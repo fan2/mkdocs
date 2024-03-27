@@ -7,7 +7,7 @@ Project documentation with Markdown.
 
 MkDocs is a fast, simple and downright gorgeous static site generator that's geared towards building project documentation. Documentation source files are written in Markdown, and configured with a single YAML configuration file. Start by reading the introductory tutorial, then check the User Guide for more information.
 
-## install mkdocs
+## pip install mkdocs
 
 参考 User Guide - [MkDocs Installation](https://www.mkdocs.org/user-guide/installation/)。
 
@@ -49,7 +49,9 @@ Commands:
   serve      Run the builtin development server
 ```
 
-### python -m mkdocs
+详情参考 User Guide - [Command Line Interface](https://www.mkdocs.org/user-guide/cli/)。
+
+---
 
 If you are using Windows/ubuntu, some of the above commands may not work out-of-the-box.
 
@@ -84,9 +86,11 @@ mkdocs
 ```
 
 1. docs 下存放 markdown 文档，index.md 为首页框架描述，参考 [Index pages](https://www.mkdocs.org/user-guide/writing-your-docs/#index-pages)。
-2. mkdocs.yml 为网站配置文件，默认只有一行：`site_name: My Docs`
+2. mkdocs.yml 为网站配置文件，默认只有一行：`site_name: My Docs`。
 
-关于配置文件，参考官网 [User Guide - Configuration](https://www.mkdocs.org/user-guide/configuration/)。
+关于配置文件，参考官网 User Guide - [Configuration](https://www.mkdocs.org/user-guide/configuration/)。
+
+> As a minimum, this configuration file must contain the `site_name`. All other settings are optional.
 
 ## mkdocs serve 启动服务
 

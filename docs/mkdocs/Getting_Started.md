@@ -16,7 +16,7 @@ site_name: 逃跑计划
 site_url: https://duetorun.com/
 ```
 
-## Adding pages to nav
+## adding pages to nav
 
 参考 User Guide - [Writing your docs](https://www.mkdocs.org/user-guide/writing-your-docs/) - Configure Pages and Navigation:
 
