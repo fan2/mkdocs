@@ -28,8 +28,19 @@ Usage: `mkdocs build [OPTIONS]`
 
 Name | Type | Description | Default
 -----|------|-------------|--------
+`-c`, --clean / --dirty | boolean | Remove old files from the site_dir before building (the default). | True
 `-f`, --config-file | filename | Provide a specific MkDocs config. This can be a file name, or '-' to read from stdin. | None
 `-d`, --site-dir | path | The directory to output the result of the documentation build. | None
+
+关于 [build速度](http://hpc.ncpgr.cn/linux/086-mkdocs/#buildsu-du) 问题：
+
+mkdocs build 默认使用了 `--clean` 选项，即会在build之前删掉所有之前build时创建的静态文件，如果文档数量较多，整个过程速度会比较慢，如本站build的时间约为25秒，build期间网站不可使用。如果修改比较频繁，则比较影响使用体验。
+
+因此对大型文档网站，只对部分页面进行了修改，可以使用 `mkdocs build --dirty`，只build修改了页面，速度会快很多，如本站使用 `mkdocs build --dirty` 后build的时间缩短为不到2秒。
+
+[官方解释](https://www.mkdocs.org/about/release-notes/#version-016-2016-11-04):
+
+For large sites the build time required to create the pages can become problematic, thus a "dirty" build mode was created. This mode simply compares the modified time of the generated HTML and source markdown. If the markdown has changed since the HTML then the page is re-constructed. Otherwise, the page remains as is. It is important to note that this method for building the pages is for development of content only, since the navigation and other links do not get updated on other pages.
 
 ## gh-deploy
 
@@ -39,6 +50,7 @@ Usage: `mkdocs gh-deploy [OPTIONS]`
 
 Name | Type | Description | Default
 -----|------|-------------|--------
+`-c`, --clean / --dirty | boolean | Remove old files from the site_dir before building (the default). | True
 `-m`, --message | text | A commit message to use when committing to the GitHub Pages remote branch. Commit {sha} and MkDocs {version} are available as expansions | None
 `-b`, --remote-branch | text | The remote branch to commit to for GitHub Pages. This overrides the value specified in config | None
 `-r`, --remote-name | text | The remote name to commit to for GitHub Pages. This overrides the value specified in config
