@@ -1,9 +1,20 @@
+---
+title: Markdown扩展
+authors:
+  - xman
+date:
+    created: 2024-03-24
+categories:
+    - mkdocs, markdown
+---
 
 User Guide - [Writing your docs](https://www.mkdocs.org/user-guide/writing-your-docs/)。
 
 MkDocs pages must be authored in [Markdown](https://daringfireball.net/projects/markdown/).
 
 MkDocs uses the [Python-Markdown](https://python-markdown.github.io/) library to render Markdown documents to HTML.
+
+<!-- more -->
 
 ## markdown_extensions
 

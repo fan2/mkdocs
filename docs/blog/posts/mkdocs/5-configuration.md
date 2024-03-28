@@ -1,4 +1,20 @@
+---
+title: Mkdocs配置
+authors:
+  - xman
+date:
+    created: 2024-03-21
+categories:
+    - mkdocs
+---
+
 User Guide - [Configuration](https://www.mkdocs.org/user-guide/configuration/)
+
+Project settings are configured by default using a YAML configuration file in the project directory named mkdocs.yml. You can specify another path for it by using the -f/--config-file option (see mkdocs build --help).
+
+As a minimum, this configuration file must contain the `site_name`. All other settings are optional.
+
+<!-- more -->
 
 ## Documentation layout
 

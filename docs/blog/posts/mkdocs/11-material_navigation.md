@@ -1,4 +1,19 @@
+---
+title: Material导航
+authors:
+  - xman
+date:
+    created: 2024-03-27
+categories:
+    - mkdocs
+    - material
+---
+
 [Setting up navigation](https://squidfunk.github.io/mkdocs-material/setup/setting-up-navigation/)
+
+A clear and concise navigation structure is an important aspect of good project documentation. Material for MkDocs provides a multitude of options to configure the behavior of navigational elements, including `tabs` and `sections`, and one of its flagship features: `instant loading`.
+
+<!-- more -->
 
 ## instant loading
 

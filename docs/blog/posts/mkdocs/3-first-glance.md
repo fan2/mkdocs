@@ -1,3 +1,13 @@
+---
+title: Mkdocs初识
+authors:
+  - xman
+date:
+    created: 2024-03-19
+categories:
+    - mkdocs
+---
+
 [MkDocs](https://www.mkdocs.org/)
 
 - @[pypi](https://pypi.org/project/mkdocs/)
@@ -6,6 +16,8 @@
 Project documentation with Markdown.
 
 MkDocs is a fast, simple and downright gorgeous static site generator that's geared towards building project documentation. Documentation source files are written in Markdown, and configured with a single YAML configuration file. Start by reading the introductory tutorial, then check the User Guide for more information.
+
+<!-- more -->
 
 ## pip install mkdocs
 

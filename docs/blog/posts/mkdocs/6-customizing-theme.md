@@ -1,8 +1,20 @@
+---
+title: Mkdocs定制主题
+authors:
+  - xman
+date:
+    created: 2024-03-22
+categories:
+    - mkdocs
+---
+
 User Guide - [Customizing Your Theme](https://www.mkdocs.org/user-guide/customizing-your-theme/)。
 
 Altering a theme to suit your needs.
 
 If you would like to make a few tweaks to an existing theme, there is no need to create your own theme from scratch. For minor tweaks which only require some CSS and/or JavaScript, you can use the `docs_dir`. However, for more complex customizations, including overriding templates, you will need to use the theme `custom_dir` setting.
+
+<!-- more -->
 
 ## Using the docs_dir
 

@@ -1,8 +1,21 @@
+---
+title: Material博客
+authors:
+  - xman
+date:
+    created: 2024-03-28
+categories:
+    - mkdocs
+    - material
+---
+
 [Setting up a blog](https://squidfunk.github.io/mkdocs-material/setup/setting-up-a-blog/)
 
 Material for MkDocs makes it very easy to build a blog, either as a sidecar to your documentation or standalone. Focus on your content while the engine does all the heavy lifting, automatically generating [archive](https://squidfunk.github.io/mkdocs-material/plugins/blog/#archive) and [category](https://squidfunk.github.io/mkdocs-material/plugins/blog/#categories) indexes, post slugs, configurable pagination and more.
 
 [Built-in blog plugin](https://squidfunk.github.io/mkdocs-material/plugins/blog/)
+
+<!-- more -->
 
 ## blog plugin
 

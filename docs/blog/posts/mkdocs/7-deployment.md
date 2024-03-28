@@ -1,8 +1,21 @@
+---
+title: Mkdocs部署
+authors:
+  - xman
+date:
+    created: 2024-03-23
+categories:
+    - mkdocs
+---
 
 User Guide:
 
 - [Command Line Interface](https://www.mkdocs.org/user-guide/cli/)
 - [Deploying your docs](https://www.mkdocs.org/user-guide/deploying-your-docs/)
+
+本文梳理了 `build` 和 `gh-deploy` 部署命令及部署工作流。
+
+<!-- more -->
 
 ## get-deps
 

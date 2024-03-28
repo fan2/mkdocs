@@ -1,9 +1,18 @@
-
-[TOC]
-
-# Getting Started
+---
+title: Mkdocs上手
+authors:
+  - xman
+date:
+    created: 2024-03-20
+categories:
+    - mkdocs
+---
 
 [Getting Started](https://www.mkdocs.org/getting-started/)
+
+Install mkdocs, get started with your first documentation project.
+
+<!-- more -->
 
 ## site_name & site_url
 

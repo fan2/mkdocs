@@ -1,3 +1,17 @@
+---
+title: Material外观
+authors:
+  - xman
+date:
+    created: 2024-03-26
+categories:
+    - mkdocs
+    - material
+---
+
+Match your brand's colors, fonts, icons, logo, and more with a few lines of configuration – Material for MkDocs makes it easy to extend the basic configuration or alter the appearance.
+
+<!-- more -->
 
 ## Logo & Icons
 

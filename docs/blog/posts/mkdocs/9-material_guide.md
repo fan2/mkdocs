@@ -1,4 +1,21 @@
+---
+title: Material主题
+authors:
+  - xman
+date:
+    created: 2024-03-25
+categories:
+    - mkdocs
+    - material
+---
+
 [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/)
+
+Documentation that simply works
+
+Material for MkDocs is a powerful documentation framework on top of MkDocs, a static site generator for project documentation.
+
+<!-- more -->
 
 ## 安装 mkdocs-material
 
