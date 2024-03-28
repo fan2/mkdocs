@@ -148,3 +148,7 @@ $ tree -L 3 .
 此时，网站蓝色导航栏多了一个 Mkdocs 菜单入口，点击下拉可以看到这个目录下的文章列表。
 
 - Mkdocs 将自动按照目录结构，生成相应的层叠菜单。
+
+## refs
+
+[从头教你用mkdocs构建个人博客系统](https://blog.csdn.net/qq_41261251/article/details/116021097)
