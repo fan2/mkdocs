@@ -46,15 +46,16 @@ Material for MkDocs comes with many configuration options. The [Setup](https://s
 
 ## 参考借鉴
 
-[使用 MkDocs 和 Material 主题搭建技术博客](http://www.cuishuaiwen.com:8000/zh/PROJECT/TECH-BLOG/mkdocs_and_material/)
+[使用 MkDocs 和 Material 主题搭建技术博客](http://www.cuishuaiwen.com:8000/zh/PROJECT/TECH-BLOG/mkdocs_and_material/) @[github](https://github.com/Shuaiwen-Cui/Infinity/)
 
-[基于 Material for MkDocs 搭建静态网页](https://derrors.github.io/)
+[基于 Material for MkDocs 搭建静态网页](https://derrors.github.io/) @[github](https://github.com/Derrors/Derrors.github.io)
 
-[Mkdocs Material使用记录](https://shafish.cn/blog/mkdocs/) - 详尽完备
+[把博客生成器从 Hugo 迁移到 Mkdocs](https://jia.je/meta/2023/07/15/migrate-from-hugo-to-mkdocs/) @[github](https://github.com/jiegec/blog-source/)
+
+[Mkdocs Material使用记录](https://shafish.cn/blog/mkdocs/) - 详尽完备 @[github](https://github.com/tffats/shafish_blog)
 
 [快来美化你的MKDocs吧](https://juejin.cn/post/7066641709198737416#heading-5) - material 配置
 
 [Material for MkDocs改动的几个地方](https://zimohan.com/it/materialmkdocs.html)
 
 [华中农业大学作重计算平台用户手册](http://hpc.ncpgr.cn/)
-[把博客生成器从 Hugo 迁移到 Mkdocs](https://jia.je/meta/2023/07/15/migrate-from-hugo-to-mkdocs/)

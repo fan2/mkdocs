@@ -42,8 +42,6 @@ theme:
     - navigation.tracking # 在url中使用标题定位锚点
 ```
 
-由于锚点不能显示中文，暂且不开。
-
 ## Navigation tabs
 
 When tabs are enabled, top-level sections are rendered in a menu layer below the header for viewports above 1220px, but remain as-is on mobile.1 Add the following lines to mkdocs.yml:
