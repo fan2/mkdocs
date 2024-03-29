@@ -34,6 +34,7 @@ theme:
 
   features:
     - toc.integrate # 右侧 TOC 集成到左侧 nav sidebar
+    - toc.follow # TOC sidebar 跟随内容滚动定位
     - header.autohide # 向下滚动时自动隐藏header
     - navigation.tabs # 顶部显示导航顶层（nav第一级节点）
     # - navigation.tabs.sticky # 滚动时不隐藏顶部nav tab
@@ -55,16 +56,17 @@ plugins:
       # post_dir: posts
       # post_excerpt_separator: <!-- more -->
       blog_toc: true
-      post_date_format: long
+      post_date_format: medium
       post_url_date_format: yyyyMMdd
       post_url_format: "{date}/{file}"
-      pagination_per_page: 10
+      pagination_per_page: 
+      pagination_format: "$link_first $link_previous ~2~ $link_next $link_last"
       # draft: true
       # draft_if_future_date: true
       archive_toc: true
       archive_name: xman 的归档
       archive_date_format: MMMM yyyy
-      archive_url_date_format: yyyy/MM
+      archive_url_date_format: yyyyMM
       archive_url_format: "archive/{date}"
       categories_toc: true
       categories_name: xman 的分类
@@ -73,21 +75,35 @@ plugins:
 # includes by default: meta, toc, tables, fenced_code
 markdown_extensions:
   ##############################
-  # Python Markdown Extensions
+  # Officially Supported Extensions
+  ## https://python-markdown.github.io/extensions/
+  ## https://squidfunk.github.io/mkdocs-material/setup/extensions/python-markdown/
   - toc:
       permalink: "#"
       separator: "_"
       # 参考 shafish.cn 和 jia.je，解决锚点无法显示中文问题
       slugify: !!python/object/apply:pymdownx.slugs.slugify {kwds: {case: lower}}
-  # cause newlines to be treated as hard breaks
-  - nl2br
-  # do not allow the mixing of list types
-  - sane_lists
+  - nl2br # cause newlines to be treated as hard breaks
+  - sane_lists # do not allow the mixing of list types
   - footnotes
+  - def_list # for Tasklist
+  - attr_list # for Buttons, Images, Annotations, Card Grids
+  - md_in_html # for Images, Annotations, Card Grids
   ##############################
   # Third Party Extensions
+  ## https://github.com/Python-Markdown/markdown/wiki/Third-Party-Extensions
   # pip install markdown-checklist
-  - markdown_checklist.extension
+  # - markdown_checklist.extension
+
+  ##############################
+  # Material Natively Supported Extensions
+  ## https://squidfunk.github.io/mkdocs-material/setup/extensions/python-markdown-extensions/
+  # Supersede markdown_checklist
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  # Content Tabs
+  - pymdownx.tabbed:
+      alternate_style: true
   # Formatting
   - pymdownx.critic
   - pymdownx.caret
@@ -95,19 +111,16 @@ markdown_extensions:
   - pymdownx.tilde
   - pymdownx.keys
   # Code Blocks
-  - pymdownx.highlight:
+  - pymdownx.superfences # Supersede fenced_code
+  - pymdownx.highlight: # Supersede fenced_codecodehilite
       anchor_linenums: true
       line_spans: __span
       pygments_lang_class: true
   - pymdownx.inlinehilite
-  - pymdownx.snippets
-  - pymdownx.superfences
-  # Content Tabs
-  - pymdownx.tabbed:
-      alternate_style: true
-  # Card Grids
-  - attr_list
-  - md_in_html
+  - pymdownx.snippets  # embed external files
+  # Admonition
+  - admonition
+  - pymdownx.details
   # MathJax
   - pymdownx.arithmatex:
       generic: true
