@@ -6,6 +6,7 @@ date:
     created: 2024-03-19
 categories:
     - mkdocs
+comments: true
 ---
 
 [MkDocs](https://www.mkdocs.org/)

@@ -6,6 +6,7 @@ date:
     created: 2024-03-22
 categories:
     - mkdocs
+comments: true
 ---
 
 User Guide - [Customizing Your Theme](https://www.mkdocs.org/user-guide/customizing-your-theme/)。

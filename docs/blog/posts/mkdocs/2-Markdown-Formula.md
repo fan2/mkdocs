@@ -5,7 +5,9 @@ authors:
 date:
     created: 2022-12-12
 categories:
-    - mkdocs, markdown
+    - mkdocs
+    - markdown
+comments: true
 ---
 
 本文梳理了 Markdown 插入数学公式。

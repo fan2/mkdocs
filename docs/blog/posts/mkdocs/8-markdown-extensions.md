@@ -7,6 +7,7 @@ date:
     updated: 2024-03-29
 categories:
     - mkdocs, markdown
+comments: true
 ---
 
 User Guide - [Writing your docs](https://www.mkdocs.org/user-guide/writing-your-docs/)。

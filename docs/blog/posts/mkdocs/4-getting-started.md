@@ -6,6 +6,7 @@ date:
     created: 2024-03-20
 categories:
     - mkdocs
+comments: true
 ---
 
 [Getting Started](https://www.mkdocs.org/getting-started/)

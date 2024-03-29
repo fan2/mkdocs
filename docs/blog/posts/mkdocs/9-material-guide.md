@@ -7,6 +7,7 @@ date:
 categories:
     - mkdocs
     - material
+comments: true
 ---
 
 [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/)

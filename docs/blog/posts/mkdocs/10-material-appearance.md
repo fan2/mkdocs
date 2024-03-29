@@ -7,6 +7,7 @@ date:
 categories:
     - mkdocs
     - material
+comments: true
 ---
 
 Match your brand's colors, fonts, icons, logo, and more with a few lines of configuration – Material for MkDocs makes it easy to extend the basic configuration or alter the appearance.

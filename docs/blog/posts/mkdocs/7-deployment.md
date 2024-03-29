@@ -6,6 +6,7 @@ date:
     created: 2024-03-23
 categories:
     - mkdocs
+comments: true
 ---
 
 User Guide:

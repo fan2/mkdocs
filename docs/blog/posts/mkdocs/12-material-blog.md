@@ -7,6 +7,7 @@ date:
 categories:
     - mkdocs
     - material
+comments: true
 ---
 
 [Setting up a blog](https://squidfunk.github.io/mkdocs-material/setup/setting-up-a-blog/)

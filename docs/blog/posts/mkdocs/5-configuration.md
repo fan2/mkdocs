@@ -6,6 +6,7 @@ date:
     created: 2024-03-21
 categories:
     - mkdocs
+comments: true
 ---
 
 User Guide - [Configuration](https://www.mkdocs.org/user-guide/configuration/)
