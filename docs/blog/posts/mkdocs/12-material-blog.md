@@ -1,5 +1,5 @@
 ---
-title: Material博客
+title: 安装Material博客插件
 authors:
   - xman
 date:

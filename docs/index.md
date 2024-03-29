@@ -22,3 +22,7 @@
 而当别处一旦变为此处，崇高感随即便变为生活的另一面：残酷。
 
 ![tranquility](./img/tranquility.png)
+
+---
+
+<span id="busuanzi_container_site_pv" style="font-size:0.8em;color=grey">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span>
