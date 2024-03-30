@@ -6,6 +6,7 @@ date:
     created: 2024-03-18T10:00:00
 categories:
     - macOS
+    - nginx
     - webDAV
 tags:
     - nginx
@@ -509,6 +510,8 @@ nginx 只有运行于 root 时，才能在 nginx.conf 中指定 worker user。
 ### webdav test
 
 关于 webdav 的连接测试，参考 [macOS上基于httpd搭建WebDav服务](./mac-setup-httpd-dav.md) - 局域网连接验证WebDAV服务 和 [使用命令行挂载操作WebDAV云盘](./cmd-mount-webdav.md) 中的相关说明。
+
+调试期间，可在 nginx 服务器执行 `tail -f /usr/local/var/log/nginx/error.log`（或 access.log）实时查看滚动日志。
 
 webdav 运行过程中，会产生一些 cache 文件，可使用 find 命令查找并按需执行 -delete 删除：
 

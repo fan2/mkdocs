@@ -6,6 +6,7 @@ date:
     created: 2024-03-18T15:00:00
 categories:
     - ubunbu
+    - nginx
     - webDAV
 tags:
     - nginx
@@ -62,7 +63,7 @@ rpi4b 的 CPU 和 OS 信息如下：
 ??? info "nginx -V"
 
     ```Shell
-    pifan@rpi4b-ubuntu $ nginx -V
+    $ nginx -V
     nginx version: nginx/1.18.0 (Ubuntu)
     built with OpenSSL 3.0.2 15 Mar 2022
     TLS SNI support enabled
@@ -399,6 +400,8 @@ nginx: configuration file /etc/nginx/nginx.conf test is successful
 执行 `curl localhost:81` 请求 web 服务，正常返回 `Welcome to nginx!` 欢迎页面（/usr/share/nginx/html/index.html）。
 
 关于 webdav 的连接测试，参考 [macOS上基于httpd搭建WebDav服务](./mac-setup-httpd-dav.md) - 局域网连接验证WebDAV服务 和 [使用命令行挂载操作WebDAV云盘](./cmd-mount-webdav.md) 中的相关说明。
+
+调试期间，可在 nginx 服务器执行 `tail -f tail -f /var/log/nginx/webdav.error.log`（或 access.log）实时查看滚动日志。
 
 ## refs
 
