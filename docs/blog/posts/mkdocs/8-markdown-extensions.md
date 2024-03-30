@@ -237,6 +237,34 @@ The [Keys](https://squidfunk.github.io/mkdocs-material/setup/extensions/python-m
 
 Code blocks and examples are an essential part of technical project documentation. Material for MkDocs provides different ways to set up syntax highlighting for code blocks, either during build time using Pygments or during runtime using a JavaScript syntax highlighter.
 
+关于 GitHub 配置 Fenced Code Block 语法高亮所使用的 YAML 标记 ，可参考 [初探YAML][]、[YAML学习][]、[YAML学习总结][]、[YAML--想要爱你很容易][]。
+
+[初探YAML]:http://www.cnblogs.com/chwkai/archive/2009/03/01/249924.html
+[YAML学习]:http://blog.csdn.net/conquer0715/article/details/42108061
+[YAML学习总结]:http://www.cnblogs.com/dbasys/archive/2007/06/11/2127620.html
+[YAML--想要爱你很容易]:http://www.ibm.com/developerworks/cn/xml/x-1103linrr/
+
+语言类型标记参考 [linguist/languages.yml](https://github.com/github-linguist/linguist/blob/master/lib/linguist/languages.yml) 和 [Languages — Pygments](https://pygments.org/languages/)。以 Shell Script 为例，语言类型标记可以为 shell 或 bash。
+
+=== "linguist"
+
+    ```YAML
+    Shell:
+      type: programming
+      color: "#89e051"
+      aliases:
+      - sh
+      - shell-script
+      - bash
+      - zsh
+    ```
+
+=== "Pygments"
+
+    Name | Extension(s) | Short name(s)
+    -----|--------------|-----------------
+    Bash | *.sh, *.ksh, *.bash, *.ebuild, *.eclass, *.exheres-0, *.exlib, *.zsh, .bashrc, bashrc, .bash\*, bash\*, zshrc, .zshrc, .kshrc, kshrc, PKGBUILD | bash, sh, ksh, zsh, shell, openrc
+
 markdown_extensions 中引入 pymdownx 四大扩展：
 
 - Highlight
