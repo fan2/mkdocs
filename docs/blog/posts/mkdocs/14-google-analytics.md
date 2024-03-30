@@ -59,13 +59,13 @@ extra_javascript:
 
 ### 首页统计总访问量
 
-在站点首页 index.md 末尾添加 `本站总访问量` 的统计：
+在站点首页 index.md 末尾添加 `本站总访问量` 和 `本站总访客数` 的统计：
 
 ```html
-<span id="busuanzi_container_site_pv" style="font-size:0.8em;color=grey">本站总访问量<span id="busuanzi_value_site_pv"></span>次</span>
+<span id="busuanzi_container_site_pv" style="font-size:0.8em;color=grey">本站总访问量 <span id="busuanzi_value_site_pv">pv</span> 次</span>，<span id="busuanzi_container_site_uv" style="font-size:0.8em;color=grey">本站总访客数 <span id="busuanzi_value_site_uv">uv</span> 次。</span>
 ```
 
-本地调试时，这个统计貌似错乱，待上线确认。
+本地调试时，这个统计貌似错乱，上线确认 OK。
 
 ### 博客文章阅读量
 
@@ -111,17 +111,42 @@ $ tree -L 1 /usr/local/lib/python3.10/site-packages/material/templates
                       <div class="md-nav__link">
                         {% include ".icons/material/book-open-page-variant-outline.svg" %}
                         <span class="md-ellipsis" id="busuanzi_container_page_pv">
-                          阅读量 <span id="busuanzi_value_page_pv"></span> 次
+                          阅读量：<span id="busuanzi_value_page_pv">N/A</span>
                         </span>
                       </div>
                     </li>
 ```
 
-从本地调试来看，文章阅读量貌似正确，待上线确认。
+从本地调试来看，文章阅读量貌似正确，上线确认桌面 Chrome 没问题。
+但是 iPhone/iPad Safari 不准确，貌似是多篇全局累计。
 
 > 注意：mkdocs-material 包升级时，会覆写掉 blog-post.html！
+
+### 替换为 Vercount
+
+从不蒜子切换到 [Vercount](https://vercount.one/) @[github](https://github.com/EvanNotFound/vercount)，只需直接替换不蒜子的 script 标签即可，不需要修改任何代码。
+
+> 数据会在初次访问时自动从不蒜子同步。
+
+```html
+<script defer src="https://vercount.one/js"></script>
+```
+
+在你的网站中添加上面其中之一的 script 之后，和不蒜子一样，你的网站就可以开始统计了。
+
+!!! note ""
+
+    ```html
+    本文总阅读量 <span id="busuanzi_value_page_pv">Loading</span> 次
+    本文总访客量 <span id="busuanzi_value_page_uv">Loading</span> 人
+    本站总访问量 <span id="busuanzi_value_site_pv">Loading</span> 次
+    本站总访客数 <span id="busuanzi_value_site_uv">Loading</span> 人
+    ```
 
 参考：
 
 - [不蒜子实现网站访问量访客数统计](https://blog.csdn.net/weixin_43919632/article/details/101086922)
 - [MkDocs实现网站访问统计(不蒜子)](https://blog.csdn.net/arnolan/article/details/105026738)
+
+- [解决不蒜子 (busuanzi) 文章计数出错问题](https://jdhao.github.io/2020/10/31/busuanzi_pv_count_error/)
+- [Vercount: 一个比不蒜子更好的网站计数器](https://ohevan.com/vercount-website-counter-busuanzi-alternative.html)

@@ -174,6 +174,7 @@ nginx can be controlled with signals.
 
 [nginx启动、重启、关闭](https://www.cnblogs.com/clphp/p/8057771.html)
 [How to stop nginx on Mac OS X](https://serverfault.com/questions/141975/how-to-stop-nginx-on-mac-os-x)
+[nginx reload 报错，彻底杀死nginx进程](https://blog.csdn.net/palmer_kai/article/details/104014595)
 
 若 nginx.conf 配置了主进程pid（master\_pid）的存储路径，则可以通过读取pid执行kill命令发送信号。
 
@@ -202,9 +203,3 @@ Usage: brew services [subcommand]
 Manage background services with macOS' launchctl(1) daemon manager or Linux's
 systemctl(1) service manager.
 ```
-
-## refs
-
-[nginx for Mac install、start、stop 、reload实践](https://zhuanlan.zhihu.com/p/38485095)
-
-[nginx reload 报错，彻底杀死nginx进程](https://blog.csdn.net/palmer_kai/article/details/104014595)
