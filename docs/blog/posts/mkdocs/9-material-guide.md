@@ -1,5 +1,5 @@
 ---
-title: Material主题
+title: 采用Material主题
 authors:
   - xman
 date:

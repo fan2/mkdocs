@@ -1,10 +1,12 @@
 ---
-title: 安装Google Analytics
+title: 为Material博客添加Google Analytics和Vercount访问统计
 authors:
   - xman
 date:
     created: 2024-03-29T17:00:00
+    updated: 2024-03-31T13:00:00
 categories:
+    - mkdocs
     - material
 tags:
     - analytics
@@ -23,7 +25,7 @@ comments: true
 
 1. Account creation: 填写名称
 2. Property creation: 填写名称
-3. Business details: 选择 Internet & Telecom 1-10
+3. Business details: 选择 Internet & Telecom, 1-10
 4. Business objectives: 选择 Get baseline reports
 5. Data collection: Web - Set up data stream
 
@@ -41,7 +43,20 @@ extra:
 
 后续登录进入 <https://analytics.google.com/analytics/web/> 即可查看对应账户的流量统计分析数据。
 
-## busuanzi
+在 Data streams 中点击站点，可以看到 MEASUREMENT ID，默认已经开启 Events | Enhanced Measurement，包括 Site search。
+
+## Google Search
+
+参考 [让Google搜索到自己的博客](https://zoharandroid.github.io/2019-08-03-%E8%AE%A9%E8%B0%B7%E6%AD%8C%E6%90%9C%E7%B4%A2%E5%88%B0%E8%87%AA%E5%B7%B1%E7%9A%84%E5%8D%9A%E5%AE%A2/)、[Hexo 个人博客 SEO 优化（3）：改造你的博客，提升搜索引擎排名](https://juejin.cn/post/6844903600485826567)。
+
+1. 查看网站是否被收录: 搜索框输入 site:duetorun.com
+2. 提交搜索资源：[Google Search Console](https://search.google.com/search-console?hl=zh) - 网址前缀，将生成的 html 文件下载放到网站根目录，点击验证。
+3. 提交站点地图：Indexing - Sitemaps 上传 sitemap.xml。如果没有 sitemap.xml，可到 [xml-sitemaps](https://www.xml-sitemaps.com/) 输入网址生成。
+4. 手动请求（重新）编入索引：URL inspection 输入博客网址，然后点击 TEST LIVE URL 手动生成 Page Index。
+
+编制索引：正在处理数据，请过 1 天左右再来查看（Indexing - Pages : Processing data, please check again in a day or so）。
+
+## busuanzi/Vercount
 
 百度统计，谷歌分析等网站统计分析工具，虽然有不错的统计分析功能，但是都不能直接呈现在网站上，都需要进入相应的后台才能查看。
 
@@ -85,7 +100,7 @@ mkdocs, version 1.5.3 from /usr/local/lib/python3.10/site-packages/mkdocs (Pytho
 
 在 site-packages 目录下找到 material，其 templates 目录下存放着网页模板文件：
 
-```Shell
+```Shell hl_lines="8"
 $ tree -L 1 /usr/local/lib/python3.10/site-packages/material/templates
 /usr/local/lib/python3.10/site-packages/material/templates
 ├── 404.html
@@ -124,15 +139,23 @@ $ tree -L 1 /usr/local/lib/python3.10/site-packages/material/templates
 
 ### 替换为 Vercount
 
-从不蒜子切换到 [Vercount](https://vercount.one/) @[github](https://github.com/EvanNotFound/vercount)，只需直接替换不蒜子的 script 标签即可，不需要修改任何代码。
+从不蒜子切换到 [Vercount](https://vercount.one/) @[github](https://github.com/EvanNotFound/vercount)，只需直接替换不蒜子的 script 标签即可，不需要修改任何代码。数据会在初次访问时自动从不蒜子同步。
 
-> 数据会在初次访问时自动从不蒜子同步。
+=== "海外访问优化版本"
 
-```html
-<script defer src="https://vercount.one/js"></script>
-```
+    ```html
+    <script defer src="https://vercount.one/js"></script>
+    ```
 
-在你的网站中添加上面其中之一的 script 之后，和不蒜子一样，你的网站就可以开始统计了。
+=== "中国访问优化版本"
+
+    ```html
+    <script defer src="https://cn.vercount.one/js"></script>
+    ```
+
+将 mkdocs.yml 中的 `extra_javascript` 部分替换 busuanzi statistics 脚本为 https://vercount.one/js。
+
+添加以上脚本之后，复用不蒜子的 pg/uv id，在 html 中插入以下统计标签，即可开始为你的网站统计访问量和访客量。
 
 !!! note ""
 

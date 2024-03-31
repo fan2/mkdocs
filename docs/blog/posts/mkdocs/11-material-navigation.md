@@ -1,5 +1,5 @@
 ---
-title: Material导航
+title: 配置Material导航
 authors:
   - xman
 date:

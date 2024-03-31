@@ -1,12 +1,13 @@
 ---
-title: Markdown扩展
+title: Python-Markdown扩展
 authors:
   - xman
 date:
     created: 2024-03-24
     updated: 2024-03-29
 categories:
-    - mkdocs, markdown
+    - mkdocs
+    - markdown
 comments: true
 ---
 

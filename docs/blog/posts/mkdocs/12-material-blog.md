@@ -1,5 +1,5 @@
 ---
-title: 安装Material博客插件
+title: 安装Material博客(sidecar to mkdocs)
 authors:
   - xman
 date:
@@ -14,9 +14,9 @@ comments: true
 
 Material for MkDocs makes it very easy to build a blog, either as a sidecar to your documentation or standalone. Focus on your content while the engine does all the heavy lifting, automatically generating [archive](https://squidfunk.github.io/mkdocs-material/plugins/blog/#archive) and [category](https://squidfunk.github.io/mkdocs-material/plugins/blog/#categories) indexes, post slugs, configurable pagination and more.
 
-[Built-in blog plugin](https://squidfunk.github.io/mkdocs-material/plugins/blog/)
-
 <!-- more -->
+
+[Built-in blog plugin](https://squidfunk.github.io/mkdocs-material/plugins/blog/)
 
 ## blog plugin
 
