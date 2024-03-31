@@ -1,0 +1,270 @@
+---
+title: vim配置
+authors:
+  - xman
+date:
+    created: 2017-10-18T11:20:00
+categories:
+    - vim
+    - editor
+tags:
+    - vim
+comments: true
+---
+
+本文梳理了 vim 配置相关基础知识并列出了一些常用的配置示例。
+
+<!-- more -->
+
+执行 `vim --version` 尾部有关于 vimrc 的位置说明:
+
+```
+λ ~/ vim --version
+VIM - Vi IMproved 8.0 (2016 Sep 12, compiled Aug 17 2018 17:24:51)
+Included patches: 1-503, 505-680, 682-1283
+Compiled by root@apple.com
+Normal version without GUI.  Features included (+) or not (-):
+
+   system vimrc file: "$VIM/vimrc"
+     user vimrc file: "$HOME/.vimrc"
+ 2nd user vimrc file: "~/.vim/vimrc"
+      user exrc file: "$HOME/.exrc"
+       defaults file: "$VIMRUNTIME/defaults.vim"
+  fall-back for $VIM: "/usr/share/vim"
+Compilation: gcc -c -I. -Iproto -DHAVE_CONFIG_H   -DMACOS_X_UNIX  -g -O2 -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=1
+Linking: gcc   -L/usr/local/lib -o vim        -lm -lncurses  -liconv -framework Cocoa
+```
+
+1. 系统级配置，对所有用户生效：`$VIM/vimrc` =  `/usr/share/vim/vimrc`；  
+2. 用户级配置1，对当前用户生效：`$HOME/.vimrc` = `~/.vimrc`；  
+3. 用户级配置2，对当前用户生效：`~/.vim/vimrc`。  
+
+在每个用户的主目录下，都有一个 vi 配置文件".vimrc"或".exrc"，没有的可以新建一个。
+用户可以编辑它，使这些设置在每次启动 vi 时都有效。
+
+vim配置可以在底行模式针对当前文档编辑设定，例如 `:set ai` 设定 `autoindent`，也可以设置到配置文件中（可省掉开头的冒号）。
+
+## 配置语法
+
+### options/features
+
+可通过 `:help vimrc-intro` 查看 **vimrc** 配置帮助。
+
+具体配置选项可参考：`/usr/share/vim/vim[0-9][0-9]/doc/options.txt`
+
+### set/enable
+
+Typing ":set xxx" sets the option "xxx", or configure to `.vimrc`.
+
+short  |  long（origin） |  comment
+-------|----------------|-------------------------------------------
+'ic'   | 'ignorecase'   |  ignore upper/lower case when searching
+'is'   | 'incsearch'    |  show partial matches for a search phrase
+'hls'  | 'hlsearch'     |  highlight all matching phrases
+
+### unset/disable
+
+Prepend "no" to switch an option off:
+
+> :set noic
+
+## 新建 .vimrc 或 .exrc
+
+```Shell
+➜  ~  cd ~
+➜  ~  touch .vimrc
+➜  ~  vi .vimrc
+```
+
+vim 配置格式可参考 `/usr/share/vim/vim[0-9][0-9]/vimrc_example.vim`。
+
+## 设置示例
+
+### 注释
+
+在C++语言中，以 `//` 开头的行视为注释；在 vim 脚本中，以 `"` 开头的行视为注释。
+
+### 设置显示行号（nu/nonu）
+
+在打开 .vimrc（.exrc） 的 vim 编辑窗口中敲 `i` 键进入 **insert** 模式，打开布尔开关 `nu`:
+
+```vim
+"显示行号
+set nu "set number
+```
+
+按下 `<Esc>` 退回 **normal** 模式，再敲入 `:wq`（或 `ZZ` ）保存退出。
+之后每次打开 vi/vim 时都会显示行号。
+
+---
+
+若不显示行号，直接删除或注释 `set nu` 这一配置行即可恢复默认；或者使能 `nu` 对应的布尔开关 `nonu`：
+
+```
+"不显示行号
+set nonu "set no number 或 set no nu
+```
+
+**说明**：
+
+在 `~/.vimrc` 配置文件中设置某项配置后，将对所有 vim 打开的文件全局有效。  
+若想在某次 vim 打开的文档中临时关闭行号显示，可在底行模式输入 `:set nonu` 临时关闭行号。  
+
+### 设置tab宽度为4（ts/tabstop）
+
+vi 中tab宽度默认为8，可以通过`set tabstop`赋值更改：
+
+```vim
+"设置tab宽度为4
+set ts=4 "tabstop
+```
+
+你也可以根据需要，开启softtabs，即用4个空格展开tab（expandtab）：
+
+```vim
+"tab用空格展开
+set et "expandtab
+```
+
+### 设置自动缩进（autoaudient）
+
+```vim
+ "自动对齐，把当前行的对齐格式应用到下一行
+set ai "autoindent
+```
+
+### 查看不可见字符
+
+`:set list`：显示不可见字符  
+`:set nolist`：取消显示不可见字符
+
+> 在显示不可见字符的情况下，TAB 键显示为 `^I`；而换行符(LF)显示为 `$`。
+
+[Show invisibles](http://vimcasts.org/episodes/show-invisibles/)  
+[Vim: Show invisible characters](https://code-maven.com/slides/vim/show-invisible-characters)  
+[How to Display Hidden Characters in vim?](https://askubuntu.com/questions/74485/how-to-display-hidden-characters-in-vim)  
+[Make Vim show ALL white spaces as a character](https://stackoverflow.com/questions/1675688/make-vim-show-all-white-spaces-as-a-character)  
+
+## [读取设置](http://blog.chinaunix.net/uid-22188554-id-461603.html)
+
+要查询某个配置开关或选项的值，可以 set 该变量为问号(?)即可查询。  
+
+`:set <option> ?`：查看特定选项  
+
+### fileencodings
+
+fileencodings 为文件编码格式：
+
+```shell
+                                *'fileencoding'* *'fenc'* *E213*
+
+        Sets the character encoding for the file of this buffer.
+                        
+        When 'fileencoding' is different from 'encoding', conversion will be
+        done when writing the file.
+
+        See 'encoding' for the possible values.
+```
+
+> 具体编码格式可查询关键字 encoding-names 和 encoding-values。
+
+查看 fileencodings 的值：
+
+```vim
+:set fileencodings ?
+```
+
+vim 帮助文档的编码格式为：
+
+> fileencodings=ucs-bom,utf-8,default,latin1
+
+---
+
+Xcode 右侧的 File Inspector 中的 Text Settings | Text Encoding 可下拉选择当前代码文件的编码格式。
+
+### fileformat
+
+fileformat 为换行格式（Line Endings）：
+
+```shell
+                                        *'fileformat'* *'ff'*
+
+This gives the <EOL> of the current buffer, which is used for
+        reading/writing the buffer from/to a file:
+            dos     <CR> <NL>
+            unix    <NL>
+            mac     <CR>
+```
+
+查看 fileformat 的值：
+
+```vim
+:set fileformat ?
+```
+
+vim 帮助文档的换行格式为：
+
+> fileformat=unix
+
+---
+
+《[vi下显示回车换行符等特殊符号](http://blog.sina.com.cn/s/blog_4c76784c0100uaf9.html)》  
+《[windows和linux文件CRLF转换](http://blog.csdn.net/yonggang7/article/details/38459143)》  
+《[Difference between CR LF, LF and CR line break types?](https://stackoverflow.com/questions/1552749/difference-between-cr-lf-lf-and-cr-line-break-types)》  
+[crlf.py](https://gist.github.com/jonlabelle/dd8c3caa7808cbe4cfe0a47ee4881059): Replace CRLF (windows) line endings with LF (unix) line endings in files.  
+
+**CR**(Carriage Return): 回车，对应 ASCII 码为 0x13，可视转义字符为 `\r`；  
+**LF**(Line Feeding)：换行，对应 ASCII 码为 0x10，可视转义字符为 `\n`。  
+
+Windows 下使用 `\r\n` 换行；UNIX 则使用 `\n` 换行。
+
+在 vim 中 `:set list` 显示的不可见字符中，Windows 行尾断行符标记为 `^M$`，UNIX 行尾断行符标记为 `$`。  
+
+---
+
+Xcode 右侧的 File Inspector 中的 Text Settings | Line Endings 有3中选项：
+
+- macOS/Unix(LF)
+- Classic Mac OS(CR)
+- Windows(CRLF)
+
+Sublime Text 的 `~/Library/Application Support/Sublime Text 3/Packages/Default/Preferences.sublime-settings`
+
+```json
+    // Determines what character(s) are used to terminate each line in new files.
+    // Valid values are 'system' (whatever the OS uses), 'windows' (CRLF) and
+    // 'unix' (LF only).
+    "default_line_ending": "system",
+```
+
+`default_line_ending`: 默认 line ending 跟随系统，macOS 下是 LF。  
+`show_line_endings`: 默认不在状态栏显示当前 Line Ending。
+
+底部状态栏将显示当前 Line Ending：
+
+- Windows：Windows Line Endings(CRLF)
+- Unix：Unix Line Endings(LF)
+- CR：Mac OS 9 Line Endings(CR)
+
+## let
+
+[What's the difference between let and set?](https://vi.stackexchange.com/questions/2076/whats-the-difference-between-let-and-set)
+
+`:let g:netrw_liststyle`：读取查看全局 let 变量的值。  
+
+## 参考
+
+[实践中学习vim之vim配置文件、插件文件加载路径](http://blog.csdn.net/smstong/article/details/20567235)  
+[优雅的配置 Vim](http://havee.me/linux/2013-10/configure-vim-gracefully.html)  
+[vim set 功能设定](http://linux.chinaunix.net/techdoc/desktop/2006/11/21/944473.shtml)  
+[某人的.vimrc：加详细注释](http://shansun123.iteye.com/blog/382650)  
+[一套强大的vim配置文件+详细注释](http://xiaozhuge0825.blog.163.com/blog/static/5760606820101127105848596/)  
+[很好很强大的vimrc（带注释版）](http://www.cnblogs.com/zourrou/archive/2011/04/16/2018493.html)  
+[Vim 配置详解](http://www.cnblogs.com/witcxc/archive/2011/12/28/2304704.html)  
+[vim配置的一些建议（附详细注释的vimrc）](http://liuyix.org/blog/2011/my-vimrc/)  
+[Linux大棚版vimrc配置](http://roclinux.cn/?p=2675)  
+[Vim 配置入门](http://www.ruanyifeng.com/blog/2018/09/vimrc.html) - 阮一峰  
+
+[The Ultimate Vim Distribution](http://vim.spf13.com/)  
+[vgod/vimrc](https://github.com/vgod/vimrc)  
+[kaochenlong/eddie-vim](https://github.com/kaochenlong/eddie-vim)  
