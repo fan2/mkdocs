@@ -4,7 +4,7 @@ authors:
   - xman
 date:
     created: 2024-03-29T17:00:00
-    updated: 2024-03-31T19:00:00
+    updated: 2024-03-31T21:00:00
 categories:
     - mkdocs
     - material
@@ -29,9 +29,11 @@ comments: true
 
     Google Analytics（分析）4 是一项分析服务，用于衡量您的网站和应用中的流量和互动情况。本文档提供了面向开发者群体的实现说明和参考资料。
 
-[将 Google Analytics（分析）与 Blogger 结合使用](https://support.google.com/blogger/answer/7039627)
+参考：[将 Google Analytics（分析）与 Blogger 结合使用](https://support.google.com/blogger/answer/7039627)。
 
-进入 [Google Analytics](https://developers.google.com/analytics)，使用 google 账号登录，然后点击 Set up measurement，按照提示开始创建评估账号。
+### Set up measurement
+
+进入 [Google Analytics](https://analytics.google.com/analytics/web/)，使用 google 账号登录，然后点击 Set up measurement，按照提示开始创建评估账号。
 
 1. Account creation: 填写名称
 2. Property creation: 填写名称
@@ -51,29 +53,31 @@ extra:
 
 ```
 
+### Admin Reports
+
 后续登录进入 [Analytics | Home](https://analytics.google.com/analytics/web/)，即可查看对应 Account | Property 的流量统计分析数据。
 
 点击左侧边栏最下方的 ⚙️ 按钮进入 Admin 管理页面，在 Data streams 中点选站点，可以看到 MEASUREMENT ID，默认已经开启 Events | Enhanced Measurement，包括 `Page views` 和 `Site search`。
 
-点击左侧边栏的第二个 Reports 按钮，进入面板可以看到报告快找（Reports snapshot），还可查看其他详细指标：
+点击左侧边栏的第二个 Reports 按钮，进入面板可以看到报告快照（Reports snapshot），还可查看其他详细指标：
 
 1. `Acquisition`（获客）: User acquisition（用户获取情况），Traffic acquisition（流量来源情况）；
 2. `Engagement`（参与度）: pages and screens, WHICH PAGES AND SCREENS GET THE MOST VIEWS?
 3. `Retention`（留存）: HOW WELL DO YOU RETAIN YOUR USERS?
 
-!!! tip "Google Analytics Reporting API"
+### Reporting API
 
-    可以借助 Google Analytics 提供的 Reporting API 将管理后台的数据拉取到网站前端，从而实现显示文章访问、阅读数量等功能。
+可以借助 Google Analytics 提供的 Reporting API 将管理后台的数据拉取到网站前端，从而实现显示文章访问、阅读数量等功能。
 
-    [Measure pageviews  |  Google Analytics  |  Google for Developers](https://developers.google.com/analytics/devguides/collection/ga4/views?client_type=gtag)
+[Measure pageviews  |  Google Analytics  |  Google for Developers](https://developers.google.com/analytics/devguides/collection/ga4/views?client_type=gtag)
 
-    [GA4 - Set up Analytics for a website and/or app - Analytics Help](https://support.google.com/analytics/answer/9304153) - Set up data collection for websites
+[GA4 - Set up Analytics for a website and/or app - Analytics Help](https://support.google.com/analytics/answer/9304153) - Set up data collection for websites
 
-    [Reporting API V4](https://developers.google.com/analytics/devguides/reporting/core/v4)，[Analytics Reporting API v4](https://developers.google.com/analytics/devguides/reporting/core/v4/rest) & [Samples](https://developers.google.com/analytics/devguides/reporting/core/v4/samples)
+[Reporting API V4](https://developers.google.com/analytics/devguides/reporting/core/v4)，[Analytics Reporting API v4](https://developers.google.com/analytics/devguides/reporting/core/v4/rest) & [Samples](https://developers.google.com/analytics/devguides/reporting/core/v4/samples)
 
-    - [自己建网站怎么添加Google Analytics统计代码查看每日流量](https://blog.naibabiji.com/tutorial/google-analytics.html)
-    - [使用 Google Analytics API 实现博客阅读量统计 - PRIN BLOG](https://prinsss.github.io/google-analytics-api-page-views-counter/)
-    - [用 Google Analytics + Vercel Serverless 为文章添加浏览量统计](https://spencer-blog-legacy.vercel.app/2020/06/serverless-ga-hit-count-api/)
+- [自己建网站怎么添加Google Analytics统计代码查看每日流量](https://blog.naibabiji.com/tutorial/google-analytics.html)
+- [使用 Google Analytics API 实现博客阅读量统计 - PRIN BLOG](https://prinsss.github.io/google-analytics-api-page-views-counter/)
+- [用 Google Analytics + Vercel Serverless 为文章添加浏览量统计](https://spencer-blog-legacy.vercel.app/2020/06/serverless-ga-hit-count-api/)
 
 ## Google Search
 
@@ -83,7 +87,7 @@ extra:
 
     Google Search Console 是一项由 Google 提供的免费服务，可帮助您监控和维护您的网站在 Google 搜索结果中的展示情况以及排查问题。即使没有注册 Search Console，您的网页也可能会显示在 Google 搜索结果中，但 Search Console 可帮助您了解并改进 Google 处理您网站的方式。
 
-参考 [让Google搜索到自己的博客](https://zoharandroid.github.io/2019-08-03-%E8%AE%A9%E8%B0%B7%E6%AD%8C%E6%90%9C%E7%B4%A2%E5%88%B0%E8%87%AA%E5%B7%B1%E7%9A%84%E5%8D%9A%E5%AE%A2/)、[Hexo 个人博客 SEO 优化（3）：改造你的博客，提升搜索引擎排名](https://juejin.cn/post/6844903600485826567)。
+参考：[让Google搜索到自己的博客](https://zoharandroid.github.io/2019-08-03-%E8%AE%A9%E8%B0%B7%E6%AD%8C%E6%90%9C%E7%B4%A2%E5%88%B0%E8%87%AA%E5%B7%B1%E7%9A%84%E5%8D%9A%E5%AE%A2/)、[Hexo 个人博客 SEO 优化（3）：改造你的博客，提升搜索引擎排名](https://juejin.cn/post/6844903600485826567)。
 
 1. 查看网站是否被收录: 搜索框输入 site:duetorun.com
 2. 在 [Google Search Console](https://search.google.com/search-console?hl=zh) 提交搜索资源（Add a property），选择网址前缀，将生成的 html 文件下载放到网站根目录，点击 [验证网站所有权](https://support.google.com/webmasters/answer/9008080#google_analytics_verification&zippy=%2Cgoogle-analytics%E5%88%86%E6%9E%90%E8%B7%9F%E8%B8%AA%E4%BB%A3%E7%A0%81)。
@@ -103,11 +107,14 @@ extra:
     编制索引：正在处理数据，请过 1 天左右再来查看
     Indexing - Pages : Processing data, please check again in a day or so
 
-## busuanzi/Vercount
+## busuanzi counter
 
 百度统计，谷歌分析等网站统计分析工具，虽然有不错的统计分析功能，但是都不能直接呈现在网站上，都需要进入相应的后台才能查看。
 
 这里尝试使用 [不蒜子](https://busuanzi.ibruce.info/) 提供的统计脚本，将访客人数、访问量统计呈现在自己的网站上。
+
+- [不蒜子实现网站访问量访客数统计](https://blog.csdn.net/weixin_43919632/article/details/101086922)
+- [MkDocs实现网站访问统计(不蒜子)](https://blog.csdn.net/arnolan/article/details/105026738)
 
 首先在引入脚本，直接在线嵌入或下载到本地：
 
@@ -201,6 +208,9 @@ $ tree -L 1 /usr/local/lib/python3.10/site-packages/material/templates
 
 ### 替换为 Vercount
 
+- [解决不蒜子 (busuanzi) 文章计数出错问题](https://jdhao.github.io/2020/10/31/busuanzi_pv_count_error/)
+- [Vercount: 一个比不蒜子更好的网站计数器](https://ohevan.com/vercount-website-counter-busuanzi-alternative.html)
+
 从不蒜子切换到 [Vercount](https://vercount.one/) @[github](https://github.com/EvanNotFound/vercount)，只需直接替换不蒜子的 script 标签即可，不需要修改任何代码。数据会在初次访问时自动从不蒜子同步。
 
 === "海外访问优化版本"
@@ -223,7 +233,7 @@ extra_javascript:
   - https://vercount.one/js
 ```
 
-添加以上脚本之后，复用不蒜子的 pg/uv id，在 html 中插入以下统计标签，即可开始为你的网站统计访问量和访客量。
+添加以上脚本之后，复用不蒜子的 pv/uv id，在 html 中插入以下统计标签，即可开始为你的网站统计访问量和访客量。
 
 !!! note ""
 
@@ -233,11 +243,3 @@ extra_javascript:
     本站总访问量 <span id="busuanzi_value_site_pv">Loading</span> 次
     本站总访客数 <span id="busuanzi_value_site_uv">Loading</span> 人
     ```
-
-### 参考
-
-- [不蒜子实现网站访问量访客数统计](https://blog.csdn.net/weixin_43919632/article/details/101086922)
-- [MkDocs实现网站访问统计(不蒜子)](https://blog.csdn.net/arnolan/article/details/105026738)
-
-- [解决不蒜子 (busuanzi) 文章计数出错问题](https://jdhao.github.io/2020/10/31/busuanzi_pv_count_error/)
-- [Vercount: 一个比不蒜子更好的网站计数器](https://ohevan.com/vercount-website-counter-busuanzi-alternative.html)
