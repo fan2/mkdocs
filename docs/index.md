@@ -1,8 +1,8 @@
 # 在别处或在路上
 
-> home | less 2 > *homeless* 1 > *elsewhere*
+!!! quote "Milan Kundera"
 
-<br />
+    Life is Elsewhere!
 
 ![coltree](./img/coltree.jpg)
 
@@ -20,6 +20,8 @@
 
 当生活在别处时，那是梦，是艺术，是诗；
 而当别处一旦变为此处，崇高感随即便变为生活的另一面：残酷。
+
+> home | less 1 > *elsewhere* 2 > *homeless*
 
 ![tranquility](./img/tranquility.png)
 

@@ -74,7 +74,7 @@ extra_javascript:
 
 ### 首页统计总访问量
 
-在站点首页 index.md 末尾添加 `本站总访问量` 和 `本站总访客数` 的统计：
+在站点首页 index.md 末尾添加 `本站总访问量` 和 `总访客数` 的统计：
 
 ```html
 <span id="busuanzi_container_site_pv" style="font-size:0.8em;color=grey">本站总访问量 <span id="busuanzi_value_site_pv">pv</span> 次</span>，<span id="busuanzi_container_site_uv" style="font-size:0.8em;color=grey">总访客数 <span id="busuanzi_value_site_uv">uv</span> 次。</span>
@@ -154,6 +154,12 @@ $ tree -L 1 /usr/local/lib/python3.10/site-packages/material/templates
     ```
 
 将 mkdocs.yml 中的 `extra_javascript` 部分替换 busuanzi statistics 脚本为 https://vercount.one/js。
+
+```YAML
+extra_javascript:
+  # busuanzi statistics
+  - https://vercount.one/js
+```
 
 添加以上脚本之后，复用不蒜子的 pg/uv id，在 html 中插入以下统计标签，即可开始为你的网站统计访问量和访客量。
 

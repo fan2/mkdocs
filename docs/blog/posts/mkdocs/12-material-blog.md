@@ -4,6 +4,7 @@ authors:
   - xman
 date:
     created: 2024-03-28
+    updated: 2024-03-31T16:00:00
 categories:
     - mkdocs
     - material
@@ -65,7 +66,7 @@ With this configuration, the url of the blog post will be `/<post_slug>` instead
 
 ## doc with Blog
 
-正常是笔记文档+博客，博客只是其中一个专项入口。
+本站是笔记文档+博客，即 sidecar 模式，博客只是其中一个专项入口。
 
 在 blog/posts 下创建一个 hello-world.md：
 
@@ -168,6 +169,23 @@ massa, nec semper lorem quam in massa.
 
 When the built-in blog plugin generates all indexes, the content before the excerpt separator is automatically extracted, allowing the user to start reading a post before deciding to jump in.
 
+By default, the plugin makes post excerpts *optional*. When a post doesn't define an excerpt, views include the entire post. This setting can be used to make post excerpts *required*:
+
+=== "Optional"
+
+    ```YAML
+    plugins:
+      - blog:
+          post_excerpt: optional
+    ```
+=== "Required"
+
+    ```YAML
+    plugins:
+      - blog:
+          post_excerpt: required
+    ```
+
 ## meta-data
 
 ### Adding categories
@@ -260,3 +278,19 @@ nav:
     - blog/authors.md
       ...
 ```
+
+## refs
+
+[Material for Mkdocs](https://squidfunk.github.io/mkdocs-material/) - [Blog](https://squidfunk.github.io/mkdocs-material/blog/) @[github](https://github.com/squidfunk/mkdocs-material/tree/master)
+
+[杰哥的{运维，编程，调板子}小笔记](https://jia.je/) @[github](https://github.com/jiegec/blog-source/)
+
+[cuishuaiwen - Eureka!](http://www.cuishuaiwen.com:8000/zh/) @[github](https://github.com/Shuaiwen-Cui/Infinity/)
+
+[格莱姆 - shafish.cn](https://shafish.cn/) @[github](https://github.com/tffats/shafish_blog)
+
+[华中农业大学作重计算平台用户手册](http://hpc.ncpgr.cn/)
+
+[A code to remember](https://copdips.com/index.html) @[github](https://github.com/copdips/copdips.github.io)
+
+[Dr. Yonghao Leo Wang Webpage](https://www.wyh.io/)
