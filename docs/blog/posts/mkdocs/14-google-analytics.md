@@ -4,12 +4,14 @@ authors:
   - xman
 date:
     created: 2024-03-29T17:00:00
-    updated: 2024-03-31T13:00:00
+    updated: 2024-03-31T19:00:00
 categories:
     - mkdocs
     - material
 tags:
     - analytics
+    - search
+    - pageviews
 comments: true
 ---
 
@@ -21,7 +23,15 @@ comments: true
 
 ## Google Analytics
 
-登录 google 账号，然后进入 [Google Analytics](https://analytics.google.com/analytics/web/)，点击 Setup a Measurement，按照提示开始创建账号。
+[Google Analytics Guides](https://developers.google.com/analytics/devguides/collection/ga4) - [Introduction to Google Analytics 4](https://developers.google.com/analytics/devguides/collection/ga4) @[zh-cn](https://developers.google.com/analytics/devguides/collection/ga4?hl=zh-cn)
+
+!!! info "Google Analytics 4"
+
+    Google Analytics（分析）4 是一项分析服务，用于衡量您的网站和应用中的流量和互动情况。本文档提供了面向开发者群体的实现说明和参考资料。
+
+[将 Google Analytics（分析）与 Blogger 结合使用](https://support.google.com/blogger/answer/7039627)
+
+进入 [Google Analytics](https://developers.google.com/analytics)，使用 google 账号登录，然后点击 Set up measurement，按照提示开始创建评估账号。
 
 1. Account creation: 填写名称
 2. Property creation: 填写名称
@@ -41,26 +51,63 @@ extra:
 
 ```
 
-后续登录进入 <https://analytics.google.com/analytics/web/> 即可查看对应账户的流量统计分析数据。
+后续登录进入 [Analytics | Home](https://analytics.google.com/analytics/web/)，即可查看对应 Account | Property 的流量统计分析数据。
 
-在 Data streams 中点击站点，可以看到 MEASUREMENT ID，默认已经开启 Events | Enhanced Measurement，包括 Site search。
+点击左侧边栏最下方的 ⚙️ 按钮进入 Admin 管理页面，在 Data streams 中点选站点，可以看到 MEASUREMENT ID，默认已经开启 Events | Enhanced Measurement，包括 `Page views` 和 `Site search`。
+
+点击左侧边栏的第二个 Reports 按钮，进入面板可以看到报告快找（Reports snapshot），还可查看其他详细指标：
+
+1. `Acquisition`（获客）: User acquisition（用户获取情况），Traffic acquisition（流量来源情况）；
+2. `Engagement`（参与度）: pages and screens, WHICH PAGES AND SCREENS GET THE MOST VIEWS?
+3. `Retention`（留存）: HOW WELL DO YOU RETAIN YOUR USERS?
+
+!!! tip "Google Analytics Reporting API"
+
+    可以借助 Google Analytics 提供的 Reporting API 将管理后台的数据拉取到网站前端，从而实现显示文章访问、阅读数量等功能。
+
+    [Measure pageviews  |  Google Analytics  |  Google for Developers](https://developers.google.com/analytics/devguides/collection/ga4/views?client_type=gtag)
+
+    [GA4 - Set up Analytics for a website and/or app - Analytics Help](https://support.google.com/analytics/answer/9304153) - Set up data collection for websites
+
+    [Reporting API V4](https://developers.google.com/analytics/devguides/reporting/core/v4)，[Analytics Reporting API v4](https://developers.google.com/analytics/devguides/reporting/core/v4/rest) & [Samples](https://developers.google.com/analytics/devguides/reporting/core/v4/samples)
+
+    - [自己建网站怎么添加Google Analytics统计代码查看每日流量](https://blog.naibabiji.com/tutorial/google-analytics.html)
+    - [使用 Google Analytics API 实现博客阅读量统计 - PRIN BLOG](https://prinsss.github.io/google-analytics-api-page-views-counter/)
+    - [用 Google Analytics + Vercel Serverless 为文章添加浏览量统计](https://spencer-blog-legacy.vercel.app/2020/06/serverless-ga-hit-count-api/)
 
 ## Google Search
+
+[Search Console帮助](https://support.google.com/webmasters) - [Search Console 简介](https://support.google.com/webmasters/answer/9128668)
+
+!!! info "Google Search Console"
+
+    Google Search Console 是一项由 Google 提供的免费服务，可帮助您监控和维护您的网站在 Google 搜索结果中的展示情况以及排查问题。即使没有注册 Search Console，您的网页也可能会显示在 Google 搜索结果中，但 Search Console 可帮助您了解并改进 Google 处理您网站的方式。
 
 参考 [让Google搜索到自己的博客](https://zoharandroid.github.io/2019-08-03-%E8%AE%A9%E8%B0%B7%E6%AD%8C%E6%90%9C%E7%B4%A2%E5%88%B0%E8%87%AA%E5%B7%B1%E7%9A%84%E5%8D%9A%E5%AE%A2/)、[Hexo 个人博客 SEO 优化（3）：改造你的博客，提升搜索引擎排名](https://juejin.cn/post/6844903600485826567)。
 
 1. 查看网站是否被收录: 搜索框输入 site:duetorun.com
-2. 提交搜索资源：[Google Search Console](https://search.google.com/search-console?hl=zh) - 网址前缀，将生成的 html 文件下载放到网站根目录，点击验证。
-3. 提交站点地图：Indexing - Sitemaps 上传 sitemap.xml。如果没有 sitemap.xml，可到 [xml-sitemaps](https://www.xml-sitemaps.com/) 输入网址生成。
+2. 在 [Google Search Console](https://search.google.com/search-console?hl=zh) 提交搜索资源（Add a property），选择网址前缀，将生成的 html 文件下载放到网站根目录，点击 [验证网站所有权](https://support.google.com/webmasters/answer/9008080#google_analytics_verification&zippy=%2Cgoogle-analytics%E5%88%86%E6%9E%90%E8%B7%9F%E8%B8%AA%E4%BB%A3%E7%A0%81)。
+
+!!! note "其他验证方法"
+
+    1. HTML 标记：向您网站的首页添加元标记
+    2. Google Analytics（分析）：使用您的 Google Analytics（分析）账号，涉及到 [analytics.js](https://developers.google.com/analytics/devguides/collection/analyticsjs/) 或 [gtag.js](https://support.google.com/analytics/answer/1008080)
+    3. Google 跟踪代碍管理器：使用您的 Google 跟踪代码管理器账号
+    4. 域名提供商：将 DNS 记录与 Google 关联
+
+3. 提交站点地图：Indexing - Sitemaps 上传 site/sitemap.xml。如果没有 sitemap.xml，可到 [xml-sitemaps](https://www.xml-sitemaps.com/) 输入网址生成。
 4. 手动请求（重新）编入索引：URL inspection 输入博客网址，然后点击 TEST LIVE URL 手动生成 Page Index。
 
-编制索引：正在处理数据，请过 1 天左右再来查看（Indexing - Pages : Processing data, please check again in a day or so）。
+!!! info ""
+
+    编制索引：正在处理数据，请过 1 天左右再来查看
+    Indexing - Pages : Processing data, please check again in a day or so
 
 ## busuanzi/Vercount
 
 百度统计，谷歌分析等网站统计分析工具，虽然有不错的统计分析功能，但是都不能直接呈现在网站上，都需要进入相应的后台才能查看。
 
-这里尝试使用不蒜子提供的统计脚本，将访客人数、访问量统计呈现在自己的网站上。
+这里尝试使用 [不蒜子](https://busuanzi.ibruce.info/) 提供的统计脚本，将访客人数、访问量统计呈现在自己的网站上。
 
 首先在引入脚本，直接在线嵌入或下载到本地：
 
@@ -121,7 +168,22 @@ $ tree -L 1 /usr/local/lib/python3.10/site-packages/material/templates
 修改之前，先将 blog-post.html 备份为 0-blog-post.html。
 在 blog-post.html 的 page.config.readtime，即 【需要 x 分钟阅读时间】后面添加一行【阅读量 N 次】：
 
-```html
+```html hl_lines="16-23"
+                    {% if page.config.readtime %}
+                      {% set time = page.config.readtime %}
+                      <li class="md-nav__item">
+                        <div class="md-nav__link">
+                          {% include ".icons/material/clock-outline.svg" %}
+                          <span class="md-ellipsis">
+                            {% if time == 1 %}
+                              {{ lang.t("readtime.one") }}
+                            {% else %}
+                              {{ lang.t("readtime.other") | replace("#", time) }}
+                            {% endif %}
+                          </span>
+                        </div>
+                      </li>
+                    {% endif %}
                     <li class="md-nav__item">
                       <div class="md-nav__link">
                         {% include ".icons/material/book-open-page-variant-outline.svg" %}
@@ -172,7 +234,7 @@ extra_javascript:
     本站总访客数 <span id="busuanzi_value_site_uv">Loading</span> 人
     ```
 
-参考：
+### 参考
 
 - [不蒜子实现网站访问量访客数统计](https://blog.csdn.net/weixin_43919632/article/details/101086922)
 - [MkDocs实现网站访问统计(不蒜子)](https://blog.csdn.net/arnolan/article/details/105026738)

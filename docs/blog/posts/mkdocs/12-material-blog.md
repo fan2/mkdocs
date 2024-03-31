@@ -4,7 +4,7 @@ authors:
   - xman
 date:
     created: 2024-03-28
-    updated: 2024-03-31T16:00:00
+    updated: 2024-03-31T17:00:00
 categories:
     - mkdocs
     - material
@@ -292,5 +292,7 @@ nav:
 [华中农业大学作重计算平台用户手册](http://hpc.ncpgr.cn/)
 
 [A code to remember](https://copdips.com/index.html) @[github](https://github.com/copdips/copdips.github.io)
+
+[Jeremy Feng](https://fengchao.pro/)
 
 [Dr. Yonghao Leo Wang Webpage](https://www.wyh.io/)

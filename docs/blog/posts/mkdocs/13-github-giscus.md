@@ -4,7 +4,7 @@ authors:
   - xman
 date:
     created: 2024-03-29T16:30:00
-    updated: 2024-03-31T12:00:00
+    updated: 2024-03-31T18:00:00
 categories:
     - mkdocs
     - material
@@ -137,3 +137,8 @@ Relevant background: [Disqus integration is broken in latest releases](https://g
 !!! info
 
     The Disqus integration was removed in v8 in favor of theme customization. The new guide explains how to achieve the same result with some block overrides. Note that in the future we might throw that out too in favor of a leaner solution (maybe giscus), as Disqus free version has become too horrible to use.
+
+## refs
+
+[为Mkdocs网站添加评论系统（以giscus为例）](https://blog.csdn.net/m0_63203517/article/details/133819706)
+[基于 giscus 为网站添加评论系统](https://fengchao.pro/blog/comment-system-with-giscus/)
