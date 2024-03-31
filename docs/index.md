@@ -1,8 +1,12 @@
 # 在别处或在路上
 
-!!! quote "Milan Kundera"
+!!! quote "Elsewhere, or on the road."
 
-    Life is Elsewhere!
+    Milan Kundera: Life is like weeds, *life is elsewhere*!
+
+    Jack Kerouac: *On the road*, O ever youthful, O ever weeping.
+
+<br />
 
 ![coltree](./img/coltree.jpg)
 
