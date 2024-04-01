@@ -4,7 +4,7 @@ authors:
   - xman
 date:
     created: 2024-03-28
-    updated: 2024-03-31T17:00:00
+    updated: 2024-04-01T11:00:00
 categories:
     - mkdocs
     - material
@@ -271,13 +271,24 @@ This will disable automatic reading time computation.
 
 Besides **posts**, it's also possible to add static pages to your blog by listing the pages in the `nav` section of mkdocs.yml. All generated indexes are included after the last specified page. For example, to add a page on the authors of the blog, add the following to mkdocs.yml:
 
-```YAML
+```YAML title="mkdocs.yml"
 nav:
   - Blog:
     - blog/index.md
     - blog/authors.md
       ...
 ```
+
+!!! warning "nav.Blog: blog/index.md"
+
+    **注意**：如果直接在 Blog 后指定博客首页路径，那么归档（archive）和分类（categories）将不会展示！
+
+    ```YAML
+    nav:
+      - Blog: blog/index.md
+    ```
+
+    因为一行将 Blog 这个导航 section 占满，将会抑制旗下自动插入 archive 和 category！
 
 ## refs
 
