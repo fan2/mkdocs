@@ -4,7 +4,7 @@ authors:
   - xman
 date:
     created: 2024-03-28
-    updated: 2024-04-01T11:00:00
+    updated: 2024-04-01T13:30:00
 categories:
     - mkdocs
     - material
@@ -290,6 +290,21 @@ nav:
 
     因为一行将 Blog 这个导航 section 占满，将会抑制旗下自动插入 archive 和 category！
 
+## route to sub path
+
+[jia.je](https://jia.je/) 的导航栏有一个入口 `知识库`，[主站点](https://github.com/jiegec/blog-source) 的 [mkdocs.yml](https://github.com/jiegec/blog-source/blob/master/mkdocs.yml) 配置如下：
+
+```YAML
+nav:
+
+  - 知识库: "/kb/"
+
+```
+
+点击打开链接 [jia.je/kb/](https://jia.je/kb/) 指向另一个独立的 mkdocs [知识库](https://github.com/jiegec/kb) 站点。
+
+在服务上配置好二级目录路由 `location /kb` 即可。
+
 ## refs
 
 [Material for Mkdocs](https://squidfunk.github.io/mkdocs-material/) - [Blog](https://squidfunk.github.io/mkdocs-material/blog/) @[github](https://github.com/squidfunk/mkdocs-material/tree/master)
@@ -307,3 +322,7 @@ nav:
 [Jeremy Feng](https://fengchao.pro/)
 
 [Dr. Yonghao Leo Wang Webpage](https://www.wyh.io/)
+
+[Starfall Projects](https://www.starfallprojects.co.uk/)
+
+[claassen.net](https://claassen.net/)

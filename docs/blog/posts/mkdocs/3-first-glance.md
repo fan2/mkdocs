@@ -4,6 +4,7 @@ authors:
   - xman
 date:
     created: 2024-03-19
+    updated: 2024-04-01T13:00:00
 categories:
     - mkdocs
 comments: true
@@ -163,5 +164,7 @@ $ tree -L 3 .
 - Mkdocs 将自动按照目录结构，生成相应的层叠菜单。
 
 ## refs
+
+[Making docs with MkDocs](https://xahteiwi.eu/blog/2023/02/23/mkdocs/)
 
 [从头教你用mkdocs构建个人博客系统](https://blog.csdn.net/qq_41261251/article/details/116021097)

@@ -4,6 +4,7 @@ authors:
   - xman
 date:
     created: 2024-03-23
+    updated: 2024-04-01T13:10:00
 categories:
     - mkdocs
 comments: true
@@ -93,3 +94,7 @@ build 会生成 site 目录，gh-deploy 会上传其内容至 gh-pages。
 2. 可通过 `-b` 指定本次部署提交分支，下次不指定，还是提交到默认分支 `gh-pages`。
 3. 可通过 `-r` 指定本次部署提交仓库，默认仓库是 `origin`，可指定 `upstream`。
 4. `--no-history` 清除部署分支旧的提交记录，以此次提交作为部署起点。
+
+## refs
+
+[用mkdocs+nginx搭建个人网站](https://zhuanlan.zhihu.com/p/551345157)
