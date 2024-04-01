@@ -307,22 +307,43 @@ nav:
 
 ## refs
 
-[Material for Mkdocs](https://squidfunk.github.io/mkdocs-material/) - [Blog](https://squidfunk.github.io/mkdocs-material/blog/) @[github](https://github.com/squidfunk/mkdocs-material/tree/master)
+Material for Mkdocs: [Blog](https://squidfunk.github.io/mkdocs-material/blog/) @[github](https://github.com/squidfunk/mkdocs-material/tree/master)
 
-[杰哥的{运维，编程，调板子}小笔记](https://jia.je/) @[github](https://github.com/jiegec/blog-source/)
+<div class="grid cards" markdown>
 
-[cuishuaiwen - Eureka!](http://www.cuishuaiwen.com:8000/zh/) @[github](https://github.com/Shuaiwen-Cui/Infinity/)
+-   :fontawesome-solid-book-open-reader: 杰哥的{运维，编程，调板子}小笔记
 
-[格莱姆 - shafish.cn](https://shafish.cn/) @[github](https://github.com/tffats/shafish_blog)
+    ---
 
-[华中农业大学作重计算平台用户手册](http://hpc.ncpgr.cn/)
+    [Blog](https://jia.je/) @[github](https://github.com/jiegec/blog-source/)
 
-[A code to remember](https://copdips.com/index.html) @[github](https://github.com/copdips/copdips.github.io)
+-   :material-controller: cuishuaiwen - Eureka!
 
-[杏子扑簌簌](https://anzai.link/), [Jeremy Feng](https://fengchao.pro/)
+    ---
 
-[Dr. Yonghao Leo Wang Webpage](https://www.wyh.io/)
+    [Blog](http://www.cuishuaiwen.com:8000/zh/) @[github](https://github.com/Shuaiwen-Cui/Infinity/)
 
-[Starfall Projects](https://www.starfallprojects.co.uk/)
+-   :material-fish: 格莱姆 - shafish.cn
 
-[claassen.net](https://claassen.net/)
+    ---
+
+    [Blog](https://shafish.cn/) @[github](https://github.com/tffats/shafish_blog)
+
+-   :material-fruit-pineapple: A code to remember
+
+    ---
+
+    [Blog](https://copdips.com/index.html) @[github](https://github.com/copdips/copdips.github.io)
+
+</div>
+
+<div class="grid cards" markdown>
+
+- [杏子扑簌簌](https://anzai.link/)
+- [Jeremy Feng](https://fengchao.pro/)
+- [华中农业大学作重计算平台用户手册](http://hpc.ncpgr.cn/)
+- [Dr. Yonghao Leo Wang Webpage](https://www.wyh.io/)
+- [Starfall Projects](https://www.starfallprojects.co.uk/)
+- [claassen.net](https://claassen.net/)
+
+</div>
