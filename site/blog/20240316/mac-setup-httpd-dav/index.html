@@ -1,0 +1,1167 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="在别处或在路上">
+      
+      
+        <meta name="author" content="Cliff Fan">
+      
+      
+        <link rel="canonical" href="https://duetorun.com/blog/20240316/mac-setup-httpd-dav/">
+      
+      
+        <link rel="prev" href="../../20221212/2-Markdown-Formula/">
+      
+      
+        <link rel="next" href="../../20240317/mac-webdav-issues/">
+      
+      
+      <link rel="icon" href="../../../assets/hold_yourself.jpg">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.15">
+    
+    
+      
+        <title>macOS上基于httpd搭建WebDav服务 - ElseWhere</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.7e359304.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function n(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],n("js",new Date),n("config","G-XGW41EGL31"),document.addEventListener("DOMContentLoaded",function(){document.forms.search&&document.forms.search.query.addEventListener("blur",function(){this.value&&n("event","search",{search_term:this.value})}),document$.subscribe(function(){var a=document.forms.feedback;if(void 0!==a)for(var e of a.querySelectorAll("[type=submit]"))e.addEventListener("click",function(e){e.preventDefault();var t=document.location.pathname,e=this.getAttribute("data-md-value");n("event","feedback",{page:t,data:e}),a.firstElementChild.disabled=!0;e=a.querySelector(".md-feedback__note [data-md-value='"+e+"']");e&&(e.hidden=!1)}),a.hidden=!1}),location$.subscribe(function(e){n("config","G-XGW41EGL31",{page_path:e.pathname})})});var e=document.createElement("script");e.async=!0,e.src="https://www.googletagmanager.com/gtag/js?id=G-XGW41EGL31",document.getElementById("__analytics").insertAdjacentElement("afterEnd",e)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#配置_apache_httpd" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../../.." title="ElseWhere" class="md-header__button md-logo" aria-label="ElseWhere" data-md-component="logo">
+      
+  <img src="../../../assets/hold_yourself.jpg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ElseWhere
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              macOS上基于httpd搭建WebDav服务
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1M8 13h8v-2H8v2m9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1 0 1.71-1.39 3.1-3.1 3.1h-4V17h4a5 5 0 0 0 5-5 5 5 0 0 0-5-5Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="indigo"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5M7 15a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/fan2/mkdocs.git" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fan2/mkdocs
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="标签" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../about/" class="md-tabs__link">
+        
+  
+    
+  
+  About
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+  
+    <li class="md-tabs__item md-tabs__item--active">
+      <a href="../../" class="md-tabs__link">
+        
+  
+    
+  
+  Blog
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../link/" class="md-tabs__link">
+        
+  
+    
+  
+  Link
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" hidden>
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="ElseWhere" class="md-nav__button md-logo" aria-label="ElseWhere" data-md-component="logo">
+      
+  <img src="../../../assets/hold_yourself.jpg" alt="logo">
+
+    </a>
+    ElseWhere
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/fan2/mkdocs.git" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fan2/mkdocs
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../about/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    About
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      <a href="../../" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../link/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Link
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#配置_apache_httpd" class="md-nav__link">
+    <span class="md-ellipsis">
+      配置 Apache httpd
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="配置 Apache httpd">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#修改_servername" class="md-nav__link">
+    <span class="md-ellipsis">
+      修改 ServerName
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#启动验证_httpd_服务" class="md-nav__link">
+    <span class="md-ellipsis">
+      启动验证 httpd 服务
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#启用_dav_扩展服务配置" class="md-nav__link">
+    <span class="md-ellipsis">
+      启用 Dav 扩展服务配置
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#配置_httpd_扩展_dav_服务" class="md-nav__link">
+    <span class="md-ellipsis">
+      配置 httpd 扩展 Dav 服务
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="配置 httpd 扩展 Dav 服务">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#设置共享目录文件夹" class="md-nav__link">
+    <span class="md-ellipsis">
+      设置共享目录文件夹
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#配置_davlockdb_目录" class="md-nav__link">
+    <span class="md-ellipsis">
+      配置 DavLockDB 目录
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#创建_webdav_访客用户" class="md-nav__link">
+    <span class="md-ellipsis">
+      创建 WebDAV 访客用户
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#httpd-davconf_主要改动部分" class="md-nav__link">
+    <span class="md-ellipsis">
+      httpd-dav.conf 主要改动部分
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="httpd-dav.conf 主要改动部分">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#authtype_basic" class="md-nav__link">
+    <span class="md-ellipsis">
+      AuthType Basic
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#authtype_digest" class="md-nav__link">
+    <span class="md-ellipsis">
+      AuthType Digest
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#配置多个共享目录" class="md-nav__link">
+    <span class="md-ellipsis">
+      配置多个共享目录
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#授予_httpd_完全磁盘访问权限" class="md-nav__link">
+    <span class="md-ellipsis">
+      授予 httpd 完全磁盘访问权限
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#验证更新配置重启apache_httpd" class="md-nav__link">
+    <span class="md-ellipsis">
+      验证更新配置重启Apache Httpd
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#局域网连接验证webdav服务" class="md-nav__link">
+    <span class="md-ellipsis">
+      局域网连接验证WebDAV服务
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#参考" class="md-nav__link">
+    <span class="md-ellipsis">
+      参考
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+  <div class="md-content md-content--post" data-md-component="content">
+    <div class="md-sidebar md-sidebar--post" data-md-component="sidebar" data-md-type="navigation">
+      <div class="md-sidebar__scrollwrap">
+        <div class="md-sidebar__inner md-post">
+          <nav class="md-nav md-nav--primary">
+            <div class="md-post__back">
+              <div class="md-nav__title md-nav__container">
+                <a href="../../" class="md-nav__link">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+                  <span class="md-ellipsis">
+                    回到主页
+                  </span>
+                </a>
+              </div>
+            </div>
+            
+              <div class="md-post__authors md-typeset">
+                
+                  <div class="md-profile md-post__profile">
+                    <span class="md-author md-author--long">
+                      <img src="https://duetorun.com/assets/hold_yourself.jpg" alt="Cliff Fan">
+                    </span>
+                    <span class="md-profile__description">
+                      <strong>
+                        
+                          <a href="https://github.com/fan2">Cliff Fan</a>
+                        
+                      </strong>
+                      <br>
+                      Just do IT
+                    </span>
+                  </div>
+                
+              </div>
+            
+            <ul class="md-post__meta md-nav__list">
+              <li class="md-nav__item md-nav__item--section">
+                <div class="md-post__title">
+                  <span class="md-ellipsis">
+                    元数据
+                  </span>
+                </div>
+                <nav class="md-nav">
+                  <ul class="md-nav__list">
+                    <li class="md-nav__item">
+                      <div class="md-nav__link">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 19H5V8h14m-3-7v2H8V1H6v2H5c-1.11 0-2 .89-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-1V1m-1 11h-5v5h5v-5Z"/></svg>
+                        <time datetime="2024-03-16 23:10:00" class="md-ellipsis">2024年3月16日</time>
+                      </div>
+                    </li>
+                    
+                    
+                      <li class="md-nav__item">
+                        <div class="md-nav__link">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 3v15h3V3H9m3 2 4 13 3-1-4-13-3 1M5 5v13h3V5H5M3 19v2h18v-2H3Z"/></svg>
+                          <span class="md-ellipsis">
+                            分类于
+                            
+                              <a href="../../category/macos/">macOS</a>, 
+                              <a href="../../category/webdav/">webDAV</a></span>
+                        </div>
+                      </li>
+                    
+                    
+                      
+                      <li class="md-nav__item">
+                        <div class="md-nav__link">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7h1.5Z"/></svg>
+                          <span class="md-ellipsis">
+                            
+                              需要 5 分钟阅读时间
+                            
+                          </span>
+                        </div>
+                      </li>
+                    
+                    <li class="md-nav__item">
+                      <div class="md-nav__link">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m19 1-5 5v11l5-4.5V1m2 4v13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V6c-1.45-1.1-3.55-1.5-5.5-1.5-1.95 0-4.05.4-5.5 1.5v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1M10 18.41C8.75 18.09 7.5 18 6.5 18c-1.06 0-2.32.19-3.5.5V7.13c.91-.4 2.14-.63 3.5-.63 1.36 0 2.59.23 3.5.63v11.28Z"/></svg>
+                        <span class="md-ellipsis" id="busuanzi_container_page_pv">
+                          阅读量：<span id="busuanzi_value_page_pv">N/A</span>
+                        </span>
+                      </div>
+                    </li>
+                  </ul>
+                </nav>
+              </li>
+            </ul>
+          </nav>
+          
+        </div>
+      </div>
+    </div>
+    <article class="md-content__inner md-typeset">
+      
+        
+  
+  
+
+<nav class="md-tags" >
+  
+    
+    
+    
+      <span class="md-tag">httpd</span>
+    
+  
+    
+    
+    
+      <span class="md-tag">webDAV</span>
+    
+  
+</nav>
+
+
+  
+  
+
+
+  <h1>macOS上基于httpd搭建WebDav服务</h1>
+
+<p>在局域网中，要想共享或访问 macOS 机器上的文件，可以通过文件共享、屏幕共享或 <a href="https://apple.stackexchange.com/questions/278744/command-line-enable-remote-login-and-remote-management">远程登录</a> 这几种方式：</p>
+<ol>
+<li><strong>FS</strong>（SMB）: <a href="https://support.apple.com/zh-sg/guide/mac-help/mh17131/mac">Set up file sharing on Mac</a>，<a href="https://support.apple.com/zh-sg/guide/mac-help/mchlp1775/mac">Control access to your Public folder on Mac</a>。</li>
+<li><strong>SSH</strong>+SFTP: <a href="https://support.apple.com/en-hk/guide/mac-help/mchlp1066/mac">Allow a remote computer to access your Mac</a></li>
+<li><strong>Screen Sharing</strong>（VNC）: <a href="https://support.apple.com/en-hk/guide/mac-help/mh11848/mac">Turn Mac screen sharing on or off</a>，<a href="https://support.apple.com/en-hk/guide/mac-help/mh14066/mac">Share the screen of another Mac</a>。</li>
+<li><strong>RD</strong>: <a href="https://support.apple.com/en-hk/guide/remote-desktop/apd8b1c65bd/mac">Enable remote management for Remote Desktop</a></li>
+</ol>
+<p>FS 模式一般默认开放给 everyone 只读，可以以 Guest User 身份免登录访问，但是一旦涉及到要开放写权限，会涉及到系统账户分级分组管理和ACL权限控制和分配粒度问题。局域网内怎么样部署简易轻量的共享同步存储系统呢？</p>
+<p>在多终端设备时代，很多人都购买了在线网络云盘服务，或者自己动手DIY搭建部署家庭局域网NAS私有云服务器，作为家里的数据和影音中心，方便文件共享和存储备份同步。另一个日益增长的需求就是分布式协作，Google文档、腾讯文档等产品就是解决这类问题的在线协同编辑的办公软件。</p>
+<!-- more -->
+
+<p>早在1996年，加州大学尔湾分校博士毕业生Jim Whitehead就与W3C共同主办了两场会议讨论了万维网上的分布式创作问题，并成立了WebDAV工作小组。</p>
+<div class="admonition quote">
+<p class="admonition-title">WebDAV wiki</p>
+<p><strong>WebDAV</strong> 是 Web-based Distributed Authoring and Versioning 的缩写，即基于Web的分布式编写和版本控制。它是对 HTTP 的扩展，为用户在服务器上创建、更改和移动文档提供了一个框架，方便用户间协同编辑和管理存储在万维网服务器上的文档。</p>
+</div>
+<p>因为基于HTTP，WebDAV 在广域网上共享文件有天然的优势，移动端文件管理APP大多都支持WebDAV协议，使用HTTPS还能保安全性。微软的Office和自家Sharepoint服务器通信，苹果的iWork套件也是基于WebDAV。Apache和Nginx都扩展支持WebDAV，可作为WebDAV文件共享服务器软件。</p>
+<p>本文记录了在 macOS 上基于内置的 Apache Httpd 搭建 WebDAV 服务的步骤流程，以供备忘和参考。</p>
+<h2 id="配置_apache_httpd">配置 Apache httpd<a class="headerlink" href="#配置_apache_httpd" title="Permanent link">#</a></h2>
+<p>Apache Httpd 配置文件：<code>/etc/apache2/httpd.conf</code>。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>/etc/apache2/
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>//<span class="w">  </span>备份文件，以防不测
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>$<span class="w"> </span>sudo<span class="w"> </span>cp<span class="w"> </span>httpd.conf<span class="w"> </span>httpd.conf.bak
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>$<span class="w"> </span>sudo<span class="w"> </span>vim<span class="w"> </span>httpd.conf
+</span></code></pre></div>
+<p>其中定义了默认的文档服务目录：</p>
+<div class="language-aconf highlight"><span class="filename">/etc/apache2/httpd.conf</span><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nb">DocumentRoot</span><span class="w"> </span><span class="s2">&quot;/Library/WebServer/Documents&quot;</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="nt">&lt;Directory</span><span class="w"> </span><span class="s">&quot;/Library/WebServer/Documents&quot;</span><span class="nt">&gt;</span>
+</span></code></pre></div>
+<h3 id="修改_servername">修改 ServerName<a class="headerlink" href="#修改_servername" title="Permanent link">#</a></h3>
+<p>macOS 上可通过以下命令获取主机名：</p>
+<ul>
+<li>hostname</li>
+<li>scutil --get ComputerName</li>
+<li>scutil --get LocalHostName</li>
+</ul>
+<p>搜索 ServerName 注释行，设置与主机名称一致</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>ServerName<span class="w"> </span>mbpa1398:80
+</span></code></pre></div>
+<h3 id="启动验证_httpd_服务">启动验证 httpd 服务<a class="headerlink" href="#启动验证_httpd_服务" title="Permanent link">#</a></h3>
+<p>由于尚未配置 webdav 扩展服务，暂时先不管 webDAV 服务，先把 httpd server 跑起来。</p>
+<div class="admonition warning">
+<p class="admonition-title">wfsctl should be disabled</p>
+<p>请先执行 <code>wfsctl status</code> 命令检查 wfsctl 是否为禁用状态：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>$<span class="w"> </span>sudo<span class="w"> </span>wfsctl<span class="w"> </span>status
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>disabled
+</span></code></pre></div>
+<p>如果否，请执行 <code>sudo wfsctl stop</code> 停止，否则可能会有端口冲突等问题导致后续无法访问。</p>
+</div>
+<p>执行 <code>sudo apachectl -k start</code> 启动 Apache Httpd 服务，然后在本地命令行输入 <code>curl localhost</code>，正常应返回 DocumentRoot 下的 index.html.en 页面：</p>
+<div class="language-HTML highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;&lt;</span><span class="nt">body</span><span class="p">&gt;&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>It works!<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;&lt;/</span><span class="nt">body</span><span class="p">&gt;&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</span></code></pre></div>
+<p>或在浏览器输入 <a href="http://localhost">http://localhost</a> 或 <a href="http://mbpa1398.local">http://mbpa1398.local</a> 看看是否正常输出 <code>It works!</code> 。</p>
+<p><a href="https://httpd.apache.org/docs/2.4/en/stopping.html">Stopping and Restarting Apache HTTP Server - Apache HTTP Server Version 2.4</a></p>
+<h3 id="启用_dav_扩展服务配置">启用 Dav 扩展服务配置<a class="headerlink" href="#启用_dav_扩展服务配置" title="Permanent link">#</a></h3>
+<p>移除以下配置文件中 5 行行首的注释：</p>
+<div class="language-aconf highlight"><span class="filename">/etc/apache2/httpd.conf</span><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="w"> </span><span class="err">92</span><span class="w"> </span><span class="c">#LoadModule auth_digest_module libexec/apache2/mod_auth_digest.so</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="err">165</span><span class="w"> </span><span class="c">#LoadModule dav_module libexec/apache2/mod_dav.so</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="err">176</span><span class="w"> </span><span class="c">#LoadModule dav_fs_module libexec/apache2/mod_dav_fs.so</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="err">177</span><span class="w"> </span><span class="c">#LoadModule dav_lock_module libexec/apache2/mod_dav_lock.so</span>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="hll"><span class="err">533</span><span class="w"> </span><span class="c">#Include /private/etc/apache2/extra/httpd-dav.conf</span>
+</span></span></code></pre></div>
+<ol>
+<li>LoadModule 加载 mod_dav 相关的三个动态库和用于 digest auth  验证的动态库。</li>
+<li>Include 包含（引入）dav 扩展服务配置（extra/httpd-dav.conf）。</li>
+</ol>
+<div class="admonition note">
+<p>如果使用默认的认证方式 AuthType Digest，则需加载 mod_auth_digest.so。<br />
+如果改为 Basic，默认已经加载了 mod_auth_basic.so，无需加载 mod_auth_digest.so。</p>
+</div>
+<h2 id="配置_httpd_扩展_dav_服务">配置 httpd 扩展 Dav 服务<a class="headerlink" href="#配置_httpd_扩展_dav_服务" title="Permanent link">#</a></h2>
+<p>Httpd 的 Dav 扩展服务配置文件：/etc/apache2/extra/httpd-dav.conf。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span>extra
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="c1"># 备份配置文件</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>$<span class="w"> </span>sudo<span class="w"> </span>cp<span class="w"> </span>httpd-dav.conf<span class="w"> </span>httpd-dav.conf.bak
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="c1"># 编辑配置文件</span>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>$<span class="w"> </span>sudo<span class="w"> </span>vim<span class="w"> </span>httpd-dav.conf
+</span></code></pre></div>
+<h3 id="设置共享目录文件夹">设置共享目录文件夹<a class="headerlink" href="#设置共享目录文件夹" title="Permanent link">#</a></h3>
+<p>macOS 下自带的 Apache Httpd 服务的站点目录有两级：</p>
+<ol>
+<li>系统级的根目录：httpd.conf 中配置的 DocumentRoot（<code>/Libraray/WebServer/Ducuments</code>），对应网址： http://localhost/。</li>
+<li>用户级的根目录：对应配置 httpd-userdir.conf（<code>～/Sites</code>），对应网址：http://localhost/~user/。</li>
+</ol>
+<p>httpd.conf 中默认未启用用户级站点配置 httpd-userdir.conf：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="c1"># User home directories</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="c1">#Include /private/etc/apache2/extra/httpd-userdir.conf</span>
+</span></code></pre></div>
+<p>httpd-userdir.conf 内容如下：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="c1">#Include /private/etc/apache2/users/*.conf</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>&lt;IfModule<span class="w"> </span>bonjour_module&gt;
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="w">       </span>RegisterUserSite<span class="w"> </span>customized-users
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>&lt;/IfModule&gt;
+</span></code></pre></div>
+<p>在 /etc/apache2/users/ 目录下，可以看到当前用户的配置 faner.conf：</p>
+<div class="language-aconf highlight"><span class="filename">/etc/apache2/users/faner.conf</span><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="nt">&lt;Directory</span><span class="w"> </span><span class="s">&quot;/Users/faner/Sites/&quot;</span><span class="nt">&gt;</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="w">    </span><span class="nb">Options</span><span class="w"> </span>Indexes<span class="w"> </span>MultiViews
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="w">    </span><span class="nb">Require</span><span class="w"> </span><span class="k">all</span><span class="w"> </span>granted
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="nt">&lt;/Directory&gt;</span>
+</span></code></pre></div>
+<p>按照 Apache 的部署策略，本机的全局站点部署在系统级根目录，用户级的站点部署在家目录下的 Sites 下。</p>
+<hr />
+<p>暂时没有使用 Apache 部署个人站点的需求，所以先在 <code>~Sites</code> 下新建 DAVNAS 目录用作 WebDAV 共享服务。</p>
+<p>第19行指定共享服务目录：/Users/faner/Sites/DAVNAS。<br />
+第17行设置 alias 名字为 /webdav，为后续访问 URL 的根路径。</p>
+<div class="language-aconf highlight"><span class="filename">/etc/apache2/extra/httpd-dav.conf</span><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="w"> </span><span class="err">17</span><span class="w"> </span><span class="nb">Alias</span><span class="w"> </span><span class="sx">/webdav</span><span class="w"> </span><span class="s2">&quot;/Users/faner/Sites/DAVNAS&quot;</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="w"> </span><span class="err">18</span>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="w"> </span><span class="err">19</span><span class="w"> </span><span class="nt">&lt;Directory</span><span class="w"> </span><span class="s">&quot;/Users/faner/Sites/DAVNAS&quot;</span><span class="nt">&gt;</span>
+</span></code></pre></div>
+<p>httpd.conf 中指定了运行 httpd daemon 进程的用户和组：</p>
+<div class="language-aconf highlight"><span class="filename">/etc/apache2/extra/httpd-dav.conf</span><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="nb">User</span><span class="w"> </span>_www
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="nb">Group</span><span class="w"> </span>_www
+</span></code></pre></div>
+<p>macOS 下 mkdir/touch 新创建的文件（夹），默认对 staff 工作组和 everyone 都开放了 Read Only 权限。</p>
+<p>客户端通过 HTTP Basic/Digest 认证访问 web 服务，运行 httpd 服务的 <code>_www._www</code> 用户作为 everyone，拥有对 Directory 目录的只读浏览权限。</p>
+<p>想要让 httpd 有权限修改/写入共享的 Directory 目录，需要将该目录更改为 <code>_www._www</code> 用户组名下。调用 <code>chown</code> 命令即可：</p>
+<div class="language-Shell highlight"><span class="filename">将共享目录 owner 改为 httpd 用户</span><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>$<span class="w"> </span>sudo<span class="w"> </span>chown<span class="w"> </span>-R<span class="w"> </span>_www:_www<span class="w"> </span>/Users/faner/Sites/DAVNAS
+</span></code></pre></div>
+<p>此项修改将导致本地管理员无法直接写 Directory 目录，详见后续讨论。</p>
+<h3 id="配置_davlockdb_目录">配置 DavLockDB 目录<a class="headerlink" href="#配置_davlockdb_目录" title="Permanent link">#</a></h3>
+<p>创建 /opt/webdav/var 目录：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>$<span class="w"> </span>sudo<span class="w"> </span>mkdir<span class="w"> </span>-p<span class="w"> </span>/opt/webdav/var
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="c1"># -R?</span>
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>$<span class="w"> </span>sudo<span class="w"> </span>chown<span class="w"> </span>_www:_www<span class="w"> </span>/opt/webdav/var
+</span></code></pre></div>
+<p>修改 httpd-dav.conf 第 15 行的 DavLockDB 路径配置：</p>
+<div class="language-aconf highlight"><span class="filename">/etc/apache2/extra/httpd-dav.conf</span><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="c"># 15 DavLockDB &quot;/usr/var/DavLock&quot;</span>
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="err">15</span><span class="w"> </span><span class="nb">DavLockDB</span><span class="w"> </span><span class="sx">/opt/webdav/var/DavLock</span>
+</span></code></pre></div>
+<h3 id="创建_webdav_访客用户">创建 WebDAV 访客用户<a class="headerlink" href="#创建_webdav_访客用户" title="Permanent link">#</a></h3>
+<p>新建存储密码的文件 user.passwd，并修改所属的用户和组。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>$<span class="w"> </span>sudo<span class="w"> </span>touch<span class="w"> </span>/opt/webdav/user.passwd
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>$<span class="w"> </span>sudo<span class="w"> </span>chown<span class="w"> </span>_www:_www<span class="w"> </span>/opt/webdav/user.passwd
+</span></code></pre></div>
+<p>紧接着，根据不同的 AuthType 执行不同的命令，为 webdav 域新增用户 username。</p>
+<p>其中， <code>-c</code> 选项将 truncate 已存在的密码文件。</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">AuthType Digest - htdigest</label><label for="__tabbed_1_2">AuthType Basic - htpasswd</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>$<span class="w"> </span>sudo<span class="w"> </span>htdigest<span class="w"> </span>-c<span class="w"> </span>/opt/webdav/user.passwd<span class="w"> </span>webdav<span class="w"> </span><span class="nv">$username</span>
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>$<span class="w"> </span>sudo<span class="w"> </span>htpasswd<span class="w"> </span>-c<span class="w"> </span>/opt/webdav/user.passwd<span class="w"> </span><span class="nv">$username</span>
+</span></code></pre></div>
+</div>
+</div>
+</div>
+<p>根据提示，为新增的用户（username）设置密码并确认。</p>
+<div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>可以提前创建多个账号，分配给不同的局域网访客用户。</p>
+</div>
+<h2 id="httpd-davconf_主要改动部分">httpd-dav.conf 主要改动部分<a class="headerlink" href="#httpd-davconf_主要改动部分" title="Permanent link">#</a></h2>
+<h3 id="authtype_basic">AuthType Basic<a class="headerlink" href="#authtype_basic" title="Permanent link">#</a></h3>
+<ul>
+<li>改：DavLockDB</li>
+<li>改：AuthName</li>
+<li>改：AuthUserFile</li>
+<li>注：AuthDigestProvider</li>
+</ul>
+<div class="language-aconf highlight"><span class="filename">/etc/apache2/extra/httpd-dav.conf</span><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="err">15</span><span class="w"> </span><span class="nb">DavLockDB</span><span class="w"> </span><span class="s2">&quot;/opt/webdav/var/DavLock&quot;</span>
+</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a><span class="err">16</span>
+</span><span id="__span-18-3"><a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a><span class="err">17</span><span class="w"> </span><span class="nb">Alias</span><span class="w"> </span><span class="sx">/webdav</span><span class="w"> </span><span class="s2">&quot;/Users/faner/Sites/DAVNAS&quot;</span>
+</span><span id="__span-18-4"><a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a><span class="err">18</span>
+</span><span id="__span-18-5"><a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a><span class="err">19</span><span class="w"> </span><span class="nt">&lt;Directory</span><span class="w"> </span><span class="s">&quot;/Users/faner/Sites/DAVNAS&quot;</span><span class="nt">&gt;</span>
+</span><span id="__span-18-6"><a id="__codelineno-18-6" name="__codelineno-18-6" href="#__codelineno-18-6"></a><span class="err">20</span><span class="w">     </span><span class="nb">Dav</span><span class="w"> </span><span class="k">On</span>
+</span><span id="__span-18-7"><a id="__codelineno-18-7" name="__codelineno-18-7" href="#__codelineno-18-7"></a><span class="err">21</span>
+</span><span id="__span-18-8"><a id="__codelineno-18-8" name="__codelineno-18-8" href="#__codelineno-18-8"></a><span class="hll"><span class="err">22</span><span class="w">     </span><span class="nb">AuthType</span><span class="w"> </span>Basic
+</span></span><span id="__span-18-9"><a id="__codelineno-18-9" name="__codelineno-18-9" href="#__codelineno-18-9"></a><span class="err">23</span><span class="w">     </span><span class="nb">AuthName</span><span class="w"> </span>webdav
+</span><span id="__span-18-10"><a id="__codelineno-18-10" name="__codelineno-18-10" href="#__codelineno-18-10"></a><span class="err">24</span><span class="w">     </span><span class="c"># You can use the htdigest program to create the password database:</span>
+</span><span id="__span-18-11"><a id="__codelineno-18-11" name="__codelineno-18-11" href="#__codelineno-18-11"></a><span class="err">25</span><span class="w">     </span><span class="c">#   htdigest -c &quot;/usr/user.passwd&quot; $AuthName $username</span>
+</span><span id="__span-18-12"><a id="__codelineno-18-12" name="__codelineno-18-12" href="#__codelineno-18-12"></a><span class="err">26</span><span class="w">     </span><span class="nb">AuthUserFile</span><span class="w"> </span><span class="s2">&quot;/opt/webdav/user.passwd&quot;</span>
+</span><span id="__span-18-13"><a id="__codelineno-18-13" name="__codelineno-18-13" href="#__codelineno-18-13"></a><span class="err">27</span><span class="w">     </span><span class="c"># AuthDigestProvider file</span>
+</span><span id="__span-18-14"><a id="__codelineno-18-14" name="__codelineno-18-14" href="#__codelineno-18-14"></a><span class="err">29</span>
+</span><span id="__span-18-15"><a id="__codelineno-18-15" name="__codelineno-18-15" href="#__codelineno-18-15"></a><span class="err">30</span><span class="w">     </span><span class="c"># Allow universal read-access, but writes are restricted</span>
+</span><span id="__span-18-16"><a id="__codelineno-18-16" name="__codelineno-18-16" href="#__codelineno-18-16"></a><span class="err">31</span><span class="w">     </span><span class="c"># to the admin user.</span>
+</span><span id="__span-18-17"><a id="__codelineno-18-17" name="__codelineno-18-17" href="#__codelineno-18-17"></a><span class="err">32</span><span class="w">     </span><span class="nt">&lt;RequireAny&gt;</span>
+</span><span id="__span-18-18"><a id="__codelineno-18-18" name="__codelineno-18-18" href="#__codelineno-18-18"></a><span class="err">33</span><span class="w">        </span><span class="nb">Require</span><span class="w"> </span>method<span class="w"> </span>GET<span class="w"> </span>POST<span class="w"> </span>OPTIONS
+</span><span id="__span-18-19"><a id="__codelineno-18-19" name="__codelineno-18-19" href="#__codelineno-18-19"></a><span class="err">34</span><span class="w">        </span><span class="nb">Require</span><span class="w"> </span><span class="k">user</span><span class="w"> </span>$username
+</span><span id="__span-18-20"><a id="__codelineno-18-20" name="__codelineno-18-20" href="#__codelineno-18-20"></a><span class="err">35</span><span class="w">    </span><span class="nt">&lt;/RequireAny&gt;</span>
+</span><span id="__span-18-21"><a id="__codelineno-18-21" name="__codelineno-18-21" href="#__codelineno-18-21"></a><span class="err">36</span><span class="w"> </span><span class="nt">&lt;/Directory&gt;</span>
+</span></code></pre></div>
+<h3 id="authtype_digest">AuthType Digest<a class="headerlink" href="#authtype_digest" title="Permanent link">#</a></h3>
+<ul>
+<li>改：DavLockDB</li>
+<li>改：AuthName</li>
+<li>改：AuthUserFile</li>
+<li>增：Require valid-user</li>
+<li>注：<code>&lt;RequireAny&gt;...&lt;/RequireAny&gt;</code></li>
+</ul>
+<div class="language-aconf highlight"><span class="filename">/etc/apache2/extra/httpd-dav.conf</span><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="err">15</span><span class="w"> </span><span class="nb">DavLockDB</span><span class="w"> </span><span class="s2">&quot;/opt/webdav/var/DavLock&quot;</span>
+</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a><span class="err">16</span>
+</span><span id="__span-19-3"><a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a><span class="err">17</span><span class="w"> </span><span class="nb">Alias</span><span class="w"> </span><span class="sx">/webdav</span><span class="w"> </span><span class="s2">&quot;/Users/faner/Sites/DAVNAS&quot;</span>
+</span><span id="__span-19-4"><a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a><span class="err">18</span>
+</span><span id="__span-19-5"><a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a><span class="err">19</span><span class="w"> </span><span class="nt">&lt;Directory</span><span class="w"> </span><span class="s">&quot;/Users/faner/Sites/DAVNAS&quot;</span><span class="nt">&gt;</span>
+</span><span id="__span-19-6"><a id="__codelineno-19-6" name="__codelineno-19-6" href="#__codelineno-19-6"></a><span class="err">20</span><span class="w">     </span><span class="nb">Dav</span><span class="w"> </span><span class="k">On</span>
+</span><span id="__span-19-7"><a id="__codelineno-19-7" name="__codelineno-19-7" href="#__codelineno-19-7"></a><span class="err">21</span>
+</span><span id="__span-19-8"><a id="__codelineno-19-8" name="__codelineno-19-8" href="#__codelineno-19-8"></a><span class="hll"><span class="err">22</span><span class="w">     </span><span class="nb">AuthType</span><span class="w"> </span>Digest
+</span></span><span id="__span-19-9"><a id="__codelineno-19-9" name="__codelineno-19-9" href="#__codelineno-19-9"></a><span class="err">23</span><span class="w">     </span><span class="nb">AuthName</span><span class="w"> </span>webdav
+</span><span id="__span-19-10"><a id="__codelineno-19-10" name="__codelineno-19-10" href="#__codelineno-19-10"></a><span class="err">24</span><span class="w">     </span><span class="c"># You can use the htdigest program to create the password database:</span>
+</span><span id="__span-19-11"><a id="__codelineno-19-11" name="__codelineno-19-11" href="#__codelineno-19-11"></a><span class="err">25</span><span class="w">     </span><span class="c">#   htdigest -c &quot;/usr/user.passwd&quot; DAV-upload admin</span>
+</span><span id="__span-19-12"><a id="__codelineno-19-12" name="__codelineno-19-12" href="#__codelineno-19-12"></a><span class="err">26</span><span class="w">     </span><span class="nb">AuthUserFile</span><span class="w"> </span><span class="s2">&quot;/opt/webdav/user.passwd&quot;</span>
+</span><span id="__span-19-13"><a id="__codelineno-19-13" name="__codelineno-19-13" href="#__codelineno-19-13"></a><span class="err">27</span><span class="w">     </span><span class="nb">Require</span><span class="w"> </span>valid-user
+</span><span id="__span-19-14"><a id="__codelineno-19-14" name="__codelineno-19-14" href="#__codelineno-19-14"></a><span class="err">28</span><span class="w">     </span><span class="nb">AuthDigestProvider</span><span class="w"> </span>file
+</span><span id="__span-19-15"><a id="__codelineno-19-15" name="__codelineno-19-15" href="#__codelineno-19-15"></a><span class="err">29</span>
+</span><span id="__span-19-16"><a id="__codelineno-19-16" name="__codelineno-19-16" href="#__codelineno-19-16"></a><span class="err">30</span><span class="w">     </span><span class="c"># Allow universal read-access, but writes are restricted</span>
+</span><span id="__span-19-17"><a id="__codelineno-19-17" name="__codelineno-19-17" href="#__codelineno-19-17"></a><span class="err">31</span><span class="w">     </span><span class="c"># to the admin user.</span>
+</span><span id="__span-19-18"><a id="__codelineno-19-18" name="__codelineno-19-18" href="#__codelineno-19-18"></a><span class="err">32</span><span class="w"> </span><span class="c">#    &lt;RequireAny&gt;</span>
+</span><span id="__span-19-19"><a id="__codelineno-19-19" name="__codelineno-19-19" href="#__codelineno-19-19"></a><span class="err">33</span><span class="w"> </span><span class="c">#        Require method GET POST OPTIONS</span>
+</span><span id="__span-19-20"><a id="__codelineno-19-20" name="__codelineno-19-20" href="#__codelineno-19-20"></a><span class="err">34</span><span class="w"> </span><span class="c">#        Require user admin</span>
+</span><span id="__span-19-21"><a id="__codelineno-19-21" name="__codelineno-19-21" href="#__codelineno-19-21"></a><span class="err">35</span><span class="w"> </span><span class="c">#    &lt;/RequireAny&gt;</span>
+</span><span id="__span-19-22"><a id="__codelineno-19-22" name="__codelineno-19-22" href="#__codelineno-19-22"></a><span class="err">36</span><span class="w"> </span><span class="nt">&lt;/Directory&gt;</span>
+</span></code></pre></div>
+<h3 id="配置多个共享目录">配置多个共享目录<a class="headerlink" href="#配置多个共享目录" title="Permanent link">#</a></h3>
+<p>建议把要共享的内容放在一个共享目录（DAVNAS），然后通过 /webdav 访问。</p>
+<p>如果有多个共享目录，可以复制 Alias、Directory，建立多组 URL 路径映射。</p>
+<div class="language-aconf highlight"><span class="filename">/etc/apache2/extra/httpd-dav.conf</span><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="nb">Alias</span><span class="w"> </span><span class="sx">/webdav1</span><span class="w"> </span><span class="s2">&quot;/Users/faner/Sites/DAVNAS1&quot;</span>
+</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>
+</span><span id="__span-20-3"><a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a><span class="nt">&lt;Directory</span><span class="w"> </span><span class="s">&quot;/Users/faner/Sites/DAVNAS1&quot;</span><span class="nt">&gt;</span>
+</span><span id="__span-20-4"><a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a><span class="w">    </span><span class="nb">Dav</span><span class="w"> </span><span class="k">On</span>
+</span><span id="__span-20-5"><a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a><span class="w">    </span><span class="c"># Dav access control</span>
+</span><span id="__span-20-6"><a id="__codelineno-20-6" name="__codelineno-20-6" href="#__codelineno-20-6"></a><span class="nt">&lt;/Directory&gt;</span>
+</span><span id="__span-20-7"><a id="__codelineno-20-7" name="__codelineno-20-7" href="#__codelineno-20-7"></a>
+</span><span id="__span-20-8"><a id="__codelineno-20-8" name="__codelineno-20-8" href="#__codelineno-20-8"></a><span class="nb">Alias</span><span class="w"> </span><span class="sx">/webdav2</span><span class="w"> </span><span class="s2">&quot;/Users/faner/Sites/DAVNAS2&quot;</span>
+</span><span id="__span-20-9"><a id="__codelineno-20-9" name="__codelineno-20-9" href="#__codelineno-20-9"></a>
+</span><span id="__span-20-10"><a id="__codelineno-20-10" name="__codelineno-20-10" href="#__codelineno-20-10"></a><span class="nt">&lt;Directory</span><span class="w"> </span><span class="s">&quot;/Users/faner/Sites/DAVNAS2&quot;</span><span class="nt">&gt;</span>
+</span><span id="__span-20-11"><a id="__codelineno-20-11" name="__codelineno-20-11" href="#__codelineno-20-11"></a><span class="w">    </span><span class="nb">Dav</span><span class="w"> </span><span class="k">On</span>
+</span><span id="__span-20-12"><a id="__codelineno-20-12" name="__codelineno-20-12" href="#__codelineno-20-12"></a><span class="w">    </span><span class="c"># Dav access control</span>
+</span><span id="__span-20-13"><a id="__codelineno-20-13" name="__codelineno-20-13" href="#__codelineno-20-13"></a><span class="nt">&lt;/Directory&gt;</span>
+</span></code></pre></div>
+<p>这样，后续就可以通过 /webdav1, /webdav2 分别访问不同的共享目录。</p>
+<h2 id="授予_httpd_完全磁盘访问权限">授予 httpd 完全磁盘访问权限<a class="headerlink" href="#授予_httpd_完全磁盘访问权限" title="Permanent link">#</a></h2>
+<p>将 DAVNAS 共享目录分配给 <code>_www:_www</code> 后，还得给 httpd 相关 daemon 进程分配磁盘访问权限，这样才能读写磁盘文件系统。</p>
+<p>打开 macOS 设置(System Settings)，隐私与安全性(Privacy &amp; Security)，完全磁盘访问权限(Full Disk Access)，</p>
+<p>点按左下角的 + 号，在打开的访达窗口按 <span class="keys"><kbd class="key-shift">Shift</kbd><span>+</span><kbd class="key-command">Cmd</kbd><span>+</span><kbd class="key-g">G</kbd></span> 调出路径访问方式，输入 <code>/usr/sbin/httpd</code> 回车，找到 httpd 命令添加。</p>
+<p>依此方法，添加 <code>/usr/sbin/htdigest</code>（或 <code>/usr/sbin/htpasswd</code>）。</p>
+<h2 id="验证更新配置重启apache_httpd">验证更新配置重启Apache Httpd<a class="headerlink" href="#验证更新配置重启apache_httpd" title="Permanent link">#</a></h2>
+<div class="admonition tip">
+<p class="admonition-title">查看 apache httpd 服务配置</p>
+<p>在验证服务之前，可以调用 <code>apachectl</code> 或 <code>httpd</code> 命令查看配置：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>$<span class="w"> </span>apachectl<span class="w"> </span>-t<span class="w"> </span>-D<span class="w"> </span>DUMP_INCLUDES
+</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>$<span class="w"> </span>apachectl<span class="w"> </span>-t<span class="w"> </span>-D<span class="w"> </span>DUMP_RUN_CFG
+</span></code></pre></div>
+</div>
+<p>执行 <code>apachectl -t</code>（或 <code>apachectl configtest</code>）检查 Apache Httpd 配置文件：如果仅输出一行  <code>Syntax OK</code> 代表配置正确；否则，表示配置有问题，请按提示检查配置文件，也可查看分析问题日志 /var/log/apache2/error_log。</p>
+<p>如果 configtest 遇到以下错误，请执行 <code>sudo mkdir /private/var/log/apache2</code> 创建 apache2 日志文件夹。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a>$<span class="w"> </span>apachectl<span class="w"> </span>-t
+</span><span id="__span-22-2"><a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a><span class="o">(</span><span class="m">2</span><span class="o">)</span>No<span class="w"> </span>such<span class="w"> </span>file<span class="w"> </span>or<span class="w"> </span>directory:<span class="w"> </span>AH02291:<span class="w"> </span>Cannot<span class="w"> </span>access<span class="w"> </span>directory<span class="w"> </span><span class="s1">&#39;/private/var/log/apache2/&#39;</span><span class="w"> </span><span class="k">for</span><span class="w"> </span>main<span class="w"> </span>error<span class="w"> </span>log
+</span><span id="__span-22-3"><a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a>AH00014:<span class="w"> </span>Configuration<span class="w"> </span>check<span class="w"> </span>failed
+</span></code></pre></div>
+<p>配置文件验证无误后，执行 <code>sudo apachectl graceful</code> 重载配置文件使生效。</p>
+<p>最后，重新启动 Apache 服务器：<code>sudo apachectl -k restart</code>。</p>
+<div class="admonition tip">
+<p class="admonition-title">How to stop apache service</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>$<span class="w"> </span>sudo<span class="w"> </span>apachectl<span class="w"> </span>-k<span class="w"> </span>stop
+</span><span id="__span-23-2"><a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a>$<span class="w"> </span>sudo<span class="w"> </span>launchctl<span class="w"> </span>unload<span class="w"> </span>-w<span class="w"> </span>/System/Library/LaunchDaemons/org.apache.httpd.plist<span class="w"> </span><span class="m">2</span>&gt;/dev/null
+</span></code></pre></div>
+</div>
+<h2 id="局域网连接验证webdav服务">局域网连接验证WebDAV服务<a class="headerlink" href="#局域网连接验证webdav服务" title="Permanent link">#</a></h2>
+<p>打开本机访达（Finder），按 Command+k 连接服务器，输入 <a href="http://mbpa1398.local/webdav/">http://mbpa1398.local/webdav/</a>，然后输入在 user.passwd 中配置的账户密码，看看是否可以正常访问。</p>
+<div class="admonition note">
+<p>如果机器名无法解析（unable to resolve host），可以换成局域网 IP 访问：<a href="http://192.168.0.100/webdav/">http://192.168.0.100/webdav/</a> ， 或者考虑在 /etc/hosts 中添加条目：127.0.0.1 mbpa1398.local 。</p>
+</div>
+<p>本机验证通过后，在局域网其他终端（例如 Mac Finder，iPhone PDF expert）上尝试连接 webdav 服务。连接成功后，即可进行简单的多用户协作。</p>
+<p>这样，就将 DAVNAS 配置为家庭局域网内的数据中心，支持多设备共享和编辑同步文件。</p>
+<p>将配置文件 httpd-dav.conf 中的  Directory 配置为外挂硬盘，例如 <code>/Volumes/WDHD</code>，即可变为简陋的 NAS。</p>
+<p>有条件的，可以进一步升级支持 HTTPS 安全访问，需要在 httpd.conf 引入 httpd-ssl.conf 并配置加载 ssl 相关模块，还得使用 openssl 创建自签名证书。</p>
+<p>如果家里的宽带有分配公网 IP，可以在路由器中配置端口映射，支持外网访问。这样，即使身在外边，也可远程访问家里的 WebDAV 服务。</p>
+<h2 id="参考">参考<a class="headerlink" href="#参考" title="Permanent link">#</a></h2>
+<p>wiki - <a href="https://en.wikipedia.org/wiki/WebDAV">WebDAV</a><br />
+<a href="https://zhuanlan.zhihu.com/p/352216119">网络存储文件共享之 WebDAV</a><br />
+<a href="https://zhuanlan.zhihu.com/p/651442490">在 Mac mini Server 上配置 WebDAV 文件共享</a></p>
+
+
+
+
+
+
+
+  
+  
+
+
+
+  
+
+
+  
+
+
+
+  <h2 id="__comments">评论</h2>
+  <!-- Insert generated snippet here -->
+  <script src="https://giscus.app/client.js"
+    data-repo="fan2/mkdocs"
+    data-repo-id="R_kgDOLltxSg"
+    data-category="Announcements"
+    data-category-id="DIC_kwDOLltxSs4CeURH"
+    data-mapping="pathname"
+    data-strict="0"
+    data-reactions-enabled="1"
+    data-emit-metadata="1"
+    data-input-position="top"
+    data-theme="preferred_color_scheme"
+    data-lang="zh-CN"
+    data-loading="lazy"
+    crossorigin="anonymous"
+    async>
+  </script>
+
+  <!-- Synchronize Giscus theme with palette -->
+  <script>
+    var giscus = document.querySelector("script[src*=giscus]")
+
+    // Set palette on initial load
+    var palette = __md_get("__palette")
+    if (palette && typeof palette.color === "object") {
+      var theme = palette.color.scheme === "slate"
+        ? "transparent_dark"
+        : "light"
+
+      // Instruct Giscus to set theme
+      giscus.setAttribute("data-theme", theme) 
+    }
+
+    // Register event handlers after documented loaded
+    document.addEventListener("DOMContentLoaded", function() {
+      var ref = document.querySelector("[data-md-component=palette]")
+      ref.addEventListener("change", function() {
+        var palette = __md_get("__palette")
+        if (palette && typeof palette.color === "object") {
+          var theme = palette.color.scheme === "slate"
+            ? "transparent_dark"
+            : "light"
+
+          // Instruct Giscus to change theme
+          var frame = document.querySelector(".giscus-frame")
+          frame.contentWindow.postMessage(
+            { giscus: { setConfig: { theme } } },
+            "https://giscus.app"
+          )
+        }
+      })
+    })
+  </script>
+
+      
+    </article>
+  </div>
+
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+        
+      
+      <nav class="md-footer__inner md-grid" aria-label="页脚" >
+        
+          
+          <a href="../../20221212/2-Markdown-Formula/" class="md-footer__link md-footer__link--prev" aria-label="上一页: Markdown Formula">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                上一页
+              </span>
+              <div class="md-ellipsis">
+                Markdown Formula
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../../20240317/mac-webdav-issues/" class="md-footer__link md-footer__link--next" aria-label="下一页: macOS上使用WebDav遇到的问题">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                下一页
+              </span>
+              <div class="md-ellipsis">
+                macOS上使用WebDav遇到的问题
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2024- Cliff Fan
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["toc.follow", "header.autohide", "navigation.tabs", "navigation.top", "navigation.footer", "navigation.tracking", "content.code.copy", "content.code.select", "content.code.annotate"], "search": "../../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.bd41221c.min.js"></script>
+      
+        <script src="../../../javascripts/mathjax.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+        <script src="https://vercount.one/js"></script>
+      
+    
+  </body>
+</html>

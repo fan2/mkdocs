@@ -1,0 +1,1837 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="在别处或在路上">
+      
+      
+        <meta name="author" content="Cliff Fan">
+      
+      
+        <link rel="canonical" href="https://duetorun.com/blog/20171018/007-vim-editing/">
+      
+      
+        <link rel="prev" href="../006-vim-text-object/">
+      
+      
+        <link rel="next" href="../008-vim-config/">
+      
+      
+      <link rel="icon" href="../../../assets/hold_yourself.jpg">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.15">
+    
+    
+      
+        <title>vim编辑 - ElseWhere</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.7e359304.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function n(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],n("js",new Date),n("config","G-XGW41EGL31"),document.addEventListener("DOMContentLoaded",function(){document.forms.search&&document.forms.search.query.addEventListener("blur",function(){this.value&&n("event","search",{search_term:this.value})}),document$.subscribe(function(){var a=document.forms.feedback;if(void 0!==a)for(var e of a.querySelectorAll("[type=submit]"))e.addEventListener("click",function(e){e.preventDefault();var t=document.location.pathname,e=this.getAttribute("data-md-value");n("event","feedback",{page:t,data:e}),a.firstElementChild.disabled=!0;e=a.querySelector(".md-feedback__note [data-md-value='"+e+"']");e&&(e.hidden=!1)}),a.hidden=!1}),location$.subscribe(function(e){n("config","G-XGW41EGL31",{page_path:e.pathname})})});var e=document.createElement("script");e.async=!0,e.src="https://www.googletagmanager.com/gtag/js?id=G-XGW41EGL31",document.getElementById("__analytics").insertAdjacentElement("afterEnd",e)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#撤销重做" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../../.." title="ElseWhere" class="md-header__button md-logo" aria-label="ElseWhere" data-md-component="logo">
+      
+  <img src="../../../assets/hold_yourself.jpg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ElseWhere
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              vim编辑
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1M8 13h8v-2H8v2m9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1 0 1.71-1.39 3.1-3.1 3.1h-4V17h4a5 5 0 0 0 5-5 5 5 0 0 0-5-5Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="indigo"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5M7 15a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/fan2/mkdocs.git" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fan2/mkdocs
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="标签" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../about/" class="md-tabs__link">
+        
+  
+    
+  
+  About
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+  
+    <li class="md-tabs__item md-tabs__item--active">
+      <a href="../../" class="md-tabs__link">
+        
+  
+    
+  
+  Blog
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../link/" class="md-tabs__link">
+        
+  
+    
+  
+  Link
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" hidden>
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="ElseWhere" class="md-nav__button md-logo" aria-label="ElseWhere" data-md-component="logo">
+      
+  <img src="../../../assets/hold_yourself.jpg" alt="logo">
+
+    </a>
+    ElseWhere
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/fan2/mkdocs.git" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fan2/mkdocs
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../about/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    About
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      <a href="../../" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../link/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Link
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#撤销重做" class="md-nav__link">
+    <span class="md-ellipsis">
+      撤销、重做
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="撤销、重做">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#撤销undo_previous_actions" class="md-nav__link">
+    <span class="md-ellipsis">
+      撤销（undo previous actions）
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#重做redo__undo_the_undos" class="md-nav__link">
+    <span class="md-ellipsis">
+      重做（redo = undo the undo's）
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#重复repeat_last_changecmd" class="md-nav__link">
+    <span class="md-ellipsis">
+      重复（repeat last change/cmd）
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#修改change" class="md-nav__link">
+    <span class="md-ellipsis">
+      修改（change）
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="修改（change）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#替换字符replace_char" class="md-nav__link">
+    <span class="md-ellipsis">
+      替换字符（replace char）
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="替换字符（replace char）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#case" class="md-nav__link">
+    <span class="md-ellipsis">
+      case
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#复制yankcopy" class="md-nav__link">
+    <span class="md-ellipsis">
+      复制（yank/copy）
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="复制（yank/copy）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#复制行" class="md-nav__link">
+    <span class="md-ellipsis">
+      复制行
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#粘贴pasteput_back" class="md-nav__link">
+    <span class="md-ellipsis">
+      粘贴（paste/put back）
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#删除delete" class="md-nav__link">
+    <span class="md-ellipsis">
+      删除（delete）
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="删除（delete）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#xsdelete_char" class="md-nav__link">
+    <span class="md-ellipsis">
+      x/s（delete char）
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dcdelete_motionobject" class="md-nav__link">
+    <span class="md-ellipsis">
+      d/c（delete motion/object）
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#删除行delete_line" class="md-nav__link">
+    <span class="md-ellipsis">
+      删除行（delete line）
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#行缩进" class="md-nav__link">
+    <span class="md-ellipsis">
+      行缩进
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#行合并" class="md-nav__link">
+    <span class="md-ellipsis">
+      行合并
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#批量编辑" class="md-nav__link">
+    <span class="md-ellipsis">
+      批量编辑
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="批量编辑">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#行编辑复制粘贴和删除" class="md-nav__link">
+    <span class="md-ellipsis">
+      行编辑复制粘贴和删除
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#列编辑插入" class="md-nav__link">
+    <span class="md-ellipsis">
+      列编辑插入
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#列编辑删除" class="md-nav__link">
+    <span class="md-ellipsis">
+      列编辑删除
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#插入行号" class="md-nav__link">
+    <span class="md-ellipsis">
+      插入行号
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="插入行号">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#nl" class="md-nav__link">
+    <span class="md-ellipsis">
+      nl
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#line" class="md-nav__link">
+    <span class="md-ellipsis">
+      line
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#保存退出save__exit" class="md-nav__link">
+    <span class="md-ellipsis">
+      保存退出（save &amp; exit）
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="保存退出（save & exit）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#discardrecover" class="md-nav__link">
+    <span class="md-ellipsis">
+      Discard(recover)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#writingwupsav" class="md-nav__link">
+    <span class="md-ellipsis">
+      Writing(w,up,sav)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Writing(w,up,sav)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mkdir" class="md-nav__link">
+    <span class="md-ellipsis">
+      mkdir
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sudo" class="md-nav__link">
+    <span class="md-ellipsis">
+      sudo
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#writing_with_multiple_bufferswa" class="md-nav__link">
+    <span class="md-ellipsis">
+      WRITING WITH MULTIPLE BUFFERS(wa)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#writing_and_quittingwq" class="md-nav__link">
+    <span class="md-ellipsis">
+      Writing and quitting(wq)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#last_line_mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      Last Line Mode
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#保存部分文件" class="md-nav__link">
+    <span class="md-ellipsis">
+      保存部分文件
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+  <div class="md-content md-content--post" data-md-component="content">
+    <div class="md-sidebar md-sidebar--post" data-md-component="sidebar" data-md-type="navigation">
+      <div class="md-sidebar__scrollwrap">
+        <div class="md-sidebar__inner md-post">
+          <nav class="md-nav md-nav--primary">
+            <div class="md-post__back">
+              <div class="md-nav__title md-nav__container">
+                <a href="../../" class="md-nav__link">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+                  <span class="md-ellipsis">
+                    回到主页
+                  </span>
+                </a>
+              </div>
+            </div>
+            
+              <div class="md-post__authors md-typeset">
+                
+                  <div class="md-profile md-post__profile">
+                    <span class="md-author md-author--long">
+                      <img src="https://duetorun.com/assets/hold_yourself.jpg" alt="Cliff Fan">
+                    </span>
+                    <span class="md-profile__description">
+                      <strong>
+                        
+                          <a href="https://github.com/fan2">Cliff Fan</a>
+                        
+                      </strong>
+                      <br>
+                      Just do IT
+                    </span>
+                  </div>
+                
+              </div>
+            
+            <ul class="md-post__meta md-nav__list">
+              <li class="md-nav__item md-nav__item--section">
+                <div class="md-post__title">
+                  <span class="md-ellipsis">
+                    元数据
+                  </span>
+                </div>
+                <nav class="md-nav">
+                  <ul class="md-nav__list">
+                    <li class="md-nav__item">
+                      <div class="md-nav__link">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 19H5V8h14m-3-7v2H8V1H6v2H5c-1.11 0-2 .89-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-1V1m-1 11h-5v5h5v-5Z"/></svg>
+                        <time datetime="2017-10-18 11:10:00" class="md-ellipsis">2017年10月18日</time>
+                      </div>
+                    </li>
+                    
+                    
+                      <li class="md-nav__item">
+                        <div class="md-nav__link">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 3v15h3V3H9m3 2 4 13 3-1-4-13-3 1M5 5v13h3V5H5M3 19v2h18v-2H3Z"/></svg>
+                          <span class="md-ellipsis">
+                            分类于
+                            
+                              <a href="../../category/vim/">vim</a>, 
+                              <a href="../../category/editor/">editor</a></span>
+                        </div>
+                      </li>
+                    
+                    
+                      
+                      <li class="md-nav__item">
+                        <div class="md-nav__link">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7h1.5Z"/></svg>
+                          <span class="md-ellipsis">
+                            
+                              需要 7 分钟阅读时间
+                            
+                          </span>
+                        </div>
+                      </li>
+                    
+                    <li class="md-nav__item">
+                      <div class="md-nav__link">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m19 1-5 5v11l5-4.5V1m2 4v13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V6c-1.45-1.1-3.55-1.5-5.5-1.5-1.95 0-4.05.4-5.5 1.5v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1M10 18.41C8.75 18.09 7.5 18 6.5 18c-1.06 0-2.32.19-3.5.5V7.13c.91-.4 2.14-.63 3.5-.63 1.36 0 2.59.23 3.5.63v11.28Z"/></svg>
+                        <span class="md-ellipsis" id="busuanzi_container_page_pv">
+                          阅读量：<span id="busuanzi_value_page_pv">N/A</span>
+                        </span>
+                      </div>
+                    </li>
+                  </ul>
+                </nav>
+              </li>
+            </ul>
+          </nav>
+          
+        </div>
+      </div>
+    </div>
+    <article class="md-content__inner md-typeset">
+      
+        
+  
+  
+
+<nav class="md-tags" >
+  
+    
+    
+    
+      <span class="md-tag">vim</span>
+    
+  
+</nav>
+
+
+  
+  
+
+
+  <h1>vim编辑</h1>
+
+<p>本文梳理了使用 vim 进行撤销、重做，修改、复制、删除，行缩进、行合并，批量编辑和保存、退出等日常基础操作。</p>
+<!-- more -->
+
+<h2 id="撤销重做">撤销、重做<a class="headerlink" href="#撤销重做" title="Permanent link">#</a></h2>
+<h3 id="撤销undo_previous_actions">撤销（undo previous actions）<a class="headerlink" href="#撤销undo_previous_actions" title="Permanent link">#</a></h3>
+<p>参考：<code>/usr/share/vim/vim[0-9][0-9]/doc/undo.txt</code></p>
+<table>
+<thead>
+<tr>
+<th>按键</th>
+<th>说明</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>u</code></td>
+<td>撤销（undo）</td>
+<td>直到<code>Already at oldest change</code></td>
+</tr>
+<tr>
+<td><code>U</code></td>
+<td>撤销（undo）</td>
+<td>撤销针对光标所在行的操作：<br>undo all the changes on a line</td>
+</tr>
+</tbody>
+</table>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>**Undo<span class="w"> </span>branches**：<span class="w">                                </span>*undo-branches*<span class="w"> </span>*undo-tree*
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>Above<span class="w"> </span>we<span class="w"> </span>only<span class="w"> </span>discussed<span class="w"> </span>**one<span class="w"> </span>line**<span class="w"> </span>of<span class="w"> </span>undo/redo.<span class="w">  </span>But<span class="w"> </span>it<span class="w"> </span>is<span class="w"> </span>also<span class="w"> </span>possible<span class="w"> </span>to<span class="w"> </span>**branch<span class="w"> </span>off**.<span class="w">  </span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>This<span class="w"> </span>happens<span class="w"> </span>when<span class="w"> </span>you<span class="w"> </span>undo<span class="w"> </span>a<span class="w"> </span>few<span class="w"> </span>changes<span class="w"> </span>and<span class="w"> </span><span class="k">then</span><span class="w"> </span>make<span class="w"> </span>a<span class="w"> </span>new<span class="w"> </span>change.<span class="w">  </span>The<span class="w"> </span>undone<span class="w"> </span>changes<span class="w"> </span>become<span class="w"> </span>a<span class="w"> </span>branch.<span class="w">  </span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>You<span class="w"> </span>can<span class="w"> </span>go<span class="w"> </span>to<span class="w"> </span>that<span class="w"> </span>branch<span class="w"> </span>with<span class="w"> </span>the<span class="w"> </span>following<span class="w"> </span>commands.
+</span></code></pre></div>
+<table>
+<thead>
+<tr>
+<th>按键</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>:undol[ist]</code></td>
+<td>List the leafs in the tree of changes.</td>
+</tr>
+<tr>
+<td><code>g-</code> / <code>:ea</code>/<code>:earlier</code></td>
+<td>Go to older text state.</td>
+</tr>
+<tr>
+<td><code>g+</code> / <code>:lat</code>/<code>:later</code></td>
+<td>Go to newer text state.</td>
+</tr>
+</tbody>
+</table>
+<p><strong><code>:undol[ist]</code> Example</strong>:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;">number</th>
+<th style="text-align: right;">changes</th>
+<th style="text-align: right;">time</th>
+<th>saved</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: right;">06:30:15</td>
+<td></td>
+</tr>
+<tr>
+<td style="text-align: right;">10</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">06:30:30</td>
+<td></td>
+</tr>
+<tr>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">06:30:34</td>
+<td></td>
+</tr>
+<tr>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">06:30:37</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>The "number" column is the change number.<br />
+This number continuously increases and can be used to identify a specific <strong><em>undo-able</em></strong> change</p>
+<h3 id="重做redo__undo_the_undos">重做（redo = undo the undo's）<a class="headerlink" href="#重做redo__undo_the_undos" title="Permanent link">#</a></h3>
+<table>
+<thead>
+<tr>
+<th>按键</th>
+<th>说明</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>&lt;C-r&gt;</code></td>
+<td>重做（redo）</td>
+<td>直到 <code>Already at newest change</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="重复repeat_last_changecmd">重复（repeat last change/cmd）<a class="headerlink" href="#重复repeat_last_changecmd" title="Permanent link">#</a></h3>
+<p>参考：<code>/usr/share/vim/vim[0-9][0-9]/doc/repeat.txt</code></p>
+<table>
+<thead>
+<tr>
+<th>按键</th>
+<th>说明</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>.</code></td>
+<td>重复执行刚才的命令</td>
+<td>不包括<code>undo</code>和<code>redo</code>命令</td>
+</tr>
+</tbody>
+</table>
+<p><strong>说明：</strong><br />
+若先按下数字（1~9），再按下<code>.</code>，可重复执行指定次数。</p>
+<h2 id="修改change">修改（change）<a class="headerlink" href="#修改change" title="Permanent link">#</a></h2>
+<p>参考：<code>/usr/share/vim/vim[0-9][0-9]/doc/change.txt</code></p>
+<h3 id="替换字符replace_char">替换字符（replace char）<a class="headerlink" href="#替换字符replace_char" title="Permanent link">#</a></h3>
+<table>
+<thead>
+<tr>
+<th>按键</th>
+<th>说明</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>r</code></td>
+<td>替换光标所在的字符</td>
+<td>replace char，只替换一次<br/>替换后恢复指令模式</td>
+</tr>
+<tr>
+<td><code>R</code></td>
+<td>进入REPLACE MODE</td>
+<td>连续修改替换，<code>&lt;Esc&gt;</code> 退出。</td>
+</tr>
+</tbody>
+</table>
+<h4 id="case">case<a class="headerlink" href="#case" title="Permanent link">#</a></h4>
+<table>
+<thead>
+<tr>
+<th>按键</th>
+<th>说明</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>~</code></td>
+<td>switch uppper/lower case</td>
+<td>Toggle case (Case =&gt; cASE)</td>
+</tr>
+<tr>
+<td><code>gU</code></td>
+<td>Uppercase</td>
+<td>先选定再执行；或后接 motion，例如 <code>w</code></td>
+</tr>
+<tr>
+<td><code>gu</code></td>
+<td>Lowercase</td>
+<td>先选定再执行；或后接 motion，例如 <code>w</code></td>
+</tr>
+<tr>
+<td><code>gUU</code></td>
+<td>Uppercase current line</td>
+<td>also <code>gUgU</code></td>
+</tr>
+<tr>
+<td><code>guu</code></td>
+<td>Lowercase current line</td>
+<td>also <code>gugu</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="复制yankcopy">复制（yank/copy）<a class="headerlink" href="#复制yankcopy" title="Permanent link">#</a></h3>
+<table>
+<thead>
+<tr>
+<th>按键</th>
+<th>说明</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>y</code></td>
+<td>按下<code>l</code>，向右复制一个字符<br/>按下<code>h</code>，向左复制一个字符<br/>按下<code>w</code>，向右复制一个单词<br/> 按下<code>e</code>，向右复制至单词末<br/> 按下<code>b</code>，向左复制一个单词</td>
+<td>copy char forward<br/>copy char backward<br/>copy word forward，包括空格<br/> copy word forward，不包括空格<br/> copy word backward</td>
+</tr>
+<tr>
+<td><code>y0</code></td>
+<td>复制到行首</td>
+<td>copy to BOL</td>
+</tr>
+<tr>
+<td><code>y$</code></td>
+<td>复制到行末</td>
+<td>copy to EOL</td>
+</tr>
+</tbody>
+</table>
+<p><strong>说明：</strong></p>
+<p>若先按下数字（1~9），再按下 <code>y</code>、<code>Y</code> 或 <code>yy</code>，则表示复制指定数量的字符、单词或行。</p>
+<h4 id="复制行">复制行<a class="headerlink" href="#复制行" title="Permanent link">#</a></h4>
+<table>
+<thead>
+<tr>
+<th>按键</th>
+<th>说明</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Y</code>/<code>yy</code></td>
+<td><strong>复制本行</strong></td>
+<td>copy/Yank line<br/>按<code>p</code>会插入粘贴到新起下一行</td>
+</tr>
+<tr>
+<td><code>y1G</code></td>
+<td>复制本行到首行</td>
+<td>copy to BOF</td>
+</tr>
+<tr>
+<td><code>yG</code></td>
+<td>复制本行到末行</td>
+<td>copy to EOF</td>
+</tr>
+<tr>
+<td><code>y-</code>/<code>yk</code></td>
+<td>复制当前及上一行</td>
+<td>copy line above</td>
+</tr>
+<tr>
+<td><code>y+</code></td>
+<td>复制当前及下一行</td>
+<td>copy line below</td>
+</tr>
+</tbody>
+</table>
+<p>以下为复制当前行及其下4行（共复制5行）的操作方法：</p>
+<ol>
+<li><code>y4k</code> 复制当前行及其上4行；<code>y4+</code> 复制当前行及其下4行；  </li>
+<li>普通模式执行 <code>5yy</code>: 复制当前光标所在及其下总共5行；  </li>
+<li>假设当前光标在第4行，普通模式执行 <code>y8G</code>(或 <code>y8gg</code>)，复制第4到8共5行；  </li>
+<li>底行模式执行 <code>:4,8y</code> 复制第4到8共5行；  </li>
+<li>假设当前光标在第4行，<code>V4j</code> 向下选中第4到8行，再执行 <code>y</code> 即可复制。按下 <code>.</code> 可重复向下复制5行。  </li>
+</ol>
+<h3 id="粘贴pasteput_back">粘贴（paste/put back）<a class="headerlink" href="#粘贴pasteput_back" title="Permanent link">#</a></h3>
+<table>
+<thead>
+<tr>
+<th>按键</th>
+<th>说明</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>p</code></td>
+<td>向<strong>后</strong>粘贴</td>
+<td>paste forward<br/>在当前光标所在字符的后面粘贴</td>
+</tr>
+<tr>
+<td><code>P</code>(<code>&lt;S-p&gt;</code>)</td>
+<td>向<strong>前</strong>粘贴</td>
+<td>paste backward<br/>在当前光标所在字符的前面粘贴</td>
+</tr>
+<tr>
+<td><code>:r [filename]</code></td>
+<td>在当前光标所在行的下面读入filename文档的内容</td>
+<td></td>
+</tr>
+<tr>
+<td><code>:r !date</code></td>
+<td>将<code>date</code>命令执行结果（当前日期）写入当前vim光标处</td>
+<td>reads the output of the <code>date</code> command and puts it below the cursor</td>
+</tr>
+</tbody>
+</table>
+<p><strong>说明：</strong></p>
+<ol>
+<li><code>P</code>和<code>p</code>的区别，相当于<code>i</code>和<code>a</code>。  </li>
+<li><code>y</code>和<code>p</code>的复制粘贴只针对vim编辑器有效，<code>y</code>（包括下文中的<code>d</code>剪切操作）复制的内容不在系统剪切板中，在vim外无法使用<code>&lt;C-v&gt;</code>进行粘贴。  </li>
+<li>若先按下数字（1~9），再按下<code>p</code>或<code>P</code>，则表示重复粘贴指定次数。  </li>
+</ol>
+<blockquote>
+<p><code>2yy</code>：复制两行。</p>
+</blockquote>
+<hr />
+<p>vim 粘贴自动缩进导致格式混乱问题解决方案：</p>
+<p><a href="https://stackoverflow.com/questions/2514445/turning-off-auto-indent-when-pasting-text-into-vim">configuration - Turning off auto indent when pasting text into vim - Stack Overflow</a></p>
+<p>在 ~/.vimrc 中添加以下行:</p>
+<div class="language-vim highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="k">let</span> &amp;<span class="nb">t_SI</span> .<span class="p">=</span> <span class="s2">&quot;\&lt;Esc&gt;[?2004h&quot;</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="k">let</span> &amp;<span class="nb">t_EI</span> .<span class="p">=</span> <span class="s2">&quot;\&lt;Esc&gt;[?2004l&quot;</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="nb">inoremap</span> <span class="p">&lt;</span>special<span class="p">&gt;</span> <span class="p">&lt;</span>expr<span class="p">&gt;</span> <span class="p">&lt;</span>Esc<span class="p">&gt;</span>[<span class="m">200</span><span class="p">~</span> XTermPasteBegin<span class="p">()</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="k">function</span><span class="p">!</span> XTermPasteBegin<span class="p">()</span>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>  <span class="k">set</span> <span class="nb">pastetoggle</span><span class="p">=&lt;</span>Esc<span class="p">&gt;</span>[<span class="m">201</span><span class="p">~</span>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>  <span class="k">set</span> <span class="nb">paste</span>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>  <span class="k">return</span> <span class="s2">&quot;&quot;</span>
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="k">endfunction</span>
+</span></code></pre></div>
+<h3 id="删除delete">删除（delete）<a class="headerlink" href="#删除delete" title="Permanent link">#</a></h3>
+<h4 id="xsdelete_char">x/s（delete char）<a class="headerlink" href="#xsdelete_char" title="Permanent link">#</a></h4>
+<table>
+<thead>
+<tr>
+<th>按键</th>
+<th>说明</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>x</code></td>
+<td>向右删除一个字符(<code>dl</code>)</td>
+<td>delete char forward</td>
+</tr>
+<tr>
+<td><code>X</code>（<code>&lt;S-x&gt;</code>）</td>
+<td>退格删除一个字符(<code>dh</code>)</td>
+<td>delete char backward/backspace</td>
+</tr>
+<tr>
+<td><code>s</code></td>
+<td>向右删除一个字符(<code>cl</code>)，<br/>并进入编辑模式</td>
+<td>delete char forward and enter inset mode</td>
+</tr>
+<tr>
+<td><code>S</code></td>
+<td>删除本行(<code>cc</code>)，并进入编辑模式</td>
+<td>Delete [count] lines and start insert.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>说明：</strong></p>
+<ul>
+<li>实际上这里的删除都是 <code>delete [into register x]</code>，等效于剪切，可使用 <code>p</code>/<code>P</code> 粘贴回来。  </li>
+<li>若先按下数字（1~9），再按下 <code>x</code>/<code>X</code> 或 <code>d</code>/<code>dd</code>，则表示删除指定数量的字符、单词或行。  </li>
+<li>组合命令效果：<code>xp</code> 相当于交换两个字符的位置。  </li>
+<li>可按键 <code>v</code> 进入可视模式（Visual Mode），针对选定内容作复制、删除操作。  </li>
+</ul>
+<h4 id="dcdelete_motionobject">d/c（delete motion/object）<a class="headerlink" href="#dcdelete_motionobject" title="Permanent link">#</a></h4>
+<table>
+<thead>
+<tr>
+<th>按键</th>
+<th>说明</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>d</code></td>
+<td>按下<code>l</code>，相当于<code>x</code><br/>按下<code>h</code>，相当于<code>X</code> <br/>按下<code>w</code>，向右删除一个单词 <br/>按下<code>e</code>，向右删除至单词末<br/>按下<code>b</code>，向左删除一个单词 <br/>按下<code>j</code>，删除本行及下一行 <br/>按下<code>k</code>，删除本行及上一行</td>
+<td>delete char forward<br/>delete char backward/backspace<br/>delete word forward，不包括下一个单词首字，删除空格<br/>delete to the end of the word，包括下一个单词首字，保留词间空格<br/>delete word backward<br/>delete current line and below<br/>delete current line and above</td>
+</tr>
+<tr>
+<td><code>d0</code></td>
+<td>删除至行首</td>
+<td>delete to BOL</td>
+</tr>
+<tr>
+<td><code>D</code>/<code>d$</code></td>
+<td>删除至行末</td>
+<td>delete to EOL</td>
+</tr>
+</tbody>
+</table>
+<p><code>d*</code> 这种语法格式称为：<code>operator + motion</code> / <code>operator + object</code>。</p>
+<p><strong>删除后编辑：</strong></p>
+<blockquote>
+<p>与<code>d</code>、<code>D</code>/<code>d$</code>、<code>dd</code>、<code>dG</code>对应的有<code>c</code>、<code>C</code>/<code>c$</code>、<code>cc</code>/<strong><code>S</code></strong>、<code>cG</code>。<br />
+<code>c</code>命令相对<code>d</code>命令不同的是<strong>删除后进入insert模式</strong>，相当于<strong>修改</strong>（ <code>c</code> 意即 <strong><em>change</em></strong> ）。</p>
+</blockquote>
+<p><strong>说明：</strong></p>
+<ul>
+<li>实际上这里的删除都是 <code>delete [into register x]</code>，等效于剪切，可使用 <code>p</code>/<code>P</code> 粘贴回来。</li>
+<li>
+<p>在<strong>operator</strong>和<strong>motion</strong>之间或之前增加数字（prepend motion with a number:）：<br />
+<code>d [number] motion</code>或<code>[number] d motion</code></p>
+<blockquote>
+<p><code>d2w</code>或<code>2dw</code>：删除光标所在（之后）的两个单词（word）。</p>
+</blockquote>
+</li>
+<li>
+<p>组合命令效果：</p>
+<blockquote>
+<p><code>dt.</code> 表示删除当前位置到下一个句号之间的内容。</p>
+</blockquote>
+</li>
+<li>
+<p>可按键 <code>v</code> 进入可视模式（Visual Mode），针对选定内容作复制、删除操作。</p>
+</li>
+</ul>
+<h4 id="删除行delete_line">删除行（delete line）<a class="headerlink" href="#删除行delete_line" title="Permanent link">#</a></h4>
+<p>结合行间移动的 motion，我们可以推演组合围绕当前行进行上下行的删除。</p>
+<table>
+<thead>
+<tr>
+<th>按键</th>
+<th>说明</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>dd</code></td>
+<td><strong>删除本行</strong></td>
+<td>delete line，下行上移</td>
+</tr>
+<tr>
+<td><code>dgg</code> / <code>d1G</code></td>
+<td>删除本行到首行</td>
+<td>delete current line to first line</td>
+</tr>
+<tr>
+<td><code>dG</code></td>
+<td>删除本行到末行</td>
+<td>delete current line to last line</td>
+</tr>
+<tr>
+<td><code>d-</code></td>
+<td>删除到上一行首</td>
+<td>删除当前行和上一行</td>
+</tr>
+<tr>
+<td><code>d+</code></td>
+<td>删除到下一行首</td>
+<td>删除当前行和下一行</td>
+</tr>
+</tbody>
+</table>
+<p>在操作符（operator）和移动（motion） 之间插入数字，则表示删除向上/下的几行。</p>
+<blockquote>
+<p><code>d3-</code>：删除当前行及向上的3行，总共删除4行；<br />
+<code>d3+</code>：删除当前行及向下的3行，总共删除4行。<br />
+<code>d2d</code>或<code>2dd</code>：删除两行。<br />
+<code>ddp</code> 相当于交换两行的位置。  </p>
+</blockquote>
+<p>删除多行的操作方法参考复制。</p>
+<blockquote>
+<p><a href="https://stackoverflow.com/questions/15912868/how-can-i-delete-multiple-lines-in-vi">How can I delete multiple lines in vi?</a><br />
+<a href="https://linoxide.com/linux-how-to/how-to-delete-line-vim-linux/">How to Delete Line in VIM on Linux</a>  </p>
+</blockquote>
+<h2 id="行缩进">行缩进<a class="headerlink" href="#行缩进" title="Permanent link">#</a></h2>
+<p>The "&gt;" and "&lt;" commands are handy for changing the indentation within<br />
+programs.<br />
+Use the '<strong>shiftwidth</strong>' option to set the size of the white space which these commands insert or delete.  Normally the 'shiftwidth' option is 8.</p>
+<table>
+<thead>
+<tr>
+<th>指令</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code motion="motion">&lt;</code></td>
+<td>Shift {motion} lines one 'shiftwidth' leftwards.</td>
+</tr>
+<tr>
+<td><code>&lt;&lt;</code></td>
+<td>Shift [count] lines one 'shiftwidth' leftwards.</td>
+</tr>
+<tr>
+<td>{Visual}[count]<code>&lt;</code></td>
+<td>Shift the highlighted lines [count] 'shiftwidth' leftwards.</td>
+</tr>
+<tr>
+<td><code motion="motion">&gt;</code></td>
+<td>Shift {motion} lines one 'shiftwidth' rightwards.</td>
+</tr>
+<tr>
+<td><code>&gt;&gt;</code></td>
+<td>Shift [count] lines one 'shiftwidth' rightwards.</td>
+</tr>
+<tr>
+<td>{Visual}[count]<code>&gt;</code></td>
+<td>Shift the highlighted lines [count] 'shiftwidth' rightwards.</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>:[range]&lt;</code></td>
+<td>Shift [range] lines one \'shiftwidth\' left. <br/>Repeat <code>&lt;</code> for shifting multiple \'shiftwidth\'s.</td>
+</tr>
+<tr>
+<td><code>:[range]&lt; {count}</code></td>
+<td>Shift {count} lines one \'shiftwidth\' left, starting with [range].<br/>Repeat <code>&lt;</code> for shifting multiple 'shiftwidth's.</td>
+</tr>
+<tr>
+<td><code>:[range]le[ft] [indent]</code></td>
+<td>left align lines in [range].  Sets the indent in the lines to [indent] (default 0).</td>
+</tr>
+<tr>
+<td><code>:[range]&gt; [flags]</code></td>
+<td>Shift {count} [range] lines one 'shiftwidth' right.<br/>Repeat <code>&gt;</code> for shifting multiple 'shiftwidth's.</td>
+</tr>
+<tr>
+<td><code>:[range]&gt; {count} [flags]</code></td>
+<td>Shift {count} lines one 'shiftwidth' right, starting with [range].<br/>Repeat <code>&gt;</code> for shifting multiple 'shiftwidth's.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>说明：</strong></p>
+<blockquote>
+<p>See |ex-flags| for [flags].</p>
+</blockquote>
+<h2 id="行合并">行合并<a class="headerlink" href="#行合并" title="Permanent link">#</a></h2>
+<table>
+<thead>
+<tr>
+<th>按键</th>
+<th>说明</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>J</code></td>
+<td>合并两行（Join Lines）</td>
+<td>将下一行合并到当前行。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="批量编辑">批量编辑<a class="headerlink" href="#批量编辑" title="Permanent link">#</a></h2>
+<p><a href="http://www.cnblogs.com/Dennis-mi/articles/5939635.html">vi/vim 中如何在每行行首或行尾插入指定字符串</a>  </p>
+<p>可前向参考 《010 - vim 搜索》中的 <code>:s</code> 批量查找替换示例。</p>
+<blockquote>
+<p><a href="https://www.ibm.com/developerworks/cn/linux/l-cn-vimcolumn/index.html">技巧：Vim 的纵向编辑模式</a></p>
+</blockquote>
+<h3 id="行编辑复制粘贴和删除">行编辑复制粘贴和删除<a class="headerlink" href="#行编辑复制粘贴和删除" title="Permanent link">#</a></h3>
+<p><code>v</code>               | 普通模式切换到可视模式       | 从当前光标开始选择：<br/>- 通过 <code>h</code>/<code>l</code> 或 <code>b</code>/<code>w</code> 展开行内选择<br/>- 通过<code>j</code>/<code>k</code>扩展行间选择<br />
+<code>V</code>(<code>&lt;S-v&gt;</code>)      | 普通模式切换到可视<strong>行</strong>模式 | VISUAL LINE：<br/>针对整行选定模式</p>
+<p>敲 <code>v</code> 从普通模式切换到可视模式，然后可利用方向键展开行内/行间选择，或敲 <code>V</code>(<code>&lt;S-v&gt;</code>) 切换到可视行模式支持整行选定。<br />
+然后再对选定的内容执行复制（y）、粘贴（p）或删除（d）。</p>
+<h3 id="列编辑插入">列编辑插入<a class="headerlink" href="#列编辑插入" title="Permanent link">#</a></h3>
+<ol>
+<li>按 <kbd>0</kbd>（或 <kbd>^</kbd>）将鼠标移动到行首（非空白字元），按 <code>CTRL-V</code> 快捷键进入 VISUAL BLOCK 列选模式；  </li>
+<li>通过上下方向键（<kbd>j</kbd>、<kbd>k</kbd>）移动光标，将需要注释的行的开头标记起来；  </li>
+<li>按下大写的 <kbd>I</kbd>（<code>&lt;S-i&gt;</code>）进入行首插入模式，输入注释符（<code>//</code> 或 <code>#</code>），然后按下 <kbd>Esc</kbd> 退出插入模式，返回普通模式查看列插入结果。  </li>
+</ol>
+<p>为当前行及其下5行（共6行）的行首添加 <code>//</code> 注释符号的操作系列：</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>0        &quot;定位到行首
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>&lt;C-v&gt;    &quot;进入 VISUAL BLOCK 模式
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>5j       &quot;光标列位向下扩展5行
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>I        &quot;进入列块的行首插入模式
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>//       &quot;输入要插入的注释符号
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>esc      &quot;退出 INSERT 模式，返回普通模式
+</span></code></pre></div>
+<blockquote>
+<p>也可以利用 <code>.</code> 重复操作：<code>I// &lt;esc&gt;</code>，然后按 <code>j.</code> 重复在下面的各行首插入。</p>
+</blockquote>
+<p>如果想为当前行及其下5行（共6行）的行尾添加 <code>//</code> 注释符号呢？这里的问题在于每一行的长短不一。操作系列如下：</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>&lt;C-v&gt;    &quot;进入 VISUAL BLOCK 模式
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>5j$      &quot;光标列位向下扩展5行，扩展至行尾
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>A        &quot;进入列块的行尾追加模式
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>//       &quot;输入要插入的注释符号
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>esc      &quot;退出 INSERT 模式，返回普通模式
+</span></code></pre></div>
+<blockquote>
+<p>也可以利用 <code>.</code> 重复操作：<code>A// &lt;esc&gt;</code>，然后按 <code>j.</code> 重复在下面的各行首插入。</p>
+</blockquote>
+<p>如果想在当前行及其下5行（共6行）的行尾的 <code>;</code> 之后添加 <code>//</code>，可以利用 <code>.</code> 重复操作：<code>f;A // &lt;esc&gt;</code>，然后按 <code>j.</code> 重复在下面的各行首插入。</p>
+<h3 id="列编辑删除">列编辑删除<a class="headerlink" href="#列编辑删除" title="Permanent link">#</a></h3>
+<p>如果上一步的注释是单个字符 <code>#</code>，可按照以下步骤移除：</p>
+<ol>
+<li>按 <code>CTRL-V</code> 快捷键进入 VISUAL BLOCK 列选模式；  </li>
+<li>通过上下方向键（<kbd>j</kbd>、<kbd>k</kbd>）移动光标，将需要反注释的行的开头字符 <code>#</code> 标记起来；  </li>
+<li>按 <kbd>x</kbd> 键批量删除列选的 <code>#</code> 字符。  </li>
+</ol>
+<p>如果上一步的注释是双字符 <code>//</code>，则第2步需按下 <code>l</code> 先向右扩选一列，再按 <code>j</code> 向下扩选行范围，然后再按下 <kbd>d</kbd> 键删除列选。</p>
+<blockquote>
+<p>当然也可以先按 <code>j</code> 向下扩选行，再 <code>l</code> 向右扩选1列。</p>
+</blockquote>
+<h3 id="插入行号">插入行号<a class="headerlink" href="#插入行号" title="Permanent link">#</a></h3>
+<p><a href="https://www.zhihu.com/question/20240867">如何使用Vim为每一行自动编号？</a>  </p>
+<h4 id="nl">nl<a class="headerlink" href="#nl" title="Permanent link">#</a></h4>
+<p><code>:%!nl</code> : 在所有非空行前加入行号<br />
+<code>:%!nl -ba</code> : 在所有行前加入行号 利用 Linux 命令 nl 来实现的  </p>
+<h4 id="line">line<a class="headerlink" href="#line" title="Permanent link">#</a></h4>
+<blockquote>
+<p><a href="https://www.zhihu.com/question/20240867">如何使用Vim为每一行自动编号？</a></p>
+</blockquote>
+<p>每行（包括空白行）前面插入行号：</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>:%s/^/<span class="se">\=</span>line<span class="o">(</span><span class="s2">&quot;.&quot;</span><span class="o">)</span>/
+</span></code></pre></div>
+<blockquote>
+<p>当 <code>:s</code> 命令的替换字符串以 <code>\=</code> 开头时，表示以表达式的计算结果作为替换值。</p>
+</blockquote>
+<p>以下在每行前面添加 <code>行号,</code>：</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>:%s/^/<span class="se">\=</span>line<span class="o">(</span><span class="s1">&#39;.&#39;</span><span class="o">)</span>.<span class="s1">&#39;,&#39;</span>/
+</span></code></pre></div>
+<p>以下在每行前面添加 <code>行号,TAB</code>：</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>:%s/^/<span class="se">\=</span>line<span class="o">(</span><span class="s2">&quot;.&quot;</span><span class="o">)</span>.<span class="s2">&quot;,\t&quot;</span>/
+</span></code></pre></div>
+<h2 id="保存退出save__exit">保存退出（save &amp; exit）<a class="headerlink" href="#保存退出save__exit" title="Permanent link">#</a></h2>
+<blockquote>
+<p>详情参考 <code>/usr/share/vim/vim[0-9][0-9]/doc/editing.txt</code> 章节。</p>
+</blockquote>
+<h3 id="discardrecover">Discard(recover)<a class="headerlink" href="#discardrecover" title="Permanent link">#</a></h3>
+<p>关键字：<code>:edit!</code> <em>discard</em><br />
+命令：<code>:e[dit]! [++opt] [+cmd]</code><br />
+作用：从磁盘重新加载，覆盖当前缓存的修改。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>Edit<span class="w"> </span>the<span class="w"> </span>current<span class="w"> </span>file<span class="w"> </span>always.
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>Discard<span class="w"> </span>any<span class="w"> </span>changes<span class="w"> </span>to<span class="w"> </span>the<span class="w"> </span>current<span class="w"> </span>buffer.
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>This<span class="w"> </span>is<span class="w"> </span>useful<span class="w"> </span><span class="k">if</span><span class="w"> </span>you<span class="w"> </span>want<span class="w"> </span>to<span class="w"> </span>start<span class="w"> </span>all<span class="w"> </span>over<span class="w"> </span>again.
+</span></code></pre></div>
+<h3 id="writingwupsav">Writing(w,up,sav)<a class="headerlink" href="#writingwupsav" title="Permanent link">#</a></h3>
+<p>关键字：<strong><em>writing</em></strong>, <strong><em>save-file</em></strong>  </p>
+<p>关键字：<code>:w</code>, <em>:write</em><br />
+<strong>命令</strong>：<code>:w[rite][!] [++opt]</code><br />
+帮助：<code>:h :w[rite]</code><br />
+作用：将 vim 编辑缓存回写文件。  </p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>Write<span class="w"> </span>the<span class="w"> </span>whole<span class="w"> </span>buffer<span class="w"> </span>to<span class="w"> </span>the<span class="w"> </span>current<span class="w"> </span>file.<span class="w">  </span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="s1">&#39;!&#39;</span><span class="w"> </span>forcefully<span class="w"> </span>write<span class="w"> </span>when<span class="w"> </span><span class="s1">&#39;readonly&#39;</span><span class="w"> </span>is<span class="w"> </span><span class="nb">set</span><span class="w">  </span>
+</span></code></pre></div>
+<p>关键字：<code>:up</code>, <em>:update</em><br />
+<strong>命令</strong>：<code>:[range]up[date][!] [++opt] [&gt;&gt;] [file]</code><br />
+帮助：<code>:h :up[date]</code><br />
+作用：当有编辑时，将改动回写文件。  </p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>Like<span class="w"> </span><span class="s2">&quot;:write&quot;</span>,<span class="w"> </span>but<span class="w"> </span>only<span class="w"> </span>write<span class="w"> </span>when<span class="w"> </span>the<span class="w"> </span>buffer<span class="w"> </span>has<span class="w"> </span>been<span class="w"> </span>modified.<span class="w">  </span>
+</span></code></pre></div>
+<p>关键字：<code>:sav</code>, <em>:saveas</em><br />
+<strong>命令</strong>：<code>:sav[eas][!] [++opt] {file}</code><br />
+帮助：<code>:h :sav[eas]</code><br />
+作用：将 vim 编辑缓存另存为指定文件。  </p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>Save<span class="w"> </span>the<span class="w"> </span>current<span class="w"> </span>buffer<span class="w"> </span>under<span class="w"> </span>the<span class="w"> </span>name<span class="w"> </span><span class="o">{</span>file<span class="o">}</span><span class="w"> </span>and<span class="w"> </span><span class="nb">set</span><span class="w"> </span>the<span class="w"> </span>filename<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>current<span class="w"> </span>buffer<span class="w"> </span>to<span class="w"> </span><span class="o">{</span>file<span class="o">}</span>.<span class="w">  </span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>The<span class="w"> </span><span class="o">[</span>!<span class="o">]</span><span class="w"> </span>is<span class="w"> </span>needed<span class="w"> </span>to<span class="w"> </span>overwrite<span class="w"> </span>an<span class="w"> </span>existing<span class="w"> </span>file.<span class="w">  </span>
+</span></code></pre></div>
+<h4 id="mkdir">mkdir<a class="headerlink" href="#mkdir" title="Permanent link">#</a></h4>
+<p>当执行 <code>vim filepath</code> 或 <code>:edit filepath</code> 中间的目录不存在时，尝试回写保存将提示目录不存在的出错信息。<br />
+此时，可以调用 shell 命令 <code>mkdir -p</code> 按需创建中间目录进行补救：</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>:!mkdir -p %:h
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>:write
+</span></code></pre></div>
+<h4 id="sudo">sudo<a class="headerlink" href="#sudo" title="Permanent link">#</a></h4>
+<p>如果 vim 以普通身份打开了 root 用户的文件（例如 <code>/etc/hosts</code>），尝试将修改后的 buffer 回写磁盘，则提示没有权限：</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>:write
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>E45: &#39;readonly&#39; option is set(add ! to override)
+</span></code></pre></div>
+<p><code>:w!</code> 尝试强制写入：</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>:w!
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>&quot;etc/hosts&quot; E212: Can`t open file for writing
+</span></code></pre></div>
+<p>现在的问题在于，我们没有写 <code>/etc/hosts</code> 文件的权限。</p>
+<p>这个文件是由 root 用户拥有的，可以通过以下这条怪模怪样的命令补救：</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>:w !sudo tee % &gt; /dev/null
+</span></code></pre></div>
+<p><code>:write !{cmd}</code> 这条命令会把缓冲区的内容作为标准输入传给指定的 <code>{cmd}</code>。<br />
+以上命令会把缓冲区的内容当作标准输入，并用它来覆盖 <code>/etc/hosts</code> 的内容。</p>
+<h4 id="writing_with_multiple_bufferswa">WRITING WITH MULTIPLE BUFFERS(wa)<a class="headerlink" href="#writing_with_multiple_bufferswa" title="Permanent link">#</a></h4>
+<p>关键字：<strong><em>buffer-write</em></strong>  </p>
+<p>关键字：<code>:wa</code>, <em>:wall</em><br />
+<strong>命令</strong>：<code>:wa[ll][!]</code><br />
+帮助：<code>:h :wa[ll]</code><br />
+作用：将 vim 所有编辑缓存回写到对应文件。  </p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>Write<span class="w"> </span>all<span class="w"> </span>changed<span class="w"> </span>buffers.<span class="w">  </span>
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>with<span class="w"> </span>suffix<span class="w"> </span><span class="s1">&#39;!&#39;</span>:<span class="w"> </span>forcefully<span class="w"> </span>write<span class="w"> </span>even<span class="w"> </span>the<span class="w"> </span>ones<span class="w"> </span>that<span class="w"> </span>are<span class="w"> </span>readonly.<span class="w">  </span>
+</span></code></pre></div>
+<h3 id="writing_and_quittingwq">Writing and quitting(wq)<a class="headerlink" href="#writing_and_quittingwq" title="Permanent link">#</a></h3>
+<p>关键字：<strong><em>write-quit</em></strong>  </p>
+<p>关键字：<code>:q</code>, <em>:quit</em><br />
+<strong>命令</strong>：<code>:q[uit][!]</code><br />
+帮助：<code>:h :q[uit]</code><br />
+作用：关闭退出当前 vim 窗口；如有改动可追加 <code>!</code> 放弃修改强制退出。  </p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>Quit<span class="w"> </span>the<span class="w"> </span>current<span class="w"> </span>window.<span class="w"> </span>Quit<span class="w"> </span>Vim<span class="w"> </span><span class="k">if</span><span class="w"> </span>this<span class="w"> </span>is<span class="w"> </span>the<span class="w"> </span>last<span class="w"> </span>window.<span class="w">  </span>
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>with<span class="w"> </span>suffix<span class="w"> </span><span class="s1">&#39;!&#39;</span>:<span class="w"> </span>Quit<span class="w"> </span>without<span class="w"> </span>writing,<span class="w"> </span>also<span class="w"> </span>when<span class="w"> </span>currently<span class="w"> </span>visible<span class="w"> </span>buffers<span class="w"> </span>have<span class="w"> </span>changes.<span class="w">  </span>
+</span></code></pre></div>
+<p>关键字：<code>:confirm</code>, <em>:conf</em><br />
+<strong>命令</strong>：<code>:conf[irm] {command}</code><br />
+帮助：<code>:h conf[irm]</code><br />
+作用：退出时，如有需要弹出确认框。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>Quit,<span class="w"> </span>but<span class="w"> </span>give<span class="w"> </span>prompt<span class="w"> </span>when<span class="w"> </span>changes<span class="w"> </span>have<span class="w"> </span>been<span class="w"> </span>made<span class="w">  </span>
+</span></code></pre></div>
+<p>例如：如果当前文档有改动但未保存，输入 <code>:conf[irm] q[uit]</code>，将弹出 confirm 文本提示：</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>Save changes to &quot;/tmp/*&quot;?
+</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>[Y]es, (N)o, (C)ancel: 
+</span></code></pre></div>
+<p>关键字：<code>:wq</code><br />
+<strong>命令</strong>：<code>:wq[!] [++opt] {file}</code><br />
+帮助：<code>:h :wq</code><br />
+作用：将 vim 编辑缓存回写保存到文件并退出。如果是 <code>vim -R</code> 打开的文档或 <code>sudo vim</code> 打开的无写权限文档，可追加 <code>!</code> 强制保存退出。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>Write<span class="w"> </span>the<span class="w"> </span>current<span class="w"> </span>file<span class="w"> </span>to<span class="w"> </span><span class="o">{</span>file<span class="o">}</span><span class="w"> </span>and<span class="w"> </span>quit.<span class="w">  </span>
+</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a>with<span class="w"> </span>suffix<span class="w"> </span><span class="s1">&#39;!&#39;</span>:<span class="w"> </span>forcefully<span class="w"> </span>write<span class="w"> </span>when<span class="w"> </span><span class="s1">&#39;readonly&#39;</span>.<span class="w">  </span>
+</span></code></pre></div>
+<h3 id="last_line_mode">Last Line Mode<a class="headerlink" href="#last_line_mode" title="Permanent link">#</a></h3>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>说明</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>:q</code></td>
+<td>退出（quit）</td>
+<td>如果无修改直接退出；<br/>否则提示<code>No write since last change (add ! to override)</code></td>
+</tr>
+<tr>
+<td><code>:q!</code> / <code>ZQ</code></td>
+<td>强制退出</td>
+<td>放弃修改</td>
+</tr>
+<tr>
+<td><code>:w</code>/<code>:write</code> / <code>:up</code>/<code>:update</code></td>
+<td>写入（write）保存</td>
+<td>从swap buffer写入文件；<br/>若以只读方式打开，则提示'readonly' option is set (add ! to override)；<br/>也可另存为：<code>:w [filename]</code></td>
+</tr>
+<tr>
+<td><code>:w!</code></td>
+<td>若文本属性为只读时，强制保存</td>
+<td></td>
+</tr>
+<tr>
+<td><code>:wq</code> / <code>ZZ</code> / <code>:x</code>/<code>:exit</code></td>
+<td>保存并退出</td>
+<td></td>
+</tr>
+<tr>
+<td><code>:wq!</code></td>
+<td>强制保存并退出</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="保存部分文件">保存部分文件<a class="headerlink" href="#保存部分文件" title="Permanent link">#</a></h3>
+<p><code>:m,n w &lt;file&gt;</code>: 将 m 行到 n 行部分的内容保存到文件 file 中；<br />
+<code>:m,n w &gt;&gt; &lt;file&gt;</code>: 将 m 行到 n 行的内容追加到文件 file 末尾  </p>
+<p>To write a range of lines to another file you can use:<br />
+Where <code>&lt;m&gt;</code> and <code>&lt;n&gt;</code> are numbers (or symbols) that designate a range of lines.<br />
+For using the desktop clipboard, take a look at the <code>+g</code> commands.  </p>
+<hr />
+<p>While editing the file, make marks where you want the start and end to be using</p>
+<p><code>ma</code> - sets the a mark<br />
+<code>mb</code> - sets the b mark  </p>
+<p>Then, to copy that into another file, just use the w command:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>:&#39;a,&#39;b w /name/of/output/file.txt
+</span></code></pre></div>
+
+
+
+
+
+
+
+  
+  
+
+
+
+  
+
+
+  
+
+
+
+  <h2 id="__comments">评论</h2>
+  <!-- Insert generated snippet here -->
+  <script src="https://giscus.app/client.js"
+    data-repo="fan2/mkdocs"
+    data-repo-id="R_kgDOLltxSg"
+    data-category="Announcements"
+    data-category-id="DIC_kwDOLltxSs4CeURH"
+    data-mapping="pathname"
+    data-strict="0"
+    data-reactions-enabled="1"
+    data-emit-metadata="1"
+    data-input-position="top"
+    data-theme="preferred_color_scheme"
+    data-lang="zh-CN"
+    data-loading="lazy"
+    crossorigin="anonymous"
+    async>
+  </script>
+
+  <!-- Synchronize Giscus theme with palette -->
+  <script>
+    var giscus = document.querySelector("script[src*=giscus]")
+
+    // Set palette on initial load
+    var palette = __md_get("__palette")
+    if (palette && typeof palette.color === "object") {
+      var theme = palette.color.scheme === "slate"
+        ? "transparent_dark"
+        : "light"
+
+      // Instruct Giscus to set theme
+      giscus.setAttribute("data-theme", theme) 
+    }
+
+    // Register event handlers after documented loaded
+    document.addEventListener("DOMContentLoaded", function() {
+      var ref = document.querySelector("[data-md-component=palette]")
+      ref.addEventListener("change", function() {
+        var palette = __md_get("__palette")
+        if (palette && typeof palette.color === "object") {
+          var theme = palette.color.scheme === "slate"
+            ? "transparent_dark"
+            : "light"
+
+          // Instruct Giscus to change theme
+          var frame = document.querySelector(".giscus-frame")
+          frame.contentWindow.postMessage(
+            { giscus: { setConfig: { theme } } },
+            "https://giscus.app"
+          )
+        }
+      })
+    })
+  </script>
+
+      
+    </article>
+  </div>
+
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+        
+      
+      <nav class="md-footer__inner md-grid" aria-label="页脚" >
+        
+          
+          <a href="../006-vim-text-object/" class="md-footer__link md-footer__link--prev" aria-label="上一页: vim对象">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                上一页
+              </span>
+              <div class="md-ellipsis">
+                vim对象
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../008-vim-config/" class="md-footer__link md-footer__link--next" aria-label="下一页: vim配置">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                下一页
+              </span>
+              <div class="md-ellipsis">
+                vim配置
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2024- Cliff Fan
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["toc.follow", "header.autohide", "navigation.tabs", "navigation.top", "navigation.footer", "navigation.tracking", "content.code.copy", "content.code.select", "content.code.annotate"], "search": "../../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.bd41221c.min.js"></script>
+      
+        <script src="../../../javascripts/mathjax.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+        <script src="https://vercount.one/js"></script>
+      
+    
+  </body>
+</html>

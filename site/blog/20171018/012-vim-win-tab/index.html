@@ -1,0 +1,1631 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="在别处或在路上">
+      
+      
+        <meta name="author" content="Cliff Fan">
+      
+      
+        <link rel="canonical" href="https://duetorun.com/blog/20171018/012-vim-win-tab/">
+      
+      
+        <link rel="prev" href="../011-vim-search/">
+      
+      
+        <link rel="next" href="../013-vim-navigation/">
+      
+      
+      <link rel="icon" href="../../../assets/hold_yourself.jpg">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.15">
+    
+    
+      
+        <title>vim窗格 - ElseWhere</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.7e359304.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function n(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],n("js",new Date),n("config","G-XGW41EGL31"),document.addEventListener("DOMContentLoaded",function(){document.forms.search&&document.forms.search.query.addEventListener("blur",function(){this.value&&n("event","search",{search_term:this.value})}),document$.subscribe(function(){var a=document.forms.feedback;if(void 0!==a)for(var e of a.querySelectorAll("[type=submit]"))e.addEventListener("click",function(e){e.preventDefault();var t=document.location.pathname,e=this.getAttribute("data-md-value");n("event","feedback",{page:t,data:e}),a.firstElementChild.disabled=!0;e=a.querySelector(".md-feedback__note [data-md-value='"+e+"']");e&&(e.hidden=!1)}),a.hidden=!1}),location$.subscribe(function(e){n("config","G-XGW41EGL31",{page_path:e.pathname})})});var e=document.createElement("script");e.async=!0,e.src="https://www.googletagmanager.com/gtag/js?id=G-XGW41EGL31",document.getElementById("__analytics").insertAdjacentElement("afterEnd",e)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#查看文件信息" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../../.." title="ElseWhere" class="md-header__button md-logo" aria-label="ElseWhere" data-md-component="logo">
+      
+  <img src="../../../assets/hold_yourself.jpg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ElseWhere
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              vim窗格
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1M8 13h8v-2H8v2m9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1 0 1.71-1.39 3.1-3.1 3.1h-4V17h4a5 5 0 0 0 5-5 5 5 0 0 0-5-5Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="indigo"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5M7 15a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/fan2/mkdocs.git" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fan2/mkdocs
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="标签" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../about/" class="md-tabs__link">
+        
+  
+    
+  
+  About
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+  
+    <li class="md-tabs__item md-tabs__item--active">
+      <a href="../../" class="md-tabs__link">
+        
+  
+    
+  
+  Blog
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../link/" class="md-tabs__link">
+        
+  
+    
+  
+  Link
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" hidden>
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="ElseWhere" class="md-nav__button md-logo" aria-label="ElseWhere" data-md-component="logo">
+      
+  <img src="../../../assets/hold_yourself.jpg" alt="logo">
+
+    </a>
+    ElseWhere
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/fan2/mkdocs.git" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fan2/mkdocs
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../about/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    About
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      <a href="../../" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../link/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Link
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#查看文件信息" class="md-nav__link">
+    <span class="md-ellipsis">
+      查看文件信息
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#复用窗口" class="md-nav__link">
+    <span class="md-ellipsis">
+      复用窗口
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="复用窗口">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#openedit" class="md-nav__link">
+    <span class="md-ellipsis">
+      open(edit)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="open(edit)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#workdir" class="md-nav__link">
+    <span class="md-ellipsis">
+      workdir
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#path" class="md-nav__link">
+    <span class="md-ellipsis">
+      path
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#switch" class="md-nav__link">
+    <span class="md-ellipsis">
+      switch
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#分屏窗口" class="md-nav__link">
+    <span class="md-ellipsis">
+      分屏窗口
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="分屏窗口">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#新建分屏" class="md-nav__link">
+    <span class="md-ellipsis">
+      新建分屏
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="新建分屏">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#position" class="md-nav__link">
+    <span class="md-ellipsis">
+      position
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#切换分屏" class="md-nav__link">
+    <span class="md-ellipsis">
+      切换分屏
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#移动窗格" class="md-nav__link">
+    <span class="md-ellipsis">
+      移动窗格
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#分屏示例" class="md-nav__link">
+    <span class="md-ellipsis">
+      分屏示例
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#尺寸调整" class="md-nav__link">
+    <span class="md-ellipsis">
+      尺寸调整
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#多标签" class="md-nav__link">
+    <span class="md-ellipsis">
+      多标签
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="多标签">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#新建关闭标签" class="md-nav__link">
+    <span class="md-ellipsis">
+      新建/关闭标签
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="新建/关闭标签">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tab" class="md-nav__link">
+    <span class="md-ellipsis">
+      :tab
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tabnew" class="md-nav__link">
+    <span class="md-ellipsis">
+      :tabnew
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tabclose" class="md-nav__link">
+    <span class="md-ellipsis">
+      :tabclose
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#切换标签" class="md-nav__link">
+    <span class="md-ellipsis">
+      切换标签
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="切换标签">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tabnext" class="md-nav__link">
+    <span class="md-ellipsis">
+      :tabnext
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#移动标签" class="md-nav__link">
+    <span class="md-ellipsis">
+      移动标签
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+  <div class="md-content md-content--post" data-md-component="content">
+    <div class="md-sidebar md-sidebar--post" data-md-component="sidebar" data-md-type="navigation">
+      <div class="md-sidebar__scrollwrap">
+        <div class="md-sidebar__inner md-post">
+          <nav class="md-nav md-nav--primary">
+            <div class="md-post__back">
+              <div class="md-nav__title md-nav__container">
+                <a href="../../" class="md-nav__link">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+                  <span class="md-ellipsis">
+                    回到主页
+                  </span>
+                </a>
+              </div>
+            </div>
+            
+              <div class="md-post__authors md-typeset">
+                
+                  <div class="md-profile md-post__profile">
+                    <span class="md-author md-author--long">
+                      <img src="https://duetorun.com/assets/hold_yourself.jpg" alt="Cliff Fan">
+                    </span>
+                    <span class="md-profile__description">
+                      <strong>
+                        
+                          <a href="https://github.com/fan2">Cliff Fan</a>
+                        
+                      </strong>
+                      <br>
+                      Just do IT
+                    </span>
+                  </div>
+                
+              </div>
+            
+            <ul class="md-post__meta md-nav__list">
+              <li class="md-nav__item md-nav__item--section">
+                <div class="md-post__title">
+                  <span class="md-ellipsis">
+                    元数据
+                  </span>
+                </div>
+                <nav class="md-nav">
+                  <ul class="md-nav__list">
+                    <li class="md-nav__item">
+                      <div class="md-nav__link">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 19H5V8h14m-3-7v2H8V1H6v2H5c-1.11 0-2 .89-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-1V1m-1 11h-5v5h5v-5Z"/></svg>
+                        <time datetime="2017-10-18 12:00:00" class="md-ellipsis">2017年10月18日</time>
+                      </div>
+                    </li>
+                    
+                    
+                      <li class="md-nav__item">
+                        <div class="md-nav__link">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 3v15h3V3H9m3 2 4 13 3-1-4-13-3 1M5 5v13h3V5H5M3 19v2h18v-2H3Z"/></svg>
+                          <span class="md-ellipsis">
+                            分类于
+                            
+                              <a href="../../category/vim/">vim</a>, 
+                              <a href="../../category/editor/">editor</a></span>
+                        </div>
+                      </li>
+                    
+                    
+                      
+                      <li class="md-nav__item">
+                        <div class="md-nav__link">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7h1.5Z"/></svg>
+                          <span class="md-ellipsis">
+                            
+                              需要 9 分钟阅读时间
+                            
+                          </span>
+                        </div>
+                      </li>
+                    
+                    <li class="md-nav__item">
+                      <div class="md-nav__link">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m19 1-5 5v11l5-4.5V1m2 4v13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V6c-1.45-1.1-3.55-1.5-5.5-1.5-1.95 0-4.05.4-5.5 1.5v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1M10 18.41C8.75 18.09 7.5 18 6.5 18c-1.06 0-2.32.19-3.5.5V7.13c.91-.4 2.14-.63 3.5-.63 1.36 0 2.59.23 3.5.63v11.28Z"/></svg>
+                        <span class="md-ellipsis" id="busuanzi_container_page_pv">
+                          阅读量：<span id="busuanzi_value_page_pv">N/A</span>
+                        </span>
+                      </div>
+                    </li>
+                  </ul>
+                </nav>
+              </li>
+            </ul>
+          </nav>
+          
+        </div>
+      </div>
+    </div>
+    <article class="md-content__inner md-typeset">
+      
+        
+  
+  
+
+<nav class="md-tags" >
+  
+    
+    
+    
+      <span class="md-tag">vim</span>
+    
+  
+</nav>
+
+
+  
+  
+
+
+  <h1>vim窗格</h1>
+
+<p>本文梳理了 vim 中复用窗口、分屏窗口和多标签等基本操作。</p>
+<!-- more -->
+
+<p><a href="http://www.cnblogs.com/hnrainll/archive/2011/04/29/2032662.html">vim在多个文件之间切换</a><br />
+<a href="http://blog.csdn.net/huiguixian/article/details/6231425">vim打开文档和多文档编辑</a></p>
+<h2 id="查看文件信息">查看文件信息<a class="headerlink" href="#查看文件信息" title="Permanent link">#</a></h2>
+<table>
+<thead>
+<tr>
+<th>按键</th>
+<th>说明</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>:f</code> / <code>&lt;C-g&gt;</code></td>
+<td>查看当前文件信息</td>
+<td>包括文件名、属性、行数、阅读进度、光标位置等信息</td>
+</tr>
+<tr>
+<td><code>1&lt;C-g&gt;</code></td>
+<td>查看当前文件信息</td>
+<td><strong>绝对路径</strong> 文件名</td>
+</tr>
+<tr>
+<td><code>:f {filename}</code></td>
+<td>拷贝当前文档</td>
+<td>类似<code>:w {filename}</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="复用窗口">复用窗口<a class="headerlink" href="#复用窗口" title="Permanent link">#</a></h2>
+<p>复用一个窗口打开编辑多个文档（buffer）。</p>
+<h3 id="openedit">open(edit)<a class="headerlink" href="#openedit" title="Permanent link">#</a></h3>
+<p>当前vim窗口再打开/新建文件</p>
+<p>前面我们在调用vim打开文件时，只带了一个文件参数。实际上，在编辑一个文件时，可以通过底行模式指令在当前窗口再打开或新建文件。</p>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>作用</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>:e {filename}</code> / <code>:open {filename}</code></td>
+<td>当前窗口编辑（edit）文件，如果不存在则新建。<br/>如果当前文件有过修改会提示<code>No write since last change (add ! to override)</code>，需先保存或<code>!</code>强制覆盖。</td>
+<td>editing.txt</td>
+</tr>
+<tr>
+<td><code>:n {filename}</code></td>
+<td><strong>当前窗口新建文件</strong>，如果已存在直接打开。<br/>如果当前文件有过修改会提示<code>No write since last change (add ! to override)</code>，需先保存或<code>!</code>强制覆盖。</td>
+<td>editing.txt</td>
+</tr>
+<tr>
+<td><code>:files</code> / <code>:buffers</code> / <code>:ls</code></td>
+<td>列出目前<strong>缓冲区</strong>中的所有文档。<br/> <code>+</code> 表示缓冲区已经被修改过了；<br/> <code>＃</code> 代表上一次编辑的文档；<br/> <code>%</code> 是当前正在编辑的文档。</td>
+<td>windows.txt</td>
+</tr>
+</tbody>
+</table>
+<h4 id="workdir">workdir<a class="headerlink" href="#workdir" title="Permanent link">#</a></h4>
+<p><strong>相对于活动文件目录打开一个文件</strong></p>
+<p><code>:e %:h</code>: 当前文件（%）完整路径去除文件名（<code>:h</code>），即打开所在目录的路径。<br />
+按下 <code>&lt;C-^&gt;</code> 切回刚才正在编辑的文档。  </p>
+<blockquote>
+<p>也可通过 <code>:E</code> &amp; <code>:Re</code> 实现同样的效果。</p>
+</blockquote>
+<h4 id="path">path<a class="headerlink" href="#path" title="Permanent link">#</a></h4>
+<p><code>path</code> 选项允许我们指定一些目录，当调用 <code>:find</code> 命令时，vim 会在这些目录中进行查找。</p>
+<blockquote>
+<p><code>:find</code> 命令的作用：<code>Find {file} in 'path' and then :edit it.</code></p>
+</blockquote>
+<p>底行输入执行 <code>:set path ?</code>，查看 path 的默认配置如下：</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>path=.,/usr/include,,
+</span></code></pre></div>
+<ol>
+<li><code>.</code> 为当前文件所在目录；  </li>
+<li><code>/usr/include</code> 为系统头文件包含目录；  </li>
+</ol>
+<p>多个目录之间以逗号（<code>,</code>）分割。</p>
+<p>如果工作的工程中包含多级嵌套目录呢？每次打开文件都需要输入完整路径，确认很麻烦。<br />
+此时，可以考虑添加查找路径：</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>:set path+=app/**
+</span></code></pre></div>
+<p><code>**</code> 通配符会匹配 <code>app/</code> 目录下的所有子目录。</p>
+<p>配置查找目录后，<code>:find</code> 命令可在目录中查找匹配的文件并打开。</p>
+<h3 id="switch">switch<a class="headerlink" href="#switch" title="Permanent link">#</a></h3>
+<p>vim可以接多个文件名作为参数列表（argument list），同时打开多个文件：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>➜<span class="w">  </span>~<span class="w">  </span><span class="nb">cd</span><span class="w"> </span>/usr/share/vim/vim<span class="o">[</span><span class="m">0</span>-9<span class="o">][</span><span class="m">0</span>-9<span class="o">]</span>/doc
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>➜<span class="w">  </span>doc<span class="w">  </span>vim<span class="w"> </span>usr_01.txt<span class="w"> </span>usr_02.txt<span class="w"> </span>usr_03.txt
+</span></code></pre></div>
+<p>打开的这几个文件各自有对应的 swap buffer，但共用当前这一个编辑窗口，需要执行命令切换文件。</p>
+<p><strong>多文档切换</strong></p>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>说明</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>:n</code></td>
+<td>编辑下一个文档</td>
+<td>针对argument list，可参考editing.txt</td>
+</tr>
+<tr>
+<td><code>:N</code></td>
+<td>编辑上一个文档</td>
+<td>针对argument list，可参考editing.txt</td>
+</tr>
+<tr>
+<td><code>:b {n}</code></td>
+<td>移至第n个文档（buffer）</td>
+<td>n为<code>:files</code>/<code>:buffers</code>中的序号，可参考 windows.txt</td>
+</tr>
+<tr>
+<td><code>:bd {n}</code></td>
+<td>关闭（delete）第n个文档（buffer）</td>
+<td>n为<code>:files</code>/<code>:buffers</code>中的序号，可参考 windows.txt</td>
+</tr>
+<tr>
+<td><code>:bn</code></td>
+<td>编辑下一个文档</td>
+<td>针对buffers，可参考editing.txt</td>
+</tr>
+<tr>
+<td><code>:bN</code> / <code>:bp</code></td>
+<td>编辑上一个文档</td>
+<td>针对buffers，可参考editing.txt</td>
+</tr>
+</tbody>
+</table>
+<p><strong>说明：</strong></p>
+<blockquote>
+<p><code>:n</code>和<code>:N</code>只能针对 argument list 打开的多文件间进行切换，vim打开单文件或后期追加打开/编辑文件的将提示 <code>There is only one file to edit</code>。<br />
+对于多个正在编辑的file buffer，需要逐个 <code>:w</code> 保存，或者执行 <code>:qa</code>/<code>:qa!</code> 关闭全部退出 vim。</p>
+</blockquote>
+<h2 id="分屏窗口">分屏窗口<a class="headerlink" href="#分屏窗口" title="Permanent link">#</a></h2>
+<p>参考： <code>/usr/share/vim/vim[0-9][0-9]/doc/windows.txt</code></p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>➜<span class="w">  </span>~<span class="w">  </span>vim<span class="w"> </span>--help
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>usage:<span class="w"> </span>vim<span class="w"> </span><span class="o">[</span>arguments<span class="o">]</span><span class="w"> </span><span class="o">[</span>file<span class="w"> </span>..<span class="o">]</span><span class="w">       </span>edit<span class="w"> </span>specified<span class="w"> </span>file<span class="o">(</span>s<span class="o">)</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>Arguments:
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">   </span>--<span class="w">           </span>Only<span class="w"> </span>file<span class="w"> </span>names<span class="w"> </span>after<span class="w"> </span>this
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="w">   </span>-o<span class="o">[</span>N<span class="o">]</span><span class="w">        </span>Open<span class="w"> </span>N<span class="w"> </span>windows<span class="w"> </span><span class="o">(</span>default:<span class="w"> </span>one<span class="w"> </span><span class="k">for</span><span class="w"> </span>each<span class="w"> </span>file<span class="o">)</span>
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="w">   </span>-O<span class="o">[</span>N<span class="o">]</span><span class="w">        </span>Like<span class="w"> </span>-o<span class="w"> </span>but<span class="w"> </span>split<span class="w"> </span>vertically
+</span></code></pre></div>
+<p>以下调用 <code>vim -o</code> 同时打开3个文件，水平分屏：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>➜<span class="w">  </span>doc<span class="w">  </span>vim<span class="w"> </span>-o<span class="w"> </span>usr_01.txt<span class="w"> </span>usr_02.txt<span class="w"> </span>usr_03.txt
+</span></code></pre></div>
+<p><img alt="vim -o" src="../../vim/images/vim_-o_hor.png" /></p>
+<p>以下调用 <code>vim -O</code> 同时打开3个文件，垂直分屏：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>➜<span class="w">  </span>doc<span class="w">  </span>vim<span class="w"> </span>-O<span class="w"> </span>usr_01.txt<span class="w"> </span>usr_02.txt<span class="w"> </span>usr_03.txt
+</span></code></pre></div>
+<p><img alt="vim -O" src="../../vim/images/vim_-O_ver.png" /></p>
+<h3 id="新建分屏">新建分屏<a class="headerlink" href="#新建分屏" title="Permanent link">#</a></h3>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>:new</code>/<code>:vnew</code></td>
+<td>在顶端/左侧创建一个新的分屏窗口</td>
+</tr>
+<tr>
+<td><code>:split</code>(<code>:sp</code>) / <code>:vsplit</code>(<code>:vs</code>)</td>
+<td>在顶端/左侧新建分屏将当前文档进行多屏显示</td>
+</tr>
+<tr>
+<td><code>:sf {filename}</code></td>
+<td>在新窗口中打开指定文件(必须已存在)</td>
+</tr>
+<tr>
+<td><code>:close</code> / <code>:q</code></td>
+<td>关闭当前窗口</td>
+</tr>
+<tr>
+<td><code>:only</code></td>
+<td>关闭除当前窗口外所有窗口</td>
+</tr>
+</tbody>
+</table>
+<p><strong>说明</strong>：</p>
+<ol>
+<li><code>:new</code>/<code>:vnew</code> 在顶端/左侧新建分屏，默认打开空白文件，也可携带 <em>file</em> 参数在新屏打开指定文件。  </li>
+<li><code>:sp</code>/<code>:vs</code> 在顶端/左侧新建分屏，默认针对当前文件进行分屏，也可携带 <em>file</em> 参数在新屏打开指定文件。  </li>
+</ol>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>CTRL-W n                                                CTRL-W_n
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>CTRL-W CTRL_N                                           CTRL-W_CTRL-N
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>:[N]new [++opt] [+cmd]                                  :new
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>                Create a new window and start editing an empty file in it.
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>:[N]new [++opt] [+cmd] {file}
+</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>:[N]sp[lit] [++opt] [+cmd] {file}                       :split_f
+</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>                Create a new window and start editing file {file} in it.  This
+</span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>                behaves like a &quot;:split&quot; first, and then an &quot;:e&quot; command.
+</span><span id="__span-6-10"><a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a>
+</span><span id="__span-6-11"><a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a>[N]vne[w] [++opt] [+cmd] [file]                        :vne :vnew
+</span><span id="__span-6-12"><a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a>                Like :new, but split vertically.
+</span><span id="__span-6-13"><a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a>
+</span><span id="__span-6-14"><a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a>CTRL-W s                                                CTRL-W_s
+</span><span id="__span-6-15"><a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a>CTRL-W S                                                CTRL-W_S
+</span><span id="__span-6-16"><a id="__codelineno-6-16" name="__codelineno-6-16" href="#__codelineno-6-16"></a>CTRL-W CTRL-S                                           CTRL-W_CTRL-S
+</span><span id="__span-6-17"><a id="__codelineno-6-17" name="__codelineno-6-17" href="#__codelineno-6-17"></a>:[N]sp[lit] [++opt] [+cmd] [file]                       :sp :split
+</span><span id="__span-6-18"><a id="__codelineno-6-18" name="__codelineno-6-18" href="#__codelineno-6-18"></a>                Split current window in two.  The result is two viewports on
+</span><span id="__span-6-19"><a id="__codelineno-6-19" name="__codelineno-6-19" href="#__codelineno-6-19"></a>                the same file.
+</span><span id="__span-6-20"><a id="__codelineno-6-20" name="__codelineno-6-20" href="#__codelineno-6-20"></a>
+</span><span id="__span-6-21"><a id="__codelineno-6-21" name="__codelineno-6-21" href="#__codelineno-6-21"></a>CTRL-W CTRL-V                                           CTRL-W_CTRL-V
+</span><span id="__span-6-22"><a id="__codelineno-6-22" name="__codelineno-6-22" href="#__codelineno-6-22"></a>CTRL-W v                                                CTRL-W_v
+</span><span id="__span-6-23"><a id="__codelineno-6-23" name="__codelineno-6-23" href="#__codelineno-6-23"></a>:[N]vs[plit] [++opt] [+cmd] [file]                      :vs :vsplit
+</span><span id="__span-6-24"><a id="__codelineno-6-24" name="__codelineno-6-24" href="#__codelineno-6-24"></a>                Like :split, but split vertically.
+</span></code></pre></div>
+<p>在底行输入 <code>:h :new</code> 实际上是在当前文档窗格的顶部新开一个窗格打开帮助文档。</p>
+<p>以下为水平分屏 <code>:sp</code>（CTRL-W_s）和垂直分屏 <code>:vs</code>（CTRL-W_v）的效果演示：</p>
+<p><img alt="vim-split-screen" src="../../vim/images/vim-split-screen.png" /></p>
+<h4 id="position">position<a class="headerlink" href="#position" title="Permanent link">#</a></h4>
+<p>底行输入 <code>:h :split</code> 默认会在当前编辑文档的顶部新开窗格显示帮助。</p>
+<p><a href="https://vi.stackexchange.com/questions/4452/how-can-i-make-vim-open-help-in-a-vertical-split">How can I make Vim open help in a vertical split?</a></p>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>:bo h :bo</code>        ｜ 在当前窗格下面新建分屏窗格打开帮助</td>
+<td></td>
+</tr>
+<tr>
+<td><code>:vert h :vert</code>    ｜ 在当前窗格左侧新建分屏窗格打开帮助</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>Note that the &#39;splitbelow&#39; and &#39;splitright&#39; options influence where a new
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>window will appear.
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>                                                :vert :vertical
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>:vert[ical] {cmd}
+</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>                Execute {cmd}.  If it contains a command that splits a window,
+</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>                it will be split vertically.
+</span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>                Doesn&#39;t work for :execute and :normal.
+</span><span id="__span-7-9"><a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>
+</span><span id="__span-7-10"><a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a>:lefta[bove] {cmd}                              :lefta :leftabove
+</span><span id="__span-7-11"><a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a>:abo[veleft] {cmd}                              :abo :aboveleft
+</span><span id="__span-7-12"><a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a>                Execute {cmd}.  If it contains a command that splits a window,
+</span><span id="__span-7-13"><a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a>                it will be opened left (vertical split) or above (horizontal
+</span><span id="__span-7-14"><a id="__codelineno-7-14" name="__codelineno-7-14" href="#__codelineno-7-14"></a>                split) the current window.  Overrules &#39;splitbelow&#39; and
+</span><span id="__span-7-15"><a id="__codelineno-7-15" name="__codelineno-7-15" href="#__codelineno-7-15"></a>                &#39;splitright&#39;.
+</span><span id="__span-7-16"><a id="__codelineno-7-16" name="__codelineno-7-16" href="#__codelineno-7-16"></a>                Doesn&#39;t work for :execute and :normal.
+</span><span id="__span-7-17"><a id="__codelineno-7-17" name="__codelineno-7-17" href="#__codelineno-7-17"></a>
+</span><span id="__span-7-18"><a id="__codelineno-7-18" name="__codelineno-7-18" href="#__codelineno-7-18"></a>:rightb[elow] {cmd}                             :rightb :rightbelow
+</span><span id="__span-7-19"><a id="__codelineno-7-19" name="__codelineno-7-19" href="#__codelineno-7-19"></a>:bel[owright] {cmd}                             :bel :belowright
+</span><span id="__span-7-20"><a id="__codelineno-7-20" name="__codelineno-7-20" href="#__codelineno-7-20"></a>                Execute {cmd}.  If it contains a command that splits a window,
+</span><span id="__span-7-21"><a id="__codelineno-7-21" name="__codelineno-7-21" href="#__codelineno-7-21"></a>                it will be opened right (vertical split) or below (horizontal
+</span><span id="__span-7-22"><a id="__codelineno-7-22" name="__codelineno-7-22" href="#__codelineno-7-22"></a>                split) the current window.  Overrules &#39;splitbelow&#39; and
+</span><span id="__span-7-23"><a id="__codelineno-7-23" name="__codelineno-7-23" href="#__codelineno-7-23"></a>                &#39;splitright&#39;.
+</span><span id="__span-7-24"><a id="__codelineno-7-24" name="__codelineno-7-24" href="#__codelineno-7-24"></a>                Doesn&#39;t work for :execute and :normal.
+</span><span id="__span-7-25"><a id="__codelineno-7-25" name="__codelineno-7-25" href="#__codelineno-7-25"></a>
+</span><span id="__span-7-26"><a id="__codelineno-7-26" name="__codelineno-7-26" href="#__codelineno-7-26"></a>                                                :topleft E442
+</span><span id="__span-7-27"><a id="__codelineno-7-27" name="__codelineno-7-27" href="#__codelineno-7-27"></a>:to[pleft] {cmd}
+</span><span id="__span-7-28"><a id="__codelineno-7-28" name="__codelineno-7-28" href="#__codelineno-7-28"></a>                Execute {cmd}.  If it contains a command that splits a window,
+</span><span id="__span-7-29"><a id="__codelineno-7-29" name="__codelineno-7-29" href="#__codelineno-7-29"></a>                it will appear at the top and occupy the full width of the Vim
+</span><span id="__span-7-30"><a id="__codelineno-7-30" name="__codelineno-7-30" href="#__codelineno-7-30"></a>                window.  When the split is vertical the window appears at the
+</span><span id="__span-7-31"><a id="__codelineno-7-31" name="__codelineno-7-31" href="#__codelineno-7-31"></a>                far left and occupies the full height of the Vim window.
+</span><span id="__span-7-32"><a id="__codelineno-7-32" name="__codelineno-7-32" href="#__codelineno-7-32"></a>                Doesn&#39;t work for :execute and :normal.
+</span><span id="__span-7-33"><a id="__codelineno-7-33" name="__codelineno-7-33" href="#__codelineno-7-33"></a>
+</span><span id="__span-7-34"><a id="__codelineno-7-34" name="__codelineno-7-34" href="#__codelineno-7-34"></a>                                                :bo :botright
+</span><span id="__span-7-35"><a id="__codelineno-7-35" name="__codelineno-7-35" href="#__codelineno-7-35"></a>:bo[tright] {cmd}
+</span><span id="__span-7-36"><a id="__codelineno-7-36" name="__codelineno-7-36" href="#__codelineno-7-36"></a>                Execute {cmd}.  If it contains a command that splits a window,
+</span><span id="__span-7-37"><a id="__codelineno-7-37" name="__codelineno-7-37" href="#__codelineno-7-37"></a>                it will appear at the bottom and occupy the full width of the
+</span><span id="__span-7-38"><a id="__codelineno-7-38" name="__codelineno-7-38" href="#__codelineno-7-38"></a>                Vim window.  When the split is vertical the window appears at
+</span><span id="__span-7-39"><a id="__codelineno-7-39" name="__codelineno-7-39" href="#__codelineno-7-39"></a>                the far right and occupies the full height of the Vim window.
+</span><span id="__span-7-40"><a id="__codelineno-7-40" name="__codelineno-7-40" href="#__codelineno-7-40"></a>                Doesn&#39;t work for :execute and :normal.
+</span></code></pre></div>
+<h3 id="切换分屏">切换分屏<a class="headerlink" href="#切换分屏" title="Permanent link">#</a></h3>
+<p>输入 <code>:h CTRL-W</code> 可查看 index.txt 中的 Window commands 列表。<br />
+输入 <code>:h window-move-cursor</code> 或 <code>:h CTRL-W_{arg}</code> 可查看 windows.txt 中具体的切换窗格按键帮助。  </p>
+<table>
+<thead>
+<tr>
+<th>指令</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>&lt;C-w&gt;h</code></td>
+<td>切换焦点到左面的窗口</td>
+</tr>
+<tr>
+<td><code>&lt;C-w&gt;j</code></td>
+<td>切换焦点到下面的窗口</td>
+</tr>
+<tr>
+<td><code>&lt;C-w&gt;k</code></td>
+<td>切换焦点到上面的窗口</td>
+</tr>
+<tr>
+<td><code>&lt;C-w&gt;l</code></td>
+<td>切换焦点到右面的窗口</td>
+</tr>
+<tr>
+<td><code>&lt;C-w&gt;w</code></td>
+<td>顺序焦点循环切换窗口</td>
+</tr>
+<tr>
+<td><code>&lt;C-w&gt;t</code></td>
+<td>切换焦点到顶部的窗口</td>
+</tr>
+<tr>
+<td><code>&lt;C-w&gt;b</code></td>
+<td>切换焦点到底部的窗口</td>
+</tr>
+<tr>
+<td><code>&lt;C-w&gt;p</code></td>
+<td>切换焦点到前一个窗口</td>
+</tr>
+<tr>
+<td><code>&lt;C-w&gt;q</code></td>
+<td>关闭当前窗口，相当于 <code>:q</code> / <code>:close</code></td>
+</tr>
+</tbody>
+</table>
+<p>除了使用 <code>CTRL-W [count] {arg}</code> 快捷键，也可以使用底行命令 <code>:wincmd {arg}</code> 切换窗格。</p>
+<blockquote>
+<p>arg 可取 j、k、h、l、w、t、b、p、q。</p>
+</blockquote>
+<h3 id="移动窗格">移动窗格<a class="headerlink" href="#移动窗格" title="Permanent link">#</a></h3>
+<table>
+<thead>
+<tr>
+<th>指令</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>&lt;C-w&gt;H</code>(CTRL-W_H)</td>
+<td>move current window to the far left</td>
+</tr>
+<tr>
+<td><code>&lt;C-w&gt;J</code>(CTRL-W_J)</td>
+<td>move current window to the very bottom</td>
+</tr>
+<tr>
+<td><code>&lt;C-w&gt;K</code>(CTRL-W_K)</td>
+<td>move current window to the very top</td>
+</tr>
+<tr>
+<td><code>&lt;C-w&gt;L</code>(CTRL-W_L)</td>
+<td>move current window to the far right</td>
+</tr>
+</tbody>
+</table>
+<h3 id="分屏示例">分屏示例<a class="headerlink" href="#分屏示例" title="Permanent link">#</a></h3>
+<p>以下基于 <code>vim -O</code> 打开3个文件的垂直三列分屏再进行水平分屏：</p>
+<ol>
+<li>将光标切换聚焦到第一个窗口 <code>usr_01.txt</code> 上，执行 <code>:sp usr_04.txt</code> 在上面水平切割出的新窗口打开 <code>usr_04.txt</code>。</li>
+<li><code>&lt;C-w&gt;l</code>切换到 <code>usr_02.txt</code> 窗口，执行 <code>:sp usr_05.txt</code> 在上面水平切割出的新窗口打开 <code>usr_05.txt</code>。</li>
+<li><code>&lt;C-w&gt;l</code>切换到 <code>usr_03.txt</code> 窗口，执行 <code>:sp usr_06.txt</code> 在上面水平切割出的新窗口打开 <code>usr_06.txt</code>。</li>
+</ol>
+<p>最终分割出六宫格布局：</p>
+<p><img alt="vim -O + split.png" src="../../vim/images/vim_-O_%2B_split.png" /></p>
+<h3 id="尺寸调整">尺寸调整<a class="headerlink" href="#尺寸调整" title="Permanent link">#</a></h3>
+<p>如果窗格过矮，可通过 <code>:resize +N</code> 增大 N 个字符高度。<br />
+如果窗格过窄，可通过 <code>:vertical resize +N</code> 增大 N 个字符宽度。  </p>
+<p><code>:h window-resize</code> 查看相关议题帮助。</p>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CTRL-W_=</td>
+<td>make all windows the same height &amp; width</td>
+</tr>
+<tr>
+<td>CTRL-W_+</td>
+<td>increase current window height N lines</td>
+</tr>
+<tr>
+<td>CTRL-W_-</td>
+<td>decrease current window height N lines</td>
+</tr>
+<tr>
+<td>CTRL-W_&lt;</td>
+<td>decrease current window width N columns</td>
+</tr>
+<tr>
+<td>CTRL-W_&gt;</td>
+<td>increase current window width N columns</td>
+</tr>
+</tbody>
+</table>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>1. Window resizing                                      window-resize
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>                                                CTRL-W_=
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>CTRL-W =        Make all windows (almost) equally high and wide, but use
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>                &#39;winheight&#39; and &#39;winwidth&#39; for the current window.
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>                Windows with &#39;winfixheight&#39; set keep their height and windows
+</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>                with &#39;winfixwidth&#39; set keep their width.
+</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>
+</span><span id="__span-8-9"><a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a>:res[ize] -N                                    :res :resize CTRL-W_-
+</span><span id="__span-8-10"><a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a>CTRL-W -        Decrease current window height by N (default 1).
+</span><span id="__span-8-11"><a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a>                If used after :vertical: decrease width by N.
+</span><span id="__span-8-12"><a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a>
+</span><span id="__span-8-13"><a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a>:res[ize] +N                                    CTRL-W_+
+</span><span id="__span-8-14"><a id="__codelineno-8-14" name="__codelineno-8-14" href="#__codelineno-8-14"></a>CTRL-W +        Increase current window height by N (default 1).
+</span><span id="__span-8-15"><a id="__codelineno-8-15" name="__codelineno-8-15" href="#__codelineno-8-15"></a>                If used after :vertical: increase width by N.
+</span><span id="__span-8-16"><a id="__codelineno-8-16" name="__codelineno-8-16" href="#__codelineno-8-16"></a>
+</span><span id="__span-8-17"><a id="__codelineno-8-17" name="__codelineno-8-17" href="#__codelineno-8-17"></a>:res[ize] [N]
+</span><span id="__span-8-18"><a id="__codelineno-8-18" name="__codelineno-8-18" href="#__codelineno-8-18"></a>CTRL-W CTRL-_                                   CTRL-W_CTRL-_ CTRL-W__
+</span><span id="__span-8-19"><a id="__codelineno-8-19" name="__codelineno-8-19" href="#__codelineno-8-19"></a>CTRL-W _        Set current window height to N (default: highest possible).
+</span><span id="__span-8-20"><a id="__codelineno-8-20" name="__codelineno-8-20" href="#__codelineno-8-20"></a>
+</span><span id="__span-8-21"><a id="__codelineno-8-21" name="__codelineno-8-21" href="#__codelineno-8-21"></a>:{winnr}res[ize] [+-]N
+</span><span id="__span-8-22"><a id="__codelineno-8-22" name="__codelineno-8-22" href="#__codelineno-8-22"></a>                Like :resize above, but apply the size to window {winnr}
+</span><span id="__span-8-23"><a id="__codelineno-8-23" name="__codelineno-8-23" href="#__codelineno-8-23"></a>                instead of the current window.
+</span><span id="__span-8-24"><a id="__codelineno-8-24" name="__codelineno-8-24" href="#__codelineno-8-24"></a>
+</span><span id="__span-8-25"><a id="__codelineno-8-25" name="__codelineno-8-25" href="#__codelineno-8-25"></a>z{nr}&lt;CR&gt;       Set current window height to {nr}.
+</span><span id="__span-8-26"><a id="__codelineno-8-26" name="__codelineno-8-26" href="#__codelineno-8-26"></a>
+</span><span id="__span-8-27"><a id="__codelineno-8-27" name="__codelineno-8-27" href="#__codelineno-8-27"></a>                                                CTRL-W_&lt;
+</span><span id="__span-8-28"><a id="__codelineno-8-28" name="__codelineno-8-28" href="#__codelineno-8-28"></a>CTRL-W &lt;        Decrease current window width by N (default 1).
+</span><span id="__span-8-29"><a id="__codelineno-8-29" name="__codelineno-8-29" href="#__codelineno-8-29"></a>
+</span><span id="__span-8-30"><a id="__codelineno-8-30" name="__codelineno-8-30" href="#__codelineno-8-30"></a>                                                CTRL-W_&gt;
+</span><span id="__span-8-31"><a id="__codelineno-8-31" name="__codelineno-8-31" href="#__codelineno-8-31"></a>CTRL-W &gt;        Increase current window width by N (default 1).
+</span><span id="__span-8-32"><a id="__codelineno-8-32" name="__codelineno-8-32" href="#__codelineno-8-32"></a>
+</span><span id="__span-8-33"><a id="__codelineno-8-33" name="__codelineno-8-33" href="#__codelineno-8-33"></a>:vertical res[ize] [N]                  :vertical-resize CTRL-W_bar
+</span><span id="__span-8-34"><a id="__codelineno-8-34" name="__codelineno-8-34" href="#__codelineno-8-34"></a>CTRL-W |        Set current window width to N (default: widest possible).
+</span></code></pre></div>
+<blockquote>
+<p><a href="http://blog.csdn.net/vanwaals/article/details/6457233">vim 改变窗口的大小</a><br />
+<a href="http://blog.csdn.net/cbbbc/article/details/44316881">vim窗口调整高度和宽度</a><br />
+<a href="http://www.cnblogs.com/xuechao/archive/2011/03/29/1999292.html">vim: vs sp 调整窗口高度和宽度</a>  </p>
+</blockquote>
+<h2 id="多标签">多标签<a class="headerlink" href="#多标签" title="Permanent link">#</a></h2>
+<blockquote>
+<p><strong>REFERENCE MANUAL</strong>: <code>/usr/share/vim/vim[0-9][0-9]/doc/tabpage.txt</code><br />
+<strong>topic</strong>: Editing with windows in multiple tab pages.<br />
+<strong>keyword</strong>: <em>tab-page</em> <em>tabpage</em></p>
+</blockquote>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>➜<span class="w">  </span>~<span class="w">  </span>vim<span class="w"> </span>--help
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>usage:<span class="w"> </span>vim<span class="w"> </span><span class="o">[</span>arguments<span class="o">]</span><span class="w"> </span><span class="o">[</span>file<span class="w"> </span>..<span class="o">]</span><span class="w">       </span>edit<span class="w"> </span>specified<span class="w"> </span>file<span class="o">(</span>s<span class="o">)</span>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>Arguments:
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="w">   </span>--<span class="w">           </span>Only<span class="w"> </span>file<span class="w"> </span>names<span class="w"> </span>after<span class="w"> </span>this
+</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>
+</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="w">   </span>-p<span class="o">[</span>N<span class="o">]</span><span class="w">        </span>Open<span class="w"> </span>N<span class="w"> </span>tab<span class="w"> </span>pages<span class="w"> </span><span class="o">(</span>default:<span class="w"> </span>one<span class="w"> </span><span class="k">for</span><span class="w"> </span>each<span class="w"> </span>file<span class="o">)</span>
+</span></code></pre></div>
+<p>以下调用 <code>vim -p</code> 同时打开3个文件，分布在同一窗口的3各标签（tab page）：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>➜<span class="w">  </span>~<span class="w">  </span><span class="nb">cd</span><span class="w"> </span>/usr/share/vim/vim<span class="o">[</span><span class="m">0</span>-9<span class="o">][</span><span class="m">0</span>-9<span class="o">]</span>/doc
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>➜<span class="w">  </span>doc<span class="w">  </span>vim<span class="w"> </span>-p<span class="w"> </span>usr_01.txt<span class="w"> </span>usr_02.txt<span class="w"> </span>usr_03.txt
+</span></code></pre></div>
+<p><img alt="vim -p tabpages" src="../../vim/images/vim_-p_tabpages.png" /></p>
+<h3 id="新建关闭标签">新建/关闭标签<a class="headerlink" href="#新建关闭标签" title="Permanent link">#</a></h3>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>:tabnew</code></td>
+<td>Open a new tab page with an empty window</td>
+</tr>
+<tr>
+<td><code>:tabe</code> / <code>:tabedit</code></td>
+<td>Open a new tab page with an empty window</td>
+</tr>
+<tr>
+<td><code>:tabs</code></td>
+<td>List the tab pages and the windows they contain. <br/>- Shows a "&gt;" for the current window; <br/>- Shows a "+" for modified buffers.</td>
+</tr>
+<tr>
+<td><code>:tabc</code> / <code>:tabclose</code></td>
+<td>Close current tab page <br/> you can specify the <strong>tab index</strong> that want to close.</td>
+</tr>
+<tr>
+<td><code>:tabo</code> / <code>:tabonly</code></td>
+<td>Close all other tab pages.</td>
+</tr>
+</tbody>
+</table>
+<h4 id="tab">:tab<a class="headerlink" href="#tab" title="Permanent link">#</a></h4>
+<p><code>:tab</code> 完整命令格式：<code>:[count]tab {cmd}</code></p>
+<blockquote>
+<p>Execute {cmd} and when it opens a new window open a new tab page instead.</p>
+</blockquote>
+<p>一般后续接 cmd，例如 <code>:tab split</code> : 新建tab打开当前文档（opens current buffer in new tab page）</p>
+<blockquote>
+<p>在 tab 页中搭配使用 <code>:new</code>/<code>:vnew</code>、<code>:sp</code>/<code>:vs</code> 可在 tab 页中进行分屏。</p>
+</blockquote>
+<p>在底行输入 <code>:h :new</code> 是在当前文档窗格的顶部新开一个窗格打开帮助文档。</p>
+<p>也可考虑新建一个专门的标签页用来阅读查看帮助文档。</p>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>:tab help gt</code></td>
+<td>opens tab page with help for "gt"</td>
+</tr>
+<tr>
+<td><code>:.tab help gt</code></td>
+<td>as above</td>
+</tr>
+<tr>
+<td><code>:+tab help</code></td>
+<td>opens tab page with help after the next tab page</td>
+</tr>
+<tr>
+<td><code>:-tab help</code></td>
+<td>opens tab page with help before the current one</td>
+</tr>
+<tr>
+<td><code>:0tab help</code></td>
+<td>opens tab page with help before the first one</td>
+</tr>
+<tr>
+<td><code>:$tab help :tab</code></td>
+<td>opens tab page with help for <code>:tab</code> after the last one</td>
+</tr>
+</tbody>
+</table>
+<h4 id="tabnew">:tabnew<a class="headerlink" href="#tabnew" title="Permanent link">#</a></h4>
+<p><code>:h :tabnew</code> 查看新建空白 tab 的命令 <code>tabnew</code>：</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>:[count]tabe[dit]                               :tabe :tabedit :tabnew
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>:[count]tabnew
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>                Open a new tab page with an empty window, after the current
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>                tab page.  If [count] is given the new tab page appears after
+</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>                the tab page [count] otherwise the new tab page will appear
+</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>                after the current one.
+</span><span id="__span-11-7"><a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a>                    :tabnew     &quot; opens tabpage after the current one
+</span><span id="__span-11-8"><a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a>                    :.tabnew    &quot; as above
+</span><span id="__span-11-9"><a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a>                    :+tabnew    &quot; opens tabpage after the next tab page
+</span><span id="__span-11-10"><a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a>                                &quot; note: it is one further than :tabnew
+</span><span id="__span-11-11"><a id="__codelineno-11-11" name="__codelineno-11-11" href="#__codelineno-11-11"></a>                    :-tabnew    &quot; opens tabpage before the current one
+</span><span id="__span-11-12"><a id="__codelineno-11-12" name="__codelineno-11-12" href="#__codelineno-11-12"></a>                    :0tabnew    &quot; opens tabpage before the first one
+</span><span id="__span-11-13"><a id="__codelineno-11-13" name="__codelineno-11-13" href="#__codelineno-11-13"></a>                    :$tabnew    &quot; opens tabpage after the last one
+</span></code></pre></div>
+<p><code>:tabnew</code> 命令后面也可指定 <em>file</em> 参数，新开tab打开指定文件。</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>:[count]tabe[dit] [++opt] [+cmd] {file}
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>:[count]tabnew [++opt] [+cmd] {file}
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>                Open a new tab page and edit {file}, like with :edit.
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>                For [count] see :tabnew above.
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>
+</span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a>:[count]tabf[ind] [++opt] [+cmd] {file}                 :tabf :tabfind
+</span><span id="__span-12-7"><a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a>                Open a new tab page and edit {file} in &#39;path&#39;, like with
+</span><span id="__span-12-8"><a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a>                :find.  For [count] see :tabnew above.
+</span><span id="__span-12-9"><a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a>                {not available when the +file_in_path feature was disabled
+</span><span id="__span-12-10"><a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a>                at compile time}
+</span></code></pre></div>
+<h4 id="tabclose">:tabclose<a class="headerlink" href="#tabclose" title="Permanent link">#</a></h4>
+<p><code>:h :tabclose</code> 查看关闭 tab 的命令 <code>tabclose</code>：</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>                    :tabclose       &quot; close the current tab page
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>:{count}tabc[lose][!]
+</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>:tabc[lose][!] {count}
+</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>                Close tab page {count}.  Fails in the same way as :tabclose
+</span><span id="__span-13-6"><a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a>                above.
+</span><span id="__span-13-7"><a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a>                    :-tabclose      &quot; close the previous tab page
+</span><span id="__span-13-8"><a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a>                    :+tabclose      &quot; close the next tab page
+</span><span id="__span-13-9"><a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a>                    :1tabclose      &quot; close the first tab page
+</span><span id="__span-13-10"><a id="__codelineno-13-10" name="__codelineno-13-10" href="#__codelineno-13-10"></a>                    :$tabclose      &quot; close the last tab page
+</span><span id="__span-13-11"><a id="__codelineno-13-11" name="__codelineno-13-11" href="#__codelineno-13-11"></a>                    :tabclose -2    &quot; close the two previous tab page
+</span><span id="__span-13-12"><a id="__codelineno-13-12" name="__codelineno-13-12" href="#__codelineno-13-12"></a>                    :tabclose +     &quot; close the next tab page
+</span><span id="__span-13-13"><a id="__codelineno-13-13" name="__codelineno-13-13" href="#__codelineno-13-13"></a>                    :tabclose 3     &quot; close the third tab page
+</span><span id="__span-13-14"><a id="__codelineno-13-14" name="__codelineno-13-14" href="#__codelineno-13-14"></a>                    :tabclose $     &quot; close the last tab page
+</span></code></pre></div>
+<h3 id="切换标签">切换标签<a class="headerlink" href="#切换标签" title="Permanent link">#</a></h3>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>说明</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tabfir</code> / <code>:tabr</code></td>
+<td>Go to the first tab page.</td>
+<td><code>:tabfirst</code> / <code>:tabrewind</code></td>
+</tr>
+<tr>
+<td><code>:tabl</code></td>
+<td>Go to the last tab page.</td>
+<td><code>:tablast</code></td>
+</tr>
+<tr>
+<td><code>:tabn</code> / <code>:tabnext</code> / <strong><code>gt</code></strong></td>
+<td>Go to the next tab page.</td>
+<td>Wraps around from the last to the first one.<br/>you can specify the <strong>tab index</strong> that want to jump.</td>
+</tr>
+<tr>
+<td><code>:tabN</code> / <code>:tabp</code> / <code>:tabprevious</code> / <strong><code>gT</code></strong></td>
+<td>Go to the previous tab page.</td>
+<td>Wraps around from the first one to the last one.<br/>you can specify the <strong>tab index</strong> that want to jump back.</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><code>{count}gt</code>: Go to tab page {count}.</p>
+</blockquote>
+<h4 id="tabnext">:tabnext<a class="headerlink" href="#tabnext" title="Permanent link">#</a></h4>
+<p><code>:h :tabnext</code> 查看切换标签的命令 <code>tabnext</code>：</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>:tabn[ext]                              :tabn :tabnext gt
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>&lt;C-PageDown&gt;                            CTRL-&lt;PageDown&gt; &lt;C-PageDown&gt;
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>gt                                      i_CTRL-&lt;PageDown&gt; i_&lt;C-PageDown&gt;
+</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a>                Go to the next tab page.  Wraps around from the last to the
+</span><span id="__span-14-5"><a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a>                first one.
+</span><span id="__span-14-6"><a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a>
+</span><span id="__span-14-7"><a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a>:{count}tabn[ext]
+</span><span id="__span-14-8"><a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a>:tabn[ext] {count}
+</span><span id="__span-14-9"><a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a>                Go to tab page {count}.  The first tab page has number one.
+</span><span id="__span-14-10"><a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a>                    :-tabnext   &quot; go to the previous tab page
+</span><span id="__span-14-11"><a id="__codelineno-14-11" name="__codelineno-14-11" href="#__codelineno-14-11"></a>                    :+tabnext   &quot; go to the next tab page
+</span><span id="__span-14-12"><a id="__codelineno-14-12" name="__codelineno-14-12" href="#__codelineno-14-12"></a>                    :+2tabnext  &quot; go to the two next tab page
+</span><span id="__span-14-13"><a id="__codelineno-14-13" name="__codelineno-14-13" href="#__codelineno-14-13"></a>                    :1tabnext   &quot; go to the first tab page
+</span><span id="__span-14-14"><a id="__codelineno-14-14" name="__codelineno-14-14" href="#__codelineno-14-14"></a>                    :$tabnext   &quot; go to the last tab page
+</span><span id="__span-14-15"><a id="__codelineno-14-15" name="__codelineno-14-15" href="#__codelineno-14-15"></a>                    :tabnext $  &quot; as above
+</span><span id="__span-14-16"><a id="__codelineno-14-16" name="__codelineno-14-16" href="#__codelineno-14-16"></a>                    :tabnext -  &quot; go to the previous tab page
+</span><span id="__span-14-17"><a id="__codelineno-14-17" name="__codelineno-14-17" href="#__codelineno-14-17"></a>                    :tabnext -1 &quot; as above
+</span><span id="__span-14-18"><a id="__codelineno-14-18" name="__codelineno-14-18" href="#__codelineno-14-18"></a>                    :tabnext +  &quot; go to the next tab page
+</span><span id="__span-14-19"><a id="__codelineno-14-19" name="__codelineno-14-19" href="#__codelineno-14-19"></a>                    :tabnext +1 &quot; as above
+</span></code></pre></div>
+<h3 id="移动标签">移动标签<a class="headerlink" href="#移动标签" title="Permanent link">#</a></h3>
+<p><code>tabmove</code> 命令移动 tab 位置。</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>:tabm[ove] [N]                                          :tabm :tabmove
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>:[N]tabm[ove]
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>                Move the current tab page to after tab page N.  Use zero to
+</span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a>                make the current tab page the first one.  N is counted before
+</span><span id="__span-15-5"><a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a>                the move, thus if the second tab is the current one,
+</span><span id="__span-15-6"><a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a>                :tabmove 1 and :tabmove 2  have no effect.
+</span><span id="__span-15-7"><a id="__codelineno-15-7" name="__codelineno-15-7" href="#__codelineno-15-7"></a>                Without N the tab page is made the last one.
+</span><span id="__span-15-8"><a id="__codelineno-15-8" name="__codelineno-15-8" href="#__codelineno-15-8"></a>                    :.tabmove   &quot; do nothing
+</span><span id="__span-15-9"><a id="__codelineno-15-9" name="__codelineno-15-9" href="#__codelineno-15-9"></a>                    :-tabmove   &quot; move the tab page to the left
+</span><span id="__span-15-10"><a id="__codelineno-15-10" name="__codelineno-15-10" href="#__codelineno-15-10"></a>                    :+tabmove   &quot; move the tab page to the right
+</span><span id="__span-15-11"><a id="__codelineno-15-11" name="__codelineno-15-11" href="#__codelineno-15-11"></a>                    :0tabmove   &quot; move the tab page to the beginning of the tab
+</span><span id="__span-15-12"><a id="__codelineno-15-12" name="__codelineno-15-12" href="#__codelineno-15-12"></a>                                &quot; list
+</span><span id="__span-15-13"><a id="__codelineno-15-13" name="__codelineno-15-13" href="#__codelineno-15-13"></a>                    :tabmove 0  &quot; as above
+</span><span id="__span-15-14"><a id="__codelineno-15-14" name="__codelineno-15-14" href="#__codelineno-15-14"></a>                    :tabmove    &quot; move the tab page to the last
+</span><span id="__span-15-15"><a id="__codelineno-15-15" name="__codelineno-15-15" href="#__codelineno-15-15"></a>                    :$tabmove   &quot; as above
+</span><span id="__span-15-16"><a id="__codelineno-15-16" name="__codelineno-15-16" href="#__codelineno-15-16"></a>                    :tabmove $  &quot; as above
+</span><span id="__span-15-17"><a id="__codelineno-15-17" name="__codelineno-15-17" href="#__codelineno-15-17"></a>
+</span><span id="__span-15-18"><a id="__codelineno-15-18" name="__codelineno-15-18" href="#__codelineno-15-18"></a>:tabm[ove] +[N]
+</span><span id="__span-15-19"><a id="__codelineno-15-19" name="__codelineno-15-19" href="#__codelineno-15-19"></a>:tabm[ove] -[N]
+</span><span id="__span-15-20"><a id="__codelineno-15-20" name="__codelineno-15-20" href="#__codelineno-15-20"></a>                Move the current tab page N places to the right (with +) or to
+</span><span id="__span-15-21"><a id="__codelineno-15-21" name="__codelineno-15-21" href="#__codelineno-15-21"></a>                the left (with -).
+</span><span id="__span-15-22"><a id="__codelineno-15-22" name="__codelineno-15-22" href="#__codelineno-15-22"></a>                    :tabmove -  &quot; move the tab page to the left
+</span><span id="__span-15-23"><a id="__codelineno-15-23" name="__codelineno-15-23" href="#__codelineno-15-23"></a>                    :tabmove -1 &quot; as above
+</span><span id="__span-15-24"><a id="__codelineno-15-24" name="__codelineno-15-24" href="#__codelineno-15-24"></a>                    :tabmove +  &quot; move the tab page to the right
+</span><span id="__span-15-25"><a id="__codelineno-15-25" name="__codelineno-15-25" href="#__codelineno-15-25"></a>                    :tabmove +1 &quot; as above
+</span></code></pre></div>
+
+
+
+
+
+
+
+  
+  
+
+
+
+  
+
+
+  
+
+
+
+  <h2 id="__comments">评论</h2>
+  <!-- Insert generated snippet here -->
+  <script src="https://giscus.app/client.js"
+    data-repo="fan2/mkdocs"
+    data-repo-id="R_kgDOLltxSg"
+    data-category="Announcements"
+    data-category-id="DIC_kwDOLltxSs4CeURH"
+    data-mapping="pathname"
+    data-strict="0"
+    data-reactions-enabled="1"
+    data-emit-metadata="1"
+    data-input-position="top"
+    data-theme="preferred_color_scheme"
+    data-lang="zh-CN"
+    data-loading="lazy"
+    crossorigin="anonymous"
+    async>
+  </script>
+
+  <!-- Synchronize Giscus theme with palette -->
+  <script>
+    var giscus = document.querySelector("script[src*=giscus]")
+
+    // Set palette on initial load
+    var palette = __md_get("__palette")
+    if (palette && typeof palette.color === "object") {
+      var theme = palette.color.scheme === "slate"
+        ? "transparent_dark"
+        : "light"
+
+      // Instruct Giscus to set theme
+      giscus.setAttribute("data-theme", theme) 
+    }
+
+    // Register event handlers after documented loaded
+    document.addEventListener("DOMContentLoaded", function() {
+      var ref = document.querySelector("[data-md-component=palette]")
+      ref.addEventListener("change", function() {
+        var palette = __md_get("__palette")
+        if (palette && typeof palette.color === "object") {
+          var theme = palette.color.scheme === "slate"
+            ? "transparent_dark"
+            : "light"
+
+          // Instruct Giscus to change theme
+          var frame = document.querySelector(".giscus-frame")
+          frame.contentWindow.postMessage(
+            { giscus: { setConfig: { theme } } },
+            "https://giscus.app"
+          )
+        }
+      })
+    })
+  </script>
+
+      
+    </article>
+  </div>
+
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+        
+      
+      <nav class="md-footer__inner md-grid" aria-label="页脚" >
+        
+          
+          <a href="../011-vim-search/" class="md-footer__link md-footer__link--prev" aria-label="上一页: vim搜索">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                上一页
+              </span>
+              <div class="md-ellipsis">
+                vim搜索
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../013-vim-navigation/" class="md-footer__link md-footer__link--next" aria-label="下一页: vim导航">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                下一页
+              </span>
+              <div class="md-ellipsis">
+                vim导航
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2024- Cliff Fan
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["toc.follow", "header.autohide", "navigation.tabs", "navigation.top", "navigation.footer", "navigation.tracking", "content.code.copy", "content.code.select", "content.code.annotate"], "search": "../../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.bd41221c.min.js"></script>
+      
+        <script src="../../../javascripts/mathjax.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+        <script src="https://vercount.one/js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,1180 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="在别处或在路上">
+      
+      
+        <meta name="author" content="Cliff Fan">
+      
+      
+        <link rel="canonical" href="https://duetorun.com/blog/20171018/011-vim-search/">
+      
+      
+        <link rel="prev" href="../010-vim-folding/">
+      
+      
+        <link rel="next" href="../012-vim-win-tab/">
+      
+      
+      <link rel="icon" href="../../../assets/hold_yourself.jpg">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.15">
+    
+    
+      
+        <title>vim搜索 - ElseWhere</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.7e359304.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function n(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],n("js",new Date),n("config","G-XGW41EGL31"),document.addEventListener("DOMContentLoaded",function(){document.forms.search&&document.forms.search.query.addEventListener("blur",function(){this.value&&n("event","search",{search_term:this.value})}),document$.subscribe(function(){var a=document.forms.feedback;if(void 0!==a)for(var e of a.querySelectorAll("[type=submit]"))e.addEventListener("click",function(e){e.preventDefault();var t=document.location.pathname,e=this.getAttribute("data-md-value");n("event","feedback",{page:t,data:e}),a.firstElementChild.disabled=!0;e=a.querySelector(".md-feedback__note [data-md-value='"+e+"']");e&&(e.hidden=!1)}),a.hidden=!1}),location$.subscribe(function(e){n("config","G-XGW41EGL31",{page_path:e.pathname})})});var e=document.createElement("script");e.async=!0,e.src="https://www.googletagmanager.com/gtag/js?id=G-XGW41EGL31",document.getElementById("__analytics").insertAdjacentElement("afterEnd",e)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#ft_搜索字符" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../../.." title="ElseWhere" class="md-header__button md-logo" aria-label="ElseWhere" data-md-component="logo">
+      
+  <img src="../../../assets/hold_yourself.jpg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ElseWhere
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              vim搜索
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1M8 13h8v-2H8v2m9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1 0 1.71-1.39 3.1-3.1 3.1h-4V17h4a5 5 0 0 0 5-5 5 5 0 0 0-5-5Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="indigo"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5M7 15a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/fan2/mkdocs.git" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fan2/mkdocs
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="标签" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../about/" class="md-tabs__link">
+        
+  
+    
+  
+  About
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+  
+    <li class="md-tabs__item md-tabs__item--active">
+      <a href="../../" class="md-tabs__link">
+        
+  
+    
+  
+  Blog
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../link/" class="md-tabs__link">
+        
+  
+    
+  
+  Link
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" hidden>
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="ElseWhere" class="md-nav__button md-logo" aria-label="ElseWhere" data-md-component="logo">
+      
+  <img src="../../../assets/hold_yourself.jpg" alt="logo">
+
+    </a>
+    ElseWhere
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/fan2/mkdocs.git" title="前往仓库" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    fan2/mkdocs
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../about/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    About
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      <a href="../../" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../link/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Link
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#ft_搜索字符" class="md-nav__link">
+    <span class="md-ellipsis">
+      f,t 搜索字符
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="f,t 搜索字符">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#repeat" class="md-nav__link">
+    <span class="md-ellipsis">
+      repeat
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_搜索查找" class="md-nav__link">
+    <span class="md-ellipsis">
+      /,* 搜索查找
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="/,* 搜索查找">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#repeat_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      repeat
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#visual" class="md-nav__link">
+    <span class="md-ellipsis">
+      visual
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#g_通配" class="md-nav__link">
+    <span class="md-ellipsis">
+      :g 通配
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=":g 通配">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#permute_lines_reverse" class="md-nav__link">
+    <span class="md-ellipsis">
+      Permute Lines: Reverse
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#regex" class="md-nav__link">
+    <span class="md-ellipsis">
+      regex
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vimgrep" class="md-nav__link">
+    <span class="md-ellipsis">
+      vimgrep
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#s_查找替换the_substitute_command" class="md-nav__link">
+    <span class="md-ellipsis">
+      :s 查找替换（THE SUBSTITUTE COMMAND）
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=":s 查找替换（THE SUBSTITUTE COMMAND）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#示例" class="md-nav__link">
+    <span class="md-ellipsis">
+      示例
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+  <div class="md-content md-content--post" data-md-component="content">
+    <div class="md-sidebar md-sidebar--post" data-md-component="sidebar" data-md-type="navigation">
+      <div class="md-sidebar__scrollwrap">
+        <div class="md-sidebar__inner md-post">
+          <nav class="md-nav md-nav--primary">
+            <div class="md-post__back">
+              <div class="md-nav__title md-nav__container">
+                <a href="../../" class="md-nav__link">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+                  <span class="md-ellipsis">
+                    回到主页
+                  </span>
+                </a>
+              </div>
+            </div>
+            
+              <div class="md-post__authors md-typeset">
+                
+                  <div class="md-profile md-post__profile">
+                    <span class="md-author md-author--long">
+                      <img src="https://duetorun.com/assets/hold_yourself.jpg" alt="Cliff Fan">
+                    </span>
+                    <span class="md-profile__description">
+                      <strong>
+                        
+                          <a href="https://github.com/fan2">Cliff Fan</a>
+                        
+                      </strong>
+                      <br>
+                      Just do IT
+                    </span>
+                  </div>
+                
+              </div>
+            
+            <ul class="md-post__meta md-nav__list">
+              <li class="md-nav__item md-nav__item--section">
+                <div class="md-post__title">
+                  <span class="md-ellipsis">
+                    元数据
+                  </span>
+                </div>
+                <nav class="md-nav">
+                  <ul class="md-nav__list">
+                    <li class="md-nav__item">
+                      <div class="md-nav__link">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 19H5V8h14m-3-7v2H8V1H6v2H5c-1.11 0-2 .89-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-1V1m-1 11h-5v5h5v-5Z"/></svg>
+                        <time datetime="2017-10-18 11:50:00" class="md-ellipsis">2017年10月18日</time>
+                      </div>
+                    </li>
+                    
+                    
+                      <li class="md-nav__item">
+                        <div class="md-nav__link">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 3v15h3V3H9m3 2 4 13 3-1-4-13-3 1M5 5v13h3V5H5M3 19v2h18v-2H3Z"/></svg>
+                          <span class="md-ellipsis">
+                            分类于
+                            
+                              <a href="../../category/vim/">vim</a>, 
+                              <a href="../../category/editor/">editor</a></span>
+                        </div>
+                      </li>
+                    
+                    
+                      
+                      <li class="md-nav__item">
+                        <div class="md-nav__link">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7h1.5Z"/></svg>
+                          <span class="md-ellipsis">
+                            
+                              需要 5 分钟阅读时间
+                            
+                          </span>
+                        </div>
+                      </li>
+                    
+                    <li class="md-nav__item">
+                      <div class="md-nav__link">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m19 1-5 5v11l5-4.5V1m2 4v13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V6c-1.45-1.1-3.55-1.5-5.5-1.5-1.95 0-4.05.4-5.5 1.5v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1M10 18.41C8.75 18.09 7.5 18 6.5 18c-1.06 0-2.32.19-3.5.5V7.13c.91-.4 2.14-.63 3.5-.63 1.36 0 2.59.23 3.5.63v11.28Z"/></svg>
+                        <span class="md-ellipsis" id="busuanzi_container_page_pv">
+                          阅读量：<span id="busuanzi_value_page_pv">N/A</span>
+                        </span>
+                      </div>
+                    </li>
+                  </ul>
+                </nav>
+              </li>
+            </ul>
+          </nav>
+          
+        </div>
+      </div>
+    </div>
+    <article class="md-content__inner md-typeset">
+      
+        
+  
+  
+
+<nav class="md-tags" >
+  
+    
+    
+    
+      <span class="md-tag">vim</span>
+    
+  
+</nav>
+
+
+  
+  
+
+
+  <h1>vim搜索</h1>
+
+<p>本文简单梳理了 vim 搜索查找和替换的基本操作。</p>
+<!-- more -->
+
+<p>参考：<code>/usr/share/vim/vim[0-9][0-9]/doc/change.txt</code></p>
+<p><a href="https://vim.fandom.com/wiki/Search_and_replace">Search and replace</a>  </p>
+<h2 id="ft_搜索字符">f,t 搜索字符<a class="headerlink" href="#ft_搜索字符" title="Permanent link">#</a></h2>
+<table>
+<thead>
+<tr>
+<th>指令</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>t{char}</code></td>
+<td>Till <strong>before</strong> [count]'th occurrence of {char} to right.</td>
+</tr>
+<tr>
+<td><code>T{char}</code></td>
+<td>Till <strong>before</strong> [count]'th occurrence of {char} to left.</td>
+</tr>
+<tr>
+<td><code>f{char}</code></td>
+<td>To [count]'th occurrence of {char} to the right.</td>
+</tr>
+<tr>
+<td><code>F{char}</code></td>
+<td>To the [count]'th occurrence of {char} to the left.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="repeat">repeat<a class="headerlink" href="#repeat" title="Permanent link">#</a></h3>
+<table>
+<thead>
+<tr>
+<th>指令</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>;</code></td>
+<td>Repeat latest f, t, F or T [count] times.</td>
+</tr>
+<tr>
+<td><code>,</code></td>
+<td>Repeat latest f, t, F or T in <strong>opposite</strong> direction [count] times.</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>对应帮助文档：motion.txt</p>
+</blockquote>
+<h2 id="_搜索查找">/,* 搜索查找<a class="headerlink" href="#_搜索查找" title="Permanent link">#</a></h2>
+<blockquote>
+<p>对应帮助文档：pattern.txt，帮助命令 <code>:h pattern-overview</code>、<code>:h regexp</code> 或 <code>:h vimgrep</code>。</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>命令</th>
+<th>说明</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/phrase</code></td>
+<td>searches FORWARD for the phrase</td>
+<td><code>\c</code>可以忽略大小写（ignore case），<code>\C</code>则区分大小写</td>
+</tr>
+<tr>
+<td><code>?phrase</code></td>
+<td>searches BACKWARD for the phrase</td>
+<td><code>\c</code>可以忽略大小写（ignore case），<code>\C</code>则区分大小写</td>
+</tr>
+<tr>
+<td><code>*phrase</code></td>
+<td>search forward : <code>/\&lt;phrase\&gt;</code></td>
+<td>向下查找当前光标所在单词</td>
+</tr>
+<tr>
+<td><code>#phrase</code></td>
+<td>search backward : <code>?\&lt;phrase\&gt;</code></td>
+<td>向上查找当前光标所在单词</td>
+</tr>
+</tbody>
+</table>
+<p>在 <code>/</code> 或 <code>?</code> 后输入关键字后，按回车键开始搜索，然后按 <kbd>n</kbd>/<kbd>N</kbd> 查找下/上一个。</p>
+<ul>
+<li><code>n</code>: to find the next occurrence in the same direction  </li>
+<li><code>N</code>: to search in the opposite direction  </li>
+<li><code>gn</code>: Search forward for the last used search pattern, and start <em>Visual</em> mode to select the match.  </li>
+</ul>
+<blockquote>
+<p>对于文本 <code>This is his idea</code>，执行 <code>/his</code> 将会命中 This 和 his；执行 <code>/\&lt;his\&gt;</code> 将只命中 his。</p>
+</blockquote>
+<p>参考 <a href="http://man7.org/linux/man-pages/man1/vi.1p.html"><strong>VI</strong>(1P)</a> 的 <strong>EXTENDED DESCRIPTION</strong> 的以下章节：</p>
+<ul>
+<li>Find Regular Expression（Synopsis: <code>/</code>）  </li>
+<li>Scan Backwards for Regular Expression（Synopsis: <code>?</code>）  </li>
+<li>Repeat Regular Expression Find (Forward)（Synopsis: <code>n</code>）  </li>
+<li>Repeat Regular Expression Find (Reverse)（Synopsis: <code>N</code>）  </li>
+</ul>
+<p><a href="http://www.thegeekstuff.com/2009/04/vi-vim-editor-search-and-replace-examples/">Vi and Vim Editor: 12 Powerful Find and Replace Examples</a>    </p>
+<p>由于配置了查找匹配高亮显示（hls/hlsearch），查找到的匹配结果会高亮显示，如果想去除搜索结果高亮，可以参考 <a href="../014-vim-pattern/">vim-pattern</a>。</p>
+<h3 id="repeat_1">repeat<a class="headerlink" href="#repeat_1" title="Permanent link">#</a></h3>
+<p><code>/phrase</code> 和 <code>?phrase</code> 尾部可添加 <code>/</code> 和 <code>?</code> 进行闭合，后面可以添加其他选项，例如 <code>/phrase/e</code> 定位到结尾字符前。</p>
+<p><code>/&lt;CR&gt;</code>(<code>//&lt;CR&gt;</code>) 和 <code>?&lt;CR&gt;</code>(<code>??&lt;CR&gt;</code>) 均按上次的关键词进行查找。</p>
+<blockquote>
+<p><code>q/</code> 和 <code>q?</code> 可查看查找历史。</p>
+</blockquote>
+<h3 id="visual">visual<a class="headerlink" href="#visual" title="Permanent link">#</a></h3>
+<p>查找命令不仅限于在普通模式下使用，还可以在可视模式及操作符待决模式中使用它。</p>
+<p>例句：<code>This phrase takes time but eventually gets to the point.</code></p>
+<p>假设当前光标在单词 <code>takes</code> 的首字母，删除 <code>takes time but eventually</code> 的操作序列如下：</p>
+<ol>
+<li><code>v</code>: 进入可视模式；  </li>
+<li><code>/ge</code>：扩大选取到 gets 的 <code>g</code>；  </li>
+<li><code>h</code>：光标回退到空格；  </li>
+<li><code>d</code>：删除选中的 <code>takes time but eventually</code>；  </li>
+</ol>
+<h2 id="g_通配"><code>:g</code> 通配<a class="headerlink" href="#g_通配" title="Permanent link">#</a></h2>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>                                                :g :global E148
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>:[range]g[lobal]/{pattern}/[cmd]
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>                        Execute the Ex command [cmd] (default &quot;:p&quot;) on the
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>                        lines within [range] where {pattern} matches.
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>:[range]g[lobal]!/{pattern}/[cmd]
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>                        Execute the Ex command [cmd] (default &quot;:p&quot;) on the
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>                        lines within [range] where {pattern} does NOT match.
+</span></code></pre></div>
+<p>在 vim 中输入 <code>:g/{pattern}</code> 命令可列出所有通配模式 <code>pattern</code> 的行。  </p>
+<ul>
+<li>执行 <code>:g/{pattern}/d</code> 删除所有匹配行。  </li>
+<li>执行 <code>:g/{pattern}/m0</code> 或 <code>:g/{pattern}/m$</code> 跳转到第一个或最后一个匹配行。  </li>
+</ul>
+<h4 id="permute_lines_reverse">Permute Lines: Reverse<a class="headerlink" href="#permute_lines_reverse" title="Permanent link">#</a></h4>
+<p>经典案例：<a href="https://vim.fandom.com/wiki/Reverse_order_of_lines">Reverse order of lines</a></p>
+<p>reverse all lines in the current buffer:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>:g/^/m0
+</span></code></pre></div>
+<ol>
+<li><code>:</code> start command-line mode.  </li>
+<li><code>g</code> means you'll take an action on any lines where a regular expression matches  </li>
+<li><code>/</code> begins the regular expression (could have used any valid delimiter)  </li>
+<li><code>^</code> matches the start of a line (which matches all lines in the buffer)  </li>
+<li>the second <code>/</code> ends the regular expression; the rest is an Ex command to execute on all matched lines (i.e. all lines in buffer)  </li>
+<li><code>m</code> means move (<code>:help :move</code>)  </li>
+<li><code>0</code> is the destination line (beginning of buffer)  </li>
+</ol>
+<blockquote>
+<p>在 Unix-like 系统上，如果有 <code>tac</code> 命令，可以执行 <code>:%!tac</code> 利用外部命令实现行序翻转。</p>
+</blockquote>
+<p>以下为 /share/vim/vim82/doc/change.txt 中关于 <code>:move</code> 帮助的部分文字：</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>1346 :[range]m[ove] {address}                        :m :mo :move E134
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>1347                         Move the lines given by [range] to below the line
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>1348                         given by {address}.
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>1349
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>1350 ==============================================================================
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>1351 6. Formatting text                                      formatting
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>1352
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>1353 :[range]ce[nter] [width]                                :ce :center
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>1354                         Center lines in [range] between [width] columns
+</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>1355                         (default &#39;textwidth&#39; or 80 when &#39;textwidth&#39; is 0).
+</span></code></pre></div>
+<p>执行 <code>:1350,1353g/^/m1349</code>，可将 1350~1353 这4行移动到 1349 行下面（的1350行），实现行序翻转：</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>1346 :[range]m[ove] {address}                        :m :mo :move E134
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>1347                         Move the lines given by [range] to below the line
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>1348                         given by {address}.
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>1349
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>1350 :[range]ce[nter] [width]                                :ce :center
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>1351
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>1352 6. Formatting text                                      formatting
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>1353 ==============================================================================
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>1354                         Center lines in [range] between [width] columns
+</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>1355                         (default &#39;textwidth&#39; or 80 when &#39;textwidth&#39; is 0).
+</span></code></pre></div>
+<p>可分步执行查看逐行移动的操作结果：</p>
+<ol>
+<li><code>:1350m1349</code>：将1350行移动到1350行，不变；  </li>
+<li><code>:1351m1349</code>：将1351行移动到1350行，原1350行下移至1351行；  </li>
+<li><code>:1352m1349</code>：将1352行移动到1350行，1350行（原1351行）下移至1351行；  </li>
+<li><code>:1353m1349</code>：将1353行移动到1350行，1350行（原1352行）下移至1351行；  </li>
+</ol>
+<blockquote>
+<p>在 Unix-like 系统上，如果有 <code>tac</code> 命令，可以执行 <code>:1350,1353!tac</code> 利用外部命令实现行序翻转。</p>
+</blockquote>
+<h3 id="regex">regex<a class="headerlink" href="#regex" title="Permanent link">#</a></h3>
+<p>http://vimregex.com/</p>
+<p>参考 <a href="http://man7.org/linux/man-pages/man1/vi.1p.html"><strong>VI</strong>(1P)</a> 的 <strong>EXTENDED DESCRIPTION</strong> 的以下章节：</p>
+<ul>
+<li>Find Regular Expression（Synopsis: <code>/</code>）  </li>
+</ul>
+<h3 id="vimgrep">vimgrep<a class="headerlink" href="#vimgrep" title="Permanent link">#</a></h3>
+<p><a href="https://vi.stackexchange.com/questions/2280/show-only-matching-lines">Show only matching lines?</a><br />
+<a href="https://vi.stackexchange.com/questions/10860/how-to-filter-text-matched-by-global-command">How to filter text matched by global command?</a>  </p>
+<p>在 vim 中查找过滤包含关键字的行（filter lines），除了执行的 global pattern match 之外，也可执行 <strong>vimgrep</strong> 命令执行高级查找过滤。</p>
+<ol>
+<li>
+<p>执行以下命令查找整个文件内的关键字 <code>{pattern}</code>：</p>
+<blockquote>
+<p><code>:vimgrep {pattern} %</code></p>
+</blockquote>
+</li>
+</ol>
+<ul>
+<li><code>:cn</code> - jump to the next match  </li>
+<li><code>:cp</code> - jump to the previous match  </li>
+<li><code>:cwin</code>/<code>:copen</code> - open a window containing the list of matches  </li>
+</ul>
+<ol start="2">
+<li>
+<p>执行 <code>:cwin</code> 打开查找结果 buffer。在其中可使用上下方向键或<kbd>j</kbd><kbd>k</kbd>定位，按下<kbd>enter</kbd>键跳转到原文匹配行。  </p>
+</li>
+<li>
+<p>执行 <code>:sav filterlines.txt</code> 可将结果 buffer 保存到指定文件（filterlines.txt）中。  </p>
+</li>
+</ol>
+<h2 id="s_查找替换the_substitute_command"><code>:s</code> 查找替换（THE SUBSTITUTE COMMAND）<a class="headerlink" href="#s_查找替换the_substitute_command" title="Permanent link">#</a></h2>
+<blockquote>
+<p>对应帮助文档：change.txt</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>按键</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>:s/old/new</code></td>
+<td>only changes the <strong>first</strong> occurrence of "old" in the line.</td>
+</tr>
+<tr>
+<td><code>:s/old/new/g</code></td>
+<td>Adding the <code>g</code> flag means to substitute <strong>globally</strong> in the line, <br/>change all occurrences of "old" in the line.</td>
+</tr>
+<tr>
+<td><code>:#,#s/old/new/g</code></td>
+<td>where #,# are the <em>line numbers</em> of the <strong>range</strong> of lines <br/>where the substitution is to be done.</td>
+</tr>
+<tr>
+<td><code>:%s/old/new/g</code></td>
+<td>to change every occurrence in the <strong><em>whole file</em></strong>.</td>
+</tr>
+<tr>
+<td><code>:%s/old/new/gc</code></td>
+<td>to find every occurrence in the <strong><em>whole file</em></strong>, with a <em>prompt</em> whether to substitute or not.</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><strong><code>/g</code></strong> 尾缀（suffix）代表对行内所有匹配都执行（替换）操作；  </li>
+<li><code>/c</code> 尾缀（suffix）代表执行操作前弹出确认（confirm prompt）；  </li>
+<li><strong><code>%</code></strong> 前缀（prefix）代表针对被编辑文件的所有行都执行后续操作；  </li>
+</ul>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="o">[</span>i<span class="o">]</span><span class="w">     </span>Ignore<span class="w"> </span><span class="k">case</span><span class="w"> </span><span class="k">for</span><span class="w"> </span>the<span class="w"> </span>pattern.
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="o">[</span>I<span class="o">]</span><span class="w">     </span>Don<span class="err">&#39;</span>t<span class="w"> </span>ignore<span class="w"> </span><span class="k">case</span><span class="w"> </span><span class="k">for</span><span class="w"> </span>the<span class="w"> </span>pattern.
+</span></code></pre></div>
+<p>可以参考分析帮助文档中的示例：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>Examples:<span class="w"> </span>&gt;
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="c1"># \0: replaced with the whole matched pattern</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">  </span>:s/a<span class="se">\|</span>b/xxx<span class="se">\0</span>xxx/g<span class="w">             </span>modifies<span class="w"> </span><span class="s2">&quot;a b&quot;</span><span class="w">      </span>to<span class="w"> </span><span class="s2">&quot;xxxaxxx xxxbxxx&quot;</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="w">  </span>:s/<span class="se">\(</span><span class="o">[</span>abc<span class="o">]</span><span class="se">\)\(</span><span class="o">[</span>efg<span class="o">]</span><span class="se">\)</span>/<span class="se">\2\1</span>/g<span class="w">   </span>modifies<span class="w"> </span><span class="s2">&quot;af fa bg&quot;</span><span class="w"> </span>to<span class="w"> </span><span class="s2">&quot;fa fa gb&quot;</span>
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="c1"># 中间插入换行符，相当于切割分行</span>
+</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="w">  </span>:s/abcde/abc^Mde/<span class="w">              </span>modifies<span class="w"> </span><span class="s2">&quot;abcde&quot;</span><span class="w">    </span>to<span class="w"> </span><span class="s2">&quot;abc&quot;</span>,<span class="w"> </span><span class="s2">&quot;de&quot;</span><span class="w"> </span><span class="o">(</span>two<span class="w"> </span>lines<span class="o">)</span>
+</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>
+</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="c1"># 转义为原始符号，只是在当前行末添加两个字符(^M)</span>
+</span><span id="__span-5-11"><a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a><span class="w">  </span>:s/$/<span class="se">\^</span>M/<span class="w">                      </span>modifies<span class="w"> </span><span class="s2">&quot;abcde&quot;</span><span class="w">    </span>to<span class="w"> </span><span class="s2">&quot;abcde^M&quot;</span>
+</span><span id="__span-5-12"><a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a>
+</span><span id="__span-5-13"><a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a>
+</span><span id="__span-5-14"><a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a><span class="w">  </span>:s/<span class="se">\w\+</span>/<span class="se">\u\0</span>/g<span class="w">                 </span>modifies<span class="w"> </span><span class="s2">&quot;bla bla&quot;</span><span class="w">  </span>to<span class="w"> </span><span class="s2">&quot;Bla Bla&quot;</span>
+</span><span id="__span-5-15"><a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a><span class="w">  </span>:s/<span class="se">\w\+</span>/<span class="se">\L\u\0</span>/g<span class="w">               </span>modifies<span class="w"> </span><span class="s2">&quot;BLA bla&quot;</span><span class="w">  </span>to<span class="w"> </span><span class="s2">&quot;Bla Bla&quot;</span>
+</span><span id="__span-5-16"><a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a>
+</span><span id="__span-5-17"><a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a><span class="nb">command</span><span class="w">         </span>text<span class="w">    </span>result<span class="w"> </span>~
+</span><span id="__span-5-18"><a id="__codelineno-5-18" name="__codelineno-5-18" href="#__codelineno-5-18"></a>:s/aa/a^Ma/<span class="w">     </span>aa<span class="w">      </span>a&lt;line-break&gt;a
+</span><span id="__span-5-19"><a id="__codelineno-5-19" name="__codelineno-5-19" href="#__codelineno-5-19"></a>:s/aa/a<span class="se">\^</span>Ma/<span class="w">    </span>aa<span class="w">      </span>a^Ma
+</span><span id="__span-5-20"><a id="__codelineno-5-20" name="__codelineno-5-20" href="#__codelineno-5-20"></a>:s/aa/a<span class="se">\\</span>^Ma/<span class="w">   </span>aa<span class="w">      </span>a<span class="se">\&lt;</span>line-break&gt;a
+</span><span id="__span-5-21"><a id="__codelineno-5-21" name="__codelineno-5-21" href="#__codelineno-5-21"></a>
+</span><span id="__span-5-22"><a id="__codelineno-5-22" name="__codelineno-5-22" href="#__codelineno-5-22"></a><span class="o">(</span>you<span class="w"> </span>need<span class="w"> </span>to<span class="w"> </span><span class="nb">type</span><span class="w"> </span>CTRL-V<span class="w"> </span>&lt;CR&gt;<span class="w"> </span>to<span class="w"> </span>get<span class="w"> </span>a<span class="w"> </span>^M<span class="w"> </span>here<span class="o">)</span>
+</span></code></pre></div>
+<h3 id="示例">示例<a class="headerlink" href="#示例" title="Permanent link">#</a></h3>
+<blockquote>
+<p><a href="http://blog.csdn.net/xufeng0991/article/details/50201561">VIM多行注释/反注释</a><br />
+<a href="http://www.cnblogs.com/Ph-one/p/5641872.html">vim多行注释和取消注释</a><br />
+<a href="http://blog.csdn.net/xxxxxx91116/article/details/7960097">vim行首加入某字符</a><br />
+<a href="http://www.cnblogs.com/Dennis-mi/articles/5939635.html">vi/vim 中如何在每行行首或行尾插入指定字符串</a>  </p>
+</blockquote>
+<ol>
+<li>在所有行首添加注释符号（//）：  </li>
+</ol>
+<p><code>:%s/^/\/\//g</code><br />
+<code>:%s#^#//#g</code>（用 <code>#</code> 或 <code>+</code> 代替 <code>/</code>，old 或 new 中的 <code>/</code> 不用转义）  </p>
+<blockquote>
+<p>说明：行首（old=<code>^</code>）替换为注释符号（new=<code>//</code>）。  </p>
+<blockquote>
+<p>若将 <code>^</code> 替换为 <code>$</code> 则针对行尾操作。  </p>
+</blockquote>
+</blockquote>
+<ol start="2">
+<li>为 20~50 行首添加注释符号（//）：  </li>
+</ol>
+<p><code>:20,50 s/^/\/\//g</code><br />
+<code>:20,50s#^#//#g</code>  </p>
+<blockquote>
+<p>在 markdown 文档的 143~145这3行首插入 <code>-</code>，使之成为 Unordered List：<code>143,145s#^#- #</code>  </p>
+<blockquote>
+<p>如果是行尾的话，将 <code>^</code> 换成 <code>$</code>。  </p>
+</blockquote>
+</blockquote>
+<ol start="3">
+<li>为 20~50 行首移除注释符号（//）：</li>
+</ol>
+<p><code>:20,50 s/^\/\///g</code><br />
+<code>:20,50s#^//##g</code>  </p>
+<blockquote>
+<p>行首的注释符号（old=<code>^//</code>）替换为空（new=空），相当于删除。  </p>
+</blockquote>
+<ol start="4">
+<li>将空行删除：</li>
+</ol>
+<p><code>:1,$s/^$\n//g</code></p>
+<blockquote>
+<p>将首行到末行（全文）中内容为换行符（old=<code>^$\n</code>）的空行替换为空（new=空），相当于移除空行。  </p>
+</blockquote>
+<p><code>:%s/\n//g</code>：删除换行符；<br />
+<code>:%s/\r//g</code>：删除DOS文件中的回车符<code>^M</code>；  </p>
+
+
+
+
+
+
+
+  
+  
+
+
+
+  
+
+
+  
+
+
+
+  <h2 id="__comments">评论</h2>
+  <!-- Insert generated snippet here -->
+  <script src="https://giscus.app/client.js"
+    data-repo="fan2/mkdocs"
+    data-repo-id="R_kgDOLltxSg"
+    data-category="Announcements"
+    data-category-id="DIC_kwDOLltxSs4CeURH"
+    data-mapping="pathname"
+    data-strict="0"
+    data-reactions-enabled="1"
+    data-emit-metadata="1"
+    data-input-position="top"
+    data-theme="preferred_color_scheme"
+    data-lang="zh-CN"
+    data-loading="lazy"
+    crossorigin="anonymous"
+    async>
+  </script>
+
+  <!-- Synchronize Giscus theme with palette -->
+  <script>
+    var giscus = document.querySelector("script[src*=giscus]")
+
+    // Set palette on initial load
+    var palette = __md_get("__palette")
+    if (palette && typeof palette.color === "object") {
+      var theme = palette.color.scheme === "slate"
+        ? "transparent_dark"
+        : "light"
+
+      // Instruct Giscus to set theme
+      giscus.setAttribute("data-theme", theme) 
+    }
+
+    // Register event handlers after documented loaded
+    document.addEventListener("DOMContentLoaded", function() {
+      var ref = document.querySelector("[data-md-component=palette]")
+      ref.addEventListener("change", function() {
+        var palette = __md_get("__palette")
+        if (palette && typeof palette.color === "object") {
+          var theme = palette.color.scheme === "slate"
+            ? "transparent_dark"
+            : "light"
+
+          // Instruct Giscus to change theme
+          var frame = document.querySelector(".giscus-frame")
+          frame.contentWindow.postMessage(
+            { giscus: { setConfig: { theme } } },
+            "https://giscus.app"
+          )
+        }
+      })
+    })
+  </script>
+
+      
+    </article>
+  </div>
+
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+        
+      
+      <nav class="md-footer__inner md-grid" aria-label="页脚" >
+        
+          
+          <a href="../010-vim-folding/" class="md-footer__link md-footer__link--prev" aria-label="上一页: vim折叠">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                上一页
+              </span>
+              <div class="md-ellipsis">
+                vim折叠
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../012-vim-win-tab/" class="md-footer__link md-footer__link--next" aria-label="下一页: vim窗格">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                下一页
+              </span>
+              <div class="md-ellipsis">
+                vim窗格
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2024- Cliff Fan
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["toc.follow", "header.autohide", "navigation.tabs", "navigation.top", "navigation.footer", "navigation.tracking", "content.code.copy", "content.code.select", "content.code.annotate"], "search": "../../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.bd41221c.min.js"></script>
+      
+        <script src="../../../javascripts/mathjax.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+        <script src="https://vercount.one/js"></script>
+      
+    
+  </body>
+</html>
