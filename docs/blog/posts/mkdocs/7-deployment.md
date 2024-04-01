@@ -4,7 +4,7 @@ authors:
   - xman
 date:
     created: 2024-03-23
-    updated: 2024-04-01T13:10:00
+    updated: 2024-04-01T21:00:00
 categories:
     - mkdocs
 comments: true
@@ -15,7 +15,7 @@ User Guide:
 - [Command Line Interface](https://www.mkdocs.org/user-guide/cli/)
 - [Deploying your docs](https://www.mkdocs.org/user-guide/deploying-your-docs/)
 
-本文梳理了 `build` 和 `gh-deploy` 部署命令及部署工作流。
+本文梳理了 `build` 构建和 `gh-deploy` 部署命令及部署工作流。
 
 <!-- more -->
 
@@ -95,6 +95,40 @@ build 会生成 site 目录，gh-deploy 会上传其内容至 gh-pages。
 3. 可通过 `-r` 指定本次部署提交仓库，默认仓库是 `origin`，可指定 `upstream`。
 4. `--no-history` 清除部署分支旧的提交记录，以此次提交作为部署起点。
 
-## refs
+## deploy to nginx
 
-[用mkdocs+nginx搭建个人网站](https://zhuanlan.zhihu.com/p/551345157)
+刚好之前在 Raspberry Pi 4B/Ubuntu 上用 nginx 部署 WebDav 服务，81 端口服务只使用了 /webdav 二级路由，可以考虑将 mkdocs material blog 挂载到根路由。
+
+!!! note ""
+
+    关于 nginx 配置，[rpi4b-ubuntu安装nginx-extras并配置WebDav](../webdav/ubuntu-install-nginx-full-config-webdav.md) 中有详细阐述。
+
+ubuntu 下执行 `nginx -V` 可知 nginx 的默认工作空间为 --prefix=/usr/share/nginx。
+
+对于自启的非80服务（这里监听 81 端口），`location /` 未指定 root 时，Docroot 默认为 /usr/share/nginx/html。
+
+这里懒得修改 webdav 配置文件了，假设工程存储在 ~/Sites/mkdocs 目录，执行 `mkdocs build` 生成的静态站点产物目录为 site，那么只需将 site 软链为 /usr/share/nginx/html 即可完成部署，参考 [用mkdocs+nginx搭建个人网站](https://zhuanlan.zhihu.com/p/551345157)。
+
+```Shell
+$ sudo mv /usr/share/nginx/html/ /usr/share/nginx/html_bak/
+$ sudo ln -s /home/pifan/Sites/mkdocs/site/ /usr/share/nginx/html
+```
+
+局域网内，在浏览器输入 http://rpi4b-ubuntu.local:81/（或使用 IP 代替 host），即可访问博客站点。
+
+接下来，可自行购买 VPS 将站点部署上去；或 [将域名交由 cloudflare 托管]((https://developers.cloudflare.com/registrar/get-started/transfer-domain-to-cloudflare/))，然后创建一条 [Cloudflare Zero Trust](https://one.dash.cloudflare.com/) 内网穿透隧道（Cloudflare Tunnel），将内网服务（blog+webdav）暴露到公网。
+
+=== "Cloudflare Zero Trust"
+
+    Cloudflare Zero Trust provides the power of Cloudflare’s global network to your internal teams and infrastructure. It empowers users with secure, fast, and seamless access to any device on the Internet.
+
+=== "Cloudflare Tunnel"
+
+    Cloudflare Tunnel (formerly Argo Tunnel) establishes a secure outbound connection within your infrastructure to connect applications and machines to Cloudflare.
+
+=== "cloudflared"
+
+    cloudflared is the software powering Cloudflare Tunnel. It runs on origin servers to connect to Cloudflare’s network and on client devices for non-HTTP traffic.
+
+[Cloudflare Docs](https://developers.cloudflare.com/) - [Cloudflare Zero Trust docs](https://developers.cloudflare.com/cloudflare-one/) - [Create a locally-managed tunnel (CLI)](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/get-started/create-local-tunnel/)
+

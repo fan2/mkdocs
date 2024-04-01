@@ -165,6 +165,8 @@ $ tree -L 3 .
 
 ## refs
 
+[EdgeAI Lab](https://edgeai-lab.github.io/notebook/)
+
 [Making docs with MkDocs](https://xahteiwi.eu/blog/2023/02/23/mkdocs/)
 
 [从头教你用mkdocs构建个人博客系统](https://blog.csdn.net/qq_41261251/article/details/116021097)

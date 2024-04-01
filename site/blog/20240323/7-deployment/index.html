@@ -903,9 +903,9 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#refs" class="md-nav__link">
+  <a href="#deploy_to_nginx" class="md-nav__link">
     <span class="md-ellipsis">
-      refs
+      deploy to nginx
     </span>
   </a>
   
@@ -974,7 +974,7 @@
                       <li class="md-nav__item">
                         <div class="md-nav__link">
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15 13h1.5v2.82l2.44 1.41-.75 1.3L15 16.69V13m4-5H5v11h4.67c-.43-.91-.67-1.93-.67-3a7 7 0 0 1 7-7c1.07 0 2.09.24 3 .67V8M5 21a2 2 0 0 1-2-2V5c0-1.11.89-2 2-2h1V1h2v2h8V1h2v2h1a2 2 0 0 1 2 2v6.1c1.24 1.26 2 2.99 2 4.9a7 7 0 0 1-7 7c-1.91 0-3.64-.76-4.9-2H5m11-9.85A4.85 4.85 0 0 0 11.15 16c0 2.68 2.17 4.85 4.85 4.85A4.85 4.85 0 0 0 20.85 16c0-2.68-2.17-4.85-4.85-4.85Z"/></svg>
-                          <time datetime="2024-04-01 13:10:00" class="md-ellipsis">2024年4月1日</time>
+                          <time datetime="2024-04-01 21:00:00" class="md-ellipsis">2024年4月1日</time>
                         </div>
                       </li>
                     
@@ -996,7 +996,7 @@
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7h1.5Z"/></svg>
                           <span class="md-ellipsis">
                             
-                              需要 2 分钟阅读时间
+                              需要 3 分钟阅读时间
                             
                           </span>
                         </div>
@@ -1032,7 +1032,7 @@
 <li><a href="https://www.mkdocs.org/user-guide/cli/">Command Line Interface</a></li>
 <li><a href="https://www.mkdocs.org/user-guide/deploying-your-docs/">Deploying your docs</a></li>
 </ul>
-<p>本文梳理了 <code>build</code> 和 <code>gh-deploy</code> 部署命令及部署工作流。</p>
+<p>本文梳理了 <code>build</code> 构建和 <code>gh-deploy</code> 部署命令及部署工作流。</p>
 <!-- more -->
 
 <h2 id="get-deps">get-deps<a class="headerlink" href="#get-deps" title="Permanent link">#</a></h2>
@@ -1157,8 +1157,33 @@
 <li>可通过 <code>-r</code> 指定本次部署提交仓库，默认仓库是 <code>origin</code>，可指定 <code>upstream</code>。</li>
 <li><code>--no-history</code> 清除部署分支旧的提交记录，以此次提交作为部署起点。</li>
 </ol>
-<h2 id="refs">refs<a class="headerlink" href="#refs" title="Permanent link">#</a></h2>
-<p><a href="https://zhuanlan.zhihu.com/p/551345157">用mkdocs+nginx搭建个人网站</a></p>
+<h2 id="deploy_to_nginx">deploy to nginx<a class="headerlink" href="#deploy_to_nginx" title="Permanent link">#</a></h2>
+<p>刚好之前在 Raspberry Pi 4B/Ubuntu 上用 nginx 部署 WebDav 服务，81 端口服务只使用了 /webdav 二级路由，可以考虑将 mkdocs material blog 挂载到根路由。</p>
+<div class="admonition note">
+<p>关于 nginx 配置，<a href="../../20240318/ubuntu-install-nginx-full-config-webdav/">rpi4b-ubuntu安装nginx-extras并配置WebDav</a> 中有详细阐述。</p>
+</div>
+<p>ubuntu 下执行 <code>nginx -V</code> 可知 nginx 的默认工作空间为 --prefix=/usr/share/nginx。</p>
+<p>对于自启的非80服务（这里监听 81 端口），<code>location /</code> 未指定 root 时，Docroot 默认为 /usr/share/nginx/html。</p>
+<p>这里懒得修改 webdav 配置文件了，假设工程存储在 ~/Sites/mkdocs 目录，执行 <code>mkdocs build</code> 生成的静态站点产物目录为 site，那么只需将 site 软链为 /usr/share/nginx/html 即可完成部署，参考 <a href="https://zhuanlan.zhihu.com/p/551345157">用mkdocs+nginx搭建个人网站</a>。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>$<span class="w"> </span>sudo<span class="w"> </span>mv<span class="w"> </span>/usr/share/nginx/html/<span class="w"> </span>/usr/share/nginx/html_bak/
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>$<span class="w"> </span>sudo<span class="w"> </span>ln<span class="w"> </span>-s<span class="w"> </span>/home/pifan/Sites/mkdocs/site/<span class="w"> </span>/usr/share/nginx/html
+</span></code></pre></div>
+<p>局域网内，在浏览器输入 http://rpi4b-ubuntu.local:81/（或使用 IP 代替 host），即可访问博客站点。</p>
+<p>接下来，可自行购买 VPS 将站点部署上去；或 <a href="(https://developers.cloudflare.com/registrar/get-started/transfer-domain-to-cloudflare/)">将域名交由 cloudflare 托管</a>，然后创建一条 <a href="https://one.dash.cloudflare.com/">Cloudflare Zero Trust</a> 内网穿透隧道（Cloudflare Tunnel），将内网服务（blog+webdav）暴露到公网。</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:3"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">Cloudflare Zero Trust</label><label for="__tabbed_1_2">Cloudflare Tunnel</label><label for="__tabbed_1_3">cloudflared</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p>Cloudflare Zero Trust provides the power of Cloudflare’s global network to your internal teams and infrastructure. It empowers users with secure, fast, and seamless access to any device on the Internet.</p>
+</div>
+<div class="tabbed-block">
+<p>Cloudflare Tunnel (formerly Argo Tunnel) establishes a secure outbound connection within your infrastructure to connect applications and machines to Cloudflare.</p>
+</div>
+<div class="tabbed-block">
+<p>cloudflared is the software powering Cloudflare Tunnel. It runs on origin servers to connect to Cloudflare’s network and on client devices for non-HTTP traffic.</p>
+</div>
+</div>
+</div>
+<p><a href="https://developers.cloudflare.com/">Cloudflare Docs</a> - <a href="https://developers.cloudflare.com/cloudflare-one/">Cloudflare Zero Trust docs</a> - <a href="https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/get-started/create-local-tunnel/">Create a locally-managed tunnel (CLI)</a></p>
 
 
 

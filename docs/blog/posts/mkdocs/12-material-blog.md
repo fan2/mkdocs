@@ -4,7 +4,7 @@ authors:
   - xman
 date:
     created: 2024-03-28
-    updated: 2024-04-01T13:30:00
+    updated: 2024-04-01T21:30:00
 categories:
     - mkdocs
     - material
@@ -319,7 +319,7 @@ nav:
 
 [A code to remember](https://copdips.com/index.html) @[github](https://github.com/copdips/copdips.github.io)
 
-[Jeremy Feng](https://fengchao.pro/)
+[杏子扑簌簌](https://anzai.link/), [Jeremy Feng](https://fengchao.pro/)
 
 [Dr. Yonghao Leo Wang Webpage](https://www.wyh.io/)
 
