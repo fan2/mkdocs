@@ -1,3 +1,7 @@
+---
+hide:
+  - footer
+---
 
 树下：<https://shuxia.site/>
 

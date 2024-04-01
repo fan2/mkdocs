@@ -1,5 +1,7 @@
 ---
 robots: noindex, nofollow
+hide:
+  - footer
 ---
 
 ## 关于我
