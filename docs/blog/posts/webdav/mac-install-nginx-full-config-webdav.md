@@ -4,6 +4,7 @@ authors:
   - xman
 date:
     created: 2024-03-18T10:00:00
+    updated: 2024-04-01T19:00:00
 categories:
     - macOS
     - nginx
@@ -67,14 +68,18 @@ $ brew info nginx
 
 关于 nginx 命令帮助，执行 `nginx -h` 或 `man nginx`。
 
-执行 `nginx -V` 可查看详细的 configure arguments，包括 `conf-path`、`pid-path` 和默认日志路径：
+执行 `nginx -V` 可查看详细的 configure arguments，包括 `prefix`、`conf-path`、`pid-path`、`http-log-path` 和 `error-log-path`，以及以 `with` 开头的已安装的模块（module）。
 
-- --http-log-path=/usr/local/var/log/nginx/access.log
-- --error-log-path=/usr/local/var/log/nginx/error.log
+!!! note "nginx -V path"
 
-以及以 `with` 开头的已安装加载的模块（module）。
+    默认工作空间：--prefix=/usr/local/Cellar/nginx/1.25.1_1
+    默认配置文件：--conf-path=/usr/local/etc/nginx/nginx.conf
+    默认日志路径：
 
-??? info "nginx -V"
+    - --http-log-path=/usr/local/var/log/nginx/access.log
+    - --error-log-path=/usr/local/var/log/nginx/error.log
+
+??? info "nginx -V details"
 
     ```Shell
     $ nginx -V
@@ -367,6 +372,27 @@ nginx 只有运行于 root 时，才能在 nginx.conf 中指定 worker user。
 
 ### nginx.conf
 
+`nginx -V` 输出 `--prefix=/usr/local/Cellar/nginx-full/1.25.4`，此为 macOS 下 brew 安装的 nginx 默认工作空间。
+执行 `ls -l` 可以看到其下有个符号链接 html 指向 `/usr/local/var/www`，此即 Docroot。
+
+```Shell
+$ ls -l /usr/local/Cellar/nginx-full/1.25.4
+
+lrwxr-xr-x  1 faner  admin      16 Mar 24 09:10 html -> ../../../var/www
+
+```
+
+nginx.conf 中默认根路径配置的 root html 指向 Docroot，后续可按需指向自己的站点目录。
+
+```nginx
+            location / {
+                root html;
+                index index.html index.htm;
+            }
+```
+
+#### reuse server
+
 在原有配置文件 `/usr/local/etc/nginx/nginx.conf` 中加入新的二级路径映射配置：
 
 > \#user  nobody; 表示以当前用户启动。
@@ -377,9 +403,9 @@ nginx 只有运行于 root 时，才能在 nginx.conf 中指定 worker user。
 
 完整的 nginx.conf 记录备忘如下：
 
-??? info "nginx.conf for webdav"
+??? info "nginx.conf: reuse 8080 for webdav"
 
-    ```nginx
+    ```nginx title="/usr/local/etc/nginx/nginx.conf"
     #user  nobody;
     user   _www _www;
 
@@ -408,7 +434,7 @@ nginx 只有运行于 root 时，才能在 nginx.conf 中指定 worker user。
                 root /usr/local/var;
                 # alias /usr/local/var/webdav;
 
-                # webdav 用户的默认权限
+                # webdav 用户(_www)的默认权限
                 dav_access user:rw group:rw all:r;
 
                 # auth_basic 参数被用作域，并在授权弹窗中显示。
@@ -492,7 +518,144 @@ nginx 只有运行于 root 时，才能在 nginx.conf 中指定 worker user。
     }
     ```
 
-每次修改了 nginx.conf 配置文件，需要重新加载配置（或重启服务），可以通过以下两种方式：
+#### config new server
+
+无论是 brew info 还是 brew install 输出的信息中，都有一句：
+
+> nginx will load all files in /usr/local/etc/nginx/servers/.
+
+默认配置 nginx.conf 最后有一句 `include servers/*`，意思是会加载 servers 下的所有配置：
+
+```nginx title="/usr/local/etc/nginx/nginx.conf"
+http {
+
+    # HTTPS server
+    #
+    include servers/*;
+}
+```
+
+因此，可以保留默认的 nginx.conf(.default)，在 servers 下新建 webdav.conf，新建一个 server 监听端口 81 专用于 webdav 服务。
+
+完整的 webdav.conf 记录备忘如下：
+
+??? info "webdav.conf: listen 81"
+
+    ```nginx title="/usr/local/etc/nginx/servers/webdav.conf"
+    # config lock for macOS Client
+    dav_ext_lock_zone zone=webdav:10m;
+
+    server {
+        listen 81;
+        server_name localhost;
+
+        # 设置使用UTF-8编码,防止中文文件名乱码
+        charset utf-8;
+
+        error_log /usr/local/var/log/nginx/webdav.error.log error;
+        access_log /usr/local/var/log/nginx/webdav.access.log combined;
+
+        # [nginx不浏览直接下载文件](https://www.cnblogs.com/oxspirt/p/10250744.html)
+        location / {
+            # 这里先提供默认页面，后面按需提供website路径
+            root html; # prefix/html symlink to /usr/local/var/www
+            index index.html index.htm;
+
+            if ($request_filename ~* ^.*?\.(txt|doc|pdf|rar|gz|zip|docx|exe|xlsx|ppt|pptx)$) {
+                add_header Content-Disposition: 'attachment;';
+            }
+        }
+
+        location /webdav {
+            # webdav 共享服务目录（可考虑放在 opt/ 下）
+            ## 请注意 chown 为 nginx worker 用户 _www:_www
+            root /usr/local/var;
+            # alias /usr/local/var/webdav;
+
+            # webdav 用户(_www)的默认权限
+            dav_access user:rw group:rw all:r;
+
+            # auth_basic 参数被用作域，并在授权弹窗中显示。
+            auth_basic "webdav";
+            # htpasswd 用户密码文件存放的位置
+            auth_basic_user_file /usr/local/etc/nginx/.htpasswd;
+
+            # webdav 及 ext 允许的操作
+            dav_methods PUT DELETE MKCOL COPY MOVE;
+            dav_ext_methods PROPFIND OPTIONS LOCK UNLOCK;
+            dav_ext_lock zone=webdav;
+
+            # 开启支持目录浏览功能
+            autoindex on;
+            # 显示出文件的大概大小，单位是KB或者MB或者GB
+            autoindex_exact_size off;
+
+            # 启用完整的创建目录支持
+            ## 默认情况下，PUT方法只能在已存在的目录里创建文件
+            create_full_put_path on;
+
+            # 临时缓存文件位置
+            client_body_temp_path /tmp;
+
+            # 最大上传文件限制, 0表示无限制
+            client_max_body_size 4G;
+
+            ########################################
+            # 为各种方法的URI后加上斜杠，解决各平台webdav客户端的兼容性问题
+            ########################################
+
+            # issue: ngx_http_dav_module.c 判断 MKCOL 指令的 URI 必须以 / 结尾
+            # 注意：如果是 alias，注意调整 rewrite 路径，或换成 root！
+            if ($request_method ~ MKCOL) {
+                rewrite ^(.*[^/])$ $1/ break;
+            }
+
+            # issue: ngx_http_dav_module.c 判断 MOVE 指令的 URI 和 Destination URI 结尾的 / 必须匹配
+            # scenario: MOVE 文件夹 Destination URI 未以 / 结尾: /webdav/test/ --> /webdav/test2
+            # error log: both URI and "Destination" URI should be either collections or non-collections
+            set $dest $http_destination;
+            if (-d $request_filename) {
+                rewrite ^(.*[^/])$ $1/;
+                set $dest $dest/;
+            }
+
+            # 需要安装 --with-headers-more-module
+            if ($request_method ~ (MOVE|COPY)) {
+                more_set_input_headers 'Destination: $dest';
+            }
+
+        }
+
+        # Bonus: Stopping Finder's Garbage
+        # https://www.robpeck.com/2020/06/making-webdav-actually-work-on-nginx/
+        location ~ \.(_.*|DS_Store|Spotlight-V100|TemporaryItems|Trashes|hidden|localized)$ {
+            access_log off;
+            error_log off;
+
+            if ($request_method = PUT) {
+                return 403;
+            }
+            return 404;
+        }
+
+        location ~ \.metadata_never_index$ {
+            return 200 "Don't index this drive, Finder!";
+        }
+
+        #error_page  404              /404.html;
+
+        # redirect server error pages to the static page /50x.html
+        #
+        error_page 500 502 503 504 /50x.html;
+        location = /50x.html {
+            root html;
+        }
+    }
+    ```
+
+#### restart nginx server
+
+每次修改了 nginx 配置文件，需要重新加载配置（或重启服务），可以通过以下两种方式：
 
 1. `sudo nginx -s reload`
 2. `sudo brew services restart denji/nginx/nginx-full`
@@ -511,7 +674,10 @@ nginx 只有运行于 root 时，才能在 nginx.conf 中指定 worker user。
 
 关于 webdav 的连接测试，参考 [macOS上基于httpd搭建WebDav服务](./mac-setup-httpd-dav.md) - 局域网连接验证WebDAV服务 和 [使用命令行挂载操作WebDAV云盘](./cmd-mount-webdav.md) 中的相关说明。
 
-调试期间，可在 nginx 服务器执行 `tail -f /usr/local/var/log/nginx/error.log`（或 access.log）实时查看滚动日志。
+1. 执行 curl localhost:81 验证 web 服务是否正常；
+2. WebDAV 客户端访问 http://mbpa1398.local:81/webdav/ 验证 webDAV 服务是否正常。
+
+调试期间，可在 nginx 服务器执行 `tail -f /usr/local/var/log/nginx/webdav.error.log` 实时查看滚动日志。
 
 webdav 运行过程中，会产生一些 cache 文件，可使用 find 命令查找并按需执行 -delete 删除：
 

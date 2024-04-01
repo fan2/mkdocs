@@ -4,7 +4,7 @@ authors:
   - xman
 date:
     created: 2024-03-29T16:30:00
-    updated: 2024-03-31T18:00:00
+    updated: 2024-04-01T18:00:00
 categories:
     - mkdocs
     - material
@@ -57,9 +57,9 @@ comments: true
       <!-- Insert generated snippet here -->
       <script src="https://giscus.app/client.js"
         data-repo="fan2/mkdocs"
-        data-repo-id="R_kgDOLltxSg"
+        data-repo-id="R_**********"
         data-category="Announcements"
-        data-category-id="DIC_kwDOLltxSs4CeURH"
+        data-category-id="DIC_****************"
         data-mapping="pathname"
         data-strict="0"
         data-reactions-enabled="1"

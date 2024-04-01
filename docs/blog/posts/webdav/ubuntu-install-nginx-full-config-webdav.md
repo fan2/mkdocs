@@ -4,6 +4,7 @@ authors:
   - xman
 date:
     created: 2024-03-18T15:00:00
+    updated: 2024-04-01T20:00:00
 categories:
     - ubunbu
     - nginx
@@ -55,12 +56,18 @@ rpi4b 的 CPU 和 OS 信息如下：
 
 ### nginx -V
 
-`nginx -V` 输出的 dav 相关的只有 `--with-http_dav_module`，要想使用完整的 webDAV 服务，还得自行安装 dav-ext 扩展模块。
+执行 `nginx -V` 可查看详细的 configure arguments，包括 `prefix`、`conf-path`、`pid-path`、`http-log-path` 和 `error-log-path`，以及以 `with` 开头的已安装的模块（module）。
 
-- The [nginx webdav module](http://nginx.org/en/docs/http/ngx_http_dav_module.html) only supports PUT, DELETE, MKCOL, COPY, and MOVE.
-- The [dav\_ext module](https://github.com/arut/nginx-dav-ext-module) adds support for PROPFIND, OPTIONS, LOCK and UNLOCK.
+!!! note "nginx -V path"
 
-??? info "nginx -V"
+    默认工作空间：--prefix=/usr/share/nginx
+    默认配置文件：--conf-path=/etc/nginx/nginx.conf
+    默认日志路径：
+
+    - --http-log-path=/var/log/nginx/access.log
+    - --error-log-path=/var/log/nginx/error.log
+
+??? info "nginx -V details"
 
     ```Shell
     $ nginx -V
@@ -73,8 +80,6 @@ rpi4b 的 CPU 和 OS 信息如下：
 ### curl localhost
 
 执行 `curl localhost` 请求 web 服务，正常返回 `Welcome to nginx!` 欢迎页面（/var/www/html/index.nginx-debian.html）：
-
-- nginx 默认自启的 HTTP 80 服务 Docroot 在 `/var/www/html` 目录。
 
 ??? info "Welcome to nginx!"
 
@@ -108,9 +113,14 @@ rpi4b 的 CPU 和 OS 信息如下：
 
 ## install nginx-extras
 
+`nginx -V` 输出的 dav 相关的只有 `--with-http_dav_module`，要想使用完整的 webDAV 服务，还得自行安装 dav-ext 扩展模块。
+
+- The [nginx webdav module](http://nginx.org/en/docs/http/ngx_http_dav_module.html) only supports PUT, DELETE, MKCOL, COPY, and MOVE.
+- The [dav\_ext module](https://github.com/arut/nginx-dav-ext-module) adds support for PROPFIND, OPTIONS, LOCK and UNLOCK.
+
 基于已经安装的 nginx，只需要安装 `nginx-extras` 扩展包即可，其中包含了 dav-ext 和 headers-more 模块。
 
-当然，也可以卸载重装 nginx-full 完整版。
+当然，也可以卸载 nginx，重装 nginx-full 完整版。
 
 ```Shell
 $ sudo apt install nginx-extras
@@ -156,11 +166,7 @@ Setting up libnginx-mod-http-dav-ext (1.18.0-6ubuntu14.4) ...
 
 ## config webdav
 
-先安装 apache2-utils
-
-```Shell
-$ sudo apt-get install apache2-utils -y
-```
+Ubuntu 下 nginx 配置 WebDav 服务的流程和 macOS 下差不多，参考上一篇 [macOS重装nginx-full并配置WebDav](./mac-install-nginx-full-config-webdav.md)。
 
 ### mkdir for webdav
 
@@ -178,15 +184,15 @@ $ sudo chown -R www-data:www-data /var/www/webdav
     [What is the www-data user?](https://askubuntu.com/questions/873839/what-is-the-www-data-user)
     [linux 下 nginx 默认使用 www-data 用户组](https://blog.csdn.net/gent__chen/article/details/50969781)
 
-    ```Shell
-    $ id www-data
-    uid=33(www-data) gid=33(www-data) groups=33(www-data)
-    ```
-
     nginx.conf 中定义了 worker process 的执行用户：
 
     ```nginx title="nginx.conf"
     user www-data;
+    ```
+
+    ```Shell
+    $ id www-data
+    uid=33(www-data) gid=33(www-data) groups=33(www-data)
     ```
 
 !!! warning "never run a website from within your home directory"
@@ -246,23 +252,30 @@ Re-type new password:
 Adding password for user $username
 ```
 
-### webdav.conf
+### nginx conf
 
-执行 `nginx -t` 检测默认配置文件（/etc/nginx/nginx.conf）:
+nginx 默认配置文件为 --conf-path=/etc/nginx/nginx.conf，nginx 启动时会加载该配置文件。
 
-```Shell
-$ sudo nginx -t
-nginx: the configuration file /etc/nginx/nginx.conf syntax is ok
-nginx: configuration file /etc/nginx/nginx.conf test is successful
-```
+nginx.conf 中定义了 worker process 执行用户 `user www-data;` 和默认的日志路径：
 
-执行 `sudo vim /etc/nginx/conf.d/webdav.conf` 新建配置文件 webdav.conf。
+!!! info "Logging Settings"
+
+    ```nginx title="/etc/nginx/nginx.conf"
+        ##
+        # Logging Settings
+        ##
+
+        access_log /var/log/nginx/access.log;
+        error_log /var/log/nginx/error.log;
+    ```
+
+#### Virtual Host
+
+nginx.conf 导入加载虚拟主机配置（Virtual Host Configs），包括 conf.d 下的 conf 文件和 sites-enabled 下的所有配置文件。
 
 !!! info "Virtual Host Configs"
 
-    nginx.conf 中有指定 Virtual Host Configs 的目录列表，这些目录下的配置会随 nginx 启动加载：
-
-    ```nginx title="nginx.conf"
+    ```nginx title="/etc/nginx/nginx.conf"
     	##
     	# Virtual Host Configs
     	##
@@ -271,11 +284,71 @@ nginx: configuration file /etc/nginx/nginx.conf test is successful
     	include /etc/nginx/sites-enabled/*;
     ```
 
+conf.d 下默认为空，/etc/nginx/sites-enabled 下有一个默认的配置文件 default，它是符号链接（symlink），指向 /etc/nginx/sites-available/default。
+
+```Shell
+$ ls -l /etc/nginx/sites-enabled
+total 0
+lrwxrwxrwx 1 root root 34 Feb 24  2022 default -> /etc/nginx/sites-available/default
+```
+
+这个默认启用的站点就是 nginx 安装之后的 default_server，监听周知的 80 端口，Docroot 为 /var/www/html：
+
+```nginx title="/etc/nginx/sites-enable/default -> /etc/nginx/sites-available/default"
+# Default server configuration
+#
+server {
+    listen 80 default_server;
+    listen [::]:80 default_server;
+
+    root /var/www/html;
+    # Add index.php to the list if you are using PHP
+    index index.html index.htm index.nginx-debian.html;
+
+    server_name _;
+
+    location / {
+        # First attempt to serve request as file, then
+        # as directory, then fall back to displaying a 404.
+        try_files $uri $uri/ =404;
+    }
+
+}
+```
+
+再来看看 sites-available/default 中的注释说明：
+
+!!! note "/etc/nginx/sites-available/default"
+
+    \# In most cases, administrators will remove this file from sites-enabled/ and
+    \# leave it as reference inside of sites-available where it will continue to be
+    \# updated by the nginx packaging team.
+
+按照这个文档的建议，最好先在 /etc/nginx/sites-available/ 下创建可用站点，然后再软链（symlink）到 /etc/nginx/sites-enabled 下启用站点。
+
+- [nginx 的 sites-available 和 sites-enabled 的区别](https://www.jianshu.com/p/42c4ffd044e6)
+- [sites-available/enabled 与 conf.d 对比](https://blog.csdn.net/weixin_34182361/article/details/112809900)
+- [nginx 启用站点和可用站点](https://skyao.gitbooks.io/learning-nginx/content/configure/vhost/action_domian.html)
+
+#### webdav.conf
+
+和 macOS 下的配置 webdav 思路一样，可以编辑 sites-available/default，在 default_server 下挂一个二级路径 `location webdav/` 路由。
+
+另一种思路是配置独立的 webdav server，不与 default_server 搅合在一起。
+
+按照 nginx 的配置管理逻辑，在 sites-available 下新建 webdav 配置文件：
+
+```Shell title="添加可用站点"
+$ sudo vim /etc/nginx/sites-available/webdav.conf
+```
+
+> 当然，也可以将 webdav 配置文件 webdav.conf 直接放在 conf.d 目录下，不需要时改后缀即可。
+
 默认的 server 监听 80 端口，这里新建 server 监听 81 端口，并设置日志文件路径。
 
 完整的 webdav.conf 记录备忘如下：
 
-??? info "webdav.conf"
+??? info "/etc/nginx/sites-available/webdav.conf"
 
     ```nginx
     # config lock for macOS Client
@@ -331,21 +404,30 @@ nginx: configuration file /etc/nginx/nginx.conf test is successful
             client_body_temp_path /tmp/webdav;
 
             # 最大上传文件限制, 0表示无限制
-            client_max_body_size 0;
+            client_max_body_size 4G;
 
+            ########################################
             # 为各种方法的URI后加上斜杠，解决各平台webdav客户端的兼容性问题
+            ########################################
+
+            # issue: ngx_http_dav_module.c 判断 MKCOL 指令的 URI 必须以 / 结尾
+            # 注意：如果是 alias，注意调整 rewrite 路径，或换成 root！
+            if ($request_method ~ MKCOL) {
+                rewrite ^(.*[^/])$ $1/ break;
+            }
+
+            # issue: ngx_http_dav_module.c 判断 MOVE 指令的 URI 和 Destination URI 结尾的 / 必须匹配
+            # scenario: MOVE 文件夹 Destination URI 未以 / 结尾: /webdav/test/ --> /webdav/test2
+            # error log: both URI and "Destination" URI should be either collections or non-collections
             set $dest $http_destination;
             if (-d $request_filename) {
                 rewrite ^(.*[^/])$ $1/;
                 set $dest $dest/;
             }
 
+            # 需要安装 --with-headers-more-module
             if ($request_method ~ (MOVE|COPY)) {
                 more_set_input_headers 'Destination: $dest';
-            }
-
-            if ($request_method ~ MKCOL) {
-                rewrite ^(.*[^/])$ $1/ break;
             }
         }
 
@@ -372,6 +454,14 @@ nginx: configuration file /etc/nginx/nginx.conf test is successful
     }
     ```
 
+最后，记得将 sites-available 下的 webdav.conf 软链一份到 sites-enabled 目录下启用站点：
+
+```Shell title="软链启用站点"
+$ sudo ln -s /etc/nginx/sites-available/webdav.conf /etc/nginx/sites-enabled
+```
+
+#### restart nginx server
+
 每次修改了 nginx 配置文件，需要重新加载配置（或重启服务），可以通过以下三种方式：
 
 1. `sudo nginx -s reload`
@@ -392,14 +482,15 @@ nginx: configuration file /etc/nginx/nginx.conf test is successful
 
 ### webdav test
 
-需要注意的是，默认自启的 80 服务 Docroot 在 `/var/www/html` 目录。
-自启的非80服务（这里监听 81 端口），Docroot 在 `/usr/share/nginx/html/` 目录下。
-
-> nginx -V 输出 --prefix=/usr/share/nginx
-
-执行 `curl localhost:81` 请求 web 服务，正常返回 `Welcome to nginx!` 欢迎页面（/usr/share/nginx/html/index.html）。
-
 关于 webdav 的连接测试，参考 [macOS上基于httpd搭建WebDav服务](./mac-setup-httpd-dav.md) - 局域网连接验证WebDAV服务 和 [使用命令行挂载操作WebDAV云盘](./cmd-mount-webdav.md) 中的相关说明。
+
+1. 执行 curl localhost:81 验证 web 服务是否正常；
+
+!!! info ""
+
+    自启的非80服务（这里监听 81 端口），location / 未指定 root，Docroot 默认为 --prefix=/usr/share/nginx 下的 html 目录。
+
+2. WebDAV 客户端访问 http://rpi4b-ubuntu.local:81/webdav/ 验证 webDAV 服务是否正常。
 
 调试期间，可在 nginx 服务器执行 `tail -f tail -f /var/log/nginx/webdav.error.log`（或 access.log）实时查看滚动日志。
 
