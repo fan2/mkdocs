@@ -31,7 +31,7 @@ hide:
 
 </div>
 
-!!! quote "John Donn, No Man Is An Island:"
+!!! quote "John Donn, No Man Is An Island"
 
     *No man is an island,
     entire of itself;
