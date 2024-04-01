@@ -1,3 +1,7 @@
+---
+robots: noindex, nofollow
+---
+
 ## 关于我
 
 ### 曾经的我

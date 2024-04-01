@@ -4,7 +4,7 @@ authors:
   - xman
 date:
     created: 2024-03-25
-    updated: 2024-03-31T15:00:00
+    updated: 2024-04-01T08:00:00
 categories:
     - mkdocs
     - material
@@ -66,6 +66,8 @@ Material for MkDocs comes with many configuration options. The [Setup](https://s
 ## 参考借鉴
 
 [Migrating my blog from Jekyll Minimal Mistakes to Mkdocs Material](https://copdips.com/2023/12/migrating-my-blog-from-jekyll-minimal-mistakes-to-mkdocs-material.html)
+
+[Tech Blog Using MkDocs and Material Theme](http://www.cuishuaiwen.com:8000/PROJECT/TECH-BLOG/mkdocs_and_material/) @[github](https://github.com/Shuaiwen-Cui/Infinity/)
 
 [使用 MkDocs 和 Material 主题搭建技术博客](http://www.cuishuaiwen.com:8000/zh/PROJECT/TECH-BLOG/mkdocs_and_material/) @[github](https://github.com/Shuaiwen-Cui/Infinity/)
 
