@@ -4,6 +4,7 @@ authors:
   - xman
 date:
     created: 2017-10-18T11:20:00
+    updated: 2024-04-01T23:10:00
 categories:
     - vim
     - editor
@@ -251,6 +252,52 @@ Sublime Text 的 `~/Library/Application Support/Sublime Text 3/Packages/Default/
 [What's the difference between let and set?](https://vi.stackexchange.com/questions/2076/whats-the-difference-between-let-and-set)
 
 `:let g:netrw_liststyle`：读取查看全局 let 变量的值。  
+
+## ubuntu
+
+ubuntu 下 man vim，FILES 部分列出了配置文件和说明文档相关的文件路径：
+
+```Shell
+$ man vim
+
+FILES
+
+       /usr/share/vim/vimrc
+                      System wide Vim initializations.
+
+       ~/.vimrc       Your personal Vim initializations.
+```
+
+而 /usr/share/vim/vimrc 指向 /etc/vim/vimrc：
+
+```Shell
+$ ls -l /usr/share/vim/
+
+lrwxrwxrwx  1 root root   14 Mar 14 09:05 vimrc -> /etc/vim/vimrc
+
+$ readlink /usr/share/vim/vimrc
+/etc/vim/vimrc
+
+```
+
+如果只修改家目录下的 ~/.vimrc 的话，只对当前用户有效。
+当 `sudo vim` 时，使用的是 /etc/vim/vimrc 中的全局配置。
+因此，要想修改配置，对所有用户全局生效，需要修改 /etc/vim/vimrc。
+
+```vim title="/etc/vim/vimrc"
+runtime! debian.vim
+
+if has("syntax")
+  syntax on
+endif
+
+" Source a global configuration file if available
+if filereadable("/etc/vim/vimrc.local")
+  source /etc/vim/vimrc.local
+endif
+```
+
+我们可以新建 /etc/vim/vimrc.local，这样配置对 vim 和 sudo vim 全局生效。
 
 ## 参考
 
