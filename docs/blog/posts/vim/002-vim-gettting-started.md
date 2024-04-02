@@ -19,9 +19,9 @@ comments: true
 ## Where is vim（on macOS）
 
 ```shell
-faner@MBP-FAN:~|⇒  whereis vim
+$ whereis vim
 /usr/bin/vim
-faner@MBP-FAN:~|⇒  ls /usr/bin/vim*              
+$ ls /usr/bin/vim*              
 /usr/bin/vim      /usr/bin/vimdiff  /usr/bin/vimtutor
 ```
 
@@ -39,7 +39,7 @@ H   |  huge
 
 ```shell
 # macOS
-faner@MBP-FAN:~|⇒  vim --version
+$ vim --version
 VIM - Vi IMproved 8.0 (2016 Sep 12, compiled Jul 26 2017 19:10:24)
 Included patches: 1-503, 505-642
 Compiled by root@apple.com
@@ -131,7 +131,7 @@ Entering Ex mode.  Type "visual" to go to Normal mode.
 
 ```shell
 # macOS
-faner@MBP-FAN:/usr/share/vim|⇒  ls
+/usr/share/vim|⇒  ls
 vim80 vimrc
 
 # raspbian
@@ -200,11 +200,11 @@ FILES
 
 ```shell
 # ls -al | grep '^d'
-faner@MBP-FAN:/usr/share/vim/vim80|⇒  ls -d */
+/usr/share/vim/vim80|⇒  ls -d */
 autoload/ compiler/ ftplugin/ keymap/   macros/   plugin/   spell/    tools/
 colors/   doc/      indent/   lang/     pack/     print/    syntax/   tutor/
 
-faner@MBP-FAN:/usr/share/vim/vim80|⇒  tree -d -L 1
+/usr/share/vim/vim80|⇒  tree -d -L 1
 .
 ├── autoload
 ├── colors
@@ -263,7 +263,7 @@ plugin    | 插件目录     | Vim Script脚本格式
 执行 `vim --help` 可查看 vim 命令启动参数及选项：
 
 ```shell
-faner@MBP-FAN:~|⇒  vim -h
+$ vim -h
 VIM - Vi IMproved 8.0 (2016 Sep 12, compiled Jul 26 2017 19:10:24)
 
 usage: vim [arguments] [file ..]       edit specified file(s)

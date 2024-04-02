@@ -276,15 +276,15 @@ Swap file "mars/.build_android.py.swp" already exists!
 
 ```shell
 # 按下 <C-z> 临时退出 man/less/vi 返回终端
-faner@MBP-FAN:~ $ man less
+$ man less
 [1]  + 2100 suspended  man less
 
 # 执行 shell 命令
-faner@MBP-FAN:~ $ echo $PAGER
+$ echo $PAGER
 less
 
 # 输入 fg 返回 man/less/vi
-faner@MBP-FAN:~ $ fg
+$ fg
 [1]  + 2100 continued  man less
 ```
 

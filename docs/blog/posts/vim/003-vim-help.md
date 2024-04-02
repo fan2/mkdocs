@@ -21,7 +21,7 @@ comments: true
 终端输入 **`vimtutor`** 命令可查看 vim 入门教程：
 
 ```shell
-faner@MBP-FAN:~|⇒  vimtutor 
+$ vimtutor 
 ```
 
 ![vimtutor](images/vimtutor.png)
