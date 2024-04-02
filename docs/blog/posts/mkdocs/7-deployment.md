@@ -4,7 +4,7 @@ authors:
   - xman
 date:
     created: 2024-03-23
-    updated: 2024-04-01T21:00:00
+    updated: 2024-04-02T08:00:00
 categories:
     - mkdocs
 comments: true
@@ -35,17 +35,32 @@ mkdocs-material
 pymdown-extensions
 ```
 
+## serve
+
+Run the builtin development server: `mkdocs serve [OPTIONS]`
+
+Name | Type | Description | Default
+-----|------|-------------|--------
+`-a`, --dev-addr | text | IP address and port to serve documentation locally (default: localhost:8000) | None
+--no-livereload | boolean | Disable the live reloading in the development server. | False
+--dirty | text | Only re-build files that have changed. | False
+`-c`, --clean | text | Build the site without any effects of mkdocs serve - pure mkdocs build, then serve. | False
+`-w`, --watch | path | A directory or file to watch for live reloading. Can be supplied multiple times. | []
+`-v`, --verbose | boolean | Enable verbose output | False
+
+1. 默认的 IP 端口是 localhost:8000，可指定 `-a 0.0.0.0:8000`，方便局域网调试。
+2. 指定 `--dirty` 只增量编译改动的文件，文档规模增大后，此项可提高调试时的实时加载反馈。
+
 ## build
 
-Build the MkDocs documentation
-
-Usage: `mkdocs build [OPTIONS]`
+Build the MkDocs documentation: `mkdocs build [OPTIONS]`
 
 Name | Type | Description | Default
 -----|------|-------------|--------
 `-c`, --clean / --dirty | boolean | Remove old files from the site_dir before building (the default). | True
 `-f`, --config-file | filename | Provide a specific MkDocs config. This can be a file name, or '-' to read from stdin. | None
 `-d`, --site-dir | path | The directory to output the result of the documentation build. | None
+`-v`, --verbose | boolean | Enable verbose output | False
 
 关于 [build速度](http://hpc.ncpgr.cn/linux/086-mkdocs/#buildsu-du) 问题：
 
@@ -59,9 +74,7 @@ For large sites the build time required to create the pages can become problemat
 
 ## gh-deploy
 
-Deploy your documentation to GitHub Pages
-
-Usage: `mkdocs gh-deploy [OPTIONS]`
+Deploy your documentation to GitHub Pages: `mkdocs gh-deploy [OPTIONS]`
 
 Name | Type | Description | Default
 -----|------|-------------|--------

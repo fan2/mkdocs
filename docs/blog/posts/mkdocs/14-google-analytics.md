@@ -4,7 +4,7 @@ authors:
   - xman
 date:
     created: 2024-03-29T17:00:00
-    updated: 2024-04-01T08:30:00
+    updated: 2024-04-02T08:30:00
 categories:
     - mkdocs
     - material
@@ -23,9 +23,15 @@ comments: true
 
 ## Google Analytics
 
-[Google Analytics Guides](https://developers.google.com/analytics/devguides/collection/ga4) - [Introduction to Google Analytics 4](https://developers.google.com/analytics/devguides/collection/ga4) @[zh-cn](https://developers.google.com/analytics/devguides/collection/ga4?hl=zh-cn)
+[Google Analytics](https://www.google.com/analytics/) - [marketingplatform](https://marketingplatform.google.com/about/analytics/)
 
-!!! info "Google Analytics 4"
+[Google Analytics](https://analytics.google.com/analytics/web/) @[zh-cn](https://analytics.google.com/analytics/web/?hl=zh-CN)
+
+[Analytics Help](https://support.google.com/analytics?hl=en&sjid=9594711740567622827-AP#topic=14090456) @[zh-cn](https://support.google.com/analytics/?hl=zh-Hans&sjid=9594711740567622827-AP#topic=14090456)
+
+[Google Analytics Guides](https://developers.google.com/analytics/devguides/collection/ga4) @[zh-cn](https://developers.google.com/analytics/devguides/collection/ga4?hl=zh-cn)
+
+!!! abstract "Google Analytics 4"
 
     Google Analytics（分析）4 是一项分析服务，用于衡量您的网站和应用中的流量和互动情况。本文档提供了面向开发者群体的实现说明和参考资料。
 
@@ -33,7 +39,7 @@ comments: true
 
 ### Set up measurement
 
-进入 [Google Analytics](https://analytics.google.com/analytics/)，使用 google 账号登录，然后点击 Set up measurement，按照提示开始创建评估账号。
+进入 [Google Analytics](https://analytics.google.com/)，使用 google 账号登录，然后点击 Set up measurement，按照提示开始创建评估账号。
 
 1. Account creation: 填写名称
 2. Property creation: 填写名称
@@ -81,9 +87,11 @@ extra:
 
 ## Google Search
 
-[Search Console帮助](https://support.google.com/webmasters) - [Search Console 简介](https://support.google.com/webmasters/answer/9128668)
+[Google Search Console](https://search.google.com/search-console) @[zh-cn](https://search.google.com/search-console?hl=zh)
 
-!!! info "Google Search Console"
+[Search Console Help](https://support.google.com/webmasters?hl=en&sjid=9594711740567622827-AP#topic=9128571) @[zh-cn](https://support.google.com/webmasters?hl=zh-Hans&sjid=9594711740567622827-AP#topic=9128571)
+
+!!! abstract "Google Search Console"
 
     Google Search Console 是一项由 Google 提供的免费服务，可帮助您监控和维护您的网站在 Google 搜索结果中的展示情况以及排查问题。即使没有注册 Search Console，您的网页也可能会显示在 Google 搜索结果中，但 Search Console 可帮助您了解并改进 Google 处理您网站的方式。
 
@@ -92,7 +100,7 @@ extra:
 ### Add a property
 
 1. 查看网站是否被收录: 搜索框输入 site:duetorun.com
-2. 在 [Google Search Console](https://search.google.com/search-console?hl=zh) 提交搜索资源（Add a property），选择网址前缀，将生成的 html 文件下载放到网站根目录，点击 [验证网站所有权](https://support.google.com/webmasters/answer/9008080#google_analytics_verification&zippy=%2Cgoogle-analytics%E5%88%86%E6%9E%90%E8%B7%9F%E8%B8%AA%E4%BB%A3%E7%A0%81)。
+2. 在 [Google Search Console](https://search.google.com/search-console) 提交搜索资源（Add a property），选择网址前缀，将生成的 html 文件下载放到网站根目录，点击 [验证网站所有权](https://support.google.com/webmasters/answer/9008080#google_analytics_verification&zippy=%2Cgoogle-analytics%E5%88%86%E6%9E%90%E8%B7%9F%E8%B8%AA%E4%BB%A3%E7%A0%81)。
 
 !!! note "其他验证方法"
 
@@ -133,7 +141,21 @@ extra:
 
 返回到 Search Console links，可以看到关联的结果。
 
-### indexing policies for search engines
+## Cloudflare Crawler Hints: IndexNow
+
+[Crawler Hints · Cloudflare Cache (CDN) docs](https://developers.cloudflare.com/cache/advanced-configuration/crawler-hints/)
+
+!!! abstract "Crawler Hints"
+
+    Crawler Hints provide high quality data to search engines and other crawlers when sites using Cloudflare change their content. This allows crawlers to precisely time crawling, avoid wasteful crawls, and generally reduce resource consumption on origins and other Internet infrastructure.
+
+登录进入 [Cloudflare Dash](https://dash.cloudflare.com/)，仪表盘定位 Websites，显示可用域名（站点），点击当前站点域名。
+仪表盘点击 Caching - Configuration，Crawler Hints 点击开启。
+
+- [Crawler Hints Update: Cloudflare Supports IndexNow and Announces General Availability](https://blog.cloudflare.com/cloudflare-now-supports-indexnow)
+- [60,000 websites using Cloudflare turned on IndexNow](https://searchengineland.com/60000-websites-using-cloudflare-turned-on-indexnow-376579)
+
+## meta tag robots: customize indexing policies
 
 [Using metadata in templates](https://squidfunk.github.io/mkdocs-material/reference/#using-metadata-in-templates)
 
@@ -169,7 +191,7 @@ robots: noindex, nofollow
     - [Robots.txt Introduction and Guide](https://developers.google.com/search/docs/crawling-indexing/robots/intro)
     - [Create and Submit a robots.txt File](https://developers.google.com/search/docs/crawling-indexing/robots/create-robots-txt)
 
-## busuanzi counter
+## busuanzi/vercount pageviews counter
 
 百度统计，谷歌分析等网站统计分析工具，虽然有不错的统计分析功能，但是都不能直接呈现在网站上，都需要进入相应的后台才能查看。
 
@@ -193,7 +215,7 @@ extra_javascript:
 在站点首页 index.md 末尾添加 `本站总访问量` 和 `总访客数` 的统计：
 
 ```html
-<span id="busuanzi_container_site_pv" style="font-size:0.8em;color=grey">本站总访问量 <span id="busuanzi_value_site_pv">pv</span> 次</span>，<span id="busuanzi_container_site_uv" style="font-size:0.8em;color=grey">总访客数 <span id="busuanzi_value_site_uv">uv</span> 次。</span>
+<span id="busuanzi_container_site_pv" style="font-size:0.8em;color=grey">本站总访问量 <span id="busuanzi_value_site_pv">pv</span></span>，<span id="busuanzi_container_site_uv" style="font-size:0.8em;color=grey">总访客数 <span id="busuanzi_value_site_uv">uv</span>。</span>
 ```
 
 本地调试时，这个统计貌似错乱，上线确认 OK。
