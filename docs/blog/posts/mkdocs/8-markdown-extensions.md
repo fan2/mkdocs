@@ -348,6 +348,8 @@ extra_javascript:
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
 ```
 
+**注意**：要将脚本拷贝到本地 docs/javascripts/mathjax.js。
+
 ### Admonitions
 
 Admonitions, also known as *call-outs*, are an excellent choice for including side content without significantly interrupting the document flow. Material for MkDocs provides several different types of admonitions and allows for the inclusion and nesting of arbitrary content.
@@ -711,3 +713,15 @@ Generic grids allow for arranging arbitrary block elements in a grid, including 
 ```
 
 </div>
+
+## embed-pdf
+
+[前端预览PDF总结：iframe、embed、PDFObject、PDF.js](https://www.cnblogs.com/lanwp1/articles/14395608.html)
+[这将是你看到过最全的pdf预览解决方案](https://juejin.cn/post/7117521871221817375)
+[前端实现 PDF 预览的常见方案](https://juejin.cn/post/7143088940953075743)
+
+在配置文件 mkdocs.yml 的 extra_javascript: 部分导入 javascripts/embed-pdf.js，然后在 markdown 文件中内嵌 iframe 标签：
+
+```html
+<iframe src="./test.pdf" height="900px;" width="100%"></iframe>
+```
