@@ -4,9 +4,10 @@ authors:
   - xman
 date:
     created: 2024-03-17T13:00:00
+    updated: 2024-04-02T09:10:00
 categories:
     - macOS
-    - linux
+    - ubuntu
     - webDAV
 tags:
     - webDAV

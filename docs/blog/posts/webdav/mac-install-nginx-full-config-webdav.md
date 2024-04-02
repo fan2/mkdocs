@@ -4,7 +4,7 @@ authors:
   - xman
 date:
     created: 2024-03-18T10:00:00
-    updated: 2024-04-01T19:00:00
+    updated: 2024-04-02T09:00:00
 categories:
     - macOS
     - nginx
@@ -28,7 +28,7 @@ comments: true
     /usr/local/bin/nginx
 
     $ readlink `which nginx`
-    ../Cellar/nginx/1.21.5/bin/nginx
+    ../Cellar/nginx/1.21.1/bin/nginx
 
 ### brew info
 
@@ -112,9 +112,7 @@ $ brew info nginx
 
 在正式安装 nginx 之前，先执行 `brew unlink nginx` 解除已安装的 nginx 的链接：
 
-!!! note
-
-    What about conflicts?
+!!! note "What about conflicts?"
 
     You are free to install this version alongside a current install of NGINX from `Homebrew/homebrew` if you wish. However, they cannot be linked at the same time. To **switch** between them use brew's built in linking system.
 
@@ -206,7 +204,7 @@ To relink, run:
   brew unlink nginx-full && brew link nginx-full
 ```
 
-后面，如果需要再次重装，可执行 `brew reinstall nginx-full ...` 命令。
+后续如果需要再次重装，可执行 `brew reinstall nginx-full ...` 命令。
 
 ### nginx -V
 
@@ -279,7 +277,7 @@ nginx: configuration file /usr/local/etc/nginx/nginx.conf test is successful
 或者执行 `brew services start` 启动常驻服务：
 
 ```Shell
-sudo brew services start denji/nginx/nginx-full
+$ sudo brew services start denji/nginx/nginx-full
 Warning: Taking root:admin ownership of some nginx-full paths:
   /usr/local/Cellar/nginx-full/1.25.4/bin
   /usr/local/Cellar/nginx-full/1.25.4/bin/nginx
@@ -291,7 +289,9 @@ brew upgrade/reinstall/uninstall.
 ==> Successfully started `nginx-full` (label: homebrew.mxcl.nginx-full)
 ```
 
-**注意**：sudo 以 root 身份启动 nginx 的 master process，由于 nginx.conf 中未指定 user，默认以 nobody 启动 worker progress。执行 `ps aux | grep nginx` 可查看 nginx 相关进程。
+!!! note "worker user"
+
+    **注意**：sudo 以 root 身份启动 nginx 的 master process，由于 nginx.conf 中未指定 user，默认以 nobody 启动 worker progress。执行 `ps aux | grep nginx` 可查看 nginx 相关进程。
 
 ### curl localhost:8080
 
@@ -481,7 +481,7 @@ nginx.conf 中默认根路径配置的 root html 指向 Docroot，后续可按�
                     set $dest $dest/;
                 }
 
-                # 需要安装 --with-headers-more-module
+                # 需要安装 headers-more module
                 if ($request_method ~ (MOVE|COPY)) {
                     more_set_input_headers 'Destination: $dest';
                 }
@@ -619,7 +619,7 @@ http {
                 set $dest $dest/;
             }
 
-            # 需要安装 --with-headers-more-module
+            # 需要安装 headers-more module
             if ($request_method ~ (MOVE|COPY)) {
                 more_set_input_headers 'Destination: $dest';
             }

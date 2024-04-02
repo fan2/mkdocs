@@ -110,7 +110,7 @@ extra:
     4. 域名提供商：将 DNS 记录与 Google 关联
 
 3. 提交站点地图：Indexing - Sitemaps 上传 site/sitemap.xml。如果没有 sitemap.xml，可到 [xml-sitemaps](https://www.xml-sitemaps.com/) 输入网址生成。
-4. 手动请求（重新）编入索引：URL inspection 输入博客网址，然后点击 TEST LIVE URL 手动生成 Page Index。
+4. 手动请求（重新）编入索引：网址检查（URL inspection）输入博客网址，然后点击 测试实际版本（TEST LIVE URL），请求编入索引（REQUEST INDEXING）。
 
 !!! info ""
 

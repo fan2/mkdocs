@@ -4,9 +4,9 @@ authors:
   - xman
 date:
     created: 2024-03-18T15:00:00
-    updated: 2024-04-01T20:00:00
+    updated: 2024-04-02T09:20:00
 categories:
-    - ubunbu
+    - ubuntu
     - nginx
     - webDAV
 tags:
@@ -425,7 +425,7 @@ $ sudo vim /etc/nginx/sites-available/webdav.conf
                 set $dest $dest/;
             }
 
-            # 需要安装 --with-headers-more-module
+            # 需要安装 headers-more module
             if ($request_method ~ (MOVE|COPY)) {
                 more_set_input_headers 'Destination: $dest';
             }

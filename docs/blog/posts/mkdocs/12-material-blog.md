@@ -4,7 +4,7 @@ authors:
   - xman
 date:
     created: 2024-03-28
-    updated: 2024-04-01T21:30:00
+    updated: 2024-04-02T09:30:00
 categories:
     - mkdocs
     - material
@@ -123,8 +123,7 @@ Posts can be organized in nested folders with a directory layout that suits your
 ## config blog
 
 1. 配置 blog.blog_dir
-2. 配置 blog.post_url_format
-3. 配置 pagination_per_page
+2. 配置 post_date_format, post_url_date_format 和 post_url_format
 4. nav 导航加入 blog 入口
 
 ```YAML
@@ -136,15 +135,26 @@ plugins:
   - blog:
       blog_dir: blog
       # post_dir: posts
-      post_date_format: long
+      post_date_format: medium
       post_url_date_format: yyyyMMdd
       post_url_format: "{date}/{file}"
-      pagination_per_page: 10
+      # pagination_per_page: 10 # default
 
 # 页面导航
 nav:
   - Blog: blog/index.md
 ```
+
+!!! warning "nav.Blog: blog/index.md ?"
+
+    上面直接在 Blog 后指定博客首页路径，归档（archive）和分类（categories）将不会展示！
+    因为一行将 Blog 这个导航 section 占满，会抑制旗下自动插入 archive 和 category！
+
+    ```YAML title="Blog 入口正确的配置姿势"
+    nav:
+      - Blog:
+        - blog/index.md
+    ```
 
 ## Adding an excerpt
 
@@ -278,17 +288,6 @@ nav:
     - blog/authors.md
       ...
 ```
-
-!!! warning "nav.Blog: blog/index.md"
-
-    **注意**：如果直接在 Blog 后指定博客首页路径，那么归档（archive）和分类（categories）将不会展示！
-
-    ```YAML
-    nav:
-      - Blog: blog/index.md
-    ```
-
-    因为一行将 Blog 这个导航 section 占满，将会抑制旗下自动插入 archive 和 category！
 
 ## route to sub path
 
