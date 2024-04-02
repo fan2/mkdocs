@@ -1,0 +1,2265 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="在别处或在路上">
+      
+      
+        <meta name="author" content="Cliff Fan">
+      
+      
+        <link rel="canonical" href="https://duetorun.com/blog/20191029/linux-cmd-iconv-enca/">
+      
+      
+        <link rel="prev" href="../linux-cmd-split-merge/">
+      
+      
+        <link rel="next" href="../linux-cmd-utility/">
+      
+      
+      <link rel="icon" href="../../../assets/hold_yourself.jpg">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.15">
+    
+    
+      
+        <title>Linux Command - file iconv & enca - ElseWhere</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.7e359304.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function n(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],n("js",new Date),n("config","G-XGW41EGL31"),document.addEventListener("DOMContentLoaded",function(){document.forms.search&&document.forms.search.query.addEventListener("blur",function(){this.value&&n("event","search",{search_term:this.value})}),document$.subscribe(function(){var a=document.forms.feedback;if(void 0!==a)for(var e of a.querySelectorAll("[type=submit]"))e.addEventListener("click",function(e){e.preventDefault();var t=document.location.pathname,e=this.getAttribute("data-md-value");n("event","feedback",{page:t,data:e}),a.firstElementChild.disabled=!0;e=a.querySelector(".md-feedback__note [data-md-value='"+e+"']");e&&(e.hidden=!1)}),a.hidden=!1}),location$.subscribe(function(e){n("config","G-XGW41EGL31",{page_path:e.pathname})})});var e=document.createElement("script");e.async=!0,e.src="https://www.googletagmanager.com/gtag/js?id=G-XGW41EGL31",document.getElementById("__analytics").insertAdjacentElement("afterEnd",e)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+    
+  
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#字符集编码" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../../.." title="ElseWhere" class="md-header__button md-logo" aria-label="ElseWhere" data-md-component="logo">
+      
+  <img src="../../../assets/hold_yourself.jpg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ElseWhere
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Linux Command - file iconv & enca
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1M8 13h8v-2H8v2m9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1 0 1.71-1.39 3.1-3.1 3.1h-4V17h4a5 5 0 0 0 5-5 5 5 0 0 0-5-5Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="indigo"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5M7 15a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="标签" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../about/" class="md-tabs__link">
+        
+  
+    
+  
+  About
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../" class="md-tabs__link">
+          
+  
+  Blog
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../link/" class="md-tabs__link">
+        
+  
+    
+  
+  Link
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" hidden>
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="ElseWhere" class="md-nav__button md-logo" aria-label="ElseWhere" data-md-component="logo">
+      
+  <img src="../../../assets/hold_yourself.jpg" alt="logo">
+
+    </a>
+    ElseWhere
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../about/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    About
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Blog
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      <a href="../../" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Archive
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            Archive
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2024/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2024
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2022/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2022
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2019/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2019
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2018/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2018
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2017/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2017
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2015/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2015
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Categories
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            Categories
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/command/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    command
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/editor/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    editor
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/git/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    git
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/linux/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    linux
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/macos/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    macOS
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/markdown/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    markdown
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/material/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    material
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/mkdocs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    mkdocs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/nginx/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    nginx
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/shell/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    shell
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/ubuntu/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ubuntu
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/vim/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    vim
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/webdav/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    webDAV
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/wiki/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    wiki
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/zsh/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    zsh
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../link/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Link
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#字符集编码" class="md-nav__link">
+    <span class="md-ellipsis">
+      字符集编码
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="字符集编码">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gb2312_gbk__gb18030" class="md-nav__link">
+    <span class="md-ellipsis">
+      GB2312, GBK &amp; GB18030
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#utf-8_bom" class="md-nav__link">
+    <span class="md-ellipsis">
+      UTF-8 BOM
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#中文显示乱码问题" class="md-nav__link">
+    <span class="md-ellipsis">
+      中文显示乱码问题
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#查看文件编码" class="md-nav__link">
+    <span class="md-ellipsis">
+      查看文件编码
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="查看文件编码">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#file_命令" class="md-nav__link">
+    <span class="md-ellipsis">
+      file 命令
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="file 命令">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#使用_file_命令" class="md-nav__link">
+    <span class="md-ellipsis">
+      使用 file 命令
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#过滤指定编码的文件" class="md-nav__link">
+    <span class="md-ellipsis">
+      过滤指定编码的文件
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#enca_命令" class="md-nav__link">
+    <span class="md-ellipsis">
+      enca 命令
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="enca 命令">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#安装_enca" class="md-nav__link">
+    <span class="md-ellipsis">
+      安装 enca
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#使用_enca_命令" class="md-nav__link">
+    <span class="md-ellipsis">
+      使用 enca 命令
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#editor_file_inspector" class="md-nav__link">
+    <span class="md-ellipsis">
+      Editor File Inspector
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#特殊编码文件" class="md-nav__link">
+    <span class="md-ellipsis">
+      特殊编码文件
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#文件编码格式转换" class="md-nav__link">
+    <span class="md-ellipsis">
+      文件编码格式转换
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="文件编码格式转换">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#iconv_命令转码" class="md-nav__link">
+    <span class="md-ellipsis">
+      iconv 命令转码
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="iconv 命令转码">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#iconv_批量更改文件编码" class="md-nav__link">
+    <span class="md-ellipsis">
+      iconv 批量更改文件编码
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#enca_命令转换" class="md-nav__link">
+    <span class="md-ellipsis">
+      enca 命令转换
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#utf8__bom" class="md-nav__link">
+    <span class="md-ellipsis">
+      UTF8 + BOM
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#line_endings" class="md-nav__link">
+    <span class="md-ellipsis">
+      Line Endings
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Line Endings">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#回车换行" class="md-nav__link">
+    <span class="md-ellipsis">
+      回车换行
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vim_编辑替换" class="md-nav__link">
+    <span class="md-ellipsis">
+      vim 编辑替换
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tr_命令" class="md-nav__link">
+    <span class="md-ellipsis">
+      tr 命令
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sed_替换" class="md-nav__link">
+    <span class="md-ellipsis">
+      sed 替换
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sublime_text_3_编辑替换" class="md-nav__link">
+    <span class="md-ellipsis">
+      Sublime Text 3 编辑替换
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+  <div class="md-content md-content--post" data-md-component="content">
+    <div class="md-sidebar md-sidebar--post" data-md-component="sidebar" data-md-type="navigation">
+      <div class="md-sidebar__scrollwrap">
+        <div class="md-sidebar__inner md-post">
+          <nav class="md-nav md-nav--primary">
+            <div class="md-post__back">
+              <div class="md-nav__title md-nav__container">
+                <a href="../../" class="md-nav__link">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+                  <span class="md-ellipsis">
+                    回到主页
+                  </span>
+                </a>
+              </div>
+            </div>
+            
+              <div class="md-post__authors md-typeset">
+                
+                  <div class="md-profile md-post__profile">
+                    <span class="md-author md-author--long">
+                      <img src="https://duetorun.com/assets/carve_yourself.jpg" alt="Cliff Fan">
+                    </span>
+                    <span class="md-profile__description">
+                      <strong>
+                        
+                          Cliff Fan
+                        
+                      </strong>
+                      <br>
+                      Just do IT
+                    </span>
+                  </div>
+                
+              </div>
+            
+            <ul class="md-post__meta md-nav__list">
+              <li class="md-nav__item md-nav__item--section">
+                <div class="md-post__title">
+                  <span class="md-ellipsis">
+                    元数据
+                  </span>
+                </div>
+                <nav class="md-nav">
+                  <ul class="md-nav__list">
+                    <li class="md-nav__item">
+                      <div class="md-nav__link">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 19H5V8h14m-3-7v2H8V1H6v2H5c-1.11 0-2 .89-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-1V1m-1 11h-5v5h5v-5Z"/></svg>
+                        <time datetime="2019-10-29 13:30:00" class="md-ellipsis">2019年10月29日</time>
+                      </div>
+                    </li>
+                    
+                    
+                      <li class="md-nav__item">
+                        <div class="md-nav__link">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 3v15h3V3H9m3 2 4 13 3-1-4-13-3 1M5 5v13h3V5H5M3 19v2h18v-2H3Z"/></svg>
+                          <span class="md-ellipsis">
+                            分类于
+                            
+                              <a href="../../category/wiki/">wiki</a>, 
+                              <a href="../../category/linux/">linux</a>, 
+                              <a href="../../category/command/">command</a></span>
+                        </div>
+                      </li>
+                    
+                    
+                      
+                      <li class="md-nav__item">
+                        <div class="md-nav__link">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7h1.5Z"/></svg>
+                          <span class="md-ellipsis">
+                            
+                              需要 15 分钟阅读时间
+                            
+                          </span>
+                        </div>
+                      </li>
+                    
+                    <!-- Add by Cliff.Fan, 29Mar24. -->
+                    <li class="md-nav__item">
+                      <div class="md-nav__link">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m19 1-5 5v11l5-4.5V1m2 4v13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V6c-1.45-1.1-3.55-1.5-5.5-1.5-1.95 0-4.05.4-5.5 1.5v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1M10 18.41C8.75 18.09 7.5 18 6.5 18c-1.06 0-2.32.19-3.5.5V7.13c.91-.4 2.14-.63 3.5-.63 1.36 0 2.59.23 3.5.63v11.28Z"/></svg>
+                        <span class="md-ellipsis" id="busuanzi_container_page_pv">
+                          阅读量：<span id="busuanzi_value_page_pv">N/A</span>
+                        </span>
+                      </div>
+                    </li>
+                  </ul>
+                </nav>
+              </li>
+            </ul>
+          </nav>
+          
+        </div>
+      </div>
+    </div>
+    <article class="md-content__inner md-typeset">
+      
+        
+  
+  
+
+<nav class="md-tags" >
+  
+    
+    
+    
+      <span class="md-tag">iconv</span>
+    
+  
+    
+    
+    
+      <span class="md-tag">enca</span>
+    
+  
+</nav>
+
+
+
+  <h1>Linux Command - file iconv & enca</h1>
+
+<p>linux 下文件编码格式转换相关的命令简介。</p>
+<!-- more -->
+
+<h2 id="字符集编码">字符集编码<a class="headerlink" href="#字符集编码" title="Permanent link">#</a></h2>
+<h3 id="gb2312_gbk__gb18030">GB2312, GBK &amp; GB18030<a class="headerlink" href="#gb2312_gbk__gb18030" title="Permanent link">#</a></h3>
+<p><a href="http://csumissu.iteye.com/blog/1090053">关于GBK、GB2312、UTF8</a><br />
+<a href="https://www.zhihu.com/question/19677619">GB2312、GBK、GB18030 这几种字符集的主要区别是什么？</a>  </p>
+<p><a href="https://blog.csdn.net/zhoubl668/article/details/6914018">常用字符集编码详解</a><br />
+<a href="https://blog.csdn.net/lxwalaz1s1s/article/details/88629318">ASCII，ISO8859-1，GBK，GB18030，Unicode，UTF-8详解</a>  </p>
+<p>GB2312 是 GBK 的子集，GBK 是 GB18030 的子集。</p>
+<p><img alt="编码发展历程图" src="https://img-blog.csdnimg.cn/20190317220459710.PNG" /></p>
+<h3 id="utf-8_bom">UTF-8 BOM<a class="headerlink" href="#utf-8_bom" title="Permanent link">#</a></h3>
+<p>BOM（Byte Order Mark），意为字节序标记。</p>
+<p>BOM 在 UTF-16 中用来表示高低字节序列。在字节流之前有 BOM 表示采用低字节序列（低字节在前面）。</p>
+<p>在 <a href="https://en.wikipedia.org/wiki/Universal_Coded_Character_Set">UCS</a>（<a href="http://www.open-std.org/CEN/TC304/guidecharactersets/guideannexb.html">THE UNIVERSAL CHARACTER SET</a>）编码中有一个叫做 "ZERO WIDTH NO-BREAK SPACE" 的字符，它的编码是 <strong><code>FE FF</code></strong>。而 <code>FF FE</code> 在 UCS 中是不存在的字符，所以不应该出现在实际传输中。</p>
+<p>UCS 规范建议我们在传输字节流前，先传输字符 "ZERO WIDTH NO-BREAK SPACE"。</p>
+<ul>
+<li>如果收到 <code>FE FF</code>，就表明这个字节流是 <code>Big-Endian</code> 的；  </li>
+<li>如果收到 <code>FF FE</code>，就表明这个字节流是 <code>Little-Endian</code> 的。</li>
+</ul>
+<p>因此，字符 "ZERO WIDTH NO-BREAK SPACE" 又被称作 <strong>BOM</strong>。</p>
+<hr />
+<p>UTF-8 以字节为编码单元，没有字节序的问题，故 UTF-8 有无 BOM 都可以。UTF-8 不需要 BOM 来表明字节顺序，但可以用 BOM 来表明编码方式。</p>
+<p>字符 "ZERO WIDTH NO-BREAK SPACE" 的 UTF-8 编码是 <strong><code>EF BB BF</code></strong>，所以如果接收者收到以 <code>EF BB BF</code> 开头的字节流，就知道这是 UTF-8 编码了。</p>
+<p>Windows 就是使用 BOM 来标记文本文件的编码方式的。</p>
+<blockquote>
+<p>使用 Sublime Text 3 打开文件，通过菜单 <code>File | Save with Encoding</code> 可以选择设置保存编码为 <a href="https://stackoverflow.com/questions/21289157/set-encoding-of-file-to-utf8-with-bom-in-sublime-text-3"><code>UTF8 with BOM</code></a>。</p>
+</blockquote>
+<p><a href="https://www.ibm.com/support/knowledgecenter/en/ssw_aix_71/com.ibm.aix.nlsgdrf/ucs-2_utf-8.htm">UCS-2 and UTF-8</a>  </p>
+<p><a href="http://www.cnblogs.com/yongssu/p/4926506.html">UTF8 带BOM和不带BOM</a><br />
+<a href="http://www.cnblogs.com/zhongru_tu/archive/2008/04/11/1147792.html">UTF8 with BOM 与 UTF8 without BOM</a><br />
+<a href="http://blog.csdn.net/LJL1603/article/details/4303971">UTF-8 and UTF-8 without BOM</a><br />
+<a href="http://www.zhihu.com/question/20167122">⎡带 BOM 的 UTF-8⎦ 和 ⎡无 BOM 的 UTF-8⎦</a>  </p>
+<h3 id="中文显示乱码问题">中文显示乱码问题<a class="headerlink" href="#中文显示乱码问题" title="Permanent link">#</a></h3>
+<p>Xcode 代码文档的默认编码通常是中英文混排的 <code>No Explicit Encoding</code>。<br />
+但老版本的 Xcode 对带 BOM 头的 UTF8 文件编码无法识别，使用了 GBK 编码的文件在 Xcode 下也无法识别的，从而导致 <a href="http://linyehui.me/2014/07/09/convert-gbk-to-utf8-on-mac/">Xcode 下的中文显示可能乱码</a>。</p>
+<p>VS2015 只支持带 BOM 的 UTF-8，否则无法识别其中的中文部分；XCode 能够直接打开和编辑 <code>UTF-8 with BOM</code> 编码的文件。因此，<strong><a href="http://zplutor.github.io/2017/04/02/the-most-compatible-text-encoding-between-visual-studio-and-xcode/"><code>UTF-8 with BOM</code></a></strong> 是目前跨平台开发兼容性最好的编码选择。</p>
+<p>遗憾的是，两款 IDE 都不能直接创建这种编码的文件，只能在创建之后再手工或借助第三方编辑工具转换。  </p>
+<blockquote>
+<p><a href="http://blog.csdn.net/kevinojt/article/details/2009619">解决Visual Studio 2005显示中文乱码</a><br />
+<a href="http://blog.csdn.net/ani_di/article/details/6657341">解决VS2008生成的文件在XCode下中文乱码</a><br />
+<a href="https://www.jianshu.com/p/b5441c8f1847">使用Xcode打开Winnows下C文件中文乱码问题解决</a><br />
+<a href="https://www.zhihu.com/question/37252051">Visual Studio 2015 中如何使文件默认保存为 UTF - 8 编码格式？</a>  </p>
+</blockquote>
+<h2 id="查看文件编码">查看文件编码<a class="headerlink" href="#查看文件编码" title="Permanent link">#</a></h2>
+<p><a href="https://stackoverflow.com/questions/539294/how-do-i-determine-file-encoding-in-osx">How do I determine file encoding in OSX?</a><br />
+<a href="http://osxdaily.com/2015/08/11/determine-file-type-encoding-command-line-mac-os-x/">How to Determine File Type &amp; Encoding from Command Line in Mac OS X</a><br />
+<a href="http://blog.csdn.net/jnbbwyth/article/details/6991425">linux下查看文件编码及修改编码</a>  </p>
+<h3 id="file_命令">file 命令<a class="headerlink" href="#file_命令" title="Permanent link">#</a></h3>
+<p>macOS Bash Shell 内置的 <code>file</code> 命令可以用来打印文件类型信息。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>pi@raspberrypi:~<span class="w"> </span>$<span class="w"> </span>man<span class="w"> </span>file
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>FILE<span class="o">(</span><span class="m">1</span><span class="o">)</span><span class="w">                                         </span>BSD<span class="w"> </span>General<span class="w"> </span>Commands<span class="w"> </span>Manual<span class="w">                                        </span>FILE<span class="o">(</span><span class="m">1</span><span class="o">)</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>NAME
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">     </span>file<span class="w"> </span>—<span class="w"> </span>determine<span class="w"> </span>file<span class="w"> </span><span class="nb">type</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>SYNOPSIS
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="w">     </span>file<span class="w"> </span><span class="o">[</span>-bcdEhiklLNnprsvzZ0<span class="o">]</span><span class="w"> </span><span class="o">[</span>--apple<span class="o">]</span><span class="w"> </span><span class="o">[</span>--extension<span class="o">]</span><span class="w"> </span><span class="o">[</span>--mime-encoding<span class="o">]</span><span class="w"> </span><span class="o">[</span>--mime-type<span class="o">]</span><span class="w"> </span><span class="o">[</span>-e<span class="w"> </span>testname<span class="o">]</span><span class="w"> </span><span class="o">[</span>-F<span class="w"> </span>separator<span class="o">]</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="w">          </span><span class="o">[</span>-f<span class="w"> </span>namefile<span class="o">]</span><span class="w"> </span><span class="o">[</span>-m<span class="w"> </span>magicfiles<span class="o">]</span><span class="w"> </span><span class="o">[</span>-P<span class="w"> </span><span class="nv">name</span><span class="o">=</span>value<span class="o">]</span><span class="w"> </span>file<span class="w"> </span>...
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="w">     </span>file<span class="w"> </span>-C<span class="w"> </span><span class="o">[</span>-m<span class="w"> </span>magicfiles<span class="o">]</span>
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="w">     </span>file<span class="w"> </span><span class="o">[</span>--help<span class="o">]</span>
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>DESCRIPTION
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="w">     </span>This<span class="w"> </span>manual<span class="w"> </span>page<span class="w"> </span>documents<span class="w"> </span>version<span class="w"> </span><span class="m">5</span>.30<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>file<span class="w"> </span>command.
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>
+</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="w">     </span>file<span class="w"> </span>tests<span class="w"> </span>each<span class="w"> </span>argument<span class="w"> </span><span class="k">in</span><span class="w"> </span>an<span class="w"> </span>attempt<span class="w"> </span>to<span class="w"> </span>classify<span class="w"> </span>it.<span class="w">  </span>There<span class="w"> </span>are<span class="w"> </span>three<span class="w"> </span>sets<span class="w"> </span>of<span class="w"> </span>tests,<span class="w"> </span>performed<span class="w"> </span><span class="k">in</span><span class="w"> </span>this<span class="w"> </span>order:
+</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a><span class="w">     </span>filesystem<span class="w"> </span>tests,<span class="w"> </span>magic<span class="w"> </span>tests,<span class="w"> </span>and<span class="w"> </span>language<span class="w"> </span>tests.<span class="w">  </span>The<span class="w"> </span>first<span class="w"> </span><span class="nb">test</span><span class="w"> </span>that<span class="w"> </span>succeeds<span class="w"> </span>causes<span class="w"> </span>the<span class="w"> </span>file<span class="w"> </span><span class="nb">type</span><span class="w"> </span>to<span class="w"> </span>be<span class="w"> </span>printed.
+</span></code></pre></div>
+<h4 id="使用_file_命令">使用 file 命令<a class="headerlink" href="#使用_file_命令" title="Permanent link">#</a></h4>
+<p>执行 file 命令，查看当前目录下 include 和 src 子目录下的文件属性信息：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>$<span class="w"> </span>file<span class="w"> </span>include/*<span class="w"> </span>src/*
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>include/CheckPCIf.h:<span class="w">      </span>C++<span class="w"> </span><span class="nb">source</span><span class="w"> </span>text,<span class="w"> </span>UTF-8<span class="w"> </span>Unicode<span class="w"> </span>text
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>include/UtilcFunctions.h:<span class="w"> </span>C++<span class="w"> </span><span class="nb">source</span><span class="w"> </span>text,<span class="w"> </span>ASCII<span class="w"> </span>text
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>include/WifiPhotoIf.h:<span class="w">    </span>C++<span class="w"> </span><span class="nb">source</span><span class="w"> </span>text,<span class="w"> </span>ISO-8859<span class="w"> </span>text
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>include/liteif.h:<span class="w">         </span>C++<span class="w"> </span><span class="nb">source</span><span class="w"> </span>text,<span class="w"> </span>ISO-8859<span class="w"> </span>text,<span class="w"> </span>with<span class="w"> </span>CRLF<span class="w"> </span>line<span class="w"> </span>terminators
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>include/litelog.h:<span class="w">        </span>c<span class="w"> </span>program<span class="w"> </span>text,<span class="w"> </span>UTF-8<span class="w"> </span>Unicode<span class="w"> </span><span class="o">(</span>with<span class="w"> </span>BOM<span class="o">)</span><span class="w"> </span>text
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>include/litenet.h:<span class="w">        </span>c<span class="w"> </span>program<span class="w"> </span>text,<span class="w"> </span>ASCII<span class="w"> </span>text,<span class="w"> </span>with<span class="w"> </span>CRLF,<span class="w"> </span>LF<span class="w"> </span>line<span class="w"> </span>terminators
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>include/litestd.h:<span class="w">        </span>c<span class="w"> </span>program<span class="w"> </span>text,<span class="w"> </span>ASCII<span class="w"> </span>text,<span class="w"> </span>with<span class="w"> </span>CRLF<span class="w"> </span>line<span class="w"> </span>terminators
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>include/litetime.h:<span class="w">       </span>c<span class="w"> </span>program<span class="w"> </span>text,<span class="w"> </span>ASCII<span class="w"> </span>text,<span class="w"> </span>with<span class="w"> </span>CRLF<span class="w"> </span>line<span class="w"> </span>terminators
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>src/CheckPC:<span class="w">              </span>directory
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>src/FileHash:<span class="w">             </span>directory
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>src/WiFiPhoto:<span class="w">            </span>directory
+</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a>src/base:<span class="w">                 </span>directory
+</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>src/http:<span class="w">                 </span>directory
+</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a>src/liteafx.h:<span class="w">            </span>C++<span class="w"> </span><span class="nb">source</span><span class="w"> </span>text,<span class="w"> </span>ASCII<span class="w"> </span>text,<span class="w"> </span>with<span class="w"> </span>CRLF,<span class="w"> </span>LF<span class="w"> </span>line<span class="w"> </span>terminators
+</span><span id="__span-1-16"><a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a>src/liteconststr.cpp:<span class="w">     </span>ASCII<span class="w"> </span>text,<span class="w"> </span>with<span class="w"> </span>CRLF<span class="w"> </span>line<span class="w"> </span>terminators
+</span><span id="__span-1-17"><a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>src/liteconststr.h:<span class="w">       </span>c<span class="w"> </span>program<span class="w"> </span>text,<span class="w"> </span>ASCII<span class="w"> </span>text,<span class="w"> </span>with<span class="w"> </span>CRLF<span class="w"> </span>line<span class="w"> </span>terminators
+</span><span id="__span-1-18"><a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>src/litetransfer.cpp:<span class="w">     </span>C++<span class="w"> </span><span class="nb">source</span><span class="w"> </span>text,<span class="w"> </span>ISO-8859<span class="w"> </span>text,<span class="w"> </span>with<span class="w"> </span>CRLF<span class="w"> </span>line<span class="w"> </span>terminators
+</span><span id="__span-1-19"><a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>src/litetransfer.h:<span class="w">       </span>C++<span class="w"> </span><span class="nb">source</span><span class="w"> </span>text,<span class="w"> </span>ASCII<span class="w"> </span>text,<span class="w"> </span>with<span class="w"> </span>CRLF<span class="w"> </span>line<span class="w"> </span>terminators
+</span><span id="__span-1-20"><a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a>src/sink.h:<span class="w">               </span>C++<span class="w"> </span><span class="nb">source</span><span class="w"> </span>text,<span class="w"> </span>ASCII<span class="w"> </span>text,<span class="w"> </span>with<span class="w"> </span>CRLF,<span class="w"> </span>LF<span class="w"> </span>line<span class="w"> </span>terminators
+</span><span id="__span-1-21"><a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a>src/tcprelaychannel:<span class="w">      </span>directory
+</span><span id="__span-1-22"><a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a>src/transfer:<span class="w">             </span>directory
+</span><span id="__span-1-23"><a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a>src/tuple.h:<span class="w">              </span>C++<span class="w"> </span><span class="nb">source</span><span class="w"> </span>text,<span class="w"> </span>ISO-8859<span class="w"> </span>text,<span class="w"> </span>with<span class="w"> </span>CRLF<span class="w"> </span>line<span class="w"> </span>terminators
+</span></code></pre></div>
+<blockquote>
+<p>包括 UTF8 编码的 with BOM 信息。</p>
+</blockquote>
+<p>带 <code>-I</code> 选项执行 <code>file -I filename</code> 将输出 MIME 类型信息：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>$<span class="w"> </span>file<span class="w"> </span>-I<span class="w"> </span>include/*
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>include/CheckPCIf.h:<span class="w">      </span>text/x-c++<span class="p">;</span><span class="w"> </span><span class="nv">charset</span><span class="o">=</span>utf-8
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>include/UtilcFunctions.h:<span class="w"> </span>text/x-c++<span class="p">;</span><span class="w"> </span><span class="nv">charset</span><span class="o">=</span>us-ascii
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>include/WifiPhotoIf.h:<span class="w">    </span>text/x-c++<span class="p">;</span><span class="w"> </span><span class="nv">charset</span><span class="o">=</span>iso-8859-1
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>include/liteif.h:<span class="w">         </span>text/x-c++<span class="p">;</span><span class="w"> </span><span class="nv">charset</span><span class="o">=</span>iso-8859-1
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>include/litelog.h:<span class="w">        </span>text/x-c<span class="p">;</span><span class="w"> </span><span class="nv">charset</span><span class="o">=</span>utf-8
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>include/litenet.h:<span class="w">        </span>text/x-c<span class="p">;</span><span class="w"> </span><span class="nv">charset</span><span class="o">=</span>us-ascii
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>include/litestd.h:<span class="w">        </span>text/x-c<span class="p">;</span><span class="w"> </span><span class="nv">charset</span><span class="o">=</span>us-ascii
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>include/litetime.h:<span class="w">       </span>text/x-c<span class="p">;</span><span class="w"> </span><span class="nv">charset</span><span class="o">=</span>us-ascii
+</span></code></pre></div>
+<p>查看单个文件时，file 命令设置 <code>-b</code>（--brief）不显示文件名：</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>$ file -b include/WifiPhotoIf.h
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>C++ source text, ISO-8859 text
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>$ file -bI include/WifiPhotoIf.h
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>text/x-c++; charset=iso-8859-1
+</span></code></pre></div>
+<p>从 <code>file include/* src/*</code> 输出结果看，src 下存在多级子目录，而 file 命令只能通配 src 目录下的文件，无法穿越子目录。<br />
+<code>file *</code> 通配当前目录，相当于 find 指定了 -maxdepth 1。若想递归查找指定目录及其子目录下的所有文件，find 默认不指定 maxdepth 即可。</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>$ find include src -type f | xargs file | tee include_src-file.log
+</span></code></pre></div>
+<p>查看 <code>include_src-file.log</code> 可知，总共有四大类编码格式：</p>
+<ol>
+<li>ASCII text  </li>
+<li>UTF-8 Unicode  </li>
+<li>ISO-8859 text  </li>
+<li>Non-ISO extended-ASCII text  </li>
+</ol>
+<h4 id="过滤指定编码的文件">过滤指定编码的文件<a class="headerlink" href="#过滤指定编码的文件" title="Permanent link">#</a></h4>
+<p>过滤出当前目录下文件编码为 <code>ISO-8859</code> 的文件信息：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>$<span class="w"> </span>file<span class="w"> </span>*<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;ISO-8859&#39;</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>build.bat:<span class="w">              </span>DOS<span class="w"> </span>batch<span class="w"> </span>file<span class="w"> </span>text,<span class="w"> </span>ISO-8859<span class="w"> </span>text,<span class="w"> </span>with<span class="w"> </span>CRLF<span class="w"> </span>line<span class="w"> </span>terminators
+</span></code></pre></div>
+<p>调用 find 递归查找当前目录及其子目录下的所有文件，并过滤出编码为 <code>ISO-8859</code> 的文件：</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>find . -type f -exec file {} \; | grep -i &#39;ISO-8859&#39;
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>find . -type f | xargs file | grep -i &#39;ISO-8859&#39;
+</span></code></pre></div>
+<p>过滤出 incldue 目录下文件编码为 <code>ISO-8859</code> 和 <code>Non-ISO</code> 的文件：</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>$ file include/* | grep -i &#39;ISO-8859\|Non-ISO&#39;
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>include/WifiPhotoIf.h:    C++ source text, ISO-8859 text
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>include/liteif.h:         C++ source text, ISO-8859 text, with CRLF line terminators
+</span></code></pre></div>
+<p>递归查找 include 和 src 子目录下编码为 <code>ISO-8859</code> 和 <code>Non-ISO</code> 的文件：</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>find include src -type f -exec file {} \; | grep -i &#39;ISO-8859\|Non-ISO&#39;
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>find include src -type f | xargs file | grep -i &#39;ISO-8859\|Non-ISO&#39;
+</span></code></pre></div>
+<h3 id="enca_命令">enca 命令<a class="headerlink" href="#enca_命令" title="Permanent link">#</a></h3>
+<p><code>enca</code> 命令可查看、转换文件的编码。</p>
+<h4 id="安装_enca">安装 enca<a class="headerlink" href="#安装_enca" title="Permanent link">#</a></h4>
+<p>macOS 通过包管理器 brew 可搜索安装 enca 工具包：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="c1"># 查找 enca</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>ifan@FAN-MC1:~<span class="p">|</span>$<span class="w"> </span>brew<span class="w"> </span>search<span class="w"> </span><span class="nv">enca</span>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="o">==</span>&gt;<span class="w"> </span>Searching<span class="w"> </span><span class="nb">local</span><span class="w"> </span>taps...
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="nv">enca</span>
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="o">==</span>&gt;<span class="w"> </span>Searching<span class="w"> </span>taps<span class="w"> </span>on<span class="w"> </span>GitHub...
+</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="o">==</span>&gt;<span class="w"> </span>Searching<span class="w"> </span>blacklisted,<span class="w"> </span>migrated<span class="w"> </span>and<span class="w"> </span>deleted<span class="w"> </span>formulae...
+</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a>
+</span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a><span class="c1"># enca 概述</span>
+</span><span id="__span-9-9"><a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a>ifan@FAN-MC1:~<span class="p">|</span>$<span class="w"> </span>brew<span class="w"> </span>desc<span class="w"> </span>enca
+</span><span id="__span-9-10"><a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a>enca:<span class="w"> </span>Charset<span class="w"> </span>analyzer<span class="w"> </span>and<span class="w"> </span>converter
+</span><span id="__span-9-11"><a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a>
+</span><span id="__span-9-12"><a id="__codelineno-9-12" name="__codelineno-9-12" href="#__codelineno-9-12"></a><span class="c1"># enca 信息</span>
+</span><span id="__span-9-13"><a id="__codelineno-9-13" name="__codelineno-9-13" href="#__codelineno-9-13"></a>ifan@FAN-MC1:~<span class="p">|</span>$<span class="w"> </span>brew<span class="w"> </span>info<span class="w"> </span>enca
+</span><span id="__span-9-14"><a id="__codelineno-9-14" name="__codelineno-9-14" href="#__codelineno-9-14"></a>enca:<span class="w"> </span>stable<span class="w"> </span><span class="m">1</span>.19<span class="w"> </span><span class="o">(</span>bottled<span class="o">)</span>,<span class="w"> </span>HEAD
+</span><span id="__span-9-15"><a id="__codelineno-9-15" name="__codelineno-9-15" href="#__codelineno-9-15"></a>Charset<span class="w"> </span>analyzer<span class="w"> </span>and<span class="w"> </span>converter
+</span><span id="__span-9-16"><a id="__codelineno-9-16" name="__codelineno-9-16" href="#__codelineno-9-16"></a>https://cihar.com/software/enca/
+</span><span id="__span-9-17"><a id="__codelineno-9-17" name="__codelineno-9-17" href="#__codelineno-9-17"></a>Not<span class="w"> </span>installed
+</span><span id="__span-9-18"><a id="__codelineno-9-18" name="__codelineno-9-18" href="#__codelineno-9-18"></a>From:<span class="w"> </span>http://android.oa.com/homebrew-core/Formula/enca.rb
+</span><span id="__span-9-19"><a id="__codelineno-9-19" name="__codelineno-9-19" href="#__codelineno-9-19"></a>
+</span><span id="__span-9-20"><a id="__codelineno-9-20" name="__codelineno-9-20" href="#__codelineno-9-20"></a><span class="c1"># 安装 enca</span>
+</span><span id="__span-9-21"><a id="__codelineno-9-21" name="__codelineno-9-21" href="#__codelineno-9-21"></a>ifan@FAN-MC1:~<span class="p">|</span>$<span class="w"> </span>brew<span class="w"> </span>install<span class="w"> </span>enca
+</span><span id="__span-9-22"><a id="__codelineno-9-22" name="__codelineno-9-22" href="#__codelineno-9-22"></a>
+</span><span id="__span-9-23"><a id="__codelineno-9-23" name="__codelineno-9-23" href="#__codelineno-9-23"></a><span class="c1"># 查看 enca 版本信息</span>
+</span><span id="__span-9-24"><a id="__codelineno-9-24" name="__codelineno-9-24" href="#__codelineno-9-24"></a>faner@MBP-FAN:~<span class="p">|</span>$<span class="w"> </span>enca<span class="w"> </span>-v
+</span><span id="__span-9-25"><a id="__codelineno-9-25" name="__codelineno-9-25" href="#__codelineno-9-25"></a>enca<span class="w"> </span><span class="m">1</span>.19
+</span><span id="__span-9-26"><a id="__codelineno-9-26" name="__codelineno-9-26" href="#__codelineno-9-26"></a>
+</span><span id="__span-9-27"><a id="__codelineno-9-27" name="__codelineno-9-27" href="#__codelineno-9-27"></a>Features:<span class="w"> </span>-librecode-interface<span class="w"> </span>+iconv-interface<span class="w"> </span>+external-converter<span class="w"> </span>+language-detection<span class="w"> </span>+locale-alias<span class="w"> </span>+target-charset-auto<span class="w"> </span>+ENCAOPT<span class="w"> </span>
+</span><span id="__span-9-28"><a id="__codelineno-9-28" name="__codelineno-9-28" href="#__codelineno-9-28"></a>
+</span><span id="__span-9-29"><a id="__codelineno-9-29" name="__codelineno-9-29" href="#__codelineno-9-29"></a>Copyright<span class="w"> </span><span class="o">(</span>C<span class="o">)</span><span class="w"> </span><span class="m">2000</span>-2005<span class="w"> </span>David<span class="w"> </span>Necas<span class="w"> </span><span class="o">(</span>Yeti<span class="o">)</span><span class="w"> </span><span class="o">(</span>&lt;yeti@physics.muni.cz&gt;<span class="o">)</span>,
+</span><span id="__span-9-30"><a id="__codelineno-9-30" name="__codelineno-9-30" href="#__codelineno-9-30"></a><span class="w">              </span><span class="m">2005</span><span class="w"> </span>Zuxy<span class="w"> </span>Meng<span class="w"> </span><span class="o">(</span>&lt;zuxy.meng@gmail.com&gt;<span class="o">)</span>.
+</span><span id="__span-9-31"><a id="__codelineno-9-31" name="__codelineno-9-31" href="#__codelineno-9-31"></a>
+</span><span id="__span-9-32"><a id="__codelineno-9-32" name="__codelineno-9-32" href="#__codelineno-9-32"></a>Enca<span class="w"> </span>is<span class="w"> </span>free<span class="w"> </span>software<span class="p">;</span><span class="w"> </span>it<span class="w"> </span>can<span class="w"> </span>be<span class="w"> </span>copied<span class="w"> </span>and/or<span class="w"> </span>modified<span class="w"> </span>under<span class="w"> </span>the<span class="w"> </span>terms<span class="w"> </span>of
+</span><span id="__span-9-33"><a id="__codelineno-9-33" name="__codelineno-9-33" href="#__codelineno-9-33"></a>version<span class="w"> </span><span class="m">2</span><span class="w"> </span>of<span class="w"> </span>GNU<span class="w"> </span>General<span class="w"> </span>Public<span class="w"> </span>License,<span class="w"> </span>run<span class="w"> </span><span class="sb">`</span>enca<span class="w"> </span>--license<span class="err">&#39;</span><span class="w"> </span>to<span class="w"> </span>see<span class="w"> </span>the<span class="w"> </span>full
+</span><span id="__span-9-34"><a id="__codelineno-9-34" name="__codelineno-9-34" href="#__codelineno-9-34"></a>license<span class="w"> </span>text.<span class="w">  </span>There<span class="w"> </span>is<span class="w"> </span>NO<span class="w"> </span>WARRANTY<span class="p">;</span><span class="w"> </span>not<span class="w"> </span>even<span class="w"> </span><span class="k">for</span><span class="w"> </span>MERCHANTABILITY<span class="w"> </span>or<span class="w"> </span>FITNESS
+</span><span id="__span-9-35"><a id="__codelineno-9-35" name="__codelineno-9-35" href="#__codelineno-9-35"></a>FOR<span class="w"> </span>A<span class="w"> </span>PARTICULAR<span class="w"> </span>PURPOSE.
+</span></code></pre></div>
+<p>raspbian 通过包管理器 apt 可搜索安装 enca 工具包：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="c1"># 查找 enca</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>pi@raspberrypi:~<span class="w"> </span>$<span class="w"> </span>apt-cache<span class="w"> </span>search<span class="w"> </span>enca<span class="w"> </span>--names-only<span class="w"> </span>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>enca<span class="w"> </span>-<span class="w"> </span>Extremely<span class="w"> </span>Naive<span class="w"> </span>Charset<span class="w"> </span>Analyser<span class="w"> </span>-<span class="w"> </span>binaries
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="c1"># 查看 enca 安装包信息</span>
+</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>pi@raspberrypi:~<span class="w"> </span>$<span class="w"> </span>apt-cache<span class="w"> </span>show<span class="w"> </span>enca
+</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a>
+</span><span id="__span-10-8"><a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a>Description:<span class="w"> </span>Extremely<span class="w"> </span>Naive<span class="w"> </span>Charset<span class="w"> </span>Analyser<span class="w"> </span>-<span class="w"> </span>binaries
+</span><span id="__span-10-9"><a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a><span class="w"> </span>Enca<span class="w"> </span>is<span class="w"> </span>an<span class="w"> </span>Extremely<span class="w"> </span>Naive<span class="w"> </span>Charset<span class="w"> </span>Analyser.<span class="w"> </span>It<span class="w"> </span>detects<span class="w"> </span>the<span class="w"> </span>character<span class="w"> </span><span class="nb">set</span><span class="w"> </span>and
+</span><span id="__span-10-10"><a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a><span class="w"> </span>the<span class="w"> </span>encoding<span class="w"> </span>of<span class="w"> </span>text<span class="w"> </span>files<span class="w"> </span>and<span class="w"> </span>can<span class="w"> </span>also<span class="w"> </span>convert<span class="w"> </span>them<span class="w"> </span>to<span class="w"> </span>other<span class="w"> </span>encodings<span class="w"> </span>using
+</span><span id="__span-10-11"><a id="__codelineno-10-11" name="__codelineno-10-11" href="#__codelineno-10-11"></a><span class="w"> </span>either<span class="w"> </span>a<span class="w"> </span>built-in<span class="w"> </span>converter<span class="w"> </span>or<span class="w"> </span>external<span class="w"> </span>libraries<span class="w"> </span>and<span class="w"> </span>tools<span class="w"> </span>like<span class="w"> </span>libiconv,
+</span><span id="__span-10-12"><a id="__codelineno-10-12" name="__codelineno-10-12" href="#__codelineno-10-12"></a><span class="w"> </span>librecode,<span class="w"> </span>or<span class="w"> </span>cstocs.
+</span><span id="__span-10-13"><a id="__codelineno-10-13" name="__codelineno-10-13" href="#__codelineno-10-13"></a>
+</span><span id="__span-10-14"><a id="__codelineno-10-14" name="__codelineno-10-14" href="#__codelineno-10-14"></a><span class="c1"># 安装 enca</span>
+</span><span id="__span-10-15"><a id="__codelineno-10-15" name="__codelineno-10-15" href="#__codelineno-10-15"></a>pi@raspberrypi:~<span class="w"> </span>$<span class="w"> </span>sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>enca
+</span><span id="__span-10-16"><a id="__codelineno-10-16" name="__codelineno-10-16" href="#__codelineno-10-16"></a>
+</span><span id="__span-10-17"><a id="__codelineno-10-17" name="__codelineno-10-17" href="#__codelineno-10-17"></a><span class="c1"># 查看 enca 版本信息</span>
+</span><span id="__span-10-18"><a id="__codelineno-10-18" name="__codelineno-10-18" href="#__codelineno-10-18"></a>pi@raspberrypi:~<span class="w"> </span>$<span class="w"> </span>enca<span class="w"> </span>-v
+</span></code></pre></div>
+<h4 id="使用_enca_命令">使用 enca 命令<a class="headerlink" href="#使用_enca_命令" title="Permanent link">#</a></h4>
+<p>用 enca 命令检测文件编码信息：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="c1"># -f, --human-readable</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>$<span class="w"> </span>enca<span class="w"> </span>-L<span class="w"> </span>zh_CN<span class="w"> </span>include/*<span class="w"> </span>src/*
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>include/CheckPCIf.h:<span class="w"> </span>Universal<span class="w"> </span>transformation<span class="w"> </span>format<span class="w"> </span><span class="m">8</span><span class="w"> </span>bits<span class="p">;</span><span class="w"> </span>UTF-8
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>include/UtilcFunctions.h:<span class="w"> </span>7bit<span class="w"> </span>ASCII<span class="w"> </span>characters
+</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>include/WifiPhotoIf.h:<span class="w"> </span>Unrecognized<span class="w"> </span>encoding
+</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>include/liteif.h:<span class="w"> </span>Simplified<span class="w"> </span>Chinese<span class="w"> </span>National<span class="w"> </span>Standard<span class="p">;</span><span class="w"> </span>GB2312
+</span><span id="__span-11-7"><a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a><span class="w">  </span>CRLF<span class="w"> </span>line<span class="w"> </span>terminators
+</span><span id="__span-11-8"><a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a>include/litelog.h:<span class="w"> </span>Universal<span class="w"> </span>transformation<span class="w"> </span>format<span class="w"> </span><span class="m">8</span><span class="w"> </span>bits<span class="p">;</span><span class="w"> </span>UTF-8
+</span><span id="__span-11-9"><a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a>include/litenet.h:<span class="w"> </span>7bit<span class="w"> </span>ASCII<span class="w"> </span>characters
+</span><span id="__span-11-10"><a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a><span class="w">  </span>Mixed<span class="w"> </span>line<span class="w"> </span>terminators
+</span><span id="__span-11-11"><a id="__codelineno-11-11" name="__codelineno-11-11" href="#__codelineno-11-11"></a>include/litestd.h:<span class="w"> </span>7bit<span class="w"> </span>ASCII<span class="w"> </span>characters
+</span><span id="__span-11-12"><a id="__codelineno-11-12" name="__codelineno-11-12" href="#__codelineno-11-12"></a><span class="w">  </span>CRLF<span class="w"> </span>line<span class="w"> </span>terminators
+</span><span id="__span-11-13"><a id="__codelineno-11-13" name="__codelineno-11-13" href="#__codelineno-11-13"></a>include/litetime.h:<span class="w"> </span>7bit<span class="w"> </span>ASCII<span class="w"> </span>characters
+</span><span id="__span-11-14"><a id="__codelineno-11-14" name="__codelineno-11-14" href="#__codelineno-11-14"></a><span class="w">  </span>CRLF<span class="w"> </span>line<span class="w"> </span>terminators
+</span><span id="__span-11-15"><a id="__codelineno-11-15" name="__codelineno-11-15" href="#__codelineno-11-15"></a>enca:<span class="w"> </span>Cannot<span class="w"> </span><span class="nb">read</span><span class="w"> </span>file<span class="w"> </span><span class="sb">`</span>src/CheckPC<span class="s1">&#39;: Is a directory</span>
+</span><span id="__span-11-16"><a id="__codelineno-11-16" name="__codelineno-11-16" href="#__codelineno-11-16"></a><span class="s1">enca: Cannot read file `src/FileHash&#39;</span>:<span class="w"> </span>Is<span class="w"> </span>a<span class="w"> </span>directory
+</span><span id="__span-11-17"><a id="__codelineno-11-17" name="__codelineno-11-17" href="#__codelineno-11-17"></a>enca:<span class="w"> </span>Cannot<span class="w"> </span><span class="nb">read</span><span class="w"> </span>file<span class="w"> </span><span class="sb">`</span>src/WiFiPhoto<span class="s1">&#39;: Is a directory</span>
+</span><span id="__span-11-18"><a id="__codelineno-11-18" name="__codelineno-11-18" href="#__codelineno-11-18"></a><span class="s1">enca: Cannot read file `src/base&#39;</span>:<span class="w"> </span>Is<span class="w"> </span>a<span class="w"> </span>directory
+</span><span id="__span-11-19"><a id="__codelineno-11-19" name="__codelineno-11-19" href="#__codelineno-11-19"></a>enca:<span class="w"> </span>Cannot<span class="w"> </span><span class="nb">read</span><span class="w"> </span>file<span class="w"> </span><span class="sb">`</span>src/http<span class="s1">&#39;: Is a directory</span>
+</span><span id="__span-11-20"><a id="__codelineno-11-20" name="__codelineno-11-20" href="#__codelineno-11-20"></a><span class="s1">src/liteafx.h: 7bit ASCII characters</span>
+</span><span id="__span-11-21"><a id="__codelineno-11-21" name="__codelineno-11-21" href="#__codelineno-11-21"></a><span class="s1">  Mixed line terminators</span>
+</span><span id="__span-11-22"><a id="__codelineno-11-22" name="__codelineno-11-22" href="#__codelineno-11-22"></a><span class="s1">src/liteconststr.cpp: 7bit ASCII characters</span>
+</span><span id="__span-11-23"><a id="__codelineno-11-23" name="__codelineno-11-23" href="#__codelineno-11-23"></a><span class="s1">  CRLF line terminators</span>
+</span><span id="__span-11-24"><a id="__codelineno-11-24" name="__codelineno-11-24" href="#__codelineno-11-24"></a><span class="s1">src/liteconststr.h: 7bit ASCII characters</span>
+</span><span id="__span-11-25"><a id="__codelineno-11-25" name="__codelineno-11-25" href="#__codelineno-11-25"></a><span class="s1">  CRLF line terminators</span>
+</span><span id="__span-11-26"><a id="__codelineno-11-26" name="__codelineno-11-26" href="#__codelineno-11-26"></a><span class="s1">src/litetransfer.cpp: Simplified Chinese National Standard; GB2312</span>
+</span><span id="__span-11-27"><a id="__codelineno-11-27" name="__codelineno-11-27" href="#__codelineno-11-27"></a><span class="s1">  CRLF line terminators</span>
+</span><span id="__span-11-28"><a id="__codelineno-11-28" name="__codelineno-11-28" href="#__codelineno-11-28"></a><span class="s1">src/litetransfer.h: 7bit ASCII characters</span>
+</span><span id="__span-11-29"><a id="__codelineno-11-29" name="__codelineno-11-29" href="#__codelineno-11-29"></a><span class="s1">  CRLF line terminators</span>
+</span><span id="__span-11-30"><a id="__codelineno-11-30" name="__codelineno-11-30" href="#__codelineno-11-30"></a><span class="s1">src/sink.h: 7bit ASCII characters</span>
+</span><span id="__span-11-31"><a id="__codelineno-11-31" name="__codelineno-11-31" href="#__codelineno-11-31"></a><span class="s1">  Mixed line terminators</span>
+</span><span id="__span-11-32"><a id="__codelineno-11-32" name="__codelineno-11-32" href="#__codelineno-11-32"></a><span class="s1">enca: Cannot read file `src/tcprelaychannel&#39;</span>:<span class="w"> </span>Is<span class="w"> </span>a<span class="w"> </span>directory
+</span><span id="__span-11-33"><a id="__codelineno-11-33" name="__codelineno-11-33" href="#__codelineno-11-33"></a>enca:<span class="w"> </span>Cannot<span class="w"> </span><span class="nb">read</span><span class="w"> </span>file<span class="w"> </span><span class="sb">`</span>src/transfer<span class="err">&#39;</span>:<span class="w"> </span>Is<span class="w"> </span>a<span class="w"> </span>directory
+</span><span id="__span-11-34"><a id="__codelineno-11-34" name="__codelineno-11-34" href="#__codelineno-11-34"></a>src/tuple.h:<span class="w"> </span>Simplified<span class="w"> </span>Chinese<span class="w"> </span>National<span class="w"> </span>Standard<span class="p">;</span><span class="w"> </span>GB2312
+</span><span id="__span-11-35"><a id="__codelineno-11-35" name="__codelineno-11-35" href="#__codelineno-11-35"></a><span class="w">  </span>CRLF<span class="w"> </span>line<span class="w"> </span>terminators
+</span></code></pre></div>
+<p><code>enca -m</code> 同 <code>file -I</code>，查看文件的 MIME 类型信息：</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a># -m, --mime-name，同 file -I
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>$ enca -L zh_CN -m include/*
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>include/CheckPCIf.h: UTF-8
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>include/UtilcFunctions.h: US-ASCII
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>include/WifiPhotoIf.h: unknown
+</span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a>include/liteif.h: GB2312
+</span><span id="__span-12-7"><a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a>include/litelog.h: UTF-8
+</span><span id="__span-12-8"><a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a>include/litenet.h: US-ASCII
+</span><span id="__span-12-9"><a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a>include/litestd.h: US-ASCII
+</span><span id="__span-12-10"><a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a>include/litetime.h: US-ASCII
+</span></code></pre></div>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a># -i, --iconv-name
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>$ enca -L zh_CN -i include/*
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>include/CheckPCIf.h: UTF-8
+</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>include/UtilcFunctions.h: ASCII
+</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>include/WifiPhotoIf.h: ???
+</span><span id="__span-13-6"><a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a>include/liteif.h: GBK
+</span><span id="__span-13-7"><a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a>include/litelog.h: UTF-8
+</span><span id="__span-13-8"><a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a>include/litenet.h: ASCII
+</span><span id="__span-13-9"><a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a>include/litestd.h: ASCII
+</span><span id="__span-13-10"><a id="__codelineno-13-10" name="__codelineno-13-10" href="#__codelineno-13-10"></a>include/litetime.h: ASCII
+</span></code></pre></div>
+<blockquote>
+<p>无法检测 BOM 信息？</p>
+</blockquote>
+<p>借助 cut 命令，可提取出以冒号字符为分割符号，提取文件和编码：</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>enca -L zh_CN -i include/* | cut -d &#39;:&#39; -f 1
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>enca -L zh_CN -i include/* | cut -d &#39;:&#39; -f 2 # 前面有空格
+</span></code></pre></div>
+<p>建议采用更为灵活的 awk 命令，可指定字符串（冒号空格）为分割符：</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>enca -L zh_CN -i include/* | awk -F &#39;: &#39; &#39;{print $1}&#39;
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>enca -L zh_CN -i include/* | awk -F &#39;: &#39; &#39;{print $2}&#39;
+</span></code></pre></div>
+<p>借助 find 命令，可以递归查找指定目录及其子目录下的所有文件，再重定向给 enca 查看编码信息：</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>$ find include src -type f | xargs enca -L zh_CN -i | tee include_src-enca.log
+</span></code></pre></div>
+<p>查看 <code>include_src-enca.log</code> 可知，总共有四大类编码格式：</p>
+<ol>
+<li>ASCII  </li>
+<li>UTF-8  </li>
+<li>GBK  </li>
+<li>???  </li>
+</ol>
+<p><code>enca -m</code> 按 MIME 类型过滤出编码为 <code>GB2312</code> 和 <code>unknown</code> 的文件：</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>find include src -type f | xargs enca -L zh_CN -m | grep -i &#39;GB2312\|unknown&#39;
+</span></code></pre></div>
+<p>或 <code>enca -i</code> 按 iconv-name 过滤出编码为 <code>GBK</code> 和 <code>???</code> 的文件：</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>find include src -type f | xargs enca -L zh_CN -i | grep -i &#39;GBK\|\?\?\?&#39;
+</span></code></pre></div>
+<h3 id="editor_file_inspector">Editor File Inspector<a class="headerlink" href="#editor_file_inspector" title="Permanent link">#</a></h3>
+<p>用 Vim 打开文件，执行底行命令 <code>:set fileencoding ?</code> 可查看当前文件编码，貌似检测不准确？</p>
+<blockquote>
+<p>具体编码格式可查询关键字 encoding-names 和 encoding-values。</p>
+</blockquote>
+<p>Sublime Text 3 默认不在状态栏显示编码格式，<code>~/Library/Application Support/Sublime Text 3/Packages/Default/Preferences.sublime-settings</code> 中默认配置如下：</p>
+<div class="language-json highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="w">    </span><span class="c1">// Display file encoding in the status bar</span>
+</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a><span class="w">    </span><span class="nt">&quot;show_encoding&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+</span></code></pre></div>
+<p><code>Preferences &gt; Settings - Users</code> 打开 <code>~/Library/Application Support/Sublime Text 3/Packages/User/Preferences.sublime-settings</code>，在其中设置 </p>
+<div class="language-json highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="w">    </span><span class="nt">&quot;show_encoding&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+</span></code></pre></div>
+<p>则在状态栏中将有一格显示当前文件编码格式：</p>
+<p><img alt="sublime_text_3" src="https://i.stack.imgur.com/FNvMj.jpg" /> </p>
+<h3 id="特殊编码文件">特殊编码文件<a class="headerlink" href="#特殊编码文件" title="Permanent link">#</a></h3>
+<p>以下有两个特殊编码的文件：</p>
+<ul>
+<li><code>include/WifiPhotoIf.h</code>  </li>
+<li><code>src/WiFiPhoto/WifiPhotoConnMgr.h</code>  </li>
+<li><code>src/http/lthttpchannel.cpp</code>  </li>
+</ul>
+<p><code>file</code> 命令查看文件编码信息：</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>$ file include/WifiPhotoIf.h src/WiFiPhoto/WifiPhotoConnMgr.h src/http/lthttpchannel.cpp
+</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>include/WifiPhotoIf.h:            C++ source text, ISO-8859 text
+</span><span id="__span-21-3"><a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a>src/WiFiPhoto/WifiPhotoConnMgr.h: C++ source text, Non-ISO extended-ASCII text
+</span><span id="__span-21-4"><a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a>src/http/lthttpchannel.cpp:       c program text, Non-ISO extended-ASCII text, with CRLF line terminators
+</span></code></pre></div>
+<p><code>enca</code> 命令无法识别文件编码信息：</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a>$ enca -L zh_CN include/WifiPhotoIf.h src/WiFiPhoto/WifiPhotoConnMgr.h src/http/lthttpchannel.cpp
+</span><span id="__span-22-2"><a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a>include/WifiPhotoIf.h: Unrecognized encoding
+</span><span id="__span-22-3"><a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a>src/WiFiPhoto/WifiPhotoConnMgr.h: Unrecognized encoding
+</span><span id="__span-22-4"><a id="__codelineno-22-4" name="__codelineno-22-4" href="#__codelineno-22-4"></a>src/http/lthttpchannel.cpp: Unrecognized encoding
+</span></code></pre></div>
+<p>尝试用 Sublime Text 3 打开以上3个文件：</p>
+<ul>
+<li><code>include/WifiPhotoIf.h</code>：Detected WINDOWS-1252 vs Western (Windows 1252) with 73% confidence；  </li>
+<li><code>src/WiFiPhoto/WifiPhotoConnMgr.h</code>：Detected WINDOWS-1252 vs Western (Windows 1252) with 62% confidence； </li>
+</ul>
+<p>弹窗让用户自行选择可能的编码：</p>
+<p><img alt="subl-lite-encoding-confirm" src="../../linux/images/subl-lite-encoding-confirm.png" /></p>
+<ul>
+<li>打开 <code>src/http/lthttpchannel.cpp</code> 时，弹窗提示错误：</li>
+</ul>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>Errors occurred while converting lthttpchannel.cpp with GB18030 encoding.
+</span><span id="__span-23-2"><a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a>
+</span><span id="__span-23-3"><a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a>WARNING: Continue to load this file using GB18030, malformed data will be ignored.
+</span><span id="__span-23-4"><a id="__codelineno-23-4" name="__codelineno-23-4" href="#__codelineno-23-4"></a>
+</span><span id="__span-23-5"><a id="__codelineno-23-5" name="__codelineno-23-5" href="#__codelineno-23-5"></a>Press &quot;Cancel&quot; to choose another encoding manually.
+</span></code></pre></div>
+<p><img alt="subl-lite-encoding-error" src="../../linux/images/subl-lite-encoding-error.png" /></p>
+<p>底部状态栏编码显示为 <code>GB18030</code>、<code>Western(Windows 1252)</code>，如果点击 Cancel 也会弹出上面的编码选择列表。</p>
+<h2 id="文件编码格式转换">文件编码格式转换<a class="headerlink" href="#文件编码格式转换" title="Permanent link">#</a></h2>
+<p><a href="http://zcodes.net/2016/09/29/visual-studio-cpp-encoding.html">Visual Studio C/C++</a> 可以 <a href="http://blog.csdn.net/maxwoods/article/details/44828295">将新建的源码文件的编码格式自动设置成UTF8</a>，或从其他格式 <a href="http://blog.csdn.net/caroline_wendy/article/details/13169837">更改编码格式为 UTF-8</a>。</p>
+<p>对于某些在 Xcode 中文乱码问题，通过右侧栏的 Text Settings | Text Encoding 选择 <code>Simplified Chinese(Mac OS)</code> 可正确显示。</p>
+<p>当然，也可借助 Sublime Text 等第三方可视化编辑器，打开文件后对已有编码执行转换。</p>
+<p>另外一种思路是借助 <code>iconv</code> 或 <code>enca</code> 等命令行工具实现转码。</p>
+<h3 id="iconv_命令转码">iconv 命令转码<a class="headerlink" href="#iconv_命令转码" title="Permanent link">#</a></h3>
+<blockquote>
+<p><a href="http://blog.csdn.net/a280606790/article/details/8504133">Linux下GBK-&gt;UTF-8文件编码批量转换命令</a><br />
+<a href="http://blog.csdn.net/qq_14821541/article/details/78860018">linux 批量转换GBK到UTF-8编码的方法</a><br />
+<a href="http://blog.csdn.net/zhaoweikid/article/details/308676">用iconv实现的gb18030到utf-8的编码转换</a><br />
+<a href="http://blog.csdn.net/ft2028739/article/details/15809019">macOS 使用 iconv 命令将 gb18030 编码转换为 utf-8 格式</a>  </p>
+</blockquote>
+<p>控制台输入 <code>iconv --help</code> 查看 iconv 命令帮助：</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>$ iconv --help
+</span><span id="__span-24-2"><a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a>Usage: iconv [OPTION...] [-f ENCODING] [-t ENCODING] [INPUTFILE...]
+</span><span id="__span-24-3"><a id="__codelineno-24-3" name="__codelineno-24-3" href="#__codelineno-24-3"></a>or:    iconv -l
+</span><span id="__span-24-4"><a id="__codelineno-24-4" name="__codelineno-24-4" href="#__codelineno-24-4"></a>
+</span><span id="__span-24-5"><a id="__codelineno-24-5" name="__codelineno-24-5" href="#__codelineno-24-5"></a>Converts text from one encoding to another encoding.
+</span><span id="__span-24-6"><a id="__codelineno-24-6" name="__codelineno-24-6" href="#__codelineno-24-6"></a>
+</span><span id="__span-24-7"><a id="__codelineno-24-7" name="__codelineno-24-7" href="#__codelineno-24-7"></a>Options controlling the input and output format:
+</span><span id="__span-24-8"><a id="__codelineno-24-8" name="__codelineno-24-8" href="#__codelineno-24-8"></a>  -f ENCODING, --from-code=ENCODING
+</span><span id="__span-24-9"><a id="__codelineno-24-9" name="__codelineno-24-9" href="#__codelineno-24-9"></a>                              the encoding of the input
+</span><span id="__span-24-10"><a id="__codelineno-24-10" name="__codelineno-24-10" href="#__codelineno-24-10"></a>  -t ENCODING, --to-code=ENCODING
+</span><span id="__span-24-11"><a id="__codelineno-24-11" name="__codelineno-24-11" href="#__codelineno-24-11"></a>                              the encoding of the output
+</span><span id="__span-24-12"><a id="__codelineno-24-12" name="__codelineno-24-12" href="#__codelineno-24-12"></a>
+</span><span id="__span-24-13"><a id="__codelineno-24-13" name="__codelineno-24-13" href="#__codelineno-24-13"></a>Options controlling conversion problems:
+</span><span id="__span-24-14"><a id="__codelineno-24-14" name="__codelineno-24-14" href="#__codelineno-24-14"></a>  -c                          discard unconvertible characters
+</span><span id="__span-24-15"><a id="__codelineno-24-15" name="__codelineno-24-15" href="#__codelineno-24-15"></a>  --unicode-subst=FORMATSTRING
+</span><span id="__span-24-16"><a id="__codelineno-24-16" name="__codelineno-24-16" href="#__codelineno-24-16"></a>                              substitution for unconvertible Unicode characters
+</span><span id="__span-24-17"><a id="__codelineno-24-17" name="__codelineno-24-17" href="#__codelineno-24-17"></a>  --byte-subst=FORMATSTRING   substitution for unconvertible bytes
+</span><span id="__span-24-18"><a id="__codelineno-24-18" name="__codelineno-24-18" href="#__codelineno-24-18"></a>  --widechar-subst=FORMATSTRING
+</span><span id="__span-24-19"><a id="__codelineno-24-19" name="__codelineno-24-19" href="#__codelineno-24-19"></a>                              substitution for unconvertible wide characters
+</span><span id="__span-24-20"><a id="__codelineno-24-20" name="__codelineno-24-20" href="#__codelineno-24-20"></a>
+</span><span id="__span-24-21"><a id="__codelineno-24-21" name="__codelineno-24-21" href="#__codelineno-24-21"></a>Options controlling error output:
+</span><span id="__span-24-22"><a id="__codelineno-24-22" name="__codelineno-24-22" href="#__codelineno-24-22"></a>  -s, --silent                suppress error messages about conversion problems
+</span><span id="__span-24-23"><a id="__codelineno-24-23" name="__codelineno-24-23" href="#__codelineno-24-23"></a>
+</span><span id="__span-24-24"><a id="__codelineno-24-24" name="__codelineno-24-24" href="#__codelineno-24-24"></a>Informative output:
+</span><span id="__span-24-25"><a id="__codelineno-24-25" name="__codelineno-24-25" href="#__codelineno-24-25"></a>  -l, --list                  list the supported encodings
+</span><span id="__span-24-26"><a id="__codelineno-24-26" name="__codelineno-24-26" href="#__codelineno-24-26"></a>  --help                      display this help and exit
+</span><span id="__span-24-27"><a id="__codelineno-24-27" name="__codelineno-24-27" href="#__codelineno-24-27"></a>  --version                   output version information and exit
+</span><span id="__span-24-28"><a id="__codelineno-24-28" name="__codelineno-24-28" href="#__codelineno-24-28"></a>
+</span><span id="__span-24-29"><a id="__codelineno-24-29" name="__codelineno-24-29" href="#__codelineno-24-29"></a>Report bugs to &lt;bug-gnu-libiconv@gnu.org&gt;.
+</span></code></pre></div>
+<p><code>iconv</code> 命令默认将转码结果输出到控制台（stdout）上。</p>
+<ul>
+<li>新版 iconv（raspbian 下的 2.24）可通过 <code>-o</code> 选项指定输出文件（outputfile）；  </li>
+<li>旧版 iconv（macOS 下的 1.11）命令不支持 <code>-o</code> 选项，则可使用 <code>&gt;</code> 将转码结果重定向到指定文件。  </li>
+</ul>
+<p>iconv 命令主要由 <code>-f</code> 和 <code>-t</code> 两个选项，指定原始编码和目标转码：</p>
+<ul>
+<li><code>-f</code> ENCODING, --from-code=ENCODING : the encoding of the input</li>
+<li><code>-t</code> ENCODING, --to-code=ENCODING : the encoding of the output</li>
+</ul>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-25-1"><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a>iconv<span class="w"> </span>-f<span class="w"> </span>GBK<span class="w"> </span>-t<span class="w"> </span>UTF-8<span class="w"> </span>file1<span class="w"> </span>-o<span class="w"> </span>file2
+</span><span id="__span-25-2"><a id="__codelineno-25-2" name="__codelineno-25-2" href="#__codelineno-25-2"></a>iconv<span class="w"> </span>-f<span class="w"> </span>GB18030<span class="w"> </span>-t<span class="w"> </span>UTF-8<span class="w"> </span>file1<span class="w"> </span>-o<span class="w"> </span>file2
+</span><span id="__span-25-3"><a id="__codelineno-25-3" name="__codelineno-25-3" href="#__codelineno-25-3"></a>
+</span><span id="__span-25-4"><a id="__codelineno-25-4" name="__codelineno-25-4" href="#__codelineno-25-4"></a><span class="c1"># macOS 下不支持 -o 选项，只能重定向</span>
+</span><span id="__span-25-5"><a id="__codelineno-25-5" name="__codelineno-25-5" href="#__codelineno-25-5"></a>iconv<span class="w"> </span>-f<span class="w"> </span>GB2312<span class="w"> </span>-t<span class="w"> </span>UTF-8<span class="w"> </span>file1<span class="w"> </span>&gt;<span class="w"> </span>file2
+</span></code></pre></div>
+<p>转换前 <code>include/</code> 目录下的文件编码信息如下：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-26-1"><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a><span class="c1"># 转换前</span>
+</span><span id="__span-26-2"><a id="__codelineno-26-2" name="__codelineno-26-2" href="#__codelineno-26-2"></a>$<span class="w"> </span>file<span class="w"> </span>include/*
+</span><span id="__span-26-3"><a id="__codelineno-26-3" name="__codelineno-26-3" href="#__codelineno-26-3"></a>include/CheckPCIf.h:<span class="w">      </span>C++<span class="w"> </span><span class="nb">source</span><span class="w"> </span>text,<span class="w"> </span>UTF-8<span class="w"> </span>Unicode<span class="w"> </span>text<span class="w"> </span><span class="c1"># 中英文</span>
+</span><span id="__span-26-4"><a id="__codelineno-26-4" name="__codelineno-26-4" href="#__codelineno-26-4"></a>include/UtilcFunctions.h:<span class="w"> </span>C++<span class="w"> </span><span class="nb">source</span><span class="w"> </span>text,<span class="w"> </span>ASCII<span class="w"> </span>text<span class="w"> </span><span class="c1"># 纯英文</span>
+</span><span id="__span-26-5"><a id="__codelineno-26-5" name="__codelineno-26-5" href="#__codelineno-26-5"></a>include/WifiPhotoIf.h:<span class="w">    </span>C++<span class="w"> </span><span class="nb">source</span><span class="w"> </span>text,<span class="w"> </span>ISO-8859<span class="w"> </span>text<span class="w"> </span><span class="c1"># 中英文</span>
+</span><span id="__span-26-6"><a id="__codelineno-26-6" name="__codelineno-26-6" href="#__codelineno-26-6"></a>include/liteif.h:<span class="w">         </span>C++<span class="w"> </span><span class="nb">source</span><span class="w"> </span>text,<span class="w"> </span>ISO-8859<span class="w"> </span>text,<span class="w"> </span>with<span class="w"> </span>CRLF<span class="w"> </span>line<span class="w"> </span>terminators<span class="w"> </span><span class="c1"># 中英文</span>
+</span><span id="__span-26-7"><a id="__codelineno-26-7" name="__codelineno-26-7" href="#__codelineno-26-7"></a>include/litelog.h:<span class="w">        </span>c<span class="w"> </span>program<span class="w"> </span>text,<span class="w"> </span>UTF-8<span class="w"> </span>Unicode<span class="w"> </span><span class="o">(</span>with<span class="w"> </span>BOM<span class="o">)</span><span class="w"> </span>text<span class="w"> </span><span class="c1"># 纯英文</span>
+</span><span id="__span-26-8"><a id="__codelineno-26-8" name="__codelineno-26-8" href="#__codelineno-26-8"></a>include/litenet.h:<span class="w">        </span>c<span class="w"> </span>program<span class="w"> </span>text,<span class="w"> </span>ASCII<span class="w"> </span>text,<span class="w"> </span>with<span class="w"> </span>CRLF,<span class="w"> </span>LF<span class="w"> </span>line<span class="w"> </span>terminators<span class="w"> </span><span class="c1"># 纯英文</span>
+</span><span id="__span-26-9"><a id="__codelineno-26-9" name="__codelineno-26-9" href="#__codelineno-26-9"></a>include/litestd.h:<span class="w">        </span>c<span class="w"> </span>program<span class="w"> </span>text,<span class="w"> </span>ASCII<span class="w"> </span>text,<span class="w"> </span>with<span class="w"> </span>CRLF<span class="w"> </span>line<span class="w"> </span>terminators<span class="w"> </span><span class="c1"># 中英文</span>
+</span><span id="__span-26-10"><a id="__codelineno-26-10" name="__codelineno-26-10" href="#__codelineno-26-10"></a>include/litetime.h:<span class="w">       </span>c<span class="w"> </span>program<span class="w"> </span>text,<span class="w"> </span>ASCII<span class="w"> </span>text,<span class="w"> </span>with<span class="w"> </span>CRLF<span class="w"> </span>line<span class="w"> </span>terminators<span class="w"> </span><span class="c1"># 纯英文</span>
+</span><span id="__span-26-11"><a id="__codelineno-26-11" name="__codelineno-26-11" href="#__codelineno-26-11"></a>
+</span><span id="__span-26-12"><a id="__codelineno-26-12" name="__codelineno-26-12" href="#__codelineno-26-12"></a>$<span class="w"> </span>enca<span class="w"> </span>-L<span class="w"> </span>zh_CN<span class="w"> </span>include/*
+</span><span id="__span-26-13"><a id="__codelineno-26-13" name="__codelineno-26-13" href="#__codelineno-26-13"></a>include/CheckPCIf.h:<span class="w"> </span>Universal<span class="w"> </span>transformation<span class="w"> </span>format<span class="w"> </span><span class="m">8</span><span class="w"> </span>bits<span class="p">;</span><span class="w"> </span>UTF-8
+</span><span id="__span-26-14"><a id="__codelineno-26-14" name="__codelineno-26-14" href="#__codelineno-26-14"></a>include/UtilcFunctions.h:<span class="w"> </span>7bit<span class="w"> </span>ASCII<span class="w"> </span>characters
+</span><span id="__span-26-15"><a id="__codelineno-26-15" name="__codelineno-26-15" href="#__codelineno-26-15"></a>include/WifiPhotoIf.h:<span class="w"> </span>Unrecognized<span class="w"> </span>encoding
+</span><span id="__span-26-16"><a id="__codelineno-26-16" name="__codelineno-26-16" href="#__codelineno-26-16"></a>include/liteif.h:<span class="w"> </span>Simplified<span class="w"> </span>Chinese<span class="w"> </span>National<span class="w"> </span>Standard<span class="p">;</span><span class="w"> </span>GB2312
+</span><span id="__span-26-17"><a id="__codelineno-26-17" name="__codelineno-26-17" href="#__codelineno-26-17"></a><span class="w">  </span>CRLF<span class="w"> </span>line<span class="w"> </span>terminators
+</span><span id="__span-26-18"><a id="__codelineno-26-18" name="__codelineno-26-18" href="#__codelineno-26-18"></a>include/litelog.h:<span class="w"> </span>Universal<span class="w"> </span>transformation<span class="w"> </span>format<span class="w"> </span><span class="m">8</span><span class="w"> </span>bits<span class="p">;</span><span class="w"> </span>UTF-8
+</span><span id="__span-26-19"><a id="__codelineno-26-19" name="__codelineno-26-19" href="#__codelineno-26-19"></a>include/litenet.h:<span class="w"> </span>7bit<span class="w"> </span>ASCII<span class="w"> </span>characters
+</span><span id="__span-26-20"><a id="__codelineno-26-20" name="__codelineno-26-20" href="#__codelineno-26-20"></a><span class="w">  </span>Mixed<span class="w"> </span>line<span class="w"> </span>terminators
+</span><span id="__span-26-21"><a id="__codelineno-26-21" name="__codelineno-26-21" href="#__codelineno-26-21"></a>include/litestd.h:<span class="w"> </span>7bit<span class="w"> </span>ASCII<span class="w"> </span>characters
+</span><span id="__span-26-22"><a id="__codelineno-26-22" name="__codelineno-26-22" href="#__codelineno-26-22"></a><span class="w">  </span>CRLF<span class="w"> </span>line<span class="w"> </span>terminators
+</span><span id="__span-26-23"><a id="__codelineno-26-23" name="__codelineno-26-23" href="#__codelineno-26-23"></a>include/litetime.h:<span class="w"> </span>7bit<span class="w"> </span>ASCII<span class="w"> </span>characters
+</span><span id="__span-26-24"><a id="__codelineno-26-24" name="__codelineno-26-24" href="#__codelineno-26-24"></a><span class="w">  </span>CRLF<span class="w"> </span>line<span class="w"> </span>terminators
+</span></code></pre></div>
+<p>执行 <code>iconv</code> 转换编码为 UTF-8：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-27-1"><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a>$<span class="w"> </span>mkdir<span class="w"> </span>include2
+</span><span id="__span-27-2"><a id="__codelineno-27-2" name="__codelineno-27-2" href="#__codelineno-27-2"></a><span class="c1"># 转换</span>
+</span><span id="__span-27-3"><a id="__codelineno-27-3" name="__codelineno-27-3" href="#__codelineno-27-3"></a>$<span class="w"> </span>iconv<span class="w"> </span>-f<span class="w"> </span>GB18030<span class="w"> </span>-t<span class="w"> </span>UTF-8<span class="w"> </span>include/CheckPCIf.h<span class="w"> </span>&gt;<span class="w"> </span>include2/CheckPCIf.h
+</span><span id="__span-27-4"><a id="__codelineno-27-4" name="__codelineno-27-4" href="#__codelineno-27-4"></a>iconv:<span class="w"> </span>include/CheckPCIf.h:5:24:<span class="w"> </span>cannot<span class="w"> </span>convert
+</span><span id="__span-27-5"><a id="__codelineno-27-5" name="__codelineno-27-5" href="#__codelineno-27-5"></a>$<span class="w"> </span>iconv<span class="w"> </span>-f<span class="w"> </span>GB18030<span class="w"> </span>-t<span class="w"> </span>UTF-8<span class="w"> </span>include/UtilcFunctions.h<span class="w"> </span>&gt;<span class="w"> </span>include2/UtilcFunctions.h
+</span><span id="__span-27-6"><a id="__codelineno-27-6" name="__codelineno-27-6" href="#__codelineno-27-6"></a>$<span class="w"> </span>iconv<span class="w"> </span>-f<span class="w"> </span>GB18030<span class="w"> </span>-t<span class="w"> </span>UTF-8<span class="w"> </span>include/WifiPhotoIf.h<span class="w"> </span>&gt;<span class="w"> </span>include2/WifiPhotoIf.h
+</span><span id="__span-27-7"><a id="__codelineno-27-7" name="__codelineno-27-7" href="#__codelineno-27-7"></a>$<span class="w"> </span>iconv<span class="w"> </span>-f<span class="w"> </span>GB18030<span class="w"> </span>-t<span class="w"> </span>UTF-8<span class="w"> </span>include/liteif.h<span class="w"> </span>&gt;<span class="w"> </span>include2/liteif.h
+</span><span id="__span-27-8"><a id="__codelineno-27-8" name="__codelineno-27-8" href="#__codelineno-27-8"></a>$<span class="w"> </span>iconv<span class="w"> </span>-f<span class="w"> </span>GB18030<span class="w"> </span>-t<span class="w"> </span>UTF-8<span class="w"> </span>include/litelog.h<span class="w"> </span>&gt;<span class="w"> </span>include2/litelog.h
+</span><span id="__span-27-9"><a id="__codelineno-27-9" name="__codelineno-27-9" href="#__codelineno-27-9"></a>iconv:<span class="w"> </span>include/litelog.h:1:2:<span class="w"> </span>cannot<span class="w"> </span>convert
+</span><span id="__span-27-10"><a id="__codelineno-27-10" name="__codelineno-27-10" href="#__codelineno-27-10"></a>$<span class="w"> </span>iconv<span class="w"> </span>-f<span class="w"> </span>GB18030<span class="w"> </span>-t<span class="w"> </span>UTF-8<span class="w"> </span>include/litenet.h<span class="w"> </span>&gt;<span class="w"> </span>include2/litenet.h
+</span><span id="__span-27-11"><a id="__codelineno-27-11" name="__codelineno-27-11" href="#__codelineno-27-11"></a>$<span class="w"> </span>iconv<span class="w"> </span>-f<span class="w"> </span>GB18030<span class="w"> </span>-t<span class="w"> </span>UTF-8<span class="w"> </span>include/litestd.h<span class="w"> </span>&gt;<span class="w"> </span>include2/litestd.h
+</span><span id="__span-27-12"><a id="__codelineno-27-12" name="__codelineno-27-12" href="#__codelineno-27-12"></a>$<span class="w"> </span>iconv<span class="w"> </span>-f<span class="w"> </span>GB18030<span class="w"> </span>-t<span class="w"> </span>UTF-8<span class="w"> </span>include/litetime.h<span class="w"> </span>&gt;<span class="w"> </span>include2/litetime.h
+</span></code></pre></div>
+<blockquote>
+<p>CheckPCIf.h 和 litelog.h 本身已是 UTF-8 Unicode 编码，部分字元无法转换？</p>
+</blockquote>
+<p>转换成功后，重新执行 <code>file</code> 和 <code>enca</code> 命令：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-28-1"><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a><span class="c1"># 转换后</span>
+</span><span id="__span-28-2"><a id="__codelineno-28-2" name="__codelineno-28-2" href="#__codelineno-28-2"></a>$<span class="w"> </span>file<span class="w"> </span>include2/*
+</span><span id="__span-28-3"><a id="__codelineno-28-3" name="__codelineno-28-3" href="#__codelineno-28-3"></a>include2/CheckPCIf.h:<span class="w">      </span>UTF-8<span class="w"> </span>Unicode<span class="w"> </span>text
+</span><span id="__span-28-4"><a id="__codelineno-28-4" name="__codelineno-28-4" href="#__codelineno-28-4"></a>include2/UtilcFunctions.h:<span class="w"> </span>C++<span class="w"> </span><span class="nb">source</span><span class="w"> </span>text,<span class="w"> </span>ASCII<span class="w"> </span>text
+</span><span id="__span-28-5"><a id="__codelineno-28-5" name="__codelineno-28-5" href="#__codelineno-28-5"></a>include2/WifiPhotoIf.h:<span class="w">    </span>C++<span class="w"> </span><span class="nb">source</span><span class="w"> </span>text,<span class="w"> </span>UTF-8<span class="w"> </span>Unicode<span class="w"> </span>text
+</span><span id="__span-28-6"><a id="__codelineno-28-6" name="__codelineno-28-6" href="#__codelineno-28-6"></a>include2/liteif.h:<span class="w">         </span>C++<span class="w"> </span><span class="nb">source</span><span class="w"> </span>text,<span class="w"> </span>UTF-8<span class="w"> </span>Unicode<span class="w"> </span>text,<span class="w"> </span>with<span class="w"> </span>CRLF<span class="w"> </span>line<span class="w"> </span>terminators
+</span><span id="__span-28-7"><a id="__codelineno-28-7" name="__codelineno-28-7" href="#__codelineno-28-7"></a>include2/litelog.h:<span class="w">        </span>UTF-8<span class="w"> </span>Unicode<span class="w"> </span>text,<span class="w"> </span>with<span class="w"> </span>no<span class="w"> </span>line<span class="w"> </span>terminators
+</span><span id="__span-28-8"><a id="__codelineno-28-8" name="__codelineno-28-8" href="#__codelineno-28-8"></a>include2/litenet.h:<span class="w">        </span>c<span class="w"> </span>program<span class="w"> </span>text,<span class="w"> </span>ASCII<span class="w"> </span>text,<span class="w"> </span>with<span class="w"> </span>CRLF,<span class="w"> </span>LF<span class="w"> </span>line<span class="w"> </span>terminators
+</span><span id="__span-28-9"><a id="__codelineno-28-9" name="__codelineno-28-9" href="#__codelineno-28-9"></a>include2/litestd.h:<span class="w">        </span>c<span class="w"> </span>program<span class="w"> </span>text,<span class="w"> </span>ASCII<span class="w"> </span>text,<span class="w"> </span>with<span class="w"> </span>CRLF<span class="w"> </span>line<span class="w"> </span>terminators
+</span><span id="__span-28-10"><a id="__codelineno-28-10" name="__codelineno-28-10" href="#__codelineno-28-10"></a>include2/litetime.h:<span class="w">       </span>c<span class="w"> </span>program<span class="w"> </span>text,<span class="w"> </span>ASCII<span class="w"> </span>text,<span class="w"> </span>with<span class="w"> </span>CRLF<span class="w"> </span>line<span class="w"> </span>terminators
+</span><span id="__span-28-11"><a id="__codelineno-28-11" name="__codelineno-28-11" href="#__codelineno-28-11"></a>
+</span><span id="__span-28-12"><a id="__codelineno-28-12" name="__codelineno-28-12" href="#__codelineno-28-12"></a>$<span class="w"> </span>enca<span class="w"> </span>-L<span class="w"> </span>zh_CN<span class="w"> </span>include/*
+</span><span id="__span-28-13"><a id="__codelineno-28-13" name="__codelineno-28-13" href="#__codelineno-28-13"></a>include2/CheckPCIf.h:<span class="w"> </span>Universal<span class="w"> </span>transformation<span class="w"> </span>format<span class="w"> </span><span class="m">8</span><span class="w"> </span>bits<span class="p">;</span><span class="w"> </span>UTF-8
+</span><span id="__span-28-14"><a id="__codelineno-28-14" name="__codelineno-28-14" href="#__codelineno-28-14"></a>include2/UtilcFunctions.h:<span class="w"> </span>7bit<span class="w"> </span>ASCII<span class="w"> </span>characters
+</span><span id="__span-28-15"><a id="__codelineno-28-15" name="__codelineno-28-15" href="#__codelineno-28-15"></a>include2/WifiPhotoIf.h:<span class="w"> </span>Universal<span class="w"> </span>transformation<span class="w"> </span>format<span class="w"> </span><span class="m">8</span><span class="w"> </span>bits<span class="p">;</span><span class="w"> </span>UTF-8
+</span><span id="__span-28-16"><a id="__codelineno-28-16" name="__codelineno-28-16" href="#__codelineno-28-16"></a>include2/liteif.h:<span class="w"> </span>Universal<span class="w"> </span>transformation<span class="w"> </span>format<span class="w"> </span><span class="m">8</span><span class="w"> </span>bits<span class="p">;</span><span class="w"> </span>UTF-8
+</span><span id="__span-28-17"><a id="__codelineno-28-17" name="__codelineno-28-17" href="#__codelineno-28-17"></a><span class="w">  </span>CRLF<span class="w"> </span>line<span class="w"> </span>terminators
+</span><span id="__span-28-18"><a id="__codelineno-28-18" name="__codelineno-28-18" href="#__codelineno-28-18"></a>include2/litelog.h:<span class="w"> </span>Universal<span class="w"> </span>transformation<span class="w"> </span>format<span class="w"> </span><span class="m">8</span><span class="w"> </span>bits<span class="p">;</span><span class="w"> </span>UTF-8
+</span><span id="__span-28-19"><a id="__codelineno-28-19" name="__codelineno-28-19" href="#__codelineno-28-19"></a>include2/litenet.h:<span class="w"> </span>7bit<span class="w"> </span>ASCII<span class="w"> </span>characters
+</span><span id="__span-28-20"><a id="__codelineno-28-20" name="__codelineno-28-20" href="#__codelineno-28-20"></a><span class="w">  </span>Mixed<span class="w"> </span>line<span class="w"> </span>terminators
+</span><span id="__span-28-21"><a id="__codelineno-28-21" name="__codelineno-28-21" href="#__codelineno-28-21"></a>include2/litestd.h:<span class="w"> </span>7bit<span class="w"> </span>ASCII<span class="w"> </span>characters
+</span><span id="__span-28-22"><a id="__codelineno-28-22" name="__codelineno-28-22" href="#__codelineno-28-22"></a><span class="w">  </span>CRLF<span class="w"> </span>line<span class="w"> </span>terminators
+</span><span id="__span-28-23"><a id="__codelineno-28-23" name="__codelineno-28-23" href="#__codelineno-28-23"></a>include2/litetime.h:<span class="w"> </span>7bit<span class="w"> </span>ASCII<span class="w"> </span>characters
+</span><span id="__span-28-24"><a id="__codelineno-28-24" name="__codelineno-28-24" href="#__codelineno-28-24"></a><span class="w">  </span>CRLF<span class="w"> </span>line<span class="w"> </span>terminators
+</span></code></pre></div>
+<blockquote>
+<p>貌似只有 ISO-8859 的被转码了？litelog.h 丢了 BOM?</p>
+</blockquote>
+<p><code>ASCII text</code>：表示纯 ASCII 编码，只有英文字符，没有中文等其他语言字符。<br />
+当输入中文等其他语言字符后，则编码将显示为 <code>UTF-8 Unicode text</code>。  </p>
+<h4 id="iconv_批量更改文件编码"><a href="http://blog.csdn.net/longxibendi/article/details/5889110">iconv 批量更改文件编码</a><a class="headerlink" href="#iconv_批量更改文件编码" title="Permanent link">#</a></h4>
+<p>将当前目录下所有的 php 文件 <code>$file</code> 从 GB18030 转码为 utf8 文件 <code>$file.new</code>，然后将 <code>$file.new</code> 重命名为 <code>$file</code>，即覆盖源文件。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-29-1"><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a><span class="ch">#!/bin/bash</span>
+</span><span id="__span-29-2"><a id="__codelineno-29-2" name="__codelineno-29-2" href="#__codelineno-29-2"></a><span class="k">for</span><span class="w"> </span>file<span class="w"> </span><span class="k">in</span><span class="w"> </span>*.php
+</span><span id="__span-29-3"><a id="__codelineno-29-3" name="__codelineno-29-3" href="#__codelineno-29-3"></a><span class="k">do</span>
+</span><span id="__span-29-4"><a id="__codelineno-29-4" name="__codelineno-29-4" href="#__codelineno-29-4"></a><span class="w">    </span>iconv<span class="w"> </span>-f<span class="w"> </span>GB18030<span class="w"> </span>-t<span class="w"> </span>utf8<span class="w"> </span>-o<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$file</span><span class="s2">.new&quot;</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$file</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">&amp;&amp;</span>
+</span><span id="__span-29-5"><a id="__codelineno-29-5" name="__codelineno-29-5" href="#__codelineno-29-5"></a><span class="w">    </span>mv<span class="w"> </span>-f<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$file</span><span class="s2">.new&quot;</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$file</span><span class="s2">&quot;</span>
+</span><span id="__span-29-6"><a id="__codelineno-29-6" name="__codelineno-29-6" href="#__codelineno-29-6"></a><span class="k">done</span>
+</span></code></pre></div>
+<p>也可利用 find 递归查找当前目录及其子目录下的所有 php 文件进行转码。</p>
+<ol>
+<li>将每个 find 结果行（文件名）读取到变量 file 中，然后 echo 打印出文件名；  </li>
+<li>紧接着将 <code>$file</code> 从 GB18030 转码为 UTF-8 文件 <code>$file.utf8</code>；  </li>
+<li>第一个 mv 命令将源文件重命名为 <code>*.18030</code> 备份；  </li>
+<li>第二个 mv 将转码文件（<code>*.utf8</code>）改名覆盖源文件。</li>
+</ol>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-30-1"><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a><span class="ch">#!/bin/bash</span>
+</span><span id="__span-30-2"><a id="__codelineno-30-2" name="__codelineno-30-2" href="#__codelineno-30-2"></a>find<span class="w"> </span>.<span class="w"> </span>-type<span class="w"> </span>f<span class="w"> </span>-name<span class="w"> </span><span class="s2">&quot;*.php&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="k">while</span><span class="w"> </span><span class="nb">read</span><span class="w"> </span>file<span class="p">;</span>
+</span><span id="__span-30-3"><a id="__codelineno-30-3" name="__codelineno-30-3" href="#__codelineno-30-3"></a><span class="k">do</span>
+</span><span id="__span-30-4"><a id="__codelineno-30-4" name="__codelineno-30-4" href="#__codelineno-30-4"></a><span class="w">   </span><span class="nb">echo</span><span class="w"> </span><span class="nv">$file</span>
+</span><span id="__span-30-5"><a id="__codelineno-30-5" name="__codelineno-30-5" href="#__codelineno-30-5"></a><span class="w">   </span>iconv<span class="w"> </span>-f<span class="w"> </span>GB18030<span class="w"> </span>-t<span class="w"> </span>UTF-8<span class="w"> </span><span class="nv">$file</span><span class="w"> </span>&gt;<span class="w"> </span><span class="si">${</span><span class="nv">file</span><span class="si">}</span>.utf8
+</span><span id="__span-30-6"><a id="__codelineno-30-6" name="__codelineno-30-6" href="#__codelineno-30-6"></a><span class="w">   </span>mv<span class="w"> </span><span class="nv">$file</span><span class="w"> </span><span class="si">${</span><span class="nv">file</span><span class="si">}</span>.18030
+</span><span id="__span-30-7"><a id="__codelineno-30-7" name="__codelineno-30-7" href="#__codelineno-30-7"></a><span class="w">   </span>mv<span class="w"> </span><span class="si">${</span><span class="nv">file</span><span class="si">}</span>.utf8<span class="w"> </span><span class="nv">$file</span>
+</span><span id="__span-30-8"><a id="__codelineno-30-8" name="__codelineno-30-8" href="#__codelineno-30-8"></a><span class="k">done</span>
+</span></code></pre></div>
+<p><a href="https://gist.github.com/dedeexe/b222b932539ea373fb0c">format_converter.sh</a></p>
+<blockquote>
+<p>iconv 命令不能直接转码覆盖源文件，只能通过 <code>mv -f</code> 强制覆盖。</p>
+</blockquote>
+<p><a href="https://unix.stackexchange.com/questions/10241/how-can-i-make-iconv-replace-the-input-file-with-the-converted-output">How can I make iconv replace the input file with the converted output?</a>  </p>
+<hr />
+<div class="language-text highlight"><pre><span></span><code><span id="__span-31-1"><a id="__codelineno-31-1" name="__codelineno-31-1" href="#__codelineno-31-1"></a>find include src -type f | xargs file | grep -i &#39;ISO-8859\|Non-ISO&#39; | cut -d &#39;:&#39; -f 1 | xargs iconv -f GB18030 -t UTF-8
+</span></code></pre></div>
+<p>如何重定向输出 src？</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-32-1"><a id="__codelineno-32-1" name="__codelineno-32-1" href="#__codelineno-32-1"></a>find include src -type f | xargs file | grep -i &#39;ISO-8859\|Non-ISO&#39; | cut -d &#39;:&#39; -f 1 | xargs -I src iconv -f GB18030 -t UTF-8 src
+</span></code></pre></div>
+<p>单行命令貌似不好实现，只能编写shell脚本。</p>
+<h3 id="enca_命令转换">enca 命令转换<a class="headerlink" href="#enca_命令转换" title="Permanent link">#</a></h3>
+<p><code>enca -L zh_CN -x utf-8 *</code> 将当前目录下的所有文件转码为 UTF-8。  </p>
+<p>如果不想覆盖，则可以执行 <code>enca -L zh_CN -x UTF-8 &lt; file1 &gt; file2</code>，将 file1 转换成 file2。</p>
+<p>利用管道批量查找过滤出混合中文编码的文件：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-33-1"><a id="__codelineno-33-1" name="__codelineno-33-1" href="#__codelineno-33-1"></a>find<span class="w"> </span>include<span class="w"> </span>src<span class="w"> </span>-type<span class="w"> </span>f<span class="w"> </span><span class="p">|</span><span class="w"> </span>xargs<span class="w"> </span>file<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;ISO-8859\|Non-ISO&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>cut<span class="w"> </span>-d<span class="w"> </span><span class="s1">&#39;:&#39;</span><span class="w"> </span>-f<span class="w"> </span><span class="m">1</span>
+</span><span id="__span-33-2"><a id="__codelineno-33-2" name="__codelineno-33-2" href="#__codelineno-33-2"></a>find<span class="w"> </span>include<span class="w"> </span>src<span class="w"> </span>-type<span class="w"> </span>f<span class="w"> </span><span class="p">|</span><span class="w"> </span>xargs<span class="w"> </span>enca<span class="w"> </span>-L<span class="w"> </span>zh_CN<span class="w"> </span>-i<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;GBK\|\?\?\?&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span>-F:<span class="w"> </span><span class="s1">&#39;{print $1}&#39;</span>
+</span></code></pre></div>
+<ol>
+<li>利用 <code>find</code> 命令查找指定文件夹及其子目录下的所有文件；  </li>
+<li>针对查找结果集，利用 <strong>xargs</strong> 重定向执行 <code>file</code> 或 <code>enca</code> 命令查看编码信息；  </li>
+<li>利用 <code>grep</code> 命令过滤出编码为 ISO-8859(iso-8859)/GBK(GB2312) 的文件信息；  </li>
+<li>利用 <code>cut</code> 或 <code>awk</code> 命令对grep结果集的文件信息行以 <code>:</code> 切割提取出第一列相对路径文件名；  </li>
+<li>对相对路径文件名结果集执行 <code>enca -L zh_CN -x utf-8</code> 命令将其转码为 UTF-8。  </li>
+</ol>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-34-1"><a id="__codelineno-34-1" name="__codelineno-34-1" href="#__codelineno-34-1"></a>find<span class="w"> </span>include<span class="w"> </span>src<span class="w"> </span>-type<span class="w"> </span>f<span class="w"> </span><span class="p">|</span><span class="w"> </span>xargs<span class="w"> </span>file<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-i<span class="w"> </span><span class="s1">&#39;ISO-8859\|Non-ISO&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>cut<span class="w"> </span>-d<span class="w"> </span><span class="s1">&#39;:&#39;</span><span class="w"> </span>-f<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>xargs<span class="w"> </span>enca<span class="w"> </span>-V<span class="w"> </span>-L<span class="w"> </span>zh_CN<span class="w"> </span>-x<span class="w"> </span>utf-8<span class="w"> </span><span class="p">|</span><span class="w"> </span>tee<span class="w"> </span>enca-x.log
+</span></code></pre></div>
+<h3 id="utf8__bom">UTF8 + BOM<a class="headerlink" href="#utf8__bom" title="Permanent link">#</a></h3>
+<p><a href="https://stackoverflow.com/questions/21289157/set-encoding-of-file-to-utf8-with-bom-in-sublime-text-3">Set Encoding of File to UTF8 With BOM in Sublime Text 3</a>  </p>
+<p>使用 iconv 或 enca 命令将所有 GB18030 字符都转换为 UTF8 后，再使用 Sublime Text 3 打开文件，通过菜单 File | Save with Encoding 选择 <code>UTF8 with BOM</code>：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-35-1"><a id="__codelineno-35-1" name="__codelineno-35-1" href="#__codelineno-35-1"></a>$<span class="w"> </span>file<span class="w"> </span>*
+</span><span id="__span-35-2"><a id="__codelineno-35-2" name="__codelineno-35-2" href="#__codelineno-35-2"></a>UtilcFunctions.h:<span class="w"> </span>c<span class="w"> </span>program<span class="w"> </span>text,<span class="w"> </span>UTF-8<span class="w"> </span>Unicode<span class="w"> </span><span class="o">(</span>with<span class="w"> </span>BOM<span class="o">)</span><span class="w"> </span>text
+</span><span id="__span-35-3"><a id="__codelineno-35-3" name="__codelineno-35-3" href="#__codelineno-35-3"></a>WifiPhotoIf.h:<span class="w">    </span>c<span class="w"> </span>program<span class="w"> </span>text,<span class="w"> </span>UTF-8<span class="w"> </span>Unicode<span class="w"> </span><span class="o">(</span>with<span class="w"> </span>BOM<span class="o">)</span><span class="w"> </span>text
+</span><span id="__span-35-4"><a id="__codelineno-35-4" name="__codelineno-35-4" href="#__codelineno-35-4"></a>liteif.h:<span class="w">         </span>c<span class="w"> </span>program<span class="w"> </span>text,<span class="w"> </span>UTF-8<span class="w"> </span>Unicode<span class="w"> </span><span class="o">(</span>with<span class="w"> </span>BOM<span class="o">)</span><span class="w"> </span>text
+</span><span id="__span-35-5"><a id="__codelineno-35-5" name="__codelineno-35-5" href="#__codelineno-35-5"></a>litelog.h:<span class="w">        </span>c<span class="w"> </span>program<span class="w"> </span>text,<span class="w"> </span>UTF-8<span class="w"> </span>Unicode<span class="w"> </span><span class="o">(</span>with<span class="w"> </span>BOM<span class="o">)</span><span class="w"> </span>text
+</span><span id="__span-35-6"><a id="__codelineno-35-6" name="__codelineno-35-6" href="#__codelineno-35-6"></a>litenet.h:<span class="w">        </span>c<span class="w"> </span>program<span class="w"> </span>text,<span class="w"> </span>UTF-8<span class="w"> </span>Unicode<span class="w"> </span><span class="o">(</span>with<span class="w"> </span>BOM<span class="o">)</span><span class="w"> </span>text,<span class="w"> </span>with<span class="w"> </span>CRLF<span class="w"> </span>line<span class="w"> </span>terminators
+</span><span id="__span-35-7"><a id="__codelineno-35-7" name="__codelineno-35-7" href="#__codelineno-35-7"></a>litestd.h:<span class="w">        </span>c<span class="w"> </span>program<span class="w"> </span>text,<span class="w"> </span>UTF-8<span class="w"> </span>Unicode<span class="w"> </span><span class="o">(</span>with<span class="w"> </span>BOM<span class="o">)</span><span class="w"> </span>text,<span class="w"> </span>with<span class="w"> </span>CRLF<span class="w"> </span>line<span class="w"> </span>terminators
+</span><span id="__span-35-8"><a id="__codelineno-35-8" name="__codelineno-35-8" href="#__codelineno-35-8"></a>litetime.h:<span class="w">       </span>c<span class="w"> </span>program<span class="w"> </span>text,<span class="w"> </span>UTF-8<span class="w"> </span>Unicode<span class="w"> </span><span class="o">(</span>with<span class="w"> </span>BOM<span class="o">)</span><span class="w"> </span>text,<span class="w"> </span>with<span class="w"> </span>CRLF<span class="w"> </span>line<span class="w"> </span>terminators
+</span><span id="__span-35-9"><a id="__codelineno-35-9" name="__codelineno-35-9" href="#__codelineno-35-9"></a>
+</span><span id="__span-35-10"><a id="__codelineno-35-10" name="__codelineno-35-10" href="#__codelineno-35-10"></a>$<span class="w"> </span>enca<span class="w"> </span>*
+</span><span id="__span-35-11"><a id="__codelineno-35-11" name="__codelineno-35-11" href="#__codelineno-35-11"></a>UtilcFunctions.h:<span class="w"> </span>Universal<span class="w"> </span>transformation<span class="w"> </span>format<span class="w"> </span><span class="m">8</span><span class="w"> </span>bits<span class="p">;</span><span class="w"> </span>UTF-8
+</span><span id="__span-35-12"><a id="__codelineno-35-12" name="__codelineno-35-12" href="#__codelineno-35-12"></a>WifiPhotoIf.h:<span class="w"> </span>Universal<span class="w"> </span>transformation<span class="w"> </span>format<span class="w"> </span><span class="m">8</span><span class="w"> </span>bits<span class="p">;</span><span class="w"> </span>UTF-8
+</span><span id="__span-35-13"><a id="__codelineno-35-13" name="__codelineno-35-13" href="#__codelineno-35-13"></a>liteif.h:<span class="w"> </span>Universal<span class="w"> </span>transformation<span class="w"> </span>format<span class="w"> </span><span class="m">8</span><span class="w"> </span>bits<span class="p">;</span><span class="w"> </span>UTF-8
+</span><span id="__span-35-14"><a id="__codelineno-35-14" name="__codelineno-35-14" href="#__codelineno-35-14"></a>litelog.h:<span class="w"> </span>Universal<span class="w"> </span>transformation<span class="w"> </span>format<span class="w"> </span><span class="m">8</span><span class="w"> </span>bits<span class="p">;</span><span class="w"> </span>UTF-8
+</span><span id="__span-35-15"><a id="__codelineno-35-15" name="__codelineno-35-15" href="#__codelineno-35-15"></a>litenet.h:<span class="w"> </span>Universal<span class="w"> </span>transformation<span class="w"> </span>format<span class="w"> </span><span class="m">8</span><span class="w"> </span>bits<span class="p">;</span><span class="w"> </span>UTF-8
+</span><span id="__span-35-16"><a id="__codelineno-35-16" name="__codelineno-35-16" href="#__codelineno-35-16"></a><span class="w">  </span>CRLF<span class="w"> </span>line<span class="w"> </span>terminators
+</span><span id="__span-35-17"><a id="__codelineno-35-17" name="__codelineno-35-17" href="#__codelineno-35-17"></a>litestd.h:<span class="w"> </span>Universal<span class="w"> </span>transformation<span class="w"> </span>format<span class="w"> </span><span class="m">8</span><span class="w"> </span>bits<span class="p">;</span><span class="w"> </span>UTF-8
+</span><span id="__span-35-18"><a id="__codelineno-35-18" name="__codelineno-35-18" href="#__codelineno-35-18"></a><span class="w">  </span>CRLF<span class="w"> </span>line<span class="w"> </span>terminators
+</span><span id="__span-35-19"><a id="__codelineno-35-19" name="__codelineno-35-19" href="#__codelineno-35-19"></a>litetime.h:<span class="w"> </span>Universal<span class="w"> </span>transformation<span class="w"> </span>format<span class="w"> </span><span class="m">8</span><span class="w"> </span>bits<span class="p">;</span><span class="w"> </span>UTF-8
+</span><span id="__span-35-20"><a id="__codelineno-35-20" name="__codelineno-35-20" href="#__codelineno-35-20"></a><span class="w">  </span>CRLF<span class="w"> </span>line<span class="w"> </span>terminators
+</span></code></pre></div>
+<h2 id="line_endings">Line Endings<a class="headerlink" href="#line_endings" title="Permanent link">#</a></h2>
+<h3 id="回车换行">回车换行<a class="headerlink" href="#回车换行" title="Permanent link">#</a></h3>
+<p>以下摘自《<a href="http://blog.sina.com.cn/s/blog_4a20485e0102dr82.html">我的电脑生涯（2）：ASCII码</a>》：</p>
+<blockquote>
+<p>使用过机械式英文打字机的人都知道，当一行字符快打完的时候，打字机会发出“叮”的一声铃响，提醒打字员别再不停地击键了，否则字符就打到纸外面去了。此时，打字员要用手把打字机的滑车推到最左边，这个动作称为“<a href="https://zh.wikipedia.org/wiki/%E5%9B%9E%E8%BD%A6%E7%AC%A6"><strong>回车</strong></a>”。  </p>
+<blockquote>
+<p><strong><code>\r</code></strong>（ASCII 码为 0x0d）：本义是光标重新回到本行开头，r 即 <strong>r</strong>eturn，控制字符可以写成 CR（<a href="https://en.wikipedia.org/wiki/Carriage_return">Carriage Return</a>）；  </p>
+</blockquote>
+<p>仅仅回车是不够的，如果此时打字员继续打字，字符就会重叠在刚才已经打过字的这一行上面，所以打字员还要用手把纸卷滚筒向前转一下，这个动作叫“<a href="https://zh.wikipedia.org/wiki/%E6%8F%9B%E8%A1%8C"><strong>换行</strong></a>”。  </p>
+<blockquote>
+<p><strong><code>\n</code></strong>（ASCII 码为 0x0a）：本义是光标往下一行（不一定到下一行行首），n 及 <strong>n</strong>ewline，控制字符可以写成 LF（<a href="https://en.wikipedia.org/wiki/Newline">Line Feed</a>）。  </p>
+</blockquote>
+</blockquote>
+<p>在计算机上编辑文本，每当按下 enter(return) 键，系统会在行末（EOL）插入不可见的结束符（invisible <strong>Line Ending</strong>）标记换行，同时光标自动移动到下一行首。</p>
+<p>在非英语系国家的键盘上，回车键会用 <kbd>↵</kbd>（U+21B5、<code>&amp;crarr;</code>）符号表示，形象直观地说明了该键的功能。</p>
+<p>尽管回车换行这两个概念也被挪到了计算机上，但是早期存储器较贵，一些科学家认为在每行结尾加两个额外的字符来标识行末太浪费存储，加一个即可。</p>
+<p>具体到文本编码中，不同的操作系统在敲下 enter 键时插入的不可见行末结束符有所不同。具体分为<a href="https://zhuanlan.zhihu.com/p/25503610">三大流派</a>：</p>
+<ul>
+<li>在 Windows 系统下，<code>\r\n</code> 这两个字符连在一起标识行末，本义表示回车换行；  </li>
+<li>在 UNIX 类系统（包括最新的 macOS）中，换行符 <code>\n</code> 标识行末，表示光标移到下一行并回到行首；  </li>
+<li>在已经退出历史舞台的 Mac OS  9 及更古，<code>\r</code> 标识行末，表示回到本行开头并往下一行。  </li>
+</ul>
+<p>两大主流操作系统阵营采用不同的 Line Endings，造成的后果是：</p>
+<ul>
+<li>Unix/macOS 系统下的文件在 Windows 中打开，所有文字都会变成一行；  </li>
+<li>而 Windows 下的文件在 Unix/macOS 下打开的话，在每行的结尾可能会多出一个 <code>^M</code> 符号。  </li>
+</ul>
+<hr />
+<ol>
+<li>
+<p>Xcode 右侧的 Line Endings：</p>
+<ul>
+<li>macOS/Unix(LF)  </li>
+<li>Classic Mac OS(CR)  </li>
+<li>Windows(CRLF)  </li>
+</ul>
+</li>
+<li>
+<p>在 vim 下底行模式输入命令 <code>:set fileformat ?</code> 可查询当前文档的 EOL 格式；问号可换为 unix/dos 设置具体格式。  </p>
+</li>
+<li>在终端命令行中使用 <code>od -A x -t xCa tuple.h</code> 或 <code>hexdump -C tuple.h</code>，或在 Sublime Text 下使用 hexviewer 可查看 tuple.h 文件的十六进制码，以查验行末结束符。  </li>
+<li>在 python 中（sublime text 控制台）执行 <code>import os;os.linesep</code> 可以查看行分隔符（<code>line separator in text files</code>）。  </li>
+</ol>
+<h3 id="vim_编辑替换">vim 编辑替换<a class="headerlink" href="#vim_编辑替换" title="Permanent link">#</a></h3>
+<p>在 vim 下执行 <code>:%s/\r//g</code> 可将DOS文件中的回车符 <code>^M</code> 替换为空（即删除）。  </p>
+<blockquote>
+<p><a href="https://www.zhihu.com/question/22130727">Vim 中如何去掉 ^M 字符？</a><br />
+<a href="http://www.cnblogs.com/juandx/p/5663064.html">vim linux下查找显示^M并且删除</a>  </p>
+</blockquote>
+<h3 id="tr_命令">tr 命令<a class="headerlink" href="#tr_命令" title="Permanent link">#</a></h3>
+<p>dos2unix（crlf-&gt;lf）: </p>
+<p>利用 <code>tr -s</code> 替换回车换行符（<code>\r\n</code>）为换行符（<code>\n</code>），仅供调试：</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-36-1"><a id="__codelineno-36-1" name="__codelineno-36-1" href="#__codelineno-36-1"></a>tr -s &quot;[\r\n]&quot; &quot;[\n*]&quot; &lt; include/litestd.h
+</span><span id="__span-36-2"><a id="__codelineno-36-2" name="__codelineno-36-2" href="#__codelineno-36-2"></a>tr -s &quot;[\015\012]&quot; &quot;[\012*]&quot; &lt; include/litestd.h
+</span></code></pre></div>
+<p>利用 <code>tr -d</code> 删除回车控制字符（<code>\r</code>），并输出到新文件：</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-37-1"><a id="__codelineno-37-1" name="__codelineno-37-1" href="#__codelineno-37-1"></a>cat include/litestd.h | tr -d &#39;[\r]&#39; &gt; include/litestd2.h
+</span><span id="__span-37-2"><a id="__codelineno-37-2" name="__codelineno-37-2" href="#__codelineno-37-2"></a>tr -d &#39;[\r]&#39; &lt; include/litestd.h &gt; include/litestd2.h
+</span><span id="__span-37-3"><a id="__codelineno-37-3" name="__codelineno-37-3" href="#__codelineno-37-3"></a>tr -d &quot;[\015]&quot; &lt; include/litestd.h | tee include/litestd2.h
+</span></code></pre></div>
+<h3 id="sed_替换">sed 替换<a class="headerlink" href="#sed_替换" title="Permanent link">#</a></h3>
+<p>dos2unix（crlf-&gt;lf）</p>
+<p>批量替换方案：<code>find . -type f -print0 | xargs -0 sed -i 's/^M$//'</code>，貌似不行。</p>
+<p>修改为 <code>sed -i '' 's/\r//g' file</code>，对单个文件执行OK。<br />
+改为以下管接报错，尚待完善！</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-38-1"><a id="__codelineno-38-1" name="__codelineno-38-1" href="#__codelineno-38-1"></a>$ find include -type f -print0 | xargs -0 file | grep -i &#39;CRLF&#39; | cut -d &#39;:&#39; -f 1 | xargs sed -i &#39;&#39; &#39;s/\r//g&#39;
+</span><span id="__span-38-2"><a id="__codelineno-38-2" name="__codelineno-38-2" href="#__codelineno-38-2"></a>sed: RE error: illegal byte sequence
+</span></code></pre></div>
+<hr />
+<p>unix2dos（lf-&gt;crlf）转换方案参考 <a href="https://www.imooc.com/wenda/detail/560901">如何使用sed替换换行符？</a> - <a href="https://cloud.tencent.com/developer/ask/137080">腾讯云</a>。</p>
+<blockquote>
+<p><a href="https://www.cnblogs.com/chenfool/p/3820029.html">sed 匹配\n换行符</a><br />
+<a href="https://blog.csdn.net/u011729865/article/details/71773840/">sed命令如何替换换行符“\n”</a>  </p>
+</blockquote>
+<p>在 GNU 中采用 sed 解决：</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-39-1"><a id="__codelineno-39-1" name="__codelineno-39-1" href="#__codelineno-39-1"></a>sed &#39;:a;N;$!ba;s/\n/\r\n/g&#39; file
+</span></code></pre></div>
+<p>这将在循环中读取整个文件，然后实现 lf-&gt;crlf 替换。</p>
+<ol>
+<li>创建标签 <code>a</code>。  </li>
+<li>通过 <code>N</code> 指令将当前和下一行附加到模式空间；  </li>
+<li>在最后一行之前（<code>$!</code>），则跳转到标签a（<code>ba</code>）；<br />
+    &gt; $! 意味着不要在最后一行执行，因为应该有一个最终换行符。  </li>
+<li>通过 <code>s</code> 替换指令将整个文件（<code>g</code>标记）中的 lf 替换为 crlf。  </li>
+</ol>
+<p>支持 BSD 和 macOS 的跨平台兼容sed语法：</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-40-1"><a id="__codelineno-40-1" name="__codelineno-40-1" href="#__codelineno-40-1"></a>sed -i -e &#39;:a&#39; -e &#39;N&#39; -e &#39;$!ba&#39; -e &#39;s/\n/\r\n/g&#39; file
+</span></code></pre></div>
+<p>改为以下管接报错，尚待完善！</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-41-1"><a id="__codelineno-41-1" name="__codelineno-41-1" href="#__codelineno-41-1"></a>$ find include -type f -print0 | xargs -0 file | grep -v &#39;CRLF&#39; | cut -d &#39;:&#39; -f 1 | xargs sed -i &#39;&#39; -e &#39;:a&#39; -e &#39;N&#39; -e &#39;$!ba&#39; -e &#39;s/\n/\r\n/g&#39;
+</span><span id="__span-41-2"><a id="__codelineno-41-2" name="__codelineno-41-2" href="#__codelineno-41-2"></a>sed: RE error: illegal byte sequence
+</span></code></pre></div>
+<h3 id="sublime_text_3_编辑替换">Sublime Text 3 编辑替换<a class="headerlink" href="#sublime_text_3_编辑替换" title="Permanent link">#</a></h3>
+<p>Sublime Text 的 <code>~/Library/Application Support/Sublime Text 3/Packages/Default/Preferences.sublime-settings</code></p>
+<div class="language-json highlight"><pre><span></span><code><span id="__span-42-1"><a id="__codelineno-42-1" name="__codelineno-42-1" href="#__codelineno-42-1"></a><span class="w">    </span><span class="c1">// Determines what character(s) are used to terminate each line in new files.</span>
+</span><span id="__span-42-2"><a id="__codelineno-42-2" name="__codelineno-42-2" href="#__codelineno-42-2"></a><span class="w">    </span><span class="c1">// Valid values are &#39;system&#39; (whatever the OS uses), &#39;windows&#39; (CRLF) and</span>
+</span><span id="__span-42-3"><a id="__codelineno-42-3" name="__codelineno-42-3" href="#__codelineno-42-3"></a><span class="w">    </span><span class="c1">// &#39;unix&#39; (LF only).</span>
+</span><span id="__span-42-4"><a id="__codelineno-42-4" name="__codelineno-42-4" href="#__codelineno-42-4"></a><span class="w">    </span><span class="nt">&quot;default_line_ending&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;system&quot;</span><span class="p">,</span>
+</span><span id="__span-42-5"><a id="__codelineno-42-5" name="__codelineno-42-5" href="#__codelineno-42-5"></a>
+</span><span id="__span-42-6"><a id="__codelineno-42-6" name="__codelineno-42-6" href="#__codelineno-42-6"></a><span class="w">    </span><span class="c1">// Display line endings in the status bar</span>
+</span><span id="__span-42-7"><a id="__codelineno-42-7" name="__codelineno-42-7" href="#__codelineno-42-7"></a><span class="w">    </span><span class="nt">&quot;show_line_endings&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="p">,</span>
+</span></code></pre></div>
+<p><code>default_line_ending</code>: 默认 line ending 跟随系统，macOS 下是 LF。<br />
+<code>show_line_endings</code>: 默认不在状态栏显示当前 Line Ending，可以 <code>Preferences &gt; Settings - Users</code> 打开 <code>~/Library/Application Support/Sublime Text 3/Packages/User/Preferences.sublime-settings</code>，在其中设置：</p>
+<div class="language-json highlight"><pre><span></span><code><span id="__span-43-1"><a id="__codelineno-43-1" name="__codelineno-43-1" href="#__codelineno-43-1"></a><span class="w">    </span><span class="nt">&quot;show_line_endings&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="p">,</span>
+</span></code></pre></div>
+<p>底部状态栏将显示当前 Line Ending：</p>
+<ul>
+<li>Windows：Windows Line Endings(CRLF)  </li>
+<li>Unix：Unix Line Endings(LF)  </li>
+<li>CR：Mac OS 9 Line Endings(CR)  </li>
+</ul>
+<p>可以点击选择切换，将 <code>litenet.h</code>,<code>litestd.h</code>,<code>litetime.h</code> 这3个文件的 Line Ending 都切换为 Unix(LF)。</p>
+<p><a href="https://stackoverflow.com/questions/1552749/difference-between-cr-lf-lf-and-cr-line-break-types">Difference between CR LF, LF and CR line break types?</a>  </p>
+<p><a href="https://help.github.com/articles/dealing-with-line-endings/">Dealing with line endings</a><br />
+<a href="https://stackoverflow.com/questions/1967370/git-replacing-lf-with-crlf">git replacing LF with CRLF</a>  </p>
+<p><a href="https://gist.github.com/jonlabelle/dd8c3caa7808cbe4cfe0a47ee4881059">crlf.py</a>: Replace CRLF (windows) line endings with LF (unix) line endings in files.  </p>
+<p><a href="https://intellij-support.jetbrains.com/hc/en-us/community/posts/205969644-How-to-Ensure-Always-LF-not-CRLF-on-Windows">How to Ensure Always LF not CRLF on Windows</a>  </p>
+
+
+
+
+
+
+
+  
+  
+
+
+
+  
+
+
+  
+
+
+
+  <h2 id="__comments">评论</h2>
+  <!-- Insert generated snippet here -->
+  <script src="https://giscus.app/client.js"
+    data-repo="fan2/mkdocs"
+    data-repo-id="R_kgDOLltxSg"
+    data-category="Announcements"
+    data-category-id="DIC_kwDOLltxSs4CeURH"
+    data-mapping="pathname"
+    data-strict="0"
+    data-reactions-enabled="1"
+    data-emit-metadata="1"
+    data-input-position="top"
+    data-theme="preferred_color_scheme"
+    data-lang="zh-CN"
+    data-loading="lazy"
+    crossorigin="anonymous"
+    async>
+  </script>
+
+  <!-- Synchronize Giscus theme with palette -->
+  <script>
+    var giscus = document.querySelector("script[src*=giscus]")
+
+    // Set palette on initial load
+    var palette = __md_get("__palette")
+    if (palette && typeof palette.color === "object") {
+      var theme = palette.color.scheme === "slate"
+        ? "transparent_dark"
+        : "light"
+
+      // Instruct Giscus to set theme
+      giscus.setAttribute("data-theme", theme) 
+    }
+
+    // Register event handlers after documented loaded
+    document.addEventListener("DOMContentLoaded", function() {
+      var ref = document.querySelector("[data-md-component=palette]")
+      ref.addEventListener("change", function() {
+        var palette = __md_get("__palette")
+        if (palette && typeof palette.color === "object") {
+          var theme = palette.color.scheme === "slate"
+            ? "transparent_dark"
+            : "light"
+
+          // Instruct Giscus to change theme
+          var frame = document.querySelector(".giscus-frame")
+          frame.contentWindow.postMessage(
+            { giscus: { setConfig: { theme } } },
+            "https://giscus.app"
+          )
+        }
+      })
+    })
+  </script>
+
+      
+    </article>
+  </div>
+
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+        
+      
+      <nav class="md-footer__inner md-grid" aria-label="页脚" >
+        
+          
+          <a href="../linux-cmd-split-merge/" class="md-footer__link md-footer__link--prev" aria-label="上一页: Linux Command - file split &amp; merge">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                上一页
+              </span>
+              <div class="md-ellipsis">
+                Linux Command - file split & merge
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../linux-cmd-utility/" class="md-footer__link md-footer__link--next" aria-label="下一页: Linux Command - utilities">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                下一页
+              </span>
+              <div class="md-ellipsis">
+                Linux Command - utilities
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2024- Cliff Fan
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["toc.follow", "header.autohide", "navigation.tabs", "navigation.top", "navigation.footer", "navigation.tracking", "content.code.copy", "content.code.select", "content.code.annotate"], "search": "../../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.bd41221c.min.js"></script>
+      
+        <script src="../../../javascripts/mathjax.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+        <script src="https://vercount.one/js"></script>
+      
+    
+  </body>
+</html>

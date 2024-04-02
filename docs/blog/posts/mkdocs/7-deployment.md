@@ -129,7 +129,7 @@ $ sudo ln -s /home/pifan/Sites/mkdocs/site/ /usr/share/nginx/html
 
 局域网内，在浏览器输入 http://rpi4b-ubuntu.local:81/（或使用 IP 代替 host），即可访问博客站点。
 
-接下来，可自行购买 VPS 将站点部署上去；或 [将域名交由 cloudflare 托管]((https://developers.cloudflare.com/registrar/get-started/transfer-domain-to-cloudflare/))，然后创建一条 [Cloudflare Zero Trust](https://one.dash.cloudflare.com/) 内网穿透隧道（Cloudflare Tunnel），将内网服务（blog+webdav）暴露到公网。
+接下来，可自行购买 VPS 将站点部署上去；或 [将域名交由 cloudflare 托管](https://developers.cloudflare.com/registrar/get-started/transfer-domain-to-cloudflare/)，然后创建一条 [Cloudflare Zero Trust](https://one.dash.cloudflare.com/) 内网穿透隧道（Cloudflare Tunnel），将内网服务（blog+webdav）暴露到公网。
 
 === "Cloudflare Zero Trust"
 

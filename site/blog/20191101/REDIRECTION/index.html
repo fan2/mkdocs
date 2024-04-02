@@ -1,0 +1,2001 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="在别处或在路上">
+      
+      
+        <meta name="author" content="Cliff Fan">
+      
+      
+        <link rel="canonical" href="https://duetorun.com/blog/20191101/REDIRECTION/">
+      
+      
+        <link rel="prev" href="../../20191030/linux-7z/">
+      
+      
+        <link rel="next" href="../Pipelines/">
+      
+      
+      <link rel="icon" href="../../../assets/hold_yourself.jpg">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.15">
+    
+    
+      
+        <title>Linux Redirection（重定向） - ElseWhere</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.7e359304.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function n(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],n("js",new Date),n("config","G-XGW41EGL31"),document.addEventListener("DOMContentLoaded",function(){document.forms.search&&document.forms.search.query.addEventListener("blur",function(){this.value&&n("event","search",{search_term:this.value})}),document$.subscribe(function(){var a=document.forms.feedback;if(void 0!==a)for(var e of a.querySelectorAll("[type=submit]"))e.addEventListener("click",function(e){e.preventDefault();var t=document.location.pathname,e=this.getAttribute("data-md-value");n("event","feedback",{page:t,data:e}),a.firstElementChild.disabled=!0;e=a.querySelector(".md-feedback__note [data-md-value='"+e+"']");e&&(e.hidden=!1)}),a.hidden=!1}),location$.subscribe(function(e){n("config","G-XGW41EGL31",{page_path:e.pathname})})});var e=document.createElement("script");e.async=!0,e.src="https://www.googletagmanager.com/gtag/js?id=G-XGW41EGL31",document.getElementById("__analytics").insertAdjacentElement("afterEnd",e)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+    
+  
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#stderr" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../../.." title="ElseWhere" class="md-header__button md-logo" aria-label="ElseWhere" data-md-component="logo">
+      
+  <img src="../../../assets/hold_yourself.jpg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ElseWhere
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Linux Redirection（重定向）
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1M8 13h8v-2H8v2m9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1 0 1.71-1.39 3.1-3.1 3.1h-4V17h4a5 5 0 0 0 5-5 5 5 0 0 0-5-5Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="indigo"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5M7 15a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="标签" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../about/" class="md-tabs__link">
+        
+  
+    
+  
+  About
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../" class="md-tabs__link">
+          
+  
+  Blog
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../link/" class="md-tabs__link">
+        
+  
+    
+  
+  Link
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" hidden>
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="ElseWhere" class="md-nav__button md-logo" aria-label="ElseWhere" data-md-component="logo">
+      
+  <img src="../../../assets/hold_yourself.jpg" alt="logo">
+
+    </a>
+    ElseWhere
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../about/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    About
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Blog
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      <a href="../../" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Archive
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            Archive
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2024/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2024
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2022/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2022
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2019/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2019
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2018/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2018
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2017/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2017
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2015/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2015
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Categories
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            Categories
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/command/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    command
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/editor/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    editor
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/git/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    git
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/linux/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    linux
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/macos/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    macOS
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/markdown/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    markdown
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/material/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    material
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/mkdocs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    mkdocs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/nginx/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    nginx
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/shell/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    shell
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/ubuntu/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ubuntu
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/vim/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    vim
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/webdav/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    webDAV
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/wiki/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    wiki
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/zsh/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    zsh
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../link/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Link
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#stderr" class="md-nav__link">
+    <span class="md-ellipsis">
+      stderr
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_" class="md-nav__link">
+    <span class="md-ellipsis">
+      &gt;, &gt;&gt;
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label=">, >>">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      &gt;
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_devnull" class="md-nav__link">
+    <span class="md-ellipsis">
+      &gt; /dev/null
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12" class="md-nav__link">
+    <span class="md-ellipsis">
+      1&gt;&amp;2
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#21" class="md-nav__link">
+    <span class="md-ellipsis">
+      2&gt;&amp;1
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#综合示例" class="md-nav__link">
+    <span class="md-ellipsis">
+      &gt;&amp;综合示例
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      &gt;&gt;
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#__1" class="md-nav__link">
+    <span class="md-ellipsis">
+      &lt;, &lt;&lt;
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="<, <<">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      &lt;
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      &lt;&lt;
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="<<">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cat" class="md-nav__link">
+    <span class="md-ellipsis">
+      cat
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bc" class="md-nav__link">
+    <span class="md-ellipsis">
+      bc
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      &lt;&lt;&lt;
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+  <div class="md-content md-content--post" data-md-component="content">
+    <div class="md-sidebar md-sidebar--post" data-md-component="sidebar" data-md-type="navigation">
+      <div class="md-sidebar__scrollwrap">
+        <div class="md-sidebar__inner md-post">
+          <nav class="md-nav md-nav--primary">
+            <div class="md-post__back">
+              <div class="md-nav__title md-nav__container">
+                <a href="../../" class="md-nav__link">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+                  <span class="md-ellipsis">
+                    回到主页
+                  </span>
+                </a>
+              </div>
+            </div>
+            
+              <div class="md-post__authors md-typeset">
+                
+                  <div class="md-profile md-post__profile">
+                    <span class="md-author md-author--long">
+                      <img src="https://duetorun.com/assets/carve_yourself.jpg" alt="Cliff Fan">
+                    </span>
+                    <span class="md-profile__description">
+                      <strong>
+                        
+                          Cliff Fan
+                        
+                      </strong>
+                      <br>
+                      Just do IT
+                    </span>
+                  </div>
+                
+              </div>
+            
+            <ul class="md-post__meta md-nav__list">
+              <li class="md-nav__item md-nav__item--section">
+                <div class="md-post__title">
+                  <span class="md-ellipsis">
+                    元数据
+                  </span>
+                </div>
+                <nav class="md-nav">
+                  <ul class="md-nav__list">
+                    <li class="md-nav__item">
+                      <div class="md-nav__link">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 19H5V8h14m-3-7v2H8V1H6v2H5c-1.11 0-2 .89-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-1V1m-1 11h-5v5h5v-5Z"/></svg>
+                        <time datetime="2019-11-01 10:00:00" class="md-ellipsis">2019年11月1日</time>
+                      </div>
+                    </li>
+                    
+                    
+                      <li class="md-nav__item">
+                        <div class="md-nav__link">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 3v15h3V3H9m3 2 4 13 3-1-4-13-3 1M5 5v13h3V5H5M3 19v2h18v-2H3Z"/></svg>
+                          <span class="md-ellipsis">
+                            分类于
+                            
+                              <a href="../../category/wiki/">wiki</a>, 
+                              <a href="../../category/linux/">linux</a></span>
+                        </div>
+                      </li>
+                    
+                    
+                      
+                      <li class="md-nav__item">
+                        <div class="md-nav__link">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7h1.5Z"/></svg>
+                          <span class="md-ellipsis">
+                            
+                              需要 8 分钟阅读时间
+                            
+                          </span>
+                        </div>
+                      </li>
+                    
+                    <!-- Add by Cliff.Fan, 29Mar24. -->
+                    <li class="md-nav__item">
+                      <div class="md-nav__link">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m19 1-5 5v11l5-4.5V1m2 4v13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V6c-1.45-1.1-3.55-1.5-5.5-1.5-1.95 0-4.05.4-5.5 1.5v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1M10 18.41C8.75 18.09 7.5 18 6.5 18c-1.06 0-2.32.19-3.5.5V7.13c.91-.4 2.14-.63 3.5-.63 1.36 0 2.59.23 3.5.63v11.28Z"/></svg>
+                        <span class="md-ellipsis" id="busuanzi_container_page_pv">
+                          阅读量：<span id="busuanzi_value_page_pv">N/A</span>
+                        </span>
+                      </div>
+                    </li>
+                  </ul>
+                </nav>
+              </li>
+            </ul>
+          </nav>
+          
+        </div>
+      </div>
+    </div>
+    <article class="md-content__inner md-typeset">
+      
+        
+  
+  
+
+<nav class="md-tags" >
+  
+    
+    
+    
+      <span class="md-tag">redirection</span>
+    
+  
+</nav>
+
+
+
+  <h1>Linux Redirection（重定向）</h1>
+
+<p>参考 BASH(1) manual page 的 <code>REDIRECTION</code> 部分。</p>
+<p>数据流重定向(REDIRECTION)就是将某个命令执行后本应输出到控制台的结果数据传导到指定的地方，例如文件或打印机之类的设备。</p>
+<!-- more -->
+
+<p>当在shell中执行命令的时候，每个进程都和三个打开的文件相联系，并使用文件描述符来引用这些文件。</p>
+<p>由于文件描述符不容易记忆，shell给出了相应的文件名代称。</p>
+<ol>
+<li>
+<p>标准输入（stdin）：文件描述符fd为0，缺省从键盘接受输入。</p>
+<ul>
+<li>也可使用 <code>&lt;</code>（<code>0&lt;</code>） 或 <code>&lt;&lt;</code>（<code>0&lt;&lt;</code>）从文件或其他设备导入。</li>
+</ul>
+</li>
+<li>
+<p>标准输出（stdout）：文件描述符fd为1，缺省输出到控制台（屏幕）。</p>
+<ul>
+<li>也可使用 <code>&gt;</code>（<code>1&gt;</code>） 或 <code>&gt;&gt;</code>（<code>1&gt;&gt;</code>）重定向导出到文件或其他设备。</li>
+</ul>
+</li>
+<li>
+<p>标准错误输出（stderr）：文件描述符fd为2，缺省输出到控制台（屏幕）。</p>
+<ul>
+<li>也可使用 <code>&gt;</code>（<code>2&gt;</code>） 或 <code>&gt;&gt;</code>（<code>2&gt;&gt;</code>）重定向导出到文件或其他设备。</li>
+</ul>
+</li>
+</ol>
+<p>如果没有特别指定文件描述符，命令默认将执行信息输出到缺省“文件”——你的屏幕，更确切地说是你的终端。</p>
+<h2 id="stderr">stderr<a class="headerlink" href="#stderr" title="Permanent link">#</a></h2>
+<p><strong>为什么会有一个专门针对错误的特殊文件stderr呢</strong>？</p>
+<p>当用命令处理大数据文件时，除了正常的（非错误的）输出信息，还有可能输出很多错误信息。<br />
+常见做法是先将标准输出重定向到一个文件，然后再把标准错误输出重定向到另外一个文件。<br />
+把错误信息存储到独立的日志文件，可以避免错误信息淹没正常结果输出，也便于排查问题。</p>
+<ul>
+<li>例如 nginx 即是分开存储普通日志 access_log 和出错日志 error_log。</li>
+</ul>
+<p>stdout和stderr区别在于：</p>
+<ol>
+<li>重定向 <code>&gt;</code> 默认是指 <code>1&gt;</code>，只将stdout输出重定向。</li>
+<li>管道 <code>|</code> 默认也只将stdout作为下一个命令的输入，不包括stderr；<code>|&amp;</code> 则包括了stdout和stderr。</li>
+</ol>
+<h2 id="_">&gt;, &gt;&gt;<a class="headerlink" href="#_" title="Permanent link">#</a></h2>
+<p>输出导向，分别是 <strong>替换</strong>（Redirecting Output）与 <strong>累加</strong>（Appending Redirected Output）。</p>
+<h3 id="_1">&gt;<a class="headerlink" href="#_1" title="Permanent link">#</a></h3>
+<p>最基本的重定向将命令的输出发送到一个文件中，bash shell用大于号（<code>&gt;</code>）来完成这项功能：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nb">command</span><span class="w"> </span>&gt;<span class="w"> </span>outputfile
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="c1"># 以上缺省了标准输出1</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="nb">command</span><span class="w"> </span><span class="m">1</span>&gt;<span class="w"> </span>outputfile
+</span></code></pre></div>
+<p>这样之前显示器上出现的命令输出，不再输出到屏幕控制台，而是保存到指定的输出文件中。</p>
+<blockquote>
+<p>如果输出文件已经存在，重定向操作符会用新的数据覆盖已有文件；否则先基于默认umask创建一个新文件。</p>
+</blockquote>
+<p>可以将stderr单独重定向到一个文件，将stdout重定向到另一个文件：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>cmd<span class="w"> </span><span class="m">2</span>&gt;stderr.txt<span class="w"> </span><span class="m">1</span>&gt;stdout.txt
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="c1"># 标准输出1可以省略</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>cmd<span class="w"> </span><span class="m">2</span>&gt;stderr.txt<span class="w"> </span>&gt;stdout.txt
+</span></code></pre></div>
+<p>假设有两个审计文件，其中一个的确存在且包含一些信息，而另一个由于某种原因可能已经不存在了。<br />
+以下脚本把这两个文件合并到accounts.out中，相应的错误将会保存在accounts.err文件中。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>$<span class="w"> </span>cat<span class="w"> </span>account_qtr.doc<span class="w"> </span>account_end.doc<span class="w"> </span><span class="m">1</span>&gt;accounts.out<span class="w"> </span><span class="m">2</span>&gt;accounts.err
+</span></code></pre></div>
+<p>我们来看一个gcc编译的例子。参考 <a href="https://gcc.gnu.org/onlinedocs/gcc-13.2.0/gcc/Overall-Options.html">Overall Options</a>，gcc 的 <code>-E</code> 选项指定只执行预处理（preprocessing），并将结果输出到standard output（默认输出到屏幕控制台）。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>-E
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>Stop<span class="w"> </span>after<span class="w"> </span>the<span class="w"> </span>preprocessing<span class="w"> </span>stage<span class="p">;</span><span class="w"> </span><span class="k">do</span><span class="w"> </span>not<span class="w"> </span>run<span class="w"> </span>the<span class="w"> </span>compiler<span class="w"> </span>proper.<span class="w"> </span>The<span class="w"> </span>output<span class="w"> </span>is<span class="w"> </span><span class="k">in</span><span class="w"> </span>the<span class="w"> </span>form<span class="w"> </span>of<span class="w"> </span>preprocessed<span class="w"> </span><span class="nb">source</span><span class="w"> </span>code,<span class="w"> </span>which<span class="w"> </span>is<span class="w"> </span>sent<span class="w"> </span>to<span class="w"> </span>the<span class="w"> </span>standard<span class="w"> </span>output.
+</span></code></pre></div>
+<p>如果c代码中包含了很多 <code>#define</code> 和 <code>#include</code> 预处理伪指令（Preprocessor Directives），控制台输出将很长，可考虑将预处理结果重定向到文本文件中，稍后用文本编辑器打开慢慢分析。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>$<span class="w"> </span>gcc<span class="w"> </span>helloworld.c<span class="w"> </span>-E<span class="w"> </span>&gt;<span class="w"> </span>preprocessing_E.txt
+</span></code></pre></div>
+<p>如果想看看 preprocessing 过程具体执行了哪些命令，可以打开 <code>-v</code> 开关，这些执行verbose信息将输出到stderr（默认输出到屏幕控制台）。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>-v
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>Print<span class="w"> </span><span class="o">(</span>on<span class="w"> </span>standard<span class="w"> </span>error<span class="w"> </span>output<span class="o">)</span><span class="w"> </span>the<span class="w"> </span>commands<span class="w"> </span>executed<span class="w"> </span>to<span class="w"> </span>run<span class="w"> </span>the<span class="w"> </span>stages<span class="w"> </span>of<span class="w"> </span>compilation.<span class="w"> </span>Also<span class="w"> </span>print<span class="w"> </span>the<span class="w"> </span>version<span class="w"> </span>number<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>compiler<span class="w"> </span>driver<span class="w"> </span>program<span class="w"> </span>and<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>preprocessor<span class="w"> </span>and<span class="w"> </span>the<span class="w"> </span>compiler<span class="w"> </span>proper.
+</span></code></pre></div>
+<p>如果要将verbose信息单独保存到文本文件，可以追加 <code>2&gt;</code>：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>$<span class="w"> </span>gcc<span class="w"> </span>helloworld.c<span class="w"> </span>-E<span class="w"> </span>-v<span class="w"> </span>&gt;preprocessing_E.txt<span class="w"> </span><span class="m">2</span>&gt;preprocessing_v.txt
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="c1"># or</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>$<span class="w"> </span>gcc<span class="w"> </span>helloworld.c<span class="w"> </span>-E<span class="w"> </span>-v<span class="w"> </span><span class="m">1</span>&gt;preprocessing_E.txt<span class="w"> </span><span class="m">2</span>&gt;preprocessing_v.txt
+</span></code></pre></div>
+<h3 id="_devnull">&gt; /dev/null<a class="headerlink" href="#_devnull" title="Permanent link">#</a></h3>
+<p>有时候，在输出中可能包含一些不必要的信息（如调试信息）。<br />
+如果不想让终端充斥着有关stderr的繁枝末节，可考虑将stderr输出重定向到 <code>/dev/null</code>，予以忽略。</p>
+<p>在使用 grep 查找时，当传入的文件或文件夹不存在时，可以指定 <code>-s</code> 选项屏蔽 No such file or directory 之类的错误信息输出。<br />
+find 命令则没有类似的选项，当查找的文件（夹）没有读权限时，可能会有大量的 Permission denied 报错信息输出到控制台。<br />
+find 执行输出的错误信息可以重定向到一个单独的日志文件，也可导向垃圾桶黑洞设备，被吞噬不输出到控制台。</p>
+<ul>
+<li><a href="https://www.cyberciti.biz/faq/bash-find-exclude-all-permission-denied-messages/">Linux / Unix Find Command Avoid Permission Denied Messages</a>  </li>
+<li><a href="https://stackoverflow.com/questions/762348/how-can-i-exclude-all-permission-denied-messages-from-find">How can I exclude all "permission denied" messages from "find"?</a>  </li>
+</ul>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="c1"># 将错误信息重定向到日志文件，不输出到控制台</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>$<span class="w"> </span>find<span class="w"> </span>/home<span class="w"> </span>-name<span class="w"> </span>.bashrc<span class="w"> </span><span class="m">2</span>&gt;<span class="w"> </span>finderrors.log
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="c1"># 将错误信息重定向到系统垃圾桶，不输出到控制台</span>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>$<span class="w"> </span>find<span class="w"> </span>/home<span class="w"> </span>-name<span class="w"> </span>.bashrc<span class="w"> </span><span class="m">2</span>&gt;<span class="w"> </span>/dev/null
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>$<span class="w"> </span>find<span class="w"> </span>/<span class="w"> </span>-type<span class="w"> </span>f<span class="w"> </span>-name<span class="w"> </span><span class="s2">&quot;*.conf&quot;</span><span class="w"> </span>-maxdepth<span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="m">2</span>&gt;/dev/null
+</span></code></pre></div>
+<p>有时候 stdout 和 stderr 中都有内容，可将其中之一重定向到黑洞，只打印另外一个。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="c1"># echo 命令执行正常，只输出 stdout，不输出 stderr；dump 一份到 stderr</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>$<span class="w"> </span><span class="nb">echo</span><span class="w"> </span>hello<span class="w"> </span><span class="m">1</span>&gt;<span class="p">&amp;</span><span class="m">2</span>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>hello
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="c1"># 过滤掉 stdout，输出 stderr</span>
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>$<span class="w"> </span><span class="nb">echo</span><span class="w"> </span>hello<span class="w"> </span><span class="m">1</span>&gt;<span class="p">&amp;</span><span class="m">2</span><span class="w"> </span><span class="m">1</span>&gt;/dev/null
+</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>hello
+</span></code></pre></div>
+<p>在 <a href="https://transfer.sh/">transfer.sh</a> 中，curl 正常输出 <code>| tee /dev/null</code> 只输出到控制台，导入黑洞（不存文件）：</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>curl --progress-bar --upload-file &quot;-&quot; &quot;https://transfer.sh/$file_name&quot; | tee /dev/null
+</span></code></pre></div>
+<p>假设要检测本地安装的Python版本，需执行 <code>python -V</code> 即可。</p>
+<ol>
+<li>已安装python，输出提示 Python 3.9.6 到 1-stdout</li>
+<li>未安装python，输出提示 zsh: command not found: python 到 2-stderr</li>
+</ol>
+<p>第3句 <code>if python -V;</code> 为试探检测语句，由于后面会针对成功失败分情况处理，若已安装后续会再次读取版本并输出安装信息。<br />
+若不希望在控制台输出临时执行结果，可续接 <code>&amp;&gt;/dev/null</code> 将执行结果(stdout or stderr)重定向到黑洞。</p>
+<p>试探执行成功，表示已安装python，在then分支中再次执行 <code>python -V</code> 将结果保存在 python_version 变量中。<br />
+由于后续有echo输出python安装和版本信息，因此这里保存执行结果到变量后，不希望输出到控制台。<br />
+可在变量赋值后，续接 <code>1&gt;/dev/null</code> 屏蔽stdout输出（suppress stdout）。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>check_python_version<span class="o">()</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="o">{</span>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span>python<span class="w"> </span>-V<span class="w"> </span><span class="p">&amp;</span>&gt;/dev/null<span class="p">;</span><span class="w"> </span><span class="c1"># 不输出执行结果</span>
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="w">    </span><span class="k">then</span>
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="w">        </span><span class="nv">python_version</span><span class="o">=</span><span class="k">$(</span>python<span class="w"> </span>-V<span class="k">)</span><span class="w"> </span><span class="m">1</span>&gt;/dev/null<span class="w"> </span><span class="c1"># 不输出版本信息</span>
+</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a><span class="w">        </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;python installed: </span><span class="nv">$python_version</span><span class="s2">&quot;</span>
+</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="m">0</span>
+</span><span id="__span-10-8"><a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a><span class="w">    </span><span class="k">else</span>
+</span><span id="__span-10-9"><a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a><span class="w">        </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;python uninstalled!&quot;</span>
+</span><span id="__span-10-10"><a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="m">1</span>
+</span><span id="__span-10-11"><a id="__codelineno-10-11" name="__codelineno-10-11" href="#__codelineno-10-11"></a><span class="w">    </span><span class="k">fi</span>
+</span><span id="__span-10-12"><a id="__codelineno-10-12" name="__codelineno-10-12" href="#__codelineno-10-12"></a><span class="o">}</span>
+</span></code></pre></div>
+<h3 id="12">1&gt;&amp;2<a class="headerlink" href="#12" title="Permanent link">#</a></h3>
+<p>在编写shell脚本时，经常会在捕获错误异常时调用echo打印自定义的出错信息，并将这些错误信息重定向到stderr设备中。<br />
+如果之前已经将stderr重定向到了指定日志文件，那么自定义的echo信息也会随stderr重定向到日志文件。<br />
+可以在中途采取这种重定向策略，使标准输出尽可能简洁，以免被计算过程中的大量输出淹没。</p>
+<blockquote>
+<p>redirect stdout to stderr: sending the output to standard error instead of standard out.</p>
+</blockquote>
+<p>重定向符号 <code>&gt;</code> 正常情况，连接左侧的源头和右侧的目标，左侧源头缺省是1-stdout。因此 <code>&gt;&amp;2</code> 实际上是 <code>1&gt;&amp;2</code> 的简略写法。</p>
+<blockquote>
+<p><code>[n]&gt;&amp;word</code> - If <code>n</code> is not speciﬁed, the standard output (ﬁle descriptor 1) is used.</p>
+</blockquote>
+<p>右侧的 <code>&amp;2</code> 中的<code>&amp;</code>类似C语言中的地址引用（denote），而后面的数字<code>2</code>为stderr的文件描述符。<br />
+因此，<code>&gt;&amp;2</code> 表示将1（stdout，标准输出）重定向到2（stderr，标准错误）中。</p>
+<p><strong>注意</strong>：<code>&gt;2</code>表示重定向到普通文件2中，<code>&gt;&amp;2</code>则表示重定向到fd=2的设备stdout中。</p>
+<p>相关参考：</p>
+<ul>
+<li><a href="https://blog.csdn.net/huangjuegeek/article/details/21713809">shell中&gt;&amp;2的含义及用法</a>  </li>
+<li><a href="https://www.cnblogs.com/bluestorm/p/10754821.html">Linux 重定向 2&gt;&amp;1，1&gt;&amp;2</a>  </li>
+<li><a href="https://stackoverflow.com/questions/23489934/echo-2-some-text-what-does-it-mean-in-shell-scripting">echo &gt;&amp;2 "some text" what does it mean in shell scripting</a>  </li>
+</ul>
+<p><a href="https://stackoverflow.com/questions/2990414/echo-that-outputs-to-stderr">bash - echo that outputs to stderr - Stack Overflow</a></p>
+<p>You could do this, which facilitates reading: <code>&gt;&amp;2 echo "error"</code></p>
+<p>以下是来自 <a href="https://transfer.sh/">transfer.sh</a> 中的一段脚本，是典型的判断文件是否存在的错误捕获处理：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span>!<span class="w"> </span>-e<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$file</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="w">            </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$file</span><span class="s2">: No such file or directory&quot;</span><span class="w"> </span>&gt;<span class="p">&amp;</span><span class="m">2</span>
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="m">1</span>
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="w">        </span><span class="k">fi</span>
+</span></code></pre></div>
+<p>echo hello 1&gt;&amp;2 配合管道操作：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="c1"># echo 命令执行正常，只输出 stdout，不输出 stderr；dump 一份到 stderr</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>$<span class="w"> </span><span class="nb">echo</span><span class="w"> </span>hello<span class="w"> </span><span class="m">1</span>&gt;<span class="p">&amp;</span><span class="m">2</span>
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>hello
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="c1"># 过滤掉 stdout，输出 stderr</span>
+</span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a>$<span class="w"> </span><span class="nb">echo</span><span class="w"> </span>hello<span class="w"> </span><span class="m">1</span>&gt;<span class="p">&amp;</span><span class="m">2</span><span class="w"> </span><span class="m">1</span>&gt;/dev/null
+</span><span id="__span-12-7"><a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a>hello
+</span><span id="__span-12-8"><a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a>
+</span><span id="__span-12-9"><a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a><span class="c1"># echo 输出 stdout；stderr(+stdout) 导向执行 grep</span>
+</span><span id="__span-12-10"><a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a>$<span class="w"> </span><span class="nb">echo</span><span class="w"> </span>hello<span class="w"> </span><span class="m">1</span>&gt;<span class="p">&amp;</span><span class="m">2</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>hello
+</span><span id="__span-12-11"><a id="__codelineno-12-11" name="__codelineno-12-11" href="#__codelineno-12-11"></a>hello
+</span><span id="__span-12-12"><a id="__codelineno-12-12" name="__codelineno-12-12" href="#__codelineno-12-12"></a>hello
+</span><span id="__span-12-13"><a id="__codelineno-12-13" name="__codelineno-12-13" href="#__codelineno-12-13"></a>
+</span><span id="__span-12-14"><a id="__codelineno-12-14" name="__codelineno-12-14" href="#__codelineno-12-14"></a><span class="c1"># echo 输出 stdout；stderr(+stdout) 导向执行 grep，出错输出stderr</span>
+</span><span id="__span-12-15"><a id="__codelineno-12-15" name="__codelineno-12-15" href="#__codelineno-12-15"></a>$<span class="w"> </span><span class="nb">echo</span><span class="w"> </span>hello<span class="w"> </span><span class="m">1</span>&gt;<span class="p">&amp;</span><span class="m">2</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>world
+</span><span id="__span-12-16"><a id="__codelineno-12-16" name="__codelineno-12-16" href="#__codelineno-12-16"></a>hello
+</span><span id="__span-12-17"><a id="__codelineno-12-17" name="__codelineno-12-17" href="#__codelineno-12-17"></a>
+</span><span id="__span-12-18"><a id="__codelineno-12-18" name="__codelineno-12-18" href="#__codelineno-12-18"></a><span class="c1"># 对比：grep 匹配失败默认没有输出（没有设置stderr）</span>
+</span><span id="__span-12-19"><a id="__codelineno-12-19" name="__codelineno-12-19" href="#__codelineno-12-19"></a>$<span class="w"> </span><span class="nb">echo</span><span class="w"> </span>hello<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>world
+</span></code></pre></div>
+<h3 id="21">2&gt;&amp;1<a class="headerlink" href="#21" title="Permanent link">#</a></h3>
+<p>当运行某些命令的时候，出错信息往往也很重要，以便用于分析问题。<br />
+那么，如何使错误信息也和正常输出一样，都写入同一个文件中呢？</p>
+<p>以下是 man bash 中关于 Redirecting Standard Output and Standard Error 的使用说明：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>Bash<span class="w"> </span>allows<span class="w"> </span>both<span class="w"> </span>the<span class="w"> </span>standard<span class="w"> </span>output<span class="w"> </span><span class="o">(</span>file<span class="w"> </span>descriptor<span class="w"> </span><span class="m">1</span><span class="o">)</span><span class="w"> </span>and<span class="w"> </span>the<span class="w"> </span>standard<span class="w"> </span>error<span class="w"> </span>output<span class="w"> </span><span class="o">(</span>file<span class="w"> </span>descriptor<span class="w"> </span><span class="m">2</span><span class="o">)</span><span class="w"> </span>to<span class="w"> </span>be<span class="w"> </span>redirected<span class="w"> </span>to<span class="w"> </span>the<span class="w"> </span>file<span class="w"> </span>whose<span class="w"> </span>name<span class="w"> </span>is<span class="w"> </span>the<span class="w"> </span>expansion<span class="w"> </span>of<span class="w"> </span>word<span class="w"> </span>with<span class="w"> </span>this<span class="w"> </span>construct.
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>There<span class="w"> </span>are<span class="w"> </span>two<span class="w"> </span>formats<span class="w"> </span><span class="k">for</span><span class="w"> </span>redirecting<span class="w"> </span>standard<span class="w"> </span>output<span class="w"> </span>and<span class="w"> </span>standard<span class="w"> </span>error:
+</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>
+</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a><span class="p">&amp;</span>&gt;word
+</span><span id="__span-13-6"><a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a>
+</span><span id="__span-13-7"><a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a>and
+</span><span id="__span-13-8"><a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a>
+</span><span id="__span-13-9"><a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a>&gt;<span class="p">&amp;</span>word
+</span><span id="__span-13-10"><a id="__codelineno-13-10" name="__codelineno-13-10" href="#__codelineno-13-10"></a>
+</span><span id="__span-13-11"><a id="__codelineno-13-11" name="__codelineno-13-11" href="#__codelineno-13-11"></a>Of<span class="w"> </span>the<span class="w"> </span>two<span class="w"> </span>forms,<span class="w"> </span>the<span class="w"> </span>first<span class="w"> </span>is<span class="w"> </span>preferred.<span class="w"> </span>This<span class="w"> </span>is<span class="w"> </span>semantically<span class="w"> </span>equivalent<span class="w"> </span>to
+</span><span id="__span-13-12"><a id="__codelineno-13-12" name="__codelineno-13-12" href="#__codelineno-13-12"></a>
+</span><span id="__span-13-13"><a id="__codelineno-13-13" name="__codelineno-13-13" href="#__codelineno-13-13"></a>&gt;word<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span>
+</span></code></pre></div>
+<p>以下的写法，两条数据交叉写入，可能导致错乱：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>$<span class="w"> </span>find<span class="w"> </span>/home<span class="w"> </span>-name<span class="w"> </span>.bashrc<span class="w"> </span><span class="m">1</span>&gt;<span class="w"> </span>file<span class="w"> </span><span class="m">2</span>&gt;<span class="w"> </span>file
+</span></code></pre></div>
+<p>根据 manpage 文档，正确的写法如下：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>$<span class="w"> </span>find<span class="w"> </span>/home<span class="w"> </span>-name<span class="w"> </span>.bashrc<span class="w"> </span><span class="p">&amp;</span>&gt;<span class="w"> </span>file
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>$<span class="w"> </span>find<span class="w"> </span>/home<span class="w"> </span>-name<span class="w"> </span>.bashrc<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="w"> </span>file
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>$<span class="w"> </span>find<span class="w"> </span>/home<span class="w"> </span>-name<span class="w"> </span>.bashrc<span class="w"> </span>&gt;<span class="w"> </span>file<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span>
+</span></code></pre></div>
+<p>第一种写法 <code>command &amp;&gt; file</code>：其中的 <code>&amp;</code> 省略了被引用的1和2，表示stdout和stderr都重定向到文件file中。<br />
+第二种写法：错误写法，少了<code>&gt;</code>，参考下面的经典示例。这里会将file理解为命令行参数！？<br />
+第三种写法 <code>command &gt; file 2&gt;&amp;1</code>：前面将标准输出1-stdout重定向到file中，后面的 <code>2&gt;&amp;1</code> 怎么理解呢？</p>
+<p><code>2&gt;&amp;1</code> 表示将2-stderr重定向到1-stdout，这样错误信息和正常结果输出都重定向到了文件file中。</p>
+<p>以下是 man bash 中的经典对比示例：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="c1"># Note that the order of redirections is significant. For example, the command</span>
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a><span class="c1"># directs both standard output and standard error to the file dirlist,</span>
+</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>ls<span class="w"> </span>&gt;<span class="w"> </span>dirlist<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span>
+</span><span id="__span-16-4"><a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a>
+</span><span id="__span-16-5"><a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a><span class="c1"># while the command directs only the standard output to file dirlist,</span>
+</span><span id="__span-16-6"><a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a><span class="c1"># because the standard error was duplicated as standard output before the standard output was redirected to dirlist.</span>
+</span><span id="__span-16-7"><a id="__codelineno-16-7" name="__codelineno-16-7" href="#__codelineno-16-7"></a>ls<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="w"> </span>&gt;<span class="w"> </span>dirlist
+</span></code></pre></div>
+<p>第二种写法 <code>ls 2&gt;&amp;1 &gt; dirlist</code> 和第一种写法的区别在于 <code>2&gt;&amp;1</code> 在重定向 <code>1 &gt; dirlist</code> 前面。</p>
+<ol>
+<li>先执行 <code>2&gt;&amp;1</code>，此时stdout默认还是输出到终端，所以stderr同stdout一样都输出到终端控制台；  </li>
+<li>再执行 <code>&gt; dirlist</code>，只有stdout会被重定向到dirlist文件中。  </li>
+</ol>
+<hr />
+<p>echo hello 2&gt;&amp;1 配合管道操作：</p>
+<blockquote>
+<p>2&gt;&amp;1 相当于 |&amp;，同时管传 stderr 和 stdout。</p>
+</blockquote>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="c1"># echo 命令执行正常，只输出 stdout，不输出 stderr；dump 空的 stderr 到 stdout</span>
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>$<span class="w"> </span><span class="nb">echo</span><span class="w"> </span>hello<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span>
+</span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>hello
+</span><span id="__span-17-4"><a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a>
+</span><span id="__span-17-5"><a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a><span class="c1"># stdout 有内容</span>
+</span><span id="__span-17-6"><a id="__codelineno-17-6" name="__codelineno-17-6" href="#__codelineno-17-6"></a>$<span class="w"> </span><span class="nb">echo</span><span class="w"> </span>hello<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="w"> </span><span class="m">2</span>&gt;/dev/null
+</span><span id="__span-17-7"><a id="__codelineno-17-7" name="__codelineno-17-7" href="#__codelineno-17-7"></a>hello
+</span><span id="__span-17-8"><a id="__codelineno-17-8" name="__codelineno-17-8" href="#__codelineno-17-8"></a>
+</span><span id="__span-17-9"><a id="__codelineno-17-9" name="__codelineno-17-9" href="#__codelineno-17-9"></a><span class="c1"># stderr 为空</span>
+</span><span id="__span-17-10"><a id="__codelineno-17-10" name="__codelineno-17-10" href="#__codelineno-17-10"></a>$<span class="w"> </span><span class="nb">echo</span><span class="w"> </span>hello<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="w"> </span><span class="m">1</span>&gt;/dev/null
+</span><span id="__span-17-11"><a id="__codelineno-17-11" name="__codelineno-17-11" href="#__codelineno-17-11"></a>
+</span><span id="__span-17-12"><a id="__codelineno-17-12" name="__codelineno-17-12" href="#__codelineno-17-12"></a>
+</span><span id="__span-17-13"><a id="__codelineno-17-13" name="__codelineno-17-13" href="#__codelineno-17-13"></a><span class="c1"># echo 输出 stdout；stdout(+stderr) 导向执行 grep</span>
+</span><span id="__span-17-14"><a id="__codelineno-17-14" name="__codelineno-17-14" href="#__codelineno-17-14"></a>$<span class="w"> </span><span class="nb">echo</span><span class="w"> </span>hello<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>hello
+</span><span id="__span-17-15"><a id="__codelineno-17-15" name="__codelineno-17-15" href="#__codelineno-17-15"></a>hello
+</span><span id="__span-17-16"><a id="__codelineno-17-16" name="__codelineno-17-16" href="#__codelineno-17-16"></a>
+</span><span id="__span-17-17"><a id="__codelineno-17-17" name="__codelineno-17-17" href="#__codelineno-17-17"></a><span class="c1"># echo 输出 stdout；stdout(+stderr) 导向执行 grep，出错输出stderr(为空)</span>
+</span><span id="__span-17-18"><a id="__codelineno-17-18" name="__codelineno-17-18" href="#__codelineno-17-18"></a>$<span class="w"> </span><span class="nb">echo</span><span class="w"> </span>hello<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>world
+</span></code></pre></div>
+<p>以下是 <a href="https://linuxize.com/post/how-to-run-linux-commands-in-background/">How to Run Linux Commands in Background</a> 中执行后台命令，并忽略stdout和stderr输出：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="c1"># suppress the stdout and stderr messages</span>
+</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a><span class="c1"># redirect stdout to /dev/null and stderr to stdout</span>
+</span><span id="__span-18-3"><a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a><span class="nb">command</span><span class="w"> </span>&gt;<span class="w"> </span>/dev/null<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="w"> </span><span class="p">&amp;</span>
+</span></code></pre></div>
+<p>以下是来自 <a href="https://developer.apple.com/library/archive/technotes/tn2065/_index.html">do shell script in AppleScript</a> 中的启动后台daemon的脚本示例：</p>
+<div class="language-AppleScript highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="nb">do shell script</span> <span class="s2">&quot;command &amp;&gt; file_path &amp;&quot;</span>
+</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a><span class="nb">do shell script</span> <span class="s2">&quot;command &gt; file_path 2&gt;&amp;1 &amp;&quot;</span>
+</span></code></pre></div>
+<h3 id="综合示例">&gt;&amp;综合示例<a class="headerlink" href="#综合示例" title="Permanent link">#</a></h3>
+<p>来看一组综合对比示例，以便加深理解：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="c1"># greplog1：只有正常输出内容</span>
+</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>grep<span class="w"> </span>pattern<span class="w"> </span>file<span class="w"> </span>&gt;<span class="w"> </span>greplog1
+</span><span id="__span-20-3"><a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a><span class="c1"># greplog2：内容为空，stdout被导向了stderr</span>
+</span><span id="__span-20-4"><a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a>grep<span class="w"> </span>pattern<span class="w"> </span>file<span class="w"> </span>&gt;<span class="w"> </span>greplog2<span class="w"> </span><span class="m">1</span>&gt;<span class="p">&amp;</span><span class="m">2</span>
+</span><span id="__span-20-5"><a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a><span class="c1"># greplog3、greplog4：既有正常输出内容，又有错误输出内容。</span>
+</span><span id="__span-20-6"><a id="__codelineno-20-6" name="__codelineno-20-6" href="#__codelineno-20-6"></a>grep<span class="w"> </span>pattern<span class="w"> </span>file<span class="w"> </span>&gt;<span class="w"> </span>greplog3<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="w">  </span><span class="c1"># stdout &gt; file, stderr same as stdout</span>
+</span><span id="__span-20-7"><a id="__codelineno-20-7" name="__codelineno-20-7" href="#__codelineno-20-7"></a>grep<span class="w"> </span>pattern<span class="w"> </span>file<span class="w"> </span><span class="m">2</span>&gt;<span class="w"> </span>greplog4<span class="w"> </span><span class="m">1</span>&gt;<span class="p">&amp;</span><span class="m">2</span><span class="w"> </span><span class="c1"># stderr &gt; file, stdout same as stderr</span>
+</span><span id="__span-20-8"><a id="__codelineno-20-8" name="__codelineno-20-8" href="#__codelineno-20-8"></a><span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;df&#39;</span><span class="w"> </span><span class="m">2</span>&gt;<span class="w"> </span>test.txt<span class="w"> </span>&gt;<span class="p">&amp;</span><span class="m">2</span><span class="w"> </span><span class="c1"># same as above</span>
+</span></code></pre></div>
+<p>回到上面的gcc预处理例子中，如果要将 <code>-E</code> 预处理(stdout)和 <code>-v</code>(stderr)信息一起保存到文本文件，可以有以下两种写法：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="c1"># directs both stdout &amp; stderr to file, nothing to console</span>
+</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>gcc<span class="w"> </span>helloworld.c<span class="w"> </span>-E<span class="w"> </span>-v<span class="w"> </span><span class="p">&amp;</span>&gt;<span class="w"> </span>preprocessing.txt
+</span><span id="__span-21-3"><a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a>
+</span><span id="__span-21-4"><a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a><span class="c1"># directs stdout to file, stderr to stdout(file), both to file, nothing to console</span>
+</span><span id="__span-21-5"><a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a>gcc<span class="w"> </span>helloworld.c<span class="w"> </span>-E<span class="w"> </span>-v<span class="w"> </span>&gt;<span class="w"> </span>preprocessing.txt<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span>
+</span></code></pre></div>
+<p>注意：以下情况中，开始的stderr(-v verbose信息)重定向到stdout，先输出到控制台；然后stdout重定向到文件。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="c1"># directs stderr(-v) to stdout, slip to console</span>
+</span><span id="__span-22-2"><a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a><span class="c1"># then directs only the original stdout(-E) to file</span>
+</span><span id="__span-22-3"><a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a>gcc<span class="w"> </span>helloworld.c<span class="w"> </span>-E<span class="w"> </span>-v<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="w"> </span>&gt;<span class="w"> </span>preprocessing_v.txt
+</span></code></pre></div>
+<p>如果想命令行执行的完整信息，既保留输出到控制台，又写入文件，可以通过管道加tee命令实现：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="c1"># directs stderr(-v) to stdout, then pipe stdout to both console and file</span>
+</span><span id="__span-23-2"><a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a>gcc<span class="w"> </span>helloworld.c<span class="w"> </span>-E<span class="w"> </span>-v<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>tee<span class="w"> </span>preprocessing.txt
+</span><span id="__span-23-3"><a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a>gcc<span class="w"> </span>helloworld.c<span class="w"> </span>-E<span class="w"> </span>-v<span class="w"> </span><span class="p">|&amp;</span><span class="w"> </span>tee<span class="w"> </span>preprocessing.txt
+</span></code></pre></div>
+<h3 id="_2">&gt;&gt;<a class="headerlink" href="#_2" title="Permanent link">#</a></h3>
+<p>有时并不想覆盖文件原有内容，而是想要将命令的输出追加到已有文件中，此时可以用双大于号（<code>&gt;&gt;</code>）来向现存文件末尾追加新数据。</p>
+<p>关于累加输出导向的广泛应用是 echo 一行新配置，追加到一个配置文件中。<br />
+以下示例在 <code>~/.zshrc</code> 末尾追加一句 export 命令：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a><span class="nb">echo</span><span class="w"> </span><span class="nb">export</span><span class="w"> </span><span class="nv">ALL_PROXY</span><span class="o">=</span>socks5://127.0.0.1:1080<span class="w"> </span>&gt;&gt;<span class="w"> </span>~/.zshrc
+</span></code></pre></div>
+<p>brew install openssl 过程中，Caveats 提示可执行脚本将其可执行路径添加到 PATH 中：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-25-1"><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a>If<span class="w"> </span>you<span class="w"> </span>need<span class="w"> </span>to<span class="w"> </span>have<span class="w"> </span>this<span class="w"> </span>software<span class="w"> </span>first<span class="w"> </span><span class="k">in</span><span class="w"> </span>your<span class="w"> </span>PATH<span class="w"> </span>run:
+</span><span id="__span-25-2"><a id="__codelineno-25-2" name="__codelineno-25-2" href="#__codelineno-25-2"></a><span class="w">  </span><span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;export PATH=&quot;/usr/local/opt/openssl/bin:$PATH&quot;&#39;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>~/.zshrc
+</span></code></pre></div>
+<h2 id="__1">&lt;, &lt;&lt;<a class="headerlink" href="#__1" title="Permanent link">#</a></h2>
+<p>输入重定向和输出重定向正好相反：输入重定向将文件的内容重定向到命令，而非将命令的输出重定向到文件。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-26-1"><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a><span class="nb">command</span><span class="w"> </span>&lt;<span class="w"> </span>inputfile
+</span></code></pre></div>
+<p>一个简单的区分记忆方法是：在命令行上，命令总是在左侧，而重定向符号“指向”数据流动的方向。</p>
+<ul>
+<li>输出重定向符号是大于号（&gt;），意味着数据从命令流向输出文件。</li>
+<li>输入重定向符号是小于号（&lt;），意味着数据从输入文件流向命令。</li>
+</ul>
+<h3 id="_3">&lt;<a class="headerlink" href="#_3" title="Permanent link">#</a></h3>
+<p>输入导向符号 <code>&lt;</code> 可以将原本应由键盘输入的数据源改为从文件读取。</p>
+<p><code>cat &gt; catfile</code>：命令将创建 <code>catfile</code> 文件，并把标准输出重定向到文件中，这时cat命令将从标准输入（键盘）接受输入，输入 <code>&lt;C-C&gt;</code> 或 <code>&lt;C-D&gt;</code> 结束。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-27-1"><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a><span class="c1"># 用 stdin 替代键盘的输入以创建新文件</span>
+</span><span id="__span-27-2"><a id="__codelineno-27-2" name="__codelineno-27-2" href="#__codelineno-27-2"></a>cat<span class="w"> </span>&gt;<span class="w"> </span>catfile<span class="w"> </span>&lt;<span class="w"> </span>~/.bash_logout
+</span></code></pre></div>
+<p>不过，以上示例的写法有点令人费解，更常见的等效写法如下：</p>
+<ul>
+<li><code>cat ~/.bash_logout &gt; ~/Documents/catfile</code>  </li>
+<li><code>cp ~/.bash_logout Documents/catfile</code>  </li>
+</ul>
+<p>以下脚本从file1读入内容到stdin作为enca的输入参数，然后将执行结果重定向到file2中。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-28-1"><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a>$<span class="w"> </span>enca<span class="w"> </span>-L<span class="w"> </span>zh_CN<span class="w"> </span>-x<span class="w"> </span>UTF-8<span class="w"> </span>&lt;<span class="w"> </span>file1<span class="w"> </span>&gt;<span class="w"> </span>file2
+</span></code></pre></div>
+<blockquote>
+<p><code>[n]&lt;&gt;file2</code>：n缺省为0-stdin，省略了file1，读取file2到stdin给命令操作，然后将结果覆写到file中。</p>
+</blockquote>
+<h3 id="_4">&lt;&lt;<a class="headerlink" href="#_4" title="Permanent link">#</a></h3>
+<p>远小于号（<code>&lt;&lt;</code>）也称作内联输入重定向符号，后面需要续接终止输入控制标记单词（字符串），用于划分输入数据的开始和结尾。</p>
+<p><code>Here Documents</code>: This type of redirection instructs the shell to read input from the current source <em>until</em> a line containing only word (with no trailing blanks) is seen. All of the lines read up to that point are then used as the standard input for a command.</p>
+<p>The format of here-documents is:</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-29-1"><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a>&lt;&lt;<span class="o">[</span>−<span class="o">]</span>word
+</span><span id="__span-29-2"><a id="__codelineno-29-2" name="__codelineno-29-2" href="#__codelineno-29-2"></a><span class="w">    </span>here-document
+</span><span id="__span-29-3"><a id="__codelineno-29-3" name="__codelineno-29-3" href="#__codelineno-29-3"></a>delimiter
+</span></code></pre></div>
+<p>以下示例中当输入 <code>eof</code> 时，则结束输入。</p>
+<p>在使用tr进行转换时，需要接受stdin输入，通常是echo string或cat file管道传给tr处理。<br />
+如果多次复制的段落中有空格需要移除，可以在预设命令末尾指定 <code>command &lt;&lt; eof</code>。<br />
+采用heredoc逐行粘贴待处理文本，最后一行输入eof结束输入执行处理。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-30-1"><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a>$<span class="w"> </span>tr<span class="w"> </span>-d<span class="w"> </span><span class="s1">&#39;[:space:]&#39;</span><span class="w"> </span><span class="s">&lt;&lt; eof</span>
+</span><span id="__span-30-2"><a id="__codelineno-30-2" name="__codelineno-30-2" href="#__codelineno-30-2"></a><span class="s">heredoc&gt; 我 们 的 爱</span>
+</span><span id="__span-30-3"><a id="__codelineno-30-3" name="__codelineno-30-3" href="#__codelineno-30-3"></a><span class="s">heredoc&gt; 一旦 错过 就 不再</span>
+</span><span id="__span-30-4"><a id="__codelineno-30-4" name="__codelineno-30-4" href="#__codelineno-30-4"></a><span class="s">heredoc&gt; eof</span>
+</span><span id="__span-30-5"><a id="__codelineno-30-5" name="__codelineno-30-5" href="#__codelineno-30-5"></a>我们的爱一旦错过就不再%
+</span></code></pre></div>
+<p>这样在命令行输入shell指令后，对即时输入的文本行（段落）做一些处理，比每次先保存临时文件再cat管传方便得多！</p>
+<h4 id="cat">cat<a class="headerlink" href="#cat" title="Permanent link">#</a></h4>
+<p>以下函数用于输出一段信息，通过getopts捕获到用户输入<code>-h, --help</code>选项时，向屏幕打印Usage帮助信息。</p>
+<blockquote>
+<p>这样写的好处是可以保持排版格式。</p>
+</blockquote>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-31-1"><a id="__codelineno-31-1" name="__codelineno-31-1" href="#__codelineno-31-1"></a>show_help<span class="o">()</span><span class="w"> </span><span class="o">{</span>
+</span><span id="__span-31-2"><a id="__codelineno-31-2" name="__codelineno-31-2" href="#__codelineno-31-2"></a><span class="w">    </span>cat<span class="w"> </span><span class="s">&lt;&lt;EOF</span>
+</span><span id="__span-31-3"><a id="__codelineno-31-3" name="__codelineno-31-3" href="#__codelineno-31-3"></a><span class="s">$(basename &quot;$0&quot;) version: 1.0.0</span>
+</span><span id="__span-31-4"><a id="__codelineno-31-4" name="__codelineno-31-4" href="#__codelineno-31-4"></a><span class="s">Usage: $(basename &quot;$0&quot;) [-?hvSPdpr]</span>
+</span><span id="__span-31-5"><a id="__codelineno-31-5" name="__codelineno-31-5" href="#__codelineno-31-5"></a>
+</span><span id="__span-31-6"><a id="__codelineno-31-6" name="__codelineno-31-6" href="#__codelineno-31-6"></a><span class="s">Options:</span>
+</span><span id="__span-31-7"><a id="__codelineno-31-7" name="__codelineno-31-7" href="#__codelineno-31-7"></a><span class="s">    -?,-h,--help            : show help and exit</span>
+</span><span id="__span-31-8"><a id="__codelineno-31-8" name="__codelineno-31-8" href="#__codelineno-31-8"></a><span class="s">    -v, --version           : show version and exit</span>
+</span><span id="__span-31-9"><a id="__codelineno-31-9" name="__codelineno-31-9" href="#__codelineno-31-9"></a><span class="s">    -S, --server            : start as server, default</span>
+</span><span id="__span-31-10"><a id="__codelineno-31-10" name="__codelineno-31-10" href="#__codelineno-31-10"></a><span class="s">    -P, --proxy             : start as proxy daemon</span>
+</span><span id="__span-31-11"><a id="__codelineno-31-11" name="__codelineno-31-11" href="#__codelineno-31-11"></a><span class="s">    -d, --debug             : run in debug mode, default</span>
+</span><span id="__span-31-12"><a id="__codelineno-31-12" name="__codelineno-31-12" href="#__codelineno-31-12"></a><span class="s">    -p, --profile           : run in profile mode</span>
+</span><span id="__span-31-13"><a id="__codelineno-31-13" name="__codelineno-31-13" href="#__codelineno-31-13"></a><span class="s">    -r, --release           : run in release mode</span>
+</span><span id="__span-31-14"><a id="__codelineno-31-14" name="__codelineno-31-14" href="#__codelineno-31-14"></a><span class="s">EOF</span>
+</span><span id="__span-31-15"><a id="__codelineno-31-15" name="__codelineno-31-15" href="#__codelineno-31-15"></a><span class="o">}</span>
+</span><span id="__span-31-16"><a id="__codelineno-31-16" name="__codelineno-31-16" href="#__codelineno-31-16"></a>
+</span><span id="__span-31-17"><a id="__codelineno-31-17" name="__codelineno-31-17" href="#__codelineno-31-17"></a><span class="c1"># vue -h 调用以下函数打印 usage 帮助说明</span>
+</span><span id="__span-31-18"><a id="__codelineno-31-18" name="__codelineno-31-18" href="#__codelineno-31-18"></a>vue_usage<span class="o">()</span><span class="w"> </span><span class="o">{</span>
+</span><span id="__span-31-19"><a id="__codelineno-31-19" name="__codelineno-31-19" href="#__codelineno-31-19"></a><span class="w">    </span>cat<span class="w"> </span><span class="s">&lt;&lt;EOF</span>
+</span><span id="__span-31-20"><a id="__codelineno-31-20" name="__codelineno-31-20" href="#__codelineno-31-20"></a><span class="s">Usage: vue &lt;command&gt; [options]</span>
+</span><span id="__span-31-21"><a id="__codelineno-31-21" name="__codelineno-31-21" href="#__codelineno-31-21"></a>
+</span><span id="__span-31-22"><a id="__codelineno-31-22" name="__codelineno-31-22" href="#__codelineno-31-22"></a><span class="s">Options:</span>
+</span><span id="__span-31-23"><a id="__codelineno-31-23" name="__codelineno-31-23" href="#__codelineno-31-23"></a><span class="s">  -V, --version  output the version number</span>
+</span><span id="__span-31-24"><a id="__codelineno-31-24" name="__codelineno-31-24" href="#__codelineno-31-24"></a><span class="s">  -h, --help     output usage information</span>
+</span><span id="__span-31-25"><a id="__codelineno-31-25" name="__codelineno-31-25" href="#__codelineno-31-25"></a>
+</span><span id="__span-31-26"><a id="__codelineno-31-26" name="__codelineno-31-26" href="#__codelineno-31-26"></a><span class="s">Commands:</span>
+</span><span id="__span-31-27"><a id="__codelineno-31-27" name="__codelineno-31-27" href="#__codelineno-31-27"></a><span class="s">  init           generate a new project from a template</span>
+</span><span id="__span-31-28"><a id="__codelineno-31-28" name="__codelineno-31-28" href="#__codelineno-31-28"></a><span class="s">  list           list available official templates</span>
+</span><span id="__span-31-29"><a id="__codelineno-31-29" name="__codelineno-31-29" href="#__codelineno-31-29"></a><span class="s">  build          prototype a new project</span>
+</span><span id="__span-31-30"><a id="__codelineno-31-30" name="__codelineno-31-30" href="#__codelineno-31-30"></a><span class="s">  create         (for v3 warning only)</span>
+</span><span id="__span-31-31"><a id="__codelineno-31-31" name="__codelineno-31-31" href="#__codelineno-31-31"></a><span class="s">  help [cmd]     display help for [cmd]</span>
+</span><span id="__span-31-32"><a id="__codelineno-31-32" name="__codelineno-31-32" href="#__codelineno-31-32"></a><span class="s">EOF</span>
+</span><span id="__span-31-33"><a id="__codelineno-31-33" name="__codelineno-31-33" href="#__codelineno-31-33"></a><span class="o">}</span>
+</span></code></pre></div>
+<p>在以上案例基础上，加个重定向将键盘输入打印到屏幕上，同时也保存到文件catfile中。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-32-1"><a id="__codelineno-32-1" name="__codelineno-32-1" href="#__codelineno-32-1"></a><span class="c1"># 用 stdin 替代键盘的输入以创建新文件</span>
+</span><span id="__span-32-2"><a id="__codelineno-32-2" name="__codelineno-32-2" href="#__codelineno-32-2"></a>cat<span class="w"> </span>&gt;<span class="w"> </span>catfile<span class="w"> </span>&lt;&lt;<span class="w"> </span><span class="s2">&quot;eof&quot;</span>
+</span></code></pre></div>
+<p>以下是完整示例：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-33-1"><a id="__codelineno-33-1" name="__codelineno-33-1" href="#__codelineno-33-1"></a>$<span class="w"> </span>cat<span class="w"> </span>&gt;<span class="w"> </span>catfile.txt<span class="w"> </span><span class="s">&lt;&lt; eof</span>
+</span><span id="__span-33-2"><a id="__codelineno-33-2" name="__codelineno-33-2" href="#__codelineno-33-2"></a><span class="s">heredoc&gt; line1</span>
+</span><span id="__span-33-3"><a id="__codelineno-33-3" name="__codelineno-33-3" href="#__codelineno-33-3"></a><span class="s">heredoc&gt; line2</span>
+</span><span id="__span-33-4"><a id="__codelineno-33-4" name="__codelineno-33-4" href="#__codelineno-33-4"></a><span class="s">heredoc&gt; line3</span>
+</span><span id="__span-33-5"><a id="__codelineno-33-5" name="__codelineno-33-5" href="#__codelineno-33-5"></a><span class="s">heredoc&gt; eof</span>
+</span><span id="__span-33-6"><a id="__codelineno-33-6" name="__codelineno-33-6" href="#__codelineno-33-6"></a>
+</span><span id="__span-33-7"><a id="__codelineno-33-7" name="__codelineno-33-7" href="#__codelineno-33-7"></a>$<span class="w"> </span>cat<span class="w"> </span>catfile.txt
+</span><span id="__span-33-8"><a id="__codelineno-33-8" name="__codelineno-33-8" href="#__codelineno-33-8"></a>line1
+</span><span id="__span-33-9"><a id="__codelineno-33-9" name="__codelineno-33-9" href="#__codelineno-33-9"></a>line2
+</span><span id="__span-33-10"><a id="__codelineno-33-10" name="__codelineno-33-10" href="#__codelineno-33-10"></a>line3
+</span></code></pre></div>
+<p>我们经常在网上看到一段脚本，想复制下来保存为本地sh文件，再执行调试。<br />
+在命令行按照以下格式，修改脚本名称，粘贴内容到EOF中间，执行完脚本文件即保存到了当前目录下。</p>
+<blockquote>
+<p>遗留问题：引用变量部分被执行了非预期替换？</p>
+</blockquote>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-34-1"><a id="__codelineno-34-1" name="__codelineno-34-1" href="#__codelineno-34-1"></a>cat<span class="w"> </span>&gt;<span class="w"> </span>reader.sh<span class="w"> </span><span class="s">&lt;&lt; EOF</span>
+</span><span id="__span-34-2"><a id="__codelineno-34-2" name="__codelineno-34-2" href="#__codelineno-34-2"></a><span class="s">#!/bin/bash</span>
+</span><span id="__span-34-3"><a id="__codelineno-34-3" name="__codelineno-34-3" href="#__codelineno-34-3"></a><span class="s">while read line; do</span>
+</span><span id="__span-34-4"><a id="__codelineno-34-4" name="__codelineno-34-4" href="#__codelineno-34-4"></a><span class="s">  echo &quot;reading: ${line}&quot;</span>
+</span><span id="__span-34-5"><a id="__codelineno-34-5" name="__codelineno-34-5" href="#__codelineno-34-5"></a><span class="s">done &lt; /dev/stdin</span>
+</span><span id="__span-34-6"><a id="__codelineno-34-6" name="__codelineno-34-6" href="#__codelineno-34-6"></a><span class="s">EOF</span>
+</span></code></pre></div>
+<h4 id="bc">bc<a class="headerlink" href="#bc" title="Permanent link">#</a></h4>
+<p>另外一个经典的例子是，基于内联输入重定向，将表达式字符串传给 <code>bc</code> 执行数学运算。</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-35-1"><a id="__codelineno-35-1" name="__codelineno-35-1" href="#__codelineno-35-1"></a>$ bc &lt;&lt;&lt; &quot;scale=4;3.44/5&quot;
+</span><span id="__span-35-2"><a id="__codelineno-35-2" name="__codelineno-35-2" href="#__codelineno-35-2"></a>.6880
+</span></code></pre></div>
+<p>一种方式是重定向：</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-36-1"><a id="__codelineno-36-1" name="__codelineno-36-1" href="#__codelineno-36-1"></a>$ var1=$(echo &quot;scale=4;3.44/5&quot; | bc)
+</span><span id="__span-36-2"><a id="__codelineno-36-2" name="__codelineno-36-2" href="#__codelineno-36-2"></a>$ echo $var1
+</span><span id="__span-36-3"><a id="__codelineno-36-3" name="__codelineno-36-3" href="#__codelineno-36-3"></a>.6880
+</span></code></pre></div>
+<p>这种方式适用于较短的运算表达式，当需进行大量运算、涉及更多的数字时，在一个命令行中列出多个表达式会很麻烦。<br />
+第二种方式是使用内联输入重定向，它允许直接在命令行中重定向数据。</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-37-1"><a id="__codelineno-37-1" name="__codelineno-37-1" href="#__codelineno-37-1"></a>variable=$(bc &lt;&lt; EOF
+</span><span id="__span-37-2"><a id="__codelineno-37-2" name="__codelineno-37-2" href="#__codelineno-37-2"></a>options
+</span><span id="__span-37-3"><a id="__codelineno-37-3" name="__codelineno-37-3" href="#__codelineno-37-3"></a>statements
+</span><span id="__span-37-4"><a id="__codelineno-37-4" name="__codelineno-37-4" href="#__codelineno-37-4"></a>expressions
+</span><span id="__span-37-5"><a id="__codelineno-37-5" name="__codelineno-37-5" href="#__codelineno-37-5"></a>EOF
+</span><span id="__span-37-6"><a id="__codelineno-37-6" name="__codelineno-37-6" href="#__codelineno-37-6"></a>)
+</span></code></pre></div>
+<p>这样，可以将所有涉及 bash 计算器的部分都放到同一个脚本文件的不同行。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-38-1"><a id="__codelineno-38-1" name="__codelineno-38-1" href="#__codelineno-38-1"></a><span class="ch">#!/bin/bash</span>
+</span><span id="__span-38-2"><a id="__codelineno-38-2" name="__codelineno-38-2" href="#__codelineno-38-2"></a>
+</span><span id="__span-38-3"><a id="__codelineno-38-3" name="__codelineno-38-3" href="#__codelineno-38-3"></a><span class="nv">var1</span><span class="o">=</span><span class="m">10</span>.46
+</span><span id="__span-38-4"><a id="__codelineno-38-4" name="__codelineno-38-4" href="#__codelineno-38-4"></a><span class="nv">var2</span><span class="o">=</span><span class="m">43</span>.67
+</span><span id="__span-38-5"><a id="__codelineno-38-5" name="__codelineno-38-5" href="#__codelineno-38-5"></a><span class="nv">var3</span><span class="o">=</span><span class="m">33</span>.2
+</span><span id="__span-38-6"><a id="__codelineno-38-6" name="__codelineno-38-6" href="#__codelineno-38-6"></a><span class="nv">var4</span><span class="o">=</span><span class="m">71</span>
+</span><span id="__span-38-7"><a id="__codelineno-38-7" name="__codelineno-38-7" href="#__codelineno-38-7"></a>
+</span><span id="__span-38-8"><a id="__codelineno-38-8" name="__codelineno-38-8" href="#__codelineno-38-8"></a><span class="nv">var5</span><span class="o">=</span><span class="k">$(</span>bc<span class="w"> </span><span class="s">&lt;&lt; EOF</span>
+</span><span id="__span-38-9"><a id="__codelineno-38-9" name="__codelineno-38-9" href="#__codelineno-38-9"></a><span class="s">scale = 4</span>
+</span><span id="__span-38-10"><a id="__codelineno-38-10" name="__codelineno-38-10" href="#__codelineno-38-10"></a><span class="s">a1 = ( $var1 * $var2)</span>
+</span><span id="__span-38-11"><a id="__codelineno-38-11" name="__codelineno-38-11" href="#__codelineno-38-11"></a><span class="s">b1 = ($var3 * $var4)</span>
+</span><span id="__span-38-12"><a id="__codelineno-38-12" name="__codelineno-38-12" href="#__codelineno-38-12"></a><span class="s">a1 + b1</span>
+</span><span id="__span-38-13"><a id="__codelineno-38-13" name="__codelineno-38-13" href="#__codelineno-38-13"></a><span class="s">EOF</span><span class="k">)</span>
+</span><span id="__span-38-14"><a id="__codelineno-38-14" name="__codelineno-38-14" href="#__codelineno-38-14"></a>
+</span><span id="__span-38-15"><a id="__codelineno-38-15" name="__codelineno-38-15" href="#__codelineno-38-15"></a><span class="nb">echo</span><span class="w"> </span>The<span class="w"> </span>final<span class="w"> </span>answer<span class="w"> </span><span class="k">for</span><span class="w"> </span>this<span class="w"> </span>mess<span class="w"> </span>is<span class="w"> </span><span class="nv">$var5</span>
+</span></code></pre></div>
+<h3 id="_5">&lt;&lt;&lt;<a class="headerlink" href="#_5" title="Permanent link">#</a></h3>
+<p><code>Here Strings</code>: A variant of here documents, the format is:</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-39-1"><a id="__codelineno-39-1" name="__codelineno-39-1" href="#__codelineno-39-1"></a><span class="nb">command</span><span class="w"> </span><span class="o">&lt;&lt;&lt;</span><span class="w"> </span>string
+</span></code></pre></div>
+<p>The word is expanded and supplied to the command on its standard input.</p>
+<p>在使用tr进行转换时，需要接受stdin输入，通常是echo string或cat file管道传给tr处理。<br />
+如果有字符串文本行需要执行一些转换处理，可以采用herestr在预设命令末尾输入待处理字符串。</p>
+<p>这样在命令行输入shell指令后，对即时输入的字符串做一些处理，比每次echo管传方便得多！</p>
+<blockquote>
+<p>Here Documents 和 Here Strings 机制实现了类似read等待用户输入待处理数据的效果。</p>
+</blockquote>
+<p>案例一：调用 tr 进行一些简单的字符替换：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-40-1"><a id="__codelineno-40-1" name="__codelineno-40-1" href="#__codelineno-40-1"></a><span class="c1"># echo 我 们 的 爱 | tr -d &#39;[:space:]&#39;</span>
+</span><span id="__span-40-2"><a id="__codelineno-40-2" name="__codelineno-40-2" href="#__codelineno-40-2"></a>$<span class="w"> </span>tr<span class="w"> </span>-d<span class="w"> </span><span class="s1">&#39;[:space:]&#39;</span><span class="w"> </span><span class="o">&lt;&lt;&lt;</span><span class="w"> </span><span class="s1">&#39;我 们 的 爱&#39;</span><span class="w"> </span><span class="c1"># 有空格，注意加引号</span>
+</span><span id="__span-40-3"><a id="__codelineno-40-3" name="__codelineno-40-3" href="#__codelineno-40-3"></a>
+</span><span id="__span-40-4"><a id="__codelineno-40-4" name="__codelineno-40-4" href="#__codelineno-40-4"></a><span class="c1"># echo dos2unix | tr &#39;[:lower:]&#39; &#39;[:upper:]&#39;</span>
+</span><span id="__span-40-5"><a id="__codelineno-40-5" name="__codelineno-40-5" href="#__codelineno-40-5"></a>$<span class="w"> </span>tr<span class="w"> </span><span class="s1">&#39;[:lower:]&#39;</span><span class="w"> </span><span class="s1">&#39;[:upper:]&#39;</span><span class="w"> </span><span class="o">&lt;&lt;&lt;</span><span class="w"> </span>dos2unix
+</span></code></pre></div>
+<p>案例二：bc运行即时输入的表达式执行运算：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-41-1"><a id="__codelineno-41-1" name="__codelineno-41-1" href="#__codelineno-41-1"></a><span class="c1"># echo &quot;5 * 7 /3&quot; | bc</span>
+</span><span id="__span-41-2"><a id="__codelineno-41-2" name="__codelineno-41-2" href="#__codelineno-41-2"></a>$<span class="w"> </span>bc<span class="w"> </span><span class="o">&lt;&lt;&lt;</span><span class="w"> </span><span class="s2">&quot;5 * 7 /3&quot;</span>
+</span><span id="__span-41-3"><a id="__codelineno-41-3" name="__codelineno-41-3" href="#__codelineno-41-3"></a><span class="c1"># 十进制转十六进制</span>
+</span><span id="__span-41-4"><a id="__codelineno-41-4" name="__codelineno-41-4" href="#__codelineno-41-4"></a>$<span class="w"> </span>bc<span class="w"> </span><span class="o">&lt;&lt;&lt;</span><span class="w"> </span><span class="s1">&#39;obase=16;ibase=10;254&#39;</span>
+</span><span id="__span-41-5"><a id="__codelineno-41-5" name="__codelineno-41-5" href="#__codelineno-41-5"></a><span class="c1"># 十六进制转十进制</span>
+</span><span id="__span-41-6"><a id="__codelineno-41-6" name="__codelineno-41-6" href="#__codelineno-41-6"></a>$<span class="w"> </span>bc<span class="w"> </span><span class="o">&lt;&lt;&lt;</span><span class="w"> </span><span class="s1">&#39;obase=10;ibase=16;FE&#39;</span>
+</span></code></pre></div>
+<p>其他案例：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-42-1"><a id="__codelineno-42-1" name="__codelineno-42-1" href="#__codelineno-42-1"></a><span class="c1"># 便捷计算字符串的SHA-1</span>
+</span><span id="__span-42-2"><a id="__codelineno-42-2" name="__codelineno-42-2" href="#__codelineno-42-2"></a>$<span class="w"> </span>shasum<span class="w"> </span><span class="o">&lt;&lt;&lt;</span><span class="w"> </span><span class="s2">&quot;How many roads must a man walk down&quot;</span>
+</span><span id="__span-42-3"><a id="__codelineno-42-3" name="__codelineno-42-3" href="#__codelineno-42-3"></a>5d9678bcd687051fa93b14fe8d21c681c7eecbc0<span class="w">  </span>-
+</span></code></pre></div>
+<p>脚本 read_by_line.sh 用于测试用户输入参数。</p>
+<details class="info">
+<summary>read_by_line.sh</summary>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-43-1"><a id="__codelineno-43-1" name="__codelineno-43-1" href="#__codelineno-43-1"></a><span class="ch">#!/bin/bash</span>
+</span><span id="__span-43-2"><a id="__codelineno-43-2" name="__codelineno-43-2" href="#__codelineno-43-2"></a>
+</span><span id="__span-43-3"><a id="__codelineno-43-3" name="__codelineno-43-3" href="#__codelineno-43-3"></a><span class="c1"># Read either the first argument or from stdin</span>
+</span><span id="__span-43-4"><a id="__codelineno-43-4" name="__codelineno-43-4" href="#__codelineno-43-4"></a>
+</span><span id="__span-43-5"><a id="__codelineno-43-5" name="__codelineno-43-5" href="#__codelineno-43-5"></a><span class="c1"># test cases</span>
+</span><span id="__span-43-6"><a id="__codelineno-43-6" name="__codelineno-43-6" href="#__codelineno-43-6"></a><span class="c1">## 1. `./read_by_line.sh README.md`：打印文件。  </span>
+</span><span id="__span-43-7"><a id="__codelineno-43-7" name="__codelineno-43-7" href="#__codelineno-43-7"></a><span class="c1">## 2. `./read_by_line.sh`：等待键盘输入，然后回显。  </span>
+</span><span id="__span-43-8"><a id="__codelineno-43-8" name="__codelineno-43-8" href="#__codelineno-43-8"></a><span class="c1">## 3. `./read_by_line.sh &lt;&lt; eof`：等待键盘输入内容，输入eof结束，然后回显。  </span>
+</span><span id="__span-43-9"><a id="__codelineno-43-9" name="__codelineno-43-9" href="#__codelineno-43-9"></a><span class="c1">## 4. `./read_by_line.sh &lt;&lt;&lt; hello`：打印回显。  </span>
+</span><span id="__span-43-10"><a id="__codelineno-43-10" name="__codelineno-43-10" href="#__codelineno-43-10"></a>
+</span><span id="__span-43-11"><a id="__codelineno-43-11" name="__codelineno-43-11" href="#__codelineno-43-11"></a>func7126967<span class="o">()</span><span class="w"> </span><span class="o">{</span>
+</span><span id="__span-43-12"><a id="__codelineno-43-12" name="__codelineno-43-12" href="#__codelineno-43-12"></a><span class="w">    </span><span class="c1"># https://stackoverflow.com/a/7126967</span>
+</span><span id="__span-43-13"><a id="__codelineno-43-13" name="__codelineno-43-13" href="#__codelineno-43-13"></a><span class="w">    </span>cat<span class="w"> </span><span class="s2">&quot;</span><span class="si">${</span><span class="nv">1</span><span class="k">:-</span><span class="p">/dev/stdin</span><span class="si">}</span><span class="s2">&quot;</span><span class="w"> </span>&gt;<span class="s2">&quot;</span><span class="si">${</span><span class="nv">2</span><span class="k">:-</span><span class="p">/dev/stdout</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span id="__span-43-14"><a id="__codelineno-43-14" name="__codelineno-43-14" href="#__codelineno-43-14"></a><span class="o">}</span>
+</span><span id="__span-43-15"><a id="__codelineno-43-15" name="__codelineno-43-15" href="#__codelineno-43-15"></a>
+</span><span id="__span-43-16"><a id="__codelineno-43-16" name="__codelineno-43-16" href="#__codelineno-43-16"></a>func7045517<span class="o">()</span><span class="w"> </span><span class="o">{</span>
+</span><span id="__span-43-17"><a id="__codelineno-43-17" name="__codelineno-43-17" href="#__codelineno-43-17"></a><span class="w">    </span><span class="c1"># https://stackoverflow.com/a/7045517</span>
+</span><span id="__span-43-18"><a id="__codelineno-43-18" name="__codelineno-43-18" href="#__codelineno-43-18"></a><span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="nb">read</span><span class="w"> </span>-r<span class="w"> </span>line<span class="p">;</span><span class="w"> </span><span class="k">do</span>
+</span><span id="__span-43-19"><a id="__codelineno-43-19" name="__codelineno-43-19" href="#__codelineno-43-19"></a><span class="w">        </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$line</span><span class="s2">&quot;</span>
+</span><span id="__span-43-20"><a id="__codelineno-43-20" name="__codelineno-43-20" href="#__codelineno-43-20"></a><span class="w">    </span><span class="k">done</span><span class="w"> </span>&lt;<span class="s2">&quot;</span><span class="si">${</span><span class="nv">1</span><span class="k">:-</span><span class="p">/dev/stdin</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span id="__span-43-21"><a id="__codelineno-43-21" name="__codelineno-43-21" href="#__codelineno-43-21"></a><span class="o">}</span>
+</span><span id="__span-43-22"><a id="__codelineno-43-22" name="__codelineno-43-22" href="#__codelineno-43-22"></a>
+</span><span id="__span-43-23"><a id="__codelineno-43-23" name="__codelineno-43-23" href="#__codelineno-43-23"></a>func28786207<span class="o">()</span><span class="w"> </span><span class="o">{</span>
+</span><span id="__span-43-24"><a id="__codelineno-43-24" name="__codelineno-43-24" href="#__codelineno-43-24"></a><span class="w">    </span><span class="c1"># https://stackoverflow.com/a/28786207</span>
+</span><span id="__span-43-25"><a id="__codelineno-43-25" name="__codelineno-43-25" href="#__codelineno-43-25"></a><span class="w">    </span><span class="nv">file</span><span class="o">=</span><span class="si">${</span><span class="nv">1</span><span class="p">--</span><span class="si">}</span><span class="w"> </span><span class="c1"># POSIX-compliant; ${1:--}</span>
+</span><span id="__span-43-26"><a id="__codelineno-43-26" name="__codelineno-43-26" href="#__codelineno-43-26"></a><span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="nv">IFS</span><span class="o">=</span><span class="w"> </span><span class="nb">read</span><span class="w"> </span>-r<span class="w"> </span>line<span class="p">;</span><span class="w"> </span><span class="k">do</span>
+</span><span id="__span-43-27"><a id="__codelineno-43-27" name="__codelineno-43-27" href="#__codelineno-43-27"></a><span class="w">        </span><span class="nb">printf</span><span class="w"> </span><span class="s1">&#39;%s\n&#39;</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$line</span><span class="s2">&quot;</span><span class="w"> </span><span class="c1"># Or: env POSIXLY_CORRECT=1 echo &quot;$line&quot;</span>
+</span><span id="__span-43-28"><a id="__codelineno-43-28" name="__codelineno-43-28" href="#__codelineno-43-28"></a><span class="w">    </span><span class="k">done</span><span class="w"> </span>&lt;<span class="w"> </span>&lt;<span class="o">(</span>cat<span class="w"> </span>--<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$file</span><span class="s2">&quot;</span><span class="o">)</span>
+</span><span id="__span-43-29"><a id="__codelineno-43-29" name="__codelineno-43-29" href="#__codelineno-43-29"></a><span class="o">}</span>
+</span><span id="__span-43-30"><a id="__codelineno-43-30" name="__codelineno-43-30" href="#__codelineno-43-30"></a>
+</span><span id="__span-43-31"><a id="__codelineno-43-31" name="__codelineno-43-31" href="#__codelineno-43-31"></a>func28788047<span class="o">()</span><span class="w"> </span><span class="o">{</span>
+</span><span id="__span-43-32"><a id="__codelineno-43-32" name="__codelineno-43-32" href="#__codelineno-43-32"></a><span class="w">    </span><span class="c1"># https://stackoverflow.com/a/28788047</span>
+</span><span id="__span-43-33"><a id="__codelineno-43-33" name="__codelineno-43-33" href="#__codelineno-43-33"></a><span class="w">    </span><span class="o">((</span><span class="nv">$#</span><span class="o">))</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">set</span><span class="w"> </span>--<span class="w"> </span>-
+</span><span id="__span-43-34"><a id="__codelineno-43-34" name="__codelineno-43-34" href="#__codelineno-43-34"></a><span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="o">((</span><span class="nv">$#</span><span class="o">))</span><span class="p">;</span><span class="w"> </span><span class="k">do</span>
+</span><span id="__span-43-35"><a id="__codelineno-43-35" name="__codelineno-43-35" href="#__codelineno-43-35"></a><span class="w">        </span><span class="o">{</span><span class="w"> </span><span class="o">[[</span><span class="w"> </span><span class="nv">$1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>-<span class="w"> </span><span class="o">]]</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">exec</span><span class="w"> </span>&lt;<span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span><span class="p">;</span><span class="w"> </span><span class="o">}</span><span class="w"> </span><span class="o">&amp;&amp;</span>
+</span><span id="__span-43-36"><a id="__codelineno-43-36" name="__codelineno-43-36" href="#__codelineno-43-36"></a><span class="w">            </span><span class="k">while</span><span class="w"> </span><span class="nb">read</span><span class="w"> </span>-r<span class="p">;</span><span class="w"> </span><span class="k">do</span>
+</span><span id="__span-43-37"><a id="__codelineno-43-37" name="__codelineno-43-37" href="#__codelineno-43-37"></a><span class="w">                </span><span class="nb">printf</span><span class="w"> </span><span class="s1">&#39;%s\n&#39;</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$REPLY</span><span class="s2">&quot;</span>
+</span><span id="__span-43-38"><a id="__codelineno-43-38" name="__codelineno-43-38" href="#__codelineno-43-38"></a><span class="w">            </span><span class="k">done</span>
+</span><span id="__span-43-39"><a id="__codelineno-43-39" name="__codelineno-43-39" href="#__codelineno-43-39"></a><span class="w">        </span><span class="nb">shift</span>
+</span><span id="__span-43-40"><a id="__codelineno-43-40" name="__codelineno-43-40" href="#__codelineno-43-40"></a><span class="w">    </span><span class="k">done</span>
+</span><span id="__span-43-41"><a id="__codelineno-43-41" name="__codelineno-43-41" href="#__codelineno-43-41"></a><span class="o">}</span>
+</span><span id="__span-43-42"><a id="__codelineno-43-42" name="__codelineno-43-42" href="#__codelineno-43-42"></a>
+</span><span id="__span-43-43"><a id="__codelineno-43-43" name="__codelineno-43-43" href="#__codelineno-43-43"></a>func7126967<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$@</span><span class="s2">&quot;</span>
+</span><span id="__span-43-44"><a id="__codelineno-43-44" name="__codelineno-43-44" href="#__codelineno-43-44"></a><span class="c1"># func7045517 &quot;$@&quot;</span>
+</span><span id="__span-43-45"><a id="__codelineno-43-45" name="__codelineno-43-45" href="#__codelineno-43-45"></a><span class="c1"># func28786207 &quot;$@&quot;</span>
+</span><span id="__span-43-46"><a id="__codelineno-43-46" name="__codelineno-43-46" href="#__codelineno-43-46"></a><span class="c1"># func28788047 &quot;$@&quot;</span>
+</span></code></pre></div>
+</details>
+<p>如果传入了参数$1，则将其作为read输入，否则等待接收stdin标准输入。四种测试用例如下：</p>
+<ol>
+<li><code>./read_by_line.sh README.md</code>：读取打印文件。  </li>
+<li><code>./read_by_line.sh</code>：等待键盘输入，然后回显。  </li>
+<li><code>./read_by_line.sh &lt;&lt; eof</code>：等待键盘输入内容，输入eof结束，然后回显。  </li>
+<li><code>./read_by_line.sh &lt;&lt;&lt; hello</code>：打印回显。  </li>
+</ol>
+
+
+
+
+
+
+
+  
+  
+
+
+
+  
+
+
+  
+
+
+
+  <h2 id="__comments">评论</h2>
+  <!-- Insert generated snippet here -->
+  <script src="https://giscus.app/client.js"
+    data-repo="fan2/mkdocs"
+    data-repo-id="R_kgDOLltxSg"
+    data-category="Announcements"
+    data-category-id="DIC_kwDOLltxSs4CeURH"
+    data-mapping="pathname"
+    data-strict="0"
+    data-reactions-enabled="1"
+    data-emit-metadata="1"
+    data-input-position="top"
+    data-theme="preferred_color_scheme"
+    data-lang="zh-CN"
+    data-loading="lazy"
+    crossorigin="anonymous"
+    async>
+  </script>
+
+  <!-- Synchronize Giscus theme with palette -->
+  <script>
+    var giscus = document.querySelector("script[src*=giscus]")
+
+    // Set palette on initial load
+    var palette = __md_get("__palette")
+    if (palette && typeof palette.color === "object") {
+      var theme = palette.color.scheme === "slate"
+        ? "transparent_dark"
+        : "light"
+
+      // Instruct Giscus to set theme
+      giscus.setAttribute("data-theme", theme) 
+    }
+
+    // Register event handlers after documented loaded
+    document.addEventListener("DOMContentLoaded", function() {
+      var ref = document.querySelector("[data-md-component=palette]")
+      ref.addEventListener("change", function() {
+        var palette = __md_get("__palette")
+        if (palette && typeof palette.color === "object") {
+          var theme = palette.color.scheme === "slate"
+            ? "transparent_dark"
+            : "light"
+
+          // Instruct Giscus to change theme
+          var frame = document.querySelector(".giscus-frame")
+          frame.contentWindow.postMessage(
+            { giscus: { setConfig: { theme } } },
+            "https://giscus.app"
+          )
+        }
+      })
+    })
+  </script>
+
+      
+    </article>
+  </div>
+
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+        
+      
+      <nav class="md-footer__inner md-grid" aria-label="页脚" >
+        
+          
+          <a href="../../20191030/linux-7z/" class="md-footer__link md-footer__link--prev" aria-label="上一页: Linux Command - 7z">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                上一页
+              </span>
+              <div class="md-ellipsis">
+                Linux Command - 7z
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../Pipelines/" class="md-footer__link md-footer__link--next" aria-label="下一页: Linux Pipeline（管道）">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                下一页
+              </span>
+              <div class="md-ellipsis">
+                Linux Pipeline（管道）
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2024- Cliff Fan
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["toc.follow", "header.autohide", "navigation.tabs", "navigation.top", "navigation.footer", "navigation.tracking", "content.code.copy", "content.code.select", "content.code.annotate"], "search": "../../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.bd41221c.min.js"></script>
+      
+        <script src="../../../javascripts/mathjax.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+        <script src="https://vercount.one/js"></script>
+      
+    
+  </body>
+</html>

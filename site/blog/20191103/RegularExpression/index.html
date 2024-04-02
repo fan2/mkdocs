@@ -1,0 +1,1831 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="在别处或在路上">
+      
+      
+        <meta name="author" content="Cliff Fan">
+      
+      
+        <link rel="canonical" href="https://duetorun.com/blog/20191103/RegularExpression/">
+      
+      
+        <link rel="prev" href="../Globbing%28Wildcard%29/">
+      
+      
+        <link rel="next" href="../../20191104/sed%26awk/">
+      
+      
+      <link rel="icon" href="../../../assets/hold_yourself.jpg">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.15">
+    
+    
+      
+        <title>Linux Regular Expression - ElseWhere</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.7e359304.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function n(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],n("js",new Date),n("config","G-XGW41EGL31"),document.addEventListener("DOMContentLoaded",function(){document.forms.search&&document.forms.search.query.addEventListener("blur",function(){this.value&&n("event","search",{search_term:this.value})}),document$.subscribe(function(){var a=document.forms.feedback;if(void 0!==a)for(var e of a.querySelectorAll("[type=submit]"))e.addEventListener("click",function(e){e.preventDefault();var t=document.location.pathname,e=this.getAttribute("data-md-value");n("event","feedback",{page:t,data:e}),a.firstElementChild.disabled=!0;e=a.querySelector(".md-feedback__note [data-md-value='"+e+"']");e&&(e.hidden=!1)}),a.hidden=!1}),location$.subscribe(function(e){n("config","G-XGW41EGL31",{page_path:e.pathname})})});var e=document.createElement("script");e.async=!0,e.src="https://www.googletagmanager.com/gtag/js?id=G-XGW41EGL31",document.getElementById("__analytics").insertAdjacentElement("afterEnd",e)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+    
+  
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#references" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../../.." title="ElseWhere" class="md-header__button md-logo" aria-label="ElseWhere" data-md-component="logo">
+      
+  <img src="../../../assets/hold_yourself.jpg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ElseWhere
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Linux Regular Expression
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1M8 13h8v-2H8v2m9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1 0 1.71-1.39 3.1-3.1 3.1h-4V17h4a5 5 0 0 0 5-5 5 5 0 0 0-5-5Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="indigo"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5M7 15a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="标签" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../about/" class="md-tabs__link">
+        
+  
+    
+  
+  About
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../" class="md-tabs__link">
+          
+  
+  Blog
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../link/" class="md-tabs__link">
+        
+  
+    
+  
+  Link
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" hidden>
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="ElseWhere" class="md-nav__button md-logo" aria-label="ElseWhere" data-md-component="logo">
+      
+  <img src="../../../assets/hold_yourself.jpg" alt="logo">
+
+    </a>
+    ElseWhere
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../about/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    About
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Blog
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      <a href="../../" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Archive
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            Archive
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2024/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2024
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2022/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2022
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2019/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2019
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2018/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2018
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2017/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2017
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2015/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2015
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Categories
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            Categories
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/command/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    command
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/editor/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    editor
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/git/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    git
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/linux/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    linux
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/macos/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    macOS
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/markdown/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    markdown
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/material/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    material
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/mkdocs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    mkdocs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/nginx/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    nginx
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/shell/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    shell
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/ubuntu/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ubuntu
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/vim/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    vim
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/webdav/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    webDAV
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/wiki/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    wiki
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/zsh/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    zsh
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../link/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Link
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      references
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="references">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#perlre" class="md-nav__link">
+    <span class="md-ellipsis">
+      perlre
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#regexp" class="md-nav__link">
+    <span class="md-ellipsis">
+      RegExp
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="RegExp">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#expression" class="md-nav__link">
+    <span class="md-ellipsis">
+      expression
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#flags" class="md-nav__link">
+    <span class="md-ellipsis">
+      flags
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#python" class="md-nav__link">
+    <span class="md-ellipsis">
+      python
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#standards" class="md-nav__link">
+    <span class="md-ellipsis">
+      standards
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="standards">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bre" class="md-nav__link">
+    <span class="md-ellipsis">
+      BRE
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ere" class="md-nav__link">
+    <span class="md-ellipsis">
+      ERE
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#perl_and_pcre" class="md-nav__link">
+    <span class="md-ellipsis">
+      Perl and PCRE
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#regex_online" class="md-nav__link">
+    <span class="md-ellipsis">
+      regex online
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cheatsheet" class="md-nav__link">
+    <span class="md-ellipsis">
+      cheatsheet
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="cheatsheet">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#常用限定符" class="md-nav__link">
+    <span class="md-ellipsis">
+      常用限定符
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#常用元字符" class="md-nav__link">
+    <span class="md-ellipsis">
+      常用元字符
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#常用反义词" class="md-nav__link">
+    <span class="md-ellipsis">
+      常用反义词
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vscode_extensions" class="md-nav__link">
+    <span class="md-ellipsis">
+      vscode extensions
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="vscode extensions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#regex_railroad_diagrams" class="md-nav__link">
+    <span class="md-ellipsis">
+      Regex Railroad Diagrams
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#regexp_preview_and_editor" class="md-nav__link">
+    <span class="md-ellipsis">
+      RegExp Preview and Editor
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#regex_previewer" class="md-nav__link">
+    <span class="md-ellipsis">
+      Regex Previewer
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#filter_line" class="md-nav__link">
+    <span class="md-ellipsis">
+      Filter Line
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Filter Line">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#config" class="md-nav__link">
+    <span class="md-ellipsis">
+      config
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+  <div class="md-content md-content--post" data-md-component="content">
+    <div class="md-sidebar md-sidebar--post" data-md-component="sidebar" data-md-type="navigation">
+      <div class="md-sidebar__scrollwrap">
+        <div class="md-sidebar__inner md-post">
+          <nav class="md-nav md-nav--primary">
+            <div class="md-post__back">
+              <div class="md-nav__title md-nav__container">
+                <a href="../../" class="md-nav__link">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+                  <span class="md-ellipsis">
+                    回到主页
+                  </span>
+                </a>
+              </div>
+            </div>
+            
+              <div class="md-post__authors md-typeset">
+                
+                  <div class="md-profile md-post__profile">
+                    <span class="md-author md-author--long">
+                      <img src="https://duetorun.com/assets/carve_yourself.jpg" alt="Cliff Fan">
+                    </span>
+                    <span class="md-profile__description">
+                      <strong>
+                        
+                          Cliff Fan
+                        
+                      </strong>
+                      <br>
+                      Just do IT
+                    </span>
+                  </div>
+                
+              </div>
+            
+            <ul class="md-post__meta md-nav__list">
+              <li class="md-nav__item md-nav__item--section">
+                <div class="md-post__title">
+                  <span class="md-ellipsis">
+                    元数据
+                  </span>
+                </div>
+                <nav class="md-nav">
+                  <ul class="md-nav__list">
+                    <li class="md-nav__item">
+                      <div class="md-nav__link">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 19H5V8h14m-3-7v2H8V1H6v2H5c-1.11 0-2 .89-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-1V1m-1 11h-5v5h5v-5Z"/></svg>
+                        <time datetime="2019-11-03 15:00:00" class="md-ellipsis">2019年11月3日</time>
+                      </div>
+                    </li>
+                    
+                    
+                      <li class="md-nav__item">
+                        <div class="md-nav__link">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 3v15h3V3H9m3 2 4 13 3-1-4-13-3 1M5 5v13h3V5H5M3 19v2h18v-2H3Z"/></svg>
+                          <span class="md-ellipsis">
+                            分类于
+                            
+                              <a href="../../category/wiki/">wiki</a>, 
+                              <a href="../../category/linux/">linux</a></span>
+                        </div>
+                      </li>
+                    
+                    
+                      
+                      <li class="md-nav__item">
+                        <div class="md-nav__link">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7h1.5Z"/></svg>
+                          <span class="md-ellipsis">
+                            
+                              需要 6 分钟阅读时间
+                            
+                          </span>
+                        </div>
+                      </li>
+                    
+                    <!-- Add by Cliff.Fan, 29Mar24. -->
+                    <li class="md-nav__item">
+                      <div class="md-nav__link">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m19 1-5 5v11l5-4.5V1m2 4v13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V6c-1.45-1.1-3.55-1.5-5.5-1.5-1.95 0-4.05.4-5.5 1.5v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1M10 18.41C8.75 18.09 7.5 18 6.5 18c-1.06 0-2.32.19-3.5.5V7.13c.91-.4 2.14-.63 3.5-.63 1.36 0 2.59.23 3.5.63v11.28Z"/></svg>
+                        <span class="md-ellipsis" id="busuanzi_container_page_pv">
+                          阅读量：<span id="busuanzi_value_page_pv">N/A</span>
+                        </span>
+                      </div>
+                    </li>
+                  </ul>
+                </nav>
+              </li>
+            </ul>
+          </nav>
+          
+        </div>
+      </div>
+    </div>
+    <article class="md-content__inner md-typeset">
+      
+        
+  
+  
+
+<nav class="md-tags" >
+  
+    
+    
+    
+      <span class="md-tag">regular_expression</span>
+    
+  
+</nav>
+
+
+
+  <h1>Linux Regular Expression</h1>
+
+<p>Linux 命令行下使用正则表达式 —— <a href="https://en.wikipedia.org/wiki/Regular_expression">Regular Expression</a>。</p>
+<!-- more -->
+
+<p>A <strong>regular expression</strong>, <strong>regex</strong> or <strong>regexp</strong> (sometimes called a <strong>rational expression</strong>) is, in theoretical computer science and formal language theory, a sequence of characters that define a search <a href="https://en.wikipedia.org/wiki/Pattern_matching">pattern</a>. Usually this pattern is then used by <a href="https://en.wikipedia.org/wiki/String_searching_algorithm">string searching algorithms</a> for "find" or "find and replace" operations on strings, or for input validation.</p>
+<p>The concept arose in the 1950s when the American mathematician Stephen Cole Kleene formalized the description of a regular language. The concept came into common use with Unix text-processing utilities.</p>
+<p>Since the 1980s, different syntaxes for writing regular expressions exist, one being the <a href="https://en.wikipedia.org/wiki/POSIX">POSIX</a> standard and another, widely used, being the <a href="https://en.wikipedia.org/wiki/Perl">Perl</a> syntax.</p>
+<p><a href="https://www.regular-expressions.info/"><strong>Regular-Expressions.info</strong></a> - The Premier website about Regular Expressions</p>
+<h2 id="references">references<a class="headerlink" href="#references" title="Permanent link">#</a></h2>
+<p><a href="http://harttle.land/2016/07/18/intro-to-regexp.html">正则表达式参考手册</a> - <a href="https://zh.wikipedia.org/wiki/%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F">PCRE表达式全集@wiki</a><br />
+<a href="https://ahkcn.github.io/docs/misc/RegEx-QuickRef.htm#%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%EF%BC%88RegEx%EF%BC%89%E2%80%94%E2%80%94%E5%BF%AB%E9%80%9F%E5%8F%82%E8%80%83">正则表达式快速参考</a><br />
+<a href="http://www.deerchao.net/tutorials/regex/regex.htm">正则表达式30分钟入门教程</a>  </p>
+<p><a href="https://www.ibm.com/developerworks/cn/java/j-perry-regular-expressions/index.html">第 19 单元：正则表达式</a><br />
+MSDN <a href="https://docs.microsoft.com/zh-cn/dotnet/standard/base-types/regular-expressions">.NET 正则表达式</a>  <a href="https://docs.microsoft.com/zh-cn/dotnet/standard/base-types/regular-expression-language-quick-reference">快速参考</a>  </p>
+<p><a href="https://regexr.com/">RegEx Reference</a>  </p>
+<h3 id="perlre">perlre<a class="headerlink" href="#perlre" title="Permanent link">#</a></h3>
+<p><a href="https://perldoc.perl.org/perlrequick.html">perlrequick</a><br />
+<a href="https://perldoc.perl.org/perlre.html">perlre</a>  </p>
+<h3 id="regexp">RegExp<a class="headerlink" href="#regexp" title="Permanent link">#</a></h3>
+<p><a href="https://tc39.github.io/ecma262/#sec-regexp-regular-expression-objects">ecma262</a>  </p>
+<p>w3: <a href="https://www.w3schools.com/jsref/jsref_obj_regexp.asp">en</a> / <a href="http://www.w3school.com.cn/js/jsref_obj_regexp.asp">zh</a><br />
+MDN: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp">en</a> / <a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/RegExp">zh</a><br />
+<a href="https://www.liaoxuefeng.com/wiki/001434446689867b27157e896e74d51a89c25cc8b43bdb3000/001434499503920bb7b42ff6627420da2ceae4babf6c4f2000">liaoxuefeng</a> / <a href="http://javascript.ruanyifeng.com/stdlib/regexp.html">ruanyifeng</a></p>
+<p><a href="https://www.regular-expressions.info/javascript.html">Using Regular Expressions with JavaScript</a><br />
+<a href="https://hackernoon.com/guide-for-regular-expressions-in-js-2a33620ca1cf?gi=79aab414369a">The Little Guide for Regular Expressions in JS</a>  </p>
+<p><a href="https://github.com/fan2/web/blob/master/javascript/notes/String%26RegExp.md">String &amp; RegExp</a>:</p>
+<ul>
+<li><code>String.match(regexp)</code>：返回 RegExpMatchArray；  </li>
+<li><code>String.search(regexp)</code>：返回 number 类型，第一个满足条件的匹配结果在整个字符串中的位置或 -1。  </li>
+<li><code>String.replace(searchValue, replaceValue)</code>：替换源 searchValue 支持 RegExp 表达式；  </li>
+<li>
+<p><code>String.split(regexp)</code>：按照正则规则分割字符串，返回一个由分割后的各个部分组成的子串数组（<code>string[]</code>）；  </p>
+</li>
+<li>
+<p><code>RegExp.test(string)</code>：测试字符串是否匹配模式；  </p>
+</li>
+<li><code>RegExp.exec(string)</code>：返回 RegExpMatchArray；  </li>
+</ul>
+<h4 id="expression">expression<a class="headerlink" href="#expression" title="Permanent link">#</a></h4>
+<p>有两种书写正则表达式的方式：</p>
+<ol>
+<li>Literal Expression: <code>let re = /pattern/flags</code>;  </li>
+<li>Class RegExp: let re = <code>new RegExp('pattern', 'flags')</code>;  </li>
+</ol>
+<ul>
+<li>Use the <strong>literal expression</strong> when the regular expression is going to be <strong><em>constant</em></strong>, because this way offers the immediate compilation of the regular expression when the script is loaded.  </li>
+<li>Use the <strong>RegExp</strong> constructor when the regular expressions is going to <strong><em>change</em></strong> or maybe the user is going to determinate the pattern.  </li>
+</ul>
+<h4 id="flags">flags<a class="headerlink" href="#flags" title="Permanent link">#</a></h4>
+<p><code>/g</code> enables "global" matching. </p>
+<blockquote>
+<p>Is for global search. Meaning it’ll match all occurrences, not just the first.<br />
+When using the replace() method, specify this modifier to replace all matches, rather than only the first one.  </p>
+</blockquote>
+<p><code>/i</code> makes the regex match case insensitive.  </p>
+<p><code>/m</code> enables "multi-line mode", for multi-line searching.  </p>
+<blockquote>
+<p>In this mode, the caret and dollar match before and after newlines in the subject string.  </p>
+</blockquote>
+<p><code>y</code>: call Sticky, matches only from the index indicated by the lastIndex property of this regular expression. (not standard yet).  </p>
+<p><strong>注意</strong>：<code>/m</code> 多行匹配，将会影响 <code>^</code> 和 <code>$</code>。</p>
+<h3 id="python">python<a class="headerlink" href="#python" title="Permanent link">#</a></h3>
+<p><a href="https://docs.python.org/3/library/re.html?highlight=re#module-re">re</a> - Support for regular expressions (RE).</p>
+<p>The sequence</p>
+<div class="language-Python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">prog</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="n">result</span> <span class="o">=</span> <span class="n">prog</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">string</span><span class="p">)</span>
+</span></code></pre></div>
+<p>is equivalent to</p>
+<div class="language-Python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">result</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">pattern</span><span class="p">,</span> <span class="n">string</span><span class="p">)</span>
+</span></code></pre></div>
+<p>常用 API 如下：</p>
+<p><code>re.search(pattern, string, flags=0)</code>: 扫描整个字符串并返回 <strong>第一个</strong> 成功的匹配。<br />
+<code>re.match(pattern, string, flags=0)</code>: 尝试从字符串的起始位置匹配一个模式，如果不是起始位置匹配成功的话就返回 None。<br />
+<code>re.fullmatch(pattern, string, flags=0)</code>: 匹配整个字符串。<br />
+<code>re.split(pattern, string, maxsplit=0, flags=0)</code>: 按照能够匹配的子串将字符串分割后返回列表。<br />
+<code>re.findall(pattern, string, flags=0)</code>:  在字符串中找到正则表达式所匹配的所有子串，并返回一个列表，如果没有找到匹配的，则返回空列表。  </p>
+<blockquote>
+<p>注意： match 和 search 是匹配 <strong>一次</strong>，findall 则是匹配 <strong>所有</strong>。</p>
+</blockquote>
+<p>flags 可为 re.M, re.I, re.S。</p>
+<h2 id="standards"><a href="https://en.wikipedia.org/wiki/Regular_expression">standards</a><a class="headerlink" href="#standards" title="Permanent link">#</a></h2>
+<h3 id="bre"><a href="https://en.wikipedia.org/wiki/Regular_expression#POSIX_basic_and_extended">BRE</a><a class="headerlink" href="#bre" title="Permanent link">#</a></h3>
+<p>基本的正则表达式（Basic Regular Expressions），又叫 Basic RegEx，简称 <code>BRE</code>。</p>
+<h3 id="ere"><a href="https://en.wikipedia.org/wiki/Regular_expression#POSIX_extended">ERE</a><a class="headerlink" href="#ere" title="Permanent link">#</a></h3>
+<p>扩展的正则表达式（Extended Regular Expressions），又叫 Extended RegEx，简称 <code>ERE</code>。</p>
+<p><code>BRE</code> and <code>ERE</code> work together.</p>
+<p><strong><code>BRE</code></strong> requires that the metacharacters <code>( )</code> and <code>{ }</code> be designated <code>\(\)</code> and <code>\{\}</code>, whereas Extended Regular Syntax (<code>ERE</code>) does not.<br />
+<strong><em><code>ERE</code></em></strong> adds <strong><code>?</code></strong>, <strong><code>+</code></strong>, and <strong><code>|</code></strong>, and it removes the need to escape the metacharacters <code>( )</code> and <code>{ }</code>, which are required in <code>BRE</code>.  </p>
+<h3 id="perl_and_pcre"><a href="https://en.wikipedia.org/wiki/Regular_expression#Perl_and_PCRE">Perl and PCRE</a><a class="headerlink" href="#perl_and_pcre" title="Permanent link">#</a></h3>
+<p>https://pcre.org/</p>
+<p>Perl 的正则表达式（Perl Regular Expressions），又叫 Perl RegEx，简称 <code>PRE</code>。<br />
+Perl 兼容格式的正则表达式（Perl Compatible Regular Expressions），简称 <code>PCRE</code>。  </p>
+<p><a href="https://en.wikipedia.org/wiki/Perl_Compatible_Regular_Expressions"><strong>PCRE</strong></a> is a library written in C, which implements a <a href="https://en.wikipedia.org/wiki/Regular_expression">regular expression</a> engine, inspired by the capabilities of the <a href="https://en.wikipedia.org/wiki/Perl">Perl programming language</a>. Philip Hazel started writing PCRE in summer 1997. PCRE's syntax is much more powerful and flexible than either of the <a href="https://en.wikipedia.org/wiki/Regular_expression#POSIX">POSIX regular expression</a> flavors and than that of many other regular-expression libraries.</p>
+<p>Because of its expressive power and (relative) ease of reading, many other utilities and programming languages have <strong>adopted</strong> syntax similar to Perl's—for example, <code>Java</code>, <code>JavaScript</code>, <code>Python</code>, <code>Ruby</code>, <code>Qt</code>, <code>Microsoft's .NET Framework</code>, and <code>XML Schema</code>.</p>
+<p>A number of prominent open-source programs, such as the Apache and Nginx HTTP Servers, and the PHP and R scripting languages, <strong>incorporate</strong> the PCRE library; proprietary software can do likewise, as the library is BSD licensed.</p>
+<p>Perl 5.10 implements syntactic extensions originally developed in PCRE and Python.</p>
+<h2 id="regex_online">regex online<a class="headerlink" href="#regex_online" title="Permanent link">#</a></h2>
+<p><a href="https://regexper.com/">regexper</a> - railroad<br />
+<a href="https://regexr.com/">regexr</a>  </p>
+<p><a href="https://www.w3cschool.cn/regexp/6a7w1pr0.html">w3cschool</a><br />
+<a href="http://tool.chinaz.com/regex">chinaz</a> / <a href="http://tool.oschina.net/regex">oschina</a>  </p>
+<h2 id="cheatsheet"><a href="https://regexr.com/">cheatsheet</a><a class="headerlink" href="#cheatsheet" title="Permanent link">#</a></h2>
+<p><a href="http://jkorpela.fi/perl/regexp.html"><strong>Regular expressions in Perl</strong></a><br />
+<a href="http://support.sas.com/documentation/cdl/en/lrdict/64316/HTML/default/viewer.htm#a003288497.htm">Tables of Perl Regular Expression (PRX) Metacharacters</a>  </p>
+<table class="cheatsheet"> <tbody><tr><th colspan="2" data-id="charclasses">Character classes</th></tr> <tr><td><a>.</a></td><td>any character except newline</td></tr> <tr><td><a>\w</a>&ensp;<a>\d</a>&ensp;<a>\s</a></td><td>word, digit, whitespace</td></tr> <tr><td><a>\W</a>&ensp;<a>\D</a>&ensp;<a>\S</a></td><td>not word, digit, whitespace</td></tr> <tr><td><a>[abc]</a></td><td>any of a, b, or c</td></tr> <tr><td><a>[^abc]</a></td><td>not a, b, or c</td></tr> <tr><td><a>[a-g]</a></td><td>character between a &amp; g</td></tr> <tr><th colspan="2" data-id="anchors">Anchors</th></tr> <tr><td><a>^abc$</a></td><td>start / end of the string</td></tr> <tr><td><a>\b</a>&ensp;<a>\B</a></td><td>word, not-word boundary</td></tr> <tr><th colspan="2" data-id="escchars">Escaped characters</th></tr> <tr><td><a>\.</a>&ensp;<a>\*</a>&ensp;<a>\\</a></td><td>escaped special characters</td></tr> <tr><td><a>\t</a>&ensp;<a>\n</a>&ensp;<a>\r</a></td><td>tab, linefeed, carriage return</td></tr> <tr><th colspan="2" data-id="groups">Groups &amp; Lookaround</th></tr> <tr><td><a>(abc)</a></td><td>capture group</td></tr> <tr><td><a>\1</a></td><td>backreference to group #1</td></tr> <tr><td><a>(?:abc)</a></td><td>non-capturing group</td></tr> <tr><td><a>(?=abc)</a></td><td>positive lookahead</td></tr> <tr><td><a>(?!abc)</a></td><td>negative lookahead</td></tr> <tr><th colspan="2" data-id="quants">Quantifiers &amp; Alternation</th></tr> <tr><td><a>a*</a>&ensp;<a>a+</a>&ensp;<a>a?</a></td><td>0 or more, 1 or more, 0 or 1</td></tr> <tr><td><a>a{5}</a>&ensp;<a>a{2,}</a></td><td>exactly five, two or more</td></tr> <tr><td><a>a{1,3}</a></td><td>between one &amp; three</td></tr> <tr><td><a>a+?</a>&ensp;<a>a{2,}?</a></td><td>match as few as possible</td></tr> <tr><td><a>ab|cd</a></td><td>match ab or cd</td></tr> </tbody></table>
+
+<p><code>(?:re)</code> 类似 <code>(…)</code>，匹配部分区块，但是不捕获存储为组。</p>
+<p>例1: <code>industr(?:y|ies)</code>：非捕获匹配 industry|industries。<br />
+例2：<code>/(?:^)\d{4}/m</code> 顶格匹配以四个数字开头的行。  </p>
+<h3 id="常用限定符">常用限定符<a class="headerlink" href="#常用限定符" title="Permanent link">#</a></h3>
+<table>
+<thead>
+<tr>
+<th>代码/语法</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>?</td>
+<td>重复0次或1次</td>
+</tr>
+<tr>
+<td>+</td>
+<td>重复1次或多次</td>
+</tr>
+<tr>
+<td>*</td>
+<td>重复0次或多次</td>
+</tr>
+<tr>
+<td>{n}</td>
+<td>重复n次</td>
+</tr>
+<tr>
+<td>{n,}</td>
+<td>重复n次或更多次</td>
+</tr>
+<tr>
+<td>{n,m}</td>
+<td>重复n到m次</td>
+</tr>
+</tbody>
+</table>
+<p><code>+</code> is equivalent to <code>{1,}</code></p>
+<h3 id="常用元字符">常用元字符<a class="headerlink" href="#常用元字符" title="Permanent link">#</a></h3>
+<table>
+<thead>
+<tr>
+<th>代码</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>.</td>
+<td>匹配除 <code>换行符</code> 以外的任意字符</td>
+</tr>
+<tr>
+<td>\w</td>
+<td>匹配 <code>字母</code> 或 <code>数字</code> 或 <code>下划线</code>（word）</td>
+</tr>
+<tr>
+<td>\s</td>
+<td>匹配任意的 <code>空白符</code>（space）</td>
+</tr>
+<tr>
+<td>\d</td>
+<td>匹配 <code>数字</code>（digit）</td>
+</tr>
+<tr>
+<td>\b</td>
+<td>匹配单词的 <code>开始</code> 或 <code>结束</code>（word boundary）</td>
+</tr>
+<tr>
+<td>^</td>
+<td>匹配字符串的 <code>开始</code></td>
+</tr>
+<tr>
+<td>$</td>
+<td>匹配字符串的 <code>结束</code></td>
+</tr>
+</tbody>
+</table>
+<p>To match any character including newline, use a pattern such as <code>[.\n]</code>.</p>
+<blockquote>
+<p>Python 中对应 flag 为 <code>re.S</code>。</p>
+</blockquote>
+<h3 id="常用反义词">常用反义词<a class="headerlink" href="#常用反义词" title="Permanent link">#</a></h3>
+<table>
+<thead>
+<tr>
+<th>代码/语法</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>\W</td>
+<td>匹配任意 <strong>不是</strong> 字母，数字，下划线，汉字的字符</td>
+</tr>
+<tr>
+<td>\S</td>
+<td>匹配任意 <strong>不是</strong> 空白符的字符</td>
+</tr>
+<tr>
+<td>\D</td>
+<td>匹配任意 <strong>非</strong> 数字的字符</td>
+</tr>
+<tr>
+<td>\B</td>
+<td>匹配 <strong>不是</strong> 单词开头或结束的位置</td>
+</tr>
+<tr>
+<td>[^x]</td>
+<td>匹配除了 x 以外的任意字符</td>
+</tr>
+<tr>
+<td>[^aeiou]</td>
+<td>匹配除了 aeiou 这几个字母以外的任意字符</td>
+</tr>
+</tbody>
+</table>
+<h2 id="vscode_extensions">vscode extensions<a class="headerlink" href="#vscode_extensions" title="Permanent link">#</a></h2>
+<p>vscode 1.29.0 基于 <a href="https://github.com/BurntSushi/ripgrep">ripgrep</a> 实现支持 multiline search。</p>
+<p>vscode 默认是 <code>search.useRipgrep</code>（Deprecated），建议采用 <strong><code>search.usePCRE2</code></strong>，支持 <a href="https://www.regular-expressions.info/lookaround.html">lookaround</a> 和 <a href="https://www.regular-expressions.info/backref.html">backreferences</a> 等特性。</p>
+<h3 id="regex_railroad_diagrams"><a href="https://marketplace.visualstudio.com/items?itemName=kogai.regex-railroad-diagrams">Regex Railroad Diagrams</a><a class="headerlink" href="#regex_railroad_diagrams" title="Permanent link">#</a></h3>
+<blockquote>
+<p>Display railroad diagram of regex under cursor.</p>
+<blockquote>
+<p>A regular expression railroad diagram view for regular expression under cursor. This is inspired by <a href="https://github.com/klorenz/atom-regex-railroad-diagrams">regex railroad diagrams</a>.</p>
+</blockquote>
+</blockquote>
+<p>光标定位到 js 文件中的正则表达式（RegExp）所在行，再在控制面板中执行 <code>Show RegExp preview</code> 命令，将在右侧新开辅助编辑器显示 <code>RegExp Diagram Preview</code>。</p>
+<p><img alt="RegExp-Diagram-Preview" src="../../linux/images/RegExp-Diagram-Preview.png" /></p>
+<blockquote>
+<p>最新版 vscode 中不可用！</p>
+</blockquote>
+<h3 id="regexp_preview_and_editor"><a href="https://marketplace.visualstudio.com/items?itemName=le0zh.vscode-regexp-preivew">RegExp Preview and Editor</a><a class="headerlink" href="#regexp_preview_and_editor" title="Permanent link">#</a></h3>
+<blockquote>
+<p>VSCode extension based on <a href="https://github.com/javallone/regexper-static">regexper-static</a>. Including regexp expression preivewer and realtime preivew editor.</p>
+</blockquote>
+<p>在控制面板中执行 <code>RegExp Editor</code>，将打开左侧编辑器，可在其输入正则表达式，右侧的 <code>RegExp Preview</code> 将展开其匹配分解逻辑图。</p>
+<p><img alt="RegExp-Preview" src="../../linux/images/RegExp-Preview.png" /></p>
+<blockquote>
+<p>最新版 vscode 中不可用，考虑安装 <a href="https://marketplace.visualstudio.com/items?itemName=Lulus.vscode-regexp-preivew">Lulus Young</a> 或 <a href="https://marketplace.visualstudio.com/items?itemName=LouisWT.regexp-preview">LouisWT</a> 适配的新版本！</p>
+</blockquote>
+<h3 id="regex_previewer"><a href="https://marketplace.visualstudio.com/items?itemName=chrmarti.regex">Regex Previewer</a><a class="headerlink" href="#regex_previewer" title="Permanent link">#</a></h3>
+<blockquote>
+<p>Regex matches previewer for JavaScript, TypeScript, PHP and Haxe in Visual Studio Code.</p>
+</blockquote>
+<p>新建一个 js 文件，该插件会自动检测其中的正则表达式，并在其上浮现 <code>Test Regex...</code> 提示条。<br />
+点击或在控制面板中执行 <code>Toggle Regex Preview In Side-By-Side Editors</code> 命令将在右侧开启测试编辑器。<br />
+在测试编辑器中输入测试字符串，再将光标移动到 js 中的正则表达式所在行，右侧将高亮匹配的文本。</p>
+<p><img alt="Regex-Previewer" src="../../linux/images/Regex-Previewer.png" /></p>
+<blockquote>
+<p><code>/g</code> 标志匹配所有行，未加则只匹配第一行。</p>
+</blockquote>
+<h3 id="filter_line"><a href="https://marketplace.visualstudio.com/items?itemName=everettjf.filter-line">Filter Line</a><a class="headerlink" href="#filter_line" title="Permanent link">#</a></h3>
+<ul>
+<li>By Input String  </li>
+<li>By Input <strong>Regex</strong>  </li>
+<li>By Not Contain Input String  </li>
+<li>By Not Match Input <strong>Regex</strong>  </li>
+<li>By Config File  </li>
+</ul>
+<h4 id="config">config<a class="headerlink" href="#config" title="Permanent link">#</a></h4>
+<p>必须在当前文件所在根目录（即 vscode 打开的文件夹）下创建过滤配置文件。</p>
+<ol>
+<li>如果打开的是独立文件，不是以文件夹打开，则提示 <code>Can not locate workspace folder for current file</code>；  </li>
+<li>如果是以文件夹（<code>~/folder</code>）打开文件（<code>~/folder/subfolder/test.log</code>），执行 <code>Filter Line By Config File</code>，则提示 <code>Can not locate config file ~/folder/.vscode/filterline.json</code>。  </li>
+</ol>
+<p><strong><em>Config file format type</em></strong></p>
+<p>There are 3 format types. As they are so simple, I will not describe them here. Please visit the demo directly :</p>
+<ol>
+<li><code>stringlist</code>: String list <a href="https://github.com/everettjf/vscode-filter-line/blob/master/demo/log0json/.vscode/filterline.json">json</a> or <a href="https://github.com/everettjf/vscode-filter-line/blob/master/demo/log0eoml/.vscode/filterline.eoml">eoml</a>  </li>
+<li><strong><code>regexlist</code></strong>: Regular expressions list <a href="https://github.com/everettjf/vscode-filter-line/blob/master/demo/log1json/.vscode/filterline.json">json</a> or <a href="https://github.com/everettjf/vscode-filter-line/blob/master/demo/log1eoml/.vscode/filterline.eoml">eoml</a>  </li>
+<li><code>general</code>: This is default if type is not specified. <a href="https://github.com/everettjf/vscode-filter-line/blob/master/demo/log2json/.vscode/filterline.json">json</a> or <a href="https://github.com/everettjf/vscode-filter-line/blob/master/demo/log2eoml/.vscode/filterline.eoml">eoml</a>  </li>
+</ol>
+
+
+
+
+
+
+
+  
+  
+
+
+
+  
+
+
+  
+
+
+
+  <h2 id="__comments">评论</h2>
+  <!-- Insert generated snippet here -->
+  <script src="https://giscus.app/client.js"
+    data-repo="fan2/mkdocs"
+    data-repo-id="R_kgDOLltxSg"
+    data-category="Announcements"
+    data-category-id="DIC_kwDOLltxSs4CeURH"
+    data-mapping="pathname"
+    data-strict="0"
+    data-reactions-enabled="1"
+    data-emit-metadata="1"
+    data-input-position="top"
+    data-theme="preferred_color_scheme"
+    data-lang="zh-CN"
+    data-loading="lazy"
+    crossorigin="anonymous"
+    async>
+  </script>
+
+  <!-- Synchronize Giscus theme with palette -->
+  <script>
+    var giscus = document.querySelector("script[src*=giscus]")
+
+    // Set palette on initial load
+    var palette = __md_get("__palette")
+    if (palette && typeof palette.color === "object") {
+      var theme = palette.color.scheme === "slate"
+        ? "transparent_dark"
+        : "light"
+
+      // Instruct Giscus to set theme
+      giscus.setAttribute("data-theme", theme) 
+    }
+
+    // Register event handlers after documented loaded
+    document.addEventListener("DOMContentLoaded", function() {
+      var ref = document.querySelector("[data-md-component=palette]")
+      ref.addEventListener("change", function() {
+        var palette = __md_get("__palette")
+        if (palette && typeof palette.color === "object") {
+          var theme = palette.color.scheme === "slate"
+            ? "transparent_dark"
+            : "light"
+
+          // Instruct Giscus to change theme
+          var frame = document.querySelector(".giscus-frame")
+          frame.contentWindow.postMessage(
+            { giscus: { setConfig: { theme } } },
+            "https://giscus.app"
+          )
+        }
+      })
+    })
+  </script>
+
+      
+    </article>
+  </div>
+
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+        
+      
+      <nav class="md-footer__inner md-grid" aria-label="页脚" >
+        
+          
+          <a href="../Globbing%28Wildcard%29/" class="md-footer__link md-footer__link--prev" aria-label="上一页: Linux Globbing(Wildcard)">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                上一页
+              </span>
+              <div class="md-ellipsis">
+                Linux Globbing(Wildcard)
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../../20191104/sed%26awk/" class="md-footer__link md-footer__link--next" aria-label="下一页: Linux sed &amp; awk">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                下一页
+              </span>
+              <div class="md-ellipsis">
+                Linux sed & awk
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2024- Cliff Fan
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["toc.follow", "header.autohide", "navigation.tabs", "navigation.top", "navigation.footer", "navigation.tracking", "content.code.copy", "content.code.select", "content.code.annotate"], "search": "../../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.bd41221c.min.js"></script>
+      
+        <script src="../../../javascripts/mathjax.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+        <script src="https://vercount.one/js"></script>
+      
+    
+  </body>
+</html>

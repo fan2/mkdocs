@@ -1,0 +1,2128 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="在别处或在路上">
+      
+      
+        <meta name="author" content="Cliff Fan">
+      
+      
+        <link rel="canonical" href="https://duetorun.com/blog/20191101/Pipelines/">
+      
+      
+        <link rel="prev" href="../REDIRECTION/">
+      
+      
+        <link rel="next" href="../../20191102/linux-cmd-grep/">
+      
+      
+      <link rel="icon" href="../../../assets/hold_yourself.jpg">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.15">
+    
+    
+      
+        <title>Linux Pipeline（管道） - ElseWhere</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.7e359304.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function n(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],n("js",new Date),n("config","G-XGW41EGL31"),document.addEventListener("DOMContentLoaded",function(){document.forms.search&&document.forms.search.query.addEventListener("blur",function(){this.value&&n("event","search",{search_term:this.value})}),document$.subscribe(function(){var a=document.forms.feedback;if(void 0!==a)for(var e of a.querySelectorAll("[type=submit]"))e.addEventListener("click",function(e){e.preventDefault();var t=document.location.pathname,e=this.getAttribute("data-md-value");n("event","feedback",{page:t,data:e}),a.firstElementChild.disabled=!0;e=a.querySelector(".md-feedback__note [data-md-value='"+e+"']");e&&(e.hidden=!1)}),a.hidden=!1}),location$.subscribe(function(e){n("config","G-XGW41EGL31",{page_path:e.pathname})})});var e=document.createElement("script");e.async=!0,e.src="https://www.googletagmanager.com/gtag/js?id=G-XGW41EGL31",document.getElementById("__analytics").insertAdjacentElement("afterEnd",e)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+    
+  
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#_1" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../../.." title="ElseWhere" class="md-header__button md-logo" aria-label="ElseWhere" data-md-component="logo">
+      
+  <img src="../../../assets/hold_yourself.jpg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ElseWhere
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Linux Pipeline（管道）
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1M8 13h8v-2H8v2m9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1 0 1.71-1.39 3.1-3.1 3.1h-4V17h4a5 5 0 0 0 5-5 5 5 0 0 0-5-5Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="indigo"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5M7 15a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="标签" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../about/" class="md-tabs__link">
+        
+  
+    
+  
+  About
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../" class="md-tabs__link">
+          
+  
+  Blog
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../link/" class="md-tabs__link">
+        
+  
+    
+  
+  Link
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" hidden>
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="ElseWhere" class="md-nav__button md-logo" aria-label="ElseWhere" data-md-component="logo">
+      
+  <img src="../../../assets/hold_yourself.jpg" alt="logo">
+
+    </a>
+    ElseWhere
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../about/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    About
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Blog
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      <a href="../../" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Archive
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            Archive
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2024/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2024
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2022/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2022
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2019/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2019
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2018/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2018
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2017/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2017
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2015/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2015
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Categories
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            Categories
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/command/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    command
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/editor/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    editor
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/git/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    git
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/linux/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    linux
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/macos/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    macOS
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/markdown/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    markdown
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/material/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    material
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/mkdocs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    mkdocs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/nginx/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    nginx
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/shell/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    shell
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/ubuntu/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ubuntu
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/vim/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    vim
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/webdav/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    webDAV
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/wiki/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    wiki
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/zsh/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    zsh
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../link/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Link
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      |
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tee" class="md-nav__link">
+    <span class="md-ellipsis">
+      tee
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#wcsortuniq" class="md-nav__link">
+    <span class="md-ellipsis">
+      wc,sort,uniq
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="wc,sort,uniq">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#wc" class="md-nav__link">
+    <span class="md-ellipsis">
+      wc
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sort" class="md-nav__link">
+    <span class="md-ellipsis">
+      sort
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#uniq" class="md-nav__link">
+    <span class="md-ellipsis">
+      uniq
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cut" class="md-nav__link">
+    <span class="md-ellipsis">
+      cut
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="cut">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bytes" class="md-nav__link">
+    <span class="md-ellipsis">
+      bytes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#characters" class="md-nav__link">
+    <span class="md-ellipsis">
+      characters
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delimiter" class="md-nav__link">
+    <span class="md-ellipsis">
+      delimiter
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tr" class="md-nav__link">
+    <span class="md-ellipsis">
+      tr
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="tr">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#substite" class="md-nav__link">
+    <span class="md-ellipsis">
+      substite
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="substite">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#squeeze" class="md-nav__link">
+    <span class="md-ellipsis">
+      Squeeze
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#complement" class="md-nav__link">
+    <span class="md-ellipsis">
+      Complement
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delete" class="md-nav__link">
+    <span class="md-ellipsis">
+      delete
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#xargs" class="md-nav__link">
+    <span class="md-ellipsis">
+      xargs
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="xargs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#options" class="md-nav__link">
+    <span class="md-ellipsis">
+      options
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      usage
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tricks" class="md-nav__link">
+    <span class="md-ellipsis">
+      tricks
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#refs" class="md-nav__link">
+    <span class="md-ellipsis">
+      refs
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+  <div class="md-content md-content--post" data-md-component="content">
+    <div class="md-sidebar md-sidebar--post" data-md-component="sidebar" data-md-type="navigation">
+      <div class="md-sidebar__scrollwrap">
+        <div class="md-sidebar__inner md-post">
+          <nav class="md-nav md-nav--primary">
+            <div class="md-post__back">
+              <div class="md-nav__title md-nav__container">
+                <a href="../../" class="md-nav__link">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+                  <span class="md-ellipsis">
+                    回到主页
+                  </span>
+                </a>
+              </div>
+            </div>
+            
+              <div class="md-post__authors md-typeset">
+                
+                  <div class="md-profile md-post__profile">
+                    <span class="md-author md-author--long">
+                      <img src="https://duetorun.com/assets/carve_yourself.jpg" alt="Cliff Fan">
+                    </span>
+                    <span class="md-profile__description">
+                      <strong>
+                        
+                          Cliff Fan
+                        
+                      </strong>
+                      <br>
+                      Just do IT
+                    </span>
+                  </div>
+                
+              </div>
+            
+            <ul class="md-post__meta md-nav__list">
+              <li class="md-nav__item md-nav__item--section">
+                <div class="md-post__title">
+                  <span class="md-ellipsis">
+                    元数据
+                  </span>
+                </div>
+                <nav class="md-nav">
+                  <ul class="md-nav__list">
+                    <li class="md-nav__item">
+                      <div class="md-nav__link">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 19H5V8h14m-3-7v2H8V1H6v2H5c-1.11 0-2 .89-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-1V1m-1 11h-5v5h5v-5Z"/></svg>
+                        <time datetime="2019-11-01 10:00:00" class="md-ellipsis">2019年11月1日</time>
+                      </div>
+                    </li>
+                    
+                    
+                      <li class="md-nav__item">
+                        <div class="md-nav__link">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 3v15h3V3H9m3 2 4 13 3-1-4-13-3 1M5 5v13h3V5H5M3 19v2h18v-2H3Z"/></svg>
+                          <span class="md-ellipsis">
+                            分类于
+                            
+                              <a href="../../category/wiki/">wiki</a>, 
+                              <a href="../../category/linux/">linux</a></span>
+                        </div>
+                      </li>
+                    
+                    
+                      
+                      <li class="md-nav__item">
+                        <div class="md-nav__link">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7h1.5Z"/></svg>
+                          <span class="md-ellipsis">
+                            
+                              需要 11 分钟阅读时间
+                            
+                          </span>
+                        </div>
+                      </li>
+                    
+                    <!-- Add by Cliff.Fan, 29Mar24. -->
+                    <li class="md-nav__item">
+                      <div class="md-nav__link">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m19 1-5 5v11l5-4.5V1m2 4v13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V6c-1.45-1.1-3.55-1.5-5.5-1.5-1.95 0-4.05.4-5.5 1.5v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1M10 18.41C8.75 18.09 7.5 18 6.5 18c-1.06 0-2.32.19-3.5.5V7.13c.91-.4 2.14-.63 3.5-.63 1.36 0 2.59.23 3.5.63v11.28Z"/></svg>
+                        <span class="md-ellipsis" id="busuanzi_container_page_pv">
+                          阅读量：<span id="busuanzi_value_page_pv">N/A</span>
+                        </span>
+                      </div>
+                    </li>
+                  </ul>
+                </nav>
+              </li>
+            </ul>
+          </nav>
+          
+        </div>
+      </div>
+    </div>
+    <article class="md-content__inner md-typeset">
+      
+        
+  
+  
+
+<nav class="md-tags" >
+  
+    
+    
+    
+      <span class="md-tag">pipeline</span>
+    
+  
+</nav>
+
+
+
+  <h1>Linux Pipeline（管道）</h1>
+
+<p>参考 BASH(1) manual page 的 <code>SHELL GRAMMAR &gt; Pipelines</code> 部分。</p>
+<!-- more -->
+
+<h2 id="_1">|<a class="headerlink" href="#_1" title="Permanent link">#</a></h2>
+<p>A <code>pipeline</code> is a sequence of one or more commands separated by one of the control operators <code>|</code> or <code>|&amp;</code>. The format for a pipeline is:</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="o">[</span><span class="nb">time</span><span class="w"> </span><span class="o">[</span>-p<span class="o">]]</span><span class="w"> </span><span class="o">[</span><span class="w"> </span>!<span class="w"> </span><span class="o">]</span><span class="w"> </span><span class="nb">command</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="o">[</span><span class="p">|</span>⎪<span class="p">|&amp;</span><span class="o">]</span><span class="w"> </span>command2<span class="w"> </span>...<span class="w"> </span><span class="o">]</span>
+</span></code></pre></div>
+<p>The standard output of <em><code>command</code></em> is connected via a pipe to the standard input of <em><code>command2</code></em>.<br />
+If <strong><code>|&amp;</code></strong> is used, <em><code>command</code></em>'s standard error, in addition to its standard output, is connected to <em><code>command2</code></em>'s standard input through the pipe; it is shorthand for <code>2&gt;&amp;1 |</code>.  </p>
+<p>管道被放在命令之间，将一个命令的输出重定向到另一个命令中：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>command1<span class="w"> </span><span class="p">|</span><span class="w"> </span>command2
+</span></code></pre></div>
+<p>不要以为由管道串起的两个命令会依次执行。Linux系统实际上会同时运行这两个命令，在系统内部将它们连接起来。在第一个命令产生输出的同时，输出会被立即送给第二个命令，数据传输不会用到任何中间文件或缓冲区。</p>
+<p>管道分隔界定符是 <code>|</code>，默认只将上一个命令的stdout输出作为下一个命令的stdin输入，不包括stderr。采用 <code>|&amp;</code> 管传，则同时传入上一个命令的stdout和stderr输出，相当于 <code>2&gt;&amp;1 |</code>。</p>
+<p>当命令输出较多时，为了避免滚动超出，可以导向给 more 或 less 翻页查看，例如 <code>ls -al /etc | less</code>。</p>
+<p>cat命令不仅可以读取文件、拼接数据，还支持从标准输入中进行读取。以下脚本将ls的输出传给 <code>cat -n</code>，后者接收stdin输入并将内容加上行号，输出重定向到文件out.txt。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>ls<span class="w"> </span><span class="p">|</span><span class="w"> </span>cat<span class="w"> </span>-n<span class="w"> </span>&gt;<span class="w"> </span>out.txt
+</span></code></pre></div>
+<p>终端通过 curl 从 github 下载安装流行的 Zsh 配置 <a href="https://ohmyz.sh/#install">Oh My ZSH</a>：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1"># curl</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>$<span class="w"> </span>sh<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span>curl<span class="w"> </span>-fsSL<span class="w"> </span>https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh<span class="k">)</span><span class="s2">&quot;</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="c1">## 或者</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>$<span class="w"> </span>curl<span class="w"> </span>-fsSL<span class="w"> </span>https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh<span class="w"> </span><span class="p">|</span><span class="w"> </span>sh<span class="w"> </span>-c
+</span></code></pre></div>
+<p>以下脚本下载 <a href="https://docs.brew.sh/">Homebrew</a> 安装包tarball，基于 <code>&amp;&amp;</code> 递进执行创建目录和下载文件。<br />
+下载完成后，将下载的压缩包（本地存储的文件路径）重定向给 tar 进行解压。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>mkdir<span class="w"> </span>homebrew<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>curl<span class="w"> </span>-L<span class="w"> </span>https://github.com/Homebrew/brew/tarball/master<span class="w"> </span><span class="p">|</span><span class="w"> </span>tar<span class="w"> </span>xz<span class="w"> </span>--strip<span class="w"> </span><span class="m">1</span><span class="w"> </span>-C<span class="w"> </span>homebrew
+</span></code></pre></div>
+<p>以下是来自 stackoverflow 上 <a href="https://stackoverflow.com/a/22671136">Amir Mehler</a> 对问题 <a href="https://stackoverflow.com/questions/6980090/how-to-read-from-a-file-or-standard-input-in-bash">How to read from a file or standard input in Bash</a> 的回答。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>$<span class="w"> </span>cat<span class="w"> </span>reader.sh
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="c1">#!/bin/bash</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="k">while</span><span class="w"> </span><span class="nb">read</span><span class="w"> </span>line<span class="p">;</span><span class="w"> </span><span class="k">do</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">  </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;reading: </span><span class="si">${</span><span class="nv">line</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="k">done</span><span class="w"> </span>&lt;<span class="w"> </span>/dev/stdin
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>$<span class="w"> </span>cat<span class="w"> </span>writer.sh
+</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="c1">#!/bin/bash</span>
+</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="k">for</span><span class="w"> </span>i<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="o">{</span><span class="m">0</span>..5<span class="o">}</span><span class="p">;</span><span class="w"> </span><span class="k">do</span>
+</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="w">  </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;line </span><span class="si">${</span><span class="nv">i</span><span class="si">}</span><span class="s2">&quot;</span>
+</span><span id="__span-5-11"><a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a><span class="k">done</span>
+</span></code></pre></div>
+<p>该案例直观阐述了管道的运行机制：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>$<span class="w"> </span>./writer.sh<span class="w"> </span><span class="p">|</span><span class="w"> </span>./reader.sh
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>reading:<span class="w"> </span>line<span class="w"> </span><span class="m">0</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>reading:<span class="w"> </span>line<span class="w"> </span><span class="m">1</span>
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>reading:<span class="w"> </span>line<span class="w"> </span><span class="m">2</span>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>reading:<span class="w"> </span>line<span class="w"> </span><span class="m">3</span>
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>reading:<span class="w"> </span>line<span class="w"> </span><span class="m">4</span>
+</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>reading:<span class="w"> </span>line<span class="w"> </span><span class="m">5</span>
+</span></code></pre></div>
+<h2 id="tee">tee<a class="headerlink" href="#tee" title="Permanent link">#</a></h2>
+<p>如果对stderr或stdout进行重定向，被重定向的文本会传入文件。<br />
+因为文本已经被重定向到文件中，也就没剩下什么东西可以通过管道传给后续命令。<br />
+有一种方法既可以将数据重定向到文件，还可以提供一份重定向数据的副本作为后续命令的stdin。</p>
+<p>双向重定向命令 <code>tee</code> 通过管道连接前后，可实现这个目标：<code>command1 | tee FILE | command2</code>。</p>
+<ol>
+<li>command1的stdout输出管传作为tee命令的stdin输入；</li>
+<li>tee将接收的数据(stdin输入)重定向到文件FILE，同时复制一份到stdout输出；</li>
+<li>tee将产生的stdout输出再通过管道传递给后续命令，command2以此作为stdin输入继续处理。</li>
+</ol>
+<p>tee 默认重定向是 <code>&gt;</code> 会清空覆写已有文件，如果不想覆写而是追加，可以指定 <code>-a</code> 等效 <code>&gt;&gt;</code>。</p>
+<blockquote>
+<p><code>-a</code>: Append the output to the files rather than overwriting(default).</p>
+</blockquote>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="c1"># 将 ls -l 结果追加到文件，同时输出到控制台用more分页显示。</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>faner@MBP-FAN:~<span class="p">|</span>⇒<span class="w">  </span>ls<span class="w"> </span>-l<span class="w"> </span>/<span class="w"> </span><span class="p">|</span><span class="w"> </span>tee<span class="w"> </span>-a<span class="w"> </span>~/homefile<span class="w"> </span><span class="p">|</span><span class="w"> </span>more
+</span></code></pre></div>
+<p>执行 <code>shadowsocks.sh</code> 脚本安装 shadowsocks 时，将执行的 stdout 和 stderr 输出既在控制台显示，同时写入日志文件 shadowsocks.log，方便后续回看。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>./shadowsocks.sh<span class="w"> </span><span class="p">|&amp;</span><span class="w"> </span>tee<span class="w"> </span>shadowsocks.log<span class="w"> </span><span class="c1"># or</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>./shadowsocks.sh<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>tee<span class="w"> </span>shadowsocks.log
+</span></code></pre></div>
+<h2 id="wcsortuniq">wc,sort,uniq<a class="headerlink" href="#wcsortuniq" title="Permanent link">#</a></h2>
+<h3 id="wc">wc<a class="headerlink" href="#wc" title="Permanent link">#</a></h3>
+<p><strong>wc</strong> - print newline, word, and byte counts for each file</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>-c,<span class="w"> </span>--bytes
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="w">      </span>print<span class="w"> </span>the<span class="w"> </span>byte<span class="w"> </span>counts
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>-m,<span class="w"> </span>--chars
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="w">      </span>print<span class="w"> </span>the<span class="w"> </span>character<span class="w"> </span>counts
+</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>
+</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a>-w,<span class="w"> </span>--words
+</span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a><span class="w">      </span>print<span class="w"> </span>the<span class="w"> </span>word<span class="w"> </span>counts
+</span><span id="__span-9-9"><a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a>
+</span><span id="__span-9-10"><a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a>-l,<span class="w"> </span>--lines
+</span><span id="__span-9-11"><a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a><span class="w">      </span>print<span class="w"> </span>the<span class="w"> </span>newline<span class="w"> </span>counts
+</span></code></pre></div>
+<p>统计 Podfile 文件的行数：</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>$ wc -l Podfile
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>     879 Podfile
+</span></code></pre></div>
+<p>统计 Podfile 文件的行数和字节数：</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>$ wc -lc Podfile
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>     879   38508 Podfile
+</span></code></pre></div>
+<p>how count all lines in all files in current dir and omit empty lines with wc, grep, cut and bc commands</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="nb">echo</span><span class="w"> </span><span class="sb">`</span>wc<span class="w"> </span>-l<span class="w"> </span>*<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>total<span class="w"> </span><span class="p">|</span><span class="w"> </span>cut<span class="w"> </span>-f2<span class="w"> </span>-d’<span class="w"> </span>‘<span class="sb">`</span><span class="w"> </span>–<span class="w"> </span><span class="sb">`</span>grep<span class="w"> </span>-in<span class="w"> </span>“^$”<span class="w"> </span>*<span class="w"> </span><span class="p">|</span><span class="w"> </span>wc<span class="w"> </span>-l<span class="w"> </span><span class="sb">`</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>bc
+</span></code></pre></div>
+<h3 id="sort">sort<a class="headerlink" href="#sort" title="Permanent link">#</a></h3>
+<p><strong>sort</strong> - sort lines of text files</p>
+<h3 id="uniq">uniq<a class="headerlink" href="#uniq" title="Permanent link">#</a></h3>
+<p><strong>uniq</strong> - report or omit repeated lines</p>
+<p>统计 <code>mars/mars/stn/src</code> 目录下类数（同名的 h/cc）</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>faner@MBP-FAN:~/Projects/git/framework/mars/mars/stn/src<span class="p">|</span>master⚡<span class="w"> </span>
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>⇒<span class="w">  </span>ls<span class="w"> </span><span class="p">|</span><span class="w"> </span>cut<span class="w"> </span>-d<span class="w"> </span><span class="s1">&#39;.&#39;</span><span class="w"> </span>-f<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>uniq<span class="w"> </span>-c
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="w">   </span><span class="m">2</span><span class="w"> </span>anti_avalanche
+</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="w">   </span><span class="m">2</span><span class="w"> </span>dynamic_timeout
+</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a><span class="w">   </span><span class="m">2</span><span class="w"> </span>flow_limit
+</span><span id="__span-13-6"><a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a><span class="w">   </span><span class="m">2</span><span class="w"> </span>frequency_limit
+</span><span id="__span-13-7"><a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a><span class="w">   </span><span class="m">2</span><span class="w"> </span>longlink
+</span><span id="__span-13-8"><a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a><span class="w">   </span><span class="m">2</span><span class="w"> </span>longlink_connect_monitor
+</span><span id="__span-13-9"><a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a><span class="w">   </span><span class="m">2</span><span class="w"> </span>longlink_identify_checker
+</span><span id="__span-13-10"><a id="__codelineno-13-10" name="__codelineno-13-10" href="#__codelineno-13-10"></a><span class="w">   </span><span class="m">2</span><span class="w"> </span>longlink_speed_test
+</span><span id="__span-13-11"><a id="__codelineno-13-11" name="__codelineno-13-11" href="#__codelineno-13-11"></a><span class="w">   </span><span class="m">2</span><span class="w"> </span>longlink_task_manager
+</span><span id="__span-13-12"><a id="__codelineno-13-12" name="__codelineno-13-12" href="#__codelineno-13-12"></a><span class="w">   </span><span class="m">2</span><span class="w"> </span>net_channel_factory
+</span><span id="__span-13-13"><a id="__codelineno-13-13" name="__codelineno-13-13" href="#__codelineno-13-13"></a><span class="w">   </span><span class="m">2</span><span class="w"> </span>net_check_logic
+</span><span id="__span-13-14"><a id="__codelineno-13-14" name="__codelineno-13-14" href="#__codelineno-13-14"></a><span class="w">   </span><span class="m">2</span><span class="w"> </span>net_core
+</span><span id="__span-13-15"><a id="__codelineno-13-15" name="__codelineno-13-15" href="#__codelineno-13-15"></a><span class="w">   </span><span class="m">2</span><span class="w"> </span>net_source
+</span><span id="__span-13-16"><a id="__codelineno-13-16" name="__codelineno-13-16" href="#__codelineno-13-16"></a><span class="w">   </span><span class="m">2</span><span class="w"> </span>netsource_timercheck
+</span><span id="__span-13-17"><a id="__codelineno-13-17" name="__codelineno-13-17" href="#__codelineno-13-17"></a><span class="w">   </span><span class="m">2</span><span class="w"> </span>proxy_test
+</span><span id="__span-13-18"><a id="__codelineno-13-18" name="__codelineno-13-18" href="#__codelineno-13-18"></a><span class="w">   </span><span class="m">2</span><span class="w"> </span>shortlink
+</span><span id="__span-13-19"><a id="__codelineno-13-19" name="__codelineno-13-19" href="#__codelineno-13-19"></a><span class="w">   </span><span class="m">1</span><span class="w"> </span>shortlink_interface
+</span><span id="__span-13-20"><a id="__codelineno-13-20" name="__codelineno-13-20" href="#__codelineno-13-20"></a><span class="w">   </span><span class="m">2</span><span class="w"> </span>shortlink_task_manager
+</span><span id="__span-13-21"><a id="__codelineno-13-21" name="__codelineno-13-21" href="#__codelineno-13-21"></a><span class="w">   </span><span class="m">2</span><span class="w"> </span>signalling_keeper
+</span><span id="__span-13-22"><a id="__codelineno-13-22" name="__codelineno-13-22" href="#__codelineno-13-22"></a><span class="w">   </span><span class="m">2</span><span class="w"> </span>simple_ipport_sort
+</span><span id="__span-13-23"><a id="__codelineno-13-23" name="__codelineno-13-23" href="#__codelineno-13-23"></a><span class="w">   </span><span class="m">2</span><span class="w"> </span>smart_heartbeat
+</span><span id="__span-13-24"><a id="__codelineno-13-24" name="__codelineno-13-24" href="#__codelineno-13-24"></a><span class="w">   </span><span class="m">1</span><span class="w"> </span>special_ini
+</span><span id="__span-13-25"><a id="__codelineno-13-25" name="__codelineno-13-25" href="#__codelineno-13-25"></a><span class="w">   </span><span class="m">1</span><span class="w"> </span>task_profile
+</span><span id="__span-13-26"><a id="__codelineno-13-26" name="__codelineno-13-26" href="#__codelineno-13-26"></a><span class="w">   </span><span class="m">2</span><span class="w"> </span>timing_sync
+</span><span id="__span-13-27"><a id="__codelineno-13-27" name="__codelineno-13-27" href="#__codelineno-13-27"></a><span class="w">   </span><span class="m">2</span><span class="w"> </span>zombie_task_manager
+</span></code></pre></div>
+<h2 id="cut">cut<a class="headerlink" href="#cut" title="Permanent link">#</a></h2>
+<p><code>cut</code> 命令可基于索引或分隔符（separator/delimiter）将文件或stdin文本行内数据进行切割提取，获取所需的信息域。</p>
+<p>在 macOS 终端执行 cut 将显示 usage 简要说明，执行 <code>man cut</code> 可查看详细帮助手册（Manual Page）：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>faner@MBP-FAN<span class="w"> </span>$<span class="w"> </span>man<span class="w"> </span>cut
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>CUT<span class="o">(</span><span class="m">1</span><span class="o">)</span><span class="w">                    </span>BSD<span class="w"> </span>General<span class="w"> </span>Commands<span class="w"> </span>Manual<span class="w">                   </span>CUT<span class="o">(</span><span class="m">1</span><span class="o">)</span>
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>
+</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a>NAME
+</span><span id="__span-14-5"><a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a><span class="w">     </span>cut<span class="w"> </span>--<span class="w"> </span>cut<span class="w"> </span>out<span class="w"> </span>selected<span class="w"> </span>portions<span class="w"> </span>of<span class="w"> </span>each<span class="w"> </span>line<span class="w"> </span>of<span class="w"> </span>a<span class="w"> </span>file
+</span><span id="__span-14-6"><a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a>
+</span><span id="__span-14-7"><a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a>SYNOPSIS
+</span><span id="__span-14-8"><a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a><span class="w">     </span>cut<span class="w"> </span>-b<span class="w"> </span>list<span class="w"> </span><span class="o">[</span>-n<span class="o">]</span><span class="w"> </span><span class="o">[</span>file<span class="w"> </span>...<span class="o">]</span>
+</span><span id="__span-14-9"><a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a><span class="w">     </span>cut<span class="w"> </span>-c<span class="w"> </span>list<span class="w"> </span><span class="o">[</span>file<span class="w"> </span>...<span class="o">]</span>
+</span><span id="__span-14-10"><a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a><span class="w">     </span>cut<span class="w"> </span>-f<span class="w"> </span>list<span class="w"> </span><span class="o">[</span>-d<span class="w"> </span>delim<span class="o">]</span><span class="w"> </span><span class="o">[</span>-s<span class="o">]</span><span class="w"> </span><span class="o">[</span>file<span class="w"> </span>...<span class="o">]</span>
+</span><span id="__span-14-11"><a id="__codelineno-14-11" name="__codelineno-14-11" href="#__codelineno-14-11"></a>
+</span><span id="__span-14-12"><a id="__codelineno-14-12" name="__codelineno-14-12" href="#__codelineno-14-12"></a>DESCRIPTION
+</span><span id="__span-14-13"><a id="__codelineno-14-13" name="__codelineno-14-13" href="#__codelineno-14-13"></a><span class="w">     </span>The<span class="w"> </span>cut<span class="w"> </span>utility<span class="w"> </span>cuts<span class="w"> </span>out<span class="w"> </span>selected<span class="w"> </span>portions<span class="w"> </span>of<span class="w"> </span>each<span class="w"> </span>line<span class="w"> </span><span class="o">(</span>as<span class="w"> </span>specified<span class="w"> </span>by<span class="w"> </span>list<span class="o">)</span><span class="w"> </span>from<span class="w"> </span>each<span class="w"> </span>file<span class="w"> </span>and
+</span><span id="__span-14-14"><a id="__codelineno-14-14" name="__codelineno-14-14" href="#__codelineno-14-14"></a><span class="w">     </span>writes<span class="w"> </span>them<span class="w"> </span>to<span class="w"> </span>the<span class="w"> </span>standard<span class="w"> </span>output.<span class="w">  </span>If<span class="w"> </span>no<span class="w"> </span>file<span class="w"> </span>arguments<span class="w"> </span>are<span class="w"> </span>specified,<span class="w"> </span>or<span class="w"> </span>a<span class="w"> </span>file<span class="w"> </span>argument<span class="w"> </span>is<span class="w"> </span>a<span class="w"> </span>single
+</span><span id="__span-14-15"><a id="__codelineno-14-15" name="__codelineno-14-15" href="#__codelineno-14-15"></a><span class="w">     </span>dash<span class="w"> </span><span class="o">(</span><span class="sb">`</span>-<span class="s1">&#39;), cut reads from the standard input.  The items specified by list can be in terms of column</span>
+</span><span id="__span-14-16"><a id="__codelineno-14-16" name="__codelineno-14-16" href="#__codelineno-14-16"></a><span class="s1">     position or in terms of fields delimited by a special character.  Column numbering starts from 1.</span>
+</span><span id="__span-14-17"><a id="__codelineno-14-17" name="__codelineno-14-17" href="#__codelineno-14-17"></a>
+</span><span id="__span-14-18"><a id="__codelineno-14-18" name="__codelineno-14-18" href="#__codelineno-14-18"></a><span class="s1">     The list option argument is a comma or whitespace separated set of numbers and/or number ranges.  Num-</span>
+</span><span id="__span-14-19"><a id="__codelineno-14-19" name="__codelineno-14-19" href="#__codelineno-14-19"></a><span class="s1">     ber ranges consist of a number, a dash (`-&#39;</span><span class="o">)</span>,<span class="w"> </span>and<span class="w"> </span>a<span class="w"> </span>second<span class="w"> </span>number<span class="w"> </span>and<span class="w"> </span><span class="k">select</span><span class="w"> </span>the<span class="w"> </span>fields<span class="w"> </span>or<span class="w"> </span>columns<span class="w"> </span>from
+</span><span id="__span-14-20"><a id="__codelineno-14-20" name="__codelineno-14-20" href="#__codelineno-14-20"></a><span class="w">     </span>the<span class="w"> </span>first<span class="w"> </span>number<span class="w"> </span>to<span class="w"> </span>the<span class="w"> </span>second,<span class="w"> </span>inclusive.<span class="w">  </span>Numbers<span class="w"> </span>or<span class="w"> </span>number<span class="w"> </span>ranges<span class="w"> </span>may<span class="w"> </span>be<span class="w"> </span>preceded<span class="w"> </span>by<span class="w"> </span>a<span class="w"> </span>dash,<span class="w"> </span>which
+</span><span id="__span-14-21"><a id="__codelineno-14-21" name="__codelineno-14-21" href="#__codelineno-14-21"></a><span class="w">     </span>selects<span class="w"> </span>all<span class="w"> </span>fields<span class="w"> </span>or<span class="w"> </span>columns<span class="w"> </span>from<span class="w"> </span><span class="m">1</span><span class="w"> </span>to<span class="w"> </span>the<span class="w"> </span>last<span class="w"> </span>number.<span class="w">  </span>Numbers<span class="w"> </span>or<span class="w"> </span>number<span class="w"> </span>ranges<span class="w"> </span>may<span class="w"> </span>be<span class="w"> </span>followed<span class="w"> </span>by<span class="w"> </span>a
+</span><span id="__span-14-22"><a id="__codelineno-14-22" name="__codelineno-14-22" href="#__codelineno-14-22"></a><span class="w">     </span>dash,<span class="w"> </span>which<span class="w"> </span>selects<span class="w"> </span>all<span class="w"> </span>fields<span class="w"> </span>or<span class="w"> </span>columns<span class="w"> </span>from<span class="w"> </span>the<span class="w"> </span>last<span class="w"> </span>number<span class="w"> </span>to<span class="w"> </span>the<span class="w"> </span>end<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>line.<span class="w">  </span>Numbers<span class="w"> </span>and
+</span><span id="__span-14-23"><a id="__codelineno-14-23" name="__codelineno-14-23" href="#__codelineno-14-23"></a><span class="w">     </span>number<span class="w"> </span>ranges<span class="w"> </span>may<span class="w"> </span>be<span class="w"> </span>repeated,<span class="w"> </span>overlapping,<span class="w"> </span>and<span class="w"> </span><span class="k">in</span><span class="w"> </span>any<span class="w"> </span>order.<span class="w">  </span>If<span class="w"> </span>a<span class="w"> </span>field<span class="w"> </span>or<span class="w"> </span>column<span class="w"> </span>is<span class="w"> </span>specified<span class="w"> </span>multi-
+</span><span id="__span-14-24"><a id="__codelineno-14-24" name="__codelineno-14-24" href="#__codelineno-14-24"></a><span class="w">     </span>ple<span class="w"> </span>times,<span class="w"> </span>it<span class="w"> </span>will<span class="w"> </span>appear<span class="w"> </span>only<span class="w"> </span>once<span class="w"> </span><span class="k">in</span><span class="w"> </span>the<span class="w"> </span>output.<span class="w">  </span>It<span class="w"> </span>is<span class="w"> </span>not<span class="w"> </span>an<span class="w"> </span>error<span class="w"> </span>to<span class="w"> </span><span class="k">select</span><span class="w"> </span>fields<span class="w"> </span>or<span class="w"> </span>columns<span class="w"> </span>not
+</span><span id="__span-14-25"><a id="__codelineno-14-25" name="__codelineno-14-25" href="#__codelineno-14-25"></a><span class="w">     </span>present<span class="w"> </span><span class="k">in</span><span class="w"> </span>the<span class="w"> </span>input<span class="w"> </span>line.
+</span><span id="__span-14-26"><a id="__codelineno-14-26" name="__codelineno-14-26" href="#__codelineno-14-26"></a>
+</span><span id="__span-14-27"><a id="__codelineno-14-27" name="__codelineno-14-27" href="#__codelineno-14-27"></a><span class="w">     </span>The<span class="w"> </span>options<span class="w"> </span>are<span class="w"> </span>as<span class="w"> </span>follows:
+</span><span id="__span-14-28"><a id="__codelineno-14-28" name="__codelineno-14-28" href="#__codelineno-14-28"></a>
+</span><span id="__span-14-29"><a id="__codelineno-14-29" name="__codelineno-14-29" href="#__codelineno-14-29"></a><span class="w">     </span>-b<span class="w"> </span>list
+</span><span id="__span-14-30"><a id="__codelineno-14-30" name="__codelineno-14-30" href="#__codelineno-14-30"></a><span class="w">             </span>The<span class="w"> </span>list<span class="w"> </span>specifies<span class="w"> </span>byte<span class="w"> </span>positions.
+</span><span id="__span-14-31"><a id="__codelineno-14-31" name="__codelineno-14-31" href="#__codelineno-14-31"></a>
+</span><span id="__span-14-32"><a id="__codelineno-14-32" name="__codelineno-14-32" href="#__codelineno-14-32"></a><span class="w">     </span>-c<span class="w"> </span>list
+</span><span id="__span-14-33"><a id="__codelineno-14-33" name="__codelineno-14-33" href="#__codelineno-14-33"></a><span class="w">             </span>The<span class="w"> </span>list<span class="w"> </span>specifies<span class="w"> </span>character<span class="w"> </span>positions.
+</span><span id="__span-14-34"><a id="__codelineno-14-34" name="__codelineno-14-34" href="#__codelineno-14-34"></a>
+</span><span id="__span-14-35"><a id="__codelineno-14-35" name="__codelineno-14-35" href="#__codelineno-14-35"></a><span class="w">     </span>-d<span class="w"> </span>delim
+</span><span id="__span-14-36"><a id="__codelineno-14-36" name="__codelineno-14-36" href="#__codelineno-14-36"></a><span class="w">             </span>Use<span class="w"> </span>delim<span class="w"> </span>as<span class="w"> </span>the<span class="w"> </span>field<span class="w"> </span>delimiter<span class="w"> </span>character<span class="w"> </span>instead<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>tab<span class="w"> </span>character.
+</span><span id="__span-14-37"><a id="__codelineno-14-37" name="__codelineno-14-37" href="#__codelineno-14-37"></a>
+</span><span id="__span-14-38"><a id="__codelineno-14-38" name="__codelineno-14-38" href="#__codelineno-14-38"></a><span class="w">     </span>-f<span class="w"> </span>list
+</span><span id="__span-14-39"><a id="__codelineno-14-39" name="__codelineno-14-39" href="#__codelineno-14-39"></a><span class="w">             </span>The<span class="w"> </span>list<span class="w"> </span>specifies<span class="w"> </span>fields,<span class="w"> </span>separated<span class="w"> </span><span class="k">in</span><span class="w"> </span>the<span class="w"> </span>input<span class="w"> </span>by<span class="w"> </span>the<span class="w"> </span>field<span class="w"> </span>delimiter<span class="w"> </span>character<span class="w"> </span><span class="o">(</span>see<span class="w"> </span>the<span class="w"> </span>-d
+</span><span id="__span-14-40"><a id="__codelineno-14-40" name="__codelineno-14-40" href="#__codelineno-14-40"></a><span class="w">             </span>option.<span class="o">)</span><span class="w">  </span>Output<span class="w"> </span>fields<span class="w"> </span>are<span class="w"> </span>separated<span class="w"> </span>by<span class="w"> </span>a<span class="w"> </span>single<span class="w"> </span>occurrence<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>field<span class="w"> </span>delimiter<span class="w"> </span>character.
+</span><span id="__span-14-41"><a id="__codelineno-14-41" name="__codelineno-14-41" href="#__codelineno-14-41"></a>
+</span><span id="__span-14-42"><a id="__codelineno-14-42" name="__codelineno-14-42" href="#__codelineno-14-42"></a><span class="w">     </span>-n<span class="w">      </span>Do<span class="w"> </span>not<span class="w"> </span>split<span class="w"> </span>multi-byte<span class="w"> </span>characters.<span class="w">  </span>Characters<span class="w"> </span>will<span class="w"> </span>only<span class="w"> </span>be<span class="w"> </span>output<span class="w"> </span><span class="k">if</span><span class="w"> </span>at<span class="w"> </span>least<span class="w"> </span>one<span class="w"> </span>byte<span class="w"> </span>is
+</span><span id="__span-14-43"><a id="__codelineno-14-43" name="__codelineno-14-43" href="#__codelineno-14-43"></a><span class="w">             </span>selected,<span class="w"> </span>and,<span class="w"> </span>after<span class="w"> </span>a<span class="w"> </span>prefix<span class="w"> </span>of<span class="w"> </span>zero<span class="w"> </span>or<span class="w"> </span>more<span class="w"> </span>unselected<span class="w"> </span>bytes,<span class="w"> </span>the<span class="w"> </span>rest<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>bytes<span class="w"> </span>that<span class="w"> </span>form
+</span><span id="__span-14-44"><a id="__codelineno-14-44" name="__codelineno-14-44" href="#__codelineno-14-44"></a><span class="w">             </span>the<span class="w"> </span>character<span class="w"> </span>are<span class="w"> </span>selected.
+</span><span id="__span-14-45"><a id="__codelineno-14-45" name="__codelineno-14-45" href="#__codelineno-14-45"></a>
+</span><span id="__span-14-46"><a id="__codelineno-14-46" name="__codelineno-14-46" href="#__codelineno-14-46"></a><span class="w">     </span>-s<span class="w">      </span>Suppress<span class="w"> </span>lines<span class="w"> </span>with<span class="w"> </span>no<span class="w"> </span>field<span class="w"> </span>delimiter<span class="w"> </span>characters.<span class="w">  </span>Unless<span class="w"> </span>specified,<span class="w"> </span>lines<span class="w"> </span>with<span class="w"> </span>no<span class="w"> </span>delimiters
+</span><span id="__span-14-47"><a id="__codelineno-14-47" name="__codelineno-14-47" href="#__codelineno-14-47"></a><span class="w">             </span>are<span class="w"> </span>passed<span class="w"> </span>through<span class="w"> </span>unmodified.
+</span></code></pre></div>
+<h3 id="bytes">bytes<a class="headerlink" href="#bytes" title="Permanent link">#</a></h3>
+<p><code>-b</code>, --bytes=LIST：select only these bytes，按二进制解析处理，提取指定索引的字节。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="c1"># 提取第4个字节</span>
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>faner@MBP-FAN<span class="w"> </span>$<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;/usr/local/bin&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>cut<span class="w"> </span>-b<span class="w"> </span><span class="m">4</span>
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>r
+</span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a><span class="c1"># 提取开头（第1个）至第4个字节</span>
+</span><span id="__span-15-5"><a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a>faner@MBP-FAN<span class="w"> </span>$<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;/usr/local/bin&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>cut<span class="w"> </span>-b<span class="w"> </span>-4
+</span><span id="__span-15-6"><a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a>/usr
+</span><span id="__span-15-7"><a id="__codelineno-15-7" name="__codelineno-15-7" href="#__codelineno-15-7"></a><span class="c1"># 提取第2个、第6个这两个字节</span>
+</span><span id="__span-15-8"><a id="__codelineno-15-8" name="__codelineno-15-8" href="#__codelineno-15-8"></a>faner@MBP-FAN<span class="w"> </span>$<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;/usr/local/bin&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>cut<span class="w"> </span>-b<span class="w"> </span><span class="m">2</span>,6
+</span><span id="__span-15-9"><a id="__codelineno-15-9" name="__codelineno-15-9" href="#__codelineno-15-9"></a>ul
+</span><span id="__span-15-10"><a id="__codelineno-15-10" name="__codelineno-15-10" href="#__codelineno-15-10"></a><span class="c1"># 提取第6个至末尾的字节</span>
+</span><span id="__span-15-11"><a id="__codelineno-15-11" name="__codelineno-15-11" href="#__codelineno-15-11"></a>faner@MBP-FAN<span class="w"> </span>$<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;/usr/local/bin&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>cut<span class="w"> </span>-b<span class="w"> </span><span class="m">6</span>-
+</span><span id="__span-15-12"><a id="__codelineno-15-12" name="__codelineno-15-12" href="#__codelineno-15-12"></a>local/bin
+</span></code></pre></div>
+<h3 id="characters">characters<a class="headerlink" href="#characters" title="Permanent link">#</a></h3>
+<p>对于英语 ASCII 码，一个字符占一个字节，对于 CJK 等多字符集，一个字符的Unicode编码占用2~4个字节。<br />
+如果以可视字符作为索引定位，则需要改用 <code>-c</code> 选项。</p>
+<p><code>-c</code>, --characters=LIST：select only these characters</p>
+<p>对于混合了字母和汉字的字符串 <code>w我m们d的a爱</code>，当其按照 <code>-b</code> 索引时，第二个<code>我</code>字占据第2~4个字节位置。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>faner@MBP-FAN<span class="w"> </span>$<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;w我m们d的a爱&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>cut<span class="w"> </span>-b<span class="w"> </span><span class="m">1</span>
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>w
+</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>faner@MBP-FAN<span class="w"> </span>$<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;w我m们d的a爱&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>cut<span class="w"> </span>-b<span class="w"> </span><span class="m">2</span>
+</span><span id="__span-16-4"><a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a>�
+</span><span id="__span-16-5"><a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a>faner@MBP-FAN<span class="w"> </span>$<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;w我m们d的a爱&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>cut<span class="w"> </span>-b<span class="w"> </span><span class="m">2</span>,3
+</span><span id="__span-16-6"><a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a>�
+</span><span id="__span-16-7"><a id="__codelineno-16-7" name="__codelineno-16-7" href="#__codelineno-16-7"></a>faner@MBP-FAN<span class="w"> </span>$<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;w我m们d的a爱&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>cut<span class="w"> </span>-b<span class="w"> </span><span class="m">2</span>,3,4
+</span><span id="__span-16-8"><a id="__codelineno-16-8" name="__codelineno-16-8" href="#__codelineno-16-8"></a>我
+</span><span id="__span-16-9"><a id="__codelineno-16-9" name="__codelineno-16-9" href="#__codelineno-16-9"></a>faner@MBP-FAN<span class="w"> </span>$<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;w我m们d的a爱&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>cut<span class="w"> </span>-b<span class="w"> </span><span class="m">2</span>,3,4,5
+</span><span id="__span-16-10"><a id="__codelineno-16-10" name="__codelineno-16-10" href="#__codelineno-16-10"></a>我m
+</span></code></pre></div>
+<p>可以通过 <code>hexdump</code> 或 <code>od</code> 查看其二进制编码，可见这几个汉字每个占据3个字节。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>faner@MBP-FAN<span class="w"> </span>$<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;w我m们d的a爱&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>hexdump<span class="w"> </span>-C
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a><span class="m">00000000</span><span class="w">  </span><span class="m">77</span><span class="w"> </span>e6<span class="w"> </span><span class="m">88</span><span class="w"> </span><span class="m">91</span><span class="w"> </span>6d<span class="w"> </span>e4<span class="w"> </span>bb<span class="w"> </span>ac<span class="w">  </span><span class="m">64</span><span class="w"> </span>e7<span class="w"> </span>9a<span class="w"> </span><span class="m">84</span><span class="w"> </span><span class="m">61</span><span class="w"> </span>e7<span class="w"> </span><span class="m">88</span><span class="w"> </span>b1<span class="w">  </span><span class="p">|</span>w...m...d...a...<span class="p">|</span>
+</span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a><span class="m">00000010</span><span class="w">  </span>0a<span class="w">                                                </span><span class="p">|</span>.<span class="p">|</span>
+</span><span id="__span-17-4"><a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a><span class="m">00000011</span>
+</span><span id="__span-17-5"><a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a>faner@MBP-FAN<span class="w"> </span>$<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;w我m们d的a爱&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>od<span class="w"> </span>-N<span class="w"> </span><span class="m">18</span><span class="w"> </span>-A<span class="w"> </span>x<span class="w"> </span>-t<span class="w"> </span>xCa
+</span><span id="__span-17-6"><a id="__codelineno-17-6" name="__codelineno-17-6" href="#__codelineno-17-6"></a><span class="m">0000000</span><span class="w">    </span><span class="m">77</span><span class="w">  </span>e6<span class="w">  </span><span class="m">88</span><span class="w">  </span><span class="m">91</span><span class="w">  </span>6d<span class="w">  </span>e4<span class="w">  </span>bb<span class="w">  </span>ac<span class="w">  </span><span class="m">64</span><span class="w">  </span>e7<span class="w">  </span>9a<span class="w">  </span><span class="m">84</span><span class="w">  </span><span class="m">61</span><span class="w">  </span>e7<span class="w">  </span><span class="m">88</span><span class="w">  </span>b1
+</span><span id="__span-17-7"><a id="__codelineno-17-7" name="__codelineno-17-7" href="#__codelineno-17-7"></a><span class="w">           </span>w<span class="w">   </span>�<span class="w">  </span><span class="m">88</span><span class="w">  </span><span class="m">91</span><span class="w">   </span>m<span class="w">   </span>�<span class="w">   </span>�<span class="w">   </span>�<span class="w">   </span>d<span class="w">   </span>�<span class="w">  </span>9a<span class="w">  </span><span class="m">84</span><span class="w">   </span>a<span class="w">   </span>�<span class="w">  </span><span class="m">88</span><span class="w">   </span>�
+</span><span id="__span-17-8"><a id="__codelineno-17-8" name="__codelineno-17-8" href="#__codelineno-17-8"></a><span class="m">0000010</span><span class="w">    </span>0a
+</span><span id="__span-17-9"><a id="__codelineno-17-9" name="__codelineno-17-9" href="#__codelineno-17-9"></a><span class="w">          </span>nl
+</span><span id="__span-17-10"><a id="__codelineno-17-10" name="__codelineno-17-10" href="#__codelineno-17-10"></a><span class="m">0000011</span>
+</span></code></pre></div>
+<p>通常，使用 <code>-c</code> 选项，按照可视字符定位提取的场景更多一点。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="c1"># 提取第2个字符</span>
+</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>faner@MBP-FAN<span class="w"> </span>$<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;w我m们d的a爱&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>cut<span class="w"> </span>-c<span class="w"> </span><span class="m">2</span>
+</span><span id="__span-18-3"><a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a>我
+</span><span id="__span-18-4"><a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a><span class="c1"># 提取第2个和第3个字符</span>
+</span><span id="__span-18-5"><a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a>faner@MBP-FAN<span class="w"> </span>$<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;w我m们d的a爱&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>cut<span class="w"> </span>-c<span class="w"> </span><span class="m">2</span>,3
+</span><span id="__span-18-6"><a id="__codelineno-18-6" name="__codelineno-18-6" href="#__codelineno-18-6"></a>我m
+</span></code></pre></div>
+<p>export 声明变量排列整齐，可据此以字符为单位提取固定字符位置区间：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="c1"># 获取 export 前4条</span>
+</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a>pi@raspberrypi:~<span class="w"> </span>$<span class="w"> </span><span class="nb">export</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-n<span class="w"> </span><span class="m">4</span>
+</span><span id="__span-19-3"><a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a><span class="nb">declare</span><span class="w"> </span>-x<span class="w"> </span><span class="nv">DBUS_SESSION_BUS_ADDRESS</span><span class="o">=</span><span class="s2">&quot;unix:path=/run/user/1000/bus&quot;</span>
+</span><span id="__span-19-4"><a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a><span class="nb">declare</span><span class="w"> </span>-x<span class="w"> </span><span class="nv">HOME</span><span class="o">=</span><span class="s2">&quot;/home/pi&quot;</span>
+</span><span id="__span-19-5"><a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a><span class="nb">declare</span><span class="w"> </span>-x<span class="w"> </span><span class="nv">INFINALITY_FT_AUTOHINT_HORIZONTAL_STEM_DARKEN_STRENGTH</span><span class="o">=</span><span class="s2">&quot;10&quot;</span>
+</span><span id="__span-19-6"><a id="__codelineno-19-6" name="__codelineno-19-6" href="#__codelineno-19-6"></a><span class="nb">declare</span><span class="w"> </span>-x<span class="w"> </span><span class="nv">INFINALITY_FT_AUTOHINT_INCREASE_GLYPH_HEIGHTS</span><span class="o">=</span><span class="s2">&quot;true&quot;</span>
+</span><span id="__span-19-7"><a id="__codelineno-19-7" name="__codelineno-19-7" href="#__codelineno-19-7"></a>
+</span><span id="__span-19-8"><a id="__codelineno-19-8" name="__codelineno-19-8" href="#__codelineno-19-8"></a><span class="c1"># 提取12个字符及其后的部分（移除行首的11个字符(declare -x )）</span>
+</span><span id="__span-19-9"><a id="__codelineno-19-9" name="__codelineno-19-9" href="#__codelineno-19-9"></a><span class="c1">## 12为起始位置，-后面未指定结束位置，表示至行尾</span>
+</span><span id="__span-19-10"><a id="__codelineno-19-10" name="__codelineno-19-10" href="#__codelineno-19-10"></a>pi@raspberrypi:~<span class="w"> </span>$<span class="w"> </span><span class="nb">export</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-n<span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>cut<span class="w"> </span>-c<span class="w"> </span><span class="m">12</span>-
+</span><span id="__span-19-11"><a id="__codelineno-19-11" name="__codelineno-19-11" href="#__codelineno-19-11"></a><span class="nv">DBUS_SESSION_BUS_ADDRESS</span><span class="o">=</span><span class="s2">&quot;unix:path=/run/user/1000/bus&quot;</span>
+</span><span id="__span-19-12"><a id="__codelineno-19-12" name="__codelineno-19-12" href="#__codelineno-19-12"></a><span class="nv">HOME</span><span class="o">=</span><span class="s2">&quot;/home/pi&quot;</span>
+</span><span id="__span-19-13"><a id="__codelineno-19-13" name="__codelineno-19-13" href="#__codelineno-19-13"></a><span class="nv">INFINALITY_FT_AUTOHINT_HORIZONTAL_STEM_DARKEN_STRENGTH</span><span class="o">=</span><span class="s2">&quot;10&quot;</span>
+</span><span id="__span-19-14"><a id="__codelineno-19-14" name="__codelineno-19-14" href="#__codelineno-19-14"></a><span class="nv">INFINALITY_FT_AUTOHINT_INCREASE_GLYPH_HEIGHTS</span><span class="o">=</span><span class="s2">&quot;true&quot;</span>
+</span></code></pre></div>
+<p>其他像 ps、last 等命令输出都由空白（空格或tab 制表符）控制排版格式，连续空白较难合适分割。</p>
+<p>以下来自 manpage 的示例，相当于提取两个range的子串：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="c1"># Show the names and login times of the currently logged in users:</span>
+</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>faner@MBP-FAN<span class="w"> </span>$<span class="w"> </span>who<span class="w"> </span><span class="p">|</span><span class="w"> </span>cut<span class="w"> </span>-c<span class="w"> </span><span class="m">1</span>-16,26-38
+</span></code></pre></div>
+<h3 id="delimiter">delimiter<a class="headerlink" href="#delimiter" title="Permanent link">#</a></h3>
+<p>除了 <code>-b</code>、<code>-c</code> 按照字节、字符索引提取文本行，还有一个更常用的 <code>-d</code> 支持按分割符提取域。</p>
+<p><code>-d</code>, --delimiter=DELIM：use DELIM instead of TAB for field delimiter</p>
+<p>一般使用 <code>-d</code> 指定 DELIM 对文本行进行分割后，往往搭配使用 <code>-f</code> 选项提取指定索引域。</p>
+<p><code>-f</code>, --fields=LIST：select only these fields; also print any line that contains no delimiter character, unless the -s option is specified</p>
+<blockquote>
+<p><code>cut -d</code> 可替代 awk 适用一些简单的切割提取场景，<code>-d</code> 选项相当于 awk 的 <code>-F</code>（<code>FS</code>），<code>-f</code> 则相当于 <code>$NF</code> 引用取域。</p>
+</blockquote>
+<hr />
+<p>提取 /etc/passwd 文件中文本行第1个域和第7个域：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>faner@MBP-FAN<span class="w"> </span>$<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;nobody:*:-2:-2:Unprivileged User:/var/empty:/usr/bin/false&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>cut<span class="w"> </span>-d<span class="w"> </span>:<span class="w"> </span>-f<span class="w"> </span><span class="m">1</span>,7
+</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>nobody:/usr/bin/false
+</span><span id="__span-21-3"><a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a>
+</span><span id="__span-21-4"><a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a><span class="c1"># 对整个文件文本行进行提取域1和域7</span>
+</span><span id="__span-21-5"><a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a><span class="c1"># Extract users&#39; login names and shells from the system passwd(5) file as ``name:shell&#39;&#39; pairs:</span>
+</span><span id="__span-21-6"><a id="__codelineno-21-6" name="__codelineno-21-6" href="#__codelineno-21-6"></a>faner@MBP-FAN<span class="w"> </span>$<span class="w"> </span>cut<span class="w"> </span>-d<span class="w"> </span>:<span class="w"> </span>-f<span class="w"> </span><span class="m">1</span>,7<span class="w"> </span>/etc/passwd<span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-20
+</span></code></pre></div>
+<p>PATH 环境变量是以 <code>:</code> 分隔多个路径，可以使用 cut 命令提取其中部分路径。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a>faner@MBP-FAN<span class="w"> </span>$<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="nv">$PATH</span>
+</span><span id="__span-22-2"><a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a>/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin
+</span><span id="__span-22-3"><a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a>faner@MBP-FAN<span class="w"> </span>$<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="nv">$PATH</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>cut<span class="w"> </span>-d<span class="w"> </span><span class="s1">&#39;:&#39;</span><span class="w"> </span>-f<span class="w"> </span><span class="m">3</span>
+</span><span id="__span-22-4"><a id="__codelineno-22-4" name="__codelineno-22-4" href="#__codelineno-22-4"></a>/bin
+</span><span id="__span-22-5"><a id="__codelineno-22-5" name="__codelineno-22-5" href="#__codelineno-22-5"></a>faner@MBP-FAN<span class="w"> </span>$<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="nv">$PATH</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>cut<span class="w"> </span>-d<span class="w"> </span><span class="s1">&#39;:&#39;</span><span class="w"> </span>-f<span class="w"> </span><span class="m">5</span>
+</span><span id="__span-22-6"><a id="__codelineno-22-6" name="__codelineno-22-6" href="#__codelineno-22-6"></a>/sbin
+</span><span id="__span-22-7"><a id="__codelineno-22-7" name="__codelineno-22-7" href="#__codelineno-22-7"></a>faner@MBP-FAN<span class="w"> </span>$<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="nv">$PATH</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>cut<span class="w"> </span>-d<span class="w"> </span><span class="s1">&#39;:&#39;</span><span class="w"> </span>-f<span class="w"> </span><span class="m">3</span>,5
+</span><span id="__span-22-8"><a id="__codelineno-22-8" name="__codelineno-22-8" href="#__codelineno-22-8"></a>/bin:/sbin
+</span></code></pre></div>
+<p>不小心向 PATH 重复追加了 <code>/usr/local/sbin</code>：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>pi@raspberrypi:~<span class="w"> </span>$<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="nv">$PATH</span>
+</span><span id="__span-23-2"><a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a>/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/games:/usr/games
+</span><span id="__span-23-3"><a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a>pi@raspberrypi:~<span class="w"> </span>$<span class="w"> </span><span class="nv">PATH</span><span class="o">=</span><span class="nv">$PATH</span>:/usr/local/sbin
+</span><span id="__span-23-4"><a id="__codelineno-23-4" name="__codelineno-23-4" href="#__codelineno-23-4"></a>pi@raspberrypi:~<span class="w"> </span>$<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="nv">$PATH</span><span class="w"> </span>
+</span><span id="__span-23-5"><a id="__codelineno-23-5" name="__codelineno-23-5" href="#__codelineno-23-5"></a>/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/games:/usr/games:/usr/local/sbin
+</span></code></pre></div>
+<p>如何删除刚才追加重复的 <code>/usr/local/sbin</code>？</p>
+<p>直接 <code>PATH=</code> 赋值修改前的值 <code>/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/games:/usr/games</code>。</p>
+<p>执行 <code>PATH=$(echo $PATH | cut -d : -f 1,3-)</code> 可移除第2项。</p>
+<h2 id="tr">tr<a class="headerlink" href="#tr" title="Permanent link">#</a></h2>
+<p><code>tr</code>（translate）命令支持对标准输入进行替换或删除，一般用于删除文件中的控制字符或进行字符转换。</p>
+<p>tr只能通过stdin，而无法通过命令行参数来接受输入，它的调用格式如下：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>tr<span class="w"> </span><span class="o">[</span>options<span class="o">]</span><span class="w"> </span>set1<span class="w"> </span>set2
+</span></code></pre></div>
+<p>将来自stdin的输入字符从set1映射到set2，然后将输出写入stdout。<br />
+其中set1和set2是字符类或字符集，set1用于查询，set2用于转换。</p>
+<ul>
+<li>如果两个字符集的长度不相等，那么set2会不断重复其最后一个字符，直到长度与set1相同。</li>
+<li>如果set2的长度大于set1，那么在set2中超出set1长度的那部分字符则全部被忽略。</li>
+</ul>
+<p>在 macOS 终端执行 <code>man tr</code> 可查看详细帮助手册（Manual Page）：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-25-1"><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a>faner@MBP-FAN<span class="w"> </span>$<span class="w"> </span>man<span class="w"> </span>tr
+</span><span id="__span-25-2"><a id="__codelineno-25-2" name="__codelineno-25-2" href="#__codelineno-25-2"></a>TR<span class="o">(</span><span class="m">1</span><span class="o">)</span><span class="w">                     </span>BSD<span class="w"> </span>General<span class="w"> </span>Commands<span class="w"> </span>Manual<span class="w">                    </span>TR<span class="o">(</span><span class="m">1</span><span class="o">)</span>
+</span><span id="__span-25-3"><a id="__codelineno-25-3" name="__codelineno-25-3" href="#__codelineno-25-3"></a>
+</span><span id="__span-25-4"><a id="__codelineno-25-4" name="__codelineno-25-4" href="#__codelineno-25-4"></a>NAME
+</span><span id="__span-25-5"><a id="__codelineno-25-5" name="__codelineno-25-5" href="#__codelineno-25-5"></a><span class="w">     </span>tr<span class="w"> </span>--<span class="w"> </span>translate<span class="w"> </span>characters
+</span><span id="__span-25-6"><a id="__codelineno-25-6" name="__codelineno-25-6" href="#__codelineno-25-6"></a>
+</span><span id="__span-25-7"><a id="__codelineno-25-7" name="__codelineno-25-7" href="#__codelineno-25-7"></a>SYNOPSIS
+</span><span id="__span-25-8"><a id="__codelineno-25-8" name="__codelineno-25-8" href="#__codelineno-25-8"></a><span class="w">     </span>tr<span class="w"> </span><span class="o">[</span>-Ccsu<span class="o">]</span><span class="w"> </span>string1<span class="w"> </span>string2
+</span><span id="__span-25-9"><a id="__codelineno-25-9" name="__codelineno-25-9" href="#__codelineno-25-9"></a><span class="w">     </span>tr<span class="w"> </span><span class="o">[</span>-Ccu<span class="o">]</span><span class="w"> </span>-d<span class="w"> </span>string1
+</span><span id="__span-25-10"><a id="__codelineno-25-10" name="__codelineno-25-10" href="#__codelineno-25-10"></a><span class="w">     </span>tr<span class="w"> </span><span class="o">[</span>-Ccu<span class="o">]</span><span class="w"> </span>-s<span class="w"> </span>string1
+</span><span id="__span-25-11"><a id="__codelineno-25-11" name="__codelineno-25-11" href="#__codelineno-25-11"></a><span class="w">     </span>tr<span class="w"> </span><span class="o">[</span>-Ccu<span class="o">]</span><span class="w"> </span>-ds<span class="w"> </span>string1<span class="w"> </span>string2
+</span><span id="__span-25-12"><a id="__codelineno-25-12" name="__codelineno-25-12" href="#__codelineno-25-12"></a>
+</span><span id="__span-25-13"><a id="__codelineno-25-13" name="__codelineno-25-13" href="#__codelineno-25-13"></a>DESCRIPTION
+</span><span id="__span-25-14"><a id="__codelineno-25-14" name="__codelineno-25-14" href="#__codelineno-25-14"></a><span class="w">     </span>The<span class="w"> </span>tr<span class="w"> </span>utility<span class="w"> </span>copies<span class="w"> </span>the<span class="w"> </span>standard<span class="w"> </span>input<span class="w"> </span>to<span class="w"> </span>the<span class="w"> </span>standard<span class="w"> </span>output<span class="w"> </span>with<span class="w"> </span>substitution<span class="w"> </span>or<span class="w"> </span>deletion<span class="w"> </span>of
+</span><span id="__span-25-15"><a id="__codelineno-25-15" name="__codelineno-25-15" href="#__codelineno-25-15"></a><span class="w">     </span>selected<span class="w"> </span>characters.
+</span><span id="__span-25-16"><a id="__codelineno-25-16" name="__codelineno-25-16" href="#__codelineno-25-16"></a>
+</span><span id="__span-25-17"><a id="__codelineno-25-17" name="__codelineno-25-17" href="#__codelineno-25-17"></a><span class="w">     </span>The<span class="w"> </span>following<span class="w"> </span>options<span class="w"> </span>are<span class="w"> </span>available:
+</span><span id="__span-25-18"><a id="__codelineno-25-18" name="__codelineno-25-18" href="#__codelineno-25-18"></a>
+</span><span id="__span-25-19"><a id="__codelineno-25-19" name="__codelineno-25-19" href="#__codelineno-25-19"></a><span class="w">     </span>-C<span class="w">      </span>Complement<span class="w"> </span>the<span class="w"> </span><span class="nb">set</span><span class="w"> </span>of<span class="w"> </span>characters<span class="w"> </span><span class="k">in</span><span class="w"> </span>string1,<span class="w"> </span>that<span class="w"> </span>is<span class="w"> </span><span class="sb">``</span>-C<span class="w"> </span>ab<span class="s1">&#39;&#39;</span><span class="w"> </span>includes<span class="w"> </span>every<span class="w"> </span>character<span class="w"> </span>except
+</span><span id="__span-25-20"><a id="__codelineno-25-20" name="__codelineno-25-20" href="#__codelineno-25-20"></a><span class="w">             </span><span class="k">for</span><span class="w"> </span><span class="sb">`</span>a<span class="s1">&#39; and `b&#39;</span>.
+</span><span id="__span-25-21"><a id="__codelineno-25-21" name="__codelineno-25-21" href="#__codelineno-25-21"></a>
+</span><span id="__span-25-22"><a id="__codelineno-25-22" name="__codelineno-25-22" href="#__codelineno-25-22"></a><span class="w">     </span>-c<span class="w">      </span>Same<span class="w"> </span>as<span class="w"> </span>-C<span class="w"> </span>but<span class="w"> </span>complement<span class="w"> </span>the<span class="w"> </span><span class="nb">set</span><span class="w"> </span>of<span class="w"> </span>values<span class="w"> </span><span class="k">in</span><span class="w"> </span>string1.
+</span><span id="__span-25-23"><a id="__codelineno-25-23" name="__codelineno-25-23" href="#__codelineno-25-23"></a>
+</span><span id="__span-25-24"><a id="__codelineno-25-24" name="__codelineno-25-24" href="#__codelineno-25-24"></a><span class="w">     </span>-d<span class="w">      </span>Delete<span class="w"> </span>characters<span class="w"> </span><span class="k">in</span><span class="w"> </span>string1<span class="w"> </span>from<span class="w"> </span>the<span class="w"> </span>input.
+</span><span id="__span-25-25"><a id="__codelineno-25-25" name="__codelineno-25-25" href="#__codelineno-25-25"></a>
+</span><span id="__span-25-26"><a id="__codelineno-25-26" name="__codelineno-25-26" href="#__codelineno-25-26"></a><span class="w">     </span>-s<span class="w">      </span>Squeeze<span class="w"> </span>multiple<span class="w"> </span>occurrences<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>characters<span class="w"> </span>listed<span class="w"> </span><span class="k">in</span><span class="w"> </span>the<span class="w"> </span>last<span class="w"> </span>operand<span class="w"> </span><span class="o">(</span>either<span class="w"> </span>string1<span class="w"> </span>or
+</span><span id="__span-25-27"><a id="__codelineno-25-27" name="__codelineno-25-27" href="#__codelineno-25-27"></a><span class="w">             </span>string2<span class="o">)</span><span class="w"> </span><span class="k">in</span><span class="w"> </span>the<span class="w"> </span>input<span class="w"> </span>into<span class="w"> </span>a<span class="w"> </span>single<span class="w"> </span>instance<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>character.<span class="w">  </span>This<span class="w"> </span>occurs<span class="w"> </span>after<span class="w"> </span>all<span class="w"> </span>deletion
+</span><span id="__span-25-28"><a id="__codelineno-25-28" name="__codelineno-25-28" href="#__codelineno-25-28"></a><span class="w">             </span>and<span class="w"> </span>translation<span class="w"> </span>is<span class="w"> </span>completed.
+</span><span id="__span-25-29"><a id="__codelineno-25-29" name="__codelineno-25-29" href="#__codelineno-25-29"></a>
+</span><span id="__span-25-30"><a id="__codelineno-25-30" name="__codelineno-25-30" href="#__codelineno-25-30"></a><span class="w">     </span>-u<span class="w">      </span>Guarantee<span class="w"> </span>that<span class="w"> </span>any<span class="w"> </span>output<span class="w"> </span>is<span class="w"> </span>unbuffered.
+</span></code></pre></div>
+<ul>
+<li><code>-c</code>, -C, --complement: use the complement of SET1. 反选设定字符，也就是符合 SET1 的部份不做处理，不符合的剩余部份才进行转换。</li>
+<li><code>-d</code>, --delete: delete characters in SET1, do not translate. 删除指令字符。  </li>
+<li><code>-s</code>, --squeeze-repeats: replace  each  sequence of a repeated character that is listed in the last specified SET, with a single<br />
+occurrence of that character. 缩减连续重复的字符成指定的单个字符。  </li>
+</ul>
+<h3 id="substite">substite<a class="headerlink" href="#substite" title="Permanent link">#</a></h3>
+<p>没有指定任何选项时，一般表示替换string1中的字符序列为string2中的字符（序列）。</p>
+<p>最典型地应用是大小写转换：</p>
+<ul>
+<li><a href="https://stackoverflow.com/questions/13700632/convert-to-uppercase-in-shell">convert to Uppercase in shell</a>  </li>
+<li><a href="https://www.shellscript.sh/tips/case/">Changing to Uppercase or Lowercase</a>  </li>
+<li><a href="https://www.cyberciti.biz/faq/linux-unix-shell-programming-converting-lowercase-uppercase/">Shell Scripting: Convert Uppercase to Lowercase</a>  </li>
+</ul>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-26-1"><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a><span class="c1"># 将文件 testfile 中的大写字母全部转换为小写</span>
+</span><span id="__span-26-2"><a id="__codelineno-26-2" name="__codelineno-26-2" href="#__codelineno-26-2"></a>faner@MBP-FAN<span class="w"> </span>$<span class="w"> </span>cat<span class="w"> </span>testfile<span class="w"> </span><span class="p">|</span><span class="w"> </span>tr<span class="w"> </span>A-Z<span class="w"> </span>a-z
+</span><span id="__span-26-3"><a id="__codelineno-26-3" name="__codelineno-26-3" href="#__codelineno-26-3"></a>
+</span><span id="__span-26-4"><a id="__codelineno-26-4" name="__codelineno-26-4" href="#__codelineno-26-4"></a><span class="c1"># 将小写字母全部转换为大写字母</span>
+</span><span id="__span-26-5"><a id="__codelineno-26-5" name="__codelineno-26-5" href="#__codelineno-26-5"></a><span class="c1"># 等效实现：awk &#39;BEGIN { getline; print toupper($0) }&#39;</span>
+</span><span id="__span-26-6"><a id="__codelineno-26-6" name="__codelineno-26-6" href="#__codelineno-26-6"></a>faner@MBP-FAN<span class="w"> </span>$<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;dos2unix&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>tr<span class="w"> </span><span class="s1">&#39;[:lower:]&#39;</span><span class="w"> </span><span class="s1">&#39;[:upper:]&#39;</span>
+</span><span id="__span-26-7"><a id="__codelineno-26-7" name="__codelineno-26-7" href="#__codelineno-26-7"></a>DOS2UNIX
+</span></code></pre></div>
+<p>以下为 manpage 中的示例，将含附加标号的英文字母（参考 <a href="https://en.wikipedia.org/wiki/Diacritic">Diacritic</a>）替换为普通字母。</p>
+<ul>
+<li>拉丁文中的字母：ùúûü  </li>
+<li>汉语拼音字母：ūúǔùǖǘǚǜü  </li>
+</ul>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-27-1"><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a><span class="c1"># 将拉丁字母中的变种u替换为普通u</span>
+</span><span id="__span-27-2"><a id="__codelineno-27-2" name="__codelineno-27-2" href="#__codelineno-27-2"></a>faner@MBP-FAN<span class="w"> </span>$<span class="w"> </span>tr<span class="w"> </span><span class="s2">&quot;[=u=]&quot;</span><span class="w"> </span><span class="s2">&quot;u&quot;</span><span class="w"> </span><span class="o">&lt;&lt;&lt;</span><span class="w"> </span>ùúûü
+</span><span id="__span-27-3"><a id="__codelineno-27-3" name="__codelineno-27-3" href="#__codelineno-27-3"></a>uuuu
+</span><span id="__span-27-4"><a id="__codelineno-27-4" name="__codelineno-27-4" href="#__codelineno-27-4"></a><span class="c1"># 移除字母e的变种标号，替换为普通e</span>
+</span><span id="__span-27-5"><a id="__codelineno-27-5" name="__codelineno-27-5" href="#__codelineno-27-5"></a>faner@MBP-FAN<span class="w"> </span>$<span class="w"> </span>tr<span class="w"> </span><span class="s2">&quot;[=e=]&quot;</span><span class="w"> </span><span class="s2">&quot;e&quot;</span><span class="w"> </span><span class="o">&lt;&lt;&lt;</span><span class="w"> </span><span class="s2">&quot;hëhë, hēcha, héliu, êxin, hèka, ęě&quot;</span>
+</span><span id="__span-27-6"><a id="__codelineno-27-6" name="__codelineno-27-6" href="#__codelineno-27-6"></a>hehe,<span class="w"> </span>hēcha,<span class="w"> </span>heliu,<span class="w"> </span>exin,<span class="w"> </span>heka,<span class="w"> </span>ęě
+</span><span id="__span-27-7"><a id="__codelineno-27-7" name="__codelineno-27-7" href="#__codelineno-27-7"></a><span class="c1"># 将文件file1中的变种e普通化后保存到file2</span>
+</span><span id="__span-27-8"><a id="__codelineno-27-8" name="__codelineno-27-8" href="#__codelineno-27-8"></a>faner@MBP-FAN<span class="w"> </span>$<span class="w"> </span>tr<span class="w"> </span><span class="s2">&quot;[=e=]&quot;</span><span class="w"> </span><span class="s2">&quot;[e*]&quot;</span><span class="w"> </span>&lt;file1<span class="w"> </span>&gt;file2
+</span></code></pre></div>
+<p>以下示例将文件1中的大括号替换为小括号，然后保存输出到 file2。</p>
+<blockquote>
+<p>注意这里左右括号的对应替换顺序。</p>
+</blockquote>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-28-1"><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a>faner@MBP-FAN<span class="w"> </span>$<span class="w"> </span>tr<span class="w"> </span><span class="s1">&#39;{}&#39;</span><span class="w"> </span><span class="s1">&#39;()&#39;</span><span class="w"> </span>&lt;<span class="w"> </span>file1<span class="w"> </span>&gt;<span class="w"> </span>file2
+</span></code></pre></div>
+<p>通过在tr中使用集合的概念，可以轻松地将字符从一个集合映射到另一个集合中。<br />
+以下示例使用tr完成简单地加解密：set1 中的 12345 基于索引位置将映射为 set2 中的 87654，反之解密。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-29-1"><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a><span class="c1"># 加密</span>
+</span><span id="__span-29-2"><a id="__codelineno-29-2" name="__codelineno-29-2" href="#__codelineno-29-2"></a>$<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="m">12345</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>tr<span class="w"> </span><span class="s1">&#39;0-9&#39;</span><span class="w"> </span><span class="s1">&#39;9876543210&#39;</span>
+</span><span id="__span-29-3"><a id="__codelineno-29-3" name="__codelineno-29-3" href="#__codelineno-29-3"></a><span class="m">87654</span>
+</span><span id="__span-29-4"><a id="__codelineno-29-4" name="__codelineno-29-4" href="#__codelineno-29-4"></a><span class="c1"># 解密</span>
+</span><span id="__span-29-5"><a id="__codelineno-29-5" name="__codelineno-29-5" href="#__codelineno-29-5"></a>$<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="m">87654</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>tr<span class="w"> </span><span class="s1">&#39;9876543210&#39;</span><span class="w"> </span><span class="s1">&#39;0-9&#39;</span>
+</span><span id="__span-29-6"><a id="__codelineno-29-6" name="__codelineno-29-6" href="#__codelineno-29-6"></a><span class="m">12345</span>
+</span></code></pre></div>
+<p>ROT13是一个著名的加密算法，它按照字母表排列顺序执行13个字母转换。<br />
+在ROT13算法中，文本加密和解密都使用同一个函数。<br />
+下面用tr进行ROT13加密：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-30-1"><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a>$<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;tr came, tr saw, tr conquered.&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>tr<span class="w"> </span><span class="s1">&#39;a-zA-Z&#39;</span><span class="w"> </span><span class="s1">&#39;n-za-mN-ZA-M&#39;</span>
+</span><span id="__span-30-2"><a id="__codelineno-30-2" name="__codelineno-30-2" href="#__codelineno-30-2"></a>ge<span class="w"> </span>pnzr,<span class="w"> </span>ge<span class="w"> </span>fnj,<span class="w"> </span>ge<span class="w"> </span>pbadhrerq.
+</span></code></pre></div>
+<p>对加密后的密文再次使用同样的ROT13函数即可进行解密：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-31-1"><a id="__codelineno-31-1" name="__codelineno-31-1" href="#__codelineno-31-1"></a>$<span class="w"> </span><span class="nb">echo</span><span class="w"> </span>ge<span class="w"> </span>pnzr,<span class="w"> </span>ge<span class="w"> </span>fnj,<span class="w"> </span>ge<span class="w"> </span>pbadhrerq.<span class="w"> </span><span class="p">|</span><span class="w"> </span>tr<span class="w"> </span><span class="s1">&#39;a-zA-Z&#39;</span><span class="w"> </span><span class="s1">&#39;n-za-mN-ZA-M&#39;</span>
+</span><span id="__span-31-2"><a id="__codelineno-31-2" name="__codelineno-31-2" href="#__codelineno-31-2"></a>tr<span class="w"> </span>came,<span class="w"> </span>tr<span class="w"> </span>saw,<span class="w"> </span>tr<span class="w"> </span>conquered.
+</span></code></pre></div>
+<h4 id="squeeze">Squeeze<a class="headerlink" href="#squeeze" title="Permanent link">#</a></h4>
+<p>以下示例将字符串中的空格转换为制表符，默认每个空格都会转换。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-32-1"><a id="__codelineno-32-1" name="__codelineno-32-1" href="#__codelineno-32-1"></a>faner@MBP-FAN<span class="w"> </span>$<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;This is a  test&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>tr<span class="w"> </span><span class="s1">&#39;[:space:]&#39;</span><span class="w"> </span><span class="s1">&#39;\t&#39;</span>
+</span><span id="__span-32-2"><a id="__codelineno-32-2" name="__codelineno-32-2" href="#__codelineno-32-2"></a>This<span class="w">    </span>is<span class="w">      </span>a<span class="w">               </span><span class="nb">test</span><span class="w">    </span>%
+</span></code></pre></div>
+<p>指定 <code>-s</code> 选项，可压缩这些重复的空格：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-33-1"><a id="__codelineno-33-1" name="__codelineno-33-1" href="#__codelineno-33-1"></a>faner@MBP-FAN<span class="w"> </span>$<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;This is a  test&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>tr<span class="w"> </span>-s<span class="w"> </span><span class="s1">&#39;[:space:]&#39;</span><span class="w"> </span><span class="s1">&#39;\t&#39;</span>
+</span><span id="__span-33-2"><a id="__codelineno-33-2" name="__codelineno-33-2" href="#__codelineno-33-2"></a>This<span class="w">    </span>is<span class="w">      </span>a<span class="w">       </span><span class="nb">test</span><span class="w">    </span>%
+</span></code></pre></div>
+<p>以下使用 <code>-s</code> 选项去除重复字母，或将相同字母进行压缩。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-34-1"><a id="__codelineno-34-1" name="__codelineno-34-1" href="#__codelineno-34-1"></a>faner@MBP-FAN<span class="w"> </span>$<span class="w">  </span>cat<span class="w"> </span>oops.txt
+</span><span id="__span-34-2"><a id="__codelineno-34-2" name="__codelineno-34-2" href="#__codelineno-34-2"></a>And<span class="w"> </span>the<span class="w"> </span>cowwwwws<span class="w"> </span>went<span class="w"> </span>homeeeeeeee
+</span><span id="__span-34-3"><a id="__codelineno-34-3" name="__codelineno-34-3" href="#__codelineno-34-3"></a>Or<span class="w"> </span>did<span class="w"> </span>theyyyy
+</span><span id="__span-34-4"><a id="__codelineno-34-4" name="__codelineno-34-4" href="#__codelineno-34-4"></a>
+</span><span id="__span-34-5"><a id="__codelineno-34-5" name="__codelineno-34-5" href="#__codelineno-34-5"></a>faner@MBP-FAN<span class="w"> </span>$<span class="w">  </span>tr<span class="w"> </span>-s<span class="w"> </span><span class="s1">&#39;[a-z]&#39;</span><span class="w"> </span>&lt;<span class="w"> </span>oops.txt
+</span><span id="__span-34-6"><a id="__codelineno-34-6" name="__codelineno-34-6" href="#__codelineno-34-6"></a>And<span class="w"> </span>the<span class="w"> </span>cows<span class="w"> </span>went<span class="w"> </span>home
+</span><span id="__span-34-7"><a id="__codelineno-34-7" name="__codelineno-34-7" href="#__codelineno-34-7"></a>Or<span class="w"> </span>did<span class="w"> </span>they
+</span></code></pre></div>
+<p>以下使用 <code>-s</code> 选项移除文件中的空行。</p>
+<blockquote>
+<p><code>-d</code> 会移除所有文本行结尾的换行符。</p>
+</blockquote>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-35-1"><a id="__codelineno-35-1" name="__codelineno-35-1" href="#__codelineno-35-1"></a><span class="c1"># tr -s &quot;[\012]&quot; &lt; oops.txt</span>
+</span><span id="__span-35-2"><a id="__codelineno-35-2" name="__codelineno-35-2" href="#__codelineno-35-2"></a>faner@MBP-FAN<span class="w"> </span>$<span class="w"> </span>tr<span class="w"> </span>-s<span class="w"> </span><span class="s2">&quot;[\n]&quot;</span><span class="w"> </span>&lt;<span class="w"> </span>oops.txt
+</span></code></pre></div>
+<p>利用 <code>tr -s</code> 替换回车换行符（<code>\r\n</code>）为换行符（<code>\n</code>），实现dos2unix（crlf-&gt;lf）：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-36-1"><a id="__codelineno-36-1" name="__codelineno-36-1" href="#__codelineno-36-1"></a>faner@MBP-FAN<span class="w"> </span>$<span class="w"> </span>tr<span class="w"> </span>-s<span class="w"> </span><span class="s2">&quot;[\r\n]&quot;</span><span class="w"> </span><span class="s2">&quot;[\n*]&quot;</span><span class="w"> </span>&lt;<span class="w"> </span>include/litestd.h
+</span><span id="__span-36-2"><a id="__codelineno-36-2" name="__codelineno-36-2" href="#__codelineno-36-2"></a>faner@MBP-FAN<span class="w"> </span>$<span class="w"> </span>tr<span class="w"> </span>-s<span class="w"> </span><span class="s2">&quot;[\015\012]&quot;</span><span class="w"> </span><span class="s2">&quot;[\012*]&quot;</span><span class="w"> </span>&lt;<span class="w"> </span>include/litestd.h
+</span></code></pre></div>
+<h4 id="complement">Complement<a class="headerlink" href="#complement" title="Permanent link">#</a></h4>
+<p>来自 unix/POSIX - <a href="https://pubs.opengroup.org/onlinepubs/9699919799/utilities/tr.html">tr</a> manpage 的一个样例：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-37-1"><a id="__codelineno-37-1" name="__codelineno-37-1" href="#__codelineno-37-1"></a><span class="c1"># creates a list of all words in file1 one per line in file2, where a word is taken to be a maximal string of letters.</span>
+</span><span id="__span-37-2"><a id="__codelineno-37-2" name="__codelineno-37-2" href="#__codelineno-37-2"></a>tr<span class="w"> </span>-cs<span class="w"> </span><span class="s2">&quot;[:alpha:]&quot;</span><span class="w"> </span><span class="s2">&quot;[\n*]&quot;</span><span class="w"> </span>&lt;file1<span class="w"> </span>&gt;file2
+</span></code></pre></div>
+<p>下面的文件包含一个星期的日程表，需要从其中删除所有数字，只保留日期。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-38-1"><a id="__codelineno-38-1" name="__codelineno-38-1" href="#__codelineno-38-1"></a>faner@MBP-FAN<span class="w"> </span>$<span class="w"> </span>$<span class="w"> </span>cat<span class="w"> </span>diary.txt
+</span><span id="__span-38-2"><a id="__codelineno-38-2" name="__codelineno-38-2" href="#__codelineno-38-2"></a>Monday<span class="w">     </span><span class="m">08</span>:00
+</span><span id="__span-38-3"><a id="__codelineno-38-3" name="__codelineno-38-3" href="#__codelineno-38-3"></a>Tuesday<span class="w">    </span><span class="m">08</span>:10
+</span><span id="__span-38-4"><a id="__codelineno-38-4" name="__codelineno-38-4" href="#__codelineno-38-4"></a>wednesday<span class="w">  </span><span class="m">08</span>:20
+</span><span id="__span-38-5"><a id="__codelineno-38-5" name="__codelineno-38-5" href="#__codelineno-38-5"></a>Thursday<span class="w">   </span><span class="m">08</span>:30
+</span><span id="__span-38-6"><a id="__codelineno-38-6" name="__codelineno-38-6" href="#__codelineno-38-6"></a>friday<span class="w">     </span><span class="m">08</span>:40
+</span><span id="__span-38-7"><a id="__codelineno-38-7" name="__codelineno-38-7" href="#__codelineno-38-7"></a>Saturday<span class="w">   </span><span class="m">08</span>:50
+</span><span id="__span-38-8"><a id="__codelineno-38-8" name="__codelineno-38-8" href="#__codelineno-38-8"></a>sunday<span class="w">     </span><span class="m">09</span>:00
+</span></code></pre></div>
+<p>基于 <code>-c</code> 的补集思路：把星期之外的非字母替换为换行符，相当于移除星期之后的部分。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-39-1"><a id="__codelineno-39-1" name="__codelineno-39-1" href="#__codelineno-39-1"></a><span class="c1"># cat diary.txt | tr -cs &quot;[a-z][A-Z]&quot; &quot;[\n*]&quot;</span>
+</span><span id="__span-39-2"><a id="__codelineno-39-2" name="__codelineno-39-2" href="#__codelineno-39-2"></a>faner@MBP-FAN<span class="w"> </span>$<span class="w"> </span>cat<span class="w"> </span>diary.txt<span class="w"> </span><span class="p">|</span><span class="w"> </span>tr<span class="w"> </span>-cs<span class="w"> </span><span class="s2">&quot;[:alpha:]&quot;</span><span class="w"> </span><span class="s2">&quot;[\n*]&quot;</span>
+</span><span id="__span-39-3"><a id="__codelineno-39-3" name="__codelineno-39-3" href="#__codelineno-39-3"></a>Monday
+</span><span id="__span-39-4"><a id="__codelineno-39-4" name="__codelineno-39-4" href="#__codelineno-39-4"></a>Tuesday
+</span><span id="__span-39-5"><a id="__codelineno-39-5" name="__codelineno-39-5" href="#__codelineno-39-5"></a>Wednesday
+</span><span id="__span-39-6"><a id="__codelineno-39-6" name="__codelineno-39-6" href="#__codelineno-39-6"></a>Thursday
+</span><span id="__span-39-7"><a id="__codelineno-39-7" name="__codelineno-39-7" href="#__codelineno-39-7"></a>Friday
+</span><span id="__span-39-8"><a id="__codelineno-39-8" name="__codelineno-39-8" href="#__codelineno-39-8"></a>Saturday
+</span><span id="__span-39-9"><a id="__codelineno-39-9" name="__codelineno-39-9" href="#__codelineno-39-9"></a>Sunday
+</span></code></pre></div>
+<p>文件每行所有不包含在大小写字母集合 <code>[a-z]</code> 或 <code>[A-Z]</code> 中的字符串放在字符串1中并转换为新行。</p>
+<blockquote>
+<p><code>-c</code> 表明保留所有字母不动，取其补集；<code>-s</code> 选项表明压缩所有新行。</p>
+</blockquote>
+<h3 id="delete">delete<a class="headerlink" href="#delete" title="Permanent link">#</a></h3>
+<p>使用 <code>-d</code> 选项可以删除指定的字符（集），例如 <code>tr -d '[:space:]'</code>（<code>tr -d ' '</code>） 删除空格。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-40-1"><a id="__codelineno-40-1" name="__codelineno-40-1" href="#__codelineno-40-1"></a><span class="c1"># 删除所有的小写字母</span>
+</span><span id="__span-40-2"><a id="__codelineno-40-2" name="__codelineno-40-2" href="#__codelineno-40-2"></a>faner@MBP-FAN<span class="w"> </span>$<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;Hua Wei&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>tr<span class="w"> </span>-d<span class="w"> </span>a-z
+</span><span id="__span-40-3"><a id="__codelineno-40-3" name="__codelineno-40-3" href="#__codelineno-40-3"></a>H<span class="w"> </span>W
+</span></code></pre></div>
+<p>使用 <code>-cd</code> 组合选项，则删除指定的字符（集）之外的其他字符，以下为 manpage 示例。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-41-1"><a id="__codelineno-41-1" name="__codelineno-41-1" href="#__codelineno-41-1"></a><span class="c1"># 删除可打印字符的补集，即删除不可打印字符。</span>
+</span><span id="__span-41-2"><a id="__codelineno-41-2" name="__codelineno-41-2" href="#__codelineno-41-2"></a>faner@MBP-FAN<span class="w"> </span>$<span class="w"> </span>tr<span class="w"> </span>-cd<span class="w"> </span><span class="s2">&quot;[:print:]&quot;</span><span class="w"> </span>&lt;<span class="w"> </span>file1
+</span></code></pre></div>
+<p>dos2unix（crlf-&gt;lf）的另外一种实现是利用 <code>tr -d</code>，删除回车控制字符（<code>\r</code>），并输出到新文件：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-42-1"><a id="__codelineno-42-1" name="__codelineno-42-1" href="#__codelineno-42-1"></a>faner@MBP-FAN<span class="w"> </span>$<span class="w"> </span>cat<span class="w"> </span>include/litestd.h<span class="w"> </span><span class="p">|</span><span class="w"> </span>tr<span class="w"> </span>-d<span class="w"> </span><span class="s1">&#39;[\r]&#39;</span><span class="w"> </span>&gt;<span class="w"> </span>include/litestd2.h
+</span><span id="__span-42-2"><a id="__codelineno-42-2" name="__codelineno-42-2" href="#__codelineno-42-2"></a>faner@MBP-FAN<span class="w"> </span>$<span class="w"> </span>tr<span class="w"> </span>-d<span class="w"> </span><span class="s1">&#39;[\r]&#39;</span><span class="w"> </span>&lt;<span class="w"> </span>include/litestd.h<span class="w"> </span>&gt;<span class="w"> </span>include/litestd2.h
+</span><span id="__span-42-3"><a id="__codelineno-42-3" name="__codelineno-42-3" href="#__codelineno-42-3"></a>faner@MBP-FAN<span class="w"> </span>$<span class="w"> </span>tr<span class="w"> </span>-d<span class="w"> </span><span class="s2">&quot;[\015]&quot;</span><span class="w"> </span>&lt;<span class="w"> </span>include/litestd.h<span class="w"> </span><span class="p">|</span><span class="w"> </span>tee<span class="w"> </span>include/litestd2.h
+</span></code></pre></div>
+<p>上面示例基于补集替换提取 diary.txt 中的日期列，另一种思路是基于 <code>-d</code> 删除除星期之外的所有字符，包括空格、数字和冒号。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-43-1"><a id="__codelineno-43-1" name="__codelineno-43-1" href="#__codelineno-43-1"></a>faner@MBP-FAN<span class="w"> </span>$<span class="w"> </span>cat<span class="w"> </span>diary.txt<span class="w"> </span><span class="p">|</span><span class="w"> </span>tr<span class="w"> </span>-d<span class="w"> </span><span class="s2">&quot;[0-9][: ]&quot;</span>
+</span></code></pre></div>
+<p><strong>注意</strong>：<code>tr -cd "[:alpha:]"</code> 会将末尾的换行符也删除，<code>tr -cd "[:alpha:][\n]"</code> 符合预期。</p>
+<h2 id="xargs">xargs<a class="headerlink" href="#xargs" title="Permanent link">#</a></h2>
+<p>unix/POSIX - <a href="https://pubs.opengroup.org/onlinepubs/9699919799/utilities/xargs.html">xargs</a><br />
+FreeBSD/Darwin - <a href="https://www.freebsd.org/cgi/man.cgi?query=xargs">xargs</a>  </p>
+<p>linux - <a href="http://man7.org/linux/man-pages/man1/xargs.1.html">xargs(1)</a> &amp; <a href="http://man7.org/linux/man-pages/man1/xargs.1p.html">xargs(1p)</a><br />
+debian/Ubuntu - <a href="https://manpages.debian.org/buster/findutils/xargs.1.en.html">xargs</a>  </p>
+<p>执行 <code>xargs --help</code> 可查看简要帮助（Usage）。<br />
+执行 <code>man xargs</code> 可查看详细帮助手册（Manual Page）：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-44-1"><a id="__codelineno-44-1" name="__codelineno-44-1" href="#__codelineno-44-1"></a>pi@raspberrypi:~<span class="w"> </span>$<span class="w"> </span>man<span class="w"> </span>xargs
+</span><span id="__span-44-2"><a id="__codelineno-44-2" name="__codelineno-44-2" href="#__codelineno-44-2"></a>
+</span><span id="__span-44-3"><a id="__codelineno-44-3" name="__codelineno-44-3" href="#__codelineno-44-3"></a>XARGS<span class="o">(</span><span class="m">1</span><span class="o">)</span><span class="w">                           </span>General<span class="w"> </span>Commands<span class="w"> </span>Manual<span class="w">                           </span>XARGS<span class="o">(</span><span class="m">1</span><span class="o">)</span>
+</span><span id="__span-44-4"><a id="__codelineno-44-4" name="__codelineno-44-4" href="#__codelineno-44-4"></a>
+</span><span id="__span-44-5"><a id="__codelineno-44-5" name="__codelineno-44-5" href="#__codelineno-44-5"></a>NAME
+</span><span id="__span-44-6"><a id="__codelineno-44-6" name="__codelineno-44-6" href="#__codelineno-44-6"></a><span class="w">     </span>xargs<span class="w"> </span>--<span class="w"> </span>construct<span class="w"> </span>argument<span class="w"> </span>list<span class="o">(</span>s<span class="o">)</span><span class="w"> </span>and<span class="w"> </span>execute<span class="w"> </span>utility
+</span><span id="__span-44-7"><a id="__codelineno-44-7" name="__codelineno-44-7" href="#__codelineno-44-7"></a>
+</span><span id="__span-44-8"><a id="__codelineno-44-8" name="__codelineno-44-8" href="#__codelineno-44-8"></a>SYNOPSIS
+</span><span id="__span-44-9"><a id="__codelineno-44-9" name="__codelineno-44-9" href="#__codelineno-44-9"></a><span class="w">     </span>xargs<span class="w"> </span><span class="o">[</span>-0oprt<span class="o">]</span><span class="w"> </span><span class="o">[</span>-E<span class="w"> </span>eofstr<span class="o">]</span><span class="w"> </span><span class="o">[</span>-I<span class="w"> </span>replstr<span class="w"> </span><span class="o">[</span>-R<span class="w"> </span>replacements<span class="o">]</span><span class="w"> </span><span class="o">[</span>-S<span class="w"> </span>replsize<span class="o">]]</span>
+</span><span id="__span-44-10"><a id="__codelineno-44-10" name="__codelineno-44-10" href="#__codelineno-44-10"></a><span class="w">       </span><span class="o">[</span>-J<span class="w"> </span>replstr<span class="o">]</span><span class="w"> </span><span class="o">[</span>-L<span class="w"> </span>number<span class="o">]</span><span class="w"> </span><span class="o">[</span>-n<span class="w"> </span>number<span class="w"> </span><span class="o">[</span>-x<span class="o">]]</span><span class="w"> </span><span class="o">[</span>-P<span class="w"> </span>maxprocs<span class="o">]</span><span class="w"> </span><span class="o">[</span>-s<span class="w"> </span>size<span class="o">]</span>
+</span><span id="__span-44-11"><a id="__codelineno-44-11" name="__codelineno-44-11" href="#__codelineno-44-11"></a><span class="w">       </span><span class="o">[</span>utility<span class="w"> </span><span class="o">[</span>argument<span class="w"> </span>...<span class="o">]]</span>
+</span><span id="__span-44-12"><a id="__codelineno-44-12" name="__codelineno-44-12" href="#__codelineno-44-12"></a>
+</span><span id="__span-44-13"><a id="__codelineno-44-13" name="__codelineno-44-13" href="#__codelineno-44-13"></a>DESCRIPTION
+</span><span id="__span-44-14"><a id="__codelineno-44-14" name="__codelineno-44-14" href="#__codelineno-44-14"></a><span class="w">     </span>The<span class="w"> </span>xargs<span class="w"> </span>utility<span class="w"> </span>reads<span class="w"> </span>space,<span class="w"> </span>tab,<span class="w"> </span>newline<span class="w"> </span>and<span class="w"> </span>end-of-file<span class="w"> </span>delimited
+</span><span id="__span-44-15"><a id="__codelineno-44-15" name="__codelineno-44-15" href="#__codelineno-44-15"></a><span class="w">     </span>strings<span class="w"> </span>from<span class="w"> </span>the<span class="w"> </span>standard<span class="w"> </span>input<span class="w"> </span>and<span class="w"> </span>executes<span class="w"> </span>utility<span class="w"> </span>with<span class="w"> </span>the<span class="w"> </span>strings<span class="w"> </span>as
+</span><span id="__span-44-16"><a id="__codelineno-44-16" name="__codelineno-44-16" href="#__codelineno-44-16"></a><span class="w">     </span>arguments.
+</span><span id="__span-44-17"><a id="__codelineno-44-17" name="__codelineno-44-17" href="#__codelineno-44-17"></a>
+</span><span id="__span-44-18"><a id="__codelineno-44-18" name="__codelineno-44-18" href="#__codelineno-44-18"></a><span class="w">     </span>Any<span class="w"> </span>arguments<span class="w"> </span>specified<span class="w"> </span>on<span class="w"> </span>the<span class="w"> </span><span class="nb">command</span><span class="w"> </span>line<span class="w"> </span>are<span class="w"> </span>given<span class="w"> </span>to<span class="w"> </span>utility<span class="w"> </span>upon
+</span><span id="__span-44-19"><a id="__codelineno-44-19" name="__codelineno-44-19" href="#__codelineno-44-19"></a><span class="w">     </span>each<span class="w"> </span>invocation,<span class="w"> </span>followed<span class="w"> </span>by<span class="w"> </span>some<span class="w"> </span>number<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>arguments<span class="w"> </span><span class="nb">read</span><span class="w"> </span>from<span class="w"> </span>the
+</span><span id="__span-44-20"><a id="__codelineno-44-20" name="__codelineno-44-20" href="#__codelineno-44-20"></a><span class="w">     </span>standard<span class="w"> </span>input<span class="w"> </span>of<span class="w"> </span>xargs.<span class="w">  </span>This<span class="w"> </span>is<span class="w"> </span>repeated<span class="w"> </span><span class="k">until</span><span class="w"> </span>standard<span class="w"> </span>input<span class="w"> </span>is<span class="w"> </span>ex-
+</span><span id="__span-44-21"><a id="__codelineno-44-21" name="__codelineno-44-21" href="#__codelineno-44-21"></a><span class="w">     </span>hausted.
+</span></code></pre></div>
+<p>执行 <code>xargs --version</code> 查看版本信息：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-45-1"><a id="__codelineno-45-1" name="__codelineno-45-1" href="#__codelineno-45-1"></a>pi@raspberrypi:~<span class="w"> </span>$<span class="w"> </span>xargs<span class="w"> </span>--version
+</span><span id="__span-45-2"><a id="__codelineno-45-2" name="__codelineno-45-2" href="#__codelineno-45-2"></a>xargs<span class="w"> </span><span class="o">(</span>GNU<span class="w"> </span>findutils<span class="o">)</span><span class="w"> </span><span class="m">4</span>.7.0-git
+</span><span id="__span-45-3"><a id="__codelineno-45-3" name="__codelineno-45-3" href="#__codelineno-45-3"></a>Copyright<span class="w"> </span><span class="o">(</span>C<span class="o">)</span><span class="w"> </span><span class="m">2016</span><span class="w"> </span>Free<span class="w"> </span>Software<span class="w"> </span>Foundation,<span class="w"> </span>Inc.
+</span><span id="__span-45-4"><a id="__codelineno-45-4" name="__codelineno-45-4" href="#__codelineno-45-4"></a>License<span class="w"> </span>GPLv3+:<span class="w"> </span>GNU<span class="w"> </span>GPL<span class="w"> </span>version<span class="w"> </span><span class="m">3</span><span class="w"> </span>or<span class="w"> </span>later<span class="w"> </span>&lt;http://gnu.org/licenses/gpl.html&gt;.
+</span><span id="__span-45-5"><a id="__codelineno-45-5" name="__codelineno-45-5" href="#__codelineno-45-5"></a>This<span class="w"> </span>is<span class="w"> </span>free<span class="w"> </span>software:<span class="w"> </span>you<span class="w"> </span>are<span class="w"> </span>free<span class="w"> </span>to<span class="w"> </span>change<span class="w"> </span>and<span class="w"> </span>redistribute<span class="w"> </span>it.
+</span><span id="__span-45-6"><a id="__codelineno-45-6" name="__codelineno-45-6" href="#__codelineno-45-6"></a>There<span class="w"> </span>is<span class="w"> </span>NO<span class="w"> </span>WARRANTY,<span class="w"> </span>to<span class="w"> </span>the<span class="w"> </span>extent<span class="w"> </span>permitted<span class="w"> </span>by<span class="w"> </span>law.
+</span><span id="__span-45-7"><a id="__codelineno-45-7" name="__codelineno-45-7" href="#__codelineno-45-7"></a>
+</span><span id="__span-45-8"><a id="__codelineno-45-8" name="__codelineno-45-8" href="#__codelineno-45-8"></a>Written<span class="w"> </span>by<span class="w"> </span>Eric<span class="w"> </span>B.<span class="w"> </span>Decker,<span class="w"> </span>James<span class="w"> </span>Youngman,<span class="w"> </span>and<span class="w"> </span>Kevin<span class="w"> </span>Dalley.
+</span></code></pre></div>
+<h3 id="options">options<a class="headerlink" href="#options" title="Permanent link">#</a></h3>
+<p>以下列举了5个常用的命令选项：</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-46-1"><a id="__codelineno-46-1" name="__codelineno-46-1" href="#__codelineno-46-1"></a>     -0      Change xargs to expect NUL (``\0&#39;&#39;) characters as separators, in-
+</span><span id="__span-46-2"><a id="__codelineno-46-2" name="__codelineno-46-2" href="#__codelineno-46-2"></a>         stead of spaces and newlines.  This is expected to be used in
+</span><span id="__span-46-3"><a id="__codelineno-46-3" name="__codelineno-46-3" href="#__codelineno-46-3"></a>         concert with the -print0 function in find(1).
+</span><span id="__span-46-4"><a id="__codelineno-46-4" name="__codelineno-46-4" href="#__codelineno-46-4"></a>
+</span><span id="__span-46-5"><a id="__codelineno-46-5" name="__codelineno-46-5" href="#__codelineno-46-5"></a>     -I replstr
+</span><span id="__span-46-6"><a id="__codelineno-46-6" name="__codelineno-46-6" href="#__codelineno-46-6"></a>         Execute utility for each input line, replacing one or more occur-
+</span><span id="__span-46-7"><a id="__codelineno-46-7" name="__codelineno-46-7" href="#__codelineno-46-7"></a>         rences of replstr in up to replacements (or 5 if no -R flag is
+</span><span id="__span-46-8"><a id="__codelineno-46-8" name="__codelineno-46-8" href="#__codelineno-46-8"></a>         specified) arguments to utility with the entire line of input.
+</span><span id="__span-46-9"><a id="__codelineno-46-9" name="__codelineno-46-9" href="#__codelineno-46-9"></a>
+</span><span id="__span-46-10"><a id="__codelineno-46-10" name="__codelineno-46-10" href="#__codelineno-46-10"></a>     -n number
+</span><span id="__span-46-11"><a id="__codelineno-46-11" name="__codelineno-46-11" href="#__codelineno-46-11"></a>         Set the maximum number of arguments taken from standard input for
+</span><span id="__span-46-12"><a id="__codelineno-46-12" name="__codelineno-46-12" href="#__codelineno-46-12"></a>         each invocation of utility.
+</span><span id="__span-46-13"><a id="__codelineno-46-13" name="__codelineno-46-13" href="#__codelineno-46-13"></a>
+</span><span id="__span-46-14"><a id="__codelineno-46-14" name="__codelineno-46-14" href="#__codelineno-46-14"></a>     -p      Echo each command to be executed and ask the user whether it
+</span><span id="__span-46-15"><a id="__codelineno-46-15" name="__codelineno-46-15" href="#__codelineno-46-15"></a>         should be executed.  An affirmative response, `y&#39; in the POSIX
+</span><span id="__span-46-16"><a id="__codelineno-46-16" name="__codelineno-46-16" href="#__codelineno-46-16"></a>         locale, causes the command to be executed, any other response
+</span><span id="__span-46-17"><a id="__codelineno-46-17" name="__codelineno-46-17" href="#__codelineno-46-17"></a>         causes it to be skipped.  No commands are executed if the process
+</span><span id="__span-46-18"><a id="__codelineno-46-18" name="__codelineno-46-18" href="#__codelineno-46-18"></a>         is not attached to a terminal.
+</span><span id="__span-46-19"><a id="__codelineno-46-19" name="__codelineno-46-19" href="#__codelineno-46-19"></a>
+</span><span id="__span-46-20"><a id="__codelineno-46-20" name="__codelineno-46-20" href="#__codelineno-46-20"></a>     -t      Echo the command to be executed to standard error immediately be-
+</span><span id="__span-46-21"><a id="__codelineno-46-21" name="__codelineno-46-21" href="#__codelineno-46-21"></a>         fore it is executed.
+</span></code></pre></div>
+<p><code>xargs -I</code> 和 <code>xargs -i</code> 是一样的，只是 <code>-i</code> 默认使用大括号（<code>{}</code>）作为替换字符串（replstr），<code>-I</code> 则可以自定义其他字符串作为 replstr，但是必须用引号包起来（？）。</p>
+<p>man 推荐使用 <code>-I</code> 代替 <code>-i</code>，但是一般都使用 <code>-i</code> 图个简单，除非在命令中不能使用大括号。</p>
+<blockquote>
+<p>macOS 下不支持 <code>-i</code> 选项！</p>
+</blockquote>
+<h3 id="usage">usage<a class="headerlink" href="#usage" title="Permanent link">#</a></h3>
+<p>大多数时候，xargs 命令都是跟管道一起使用的。但是，它也可以单独使用。<br />
+<code>xargs</code> 后面的命令默认是 <code>echo</code>。</p>
+<p><code>xargs</code> 是构建单行命令的重要组件之一，它擅长将标准输入数据转换成命令行参数。<br />
+xargs 命令一般紧跟在管道操作符之后，以标准输入作为主要的源数据流。它使用 stdin 并通过提供 <em>命令行参数</em> 来执行其他命令。<br />
+默认情况下 xargs 将其标准输入中的内容以空白(包括空格、tab、回车换行等)分割成多个 arguments 之后当作命令行参数传递给其后面的命令。<br />
+也可以使用 <code>-d</code> 命令指定特定分隔符（macOS 貌似不支持该选项）。  </p>
+<p>基于这一原理，最简单的应用是通过 <code>| xargs</code> 移除字符串首尾空格。</p>
+<p>``Shell<br />
+$ echo "   lol  " | xargs<br />
+lol<br />
+<div class="language-text highlight"><pre><span></span><code><span id="__span-47-1"><a id="__codelineno-47-1" name="__codelineno-47-1" href="#__codelineno-47-1"></a>md5 命令支持计算指定文件或字符串的MD5值，但不支持从stdin输入，因此无法将字符串管传给md5执行计算。
+</span><span id="__span-47-2"><a id="__codelineno-47-2" name="__codelineno-47-2" href="#__codelineno-47-2"></a>此时可考虑基于 `| xargs md -s` 变通实现：
+</span><span id="__span-47-3"><a id="__codelineno-47-3" name="__codelineno-47-3" href="#__codelineno-47-3"></a>
+</span><span id="__span-47-4"><a id="__codelineno-47-4" name="__codelineno-47-4" href="#__codelineno-47-4"></a>```Shell
+</span><span id="__span-47-5"><a id="__codelineno-47-5" name="__codelineno-47-5" href="#__codelineno-47-5"></a>$ echo &#39;How many roads must a man walk down&#39; | xargs md5 -s
+</span></code></pre></div></p>
+<p>以下通过 <code>brew list --cask</code> 列举所有brew安装的cask应用，然后通过管道 xargs 传参给 <code>brew upgrade --cask</code> 执行升级：</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-48-1"><a id="__codelineno-48-1" name="__codelineno-48-1" href="#__codelineno-48-1"></a>brew list --cask | xargs -t brew upgrade --cask
+</span></code></pre></div>
+<p>xargs 和 find 算是一对死党，两者结合使用可以让任务变得更轻松，详情参考 <a href="../../20191029/linux-cmd-find-xargs/">find</a>。</p>
+<h3 id="tricks">tricks<a class="headerlink" href="#tricks" title="Permanent link">#</a></h3>
+<p>无法通过 xargs 传递数值做正确的算术扩展：</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-49-1"><a id="__codelineno-49-1" name="__codelineno-49-1" href="#__codelineno-49-1"></a>$ echo 1 | xargs -I &quot;x&quot; echo $((2*x))
+</span></code></pre></div>
+<p>这时只能改变方法或寻找一些小技巧，例如：</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-50-1"><a id="__codelineno-50-1" name="__codelineno-50-1" href="#__codelineno-50-1"></a>$ echo 1 | xargs -I {} expr 2 \* {}
+</span></code></pre></div>
+<hr />
+<p>默认情况下，xargs 每次只能传递一条分割的数据到命令行中作为参数。但有时候想要让 xargs 一次传递2个或2个以上参数到命令行中。如何实现呢？</p>
+<p>例如有一个文件保存了 wget 想要下载的大量链接和对应要保存的文件名，一行链接一行文件名。格式如下：</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-51-1"><a id="__codelineno-51-1" name="__codelineno-51-1" href="#__codelineno-51-1"></a>https://www.xxx.yyy/a1
+</span><span id="__span-51-2"><a id="__codelineno-51-2" name="__codelineno-51-2" href="#__codelineno-51-2"></a>filename1
+</span><span id="__span-51-3"><a id="__codelineno-51-3" name="__codelineno-51-3" href="#__codelineno-51-3"></a>https://www.xxx.yyy/a2
+</span><span id="__span-51-4"><a id="__codelineno-51-4" name="__codelineno-51-4" href="#__codelineno-51-4"></a>filename2
+</span><span id="__span-51-5"><a id="__codelineno-51-5" name="__codelineno-51-5" href="#__codelineno-51-5"></a>https://www.xxx.yyy/a3
+</span><span id="__span-51-6"><a id="__codelineno-51-6" name="__codelineno-51-6" href="#__codelineno-51-6"></a>filename3
+</span></code></pre></div>
+<p>现在想要通过读取这个文件，将每一个URL和对应的文件名传递给wget去下载：</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-52-1"><a id="__codelineno-52-1" name="__codelineno-52-1" href="#__codelineno-52-1"></a>$ wget &#39;{URL}&#39; -O &#39;{FILENAME}&#39;
+</span></code></pre></div>
+<p>xargs 自身的功能无法一次性传递多个参数（parallel命令可以，而且方式多种），只能寻求一些技巧来实现。</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-53-1"><a id="__codelineno-53-1" name="__codelineno-53-1" href="#__codelineno-53-1"></a>cat url.txt | xargs -n 2 bash -c &#39;wget &quot;$1&quot; -O &quot;$2&quot;&#39;
+</span></code></pre></div>
+<h3 id="refs">refs<a class="headerlink" href="#refs" title="Permanent link">#</a></h3>
+<p>关于 xargs 的用法，可以参考 《Linux Shell 脚本攻略》中的 <code>2.5 玩转 xargs</code> 相关章节。</p>
+<p><a href="http://www.ruanyifeng.com/blog/2019/08/xargs-tutorial.html">xargs 命令教程</a><br />
+<a href="https://www.cnblogs.com/wangqiguo/p/6464234.html">xargs 命令详解</a><br />
+<a href="https://blog.csdn.net/zhangfn2011/article/details/6776925">Xargs 用法详解</a><br />
+<a href="https://www.cnblogs.com/f-ck-need-u/p/5925923.html">xargs 原理剖析及用法详解</a>  </p>
+
+
+
+
+
+
+
+  
+  
+
+
+
+  
+
+
+  
+
+
+
+  <h2 id="__comments">评论</h2>
+  <!-- Insert generated snippet here -->
+  <script src="https://giscus.app/client.js"
+    data-repo="fan2/mkdocs"
+    data-repo-id="R_kgDOLltxSg"
+    data-category="Announcements"
+    data-category-id="DIC_kwDOLltxSs4CeURH"
+    data-mapping="pathname"
+    data-strict="0"
+    data-reactions-enabled="1"
+    data-emit-metadata="1"
+    data-input-position="top"
+    data-theme="preferred_color_scheme"
+    data-lang="zh-CN"
+    data-loading="lazy"
+    crossorigin="anonymous"
+    async>
+  </script>
+
+  <!-- Synchronize Giscus theme with palette -->
+  <script>
+    var giscus = document.querySelector("script[src*=giscus]")
+
+    // Set palette on initial load
+    var palette = __md_get("__palette")
+    if (palette && typeof palette.color === "object") {
+      var theme = palette.color.scheme === "slate"
+        ? "transparent_dark"
+        : "light"
+
+      // Instruct Giscus to set theme
+      giscus.setAttribute("data-theme", theme) 
+    }
+
+    // Register event handlers after documented loaded
+    document.addEventListener("DOMContentLoaded", function() {
+      var ref = document.querySelector("[data-md-component=palette]")
+      ref.addEventListener("change", function() {
+        var palette = __md_get("__palette")
+        if (palette && typeof palette.color === "object") {
+          var theme = palette.color.scheme === "slate"
+            ? "transparent_dark"
+            : "light"
+
+          // Instruct Giscus to change theme
+          var frame = document.querySelector(".giscus-frame")
+          frame.contentWindow.postMessage(
+            { giscus: { setConfig: { theme } } },
+            "https://giscus.app"
+          )
+        }
+      })
+    })
+  </script>
+
+      
+    </article>
+  </div>
+
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+        
+      
+      <nav class="md-footer__inner md-grid" aria-label="页脚" >
+        
+          
+          <a href="../REDIRECTION/" class="md-footer__link md-footer__link--prev" aria-label="上一页: Linux Redirection（重定向）">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                上一页
+              </span>
+              <div class="md-ellipsis">
+                Linux Redirection（重定向）
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../../20191102/linux-cmd-grep/" class="md-footer__link md-footer__link--next" aria-label="下一页: Linux Command - grep">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                下一页
+              </span>
+              <div class="md-ellipsis">
+                Linux Command - grep
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2024- Cliff Fan
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["toc.follow", "header.autohide", "navigation.tabs", "navigation.top", "navigation.footer", "navigation.tracking", "content.code.copy", "content.code.select", "content.code.annotate"], "search": "../../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.bd41221c.min.js"></script>
+      
+        <script src="../../../javascripts/mathjax.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+        <script src="https://vercount.one/js"></script>
+      
+    
+  </body>
+</html>

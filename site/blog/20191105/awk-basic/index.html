@@ -1,0 +1,1756 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="在别处或在路上">
+      
+      
+        <meta name="author" content="Cliff Fan">
+      
+      
+        <link rel="canonical" href="https://duetorun.com/blog/20191105/awk-basic/">
+      
+      
+        <link rel="prev" href="../../20191104/sed-NDP/">
+      
+      
+        <link rel="next" href="../awk-vars/">
+      
+      
+      <link rel="icon" href="../../../assets/hold_yourself.jpg">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.15">
+    
+    
+      
+        <title>Linux Command - awk basic - ElseWhere</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.7e359304.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function n(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],n("js",new Date),n("config","G-XGW41EGL31"),document.addEventListener("DOMContentLoaded",function(){document.forms.search&&document.forms.search.query.addEventListener("blur",function(){this.value&&n("event","search",{search_term:this.value})}),document$.subscribe(function(){var a=document.forms.feedback;if(void 0!==a)for(var e of a.querySelectorAll("[type=submit]"))e.addEventListener("click",function(e){e.preventDefault();var t=document.location.pathname,e=this.getAttribute("data-md-value");n("event","feedback",{page:t,data:e}),a.firstElementChild.disabled=!0;e=a.querySelector(".md-feedback__note [data-md-value='"+e+"']");e&&(e.hidden=!1)}),a.hidden=!1}),location$.subscribe(function(e){n("config","G-XGW41EGL31",{page_path:e.pathname})})});var e=document.createElement("script");e.async=!0,e.src="https://www.googletagmanager.com/gtag/js?id=G-XGW41EGL31",document.getElementById("__analytics").insertAdjacentElement("afterEnd",e)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+    
+  
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#awk_范式" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../../.." title="ElseWhere" class="md-header__button md-logo" aria-label="ElseWhere" data-md-component="logo">
+      
+  <img src="../../../assets/hold_yourself.jpg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ElseWhere
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Linux Command - awk basic
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1M8 13h8v-2H8v2m9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1 0 1.71-1.39 3.1-3.1 3.1h-4V17h4a5 5 0 0 0 5-5 5 5 0 0 0-5-5Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="indigo"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5M7 15a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="标签" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../about/" class="md-tabs__link">
+        
+  
+    
+  
+  About
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../" class="md-tabs__link">
+          
+  
+  Blog
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../link/" class="md-tabs__link">
+        
+  
+    
+  
+  Link
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" hidden>
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="ElseWhere" class="md-nav__button md-logo" aria-label="ElseWhere" data-md-component="logo">
+      
+  <img src="../../../assets/hold_yourself.jpg" alt="logo">
+
+    </a>
+    ElseWhere
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../about/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    About
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Blog
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      <a href="../../" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Archive
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            Archive
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2024/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2024
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2022/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2022
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2019/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2019
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2018/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2018
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2017/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2017
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2015/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2015
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Categories
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            Categories
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/command/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    command
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/editor/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    editor
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/git/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    git
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/linux/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    linux
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/macos/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    macOS
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/markdown/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    markdown
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/material/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    material
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/mkdocs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    mkdocs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/nginx/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    nginx
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/shell/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    shell
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/ubuntu/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ubuntu
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/vim/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    vim
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/webdav/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    webDAV
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/wiki/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    wiki
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/zsh/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    zsh
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../link/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Link
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#awk_范式" class="md-nav__link">
+    <span class="md-ellipsis">
+      awk 范式
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="awk 范式">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#beginend" class="md-nav__link">
+    <span class="md-ellipsis">
+      BEGIN/END
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#模式和动作" class="md-nav__link">
+    <span class="md-ellipsis">
+      模式和动作
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#入门示例" class="md-nav__link">
+    <span class="md-ellipsis">
+      入门示例
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#记录和域" class="md-nav__link">
+    <span class="md-ellipsis">
+      记录和域
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="记录和域">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#记录record" class="md-nav__link">
+    <span class="md-ellipsis">
+      记录（Record）
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#域field" class="md-nav__link">
+    <span class="md-ellipsis">
+      域（Field）
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="域（Field）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#-f_指定域分割符" class="md-nav__link">
+    <span class="md-ellipsis">
+      -F 指定域分割符
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#域标识及引用" class="md-nav__link">
+    <span class="md-ellipsis">
+      域标识及引用
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#典型范式" class="md-nav__link">
+    <span class="md-ellipsis">
+      典型范式
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="典型范式">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#options" class="md-nav__link">
+    <span class="md-ellipsis">
+      options
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#input_from_stdin" class="md-nav__link">
+    <span class="md-ellipsis">
+      input from STDIN
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+  <div class="md-content md-content--post" data-md-component="content">
+    <div class="md-sidebar md-sidebar--post" data-md-component="sidebar" data-md-type="navigation">
+      <div class="md-sidebar__scrollwrap">
+        <div class="md-sidebar__inner md-post">
+          <nav class="md-nav md-nav--primary">
+            <div class="md-post__back">
+              <div class="md-nav__title md-nav__container">
+                <a href="../../" class="md-nav__link">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+                  <span class="md-ellipsis">
+                    回到主页
+                  </span>
+                </a>
+              </div>
+            </div>
+            
+              <div class="md-post__authors md-typeset">
+                
+                  <div class="md-profile md-post__profile">
+                    <span class="md-author md-author--long">
+                      <img src="https://duetorun.com/assets/carve_yourself.jpg" alt="Cliff Fan">
+                    </span>
+                    <span class="md-profile__description">
+                      <strong>
+                        
+                          Cliff Fan
+                        
+                      </strong>
+                      <br>
+                      Just do IT
+                    </span>
+                  </div>
+                
+              </div>
+            
+            <ul class="md-post__meta md-nav__list">
+              <li class="md-nav__item md-nav__item--section">
+                <div class="md-post__title">
+                  <span class="md-ellipsis">
+                    元数据
+                  </span>
+                </div>
+                <nav class="md-nav">
+                  <ul class="md-nav__list">
+                    <li class="md-nav__item">
+                      <div class="md-nav__link">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 19H5V8h14m-3-7v2H8V1H6v2H5c-1.11 0-2 .89-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-1V1m-1 11h-5v5h5v-5Z"/></svg>
+                        <time datetime="2019-11-05 09:00:00" class="md-ellipsis">2019年11月5日</time>
+                      </div>
+                    </li>
+                    
+                    
+                      <li class="md-nav__item">
+                        <div class="md-nav__link">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 3v15h3V3H9m3 2 4 13 3-1-4-13-3 1M5 5v13h3V5H5M3 19v2h18v-2H3Z"/></svg>
+                          <span class="md-ellipsis">
+                            分类于
+                            
+                              <a href="../../category/wiki/">wiki</a>, 
+                              <a href="../../category/linux/">linux</a></span>
+                        </div>
+                      </li>
+                    
+                    
+                      
+                      <li class="md-nav__item">
+                        <div class="md-nav__link">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7h1.5Z"/></svg>
+                          <span class="md-ellipsis">
+                            
+                              需要 4 分钟阅读时间
+                            
+                          </span>
+                        </div>
+                      </li>
+                    
+                    <!-- Add by Cliff.Fan, 29Mar24. -->
+                    <li class="md-nav__item">
+                      <div class="md-nav__link">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m19 1-5 5v11l5-4.5V1m2 4v13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V6c-1.45-1.1-3.55-1.5-5.5-1.5-1.95 0-4.05.4-5.5 1.5v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1M10 18.41C8.75 18.09 7.5 18 6.5 18c-1.06 0-2.32.19-3.5.5V7.13c.91-.4 2.14-.63 3.5-.63 1.36 0 2.59.23 3.5.63v11.28Z"/></svg>
+                        <span class="md-ellipsis" id="busuanzi_container_page_pv">
+                          阅读量：<span id="busuanzi_value_page_pv">N/A</span>
+                        </span>
+                      </div>
+                    </li>
+                  </ul>
+                </nav>
+              </li>
+            </ul>
+          </nav>
+          
+        </div>
+      </div>
+    </div>
+    <article class="md-content__inner md-typeset">
+      
+        
+  
+  
+
+<nav class="md-tags" >
+  
+    
+    
+    
+      <span class="md-tag">awk</span>
+    
+  
+</nav>
+
+
+
+  <h1>Linux Command - awk basic</h1>
+
+<p>Linux 下的 awk 命令基本知识。</p>
+<!-- more -->
+
+<p>虽然sed编辑器是非常方便自动修改文本文件的工具，但其也有自身的限制。<br />
+如果要格式化报文或从一个大的文本文件中抽取数据包，那么 awk 可以完成这些任务。</p>
+<p>awk 提供了一个类编程环境来修改和重新组织文件中的数据，是一种来处理文件中的数据的更高级工具。<br />
+awk 是一种自解释的编程语言，以发展这种语言的人 <code>A</code>ho.<code>W</code>eninberger 和 <code>K</code>ernigham 命名。<br />
+awk 结合诸如 grep 和 sed 等其他工具，将会使shell编程更加强大。除此之外，还有 gawk、nawk 和 mawk 等扩展变种。  </p>
+<p>为获得所需信息，文本或字符串必须格式化，意即用 <code>域分割符</code>（Filed Separator）划分抽取域。<br />
+awk 在文本文件或字符串中基于指定规则浏览和抽取信息，然后再执行其他命令。</p>
+<p>可以利用 awk 编程语言做下面的事情：</p>
+<ul>
+<li>定义变量来保存数据  </li>
+<li>使用算术和字符串操作符来处理数据  </li>
+<li>使用结构化编程概念（比如if-then语句和循环）来为数据处理增加处理逻辑  </li>
+<li>通过提取数据文件中的数据元素，将其重新排列或格式化，生成格式化报告  </li>
+</ul>
+<p>awk 程序的报告生成能力通常用来从大文本文件中提取数据元素，并将它们格式化成可读的报告。其中最完美的例子是格式化日志文件。</p>
+<h2 id="awk_范式">awk 范式<a class="headerlink" href="#awk_范式" title="Permanent link">#</a></h2>
+<p>默认情况下，awk 会从输入中读取一行文本，然后针对该行的数据执行程序脚本。</p>
+<p>一个完整的 awk 脚本由3部分组成，形如如下：</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>awk &#39;BEGIN {begin} {body} END {end}&#39; file
+</span></code></pre></div>
+<h3 id="beginend">BEGIN/END<a class="headerlink" href="#beginend" title="Permanent link">#</a></h3>
+<p>awk 脚本包含两个特殊字段 <code>BEGIN</code> 和 <code>END</code>。</p>
+<ul>
+<li><code>BEGIN</code> : 在处理数据前运行脚本，用于为报告创建标题等；  </li>
+<li><code>END</code> : 在处理数据后运行脚本，awk 会在读完数据后执行它；  </li>
+</ul>
+<p><code>BEGIN</code> 语句用于设定 PreProcessing，用于设置计数和打印头，使用在任何文本浏览动作之前。  </p>
+<blockquote>
+<p>通常 awk 控制格式相关的一些内置变量和用户自定义变量放在 BEGIN 部分，以便在读取第一行之前即初始化。</p>
+</blockquote>
+<p><code>END</code> 语句用来设定 PostProcessing，用于在完成文本浏览动作后打印输出文本总数和结尾状态标志。  </p>
+<blockquote>
+<p>BEGIN/END 部分通常不是必须的。</p>
+</blockquote>
+<h3 id="模式和动作">模式和动作<a class="headerlink" href="#模式和动作" title="Permanent link">#</a></h3>
+<p>awk 脚本的 body 部分可能包含多条语句，任何一条 awk 语句则都由 <code>模式</code> 和 <code>动作</code> 组成。</p>
+<p>模式部分决定动作语句何时触发及触发事件，处理即对数据进行的操作。<br />
+模式可以是任何条件语句或复合语句或正则表达式。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>pattern<span class="w"> </span><span class="o">{</span><span class="w"> </span>action<span class="w"> </span><span class="o">}</span>
+</span></code></pre></div>
+<blockquote>
+<p>如果不特别指明模式，awk 总是匹配或打印行数。如果省略模式部分，动作将时刻保持执行状态。</p>
+</blockquote>
+<p><strong>动作</strong> 大多数用来打印，但是可以在大括号（<code>{}</code>）内书写更长的代码诸如 if 和循环（looping）语句及循环退出结构。<br />
+大括号（<code>{}</code>）内多行语句以分号（<code>;</code>）相隔，这一点和 sed、C等其他编程语言一致。  </p>
+<blockquote>
+<p>如果不指明采取动作，awk 将打印出所有浏览出来的记录。</p>
+</blockquote>
+<p>awk 默认的动作是<strong>逐条遍历打印记录</strong>(<em>foreach print</em>)，有以下几种最简范式：</p>
+<ul>
+<li>逐行打印文档：<code>awk 1{print $0} data.txt</code>，其中模式1恒成立；  </li>
+<li>进一步省略默认参数 $0：<code>awk 1{print} data.txt</code>；  </li>
+<li>进一步省略默认动作：<code>awk 1 data.txt</code>。  </li>
+</ul>
+<p>除了输出字段分割符（<code>OFS</code>），awk 中的 print 语句在数据显示上并未提供多少控制。</p>
+<h3 id="入门示例">入门示例<a class="headerlink" href="#入门示例" title="Permanent link">#</a></h3>
+<p>可以只书写 BEGIN 部分测试 awk 语法，省略 body 和 END 部分，以及 file 参数。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>$<span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;BEGIN {print &quot;Hello, AWK!&quot;}&#39;</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>Hello,<span class="w"> </span>AWK!
+</span></code></pre></div>
+<p>文本文件 data1 内容如下：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>$<span class="w"> </span>cat<span class="w"> </span>data1
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>P.Bunny<span class="w"> </span><span class="c1"># 02/99 # 48   # Yellow</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>J.Troll<span class="w"> </span><span class="c1"># 07/99 # 4842 # Brown-3</span>
+</span></code></pre></div>
+<p>在 awk 结尾部分，通过 END 打印处理的记录数：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>$<span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;END {print &quot;end-of-record, NR=&quot;NR}&#39;</span><span class="w"> </span>data1
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>end-of-record,<span class="w"> </span><span class="nv">NR</span><span class="o">=</span><span class="m">2</span>
+</span></code></pre></div>
+<hr />
+<p>文本文件 data2.txt 内容如下：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>$<span class="w"> </span>cat<span class="w"> </span>data2.txt
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>One<span class="w"> </span>line<span class="w"> </span>of<span class="w"> </span><span class="nb">test</span><span class="w"> </span>text.
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>Two<span class="w"> </span>lines<span class="w"> </span>of<span class="w"> </span><span class="nb">test</span><span class="w"> </span>text.
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>Three<span class="w"> </span>lines<span class="w"> </span>of<span class="w"> </span><span class="nb">test</span><span class="w"> </span>text.
+</span></code></pre></div>
+<p>下面是一段完整的范式示例：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>$<span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;BEGIN {print &quot;The data2 File Contents:&quot;; print &quot;==========&quot;}</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="s1">    {print $0}</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="s1">    END {print &quot;==========&quot;; print &quot;End of File&quot;}&#39;</span><span class="w"> </span>data2.txt
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>The<span class="w"> </span>data2<span class="w"> </span>File<span class="w"> </span>Contents:
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="o">==========</span>
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>One<span class="w"> </span>line<span class="w"> </span>of<span class="w"> </span><span class="nb">test</span><span class="w"> </span>text.
+</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>Two<span class="w"> </span>lines<span class="w"> </span>of<span class="w"> </span><span class="nb">test</span><span class="w"> </span>text.
+</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>Three<span class="w"> </span>lines<span class="w"> </span>of<span class="w"> </span><span class="nb">test</span><span class="w"> </span>text.
+</span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="o">==========</span>
+</span><span id="__span-6-10"><a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a>End<span class="w"> </span>of<span class="w"> </span>File
+</span></code></pre></div>
+<h2 id="记录和域">记录和域<a class="headerlink" href="#记录和域" title="Permanent link">#</a></h2>
+<h3 id="记录record">记录（Record）<a class="headerlink" href="#记录record" title="Permanent link">#</a></h3>
+<p>跟 sed 一样，awk 默认逐行扫描文本，并执行程序对每一行进行分析处理。<br />
+这里的“一行”即为一条记录（Record），是 awk 将进行数据分析处理的基本单位。</p>
+<p>awk 扫描文本时，实际上是根据记录分割符 <code>RS</code>（Record Seperator）来界定一条记录的。<br />
+当发现 RS 时，awk 获悉读取到了一条记录，进行模式匹配（分析）并执行动作（处理）。<br />
+分析完一条记录后，继续移动指针向后扫描，直到发现下一个 RS，处理新的记录。<br />
+读取进程如此往复，持续到文件结尾（EOF）或文件不再存在结束。</p>
+<p>以下在 BEGIN 中打印当前 RS，默认为换行符 <code>\n</code>：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>$<span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;BEGIN { printf &quot;RS=\&quot;%s\&quot;\n&quot;, RS }&#39;</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="nv">RS</span><span class="o">=</span><span class="s2">&quot;</span>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="s2">&quot;</span>
+</span></code></pre></div>
+<blockquote>
+<p>关于 RS 变量的设置和实践，参考 <a href="../awk-vars/">awk-vars</a> 一节。</p>
+</blockquote>
+<hr />
+<p><code>awk '1 {print $0}' data2.txt</code> 中的模式永真，实际效果为逐条打印。</p>
+<blockquote>
+<p>由于 print 为缺省动作，因此可进一步简写为 <code>awk 1 data2.txt</code>。</p>
+</blockquote>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>$<span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;1 {print}&#39;</span><span class="w"> </span>data2.txt
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>One<span class="w"> </span>line<span class="w"> </span>of<span class="w"> </span><span class="nb">test</span><span class="w"> </span>text.
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>Two<span class="w"> </span>lines<span class="w"> </span>of<span class="w"> </span><span class="nb">test</span><span class="w"> </span>text.
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>Three<span class="w"> </span>lines<span class="w"> </span>of<span class="w"> </span><span class="nb">test</span><span class="w"> </span>text.
+</span></code></pre></div>
+<h3 id="域field">域（Field）<a class="headerlink" href="#域field" title="Permanent link">#</a></h3>
+<p>awk 在处理一条记录时，会用预定义的分割符，将这条记录划分为多个域（字段，Field）。</p>
+<blockquote>
+<p>可类比excel表格数据：将记录类比表格的行（row），域类比为表格的列（column）。</p>
+</blockquote>
+<p>awk 扫描记录时，当发现域分割符 <code>FS</code>（Field Seperator），则将其当做一个字段。</p>
+<p>awk 中默认的字段分割符是任意的空白字符（例如空格或制表符）。</p>
+<p>以下在 BEGIN 中打印当前 FS：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>$<span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;BEGIN { printf &quot;FS=\&quot;%s\&quot;\n&quot;, FS }&#39;</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="nv">FS</span><span class="o">=</span><span class="s2">&quot; &quot;</span>
+</span></code></pre></div>
+<h4 id="-f_指定域分割符">-F 指定域分割符<a class="headerlink" href="#-f_指定域分割符" title="Permanent link">#</a></h4>
+<p>默认 <code>FS</code> 非顶格空格或制表符，也可以自行指定其他字符（串）作为域分割符。<br />
+除此之外，也可在执行 awk 命令时通过 <code>-F</code> 选项来指定域分割符。</p>
+<blockquote>
+<p><code>-F</code> 之后的 fs 之间可以没有空格；<code>fs</code> 如果是单个字符可以不加（双）引号；如果是多个字符或包含空格，建议添加引号。</p>
+</blockquote>
+<p>携带 <code>-F</code> 选项的典型调用范式如下：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>awk<span class="w"> </span>-F:<span class="w"> </span><span class="s1">&#39;commands&#39;</span><span class="w"> </span>input-file
+</span></code></pre></div>
+<p>执行 awk 命令，<code>-F</code> 指定按 <code>#</code> 分割域，输出如下：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>$<span class="w"> </span>awk<span class="w"> </span>-F<span class="w"> </span><span class="s1">&#39;#&#39;</span><span class="w"> </span><span class="s1">&#39;{print $1,$2,$3,$4}&#39;</span><span class="w"> </span>data1
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>P.Bunny<span class="w">   </span><span class="m">02</span>/99<span class="w">   </span><span class="m">48</span><span class="w">     </span>Yellow
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>J.Troll<span class="w">   </span><span class="m">07</span>/99<span class="w">   </span><span class="m">4842</span><span class="w">   </span>Brown-3
+</span></code></pre></div>
+<p>参照下表，awk 每次读取一条记录，在分析记录时，遇到域分割符（<code>#</code>），标识其为域 $n，直至遇到记录分割符 <code>RS</code> 结束。<br />
+然后，继续扫描下一条记录，分析其中的域（字段），如此往复。</p>
+<table>
+<thead>
+<tr>
+<th>域1</th>
+<th>分割符</th>
+<th>域2</th>
+<th>分割符</th>
+<th>域3</th>
+<th>分割符</th>
+<th>域4</th>
+<th>RS</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P.Bunny</td>
+<td>#</td>
+<td>02/99</td>
+<td>#</td>
+<td>48</td>
+<td>#</td>
+<td>Yellow</td>
+<td>\n</td>
+</tr>
+<tr>
+<td>J.Troll</td>
+<td>#</td>
+<td>07/99</td>
+<td>#</td>
+<td>4842</td>
+<td>#</td>
+<td>Brown-3</td>
+<td>\n</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p>awk 的 <code>-F</code> 选项可指定任何合法的字符串作为域分割符，以便对数据记录进行切割提取分析。<br />
+典型使用场景是利用 grep 或 sed 从文本中筛选出匹配指定模式的行，再通过管道重定向给 awk 进行切割提取指定域。  </p>
+<p><a href="../sed-awk-demo/">sed-awk-demo</a> 中有大量 sed 与 awk 结合使用的场景示例。 </p>
+<p><a href="https://www.theunixschool.com/2012/11/awk-examples-insert-remove-update-fields.html">awk - 10 examples to insert / remove / update fields of a CSV file</a>  </p>
+<p><a href="https://bbs.csdn.net/topics/380208443">关于使用shell在文件中查找一段字符串的问题</a></p>
+<p>指定 FS=AAA，基于 AAA 分割前半部分：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>$<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;12312312343242AAAdfasdfasdfasdfasdfadAAAfsdgfsdfgfgfgdfgasdfg&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span>-F<span class="w"> </span><span class="s2">&quot;AAA&quot;</span><span class="w"> </span><span class="s1">&#39;{print $1}&#39;</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="m">12312312343242</span>
+</span></code></pre></div>
+<p>指定 FS=AAA，基于 AAA 分割后半部分：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>$<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;12312312343242AAAdfasdfasdfasdfasdfadAAAfsdgfsdfgfgfgdfgasdfg&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span>-F<span class="w"> </span><span class="s2">&quot;AAA&quot;</span><span class="w"> </span><span class="s1">&#39;{print $2}&#39;</span>
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>dfasdfasdfasdfasdfad
+</span></code></pre></div>
+<h4 id="域标识及引用">域标识及引用<a class="headerlink" href="#域标识及引用" title="Permanent link">#</a></h4>
+<p>awk 将分割出来的域依次标记为 <code>$1</code>,<code>$2</code>,...,<code>$n</code>，它们称为 <strong>域标识</strong>。</p>
+<ul>
+<li><code>$0</code> : 代表整个文本行（整条记录）  </li>
+<li><code>$1</code> : 代表文本行中的第1个数据字段  </li>
+<li><code>$2</code> : 代表文本行中的第2个数据字段  </li>
+<li><code>$n</code> : 代表文本行中的第n个数据字段  </li>
+</ul>
+<p>脚本中可引用域标识对域进行进一步处理。<br />
+使用 <code>$1,$3</code> 表示引用第1和第3域，注意这里用逗号做域分割。<br />
+如果希望打印有5个域的记录的所有域，不必指明 <code>$1,$2,$3,$4,$5</code>，可使用 <code>$0</code>，意即整条记录的所有域。<br />
+awk 浏览数据到达一新行时，即假定到达包含域的记录末尾，然后开始下一行新记录的读动作，并重新设置域分割符。  </p>
+<hr />
+<p>以下示例中，awk 读取文本文件，每行只显示第1个字段。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>$<span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;{print $1}&#39;</span><span class="w"> </span>data2.txt
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>One
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>Two
+</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a>Three
+</span></code></pre></div>
+<p>以下命令摘取打印每条记录的第1、3、6三个字段：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>$<span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;{print $1,$3,$6}&#39;</span><span class="w"> </span>grade.txt
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>M.Tansley<span class="w"> </span><span class="m">48311</span><span class="w"> </span><span class="m">40</span>
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>J.Lulu<span class="w"> </span><span class="m">48317</span><span class="w"> </span><span class="m">24</span>
+</span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a>P.Bunny<span class="w"> </span><span class="m">48</span><span class="w"> </span><span class="m">35</span>
+</span><span id="__span-15-5"><a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a>J.Troll<span class="w"> </span><span class="m">4842</span><span class="w"> </span><span class="m">26</span>
+</span><span id="__span-15-6"><a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a>L.Tansley<span class="w"> </span><span class="m">4712</span><span class="w"> </span><span class="m">30</span>
+</span></code></pre></div>
+<p>以下示例中，awk 引用域四并对其进行赋值修改：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>$<span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;{$4=&quot;awk&quot;;print$0}&#39;</span><span class="w"> </span>data2.txt
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>One<span class="w"> </span>line<span class="w"> </span>of<span class="w"> </span>awk<span class="w"> </span>text.
+</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>Two<span class="w"> </span>lines<span class="w"> </span>of<span class="w"> </span>awk<span class="w"> </span>text.
+</span><span id="__span-16-4"><a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a>Three<span class="w"> </span>lines<span class="w"> </span>of<span class="w"> </span>awk<span class="w"> </span>text.
+</span></code></pre></div>
+<h2 id="典型范式">典型范式<a class="headerlink" href="#典型范式" title="Permanent link">#</a></h2>
+<p>Manual Pages 中的 SYNOPSIS 如下：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="w">       </span>awk<span class="w"> </span><span class="o">[</span><span class="w"> </span>-F<span class="w"> </span>fs<span class="w"> </span><span class="o">]</span><span class="w"> </span><span class="o">[</span><span class="w"> </span>-v<span class="w"> </span><span class="nv">var</span><span class="o">=</span>value<span class="w"> </span><span class="o">]</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="s1">&#39;prog&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>-f<span class="w"> </span>progfile<span class="w"> </span><span class="o">]</span><span class="w"> </span><span class="o">[</span><span class="w"> </span>file<span class="w"> </span>...<span class="w">  </span><span class="o">]</span>
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>
+</span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a><span class="w">       </span>awk<span class="w"> </span><span class="o">[</span>−F<span class="w"> </span>sepstring<span class="o">]</span><span class="w"> </span><span class="o">[</span>−v<span class="w"> </span>assignment<span class="o">]</span>...<span class="w"> </span>program<span class="w"> </span><span class="o">[</span>argument...<span class="o">]</span>
+</span><span id="__span-17-4"><a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a>
+</span><span id="__span-17-5"><a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a><span class="w">       </span>awk<span class="w"> </span><span class="o">[</span>−F<span class="w"> </span>sepstring<span class="o">]</span><span class="w"> </span>−f<span class="w"> </span>progfile<span class="w"> </span><span class="o">[</span>−f<span class="w"> </span>progfile<span class="o">]</span>...<span class="w"> </span><span class="o">[</span>−v<span class="w"> </span>assignment<span class="o">]</span>...
+</span><span id="__span-17-6"><a id="__codelineno-17-6" name="__codelineno-17-6" href="#__codelineno-17-6"></a><span class="w">            </span><span class="o">[</span>argument...<span class="o">]</span>
+</span></code></pre></div>
+<p>省略模式部分的典型 awk 调用范式如下：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>awk<span class="w"> </span>options<span class="w"> </span><span class="s1">&#39;commands&#39;</span><span class="w"> </span>input-file
+</span></code></pre></div>
+<p>也可将所有的 awk 命令保存到一个脚本文件中，然后调用 awk 时用 <code>-f</code> 选项指定命令脚本：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>awk<span class="w"> </span>-f<span class="w"> </span>awk-script-file<span class="w"> </span>input-file<span class="o">(</span>s<span class="o">)</span>
+</span></code></pre></div>
+<ul>
+<li><code>-f</code> 选项指明在文件 awk_script_file 中的 awk 脚本；  </li>
+<li><code>input-file(s)</code> 是使用 awk 进行浏览的文件名。  </li>
+</ul>
+<h3 id="options">options<a class="headerlink" href="#options" title="Permanent link">#</a></h3>
+<p>awk 常用命令选项如下表：</p>
+<table>
+<thead>
+<tr>
+<th>选项</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>-F fs</code></td>
+<td>指定行中划分数据字段的字段分割符</td>
+</tr>
+<tr>
+<td><code>-f file</code></td>
+<td>从指定的文件中读取脚本程序</td>
+</tr>
+<tr>
+<td><code>-v var=value</code></td>
+<td>定义一个变量及其默认值</td>
+</tr>
+<tr>
+<td><code>-mf N</code></td>
+<td>指定要处理的数据文件中的最大字段数</td>
+</tr>
+<tr>
+<td><code>-mr N</code></td>
+<td>指定数据文件中的最大数据行数</td>
+</tr>
+</tbody>
+</table>
+<h3 id="input_from_stdin">input from STDIN<a class="headerlink" href="#input_from_stdin" title="Permanent link">#</a></h3>
+<p>若没有在命令行上指定文件（input-file），则 awk 将会等待从 STDIN 接受输入参数作为待处理数据。</p>
+<p>输入一行文本并按下回车键，awk 会对这行文本运行一遍程序脚本。</p>
+<p>以下示例 <code>awk '{print "Hello, AWK!"}'</code> 总是打印一行固定的文本字符串，因此不管你在数据流中输入什么文本，都会得到同样的文本输出。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>$<span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;{print &quot;Hello, AWK!&quot;}&#39;</span>
+</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>stdin<span class="w"> </span>line<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="k">for</span><span class="w"> </span>awk!
+</span><span id="__span-20-3"><a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a>Hello,<span class="w"> </span>AWK!
+</span><span id="__span-20-4"><a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a>stdin<span class="w"> </span>line<span class="w"> </span><span class="m">2</span><span class="w"> </span><span class="k">for</span><span class="w"> </span>awk!
+</span><span id="__span-20-5"><a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a>Hello,<span class="w"> </span>AWK!
+</span></code></pre></div>
+<p>稍作修改为 <code>awk '{print $2}'</code>，则打印输入文本空格分割的第2个字段：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>$<span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;{print $2}&#39;</span>
+</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>Hello<span class="w"> </span>World
+</span><span id="__span-21-3"><a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a>World
+</span><span id="__span-21-4"><a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a>Hey<span class="w"> </span>Jude
+</span><span id="__span-21-5"><a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a>Jude
+</span></code></pre></div>
+<p>按下 <code>&lt;C-C&gt;</code> 或 <code>&lt;C-D&gt;</code>（EOF）退出。</p>
+
+
+
+
+
+
+
+  
+  
+
+
+
+  
+
+
+  
+
+
+
+  <h2 id="__comments">评论</h2>
+  <!-- Insert generated snippet here -->
+  <script src="https://giscus.app/client.js"
+    data-repo="fan2/mkdocs"
+    data-repo-id="R_kgDOLltxSg"
+    data-category="Announcements"
+    data-category-id="DIC_kwDOLltxSs4CeURH"
+    data-mapping="pathname"
+    data-strict="0"
+    data-reactions-enabled="1"
+    data-emit-metadata="1"
+    data-input-position="top"
+    data-theme="preferred_color_scheme"
+    data-lang="zh-CN"
+    data-loading="lazy"
+    crossorigin="anonymous"
+    async>
+  </script>
+
+  <!-- Synchronize Giscus theme with palette -->
+  <script>
+    var giscus = document.querySelector("script[src*=giscus]")
+
+    // Set palette on initial load
+    var palette = __md_get("__palette")
+    if (palette && typeof palette.color === "object") {
+      var theme = palette.color.scheme === "slate"
+        ? "transparent_dark"
+        : "light"
+
+      // Instruct Giscus to set theme
+      giscus.setAttribute("data-theme", theme) 
+    }
+
+    // Register event handlers after documented loaded
+    document.addEventListener("DOMContentLoaded", function() {
+      var ref = document.querySelector("[data-md-component=palette]")
+      ref.addEventListener("change", function() {
+        var palette = __md_get("__palette")
+        if (palette && typeof palette.color === "object") {
+          var theme = palette.color.scheme === "slate"
+            ? "transparent_dark"
+            : "light"
+
+          // Instruct Giscus to change theme
+          var frame = document.querySelector(".giscus-frame")
+          frame.contentWindow.postMessage(
+            { giscus: { setConfig: { theme } } },
+            "https://giscus.app"
+          )
+        }
+      })
+    })
+  </script>
+
+      
+    </article>
+  </div>
+
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+        
+      
+      <nav class="md-footer__inner md-grid" aria-label="页脚" >
+        
+          
+          <a href="../../20191104/sed-NDP/" class="md-footer__link md-footer__link--prev" aria-label="上一页: Linux Command - sed NDP">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                上一页
+              </span>
+              <div class="md-ellipsis">
+                Linux Command - sed NDP
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../awk-vars/" class="md-footer__link md-footer__link--next" aria-label="下一页: Linux Command - awk vars">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                下一页
+              </span>
+              <div class="md-ellipsis">
+                Linux Command - awk vars
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2024- Cliff Fan
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["toc.follow", "header.autohide", "navigation.tabs", "navigation.top", "navigation.footer", "navigation.tracking", "content.code.copy", "content.code.select", "content.code.annotate"], "search": "../../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.bd41221c.min.js"></script>
+      
+        <script src="../../../javascripts/mathjax.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+        <script src="https://vercount.one/js"></script>
+      
+    
+  </body>
+</html>
