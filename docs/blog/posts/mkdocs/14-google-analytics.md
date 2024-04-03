@@ -4,11 +4,12 @@ authors:
   - xman
 date:
     created: 2024-03-29T17:00:00
-    updated: 2024-04-02T08:30:00
+    updated: 2024-04-03T10:30:00
 categories:
     - mkdocs
     - material
 tags:
+    - SEO
     - analytics
     - search
     - pageviews
@@ -91,6 +92,8 @@ extra:
 
 [Search Console Help](https://support.google.com/webmasters?hl=en&sjid=9594711740567622827-AP#topic=9128571) @[zh-cn](https://support.google.com/webmasters?hl=zh-Hans&sjid=9594711740567622827-AP#topic=9128571)
 
+[Google Search Central | Documentation](https://developers.google.com/search/docs) @[zh-cn](https://developers.google.com/search/docs?hl=zh-cn)
+
 !!! abstract "Google Search Console"
 
     Google Search Console 是一项由 Google 提供的免费服务，可帮助您监控和维护您的网站在 Google 搜索结果中的展示情况以及排查问题。即使没有注册 Search Console，您的网页也可能会显示在 Google 搜索结果中，但 Search Console 可帮助您了解并改进 Google 处理您网站的方式。
@@ -109,13 +112,35 @@ extra:
     3. Google 跟踪代碍管理器：使用您的 Google 跟踪代码管理器账号
     4. 域名提供商：将 DNS 记录与 Google 关联
 
-3. 提交站点地图：Indexing - Sitemaps 上传 site/sitemap.xml。如果没有 sitemap.xml，可到 [xml-sitemaps](https://www.xml-sitemaps.com/) 输入网址生成。
-4. 手动请求（重新）编入索引：网址检查（URL inspection）输入博客网址，然后点击 测试实际版本（TEST LIVE URL），请求编入索引（REQUEST INDEXING）。
+### Crawling and Indexing
+
+[Google Crawling and Indexing | Google Search Central](https://developers.google.com/search/docs/crawling-indexing/)
+
+**1.提交站点地图**：[Sitemaps](https://developers.google.com/search/docs/crawling-indexing/sitemaps/overview)
+
+点击左侧菜单 编制索引-站点地图（Indexing - Sitemaps），在 添加新的站点地图（Add a new sitemap）输入站点地图（Enter sitemap URL）并点击 SUBMIT 提交。
+
+> 如果没有站点地图 sitemap.xml，可到 [xml-sitemaps](https://www.xml-sitemaps.com/) 输入网址生成。
+
+**2.手动请求（重新）编入索引**：[Ask Google to Recrawl Your Website](https://developers.google.com/search/docs/crawling-indexing/ask-google-to-recrawl)
+
+点击左侧菜单 网址检查（URL inspection），输入博客网址，然后点击 测试实际版本（TEST LIVE URL），请求编入索引（REQUEST INDEXING）。
 
 !!! info ""
 
     编制索引：正在处理数据，请过 1 天左右再来查看
     Indexing - Pages : Processing data, please check again in a day or so
+
+**3.手动请求移除失效的索引**：[Remove a page hosted on your site from Google](https://developers.google.com/search/docs/crawling-indexing/remove-information)
+
+- [Remove A URL From Google's Index | SEO Tips | Contensis](https://www.contensis.com/community/blog/how-to-remove-a-web-page-from-googles-index)
+- [Remove web results from Google Search - Google Search Help](https://support.google.com/websearch/answer/11080680?hl=en)
+- [Requesting removal of content from our index  |  Google Search Central Blog](https://developers.google.com/search/blog/2007/04/requesting-removal-of-content-from-our)
+
+点击左侧 编制索引-删除（Indexing - Removals），点击 tab 暂时移除（TEMPORARY REMOVALS），点击 新要求（NEW REQUEST）：
+
+1. Remove this URL only: https://duetorun.com/About/about/
+2. Remove all URLs with this prefix: https://duetorun.com/Productivity/
 
 ### link account to analytics
 
