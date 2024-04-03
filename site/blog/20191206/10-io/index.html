@@ -1,0 +1,2187 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="在别处或在路上">
+      
+      
+        <meta name="author" content="Cliff Fan">
+      
+      
+        <link rel="canonical" href="https://duetorun.com/blog/20191206/10-io/">
+      
+      
+        <link rel="prev" href="../9-json/">
+      
+      
+        <link rel="next" href="../11-logging/">
+      
+      
+      <link rel="icon" href="../../../assets/hold_yourself.jpg">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.15">
+    
+    
+      
+        <title>python中的文件io操作 - ElseWhere</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.7e359304.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function n(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],n("js",new Date),n("config","G-XGW41EGL31"),document.addEventListener("DOMContentLoaded",function(){document.forms.search&&document.forms.search.query.addEventListener("blur",function(){this.value&&n("event","search",{search_term:this.value})}),document$.subscribe(function(){var a=document.forms.feedback;if(void 0!==a)for(var e of a.querySelectorAll("[type=submit]"))e.addEventListener("click",function(e){e.preventDefault();var t=document.location.pathname,e=this.getAttribute("data-md-value");n("event","feedback",{page:t,data:e}),a.firstElementChild.disabled=!0;e=a.querySelector(".md-feedback__note [data-md-value='"+e+"']");e&&(e.hidden=!1)}),a.hidden=!1}),location$.subscribe(function(e){n("config","G-XGW41EGL31",{page_path:e.pathname})})});var e=document.createElement("script");e.async=!0,e.src="https://www.googletagmanager.com/gtag/js?id=G-XGW41EGL31",document.getElementById("__analytics").insertAdjacentElement("afterEnd",e)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+    
+  
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#help" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../../.." title="ElseWhere" class="md-header__button md-logo" aria-label="ElseWhere" data-md-component="logo">
+      
+  <img src="../../../assets/hold_yourself.jpg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ElseWhere
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              python中的文件io操作
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1M8 13h8v-2H8v2m9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1 0 1.71-1.39 3.1-3.1 3.1h-4V17h4a5 5 0 0 0 5-5 5 5 0 0 0-5-5Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="indigo"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5M7 15a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="标签" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../about/" class="md-tabs__link">
+        
+  
+    
+  
+  About
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../" class="md-tabs__link">
+          
+  
+  Blog
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../link/" class="md-tabs__link">
+        
+  
+    
+  
+  Link
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" hidden>
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="ElseWhere" class="md-nav__button md-logo" aria-label="ElseWhere" data-md-component="logo">
+      
+  <img src="../../../assets/hold_yourself.jpg" alt="logo">
+
+    </a>
+    ElseWhere
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../about/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    About
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Blog
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      <a href="../../" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Archive
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            Archive
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2024/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2024
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2022/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2022
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2019/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2019
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2018/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2018
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2017/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2017
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2015/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2015
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Categories
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            Categories
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/command/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    command
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/editor/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    editor
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/git/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    git
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/linux/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    linux
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/macos/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    macOS
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/markdown/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    markdown
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/material/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    material
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/mkdocs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    mkdocs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/nginx/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    nginx
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/python/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    python
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/shell/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    shell
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/ubuntu/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ubuntu
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/vim/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    vim
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/webdav/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    webDAV
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/wiki/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    wiki
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/zsh/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    zsh
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../link/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Link
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#help" class="md-nav__link">
+    <span class="md-ellipsis">
+      help
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#open" class="md-nav__link">
+    <span class="md-ellipsis">
+      open
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="open">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      mode
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#with_open" class="md-nav__link">
+    <span class="md-ellipsis">
+      with open
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ospath" class="md-nav__link">
+    <span class="md-ellipsis">
+      os.path
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#class_hierarchy" class="md-nav__link">
+    <span class="md-ellipsis">
+      Class hierarchy
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#read" class="md-nav__link">
+    <span class="md-ellipsis">
+      read
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="read">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#read_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      read
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#seek" class="md-nav__link">
+    <span class="md-ellipsis">
+      seek
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#readline" class="md-nav__link">
+    <span class="md-ellipsis">
+      readline
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#readlines" class="md-nav__link">
+    <span class="md-ellipsis">
+      readlines
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#for_loop" class="md-nav__link">
+    <span class="md-ellipsis">
+      for loop
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#write" class="md-nav__link">
+    <span class="md-ellipsis">
+      write
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#codecs" class="md-nav__link">
+    <span class="md-ellipsis">
+      codecs
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="codecs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bom" class="md-nav__link">
+    <span class="md-ellipsis">
+      BOM
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#unicodedecodeerror" class="md-nav__link">
+    <span class="md-ellipsis">
+      UnicodeDecodeError
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+  <div class="md-content md-content--post" data-md-component="content">
+    <div class="md-sidebar md-sidebar--post" data-md-component="sidebar" data-md-type="navigation">
+      <div class="md-sidebar__scrollwrap">
+        <div class="md-sidebar__inner md-post">
+          <nav class="md-nav md-nav--primary">
+            <div class="md-post__back">
+              <div class="md-nav__title md-nav__container">
+                <a href="../../" class="md-nav__link">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+                  <span class="md-ellipsis">
+                    回到主页
+                  </span>
+                </a>
+              </div>
+            </div>
+            
+              <div class="md-post__authors md-typeset">
+                
+                  <div class="md-profile md-post__profile">
+                    <span class="md-author md-author--long">
+                      <img src="https://duetorun.com/assets/carve_yourself.jpg" alt="Cliff Fan">
+                    </span>
+                    <span class="md-profile__description">
+                      <strong>
+                        
+                          Cliff Fan
+                        
+                      </strong>
+                      <br>
+                      Just do IT
+                    </span>
+                  </div>
+                
+              </div>
+            
+            <ul class="md-post__meta md-nav__list">
+              <li class="md-nav__item md-nav__item--section">
+                <div class="md-post__title">
+                  <span class="md-ellipsis">
+                    元数据
+                  </span>
+                </div>
+                <nav class="md-nav">
+                  <ul class="md-nav__list">
+                    <li class="md-nav__item">
+                      <div class="md-nav__link">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 19H5V8h14m-3-7v2H8V1H6v2H5c-1.11 0-2 .89-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-1V1m-1 11h-5v5h5v-5Z"/></svg>
+                        <time datetime="2019-12-06 09:30:00" class="md-ellipsis">2019年12月6日</time>
+                      </div>
+                    </li>
+                    
+                    
+                      <li class="md-nav__item">
+                        <div class="md-nav__link">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 3v15h3V3H9m3 2 4 13 3-1-4-13-3 1M5 5v13h3V5H5M3 19v2h18v-2H3Z"/></svg>
+                          <span class="md-ellipsis">
+                            分类于
+                            
+                              <a href="../../category/python/">python</a></span>
+                        </div>
+                      </li>
+                    
+                    
+                      
+                      <li class="md-nav__item">
+                        <div class="md-nav__link">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7h1.5Z"/></svg>
+                          <span class="md-ellipsis">
+                            
+                              需要 11 分钟阅读时间
+                            
+                          </span>
+                        </div>
+                      </li>
+                    
+                    <!-- Add by Cliff.Fan, 29Mar24. -->
+                    <li class="md-nav__item">
+                      <div class="md-nav__link">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m19 1-5 5v11l5-4.5V1m2 4v13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V6c-1.45-1.1-3.55-1.5-5.5-1.5-1.95 0-4.05.4-5.5 1.5v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1M10 18.41C8.75 18.09 7.5 18 6.5 18c-1.06 0-2.32.19-3.5.5V7.13c.91-.4 2.14-.63 3.5-.63 1.36 0 2.59.23 3.5.63v11.28Z"/></svg>
+                        <span class="md-ellipsis" id="busuanzi_container_page_pv">
+                          阅读量：<span id="busuanzi_value_page_pv">N/A</span>
+                        </span>
+                      </div>
+                    </li>
+                  </ul>
+                </nav>
+              </li>
+            </ul>
+          </nav>
+          
+        </div>
+      </div>
+    </div>
+    <article class="md-content__inner md-typeset">
+      
+        
+  
+  
+
+<nav class="md-tags" >
+  
+    
+    
+    
+      <span class="md-tag">io</span>
+    
+  
+    
+    
+    
+      <span class="md-tag">open</span>
+    
+  
+    
+    
+    
+      <span class="md-tag">read</span>
+    
+  
+    
+    
+    
+      <span class="md-tag">write</span>
+    
+  
+</nav>
+
+
+
+  <h1>python中的文件io操作</h1>
+
+<p>本文梳理了 python 中的 io 模块，包括打开文件和读写处理基本操作。</p>
+<!-- more -->
+
+<p><a href="https://docs.python.org/3/library/functions.html#open">open</a>  </p>
+<p><a href="https://docs.python.org/3/library/io.html">io — Core tools for working with streams</a></p>
+<p><a href="https://docs.python.org/3.7/tutorial/inputoutput.html#reading-and-writing-files">7.2. Reading and Writing Files</a></p>
+<h2 id="help">help<a class="headerlink" href="#help" title="Permanent link">#</a></h2>
+<p>要打开文件，可使用内置的函数 <code>open</code>，它实际位于自动导入的模块io中。<br />
+相当于 builtins 模块中执行了 <code>from io import open</code>。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>&gt;&gt;&gt;<span class="w"> </span>help<span class="o">(</span>open<span class="o">)</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>Help<span class="w"> </span>on<span class="w"> </span>built-in<span class="w"> </span><span class="k">function</span><span class="w"> </span>open<span class="w"> </span><span class="k">in</span><span class="w"> </span>module<span class="w"> </span>io:
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>open<span class="o">(</span>file,<span class="w"> </span><span class="nv">mode</span><span class="o">=</span><span class="s1">&#39;r&#39;</span>,<span class="w"> </span><span class="nv">buffering</span><span class="o">=</span>-1,<span class="w"> </span><span class="nv">encoding</span><span class="o">=</span>None,<span class="w"> </span><span class="nv">errors</span><span class="o">=</span>None,<span class="w"> </span><span class="nv">newline</span><span class="o">=</span>None,<span class="w"> </span><span class="nv">closefd</span><span class="o">=</span>True,<span class="w"> </span><span class="nv">opener</span><span class="o">=</span>None<span class="o">)</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">    </span>Open<span class="w"> </span>file<span class="w"> </span>and<span class="w"> </span><span class="k">return</span><span class="w"> </span>a<span class="w"> </span>stream.<span class="w">  </span>Raise<span class="w"> </span>OSError<span class="w"> </span>upon<span class="w"> </span>failure.
+</span></code></pre></div>
+<p>也可以先导入 io 模块（<code>import io</code>），再 help(io) 或 help(io.open) 查看完整帮助。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>&gt;&gt;&gt;<span class="w"> </span>import<span class="w"> </span>io
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>&gt;&gt;&gt;<span class="w"> </span>help<span class="o">(</span>io.open<span class="o">)</span>
+</span></code></pre></div>
+<p><code>open</code>() returns a file object, and is most commonly used with two positional arguments and one keyword argument:</p>
+<blockquote>
+<p>open(filename, mode, encoding=None)</p>
+</blockquote>
+<h2 id="open">open<a class="headerlink" href="#open" title="Permanent link">#</a></h2>
+<p>The first argument <code>file</code> is a string containing the filename.</p>
+<p>函数 open 将文件名作为唯一必不可少的参数，并返回一个文件对象。<br />
+如果当前目录中有一个名为somefile.txt的文本文件（可能是使用文本编辑器创建的），则可像下面这样打开它：</p>
+<blockquote>
+<blockquote>
+<blockquote>
+<p>f = open('somefile.txt')</p>
+</blockquote>
+</blockquote>
+</blockquote>
+<p>如果文件位于其他地方，可指定相对路径或完整的绝对路径。</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>&gt;&gt;&gt; fp = open(&#39;test.py&#39;)
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>&gt;&gt;&gt; # io manipulation
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>&gt;&gt;&gt; fp.close()
+</span></code></pre></div>
+<p>最终文件不用时，需要显式调用 fp.<code>close</code>() 关闭文件。</p>
+<h3 id="mode">mode<a class="headerlink" href="#mode" title="Permanent link">#</a></h3>
+<p>The second argument <code>mode</code> is another string containing a few characters describing the way in which the file will be used.</p>
+<p>The mode argument is optional; <code>'r'</code> will be assumed if it’s omitted.</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="w">    </span><span class="o">=========</span><span class="w"> </span><span class="o">===============================================================</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">    </span>Character<span class="w"> </span>Meaning
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">    </span>---------<span class="w"> </span>---------------------------------------------------------------
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">    </span><span class="s1">&#39;r&#39;</span><span class="w">       </span>open<span class="w"> </span><span class="k">for</span><span class="w"> </span>reading<span class="w"> </span><span class="o">(</span>default<span class="o">)</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">    </span><span class="s1">&#39;w&#39;</span><span class="w">       </span>open<span class="w"> </span><span class="k">for</span><span class="w"> </span>writing,<span class="w"> </span>truncating<span class="w"> </span>the<span class="w"> </span>file<span class="w"> </span>first
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="w">    </span><span class="s1">&#39;x&#39;</span><span class="w">       </span>create<span class="w"> </span>a<span class="w"> </span>new<span class="w"> </span>file<span class="w"> </span>and<span class="w"> </span>open<span class="w"> </span>it<span class="w"> </span><span class="k">for</span><span class="w"> </span>writing
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="w">    </span><span class="s1">&#39;a&#39;</span><span class="w">       </span>open<span class="w"> </span><span class="k">for</span><span class="w"> </span>writing,<span class="w"> </span>appending<span class="w"> </span>to<span class="w"> </span>the<span class="w"> </span>end<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>file<span class="w"> </span><span class="k">if</span><span class="w"> </span>it<span class="w"> </span>exists
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="w">    </span><span class="s1">&#39;b&#39;</span><span class="w">       </span>binary<span class="w"> </span>mode
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="w">    </span><span class="s1">&#39;t&#39;</span><span class="w">       </span>text<span class="w"> </span>mode<span class="w"> </span><span class="o">(</span>default<span class="o">)</span>
+</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="w">    </span><span class="s1">&#39;+&#39;</span><span class="w">       </span>open<span class="w"> </span>a<span class="w"> </span>disk<span class="w"> </span>file<span class="w"> </span><span class="k">for</span><span class="w"> </span>updating<span class="w"> </span><span class="o">(</span>reading<span class="w"> </span>and<span class="w"> </span>writing<span class="o">)</span>
+</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="w">    </span><span class="s1">&#39;U&#39;</span><span class="w">       </span>universal<span class="w"> </span>newline<span class="w"> </span>mode<span class="w"> </span><span class="o">(</span>deprecated<span class="o">)</span>
+</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="w">    </span><span class="o">=========</span><span class="w"> </span><span class="o">===============================================================</span>
+</span></code></pre></div>
+<p>Normally, files are opened in text mode(<code>'t'</code>), that means, you read and write strings from and to the file, which are encoded in a specific encoding.</p>
+<blockquote>
+<p>默认 mode='r'，即以只读、文本模式(<code>rt</code>)打开文件。</p>
+</blockquote>
+<p>In text mode (the default, or when 't' is included in the mode argument), the contents of the file are returned as <code>str</code>, the bytes having been first <em>decoded</em> using a platform-dependent encoding or using the specified encoding if given.</p>
+<p>Appending a <code>'b'</code> to the mode opens the file in binary mode. Binary mode data is read and written as bytes objects. You can not specify encoding when opening file in binary mode.</p>
+<p>Files opened in binary mode (including 'b' in the mode argument) return contents as <a href="https://docs.python.org/3/library/stdtypes.html#bytes">bytes</a> objects without any decoding.</p>
+<hr />
+<p><code>mode</code>: Must have exactly one of create/read/write/append mode and at most one plus</p>
+<ol>
+<li>选定打开模式：<code>t</code> 和 <code>b</code> 二选一，以文本形式或二进制形式打开文件。</li>
+<li>选定读写模式：<code>r</code>、<code>x</code>、<code>w</code>、<code>a</code> 四选一，分别是 read/create/write/append，第一种为读，后三种都是写。</li>
+<li>最多可以包含一个加号：<code>+</code>。</li>
+</ol>
+<p>模式位组合示例：</p>
+<ol>
+<li>如果打开的是 <code>tr</code>/<code>br</code>，如果还想写，可以追加一个加号：<code>tr+</code>/<code>br+</code>。</li>
+<li>如果打开的是 <code>ta</code>/<code>ba</code>，如果还想读，可以追加一个加号：<code>ta+</code>/<code>ba+</code>。</li>
+</ol>
+<h3 id="with_open">with open<a class="headerlink" href="#with_open" title="Permanent link">#</a></h3>
+<p>以下代码片段演示了打开文件（open），然后进行处理（manipulation），最后关闭文件（close）的流程。</p>
+<p>无论 try 主处理模块中有无异常抛出，最终都会进入 finally 释放文件句柄资源。</p>
+<div class="language-Python highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">debug</span> <span class="o">=</span> <span class="kc">True</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="n">file</span> <span class="o">=</span> <span class="kc">None</span> <span class="c1"># io.TextIOWrapper</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="n">shebang</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="k">try</span><span class="p">:</span>
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>    <span class="n">file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;nosuchfile.md&#39;</span><span class="p">)</span>
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>    <span class="n">shebang</span> <span class="o">=</span> <span class="n">file</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>    <span class="nb">print</span><span class="p">(</span><span class="n">shebang</span><span class="p">)</span>
+</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>    <span class="c1"># manipulation</span>
+</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">exc</span><span class="p">:</span>
+</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a>    <span class="k">if</span> <span class="p">(</span><span class="n">debug</span><span class="p">):</span>
+</span><span id="__span-4-12"><a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a>        <span class="nb">print</span><span class="p">(</span><span class="n">exc</span><span class="p">)</span>
+</span><span id="__span-4-13"><a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a>        <span class="nb">print</span><span class="p">(</span><span class="n">shebang</span><span class="p">)</span>
+</span><span id="__span-4-14"><a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a>    <span class="k">else</span><span class="p">:</span>
+</span><span id="__span-4-15"><a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a>        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;A exception flew by!&#39;</span><span class="p">)</span>
+</span><span id="__span-4-16"><a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a>        <span class="k">raise</span>
+</span><span id="__span-4-17"><a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a><span class="k">finally</span><span class="p">:</span>
+</span><span id="__span-4-18"><a id="__codelineno-4-18" name="__codelineno-4-18" href="#__codelineno-4-18"></a>    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;finally&#39;</span><span class="p">)</span>
+</span><span id="__span-4-19"><a id="__codelineno-4-19" name="__codelineno-4-19" href="#__codelineno-4-19"></a>    <span class="k">if</span> <span class="n">file</span><span class="p">:</span>
+</span><span id="__span-4-20"><a id="__codelineno-4-20" name="__codelineno-4-20" href="#__codelineno-4-20"></a>        <span class="n">file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</span></code></pre></div>
+<p>It is good practice to use the <code>with</code> keyword when dealing with file objects.<br />
+The advantage is that the file is properly <strong>closed</strong> after its suite finishes, even if an exception is raised at some point.<br />
+Using with is also much shorter than writing equivalent <code>try-finally</code> blocks.  </p>
+<p>建议采用 with...as 语句：<code>with open('test.py') as fp:</code>。</p>
+<p>因为 with 区块销毁时会自动执行清理动作，从而无需显式调用 close。<br />
+即使读写文件中途遇到异常，也能安全回收文件资源。<br />
+另外，相比 try-finally 区块，可以简化代码。</p>
+<p>If you’re not using the <code>with</code> keyword, then you should call f.<code>close</code>() to close the file and immediately free up any system resources used by it.</p>
+<p>Warning Calling f.<code>write</code>() without using the <code>with</code> keyword or calling f.<code>close</code>() might result in the arguments of f.<code>write</code>() not being completely written to the disk, even if the program exits successfully.</p>
+<h3 id="ospath">os.path<a class="headerlink" href="#ospath" title="Permanent link">#</a></h3>
+<p>参考 <a href="../3-sysos/">sysos</a>，对于给定路径字符串，在尝试调用 open 之前，可调用 os.path 先行判断文件的存在性和相关属性。</p>
+<ol>
+<li>判断给定字符串是否为目录：os.path.isdir(path)</li>
+<li>判断给定字符串是否为文件：os.path.isfile(path)</li>
+<li>判断给定字符串（目录或文件）是否存在：os.path.exists(path)</li>
+<li>获取路径目录和文件部分：os.path.dirname, os.path.basename</li>
+<li>分离或组合路径字符串：os.path.split(drive, ext)，os.path.join</li>
+</ol>
+<h2 id="class_hierarchy">Class hierarchy<a class="headerlink" href="#class_hierarchy" title="Permanent link">#</a></h2>
+<p>可以 import io，然后执行 <code>help(io)</code> 一览 io 模块，涉及到的类如下：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>&gt;&gt;&gt;<span class="w"> </span>help<span class="o">(</span>io<span class="o">)</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>CLASSES
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">    </span>_io._BufferedIOBase<span class="o">(</span>_io._IOBase<span class="o">)</span>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="w">        </span>_io.BufferedRWPair
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="w">        </span>_io.BufferedRandom
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="w">        </span>_io.BufferedReader
+</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="w">        </span>_io.BufferedWriter
+</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="w">        </span>_io.BytesIO
+</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="w">        </span>BufferedIOBase<span class="o">(</span>_io._BufferedIOBase,<span class="w"> </span>IOBase<span class="o">)</span>
+</span><span id="__span-5-11"><a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a><span class="w">    </span>_io._IOBase<span class="o">(</span>builtins.object<span class="o">)</span>
+</span><span id="__span-5-12"><a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a><span class="w">        </span>IOBase
+</span><span id="__span-5-13"><a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a><span class="w">            </span>BufferedIOBase<span class="o">(</span>_io._BufferedIOBase,<span class="w"> </span>IOBase<span class="o">)</span>
+</span><span id="__span-5-14"><a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a><span class="w">            </span>RawIOBase<span class="o">(</span>_io._RawIOBase,<span class="w"> </span>IOBase<span class="o">)</span>
+</span><span id="__span-5-15"><a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a><span class="w">            </span>TextIOBase<span class="o">(</span>_io._TextIOBase,<span class="w"> </span>IOBase<span class="o">)</span>
+</span><span id="__span-5-16"><a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a><span class="w">    </span>_io._RawIOBase<span class="o">(</span>_io._IOBase<span class="o">)</span>
+</span><span id="__span-5-17"><a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a><span class="w">        </span>_io.FileIO
+</span><span id="__span-5-18"><a id="__codelineno-5-18" name="__codelineno-5-18" href="#__codelineno-5-18"></a><span class="w">        </span>RawIOBase<span class="o">(</span>_io._RawIOBase,<span class="w"> </span>IOBase<span class="o">)</span>
+</span><span id="__span-5-19"><a id="__codelineno-5-19" name="__codelineno-5-19" href="#__codelineno-5-19"></a><span class="w">    </span>_io._TextIOBase<span class="o">(</span>_io._IOBase<span class="o">)</span>
+</span><span id="__span-5-20"><a id="__codelineno-5-20" name="__codelineno-5-20" href="#__codelineno-5-20"></a><span class="w">        </span>_io.StringIO
+</span><span id="__span-5-21"><a id="__codelineno-5-21" name="__codelineno-5-21" href="#__codelineno-5-21"></a><span class="w">        </span>_io.TextIOWrapper
+</span><span id="__span-5-22"><a id="__codelineno-5-22" name="__codelineno-5-22" href="#__codelineno-5-22"></a><span class="w">        </span>TextIOBase<span class="o">(</span>_io._TextIOBase,<span class="w"> </span>IOBase<span class="o">)</span>
+</span></code></pre></div>
+<p>在控制台 REPL 中，借助帮助 tab 自动补全，可以看看 io 模块向外提供的接口：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>&gt;&gt;&gt;<span class="w"> </span>help<span class="o">(</span>io.
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>io.abc<span class="w">                        </span>io.DEFAULT_BUFFER_SIZE<span class="w">        </span>io.SEEK_END
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>io.BlockingIOError<span class="o">(</span><span class="w">           </span>io.FileIO<span class="o">(</span><span class="w">                    </span>io.SEEK_SET
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>io.BufferedIOBase<span class="o">()</span><span class="w">           </span>io.IncrementalNewlineDecoder<span class="o">(</span><span class="w"> </span>io.StringIO<span class="o">(</span>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>io.BufferedRandom<span class="o">(</span><span class="w">            </span>io.IOBase<span class="o">()</span><span class="w">                   </span>io.text_encoding<span class="o">(</span>
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>io.BufferedReader<span class="o">(</span><span class="w">            </span>io.open<span class="o">(</span><span class="w">                      </span>io.TextIOBase<span class="o">()</span>
+</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>io.BufferedRWPair<span class="o">(</span><span class="w">            </span>io.open_code<span class="o">(</span><span class="w">                 </span>io.TextIOWrapper<span class="o">(</span>
+</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>io.BufferedWriter<span class="o">(</span><span class="w">            </span>io.RawIOBase<span class="o">()</span><span class="w">                </span>io.UnsupportedOperation<span class="o">(</span>
+</span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>io.BytesIO<span class="o">(</span><span class="w">                   </span>io.SEEK_CUR
+</span></code></pre></div>
+<p>IOBase 为基类，BufferedIOBase 为二进制处理基类，TextIOBase 为文本处理基类。</p>
+<ol>
+<li>二进制相关处理：BufferedReader/BufferedWriter 和 BytesIO</li>
+<li>文件处理相关：FileIO</li>
+<li>文本相关处理：TextIOWrapper</li>
+</ol>
+<ul>
+<li><a href="https://docs.python.org/3/library/io.html?highlight=textiowrapper#io.IOBase">io.IOBase</a>  </li>
+<li><a href="https://docs.python.org/3/library/io.html?highlight=textiowrapper#io.TextIOBase">io.TextIOBase</a>  </li>
+<li><a href="https://docs.python.org/3/library/io.html?highlight=textiowrapper#io.TextIOWrapper">io.TextIOWrapper</a>  </li>
+</ul>
+<p>执行 <code>type(fp)</code> 可以查看打开的文件句柄是 TextIOWrapper 对象：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>&gt;&gt;&gt;<span class="w"> </span>type<span class="o">(</span>fp<span class="o">)</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>&lt;class<span class="w"> </span><span class="s1">&#39;_io.TextIOWrapper&#39;</span>&gt;
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>&gt;&gt;&gt;<span class="w"> </span>isinstance<span class="o">(</span>f,<span class="w"> </span>io.TextIOWrapper<span class="o">)</span>
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>True
+</span></code></pre></div>
+<p>执行 <code>help(io.TextIOWrapper)</code> 查看文件句柄对象相关帮助。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>Method<span class="w"> </span>resolution<span class="w"> </span>order:
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="w"> </span><span class="p">|</span><span class="w">      </span>TextIOWrapper
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="w"> </span><span class="p">|</span><span class="w">      </span>_TextIOBase
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="w"> </span><span class="p">|</span><span class="w">      </span>_IOBase
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="w"> </span><span class="p">|</span><span class="w">      </span>builtins.object
+</span></code></pre></div>
+<p>借助帮助 tab 自动补全，查看 TextIOWrapper 类向外提供的接口：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>&gt;&gt;&gt;<span class="w"> </span>help<span class="o">(</span>io.TextIOWrapper.
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>io.TextIOWrapper.buffer<span class="w">         </span>io.TextIOWrapper.line_buffering<span class="w"> </span>io.TextIOWrapper.seek<span class="o">(</span>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>io.TextIOWrapper.close<span class="o">(</span><span class="w">         </span>io.TextIOWrapper.mro<span class="o">()</span><span class="w">          </span>io.TextIOWrapper.seekable<span class="o">(</span>
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>io.TextIOWrapper.closed<span class="w">         </span>io.TextIOWrapper.name<span class="w">           </span>io.TextIOWrapper.tell<span class="o">(</span>
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>io.TextIOWrapper.detach<span class="o">(</span><span class="w">        </span>io.TextIOWrapper.newlines<span class="w">       </span>io.TextIOWrapper.truncate<span class="o">(</span>
+</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>io.TextIOWrapper.encoding<span class="w">       </span>io.TextIOWrapper.read<span class="o">(</span><span class="w">          </span>io.TextIOWrapper.writable<span class="o">(</span>
+</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a>io.TextIOWrapper.errors<span class="w">         </span>io.TextIOWrapper.readable<span class="o">(</span><span class="w">      </span>io.TextIOWrapper.write<span class="o">(</span>
+</span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a>io.TextIOWrapper.fileno<span class="o">(</span><span class="w">        </span>io.TextIOWrapper.readline<span class="o">(</span><span class="w">      </span>io.TextIOWrapper.write_through
+</span><span id="__span-9-9"><a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a>io.TextIOWrapper.flush<span class="o">(</span><span class="w">         </span>io.TextIOWrapper.readlines<span class="o">(</span><span class="w">     </span>io.TextIOWrapper.writelines<span class="o">(</span>
+</span><span id="__span-9-10"><a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a>io.TextIOWrapper.isatty<span class="o">(</span><span class="w">        </span>io.TextIOWrapper.reconfigure<span class="o">(</span>
+</span></code></pre></div>
+<p>对于打开的文件句柄（TextIOWrapper 对象实例），可查看相关属性：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>&gt;&gt;&gt;<span class="w"> </span>fp.name
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="s1">&#39;test.py&#39;</span>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>&gt;&gt;&gt;<span class="w"> </span>fp.mode
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="s1">&#39;r&#39;</span>
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>&gt;&gt;&gt;<span class="w"> </span>fp.encoding
+</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a><span class="s1">&#39;UTF-8&#39;</span>
+</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a>&gt;&gt;&gt;<span class="w"> </span>fp.newlines
+</span><span id="__span-10-8"><a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a><span class="s1">&#39;\n&#39;</span>
+</span></code></pre></div>
+<p>下面主要针对文本文件处理（TextIOWrapper）展开讨论，后面涉及到网络编程时再看看二进制处理。</p>
+<h2 id="read">read<a class="headerlink" href="#read" title="Permanent link">#</a></h2>
+<p>要使用文本文件中的信息，首先需要将信息读取到内存中。为此，你可以一次性读取文件的全部内容，也可以以每次一行的方式逐步读取。</p>
+<p><code>io.TextIOWrapper</code> 中读文件相关的接口如下：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>&gt;&gt;&gt;<span class="w"> </span>help<span class="o">(</span>io.TextIOWrapper<span class="o">)</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>read<span class="o">(</span>self,<span class="w"> </span><span class="nv">size</span><span class="o">=</span>-1,<span class="w"> </span>/<span class="o">)</span>
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="w"> </span><span class="p">|</span><span class="w">      </span>Read<span class="w"> </span>at<span class="w"> </span>most<span class="w"> </span>size<span class="w"> </span>characters<span class="w"> </span>from<span class="w"> </span>stream.
+</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="w"> </span><span class="p">|</span>
+</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a><span class="w"> </span><span class="p">|</span><span class="w">      </span>Read<span class="w"> </span>from<span class="w"> </span>underlying<span class="w"> </span>buffer<span class="w"> </span><span class="k">until</span><span class="w"> </span>we<span class="w"> </span>have<span class="w"> </span>size<span class="w"> </span>characters<span class="w"> </span>or<span class="w"> </span>we<span class="w"> </span>hit<span class="w"> </span>EOF.
+</span><span id="__span-11-7"><a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a><span class="w"> </span><span class="p">|</span><span class="w">      </span>If<span class="w"> </span>size<span class="w"> </span>is<span class="w"> </span>negative<span class="w"> </span>or<span class="w"> </span>omitted,<span class="w"> </span><span class="nb">read</span><span class="w"> </span><span class="k">until</span><span class="w"> </span>EOF.
+</span><span id="__span-11-8"><a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a><span class="w"> </span><span class="p">|</span>
+</span><span id="__span-11-9"><a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>readline<span class="o">(</span>self,<span class="w"> </span><span class="nv">size</span><span class="o">=</span>-1,<span class="w"> </span>/<span class="o">)</span>
+</span><span id="__span-11-10"><a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a><span class="w"> </span><span class="p">|</span><span class="w">      </span>Read<span class="w"> </span><span class="k">until</span><span class="w"> </span>newline<span class="w"> </span>or<span class="w"> </span>EOF.
+</span><span id="__span-11-11"><a id="__codelineno-11-11" name="__codelineno-11-11" href="#__codelineno-11-11"></a><span class="w"> </span><span class="p">|</span>
+</span><span id="__span-11-12"><a id="__codelineno-11-12" name="__codelineno-11-12" href="#__codelineno-11-12"></a><span class="w"> </span><span class="p">|</span><span class="w">      </span>Return<span class="w"> </span>an<span class="w"> </span>empty<span class="w"> </span>string<span class="w"> </span><span class="k">if</span><span class="w"> </span>EOF<span class="w"> </span>is<span class="w"> </span>hit<span class="w"> </span>immediately.
+</span><span id="__span-11-13"><a id="__codelineno-11-13" name="__codelineno-11-13" href="#__codelineno-11-13"></a><span class="w"> </span><span class="p">|</span><span class="w">      </span>If<span class="w"> </span>size<span class="w"> </span>is<span class="w"> </span>specified,<span class="w"> </span>at<span class="w"> </span>most<span class="w"> </span>size<span class="w"> </span>characters<span class="w"> </span>will<span class="w"> </span>be<span class="w"> </span>read.
+</span><span id="__span-11-14"><a id="__codelineno-11-14" name="__codelineno-11-14" href="#__codelineno-11-14"></a>
+</span><span id="__span-11-15"><a id="__codelineno-11-15" name="__codelineno-11-15" href="#__codelineno-11-15"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>----------------------------------------------------------------------
+</span><span id="__span-11-16"><a id="__codelineno-11-16" name="__codelineno-11-16" href="#__codelineno-11-16"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>Methods<span class="w"> </span>inherited<span class="w"> </span>from<span class="w"> </span>_IOBase:
+</span><span id="__span-11-17"><a id="__codelineno-11-17" name="__codelineno-11-17" href="#__codelineno-11-17"></a><span class="w"> </span><span class="p">|</span>
+</span><span id="__span-11-18"><a id="__codelineno-11-18" name="__codelineno-11-18" href="#__codelineno-11-18"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>readlines<span class="o">(</span>self,<span class="w"> </span><span class="nv">hint</span><span class="o">=</span>-1,<span class="w"> </span>/<span class="o">)</span>
+</span><span id="__span-11-19"><a id="__codelineno-11-19" name="__codelineno-11-19" href="#__codelineno-11-19"></a><span class="w"> </span><span class="p">|</span><span class="w">      </span>Return<span class="w"> </span>a<span class="w"> </span>list<span class="w"> </span>of<span class="w"> </span>lines<span class="w"> </span>from<span class="w"> </span>the<span class="w"> </span>stream.
+</span><span id="__span-11-20"><a id="__codelineno-11-20" name="__codelineno-11-20" href="#__codelineno-11-20"></a><span class="w"> </span><span class="p">|</span>
+</span><span id="__span-11-21"><a id="__codelineno-11-21" name="__codelineno-11-21" href="#__codelineno-11-21"></a><span class="w"> </span><span class="p">|</span><span class="w">      </span>hint<span class="w"> </span>can<span class="w"> </span>be<span class="w"> </span>specified<span class="w"> </span>to<span class="w"> </span>control<span class="w"> </span>the<span class="w"> </span>number<span class="w"> </span>of<span class="w"> </span>lines<span class="w"> </span>read:<span class="w"> </span>no<span class="w"> </span>more
+</span><span id="__span-11-22"><a id="__codelineno-11-22" name="__codelineno-11-22" href="#__codelineno-11-22"></a><span class="w"> </span><span class="p">|</span><span class="w">      </span>lines<span class="w"> </span>will<span class="w"> </span>be<span class="w"> </span><span class="nb">read</span><span class="w"> </span><span class="k">if</span><span class="w"> </span>the<span class="w"> </span>total<span class="w"> </span>size<span class="w"> </span><span class="o">(</span><span class="k">in</span><span class="w"> </span>bytes/characters<span class="o">)</span><span class="w"> </span>of<span class="w"> </span>all
+</span><span id="__span-11-23"><a id="__codelineno-11-23" name="__codelineno-11-23" href="#__codelineno-11-23"></a><span class="w"> </span><span class="p">|</span><span class="w">      </span>lines<span class="w"> </span>so<span class="w"> </span>far<span class="w"> </span>exceeds<span class="w"> </span>hint.
+</span></code></pre></div>
+<h3 id="read_1">read<a class="headerlink" href="#read_1" title="Permanent link">#</a></h3>
+<p><code>read</code> 方法从文件最多（或者说尽量尝试）读取 size 指定数量的字符（字节）。<br />
+如果未指定size，则默认读至末尾（EOF, End Of File），即读取整个文件的内容。</p>
+<blockquote>
+<p>对于文本模式，read 读取返回 <code>str</code> 对象（包含换行符的 repr）。</p>
+</blockquote>
+<p>Python读文件和C语言中的文件操作类似，内部有游标（指针）跟踪读取位置，以支持迭代读取。<br />
+具体来说，每调用一次读操作（read, readline, readlines），都从当前游标开始读取。<br />
+每读取一个字节，游标后移一位，本次读完后，游标后移至下一个待读取点。</p>
+<p>可以调用继承自 IOBase 的 <code>tell</code> 方法，获取当前游标位置（初始为0）。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>&gt;&gt;&gt;<span class="w"> </span>help<span class="o">(</span>io.TextIOWrapper<span class="o">)</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>----------------------------------------------------------------------
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>Methods<span class="w"> </span>inherited<span class="w"> </span>from<span class="w"> </span>_IOBase:
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="w"> </span><span class="p">|</span>
+</span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>tell<span class="o">(</span>self,<span class="w"> </span>/<span class="o">)</span>
+</span><span id="__span-12-7"><a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a><span class="w"> </span><span class="p">|</span><span class="w">      </span>Return<span class="w"> </span>the<span class="w"> </span>stream<span class="w"> </span>position<span class="w"> </span>as<span class="w"> </span>an<span class="w"> </span>opaque<span class="w"> </span>number.
+</span><span id="__span-12-8"><a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a><span class="w"> </span><span class="p">|</span>
+</span><span id="__span-12-9"><a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a><span class="w"> </span><span class="p">|</span><span class="w">      </span>The<span class="w"> </span><span class="k">return</span><span class="w"> </span>value<span class="w"> </span>of<span class="w"> </span>tell<span class="o">()</span><span class="w"> </span>can<span class="w"> </span>be<span class="w"> </span>given<span class="w"> </span>as<span class="w"> </span>input<span class="w"> </span>to<span class="w"> </span>seek<span class="o">()</span>,<span class="w"> </span>to<span class="w"> </span>restore<span class="w"> </span>a
+</span><span id="__span-12-10"><a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a><span class="w"> </span><span class="p">|</span><span class="w">      </span>previous<span class="w"> </span>stream<span class="w"> </span>position.
+</span></code></pre></div>
+<p>以下 read 和 tell 配合演示了读取文本文件一行的过程和机制：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="c1"># 打开文件</span>
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>&gt;&gt;&gt;<span class="w"> </span><span class="nv">f</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>open<span class="o">(</span><span class="s1">&#39;test.py&#39;</span><span class="o">)</span>
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="c1"># 初始游标位置为0：下一个待读初始位置</span>
+</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>&gt;&gt;&gt;<span class="w"> </span>f.tell<span class="o">()</span>
+</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a><span class="m">0</span>
+</span><span id="__span-13-6"><a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a><span class="c1"># 读取2个字符（字节），游标自动后移2位</span>
+</span><span id="__span-13-7"><a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a>&gt;&gt;&gt;<span class="w"> </span>f.read<span class="o">(</span><span class="m">2</span><span class="o">)</span>
+</span><span id="__span-13-8"><a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a><span class="s1">&#39;#!&#39;</span>
+</span><span id="__span-13-9"><a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a>&gt;&gt;&gt;<span class="w"> </span>f.tell<span class="o">()</span>
+</span><span id="__span-13-10"><a id="__codelineno-13-10" name="__codelineno-13-10" href="#__codelineno-13-10"></a><span class="m">2</span>
+</span><span id="__span-13-11"><a id="__codelineno-13-11" name="__codelineno-13-11" href="#__codelineno-13-11"></a><span class="c1"># 继续读取12个字符（字节），游标自动后移12位</span>
+</span><span id="__span-13-12"><a id="__codelineno-13-12" name="__codelineno-13-12" href="#__codelineno-13-12"></a>&gt;&gt;&gt;<span class="w"> </span>f.read<span class="o">(</span><span class="m">12</span><span class="o">)</span>
+</span><span id="__span-13-13"><a id="__codelineno-13-13" name="__codelineno-13-13" href="#__codelineno-13-13"></a><span class="s1">&#39;/usr/bin/env&#39;</span>
+</span><span id="__span-13-14"><a id="__codelineno-13-14" name="__codelineno-13-14" href="#__codelineno-13-14"></a>&gt;&gt;&gt;<span class="w"> </span>f.tell<span class="o">()</span>
+</span><span id="__span-13-15"><a id="__codelineno-13-15" name="__codelineno-13-15" href="#__codelineno-13-15"></a><span class="m">14</span>
+</span><span id="__span-13-16"><a id="__codelineno-13-16" name="__codelineno-13-16" href="#__codelineno-13-16"></a><span class="c1"># 继续读取1个字符（字节），游标自动后移1位</span>
+</span><span id="__span-13-17"><a id="__codelineno-13-17" name="__codelineno-13-17" href="#__codelineno-13-17"></a>&gt;&gt;&gt;<span class="w"> </span>f.read<span class="o">(</span><span class="m">1</span><span class="o">)</span>
+</span><span id="__span-13-18"><a id="__codelineno-13-18" name="__codelineno-13-18" href="#__codelineno-13-18"></a><span class="s1">&#39; &#39;</span>
+</span><span id="__span-13-19"><a id="__codelineno-13-19" name="__codelineno-13-19" href="#__codelineno-13-19"></a><span class="c1"># 继续读取7个字符（字节），游标自动后移7位</span>
+</span><span id="__span-13-20"><a id="__codelineno-13-20" name="__codelineno-13-20" href="#__codelineno-13-20"></a>&gt;&gt;&gt;<span class="w"> </span>f.read<span class="o">(</span><span class="m">7</span><span class="o">)</span>
+</span><span id="__span-13-21"><a id="__codelineno-13-21" name="__codelineno-13-21" href="#__codelineno-13-21"></a><span class="s1">&#39;python3&#39;</span>
+</span><span id="__span-13-22"><a id="__codelineno-13-22" name="__codelineno-13-22" href="#__codelineno-13-22"></a>&gt;&gt;&gt;<span class="w"> </span>f.tell<span class="o">()</span>
+</span><span id="__span-13-23"><a id="__codelineno-13-23" name="__codelineno-13-23" href="#__codelineno-13-23"></a><span class="m">22</span>
+</span><span id="__span-13-24"><a id="__codelineno-13-24" name="__codelineno-13-24" href="#__codelineno-13-24"></a><span class="c1"># 继续读取1个字符（字节），为第一行结尾换行符；游标自动后移1位至下一行开头</span>
+</span><span id="__span-13-25"><a id="__codelineno-13-25" name="__codelineno-13-25" href="#__codelineno-13-25"></a>&gt;&gt;&gt;<span class="w"> </span>f.read<span class="o">(</span><span class="m">1</span><span class="o">)</span>
+</span><span id="__span-13-26"><a id="__codelineno-13-26" name="__codelineno-13-26" href="#__codelineno-13-26"></a><span class="s1">&#39;\n&#39;</span>
+</span><span id="__span-13-27"><a id="__codelineno-13-27" name="__codelineno-13-27" href="#__codelineno-13-27"></a><span class="c1"># 继续读取1个字符（字节），为第二行第一个字符</span>
+</span><span id="__span-13-28"><a id="__codelineno-13-28" name="__codelineno-13-28" href="#__codelineno-13-28"></a>&gt;&gt;&gt;<span class="w"> </span>f.read<span class="o">(</span><span class="m">1</span><span class="o">)</span>
+</span><span id="__span-13-29"><a id="__codelineno-13-29" name="__codelineno-13-29" href="#__codelineno-13-29"></a><span class="s1">&#39;#&#39;</span>
+</span></code></pre></div>
+<h3 id="seek">seek<a class="headerlink" href="#seek" title="Permanent link">#</a></h3>
+<p>如果中途想改变读取的游标位置，可以考虑调用 seek 方法。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>&gt;&gt;&gt;<span class="w"> </span>help<span class="o">(</span>io.TextIOWrapper<span class="o">)</span>
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>----------------------------------------------------------------------
+</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>Methods<span class="w"> </span>inherited<span class="w"> </span>from<span class="w"> </span>_IOBase:
+</span><span id="__span-14-5"><a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a><span class="w"> </span><span class="p">|</span>
+</span><span id="__span-14-6"><a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>seek<span class="o">(</span>self,<span class="w"> </span>cookie,<span class="w"> </span><span class="nv">whence</span><span class="o">=</span><span class="m">0</span>,<span class="w"> </span>/<span class="o">)</span>
+</span><span id="__span-14-7"><a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a><span class="w"> </span><span class="p">|</span><span class="w">      </span>Set<span class="w"> </span>the<span class="w"> </span>stream<span class="w"> </span>position,<span class="w"> </span>and<span class="w"> </span><span class="k">return</span><span class="w"> </span>the<span class="w"> </span>new<span class="w"> </span>stream<span class="w"> </span>position.
+</span><span id="__span-14-8"><a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a><span class="w"> </span><span class="p">|</span>
+</span><span id="__span-14-9"><a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a><span class="w"> </span><span class="p">|</span><span class="w">        </span>cookie
+</span><span id="__span-14-10"><a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a><span class="w"> </span><span class="p">|</span><span class="w">          </span>Zero<span class="w"> </span>or<span class="w"> </span>an<span class="w"> </span>opaque<span class="w"> </span>number<span class="w"> </span>returned<span class="w"> </span>by<span class="w"> </span>tell<span class="o">()</span>.
+</span><span id="__span-14-11"><a id="__codelineno-14-11" name="__codelineno-14-11" href="#__codelineno-14-11"></a><span class="w"> </span><span class="p">|</span><span class="w">        </span>whence
+</span><span id="__span-14-12"><a id="__codelineno-14-12" name="__codelineno-14-12" href="#__codelineno-14-12"></a><span class="w"> </span><span class="p">|</span><span class="w">          </span>The<span class="w"> </span>relative<span class="w"> </span>position<span class="w"> </span>to<span class="w"> </span>seek<span class="w"> </span>from.
+</span><span id="__span-14-13"><a id="__codelineno-14-13" name="__codelineno-14-13" href="#__codelineno-14-13"></a><span class="w"> </span><span class="p">|</span>
+</span><span id="__span-14-14"><a id="__codelineno-14-14" name="__codelineno-14-14" href="#__codelineno-14-14"></a><span class="w"> </span><span class="p">|</span><span class="w">      </span>Four<span class="w"> </span>operations<span class="w"> </span>are<span class="w"> </span>supported,<span class="w"> </span>given<span class="w"> </span>by<span class="w"> </span>the<span class="w"> </span>following<span class="w"> </span>argument
+</span><span id="__span-14-15"><a id="__codelineno-14-15" name="__codelineno-14-15" href="#__codelineno-14-15"></a><span class="w"> </span><span class="p">|</span><span class="w">      </span>combinations:
+</span><span id="__span-14-16"><a id="__codelineno-14-16" name="__codelineno-14-16" href="#__codelineno-14-16"></a><span class="w"> </span><span class="p">|</span>
+</span><span id="__span-14-17"><a id="__codelineno-14-17" name="__codelineno-14-17" href="#__codelineno-14-17"></a><span class="w"> </span><span class="p">|</span><span class="w">      </span>-<span class="w"> </span>seek<span class="o">(</span><span class="m">0</span>,<span class="w"> </span>SEEK_SET<span class="o">)</span>:<span class="w"> </span>Rewind<span class="w"> </span>to<span class="w"> </span>the<span class="w"> </span>start<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>stream.
+</span><span id="__span-14-18"><a id="__codelineno-14-18" name="__codelineno-14-18" href="#__codelineno-14-18"></a><span class="w"> </span><span class="p">|</span><span class="w">      </span>-<span class="w"> </span>seek<span class="o">(</span>cookie,<span class="w"> </span>SEEK_SET<span class="o">)</span>:<span class="w"> </span>Restore<span class="w"> </span>a<span class="w"> </span>previous<span class="w"> </span>position<span class="p">;</span>
+</span><span id="__span-14-19"><a id="__codelineno-14-19" name="__codelineno-14-19" href="#__codelineno-14-19"></a><span class="w"> </span><span class="p">|</span><span class="w">        </span><span class="s1">&#39;cookie&#39;</span><span class="w"> </span>must<span class="w"> </span>be<span class="w"> </span>a<span class="w"> </span>number<span class="w"> </span>returned<span class="w"> </span>by<span class="w"> </span>tell<span class="o">()</span>.
+</span><span id="__span-14-20"><a id="__codelineno-14-20" name="__codelineno-14-20" href="#__codelineno-14-20"></a><span class="w"> </span><span class="p">|</span><span class="w">      </span>-<span class="w"> </span>seek<span class="o">(</span><span class="m">0</span>,<span class="w"> </span>SEEK_END<span class="o">)</span>:<span class="w"> </span>Fast-forward<span class="w"> </span>to<span class="w"> </span>the<span class="w"> </span>end<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>stream.
+</span><span id="__span-14-21"><a id="__codelineno-14-21" name="__codelineno-14-21" href="#__codelineno-14-21"></a><span class="w"> </span><span class="p">|</span><span class="w">      </span>-<span class="w"> </span>seek<span class="o">(</span><span class="m">0</span>,<span class="w"> </span>SEEK_CUR<span class="o">)</span>:<span class="w"> </span>Leave<span class="w"> </span>the<span class="w"> </span>current<span class="w"> </span>stream<span class="w"> </span>position<span class="w"> </span>unchanged.
+</span><span id="__span-14-22"><a id="__codelineno-14-22" name="__codelineno-14-22" href="#__codelineno-14-22"></a><span class="w"> </span><span class="p">|</span>
+</span><span id="__span-14-23"><a id="__codelineno-14-23" name="__codelineno-14-23" href="#__codelineno-14-23"></a><span class="w"> </span><span class="p">|</span><span class="w">      </span>Any<span class="w"> </span>other<span class="w"> </span>argument<span class="w"> </span>combinations<span class="w"> </span>are<span class="w"> </span>invalid,
+</span><span id="__span-14-24"><a id="__codelineno-14-24" name="__codelineno-14-24" href="#__codelineno-14-24"></a><span class="w"> </span><span class="p">|</span><span class="w">      </span>and<span class="w"> </span>may<span class="w"> </span>raise<span class="w"> </span>exceptions.
+</span><span id="__span-14-25"><a id="__codelineno-14-25" name="__codelineno-14-25" href="#__codelineno-14-25"></a><span class="w"> </span><span class="p">|</span>
+</span><span id="__span-14-26"><a id="__codelineno-14-26" name="__codelineno-14-26" href="#__codelineno-14-26"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>tell<span class="o">(</span>self,<span class="w"> </span>/<span class="o">)</span>
+</span><span id="__span-14-27"><a id="__codelineno-14-27" name="__codelineno-14-27" href="#__codelineno-14-27"></a><span class="w"> </span><span class="p">|</span><span class="w">      </span>Return<span class="w"> </span>the<span class="w"> </span>stream<span class="w"> </span>position<span class="w"> </span>as<span class="w"> </span>an<span class="w"> </span>opaque<span class="w"> </span>number.
+</span><span id="__span-14-28"><a id="__codelineno-14-28" name="__codelineno-14-28" href="#__codelineno-14-28"></a><span class="w"> </span><span class="p">|</span>
+</span><span id="__span-14-29"><a id="__codelineno-14-29" name="__codelineno-14-29" href="#__codelineno-14-29"></a><span class="w"> </span><span class="p">|</span><span class="w">      </span>The<span class="w"> </span><span class="k">return</span><span class="w"> </span>value<span class="w"> </span>of<span class="w"> </span>tell<span class="o">()</span><span class="w"> </span>can<span class="w"> </span>be<span class="w"> </span>given<span class="w"> </span>as<span class="w"> </span>input<span class="w"> </span>to<span class="w"> </span>seek<span class="o">()</span>,<span class="w"> </span>to<span class="w"> </span>restore<span class="w"> </span>a
+</span><span id="__span-14-30"><a id="__codelineno-14-30" name="__codelineno-14-30" href="#__codelineno-14-30"></a><span class="w"> </span><span class="p">|</span><span class="w">      </span>previous<span class="w"> </span>stream<span class="w"> </span>position.
+</span></code></pre></div>
+<p>其中 whence 参数可以取以下枚举值，代表文件开头、当前位置和结尾。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>&gt;&gt;&gt;<span class="w"> </span>io.SEEK_SET
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="m">0</span>
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>&gt;&gt;&gt;<span class="w"> </span>io.SEEK_CUR
+</span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a><span class="m">1</span>
+</span><span id="__span-15-5"><a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a>&gt;&gt;&gt;<span class="w"> </span>io.SEEK_END
+</span><span id="__span-15-6"><a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a><span class="m">2</span>
+</span></code></pre></div>
+<ol>
+<li>seek(0, io.SEEK_CUR)：保持当前游标。</li>
+<li>
+<p>seek(0, io.SEEK_END)：定位到文件结尾。</p>
+<ul>
+<li>这两种情况下，cookie 必须为零，否则报错：io.UnsupportedOperation: can't do nonzero cur-relative seeks。</li>
+</ul>
+</li>
+<li>
+<p>seek(0, io.SEEK_SET)：定位到文件开头，可指定 cookie 偏移量。</p>
+<ul>
+<li>f.seek(2, io.SEEK_SET)：返回新的位置，同 f.tell() = 2。</li>
+</ul>
+</li>
+</ol>
+<h3 id="readline">readline<a class="headerlink" href="#readline" title="Permanent link">#</a></h3>
+<p>readline: Read until newline or EOF.</p>
+<p>TextIOWrapper 的 <code>readline</code> 方法基于 newlines（默认为 <code>\n</code>）作为断行分割符。</p>
+<blockquote>
+<p>对于文本模式，readline 读取返回<code>str</code> 对象，它是一行内容的字符串表示（包含换行符的 repr）。</p>
+</blockquote>
+<p>readline 如果指定了 size，读取当前行的 size 个字符（字节）；否则，读取当前行（包括行尾部换行符），游标移动到下一行开头。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>&gt;&gt;&gt;<span class="w"> </span>f.seek<span class="o">(</span><span class="m">0</span>,<span class="w"> </span>io.SEEK_SET<span class="o">)</span>
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a><span class="m">0</span>
+</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a><span class="c1"># 读取当前行（3个字符）</span>
+</span><span id="__span-16-4"><a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a>&gt;&gt;&gt;<span class="w"> </span>f.readline<span class="o">(</span><span class="m">3</span><span class="o">)</span>
+</span><span id="__span-16-5"><a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a><span class="s1">&#39;#!/&#39;</span>
+</span><span id="__span-16-6"><a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a><span class="c1"># 继续读完该行</span>
+</span><span id="__span-16-7"><a id="__codelineno-16-7" name="__codelineno-16-7" href="#__codelineno-16-7"></a>&gt;&gt;&gt;<span class="w"> </span>f.readline<span class="o">()</span>
+</span><span id="__span-16-8"><a id="__codelineno-16-8" name="__codelineno-16-8" href="#__codelineno-16-8"></a><span class="s1">&#39;usr/bin/env python3\n&#39;</span>
+</span><span id="__span-16-9"><a id="__codelineno-16-9" name="__codelineno-16-9" href="#__codelineno-16-9"></a><span class="c1"># 继续读取第二行第一个字符</span>
+</span><span id="__span-16-10"><a id="__codelineno-16-10" name="__codelineno-16-10" href="#__codelineno-16-10"></a>&gt;&gt;&gt;<span class="w"> </span>f.read<span class="o">(</span><span class="m">1</span><span class="o">)</span>
+</span><span id="__span-16-11"><a id="__codelineno-16-11" name="__codelineno-16-11" href="#__codelineno-16-11"></a><span class="s1">&#39;#&#39;</span>
+</span><span id="__span-16-12"><a id="__codelineno-16-12" name="__codelineno-16-12" href="#__codelineno-16-12"></a><span class="c1"># 继续读完第二行</span>
+</span><span id="__span-16-13"><a id="__codelineno-16-13" name="__codelineno-16-13" href="#__codelineno-16-13"></a>&gt;&gt;&gt;<span class="w"> </span>f.readline<span class="o">()</span>
+</span><span id="__span-16-14"><a id="__codelineno-16-14" name="__codelineno-16-14" href="#__codelineno-16-14"></a><span class="s1">&#39; -*- coding: UTF-8 -*-\n&#39;</span>
+</span><span id="__span-16-15"><a id="__codelineno-16-15" name="__codelineno-16-15" href="#__codelineno-16-15"></a><span class="c1"># 继续读第三行（空行）</span>
+</span><span id="__span-16-16"><a id="__codelineno-16-16" name="__codelineno-16-16" href="#__codelineno-16-16"></a>&gt;&gt;&gt;<span class="w"> </span>f.readline<span class="o">()</span>
+</span><span id="__span-16-17"><a id="__codelineno-16-17" name="__codelineno-16-17" href="#__codelineno-16-17"></a><span class="s1">&#39;\n&#39;</span>
+</span></code></pre></div>
+<p>实际项目应用中，可在循环中调用 readline，实现逐行读取处理。<br />
+readline 带 size 相当于 read 读取指定字节，不带 size 读取到行尾。<br />
+这种特性适合解析基于行分割的 HTTP 报文：read 读取报文头，readline 读至结尾。</p>
+<p>以下演示了循环调用 readline 逐行读取文本内容。</p>
+<ol>
+<li>由于事先不知道总行数，故用 while True 循环，待读到 EOF 返回 None 时 break 结束循环。</li>
+<li>由于每一行末尾自带换行符，print 默认会在末尾（end）插入换行符，因此应重设 end 为空，或对行内容执行 rstrip。</li>
+</ol>
+<div class="language-Python highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>    <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+</span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>        <span class="n">line</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+</span><span id="__span-17-4"><a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a>        <span class="k">if</span> <span class="ow">not</span> <span class="n">line</span><span class="p">:</span>
+</span><span id="__span-17-5"><a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a>            <span class="k">break</span>
+</span><span id="__span-17-6"><a id="__codelineno-17-6" name="__codelineno-17-6" href="#__codelineno-17-6"></a>        <span class="nb">print</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="c1"># print(line.rstrip())</span>
+</span><span id="__span-17-7"><a id="__codelineno-17-7" name="__codelineno-17-7" href="#__codelineno-17-7"></a>        <span class="c1"># manipulation</span>
+</span></code></pre></div>
+<p>以下代码 for 循环读取6行文本，打印每一行，给每一行冠以行号：</p>
+<div class="language-Python highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="kn">import</span> <span class="nn">string</span>
+</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>
+</span><span id="__span-18-3"><a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a><span class="n">MAX_LINES</span> <span class="o">=</span> <span class="mi">6</span>
+</span><span id="__span-18-4"><a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a>
+</span><span id="__span-18-5"><a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;test.py&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+</span><span id="__span-18-6"><a id="__codelineno-18-6" name="__codelineno-18-6" href="#__codelineno-18-6"></a>    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">MAX_LINES</span><span class="p">):</span>
+</span><span id="__span-18-7"><a id="__codelineno-18-7" name="__codelineno-18-7" href="#__codelineno-18-7"></a>        <span class="n">line</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+</span><span id="__span-18-8"><a id="__codelineno-18-8" name="__codelineno-18-8" href="#__codelineno-18-8"></a>        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">whitespace</span><span class="p">))):</span>
+</span><span id="__span-18-9"><a id="__codelineno-18-9" name="__codelineno-18-9" href="#__codelineno-18-9"></a>            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s1">:&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+</span><span id="__span-18-10"><a id="__codelineno-18-10" name="__codelineno-18-10" href="#__codelineno-18-10"></a>            <span class="c1"># manipulation</span>
+</span><span id="__span-18-11"><a id="__codelineno-18-11" name="__codelineno-18-11" href="#__codelineno-18-11"></a>        <span class="k">else</span><span class="p">:</span>
+</span><span id="__span-18-12"><a id="__codelineno-18-12" name="__codelineno-18-12" href="#__codelineno-18-12"></a>            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s1">: &#39;</span><span class="p">)</span>
+</span></code></pre></div>
+<h3 id="readlines">readlines<a class="headerlink" href="#readlines" title="Permanent link">#</a></h3>
+<p>TextIOWrapper 的 <code>readline</code> 方法和继承自基类 IOBase 的 <code>readlines</code> 方法都是基于 newlines（默认为 <code>\n</code>）作为断行分割符。</p>
+<ul>
+<li>readline: Read until newline or EOF.</li>
+<li>readlines: Return a list of lines from the stream.</li>
+</ul>
+<p>如果不指定参数（hint默认为-1 或 0），readlines 将逐行读取全文，返回字符串列表（list<str>）。<br />
+相当于循环调用 readline 再 append 到列表。</p>
+<p>下面重点看看，当 hint 非零时，即在指定字符限定下，该方法是如何尽可能多地读取行。</p>
+<p>假设 test.py 文件前四行的字符数如下（每行包含结尾换行符）：</p>
+<ol>
+<li>23</li>
+<li>24</li>
+<li>1</li>
+<li>11</li>
+</ol>
+<p>以下代码片段演示了 readlines 的参数 hint 的限制逻辑。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="c1"># hint少于1行，至少读取一行</span>
+</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a>&gt;&gt;&gt;<span class="w"> </span>f.seek<span class="o">(</span><span class="m">0</span>,<span class="w"> </span>io.SEEK_SET<span class="o">)</span>
+</span><span id="__span-19-3"><a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a><span class="m">0</span>
+</span><span id="__span-19-4"><a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a>&gt;&gt;&gt;<span class="w"> </span>f.readlines<span class="o">(</span><span class="m">3</span><span class="o">)</span>
+</span><span id="__span-19-5"><a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a><span class="o">[</span><span class="s1">&#39;#!/usr/bin/env python3\n&#39;</span><span class="o">]</span>
+</span><span id="__span-19-6"><a id="__codelineno-19-6" name="__codelineno-19-6" href="#__codelineno-19-6"></a><span class="c1"># hint刚好1行（不包括换行符），读取一行</span>
+</span><span id="__span-19-7"><a id="__codelineno-19-7" name="__codelineno-19-7" href="#__codelineno-19-7"></a>&gt;&gt;&gt;<span class="w"> </span>f.seek<span class="o">(</span><span class="m">0</span>,<span class="w"> </span>io.SEEK_SET<span class="o">)</span>
+</span><span id="__span-19-8"><a id="__codelineno-19-8" name="__codelineno-19-8" href="#__codelineno-19-8"></a><span class="m">0</span>
+</span><span id="__span-19-9"><a id="__codelineno-19-9" name="__codelineno-19-9" href="#__codelineno-19-9"></a>&gt;&gt;&gt;<span class="w"> </span>f.readlines<span class="o">(</span><span class="m">22</span><span class="o">)</span>
+</span><span id="__span-19-10"><a id="__codelineno-19-10" name="__codelineno-19-10" href="#__codelineno-19-10"></a><span class="o">[</span><span class="s1">&#39;#!/usr/bin/env python3\n&#39;</span><span class="o">]</span>
+</span><span id="__span-19-11"><a id="__codelineno-19-11" name="__codelineno-19-11" href="#__codelineno-19-11"></a><span class="c1"># hint刚好1行（包括换行符），读取一行，再读一行</span>
+</span><span id="__span-19-12"><a id="__codelineno-19-12" name="__codelineno-19-12" href="#__codelineno-19-12"></a>&gt;&gt;&gt;<span class="w"> </span>f.seek<span class="o">(</span><span class="m">0</span>,<span class="w"> </span>io.SEEK_SET<span class="o">)</span>
+</span><span id="__span-19-13"><a id="__codelineno-19-13" name="__codelineno-19-13" href="#__codelineno-19-13"></a><span class="m">0</span>
+</span><span id="__span-19-14"><a id="__codelineno-19-14" name="__codelineno-19-14" href="#__codelineno-19-14"></a>&gt;&gt;&gt;<span class="w"> </span>f.readlines<span class="o">(</span><span class="m">23</span><span class="o">)</span>
+</span><span id="__span-19-15"><a id="__codelineno-19-15" name="__codelineno-19-15" href="#__codelineno-19-15"></a><span class="o">[</span><span class="s1">&#39;#!/usr/bin/env python3\n&#39;</span>,<span class="w"> </span><span class="s1">&#39;# -*- coding: UTF-8 -*-\n&#39;</span><span class="o">]</span>
+</span><span id="__span-19-16"><a id="__codelineno-19-16" name="__codelineno-19-16" href="#__codelineno-19-16"></a><span class="c1"># hint刚好2行（不包括第二行的换行符），读取两行</span>
+</span><span id="__span-19-17"><a id="__codelineno-19-17" name="__codelineno-19-17" href="#__codelineno-19-17"></a>&gt;&gt;&gt;<span class="w"> </span>f.seek<span class="o">(</span><span class="m">0</span>,<span class="w"> </span>io.SEEK_SET<span class="o">)</span>
+</span><span id="__span-19-18"><a id="__codelineno-19-18" name="__codelineno-19-18" href="#__codelineno-19-18"></a><span class="m">0</span>
+</span><span id="__span-19-19"><a id="__codelineno-19-19" name="__codelineno-19-19" href="#__codelineno-19-19"></a>&gt;&gt;&gt;<span class="w"> </span>f.readlines<span class="o">(</span><span class="m">46</span><span class="o">)</span>
+</span><span id="__span-19-20"><a id="__codelineno-19-20" name="__codelineno-19-20" href="#__codelineno-19-20"></a><span class="o">[</span><span class="s1">&#39;#!/usr/bin/env python3\n&#39;</span>,<span class="w"> </span><span class="s1">&#39;# -*- coding: UTF-8 -*-\n&#39;</span><span class="o">]</span>
+</span><span id="__span-19-21"><a id="__codelineno-19-21" name="__codelineno-19-21" href="#__codelineno-19-21"></a><span class="c1"># hint刚好2行（包括第二行的换行符），读取两行，再读一行</span>
+</span><span id="__span-19-22"><a id="__codelineno-19-22" name="__codelineno-19-22" href="#__codelineno-19-22"></a>&gt;&gt;&gt;<span class="w"> </span>f.seek<span class="o">(</span><span class="m">0</span>,<span class="w"> </span>io.SEEK_SET<span class="o">)</span>
+</span><span id="__span-19-23"><a id="__codelineno-19-23" name="__codelineno-19-23" href="#__codelineno-19-23"></a><span class="m">0</span>
+</span><span id="__span-19-24"><a id="__codelineno-19-24" name="__codelineno-19-24" href="#__codelineno-19-24"></a>&gt;&gt;&gt;<span class="w"> </span>f.readlines<span class="o">(</span><span class="m">47</span><span class="o">)</span>
+</span><span id="__span-19-25"><a id="__codelineno-19-25" name="__codelineno-19-25" href="#__codelineno-19-25"></a><span class="o">[</span><span class="s1">&#39;#!/usr/bin/env python3\n&#39;</span>,<span class="w"> </span><span class="s1">&#39;# -*- coding: UTF-8 -*-\n&#39;</span>,<span class="w"> </span><span class="s1">&#39;\n&#39;</span><span class="o">]</span>
+</span></code></pre></div>
+<p>大部分情况下，调用 readlines 不传参数，读取整个文件内容。<br />
+当然也可直接将支持序列化的文件对象传给 list 直接构造，实现同等效果。</p>
+<p>If you want to read all the lines of a file in a list you can also use <code>list(f)</code> or <code>f.readlines()</code>.</p>
+<p>读取所有行到字符串列表（list of str），然后可以 for 循环逐行进行文本分析。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>&gt;&gt;&gt;<span class="w"> </span><span class="nv">lines</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>fp.readlines<span class="o">()</span><span class="w"> </span><span class="c1"># list(fp)</span>
+</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>&gt;&gt;&gt;<span class="w"> </span>type<span class="o">(</span>lines<span class="o">)</span>
+</span><span id="__span-20-3"><a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a>&lt;class<span class="w"> </span><span class="s1">&#39;list&#39;</span>&gt;
+</span><span id="__span-20-4"><a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a>&gt;&gt;&gt;<span class="w"> </span>type<span class="o">(</span>lines<span class="o">[</span><span class="m">0</span><span class="o">])</span>
+</span><span id="__span-20-5"><a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a>&lt;class<span class="w"> </span><span class="s1">&#39;str&#39;</span>&gt;
+</span></code></pre></div>
+<p><code>len(lines)</code> 计算文件包含的行数（包含空行）：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>&gt;&gt;&gt;<span class="w"> </span>len<span class="o">(</span>lines<span class="o">)</span>
+</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a><span class="m">294637</span>
+</span></code></pre></div>
+<p>对于小文件，一次性读取到内存，空间换取I/O时间，可以在内存中便捷存取。<br />
+但是，对于大文件，一次性读取到内存，比较消耗内存空间。<br />
+根据情况可折衷选择循环 readline，边读边处理。</p>
+<h3 id="for_loop">for loop<a class="headerlink" href="#for_loop" title="Permanent link">#</a></h3>
+<p>IOBase (and its subclasses) supports the iterator protocol, meaning that an IOBase object can be iterated over yielding the lines in a stream.</p>
+<p>For reading lines from a file, you can <strong>loop</strong> over the file object. This is memory efficient, fast, and leads to simple code.</p>
+<p>文件实际上是可迭代的，这意味着可在for循环中直接使用它们来迭代行。<br />
+建议采用 for...in （或 while readline）循环迭代逐行读取分析。</p>
+<p>以下代码读取文件前10行并逐行分析（打印）：</p>
+<div class="language-Python highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;test.py&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+</span><span id="__span-22-2"><a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a>    <span class="n">line_count</span> <span class="o">=</span> <span class="mi">10</span>
+</span><span id="__span-22-3"><a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a>    <span class="n">line_index</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span id="__span-22-4"><a id="__codelineno-22-4" name="__codelineno-22-4" href="#__codelineno-22-4"></a>    <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">fp</span><span class="p">:</span>
+</span><span id="__span-22-5"><a id="__codelineno-22-5" name="__codelineno-22-5" href="#__codelineno-22-5"></a>        <span class="k">if</span> <span class="p">(</span><span class="n">line_index</span> <span class="o">&lt;</span> <span class="n">line_count</span><span class="p">):</span>
+</span><span id="__span-22-6"><a id="__codelineno-22-6" name="__codelineno-22-6" href="#__codelineno-22-6"></a>            <span class="nb">print</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="c1">#print(line)</span>
+</span><span id="__span-22-7"><a id="__codelineno-22-7" name="__codelineno-22-7" href="#__codelineno-22-7"></a>            <span class="n">line_index</span> <span class="o">=</span> <span class="n">line_index</span><span class="o">+</span><span class="mi">1</span>
+</span><span id="__span-22-8"><a id="__codelineno-22-8" name="__codelineno-22-8" href="#__codelineno-22-8"></a>        <span class="k">else</span><span class="p">:</span>
+</span><span id="__span-22-9"><a id="__codelineno-22-9" name="__codelineno-22-9" href="#__codelineno-22-9"></a>            <span class="k">break</span>
+</span></code></pre></div>
+<p>文件指针已经偏移到了第11行，如果再继续执行一遍以上代码，将会打印第11-20行。<br />
+如果想重新打印前10行，则需要执行 <code>fp.seek(0, io.SEEK_SET)</code> 将游标移到开始位置。  </p>
+<p>也可以先将文件对象传给 enumerate，再 for 循环迭代，析解行索引和内容。</p>
+<div class="language-Python highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="kn">import</span> <span class="nn">string</span>
+</span><span id="__span-23-2"><a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a>
+</span><span id="__span-23-3"><a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;test.py&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+</span><span id="__span-23-4"><a id="__codelineno-23-4" name="__codelineno-23-4" href="#__codelineno-23-4"></a>    <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">line</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">f</span><span class="p">):</span>
+</span><span id="__span-23-5"><a id="__codelineno-23-5" name="__codelineno-23-5" href="#__codelineno-23-5"></a>        <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">line</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="nb">tuple</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">whitespace</span><span class="p">))):</span>
+</span><span id="__span-23-6"><a id="__codelineno-23-6" name="__codelineno-23-6" href="#__codelineno-23-6"></a>            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">index</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s1">:&#39;</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+</span><span id="__span-23-7"><a id="__codelineno-23-7" name="__codelineno-23-7" href="#__codelineno-23-7"></a>        <span class="k">else</span><span class="p">:</span>
+</span><span id="__span-23-8"><a id="__codelineno-23-8" name="__codelineno-23-8" href="#__codelineno-23-8"></a>            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">index</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s1">: &#39;</span><span class="p">)</span>
+</span></code></pre></div>
+<h2 id="write">write<a class="headerlink" href="#write" title="Permanent link">#</a></h2>
+<p>要想写文件，打开文件时，要支持写模式。</p>
+<p>第一种方式是，打开文件以读模式（<code>r</code>）打开，但是追加 <code>+</code> 支持写更新：<code>tr+</code>/<code>br+</code>。<br />
+第二种方式是，打开文件时，以写模式（<code>x</code>、<code>a</code>、<code>w</code>）打开。</p>
+<p>关于 open 以写模式打开 mode 标记的注意事项：</p>
+<ul>
+<li><code>x</code>: 如果指定路径的文件已经存在，会报错 FileExistsError: [Errno 17] File exists。</li>
+<li><code>a</code>: 打开已经存在的文件，将游标移到文件末尾（下一个可写的位置），以便 write 追加内容。</li>
+<li><code>w</code>: 打开已经存在的文件，并且清空文件（truncate first），千万要注意。</li>
+</ul>
+<p>如果是以写模式打开还想读，可以追加一个加号：<code>tx+</code>/<code>bx+</code>、<code>ta+</code>/<code>ba+</code>。</p>
+<p>与 <code>read</code> 方法相对应，TextIOWrapper 提供了 <code>write</code> 方法，支持写入字符串。<br />
+与 <code>readlines</code> 方法相对应，继承了基类 IOBase 的 <code>writelines</code> 方法支持写入多行（字符串列表：list<str>）。</p>
+<p><strong>注意</strong>：两个方法都需要自行在写入的字符串（text）末尾追加换行字符串（<code>\n</code>），否则多次write(lines)的内容会粘连在一起。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>&gt;&gt;&gt;<span class="w"> </span>help<span class="o">(</span>io.TextIOWrapper<span class="o">)</span>
+</span><span id="__span-24-2"><a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a>
+</span><span id="__span-24-3"><a id="__codelineno-24-3" name="__codelineno-24-3" href="#__codelineno-24-3"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>write<span class="o">(</span>self,<span class="w"> </span>text,<span class="w"> </span>/<span class="o">)</span>
+</span><span id="__span-24-4"><a id="__codelineno-24-4" name="__codelineno-24-4" href="#__codelineno-24-4"></a><span class="w"> </span><span class="p">|</span><span class="w">      </span>Write<span class="w"> </span>string<span class="w"> </span>to<span class="w"> </span>stream.
+</span><span id="__span-24-5"><a id="__codelineno-24-5" name="__codelineno-24-5" href="#__codelineno-24-5"></a><span class="w"> </span><span class="p">|</span><span class="w">      </span>Returns<span class="w"> </span>the<span class="w"> </span>number<span class="w"> </span>of<span class="w"> </span>characters<span class="w"> </span>written<span class="w"> </span><span class="o">(</span>which<span class="w"> </span>is<span class="w"> </span>always<span class="w"> </span>equal<span class="w"> </span>to
+</span><span id="__span-24-6"><a id="__codelineno-24-6" name="__codelineno-24-6" href="#__codelineno-24-6"></a><span class="w"> </span><span class="p">|</span><span class="w">      </span>the<span class="w"> </span>length<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>string<span class="o">)</span>.
+</span><span id="__span-24-7"><a id="__codelineno-24-7" name="__codelineno-24-7" href="#__codelineno-24-7"></a>
+</span><span id="__span-24-8"><a id="__codelineno-24-8" name="__codelineno-24-8" href="#__codelineno-24-8"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>----------------------------------------------------------------------
+</span><span id="__span-24-9"><a id="__codelineno-24-9" name="__codelineno-24-9" href="#__codelineno-24-9"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>Methods<span class="w"> </span>inherited<span class="w"> </span>from<span class="w"> </span>_IOBase:
+</span><span id="__span-24-10"><a id="__codelineno-24-10" name="__codelineno-24-10" href="#__codelineno-24-10"></a><span class="w"> </span><span class="p">|</span>
+</span><span id="__span-24-11"><a id="__codelineno-24-11" name="__codelineno-24-11" href="#__codelineno-24-11"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>writelines<span class="o">(</span>self,<span class="w"> </span>lines,<span class="w"> </span>/<span class="o">)</span>
+</span><span id="__span-24-12"><a id="__codelineno-24-12" name="__codelineno-24-12" href="#__codelineno-24-12"></a><span class="w"> </span><span class="p">|</span><span class="w">      </span>Write<span class="w"> </span>a<span class="w"> </span>list<span class="w"> </span>of<span class="w"> </span>lines<span class="w"> </span>to<span class="w"> </span>stream.
+</span><span id="__span-24-13"><a id="__codelineno-24-13" name="__codelineno-24-13" href="#__codelineno-24-13"></a><span class="w"> </span><span class="p">|</span>
+</span><span id="__span-24-14"><a id="__codelineno-24-14" name="__codelineno-24-14" href="#__codelineno-24-14"></a><span class="w"> </span><span class="p">|</span><span class="w">      </span>Line<span class="w"> </span>separators<span class="w"> </span>are<span class="w"> </span>not<span class="w"> </span>added,<span class="w"> </span>so<span class="w"> </span>it<span class="w"> </span>is<span class="w"> </span>usual<span class="w"> </span><span class="k">for</span><span class="w"> </span>each<span class="w"> </span>of<span class="w"> </span>the
+</span><span id="__span-24-15"><a id="__codelineno-24-15" name="__codelineno-24-15" href="#__codelineno-24-15"></a><span class="w"> </span><span class="p">|</span><span class="w">      </span>lines<span class="w"> </span>provided<span class="w"> </span>to<span class="w"> </span>have<span class="w"> </span>a<span class="w"> </span>line<span class="w"> </span>separator<span class="w"> </span>at<span class="w"> </span>the<span class="w"> </span>end.
+</span></code></pre></div>
+<p>以下调用 write 插入两个字符串，由于行尾没有换行符，多次写入文件追加为一行。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-25-1"><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a>&gt;&gt;&gt;<span class="w"> </span><span class="nv">f</span><span class="o">=</span>open<span class="o">(</span><span class="s1">&#39;test.log&#39;</span>,<span class="w"> </span><span class="s1">&#39;tr+&#39;</span><span class="o">)</span>
+</span><span id="__span-25-2"><a id="__codelineno-25-2" name="__codelineno-25-2" href="#__codelineno-25-2"></a>&gt;&gt;&gt;<span class="w"> </span>f.tell<span class="o">()</span>
+</span><span id="__span-25-3"><a id="__codelineno-25-3" name="__codelineno-25-3" href="#__codelineno-25-3"></a><span class="m">0</span>
+</span><span id="__span-25-4"><a id="__codelineno-25-4" name="__codelineno-25-4" href="#__codelineno-25-4"></a>&gt;&gt;&gt;<span class="w"> </span>f.write<span class="o">(</span><span class="s1">&#39;line 1&#39;</span><span class="o">)</span>
+</span><span id="__span-25-5"><a id="__codelineno-25-5" name="__codelineno-25-5" href="#__codelineno-25-5"></a><span class="m">6</span>
+</span><span id="__span-25-6"><a id="__codelineno-25-6" name="__codelineno-25-6" href="#__codelineno-25-6"></a>&gt;&gt;&gt;<span class="w"> </span>f.write<span class="o">(</span><span class="s1">&#39;line 2&#39;</span><span class="o">)</span>
+</span><span id="__span-25-7"><a id="__codelineno-25-7" name="__codelineno-25-7" href="#__codelineno-25-7"></a><span class="m">6</span>
+</span><span id="__span-25-8"><a id="__codelineno-25-8" name="__codelineno-25-8" href="#__codelineno-25-8"></a><span class="c1"># 游标在末尾，要想读取，需要复位</span>
+</span><span id="__span-25-9"><a id="__codelineno-25-9" name="__codelineno-25-9" href="#__codelineno-25-9"></a>&gt;&gt;&gt;<span class="w"> </span>f.readlines<span class="o">()</span>
+</span><span id="__span-25-10"><a id="__codelineno-25-10" name="__codelineno-25-10" href="#__codelineno-25-10"></a><span class="o">[]</span>
+</span><span id="__span-25-11"><a id="__codelineno-25-11" name="__codelineno-25-11" href="#__codelineno-25-11"></a>&gt;&gt;&gt;<span class="w"> </span>f.seek<span class="o">(</span><span class="m">0</span>,<span class="w"> </span>io.SEEK_SET<span class="o">)</span>
+</span><span id="__span-25-12"><a id="__codelineno-25-12" name="__codelineno-25-12" href="#__codelineno-25-12"></a><span class="m">0</span>
+</span><span id="__span-25-13"><a id="__codelineno-25-13" name="__codelineno-25-13" href="#__codelineno-25-13"></a>&gt;&gt;&gt;<span class="w"> </span>f.readlines<span class="o">()</span>
+</span><span id="__span-25-14"><a id="__codelineno-25-14" name="__codelineno-25-14" href="#__codelineno-25-14"></a><span class="o">[</span><span class="s1">&#39;line 1line 2&#39;</span><span class="o">]</span>
+</span></code></pre></div>
+<p><strong>注意</strong>：write 总是在当前游标处开始写入，如果中途将游标回拨，可能会覆写掉原来的数据！</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-26-1"><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a>&gt;&gt;&gt;<span class="w"> </span>f.seek<span class="o">(</span><span class="m">0</span>,<span class="w"> </span>io.SEEK_SET<span class="o">)</span>
+</span><span id="__span-26-2"><a id="__codelineno-26-2" name="__codelineno-26-2" href="#__codelineno-26-2"></a><span class="m">0</span>
+</span><span id="__span-26-3"><a id="__codelineno-26-3" name="__codelineno-26-3" href="#__codelineno-26-3"></a>&gt;&gt;&gt;<span class="w"> </span>f.write<span class="o">(</span><span class="s1">&#39;line 3&#39;</span><span class="o">)</span>
+</span><span id="__span-26-4"><a id="__codelineno-26-4" name="__codelineno-26-4" href="#__codelineno-26-4"></a><span class="m">6</span>
+</span><span id="__span-26-5"><a id="__codelineno-26-5" name="__codelineno-26-5" href="#__codelineno-26-5"></a>&gt;&gt;&gt;<span class="w"> </span>f.seek<span class="o">(</span><span class="m">0</span>,<span class="w"> </span>io.SEEK_SET<span class="o">)</span>
+</span><span id="__span-26-6"><a id="__codelineno-26-6" name="__codelineno-26-6" href="#__codelineno-26-6"></a><span class="m">0</span>
+</span><span id="__span-26-7"><a id="__codelineno-26-7" name="__codelineno-26-7" href="#__codelineno-26-7"></a>&gt;&gt;&gt;<span class="w"> </span>f.readlines<span class="o">()</span>
+</span><span id="__span-26-8"><a id="__codelineno-26-8" name="__codelineno-26-8" href="#__codelineno-26-8"></a><span class="o">[</span><span class="s1">&#39;line 3line 2&#39;</span><span class="o">]</span>
+</span></code></pre></div>
+<p>以下演示废弃 test.log 中的内容，然后重新写入带换行符的字符串行：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-27-1"><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a>&gt;&gt;&gt;<span class="w"> </span><span class="nv">f</span><span class="o">=</span>open<span class="o">(</span><span class="s1">&#39;test.log&#39;</span>,<span class="w"> </span><span class="s1">&#39;tw+&#39;</span><span class="o">)</span>
+</span><span id="__span-27-2"><a id="__codelineno-27-2" name="__codelineno-27-2" href="#__codelineno-27-2"></a>&gt;&gt;&gt;<span class="w"> </span>f.readlines<span class="o">()</span>
+</span><span id="__span-27-3"><a id="__codelineno-27-3" name="__codelineno-27-3" href="#__codelineno-27-3"></a><span class="o">[]</span>
+</span><span id="__span-27-4"><a id="__codelineno-27-4" name="__codelineno-27-4" href="#__codelineno-27-4"></a>&gt;&gt;&gt;<span class="w"> </span>f.write<span class="o">(</span><span class="s1">&#39;line 1\n&#39;</span><span class="o">)</span>
+</span><span id="__span-27-5"><a id="__codelineno-27-5" name="__codelineno-27-5" href="#__codelineno-27-5"></a><span class="m">7</span>
+</span><span id="__span-27-6"><a id="__codelineno-27-6" name="__codelineno-27-6" href="#__codelineno-27-6"></a>&gt;&gt;&gt;<span class="w"> </span>f.write<span class="o">(</span><span class="s1">&#39;line 2\n&#39;</span><span class="o">)</span>
+</span><span id="__span-27-7"><a id="__codelineno-27-7" name="__codelineno-27-7" href="#__codelineno-27-7"></a><span class="m">7</span>
+</span><span id="__span-27-8"><a id="__codelineno-27-8" name="__codelineno-27-8" href="#__codelineno-27-8"></a>&gt;&gt;&gt;<span class="w"> </span>f.seek<span class="o">(</span><span class="m">0</span>,<span class="w"> </span>io.SEEK_SET<span class="o">)</span>
+</span><span id="__span-27-9"><a id="__codelineno-27-9" name="__codelineno-27-9" href="#__codelineno-27-9"></a><span class="m">0</span>
+</span><span id="__span-27-10"><a id="__codelineno-27-10" name="__codelineno-27-10" href="#__codelineno-27-10"></a>&gt;&gt;&gt;<span class="w"> </span>f.readlines<span class="o">()</span>
+</span><span id="__span-27-11"><a id="__codelineno-27-11" name="__codelineno-27-11" href="#__codelineno-27-11"></a><span class="o">[</span><span class="s1">&#39;line 1\n&#39;</span>,<span class="w"> </span><span class="s1">&#39;line 2\n&#39;</span><span class="o">]</span>
+</span></code></pre></div>
+<p>下面演示 writelines 写入列表中的多行字符串：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-28-1"><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a>&gt;&gt;&gt;<span class="w"> </span><span class="nv">line34</span><span class="o">=[</span><span class="s1">&#39;line 3&#39;</span>,<span class="w"> </span><span class="s1">&#39;line 4&#39;</span><span class="o">]</span>
+</span><span id="__span-28-2"><a id="__codelineno-28-2" name="__codelineno-28-2" href="#__codelineno-28-2"></a>&gt;&gt;&gt;<span class="w"> </span>f.tell<span class="o">()</span>
+</span><span id="__span-28-3"><a id="__codelineno-28-3" name="__codelineno-28-3" href="#__codelineno-28-3"></a><span class="m">14</span>
+</span><span id="__span-28-4"><a id="__codelineno-28-4" name="__codelineno-28-4" href="#__codelineno-28-4"></a>&gt;&gt;&gt;<span class="w"> </span>f.writelines<span class="o">(</span>line34<span class="o">)</span>
+</span><span id="__span-28-5"><a id="__codelineno-28-5" name="__codelineno-28-5" href="#__codelineno-28-5"></a>&gt;&gt;&gt;<span class="w"> </span>f.seek<span class="o">(</span><span class="m">0</span>,<span class="w"> </span>io.SEEK_SET<span class="o">)</span>
+</span><span id="__span-28-6"><a id="__codelineno-28-6" name="__codelineno-28-6" href="#__codelineno-28-6"></a><span class="m">0</span>
+</span><span id="__span-28-7"><a id="__codelineno-28-7" name="__codelineno-28-7" href="#__codelineno-28-7"></a>&gt;&gt;&gt;<span class="w"> </span>f.readlines<span class="o">()</span>
+</span><span id="__span-28-8"><a id="__codelineno-28-8" name="__codelineno-28-8" href="#__codelineno-28-8"></a><span class="o">[</span><span class="s1">&#39;line 1\n&#39;</span>,<span class="w"> </span><span class="s1">&#39;line 2\n&#39;</span>,<span class="w"> </span><span class="s1">&#39;line 3line 4&#39;</span><span class="o">]</span>
+</span><span id="__span-28-9"><a id="__codelineno-28-9" name="__codelineno-28-9" href="#__codelineno-28-9"></a>
+</span><span id="__span-28-10"><a id="__codelineno-28-10" name="__codelineno-28-10" href="#__codelineno-28-10"></a>&gt;&gt;&gt;<span class="w"> </span><span class="nv">line56</span><span class="o">=[</span><span class="s1">&#39;line 5\n&#39;</span><span class="w"> </span><span class="s1">&#39;line 6\n&#39;</span><span class="o">]</span>
+</span><span id="__span-28-11"><a id="__codelineno-28-11" name="__codelineno-28-11" href="#__codelineno-28-11"></a>&gt;&gt;&gt;<span class="w"> </span>f.writelines<span class="o">(</span>line56<span class="o">)</span>
+</span><span id="__span-28-12"><a id="__codelineno-28-12" name="__codelineno-28-12" href="#__codelineno-28-12"></a>&gt;&gt;&gt;<span class="w"> </span>f.seek<span class="o">(</span><span class="m">0</span>,<span class="w"> </span>io.SEEK_SET<span class="o">)</span>
+</span><span id="__span-28-13"><a id="__codelineno-28-13" name="__codelineno-28-13" href="#__codelineno-28-13"></a><span class="m">0</span>
+</span><span id="__span-28-14"><a id="__codelineno-28-14" name="__codelineno-28-14" href="#__codelineno-28-14"></a>&gt;&gt;&gt;<span class="w"> </span>f.readlines<span class="o">()</span>
+</span><span id="__span-28-15"><a id="__codelineno-28-15" name="__codelineno-28-15" href="#__codelineno-28-15"></a><span class="o">[</span><span class="s1">&#39;line 1\n&#39;</span>,<span class="w"> </span><span class="s1">&#39;line 2\n&#39;</span>,<span class="w"> </span><span class="s1">&#39;line 3line 4line 5\n&#39;</span>,<span class="w"> </span><span class="s1">&#39;line 6\n&#39;</span><span class="o">]</span>
+</span></code></pre></div>
+<h2 id="codecs">codecs<a class="headerlink" href="#codecs" title="Permanent link">#</a></h2>
+<h3 id="bom">BOM<a class="headerlink" href="#bom" title="Permanent link">#</a></h3>
+<p>可以用 hexdump 查看 UTF-8 with BOM（byte-order mark）开头的3个字节是 <code>0xEF 0xBB 0xBF</code>。</p>
+<p><a href="https://docs.python.org/3/reference/lexical_analysis.html#encoding-declarations">Encoding declarations</a>:</p>
+<p>If no encoding declaration is found, the default encoding is UTF-8. In addition, if the first bytes of the file are the UTF-8 byte-order mark (<code>b'\xef\xbb\xbf'</code>), the declared file encoding is UTF-8 (this is supported, among others, by Microsoft’s <strong>notepad</strong>).</p>
+<p><a href="https://stackoverflow.com/questions/13590749/reading-unicode-file-data-with-bom-chars-in-python">Reading Unicode file data with BOM chars in Python</a>  </p>
+<p>Standard UTF-8 without BOM:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-29-1"><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a>&gt;&gt;&gt; b&#39;hello&#39;.decode(&#39;utf-8&#39;)
+</span><span id="__span-29-2"><a id="__codelineno-29-2" name="__codelineno-29-2" href="#__codelineno-29-2"></a>&#39;hello&#39;
+</span><span id="__span-29-3"><a id="__codelineno-29-3" name="__codelineno-29-3" href="#__codelineno-29-3"></a>&gt;&gt;&gt; b&#39;hello&#39;.decode(&#39;utf-8-sig&#39;)
+</span><span id="__span-29-4"><a id="__codelineno-29-4" name="__codelineno-29-4" href="#__codelineno-29-4"></a>&#39;hello&#39;
+</span></code></pre></div>
+<p>BOM encoded UTF-8:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-30-1"><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a>&gt;&gt;&gt; b&#39;\xef\xbb\xbfhello&#39;.decode(&#39;utf-8&#39;)
+</span><span id="__span-30-2"><a id="__codelineno-30-2" name="__codelineno-30-2" href="#__codelineno-30-2"></a>&#39;\ufeffhello&#39;
+</span><span id="__span-30-3"><a id="__codelineno-30-3" name="__codelineno-30-3" href="#__codelineno-30-3"></a>&gt;&gt;&gt; b&#39;\xef\xbb\xbfhello&#39;.decode(&#39;utf-8-sig&#39;)
+</span><span id="__span-30-4"><a id="__codelineno-30-4" name="__codelineno-30-4" href="#__codelineno-30-4"></a>&#39;hello&#39;
+</span></code></pre></div>
+<p>自动检测文件编码：</p>
+<div class="language-Python highlight"><pre><span></span><code><span id="__span-31-1"><a id="__codelineno-31-1" name="__codelineno-31-1" href="#__codelineno-31-1"></a><span class="kn">import</span> <span class="nn">codecs</span>
+</span><span id="__span-31-2"><a id="__codelineno-31-2" name="__codelineno-31-2" href="#__codelineno-31-2"></a>
+</span><span id="__span-31-3"><a id="__codelineno-31-3" name="__codelineno-31-3" href="#__codelineno-31-3"></a><span class="k">def</span> <span class="nf">detect_by_bom</span><span class="p">(</span><span class="n">path</span><span class="p">,</span><span class="n">default</span><span class="p">):</span>
+</span><span id="__span-31-4"><a id="__codelineno-31-4" name="__codelineno-31-4" href="#__codelineno-31-4"></a>    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+</span><span id="__span-31-5"><a id="__codelineno-31-5" name="__codelineno-31-5" href="#__codelineno-31-5"></a>        <span class="n">raw</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>    <span class="c1">#will read less if the file is smaller</span>
+</span><span id="__span-31-6"><a id="__codelineno-31-6" name="__codelineno-31-6" href="#__codelineno-31-6"></a>    <span class="k">for</span> <span class="n">enc</span><span class="p">,</span><span class="n">boms</span> <span class="ow">in</span> \
+</span><span id="__span-31-7"><a id="__codelineno-31-7" name="__codelineno-31-7" href="#__codelineno-31-7"></a>            <span class="p">(</span><span class="s1">&#39;utf-8-sig&#39;</span><span class="p">,(</span><span class="n">codecs</span><span class="o">.</span><span class="n">BOM_UTF8</span><span class="p">,)),</span>\
+</span><span id="__span-31-8"><a id="__codelineno-31-8" name="__codelineno-31-8" href="#__codelineno-31-8"></a>            <span class="p">(</span><span class="s1">&#39;utf-16&#39;</span><span class="p">,(</span><span class="n">codecs</span><span class="o">.</span><span class="n">BOM_UTF16_LE</span><span class="p">,</span><span class="n">codecs</span><span class="o">.</span><span class="n">BOM_UTF16_BE</span><span class="p">)),</span>\
+</span><span id="__span-31-9"><a id="__codelineno-31-9" name="__codelineno-31-9" href="#__codelineno-31-9"></a>            <span class="p">(</span><span class="s1">&#39;utf-32&#39;</span><span class="p">,(</span><span class="n">codecs</span><span class="o">.</span><span class="n">BOM_UTF32_LE</span><span class="p">,</span><span class="n">codecs</span><span class="o">.</span><span class="n">BOM_UTF32_BE</span><span class="p">)):</span>
+</span><span id="__span-31-10"><a id="__codelineno-31-10" name="__codelineno-31-10" href="#__codelineno-31-10"></a>        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">raw</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">bom</span><span class="p">)</span> <span class="k">for</span> <span class="n">bom</span> <span class="ow">in</span> <span class="n">boms</span><span class="p">):</span> <span class="k">return</span> <span class="n">enc</span>
+</span><span id="__span-31-11"><a id="__codelineno-31-11" name="__codelineno-31-11" href="#__codelineno-31-11"></a>    <span class="k">return</span> <span class="n">default</span>
+</span></code></pre></div>
+<p>codecs 打印 BOM 头：</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-32-1"><a id="__codelineno-32-1" name="__codelineno-32-1" href="#__codelineno-32-1"></a>&gt;&gt;&gt; codecs.BOM_UTF8
+</span><span id="__span-32-2"><a id="__codelineno-32-2" name="__codelineno-32-2" href="#__codelineno-32-2"></a>b&#39;\xef\xbb\xbf&#39;
+</span><span id="__span-32-3"><a id="__codelineno-32-3" name="__codelineno-32-3" href="#__codelineno-32-3"></a>&gt;&gt;&gt; codecs.BOM_UTF16_LE
+</span><span id="__span-32-4"><a id="__codelineno-32-4" name="__codelineno-32-4" href="#__codelineno-32-4"></a>b&#39;\xff\xfe&#39;
+</span><span id="__span-32-5"><a id="__codelineno-32-5" name="__codelineno-32-5" href="#__codelineno-32-5"></a>&gt;&gt;&gt; codecs.BOM_UTF16_BE
+</span><span id="__span-32-6"><a id="__codelineno-32-6" name="__codelineno-32-6" href="#__codelineno-32-6"></a>b&#39;\xfe\xff&#39;
+</span><span id="__span-32-7"><a id="__codelineno-32-7" name="__codelineno-32-7" href="#__codelineno-32-7"></a>&gt;&gt;&gt; codecs.BOM_UTF32_LE
+</span><span id="__span-32-8"><a id="__codelineno-32-8" name="__codelineno-32-8" href="#__codelineno-32-8"></a>b&#39;\xff\xfe\x00\x00&#39;
+</span><span id="__span-32-9"><a id="__codelineno-32-9" name="__codelineno-32-9" href="#__codelineno-32-9"></a>&gt;&gt;&gt; codecs.BOM_UTF32_BE
+</span><span id="__span-32-10"><a id="__codelineno-32-10" name="__codelineno-32-10" href="#__codelineno-32-10"></a>b&#39;\x00\x00\xfe\xff&#39;
+</span></code></pre></div>
+<hr />
+<p><a href="https://stackoverflow.com/questions/8898294/convert-utf-8-with-bom-to-utf-8-with-no-bom-in-python">Convert UTF-8 with BOM to UTF-8 with no BOM in Python</a>  </p>
+<p>Sublime Text: File - Save with Encoding</p>
+<div class="language-Python highlight"><pre><span></span><code><span id="__span-33-1"><a id="__codelineno-33-1" name="__codelineno-33-1" href="#__codelineno-33-1"></a><span class="kn">import</span> <span class="nn">os</span>
+</span><span id="__span-33-2"><a id="__codelineno-33-2" name="__codelineno-33-2" href="#__codelineno-33-2"></a>
+</span><span id="__span-33-3"><a id="__codelineno-33-3" name="__codelineno-33-3" href="#__codelineno-33-3"></a><span class="c1"># absfilepath1, add BOM</span>
+</span><span id="__span-33-4"><a id="__codelineno-33-4" name="__codelineno-33-4" href="#__codelineno-33-4"></a><span class="n">s1</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">absfilepath1</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</span><span id="__span-33-5"><a id="__codelineno-33-5" name="__codelineno-33-5" href="#__codelineno-33-5"></a><span class="p">(</span><span class="n">filepath1</span><span class="p">,</span> <span class="n">filename1</span><span class="p">)</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">absfilepath1</span><span class="p">)</span>
+</span><span id="__span-33-6"><a id="__codelineno-33-6" name="__codelineno-33-6" href="#__codelineno-33-6"></a><span class="p">(</span><span class="n">relfilename1</span><span class="p">,</span> <span class="n">fileext1</span><span class="p">)</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">filename1</span><span class="p">)</span>
+</span><span id="__span-33-7"><a id="__codelineno-33-7" name="__codelineno-33-7" href="#__codelineno-33-7"></a><span class="n">bom_filename</span> <span class="o">=</span> <span class="n">relfilename1</span><span class="o">+</span><span class="s1">&#39;_bom&#39;</span><span class="o">+</span><span class="n">fileext1</span>
+</span><span id="__span-33-8"><a id="__codelineno-33-8" name="__codelineno-33-8" href="#__codelineno-33-8"></a><span class="n">bom_filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">filepath1</span><span class="p">,</span> <span class="n">bom_filename</span><span class="p">)</span>
+</span><span id="__span-33-9"><a id="__codelineno-33-9" name="__codelineno-33-9" href="#__codelineno-33-9"></a><span class="nb">open</span><span class="p">(</span><span class="n">bom_filepath</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8-sig&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">s1</span><span class="p">)</span>
+</span><span id="__span-33-10"><a id="__codelineno-33-10" name="__codelineno-33-10" href="#__codelineno-33-10"></a>
+</span><span id="__span-33-11"><a id="__codelineno-33-11" name="__codelineno-33-11" href="#__codelineno-33-11"></a><span class="c1">#rewrite without BOM</span>
+</span><span id="__span-33-12"><a id="__codelineno-33-12" name="__codelineno-33-12" href="#__codelineno-33-12"></a><span class="n">s</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">bom_file</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8-sig&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</span><span id="__span-33-13"><a id="__codelineno-33-13" name="__codelineno-33-13" href="#__codelineno-33-13"></a><span class="nb">open</span><span class="p">(</span><span class="n">bom_file</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+</span><span id="__span-33-14"><a id="__codelineno-33-14" name="__codelineno-33-14" href="#__codelineno-33-14"></a>
+</span><span id="__span-33-15"><a id="__codelineno-33-15" name="__codelineno-33-15" href="#__codelineno-33-15"></a><span class="c1"># absfilepath2, remove BOM</span>
+</span><span id="__span-33-16"><a id="__codelineno-33-16" name="__codelineno-33-16" href="#__codelineno-33-16"></a><span class="n">s2</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">absfilepath2</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;r&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8-sig&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+</span><span id="__span-33-17"><a id="__codelineno-33-17" name="__codelineno-33-17" href="#__codelineno-33-17"></a><span class="p">(</span><span class="n">filepath2</span><span class="p">,</span> <span class="n">filename2</span><span class="p">)</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">absfilepath2</span><span class="p">)</span>
+</span><span id="__span-33-18"><a id="__codelineno-33-18" name="__codelineno-33-18" href="#__codelineno-33-18"></a><span class="p">(</span><span class="n">relfilename2</span><span class="p">,</span> <span class="n">fileext2</span><span class="p">)</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">filename2</span><span class="p">)</span>
+</span><span id="__span-33-19"><a id="__codelineno-33-19" name="__codelineno-33-19" href="#__codelineno-33-19"></a><span class="n">nobom_filename</span> <span class="o">=</span> <span class="n">relfilename2</span><span class="o">+</span><span class="s1">&#39;_nobom&#39;</span><span class="o">+</span><span class="n">fileext2</span>
+</span><span id="__span-33-20"><a id="__codelineno-33-20" name="__codelineno-33-20" href="#__codelineno-33-20"></a><span class="n">nobom_filepath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">filepath2</span><span class="p">,</span> <span class="n">nobom_filename</span><span class="p">)</span>
+</span><span id="__span-33-21"><a id="__codelineno-33-21" name="__codelineno-33-21" href="#__codelineno-33-21"></a><span class="nb">open</span><span class="p">(</span><span class="n">nobom_filepath</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">s2</span><span class="p">)</span>
+</span></code></pre></div>
+<h3 id="unicodedecodeerror">UnicodeDecodeError<a class="headerlink" href="#unicodedecodeerror" title="Permanent link">#</a></h3>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-34-1"><a id="__codelineno-34-1" name="__codelineno-34-1" href="#__codelineno-34-1"></a>&gt;&gt;&gt; fp1 = open(&#39;2019-09-23-06.log&#39;)
+</span><span id="__span-34-2"><a id="__codelineno-34-2" name="__codelineno-34-2" href="#__codelineno-34-2"></a>&gt;&gt;&gt; lines1 = fp1.readlines()
+</span><span id="__span-34-3"><a id="__codelineno-34-3" name="__codelineno-34-3" href="#__codelineno-34-3"></a>Traceback (most recent call last):
+</span><span id="__span-34-4"><a id="__codelineno-34-4" name="__codelineno-34-4" href="#__codelineno-34-4"></a>  File &quot;&lt;stdin&gt;&quot;, line 1, in &lt;module&gt;
+</span><span id="__span-34-5"><a id="__codelineno-34-5" name="__codelineno-34-5" href="#__codelineno-34-5"></a>  File &quot;/usr/local/Cellar/python/3.7.4_1/Frameworks/Python.framework/Versions/3.7/lib/python3.7/codecs.py&quot;, line 322, in decode
+</span><span id="__span-34-6"><a id="__codelineno-34-6" name="__codelineno-34-6" href="#__codelineno-34-6"></a>    (result, consumed) = self._buffer_decode(data, self.errors, final)
+</span><span id="__span-34-7"><a id="__codelineno-34-7" name="__codelineno-34-7" href="#__codelineno-34-7"></a>UnicodeDecodeError: &#39;utf-8&#39; codec can&#39;t decode byte 0xb5 in position 7312: invalid start byte
+</span><span id="__span-34-8"><a id="__codelineno-34-8" name="__codelineno-34-8" href="#__codelineno-34-8"></a>
+</span><span id="__span-34-9"><a id="__codelineno-34-9" name="__codelineno-34-9" href="#__codelineno-34-9"></a>&gt;&gt;&gt; fp2 = open(&#39;2019-10-01-12.log&#39;)
+</span><span id="__span-34-10"><a id="__codelineno-34-10" name="__codelineno-34-10" href="#__codelineno-34-10"></a>&gt;&gt;&gt; lines2 = fp2.readlines()
+</span><span id="__span-34-11"><a id="__codelineno-34-11" name="__codelineno-34-11" href="#__codelineno-34-11"></a>Traceback (most recent call last):
+</span><span id="__span-34-12"><a id="__codelineno-34-12" name="__codelineno-34-12" href="#__codelineno-34-12"></a>  File &quot;&lt;stdin&gt;&quot;, line 1, in &lt;module&gt;
+</span><span id="__span-34-13"><a id="__codelineno-34-13" name="__codelineno-34-13" href="#__codelineno-34-13"></a>  File &quot;/usr/local/Cellar/python/3.7.4_1/Frameworks/Python.framework/Versions/3.7/lib/python3.7/codecs.py&quot;, line 322, in decode
+</span><span id="__span-34-14"><a id="__codelineno-34-14" name="__codelineno-34-14" href="#__codelineno-34-14"></a>    (result, consumed) = self._buffer_decode(data, self.errors, final)
+</span><span id="__span-34-15"><a id="__codelineno-34-15" name="__codelineno-34-15" href="#__codelineno-34-15"></a>UnicodeDecodeError: &#39;utf-8&#39; codec can&#39;t decode byte 0x8d in position 6873: invalid start byte
+</span></code></pre></div>
+<p><a href="https://stackoverflow.com/questions/19699367/unicodedecodeerror-utf-8-codec-cant-decode-byte">UnicodeDecodeError: 'utf-8' codec can't decode byte</a><br />
+<a href="https://stackoverflow.com/questions/38518023/unicodedecodeerror-utf8-codec-cant-decode-byte-0x80-in-position-3131-invali">UnicodeDecodeError: 'utf8' codec can't decode byte 0x80 in position 3131: invalid start byte</a>  </p>
+<p>The encoding was "<strong>ISO-8859-1</strong>", so replacing <code>open("u.item", encoding="utf-8")</code> with <code>open('u.item', encoding = "ISO-8859-1")</code> will solve the problem.</p>
+<blockquote>
+<p>The trick is that <code>ISO-8859-1</code> or <code>Latin_1</code> is 8 bit character sets, thus all garbage has a valid value. Perhaps not useable, but if you want to ignore!</p>
+</blockquote>
+
+
+
+
+
+
+
+  
+  
+
+
+
+  
+
+
+  
+
+
+
+  <h2 id="__comments">评论</h2>
+  <!-- Insert generated snippet here -->
+  <script src="https://giscus.app/client.js"
+    data-repo="fan2/mkdocs"
+    data-repo-id="R_kgDOLltxSg"
+    data-category="Announcements"
+    data-category-id="DIC_kwDOLltxSs4CeURH"
+    data-mapping="pathname"
+    data-strict="0"
+    data-reactions-enabled="1"
+    data-emit-metadata="1"
+    data-input-position="top"
+    data-theme="preferred_color_scheme"
+    data-lang="zh-CN"
+    data-loading="lazy"
+    crossorigin="anonymous"
+    async>
+  </script>
+
+  <!-- Synchronize Giscus theme with palette -->
+  <script>
+    var giscus = document.querySelector("script[src*=giscus]")
+
+    // Set palette on initial load
+    var palette = __md_get("__palette")
+    if (palette && typeof palette.color === "object") {
+      var theme = palette.color.scheme === "slate"
+        ? "transparent_dark"
+        : "light"
+
+      // Instruct Giscus to set theme
+      giscus.setAttribute("data-theme", theme) 
+    }
+
+    // Register event handlers after documented loaded
+    document.addEventListener("DOMContentLoaded", function() {
+      var ref = document.querySelector("[data-md-component=palette]")
+      ref.addEventListener("change", function() {
+        var palette = __md_get("__palette")
+        if (palette && typeof palette.color === "object") {
+          var theme = palette.color.scheme === "slate"
+            ? "transparent_dark"
+            : "light"
+
+          // Instruct Giscus to change theme
+          var frame = document.querySelector(".giscus-frame")
+          frame.contentWindow.postMessage(
+            { giscus: { setConfig: { theme } } },
+            "https://giscus.app"
+          )
+        }
+      })
+    })
+  </script>
+
+      
+    </article>
+  </div>
+
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+        
+      
+      <nav class="md-footer__inner md-grid" aria-label="页脚" >
+        
+          
+          <a href="../9-json/" class="md-footer__link md-footer__link--prev" aria-label="上一页: python中的json处理">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                上一页
+              </span>
+              <div class="md-ellipsis">
+                python中的json处理
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../11-logging/" class="md-footer__link md-footer__link--next" aria-label="下一页: python中的日志类——logging">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                下一页
+              </span>
+              <div class="md-ellipsis">
+                python中的日志类——logging
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2024- Cliff Fan
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["toc.follow", "header.autohide", "navigation.tabs", "navigation.top", "navigation.footer", "navigation.tracking", "content.code.copy", "content.code.select", "content.code.annotate"], "search": "../../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.bd41221c.min.js"></script>
+      
+        <script src="../../../javascripts/mathjax.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+        <script src="https://vercount.one/js"></script>
+      
+    
+  </body>
+</html>

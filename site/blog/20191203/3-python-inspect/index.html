@@ -1,0 +1,2007 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="在别处或在路上">
+      
+      
+        <meta name="author" content="Cliff Fan">
+      
+      
+        <link rel="canonical" href="https://duetorun.com/blog/20191203/3-python-inspect/">
+      
+      
+        <link rel="prev" href="../2-python-module/">
+      
+      
+        <link rel="next" href="../4-python-builtins/">
+      
+      
+      <link rel="icon" href="../../../assets/hold_yourself.jpg">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.15">
+    
+    
+      
+        <title>python inspect - ElseWhere</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.7e359304.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function n(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],n("js",new Date),n("config","G-XGW41EGL31"),document.addEventListener("DOMContentLoaded",function(){document.forms.search&&document.forms.search.query.addEventListener("blur",function(){this.value&&n("event","search",{search_term:this.value})}),document$.subscribe(function(){var a=document.forms.feedback;if(void 0!==a)for(var e of a.querySelectorAll("[type=submit]"))e.addEventListener("click",function(e){e.preventDefault();var t=document.location.pathname,e=this.getAttribute("data-md-value");n("event","feedback",{page:t,data:e}),a.firstElementChild.disabled=!0;e=a.querySelector(".md-feedback__note [data-md-value='"+e+"']");e&&(e.hidden=!1)}),a.hidden=!1}),location$.subscribe(function(e){n("config","G-XGW41EGL31",{page_path:e.pathname})})});var e=document.createElement("script");e.async=!0,e.src="https://www.googletagmanager.com/gtag/js?id=G-XGW41EGL31",document.getElementById("__analytics").insertAdjacentElement("afterEnd",e)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+    
+  
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#docstring" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../../.." title="ElseWhere" class="md-header__button md-logo" aria-label="ElseWhere" data-md-component="logo">
+      
+  <img src="../../../assets/hold_yourself.jpg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ElseWhere
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              python inspect
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1M8 13h8v-2H8v2m9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1 0 1.71-1.39 3.1-3.1 3.1h-4V17h4a5 5 0 0 0 5-5 5 5 0 0 0-5-5Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="indigo"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5M7 15a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="标签" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../about/" class="md-tabs__link">
+        
+  
+    
+  
+  About
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../" class="md-tabs__link">
+          
+  
+  Blog
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../link/" class="md-tabs__link">
+        
+  
+    
+  
+  Link
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" hidden>
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="ElseWhere" class="md-nav__button md-logo" aria-label="ElseWhere" data-md-component="logo">
+      
+  <img src="../../../assets/hold_yourself.jpg" alt="logo">
+
+    </a>
+    ElseWhere
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../about/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    About
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Blog
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      <a href="../../" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Archive
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            Archive
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2024/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2024
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2022/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2022
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2019/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2019
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2018/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2018
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2017/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2017
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2015/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2015
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Categories
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            Categories
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/command/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    command
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/editor/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    editor
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/git/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    git
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/linux/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    linux
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/macos/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    macOS
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/markdown/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    markdown
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/material/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    material
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/mkdocs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    mkdocs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/nginx/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    nginx
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/python/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    python
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/shell/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    shell
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/ubuntu/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ubuntu
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/vim/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    vim
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/webdav/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    webDAV
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/wiki/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    wiki
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/zsh/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    zsh
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../link/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Link
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#docstring" class="md-nav__link">
+    <span class="md-ellipsis">
+      Docstring
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Docstring">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#doc" class="md-nav__link">
+    <span class="md-ellipsis">
+      doc
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="doc">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pprint" class="md-nav__link">
+    <span class="md-ellipsis">
+      pprint
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#string" class="md-nav__link">
+    <span class="md-ellipsis">
+      string
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#inspectgetdoc" class="md-nav__link">
+    <span class="md-ellipsis">
+      inspect.getdoc
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#source_code" class="md-nav__link">
+    <span class="md-ellipsis">
+      Source Code
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Source Code">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#file" class="md-nav__link">
+    <span class="md-ellipsis">
+      file
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="file">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#study_the_source_code" class="md-nav__link">
+    <span class="md-ellipsis">
+      study the source code
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#openpythonmodulecode" class="md-nav__link">
+    <span class="md-ellipsis">
+      openPythonModuleCode
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#inspect" class="md-nav__link">
+    <span class="md-ellipsis">
+      inspect
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="inspect">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#inspectgetfile" class="md-nav__link">
+    <span class="md-ellipsis">
+      inspect.getfile
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#inspectgetsourcefile" class="md-nav__link">
+    <span class="md-ellipsis">
+      inspect.getsourcefile
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#inspectgetsource" class="md-nav__link">
+    <span class="md-ellipsis">
+      inspect.getsource
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+  <div class="md-content md-content--post" data-md-component="content">
+    <div class="md-sidebar md-sidebar--post" data-md-component="sidebar" data-md-type="navigation">
+      <div class="md-sidebar__scrollwrap">
+        <div class="md-sidebar__inner md-post">
+          <nav class="md-nav md-nav--primary">
+            <div class="md-post__back">
+              <div class="md-nav__title md-nav__container">
+                <a href="../../" class="md-nav__link">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+                  <span class="md-ellipsis">
+                    回到主页
+                  </span>
+                </a>
+              </div>
+            </div>
+            
+              <div class="md-post__authors md-typeset">
+                
+                  <div class="md-profile md-post__profile">
+                    <span class="md-author md-author--long">
+                      <img src="https://duetorun.com/assets/carve_yourself.jpg" alt="Cliff Fan">
+                    </span>
+                    <span class="md-profile__description">
+                      <strong>
+                        
+                          Cliff Fan
+                        
+                      </strong>
+                      <br>
+                      Just do IT
+                    </span>
+                  </div>
+                
+              </div>
+            
+            <ul class="md-post__meta md-nav__list">
+              <li class="md-nav__item md-nav__item--section">
+                <div class="md-post__title">
+                  <span class="md-ellipsis">
+                    元数据
+                  </span>
+                </div>
+                <nav class="md-nav">
+                  <ul class="md-nav__list">
+                    <li class="md-nav__item">
+                      <div class="md-nav__link">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 19H5V8h14m-3-7v2H8V1H6v2H5c-1.11 0-2 .89-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-1V1m-1 11h-5v5h5v-5Z"/></svg>
+                        <time datetime="2019-12-03 08:20:00" class="md-ellipsis">2019年12月3日</time>
+                      </div>
+                    </li>
+                    
+                    
+                      <li class="md-nav__item">
+                        <div class="md-nav__link">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 3v15h3V3H9m3 2 4 13 3-1-4-13-3 1M5 5v13h3V5H5M3 19v2h18v-2H3Z"/></svg>
+                          <span class="md-ellipsis">
+                            分类于
+                            
+                              <a href="../../category/python/">python</a></span>
+                        </div>
+                      </li>
+                    
+                    
+                      
+                      <li class="md-nav__item">
+                        <div class="md-nav__link">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7h1.5Z"/></svg>
+                          <span class="md-ellipsis">
+                            
+                              需要 11 分钟阅读时间
+                            
+                          </span>
+                        </div>
+                      </li>
+                    
+                    <!-- Add by Cliff.Fan, 29Mar24. -->
+                    <li class="md-nav__item">
+                      <div class="md-nav__link">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m19 1-5 5v11l5-4.5V1m2 4v13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V6c-1.45-1.1-3.55-1.5-5.5-1.5-1.95 0-4.05.4-5.5 1.5v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1M10 18.41C8.75 18.09 7.5 18 6.5 18c-1.06 0-2.32.19-3.5.5V7.13c.91-.4 2.14-.63 3.5-.63 1.36 0 2.59.23 3.5.63v11.28Z"/></svg>
+                        <span class="md-ellipsis" id="busuanzi_container_page_pv">
+                          阅读量：<span id="busuanzi_value_page_pv">N/A</span>
+                        </span>
+                      </div>
+                    </li>
+                  </ul>
+                </nav>
+              </li>
+            </ul>
+          </nav>
+          
+        </div>
+      </div>
+    </div>
+    <article class="md-content__inner md-typeset">
+      
+        
+  
+  
+
+<nav class="md-tags" >
+  
+    
+    
+    
+      <span class="md-tag">inspect</span>
+    
+  
+</nav>
+
+
+
+  <h1>python inspect</h1>
+
+<p>介绍Python中包和模块的 <code>__doc__</code> 和 <code>__file__</code> 属性，并借此查看模块概述和文件路径。</p>
+<!-- more -->
+
+<h2 id="docstring">Docstring<a class="headerlink" href="#docstring" title="Permanent link">#</a></h2>
+<p>A <a href="https://www.python.org/dev/peps/pep-0257/#what-is-a-docstring">docstring</a> is a string literal that occurs as the <strong>first</strong> statement in a module, function, class, or method definition.<br />
+Such a docstring becomes the <code>__doc__</code> special attribute of that object.</p>
+<p><img alt="string.docstring" src="../../python/images/string.docstring.png" /></p>
+<p>pydoc 模块自动根据实现代码中各部分按约定格式定义的 docstring，聚合生成整个模块的帮助文档。</p>
+<blockquote>
+<p>The <a href="https://docs.python.org/3/library/pydoc.html?highlight=docstring#module-pydoc">pydoc</a> module automatically generates documentation from Python modules.  </p>
+</blockquote>
+<p>调用 <code>help()</code> 的输出实际上就是整个模块的 docstrings 或各个部分的 docstring。</p>
+<blockquote>
+<p>Calling <code>help()</code> on methods or functions displays the docstrings.  </p>
+<blockquote>
+<p>The built-in function <code>help()</code> invokes the online help system in the interactive interpreter, which uses <a href="https://docs.python.org/3/library/pydoc.html?highlight=docstring#module-pydoc">pydoc</a> to generate its documentation as text on the console.  </p>
+</blockquote>
+</blockquote>
+<p><a href="https://www.python.org/dev/peps/pep-0257/">PEP 257 -- Docstring Conventions</a><br />
+<a href="http://www.maixj.net/ict/python-docstring-16247">使用Python的docstring</a>  </p>
+<h3 id="doc"><strong>doc</strong><a class="headerlink" href="#doc" title="Permanent link">#</a></h3>
+<blockquote>
+<p>python 中每个 module，每个 class，每个 def 都留有写 doc 的地方。</p>
+</blockquote>
+<p>关于 <code>__doc__</code> 属性，参考 《<a href="https://docs.python.org/3/library/inspect.html#types-and-members">Types and members</a>》。</p>
+<ul>
+<li><code>print(module.__doc__)</code>：查看模块概述。</li>
+</ul>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>&gt;&gt;&gt;<span class="w"> </span><span class="c1"># 查看 builtins 模块的 docstring</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>&gt;&gt;&gt;<span class="w"> </span>import<span class="w"> </span>builtins
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>&gt;&gt;&gt;<span class="w"> </span>print<span class="o">(</span>builtins.__doc__<span class="o">)</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>Built-in<span class="w"> </span>functions,<span class="w"> </span>exceptions,<span class="w"> </span>and<span class="w"> </span>other<span class="w"> </span>objects.
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>Noteworthy:<span class="w"> </span>None<span class="w"> </span>is<span class="w"> </span>the<span class="w"> </span><span class="sb">`</span>nil<span class="s1">&#39; object; Ellipsis represents `...&#39;</span><span class="w"> </span><span class="k">in</span><span class="w"> </span>slices.
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>&gt;&gt;&gt;
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>&gt;&gt;&gt;<span class="w"> </span><span class="c1"># 查看 string 模块的 docstring</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>&gt;&gt;&gt;<span class="w"> </span>print<span class="o">(</span>string.__doc__<span class="o">)</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>A<span class="w"> </span>collection<span class="w"> </span>of<span class="w"> </span>string<span class="w"> </span>constants.
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>Public<span class="w"> </span>module<span class="w"> </span>variables:
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>whitespace<span class="w"> </span>--<span class="w"> </span>a<span class="w"> </span>string<span class="w"> </span>containing<span class="w"> </span>all<span class="w"> </span>ASCII<span class="w"> </span>whitespace
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>ascii_lowercase<span class="w"> </span>--<span class="w"> </span>a<span class="w"> </span>string<span class="w"> </span>containing<span class="w"> </span>all<span class="w"> </span>ASCII<span class="w"> </span>lowercase<span class="w"> </span>letters
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>ascii_uppercase<span class="w"> </span>--<span class="w"> </span>a<span class="w"> </span>string<span class="w"> </span>containing<span class="w"> </span>all<span class="w"> </span>ASCII<span class="w"> </span>uppercase<span class="w"> </span>letters
+</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>ascii_letters<span class="w"> </span>--<span class="w"> </span>a<span class="w"> </span>string<span class="w"> </span>containing<span class="w"> </span>all<span class="w"> </span>ASCII<span class="w"> </span>letters
+</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>digits<span class="w"> </span>--<span class="w"> </span>a<span class="w"> </span>string<span class="w"> </span>containing<span class="w"> </span>all<span class="w"> </span>ASCII<span class="w"> </span>decimal<span class="w"> </span>digits
+</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a>hexdigits<span class="w"> </span>--<span class="w"> </span>a<span class="w"> </span>string<span class="w"> </span>containing<span class="w"> </span>all<span class="w"> </span>ASCII<span class="w"> </span>hexadecimal<span class="w"> </span>digits
+</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>octdigits<span class="w"> </span>--<span class="w"> </span>a<span class="w"> </span>string<span class="w"> </span>containing<span class="w"> </span>all<span class="w"> </span>ASCII<span class="w"> </span>octal<span class="w"> </span>digits
+</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a>punctuation<span class="w"> </span>--<span class="w"> </span>a<span class="w"> </span>string<span class="w"> </span>containing<span class="w"> </span>all<span class="w"> </span>ASCII<span class="w"> </span>punctuation<span class="w"> </span>characters
+</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a>printable<span class="w"> </span>--<span class="w"> </span>a<span class="w"> </span>string<span class="w"> </span>containing<span class="w"> </span>all<span class="w"> </span>ASCII<span class="w"> </span>characters<span class="w"> </span>considered<span class="w"> </span>printable
+</span></code></pre></div>
+<p><strong>注意</strong>：先要 import module。</p>
+<h4 id="pprint">pprint<a class="headerlink" href="#pprint" title="Permanent link">#</a></h4>
+<p>在 py 目录下执行 <code>python3 open_python_module_code.py pprint</code> 打开 pprint.py 源码，第11~35行为模块的docstring（模块概要）。<br />
+第50、59、65行为函数 pprint、pformat、pp 的docstring（函数说明）。</p>
+<p><img alt="pprint.docstring" src="../../python/images/pprint.docstring.png" /></p>
+<p>模块代码文件开头定义的 <code>pprint.__doc__</code> 即为 help(pprint) 帮助命令输出的 DESCRIPTION 部分：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>&gt;&gt;&gt;<span class="w"> </span>import<span class="w"> </span>pprint
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>&gt;&gt;&gt;<span class="w"> </span>pprint.__doc__
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="s2">&quot;Support to pretty-print lists, tuples, &amp; dictionaries recursively.\n\nVery simple, but useful, especially in debugging data structures.\n\nClasses\n-------\n\nPrettyPrinter()\n    Handle pretty-printing operations onto a stream using a configured\n    set of formatting parameters.\n\nFunctions\n---------\n\npformat()\n    Format a Python object into a pretty-printed representation.\n\npprint()\n    Pretty-print a Python object to a stream [default is sys.stdout].å\n\nsaferepr()\n    Generate a &#39;standard&#39; repr()-like value, but protect against recursive\n    data structures.\n\n&quot;</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>&gt;&gt;&gt;<span class="w"> </span>help<span class="o">(</span>pprint<span class="o">)</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>Help<span class="w"> </span>on<span class="w"> </span>module<span class="w"> </span>pprint:
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>NAME
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">    </span>pprint<span class="w"> </span>-<span class="w"> </span>Support<span class="w"> </span>to<span class="w"> </span>pretty-print<span class="w"> </span>lists,<span class="w"> </span>tuples,<span class="w"> </span><span class="p">&amp;</span><span class="w"> </span>dictionaries<span class="w"> </span>recursively.
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>DESCRIPTION
+</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="w">    </span>Very<span class="w"> </span>simple,<span class="w"> </span>but<span class="w"> </span>useful,<span class="w"> </span>especially<span class="w"> </span><span class="k">in</span><span class="w"> </span>debugging<span class="w"> </span>data<span class="w"> </span>structures.
+</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>
+</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="w">    </span>Classes
+</span><span id="__span-1-16"><a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="w">    </span>-------
+</span><span id="__span-1-17"><a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a>
+</span><span id="__span-1-18"><a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a><span class="w">    </span>PrettyPrinter<span class="o">()</span>
+</span><span id="__span-1-19"><a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a><span class="w">        </span>Handle<span class="w"> </span>pretty-printing<span class="w"> </span>operations<span class="w"> </span>onto<span class="w"> </span>a<span class="w"> </span>stream<span class="w"> </span>using<span class="w"> </span>a<span class="w"> </span>configured
+</span><span id="__span-1-20"><a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a><span class="w">        </span><span class="nb">set</span><span class="w"> </span>of<span class="w"> </span>formatting<span class="w"> </span>parameters.
+</span><span id="__span-1-21"><a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a>
+</span><span id="__span-1-22"><a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a><span class="w">    </span>Functions
+</span><span id="__span-1-23"><a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a><span class="w">    </span>---------
+</span><span id="__span-1-24"><a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a>
+</span><span id="__span-1-25"><a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a><span class="w">    </span>pformat<span class="o">()</span>
+</span><span id="__span-1-26"><a id="__codelineno-1-26" name="__codelineno-1-26" href="#__codelineno-1-26"></a><span class="w">        </span>Format<span class="w"> </span>a<span class="w"> </span>Python<span class="w"> </span>object<span class="w"> </span>into<span class="w"> </span>a<span class="w"> </span>pretty-printed<span class="w"> </span>representation.
+</span><span id="__span-1-27"><a id="__codelineno-1-27" name="__codelineno-1-27" href="#__codelineno-1-27"></a>
+</span><span id="__span-1-28"><a id="__codelineno-1-28" name="__codelineno-1-28" href="#__codelineno-1-28"></a><span class="w">    </span>pprint<span class="o">()</span>
+</span><span id="__span-1-29"><a id="__codelineno-1-29" name="__codelineno-1-29" href="#__codelineno-1-29"></a><span class="w">        </span>Pretty-print<span class="w"> </span>a<span class="w"> </span>Python<span class="w"> </span>object<span class="w"> </span>to<span class="w"> </span>a<span class="w"> </span>stream<span class="w"> </span><span class="o">[</span>default<span class="w"> </span>is<span class="w"> </span>sys.stdout<span class="o">]</span>.å
+</span><span id="__span-1-30"><a id="__codelineno-1-30" name="__codelineno-1-30" href="#__codelineno-1-30"></a>
+</span><span id="__span-1-31"><a id="__codelineno-1-31" name="__codelineno-1-31" href="#__codelineno-1-31"></a><span class="w">    </span>saferepr<span class="o">()</span>
+</span><span id="__span-1-32"><a id="__codelineno-1-32" name="__codelineno-1-32" href="#__codelineno-1-32"></a><span class="w">        </span>Generate<span class="w"> </span>a<span class="w"> </span><span class="s1">&#39;standard&#39;</span><span class="w"> </span>repr<span class="o">()</span>-like<span class="w"> </span>value,<span class="w"> </span>but<span class="w"> </span>protect<span class="w"> </span>against<span class="w"> </span>recursive
+</span><span id="__span-1-33"><a id="__codelineno-1-33" name="__codelineno-1-33" href="#__codelineno-1-33"></a><span class="w">        </span>data<span class="w"> </span>structures.
+</span></code></pre></div>
+<p>以下查看 <code>pprint.pprint.__doc__</code>：</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>&gt;&gt;&gt; import pprint
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>&gt;&gt;&gt; pprint.pprint.__doc__
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>&#39;Pretty-print a Python object to a stream [default is sys.stdout].&#39;
+</span></code></pre></div>
+<h4 id="string">string<a class="headerlink" href="#string" title="Permanent link">#</a></h4>
+<blockquote>
+<p><code>string.__doc__</code> 即 string.docstring 截图中定义在模块代码 <code>string.py</code> 首部三引号包括的多行注释部分（<a href="https://www.python.org/dev/peps/pep-0257/#id17">Multi-line Docstrings</a>）—— ①。<br />
+结合 help() 输出可知，包括紧随三引号后的 NAME 部分，以及间隔空行后的 DESCRIPTION 部分。  </p>
+</blockquote>
+<ul>
+<li><code>print(class.__doc__)</code>（或 <code>print(object.__doc__)</code>）：查看类说明。  </li>
+</ul>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>&gt;&gt;&gt;<span class="w"> </span><span class="c1"># 查看 builtins.str 类的 docstring</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>&gt;&gt;&gt;<span class="w"> </span>print<span class="o">(</span>str.__doc__<span class="o">)</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>str<span class="o">(</span><span class="nv">object</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="o">)</span><span class="w"> </span>-&gt;<span class="w"> </span>str
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>str<span class="o">(</span>bytes_or_buffer<span class="o">[</span>,<span class="w"> </span>encoding<span class="o">[</span>,<span class="w"> </span>errors<span class="o">]])</span><span class="w"> </span>-&gt;<span class="w"> </span>str
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>Create<span class="w"> </span>a<span class="w"> </span>new<span class="w"> </span>string<span class="w"> </span>object<span class="w"> </span>from<span class="w"> </span>the<span class="w"> </span>given<span class="w"> </span>object.<span class="w"> </span>If<span class="w"> </span>encoding<span class="w"> </span>or
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>errors<span class="w"> </span>is<span class="w"> </span>specified,<span class="w"> </span><span class="k">then</span><span class="w"> </span>the<span class="w"> </span>object<span class="w"> </span>must<span class="w"> </span>expose<span class="w"> </span>a<span class="w"> </span>data<span class="w"> </span>buffer
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>that<span class="w"> </span>will<span class="w"> </span>be<span class="w"> </span>decoded<span class="w"> </span>using<span class="w"> </span>the<span class="w"> </span>given<span class="w"> </span>encoding<span class="w"> </span>and<span class="w"> </span>error<span class="w"> </span>handler.
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>Otherwise,<span class="w"> </span>returns<span class="w"> </span>the<span class="w"> </span>result<span class="w"> </span>of<span class="w"> </span>object.__str__<span class="o">()</span><span class="w"> </span><span class="o">(</span><span class="k">if</span><span class="w"> </span>defined<span class="o">)</span>
+</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>or<span class="w"> </span>repr<span class="o">(</span>object<span class="o">)</span>.
+</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>encoding<span class="w"> </span>defaults<span class="w"> </span>to<span class="w"> </span>sys.getdefaultencoding<span class="o">()</span>.
+</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>errors<span class="w"> </span>defaults<span class="w"> </span>to<span class="w"> </span><span class="s1">&#39;strict&#39;</span>.
+</span></code></pre></div>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>&gt;&gt;&gt; # 查看 string 模块的类 Template 的 docstring
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>&gt;&gt;&gt; print(string.Template.__doc__)
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>A string class for supporting $-substitutions.
+</span></code></pre></div>
+<blockquote>
+<p><code>string.Template.__doc__</code> 即 string.docstring 截图中定义在模块代码 <code>string.py</code> 中 Template 类声明后的单行三引号注释部分（<a href="https://www.python.org/dev/peps/pep-0257/#id16">One-line Docstrings</a>） —— ③。  </p>
+</blockquote>
+<ul>
+<li><code>print(class.method.__doc__)</code>（或 <code>print(object.method.__doc__)</code>）：查看类成员函数说明。  </li>
+</ul>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>&gt;&gt;&gt;<span class="w"> </span><span class="c1"># 查看 builtins.str 类的成员函数 format 的 docstring</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>&gt;&gt;&gt;<span class="w"> </span>print<span class="o">(</span>str.format.__doc__<span class="o">)</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>S.format<span class="o">(</span>*args,<span class="w"> </span>**kwargs<span class="o">)</span><span class="w"> </span>-&gt;<span class="w"> </span>str
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>Return<span class="w"> </span>a<span class="w"> </span>formatted<span class="w"> </span>version<span class="w"> </span>of<span class="w"> </span>S,<span class="w"> </span>using<span class="w"> </span>substitutions<span class="w"> </span>from<span class="w"> </span>args<span class="w"> </span>and<span class="w"> </span>kwargs.
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>The<span class="w"> </span>substitutions<span class="w"> </span>are<span class="w"> </span>identified<span class="w"> </span>by<span class="w"> </span>braces<span class="w"> </span><span class="o">(</span><span class="s1">&#39;{&#39;</span><span class="w"> </span>and<span class="w"> </span><span class="s1">&#39;}&#39;</span><span class="o">)</span>.
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>&gt;&gt;&gt;
+</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>&gt;&gt;&gt;<span class="w"> </span><span class="c1"># 查看 string 模块的函数 capwords 的 docstring</span>
+</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>&gt;&gt;&gt;<span class="w"> </span>print<span class="o">(</span>string.capwords.__doc__<span class="o">)</span>
+</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a>capwords<span class="o">(</span>s<span class="w"> </span><span class="o">[</span>,sep<span class="o">])</span><span class="w"> </span>-&gt;<span class="w"> </span>string
+</span><span id="__span-5-11"><a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>
+</span><span id="__span-5-12"><a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a><span class="w">    </span>Split<span class="w"> </span>the<span class="w"> </span>argument<span class="w"> </span>into<span class="w"> </span>words<span class="w"> </span>using<span class="w"> </span>split,<span class="w"> </span>capitalize<span class="w"> </span>each
+</span><span id="__span-5-13"><a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a><span class="w">    </span>word<span class="w"> </span>using<span class="w"> </span>capitalize,<span class="w"> </span>and<span class="w"> </span>join<span class="w"> </span>the<span class="w"> </span>capitalized<span class="w"> </span>words<span class="w"> </span>using
+</span><span id="__span-5-14"><a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a><span class="w">    </span>join.<span class="w">  </span>If<span class="w"> </span>the<span class="w"> </span>optional<span class="w"> </span>second<span class="w"> </span>argument<span class="w"> </span>sep<span class="w"> </span>is<span class="w"> </span>absent<span class="w"> </span>or<span class="w"> </span>None,
+</span><span id="__span-5-15"><a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a><span class="w">    </span>runs<span class="w"> </span>of<span class="w"> </span>whitespace<span class="w"> </span>characters<span class="w"> </span>are<span class="w"> </span>replaced<span class="w"> </span>by<span class="w"> </span>a<span class="w"> </span>single<span class="w"> </span>space
+</span><span id="__span-5-16"><a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a><span class="w">    </span>and<span class="w"> </span>leading<span class="w"> </span>and<span class="w"> </span>trailing<span class="w"> </span>whitespace<span class="w"> </span>are<span class="w"> </span>removed,<span class="w"> </span>otherwise
+</span><span id="__span-5-17"><a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a><span class="w">    </span>sep<span class="w"> </span>is<span class="w"> </span>used<span class="w"> </span>to<span class="w"> </span>split<span class="w"> </span>and<span class="w"> </span>join<span class="w"> </span>the<span class="w"> </span>words.
+</span></code></pre></div>
+<blockquote>
+<p><code>string.capwords.__doc__</code> 即 string.docstring 截图中定义在模块代码 <code>string.py</code> 中 capwords 函数体首部三引号包括的多行注释部分 —— ②。<br />
+结合 help() 输出可知，包括紧随三引号后的概要（summary line），以及间隔空行后（followed by a blank line）的详细说明部分（more elaborate description）。  </p>
+</blockquote>
+<h3 id="inspectgetdoc">inspect.getdoc<a class="headerlink" href="#inspectgetdoc" title="Permanent link">#</a></h3>
+<p>通过 inspect.getdoc(<em>object</em>) 接口亦可获取 object 对应的 docstring（documentation string）：</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>inspect.getdoc<span class="o">(</span>object<span class="o">)</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>Get<span class="w"> </span>the<span class="w"> </span>documentation<span class="w"> </span>string<span class="w"> </span><span class="k">for</span><span class="w"> </span>an<span class="w"> </span>object
+</span></code></pre></div>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>&gt;&gt;&gt; inspect.getdoc(str)
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>Traceback (most recent call last):
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>  File &quot;&lt;stdin&gt;&quot;, line 1, in &lt;module&gt;
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>NameError: name &#39;inspect&#39; is not defined
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>
+</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a># 需要先 import inspect 模块方可调用
+</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>&gt;&gt;&gt; import inspect
+</span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>&gt;&gt;&gt; inspect.getdoc(str)
+</span><span id="__span-7-9"><a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>&quot;str(object=&#39;&#39;) -&gt; str\nstr(bytes_or_buffer[, encoding[, errors]]) -&gt; str\n\nCreate a new string object from the given object. If encoding or\nerrors is specified, then the object must expose a data buffer\nthat will be decoded using the given encoding and error handler.\nOtherwise, returns the result of object.__str__() (if defined)\nor repr(object).\nencoding defaults to sys.getdefaultencoding().\nerrors defaults to &#39;strict&#39;.&quot;
+</span></code></pre></div>
+<p><code>inspect.getdoc(str)</code> 等效于 <code>str.__doc__</code><br />
+<code>inspect.getdoc(string)</code> 等效于 <code>string.__doc__</code><br />
+<code>inspect.getdoc(string.Template)</code> 等效于 <code>string.Template.__doc__</code><br />
+<code>inspect.getdoc(string.capwords)</code> 等效于 <code>string.capwords.__doc__</code>  </p>
+<h2 id="source_code">Source Code<a class="headerlink" href="#source_code" title="Permanent link">#</a></h2>
+<p>如果定位符号所在的包模块呢？</p>
+<p>已经通过pip3安装了pdfminer，但是通过 from import 导入 <code>PDFNoOutlines</code>、<code>PSLiteral</code>、<code>LTTextBox</code> 时，如何确定具体在哪个子模块呢？</p>
+<ol>
+<li>
+<p>方案一：逐个 help 或 dir 子模块，肉眼查找类或函数名符号在哪个子模块中。  </p>
+<ul>
+<li>也可写个python脚本，遍历pdfminer所有模块的dir查找匹配某个符号。</li>
+</ul>
+</li>
+<li>
+<p>方案二：通过 open_python_module_code.py（参见下文）脚本打开指定 pdfminer 包源代码进行查找。  </p>
+<ul>
+<li>python3 open_python_module_code.py pdfminer</li>
+</ul>
+</li>
+</ol>
+<h3 id="file"><strong>file</strong><a class="headerlink" href="#file" title="Permanent link">#</a></h3>
+<p>关于 <code>__file__</code> 属性，参考 《<a href="https://docs.python.org/3/library/inspect.html#types-and-members">Types and members</a>》。</p>
+<p>在 python 主控制台中直接输入 <code>module</code>、<code>module.function</code>、<code>module.class</code>、<code>module.class.method</code> 也会显示其路径或类型等信息：</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>&gt;&gt;&gt;<span class="w"> </span>import<span class="w"> </span>builtins
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>&gt;&gt;&gt;<span class="w"> </span>builtins
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>&lt;module<span class="w"> </span><span class="s1">&#39;builtins&#39;</span><span class="w"> </span><span class="o">(</span>built-in<span class="o">)</span>&gt;
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>&gt;&gt;&gt;<span class="w"> </span>builtins.print
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>&lt;built-in<span class="w"> </span><span class="k">function</span><span class="w"> </span>print&gt;
+</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>
+</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>&gt;&gt;&gt;<span class="w"> </span>builtins.str
+</span><span id="__span-8-9"><a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a>&lt;class<span class="w"> </span><span class="s1">&#39;str&#39;</span>&gt;
+</span><span id="__span-8-10"><a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a>
+</span><span id="__span-8-11"><a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a>&gt;&gt;&gt;<span class="w"> </span>builtins.str.format
+</span><span id="__span-8-12"><a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a>&lt;method<span class="w"> </span><span class="s1">&#39;format&#39;</span><span class="w"> </span>of<span class="w"> </span><span class="s1">&#39;str&#39;</span><span class="w"> </span>objects&gt;
+</span><span id="__span-8-13"><a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a>
+</span><span id="__span-8-14"><a id="__codelineno-8-14" name="__codelineno-8-14" href="#__codelineno-8-14"></a>&gt;&gt;&gt;<span class="w"> </span>import<span class="w"> </span>sys
+</span><span id="__span-8-15"><a id="__codelineno-8-15" name="__codelineno-8-15" href="#__codelineno-8-15"></a>&gt;&gt;&gt;<span class="w"> </span>sys
+</span><span id="__span-8-16"><a id="__codelineno-8-16" name="__codelineno-8-16" href="#__codelineno-8-16"></a>&lt;module<span class="w"> </span><span class="s1">&#39;sys&#39;</span><span class="w"> </span><span class="o">(</span>built-in<span class="o">)</span>&gt;
+</span><span id="__span-8-17"><a id="__codelineno-8-17" name="__codelineno-8-17" href="#__codelineno-8-17"></a>
+</span><span id="__span-8-18"><a id="__codelineno-8-18" name="__codelineno-8-18" href="#__codelineno-8-18"></a>&gt;&gt;&gt;<span class="w"> </span>import<span class="w"> </span>os
+</span><span id="__span-8-19"><a id="__codelineno-8-19" name="__codelineno-8-19" href="#__codelineno-8-19"></a>&gt;&gt;&gt;<span class="w"> </span>os
+</span><span id="__span-8-20"><a id="__codelineno-8-20" name="__codelineno-8-20" href="#__codelineno-8-20"></a>&lt;module<span class="w"> </span><span class="s1">&#39;os&#39;</span><span class="w"> </span>from<span class="w"> </span><span class="s1">&#39;/usr/local/Cellar/python/3.6.5/Frameworks/Python.framework/Versions/3.6/lib/python3.6/os.py&#39;</span>&gt;
+</span><span id="__span-8-21"><a id="__codelineno-8-21" name="__codelineno-8-21" href="#__codelineno-8-21"></a>
+</span><span id="__span-8-22"><a id="__codelineno-8-22" name="__codelineno-8-22" href="#__codelineno-8-22"></a>&gt;&gt;&gt;<span class="w"> </span>import<span class="w"> </span>array
+</span><span id="__span-8-23"><a id="__codelineno-8-23" name="__codelineno-8-23" href="#__codelineno-8-23"></a>&gt;&gt;&gt;<span class="w"> </span>array
+</span><span id="__span-8-24"><a id="__codelineno-8-24" name="__codelineno-8-24" href="#__codelineno-8-24"></a>&lt;module<span class="w"> </span><span class="s1">&#39;array&#39;</span><span class="w"> </span>from<span class="w"> </span><span class="s1">&#39;/usr/local/Cellar/python/3.6.5/Frameworks/Python.framework/Versions/3.6/lib/python3.6/lib-dynload/array.cpython-36m-darwin.so&#39;</span>&gt;
+</span></code></pre></div>
+<p>在终端执行 python(3) 启动时，可携带 <code>-v</code> 选项，将输出详细的模块加载信息：</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>-v<span class="w">     </span>:<span class="w"> </span>verbose<span class="w"> </span><span class="o">(</span>trace<span class="w"> </span>import<span class="w"> </span>statements<span class="o">)</span><span class="p">;</span><span class="w"> </span>also<span class="w"> </span><span class="nv">PYTHONVERBOSE</span><span class="o">=</span>x
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="w">         </span>can<span class="w"> </span>be<span class="w"> </span>supplied<span class="w"> </span>multiple<span class="w"> </span><span class="nb">times</span><span class="w"> </span>to<span class="w"> </span>increase<span class="w"> </span>verbosity
+</span></code></pre></div>
+<hr />
+<p>另外，也可打印模块的 <code>__file__</code> 属性来查看模块路径信息。</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="c1"># builtins 模块未定义该属性</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>&gt;&gt;&gt;<span class="w"> </span>import<span class="w"> </span>builtins
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>&gt;&gt;&gt;<span class="w"> </span>builtins.__file__
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>Traceback<span class="w"> </span><span class="o">(</span>most<span class="w"> </span>recent<span class="w"> </span>call<span class="w"> </span>last<span class="o">)</span>:
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="w">  </span>File<span class="w"> </span><span class="s2">&quot;&lt;stdin&gt;&quot;</span>,<span class="w"> </span>line<span class="w"> </span><span class="m">1</span>,<span class="w"> </span><span class="k">in</span><span class="w"> </span>&lt;module&gt;
+</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>AttributeError:<span class="w"> </span>module<span class="w"> </span><span class="s1">&#39;builtins&#39;</span><span class="w"> </span>has<span class="w"> </span>no<span class="w"> </span>attribute<span class="w"> </span><span class="s1">&#39;__file__&#39;</span>
+</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a>
+</span><span id="__span-10-8"><a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a><span class="c1"># sys 模块未定义该属性</span>
+</span><span id="__span-10-9"><a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a>&gt;&gt;&gt;<span class="w"> </span>import<span class="w"> </span>sys
+</span><span id="__span-10-10"><a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a>&gt;&gt;&gt;<span class="w"> </span>sys.__file__
+</span><span id="__span-10-11"><a id="__codelineno-10-11" name="__codelineno-10-11" href="#__codelineno-10-11"></a>Traceback<span class="w"> </span><span class="o">(</span>most<span class="w"> </span>recent<span class="w"> </span>call<span class="w"> </span>last<span class="o">)</span>:
+</span><span id="__span-10-12"><a id="__codelineno-10-12" name="__codelineno-10-12" href="#__codelineno-10-12"></a><span class="w">  </span>File<span class="w"> </span><span class="s2">&quot;&lt;stdin&gt;&quot;</span>,<span class="w"> </span>line<span class="w"> </span><span class="m">1</span>,<span class="w"> </span><span class="k">in</span><span class="w"> </span>&lt;module&gt;
+</span><span id="__span-10-13"><a id="__codelineno-10-13" name="__codelineno-10-13" href="#__codelineno-10-13"></a>AttributeError:<span class="w"> </span>module<span class="w"> </span><span class="s1">&#39;sys&#39;</span><span class="w"> </span>has<span class="w"> </span>no<span class="w"> </span>attribute<span class="w"> </span><span class="s1">&#39;__file__&#39;</span>
+</span><span id="__span-10-14"><a id="__codelineno-10-14" name="__codelineno-10-14" href="#__codelineno-10-14"></a>
+</span><span id="__span-10-15"><a id="__codelineno-10-15" name="__codelineno-10-15" href="#__codelineno-10-15"></a><span class="c1"># string 模块对应 Python 源码</span>
+</span><span id="__span-10-16"><a id="__codelineno-10-16" name="__codelineno-10-16" href="#__codelineno-10-16"></a>&gt;&gt;&gt;<span class="w"> </span>import<span class="w"> </span>string
+</span><span id="__span-10-17"><a id="__codelineno-10-17" name="__codelineno-10-17" href="#__codelineno-10-17"></a>&gt;&gt;&gt;<span class="w"> </span>string.__file__
+</span><span id="__span-10-18"><a id="__codelineno-10-18" name="__codelineno-10-18" href="#__codelineno-10-18"></a><span class="s1">&#39;/usr/local/Cellar/python/3.7.4/Frameworks/Python.framework/Versions/3.7/lib/python3.7/string.py&#39;</span>
+</span><span id="__span-10-19"><a id="__codelineno-10-19" name="__codelineno-10-19" href="#__codelineno-10-19"></a>
+</span><span id="__span-10-20"><a id="__codelineno-10-20" name="__codelineno-10-20" href="#__codelineno-10-20"></a><span class="c1"># os 模块对应 Python 源码</span>
+</span><span id="__span-10-21"><a id="__codelineno-10-21" name="__codelineno-10-21" href="#__codelineno-10-21"></a>&gt;&gt;&gt;<span class="w"> </span>import<span class="w"> </span>os
+</span><span id="__span-10-22"><a id="__codelineno-10-22" name="__codelineno-10-22" href="#__codelineno-10-22"></a>&gt;&gt;&gt;<span class="w"> </span>os.__file__
+</span><span id="__span-10-23"><a id="__codelineno-10-23" name="__codelineno-10-23" href="#__codelineno-10-23"></a><span class="s1">&#39;/usr/local/Cellar/python/3.6.5/Frameworks/Python.framework/Versions/3.6/lib/python3.6/os.py&#39;</span>
+</span><span id="__span-10-24"><a id="__codelineno-10-24" name="__codelineno-10-24" href="#__codelineno-10-24"></a>
+</span><span id="__span-10-25"><a id="__codelineno-10-25" name="__codelineno-10-25" href="#__codelineno-10-25"></a><span class="c1"># array 模块对应 cpython 实现动态库</span>
+</span><span id="__span-10-26"><a id="__codelineno-10-26" name="__codelineno-10-26" href="#__codelineno-10-26"></a>&gt;&gt;&gt;<span class="w"> </span>import<span class="w"> </span>array
+</span><span id="__span-10-27"><a id="__codelineno-10-27" name="__codelineno-10-27" href="#__codelineno-10-27"></a>&gt;&gt;&gt;<span class="w"> </span>array.__file__
+</span><span id="__span-10-28"><a id="__codelineno-10-28" name="__codelineno-10-28" href="#__codelineno-10-28"></a><span class="s1">&#39;/usr/local/Cellar/python/3.6.5/Frameworks/Python.framework/Versions/3.6/lib/python3.6/lib-dynload/array.cpython-36m-darwin.so&#39;</span>
+</span></code></pre></div>
+<h4 id="study_the_source_code">study the source code<a class="headerlink" href="#study_the_source_code" title="Permanent link">#</a></h4>
+<p>初学 Python 的一种有效途径是阅读 python 标准模块源码，通过阅读源码可观摩编码规范，了解语言风格，快速掌握 Python 程序设计的一般流程。</p>
+<p>找到对应模块的 Python 源码路径，我们便可以<a href="http://www.cnblogs.com/IPYQ/p/5672922.html">使用文本编辑器打开</a>进行研读。  </p>
+<p><code>os.system('open '+module.__file__)</code>：调用 open 使用默认文本编辑器打开 module 源码：</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>&gt;&gt;&gt;<span class="w"> </span>import<span class="w"> </span>argparse
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>&gt;&gt;&gt;<span class="w"> </span>import<span class="w"> </span>os
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="c1"># 调用 open 命令打开 argparse 模块源码</span>
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>&gt;&gt;&gt;<span class="w"> </span>os.system<span class="o">(</span><span class="s1">&#39;open &#39;</span>+argparse.__file__<span class="o">)</span>
+</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>
+</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a><span class="c1"># 调用 subl 命令打开 argparse 模块源码</span>
+</span><span id="__span-11-7"><a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a>&gt;&gt;&gt;<span class="w"> </span>os.system<span class="o">(</span><span class="s1">&#39;subl &#39;</span>+argparse.__file__<span class="o">)</span>
+</span></code></pre></div>
+<p>当然，我们也可以先切换工作目录到 python 库源码目录，再调用 <code>os.system('open '+'module'+'.py')</code>。</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>&gt;&gt;&gt;<span class="w"> </span>import<span class="w"> </span>os
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="c1"># 获取当前工作目录并记录</span>
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>&gt;&gt;&gt;<span class="w"> </span>os.getcwd<span class="o">()</span>
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="s1">&#39;/Users/faner&#39;</span>
+</span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a>&gt;&gt;&gt;<span class="w"> </span><span class="nv">last_cwd</span><span class="o">=</span>os.getcwd<span class="o">()</span>
+</span><span id="__span-12-7"><a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a>
+</span><span id="__span-12-8"><a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a><span class="c1"># 修改工作目录</span>
+</span><span id="__span-12-9"><a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a>&gt;&gt;&gt;<span class="w"> </span>os.chdir<span class="o">(</span><span class="s1">&#39;/usr/local/Cellar/python/3.6.5/Frameworks/Python.framework/Versions/3.6/lib/python3.6/&#39;</span><span class="o">)</span>
+</span><span id="__span-12-10"><a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a>&gt;&gt;&gt;<span class="w"> </span>os.getcwd<span class="o">()</span>
+</span><span id="__span-12-11"><a id="__codelineno-12-11" name="__codelineno-12-11" href="#__codelineno-12-11"></a><span class="s1">&#39;/usr/local/Cellar/python/3.6.5/Frameworks/Python.framework/Versions/3.6/lib/python3.6&#39;</span>
+</span><span id="__span-12-12"><a id="__codelineno-12-12" name="__codelineno-12-12" href="#__codelineno-12-12"></a>
+</span><span id="__span-12-13"><a id="__codelineno-12-13" name="__codelineno-12-13" href="#__codelineno-12-13"></a><span class="c1"># 调用 open 命令打开 python 库源码目录</span>
+</span><span id="__span-12-14"><a id="__codelineno-12-14" name="__codelineno-12-14" href="#__codelineno-12-14"></a>&gt;&gt;&gt;<span class="w"> </span>os.system<span class="o">(</span><span class="s1">&#39;subl &#39;</span>+os.getcwd<span class="o">())</span>
+</span><span id="__span-12-15"><a id="__codelineno-12-15" name="__codelineno-12-15" href="#__codelineno-12-15"></a><span class="m">0</span>
+</span><span id="__span-12-16"><a id="__codelineno-12-16" name="__codelineno-12-16" href="#__codelineno-12-16"></a>
+</span><span id="__span-12-17"><a id="__codelineno-12-17" name="__codelineno-12-17" href="#__codelineno-12-17"></a><span class="c1"># 调用 subl 命令打开 python 库源码目录</span>
+</span><span id="__span-12-18"><a id="__codelineno-12-18" name="__codelineno-12-18" href="#__codelineno-12-18"></a>&gt;&gt;&gt;<span class="w"> </span>os.system<span class="o">(</span><span class="s1">&#39;subl &#39;</span>+os.getcwd<span class="o">())</span>
+</span><span id="__span-12-19"><a id="__codelineno-12-19" name="__codelineno-12-19" href="#__codelineno-12-19"></a><span class="m">0</span>
+</span><span id="__span-12-20"><a id="__codelineno-12-20" name="__codelineno-12-20" href="#__codelineno-12-20"></a>
+</span><span id="__span-12-21"><a id="__codelineno-12-21" name="__codelineno-12-21" href="#__codelineno-12-21"></a><span class="c1"># 调用 open 命令打开指定 python 源码</span>
+</span><span id="__span-12-22"><a id="__codelineno-12-22" name="__codelineno-12-22" href="#__codelineno-12-22"></a>&gt;&gt;&gt;<span class="w"> </span>os.system<span class="o">(</span><span class="s1">&#39;open &#39;</span>+<span class="s1">&#39;argparse&#39;</span>+<span class="s1">&#39;.py&#39;</span><span class="o">)</span>
+</span><span id="__span-12-23"><a id="__codelineno-12-23" name="__codelineno-12-23" href="#__codelineno-12-23"></a><span class="m">0</span>
+</span><span id="__span-12-24"><a id="__codelineno-12-24" name="__codelineno-12-24" href="#__codelineno-12-24"></a>
+</span><span id="__span-12-25"><a id="__codelineno-12-25" name="__codelineno-12-25" href="#__codelineno-12-25"></a><span class="c1"># 调用 subl 命令打开指定 python 源码</span>
+</span><span id="__span-12-26"><a id="__codelineno-12-26" name="__codelineno-12-26" href="#__codelineno-12-26"></a>&gt;&gt;&gt;<span class="w"> </span>os.system<span class="o">(</span><span class="s1">&#39;subl &#39;</span>+<span class="s1">&#39;argparse&#39;</span>+<span class="s1">&#39;.py&#39;</span><span class="o">)</span>
+</span><span id="__span-12-27"><a id="__codelineno-12-27" name="__codelineno-12-27" href="#__codelineno-12-27"></a><span class="m">0</span>
+</span></code></pre></div>
+<p>调用 subl 命令打开 python 库源码目录，可使用 Sublime Text 强大的搜索和定位功能进行高效阅读。</p>
+<p>阅读 <code>base64.py</code> 可知内部调用了基础库 binascii，其为解释器内置模块（<code>binascii.cpython-36m-darwin.so</code>）。</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>&gt;&gt;&gt;<span class="w"> </span>import<span class="w"> </span>binascii
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>&gt;&gt;&gt;<span class="w"> </span>binascii
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>&lt;module<span class="w"> </span><span class="s1">&#39;binascii&#39;</span><span class="w"> </span>from<span class="w"> </span><span class="s1">&#39;/usr/local/Cellar/python/3.6.5/Frameworks/Python.framework/Versions/3.6/lib/python3.6/lib-dynload/binascii.cpython-36m-darwin.so&#39;</span>&gt;
+</span></code></pre></div>
+<p>参考 <a href="https://github.com/python/cpython">cpython</a> 的 <a href="https://github.com/python/cpython/blob/master/Modules/clinic/binascii.c.h">binascii.c.h</a>。</p>
+<h4 id="openpythonmodulecode">openPythonModuleCode<a class="headerlink" href="#openpythonmodulecode" title="Permanent link">#</a></h4>
+<p>open_python_module_code.py 脚本打开指定名称的模块源代码进行学习。</p>
+<details class="info">
+<summary>open_python_module_code.py</summary>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="ch">#!/usr/bin/env python3</span>
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="c1"># -*- coding: UTF-8 -*-</span>
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>
+</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="__span-14-5"><a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a><span class="sd">运行示例：</span>
+</span><span id="__span-14-6"><a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a><span class="sd">$ python3 open_python_module_code.py string</span>
+</span><span id="__span-14-7"><a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a><span class="sd">$ python3 open_python_module_code.py datetime</span>
+</span><span id="__span-14-8"><a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a><span class="sd">&quot;&quot;&quot;</span>
+</span><span id="__span-14-9"><a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a>
+</span><span id="__span-14-10"><a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a><span class="kn">import</span> <span class="nn">os</span>
+</span><span id="__span-14-11"><a id="__codelineno-14-11" name="__codelineno-14-11" href="#__codelineno-14-11"></a><span class="kn">import</span> <span class="nn">sys</span>
+</span><span id="__span-14-12"><a id="__codelineno-14-12" name="__codelineno-14-12" href="#__codelineno-14-12"></a><span class="kn">import</span> <span class="nn">importlib</span>
+</span><span id="__span-14-13"><a id="__codelineno-14-13" name="__codelineno-14-13" href="#__codelineno-14-13"></a>
+</span><span id="__span-14-14"><a id="__codelineno-14-14" name="__codelineno-14-14" href="#__codelineno-14-14"></a>
+</span><span id="__span-14-15"><a id="__codelineno-14-15" name="__codelineno-14-15" href="#__codelineno-14-15"></a><span class="k">def</span> <span class="nf">open_module_source_code</span><span class="p">(</span><span class="n">str_module_name</span><span class="p">):</span>
+</span><span id="__span-14-16"><a id="__codelineno-14-16" name="__codelineno-14-16" href="#__codelineno-14-16"></a>    <span class="k">try</span><span class="p">:</span>
+</span><span id="__span-14-17"><a id="__codelineno-14-17" name="__codelineno-14-17" href="#__codelineno-14-17"></a>        <span class="n">dynamic_module</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">str_module_name</span><span class="p">)</span>
+</span><span id="__span-14-18"><a id="__codelineno-14-18" name="__codelineno-14-18" href="#__codelineno-14-18"></a>        <span class="n">str_cmd</span> <span class="o">=</span> <span class="s1">&#39;code &#39;</span>  <span class="c1"># &#39;open &#39; # &#39;subl &#39;</span>
+</span><span id="__span-14-19"><a id="__codelineno-14-19" name="__codelineno-14-19" href="#__codelineno-14-19"></a>        <span class="c1"># module_path = inspect.getsourcefile(str_module_name)</span>
+</span><span id="__span-14-20"><a id="__codelineno-14-20" name="__codelineno-14-20" href="#__codelineno-14-20"></a>        <span class="n">str_file</span> <span class="o">=</span> <span class="n">dynamic_module</span><span class="o">.</span><span class="vm">__file__</span>  <span class="c1"># 绝对路径</span>
+</span><span id="__span-14-21"><a id="__codelineno-14-21" name="__codelineno-14-21" href="#__codelineno-14-21"></a>        <span class="k">if</span> <span class="n">str_file</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+</span><span id="__span-14-22"><a id="__codelineno-14-22" name="__codelineno-14-22" href="#__codelineno-14-22"></a>            <span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="n">file_name</span><span class="p">)</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">str_file</span><span class="p">)</span>
+</span><span id="__span-14-23"><a id="__codelineno-14-23" name="__codelineno-14-23" href="#__codelineno-14-23"></a>            <span class="c1"># dot_idx = str_file.rindex(os.extsep)</span>
+</span><span id="__span-14-24"><a id="__codelineno-14-24" name="__codelineno-14-24" href="#__codelineno-14-24"></a>            <span class="c1"># file_ext = str_file[(dot_idx + 1):]</span>
+</span><span id="__span-14-25"><a id="__codelineno-14-25" name="__codelineno-14-25" href="#__codelineno-14-25"></a>            <span class="p">(</span><span class="n">file_name_prefix</span><span class="p">,</span> <span class="n">file_name_suffix</span><span class="p">)</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">file_name</span><span class="p">)</span>
+</span><span id="__span-14-26"><a id="__codelineno-14-26" name="__codelineno-14-26" href="#__codelineno-14-26"></a>            <span class="k">if</span> <span class="n">file_name_suffix</span> <span class="o">==</span> <span class="s1">&#39;.py&#39;</span><span class="p">:</span>  <span class="c1"># ext</span>
+</span><span id="__span-14-27"><a id="__codelineno-14-27" name="__codelineno-14-27" href="#__codelineno-14-27"></a>                <span class="k">if</span> <span class="n">file_name_prefix</span> <span class="o">==</span> <span class="s1">&#39;__init__&#39;</span><span class="p">:</span>
+</span><span id="__span-14-28"><a id="__codelineno-14-28" name="__codelineno-14-28" href="#__codelineno-14-28"></a>                    <span class="nb">print</span><span class="p">(</span><span class="n">str_cmd</span> <span class="o">+</span> <span class="n">file_path</span><span class="p">)</span>
+</span><span id="__span-14-29"><a id="__codelineno-14-29" name="__codelineno-14-29" href="#__codelineno-14-29"></a>                    <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="n">str_cmd</span> <span class="o">+</span> <span class="n">file_path</span><span class="p">)</span>  <span class="c1"># vscode打开目录</span>
+</span><span id="__span-14-30"><a id="__codelineno-14-30" name="__codelineno-14-30" href="#__codelineno-14-30"></a>                <span class="k">else</span><span class="p">:</span>
+</span><span id="__span-14-31"><a id="__codelineno-14-31" name="__codelineno-14-31" href="#__codelineno-14-31"></a>                    <span class="nb">print</span><span class="p">(</span><span class="n">str_cmd</span> <span class="o">+</span> <span class="n">str_file</span><span class="p">)</span>
+</span><span id="__span-14-32"><a id="__codelineno-14-32" name="__codelineno-14-32" href="#__codelineno-14-32"></a>                    <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="n">str_cmd</span> <span class="o">+</span> <span class="n">str_file</span><span class="p">)</span>  <span class="c1"># vscode打开文件</span>
+</span><span id="__span-14-33"><a id="__codelineno-14-33" name="__codelineno-14-33" href="#__codelineno-14-33"></a>            <span class="k">else</span><span class="p">:</span>  <span class="c1"># &#39;module.cpython*.so&#39;</span>
+</span><span id="__span-14-34"><a id="__codelineno-14-34" name="__codelineno-14-34" href="#__codelineno-14-34"></a>                <span class="c1"># file_name_idx = str_file.rindex(os.sep)</span>
+</span><span id="__span-14-35"><a id="__codelineno-14-35" name="__codelineno-14-35" href="#__codelineno-14-35"></a>                <span class="c1"># file_name = str_file[file_name_idx+1:]</span>
+</span><span id="__span-14-36"><a id="__codelineno-14-36" name="__codelineno-14-36" href="#__codelineno-14-36"></a>                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;module file: &#39;</span><span class="p">,</span> <span class="n">str_file</span><span class="p">)</span>
+</span><span id="__span-14-37"><a id="__codelineno-14-37" name="__codelineno-14-37" href="#__codelineno-14-37"></a>        <span class="k">else</span><span class="p">:</span>
+</span><span id="__span-14-38"><a id="__codelineno-14-38" name="__codelineno-14-38" href="#__codelineno-14-38"></a>            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;module file not exist!&#39;</span><span class="p">)</span>
+</span><span id="__span-14-39"><a id="__codelineno-14-39" name="__codelineno-14-39" href="#__codelineno-14-39"></a>    <span class="k">except</span> <span class="p">(</span><span class="ne">ImportError</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">,</span> <span class="ne">ValueError</span><span class="p">)</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+</span><span id="__span-14-40"><a id="__codelineno-14-40" name="__codelineno-14-40" href="#__codelineno-14-40"></a>        <span class="nb">print</span><span class="p">(</span><span class="n">e</span><span class="p">)</span>
+</span><span id="__span-14-41"><a id="__codelineno-14-41" name="__codelineno-14-41" href="#__codelineno-14-41"></a>        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+</span><span id="__span-14-42"><a id="__codelineno-14-42" name="__codelineno-14-42" href="#__codelineno-14-42"></a>
+</span><span id="__span-14-43"><a id="__codelineno-14-43" name="__codelineno-14-43" href="#__codelineno-14-43"></a>
+</span><span id="__span-14-44"><a id="__codelineno-14-44" name="__codelineno-14-44" href="#__codelineno-14-44"></a><span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">args</span><span class="p">):</span>
+</span><span id="__span-14-45"><a id="__codelineno-14-45" name="__codelineno-14-45" href="#__codelineno-14-45"></a>    <span class="n">open_module_source_code</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</span><span id="__span-14-46"><a id="__codelineno-14-46" name="__codelineno-14-46" href="#__codelineno-14-46"></a>
+</span><span id="__span-14-47"><a id="__codelineno-14-47" name="__codelineno-14-47" href="#__codelineno-14-47"></a>
+</span><span id="__span-14-48"><a id="__codelineno-14-48" name="__codelineno-14-48" href="#__codelineno-14-48"></a><span class="c1"># main entry</span>
+</span><span id="__span-14-49"><a id="__codelineno-14-49" name="__codelineno-14-49" href="#__codelineno-14-49"></a><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+</span><span id="__span-14-50"><a id="__codelineno-14-50" name="__codelineno-14-50" href="#__codelineno-14-50"></a>    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;This program is being run by itself&#39;</span><span class="p">)</span>
+</span><span id="__span-14-51"><a id="__codelineno-14-51" name="__codelineno-14-51" href="#__codelineno-14-51"></a>    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+</span><span id="__span-14-52"><a id="__codelineno-14-52" name="__codelineno-14-52" href="#__codelineno-14-52"></a>        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;please input module name&#39;</span><span class="p">)</span>
+</span><span id="__span-14-53"><a id="__codelineno-14-53" name="__codelineno-14-53" href="#__codelineno-14-53"></a>    <span class="k">else</span><span class="p">:</span>
+</span><span id="__span-14-54"><a id="__codelineno-14-54" name="__codelineno-14-54" href="#__codelineno-14-54"></a>        <span class="n">main</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+</span><span id="__span-14-55"><a id="__codelineno-14-55" name="__codelineno-14-55" href="#__codelineno-14-55"></a><span class="k">else</span><span class="p">:</span>
+</span><span id="__span-14-56"><a id="__codelineno-14-56" name="__codelineno-14-56" href="#__codelineno-14-56"></a>    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;I am being imported from another module&#39;</span><span class="p">)</span>
+</span></code></pre></div>
+</details>
+<ol>
+<li>读取模块所在代码路径：</li>
+</ol>
+<blockquote>
+<p><code>dynamic_module = importlib.import_module(module)</code> 导入指定 module，然后取其 <code>__file__</code> 属性，等效于 <code>module_path = inspect.getsourcefile(str_module_name)</code> 取其绝对路径。</p>
+</blockquote>
+<ol start="2">
+<li>判断文件后缀名是 <code>.py</code>：如果文件名是 <code>__init__.py</code>，则用 vscode 打开所在目录；否则用 vscode 打开py源码。</li>
+</ol>
+<p>以下为几组用例执行结果：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="c1"># ImportError</span>
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>$<span class="w"> </span>python3<span class="w"> </span>open_python_module_code.py<span class="w"> </span>str
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>This<span class="w"> </span>program<span class="w"> </span>is<span class="w"> </span>being<span class="w"> </span>run<span class="w"> </span>by<span class="w"> </span>itself
+</span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a>No<span class="w"> </span>module<span class="w"> </span>named<span class="w"> </span><span class="s1">&#39;str&#39;</span>
+</span><span id="__span-15-5"><a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a>
+</span><span id="__span-15-6"><a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a><span class="c1"># AttributeError</span>
+</span><span id="__span-15-7"><a id="__codelineno-15-7" name="__codelineno-15-7" href="#__codelineno-15-7"></a>$<span class="w"> </span>python3<span class="w"> </span>open_python_module_code.py<span class="w"> </span>builtins
+</span><span id="__span-15-8"><a id="__codelineno-15-8" name="__codelineno-15-8" href="#__codelineno-15-8"></a>This<span class="w"> </span>program<span class="w"> </span>is<span class="w"> </span>being<span class="w"> </span>run<span class="w"> </span>by<span class="w"> </span>itself
+</span><span id="__span-15-9"><a id="__codelineno-15-9" name="__codelineno-15-9" href="#__codelineno-15-9"></a>module<span class="w"> </span><span class="s1">&#39;builtins&#39;</span><span class="w"> </span>has<span class="w"> </span>no<span class="w"> </span>attribute<span class="w"> </span><span class="s1">&#39;__file__&#39;</span>
+</span><span id="__span-15-10"><a id="__codelineno-15-10" name="__codelineno-15-10" href="#__codelineno-15-10"></a>
+</span><span id="__span-15-11"><a id="__codelineno-15-11" name="__codelineno-15-11" href="#__codelineno-15-11"></a><span class="c1"># cpython.so</span>
+</span><span id="__span-15-12"><a id="__codelineno-15-12" name="__codelineno-15-12" href="#__codelineno-15-12"></a>$<span class="w"> </span>python3<span class="w"> </span>open_python_module_code.py<span class="w"> </span>array
+</span><span id="__span-15-13"><a id="__codelineno-15-13" name="__codelineno-15-13" href="#__codelineno-15-13"></a>This<span class="w"> </span>program<span class="w"> </span>is<span class="w"> </span>being<span class="w"> </span>run<span class="w"> </span>by<span class="w"> </span>itself
+</span><span id="__span-15-14"><a id="__codelineno-15-14" name="__codelineno-15-14" href="#__codelineno-15-14"></a>module<span class="w"> </span>file:<span class="w">  </span>/usr/local/Cellar/python@3.9/3.9.7/Frameworks/Python.framework/Versions/3.9/lib/python3.9/lib-dynload/array.cpython-39-darwin.so
+</span><span id="__span-15-15"><a id="__codelineno-15-15" name="__codelineno-15-15" href="#__codelineno-15-15"></a>
+</span><span id="__span-15-16"><a id="__codelineno-15-16" name="__codelineno-15-16" href="#__codelineno-15-16"></a><span class="c1"># python sourcefile</span>
+</span><span id="__span-15-17"><a id="__codelineno-15-17" name="__codelineno-15-17" href="#__codelineno-15-17"></a>$<span class="w"> </span>python3<span class="w"> </span>open_python_module_code.py<span class="w"> </span>string
+</span><span id="__span-15-18"><a id="__codelineno-15-18" name="__codelineno-15-18" href="#__codelineno-15-18"></a>This<span class="w"> </span>program<span class="w"> </span>is<span class="w"> </span>being<span class="w"> </span>run<span class="w"> </span>by<span class="w"> </span>itself
+</span><span id="__span-15-19"><a id="__codelineno-15-19" name="__codelineno-15-19" href="#__codelineno-15-19"></a>code<span class="w"> </span>/usr/local/Cellar/python@3.9/3.9.7/Frameworks/Python.framework/Versions/3.9/lib/python3.9/string.py
+</span><span id="__span-15-20"><a id="__codelineno-15-20" name="__codelineno-15-20" href="#__codelineno-15-20"></a>
+</span><span id="__span-15-21"><a id="__codelineno-15-21" name="__codelineno-15-21" href="#__codelineno-15-21"></a><span class="c1"># python sourcefile</span>
+</span><span id="__span-15-22"><a id="__codelineno-15-22" name="__codelineno-15-22" href="#__codelineno-15-22"></a>$<span class="w"> </span>python3<span class="w"> </span>open_python_module_code.py<span class="w"> </span>argparse
+</span><span id="__span-15-23"><a id="__codelineno-15-23" name="__codelineno-15-23" href="#__codelineno-15-23"></a>This<span class="w"> </span>program<span class="w"> </span>is<span class="w"> </span>being<span class="w"> </span>run<span class="w"> </span>by<span class="w"> </span>itself
+</span><span id="__span-15-24"><a id="__codelineno-15-24" name="__codelineno-15-24" href="#__codelineno-15-24"></a>code<span class="w"> </span>/usr/local/Cellar/python@3.9/3.9.7/Frameworks/Python.framework/Versions/3.9/lib/python3.9/argparse.py
+</span><span id="__span-15-25"><a id="__codelineno-15-25" name="__codelineno-15-25" href="#__codelineno-15-25"></a>
+</span><span id="__span-15-26"><a id="__codelineno-15-26" name="__codelineno-15-26" href="#__codelineno-15-26"></a><span class="c1"># python dir</span>
+</span><span id="__span-15-27"><a id="__codelineno-15-27" name="__codelineno-15-27" href="#__codelineno-15-27"></a>$<span class="w"> </span>python3<span class="w"> </span>open_python_module_code.py<span class="w"> </span>pdfminer
+</span><span id="__span-15-28"><a id="__codelineno-15-28" name="__codelineno-15-28" href="#__codelineno-15-28"></a>This<span class="w"> </span>program<span class="w"> </span>is<span class="w"> </span>being<span class="w"> </span>run<span class="w"> </span>by<span class="w"> </span>itself
+</span><span id="__span-15-29"><a id="__codelineno-15-29" name="__codelineno-15-29" href="#__codelineno-15-29"></a>code<span class="w"> </span>/usr/local/lib/python3.9/site-packages/pdfminer
+</span></code></pre></div>
+<h3 id="inspect">inspect<a class="headerlink" href="#inspect" title="Permanent link">#</a></h3>
+<p><a href="https://stackoverflow.com/questions/269795/how-do-i-find-the-location-of-python-module-sources">How do I find the location of Python module sources?</a></p>
+<p>除了通过 <code>__file__</code> 属性外 ，还可通过 inspect 模块提供的一些接口，来查看某个类、对象或函数所属模块以及源文件等信息。参考 <a href="https://docs.python.org/3/library/inspect.html#retrieving-source-code">29.12.2. Retrieving source code</a> 章节。</p>
+<h4 id="inspectgetfile">inspect.getfile<a class="headerlink" href="#inspectgetfile" title="Permanent link">#</a></h4>
+<p><code>inspect.getfile(object)</code> 接口用于获取定义 object（模块、类或函数）的文件，python 源码或 cpython 动态库（so）。</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>inspect.getfile<span class="o">(</span>object<span class="o">)</span>
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>Return<span class="w"> </span>the<span class="w"> </span>name<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span><span class="o">(</span>text<span class="w"> </span>or<span class="w"> </span>binary<span class="o">)</span><span class="w"> </span>file<span class="w"> </span><span class="k">in</span><span class="w"> </span>which<span class="w"> </span>an<span class="w"> </span>object<span class="w"> </span>was<span class="w"> </span>defined.<span class="w"> </span>This<span class="w"> </span>will<span class="w"> </span>fail<span class="w"> </span>with<span class="w"> </span>a<span class="w"> </span>TypeError<span class="w"> </span><span class="k">if</span><span class="w"> </span>the<span class="w"> </span>object<span class="w"> </span>is<span class="w"> </span>a<span class="w"> </span>built-in<span class="w"> </span>module,<span class="w"> </span>class,<span class="w"> </span>or<span class="w"> </span><span class="k">function</span>.
+</span></code></pre></div>
+<p>对于内置模块、类或函数，调用该接口将报 TypeError 异常。</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>&gt;&gt;&gt;<span class="w"> </span><span class="c1"># string 模块的代码</span>
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>&gt;&gt;&gt;<span class="w"> </span>inspect.getfile<span class="o">(</span>string<span class="o">)</span>
+</span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a><span class="s1">&#39;/usr/local/Cellar/python/3.6.5/Frameworks/Python.framework/Versions/3.6/lib/python3.6/string.py&#39;</span>
+</span><span id="__span-17-4"><a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a>&gt;&gt;&gt;
+</span><span id="__span-17-5"><a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a>&gt;&gt;&gt;<span class="w"> </span><span class="c1"># array 模块的 cpython 实现 so</span>
+</span><span id="__span-17-6"><a id="__codelineno-17-6" name="__codelineno-17-6" href="#__codelineno-17-6"></a>&gt;&gt;&gt;<span class="w"> </span>inspect.getfile<span class="o">(</span>array<span class="o">)</span>
+</span><span id="__span-17-7"><a id="__codelineno-17-7" name="__codelineno-17-7" href="#__codelineno-17-7"></a><span class="s1">&#39;/usr/local/Cellar/python/3.6.5/Frameworks/Python.framework/Versions/3.6/lib/python3.6/lib-dynload/array.cpython-36m-darwin.so&#39;</span>
+</span><span id="__span-17-8"><a id="__codelineno-17-8" name="__codelineno-17-8" href="#__codelineno-17-8"></a>&gt;&gt;&gt;
+</span><span id="__span-17-9"><a id="__codelineno-17-9" name="__codelineno-17-9" href="#__codelineno-17-9"></a>&gt;&gt;&gt;<span class="w"> </span><span class="c1"># str 类为内置 built-in class，报 TypeError 异常</span>
+</span><span id="__span-17-10"><a id="__codelineno-17-10" name="__codelineno-17-10" href="#__codelineno-17-10"></a>&gt;&gt;&gt;<span class="w"> </span>inspect.getfile<span class="o">(</span>str<span class="o">)</span>
+</span><span id="__span-17-11"><a id="__codelineno-17-11" name="__codelineno-17-11" href="#__codelineno-17-11"></a>Traceback<span class="w"> </span><span class="o">(</span>most<span class="w"> </span>recent<span class="w"> </span>call<span class="w"> </span>last<span class="o">)</span>:
+</span><span id="__span-17-12"><a id="__codelineno-17-12" name="__codelineno-17-12" href="#__codelineno-17-12"></a><span class="w">  </span>File<span class="w"> </span><span class="s2">&quot;&lt;stdin&gt;&quot;</span>,<span class="w"> </span>line<span class="w"> </span><span class="m">1</span>,<span class="w"> </span><span class="k">in</span><span class="w"> </span>&lt;module&gt;
+</span><span id="__span-17-13"><a id="__codelineno-17-13" name="__codelineno-17-13" href="#__codelineno-17-13"></a><span class="w">  </span>File<span class="w"> </span><span class="s2">&quot;/usr/local/Cellar/python/3.6.5/Frameworks/Python.framework/Versions/3.6/lib/python3.6/inspect.py&quot;</span>,<span class="w"> </span>line<span class="w"> </span><span class="m">654</span>,<span class="w"> </span><span class="k">in</span><span class="w"> </span>getfile
+</span><span id="__span-17-14"><a id="__codelineno-17-14" name="__codelineno-17-14" href="#__codelineno-17-14"></a><span class="w">    </span>raise<span class="w"> </span>TypeError<span class="o">(</span><span class="s1">&#39;{!r} is a built-in class&#39;</span>.format<span class="o">(</span>object<span class="o">))</span>
+</span><span id="__span-17-15"><a id="__codelineno-17-15" name="__codelineno-17-15" href="#__codelineno-17-15"></a>TypeError:<span class="w"> </span>&lt;module<span class="w"> </span><span class="s1">&#39;builtins&#39;</span><span class="w"> </span><span class="o">(</span>built-in<span class="o">)</span>&gt;<span class="w"> </span>is<span class="w"> </span>a<span class="w"> </span>built-in<span class="w"> </span>class
+</span></code></pre></div>
+<h4 id="inspectgetsourcefile">inspect.getsourcefile<a class="headerlink" href="#inspectgetsourcefile" title="Permanent link">#</a></h4>
+<p><code>inspect.getsourcefile(object)</code> 接口用于获取定义 object（模块、类或函数）的 python 源文件。</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>inspect.getsourcefile<span class="o">(</span>object<span class="o">)</span>
+</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>Return<span class="w"> </span>the<span class="w"> </span>name<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>Python<span class="w"> </span><span class="nb">source</span><span class="w"> </span>file<span class="w"> </span><span class="k">in</span><span class="w"> </span>which<span class="w"> </span>an<span class="w"> </span>object<span class="w"> </span>was<span class="w"> </span>defined.<span class="w"> </span>This<span class="w"> </span>will<span class="w"> </span>fail<span class="w"> </span>with<span class="w"> </span>a<span class="w"> </span>TypeError<span class="w"> </span><span class="k">if</span><span class="w"> </span>the<span class="w"> </span>object<span class="w"> </span>is<span class="w"> </span>a<span class="w"> </span>built-in<span class="w"> </span>module,<span class="w"> </span>class,<span class="w"> </span>or<span class="w"> </span><span class="k">function</span>.
+</span></code></pre></div>
+<p>对于通过 cpython.so 动态库提供的模块接口，没有 python 源码，返回空。<br />
+对于内置模块、类或函数，调用该接口将报 TypeError 异常。  </p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>&gt;&gt;&gt;<span class="w"> </span><span class="c1"># string 模块的代码</span>
+</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a>&gt;&gt;&gt;<span class="w"> </span>inspect.getsourcefile<span class="o">(</span>string<span class="o">))</span>
+</span><span id="__span-19-3"><a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a>/usr/local/Cellar/python/3.6.5/Frameworks/Python.framework/Versions/3.6/lib/python3.6/string.py
+</span><span id="__span-19-4"><a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a>&gt;&gt;&gt;
+</span><span id="__span-19-5"><a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a>&gt;&gt;&gt;<span class="w"> </span><span class="c1"># array 模块的源码？</span>
+</span><span id="__span-19-6"><a id="__codelineno-19-6" name="__codelineno-19-6" href="#__codelineno-19-6"></a>&gt;&gt;&gt;<span class="w"> </span>inspect.getsourcefile<span class="o">(</span>array<span class="o">)</span>
+</span><span id="__span-19-7"><a id="__codelineno-19-7" name="__codelineno-19-7" href="#__codelineno-19-7"></a>&gt;&gt;&gt;<span class="w"> </span>
+</span><span id="__span-19-8"><a id="__codelineno-19-8" name="__codelineno-19-8" href="#__codelineno-19-8"></a>&gt;&gt;&gt;<span class="w"> </span><span class="c1"># str 类为内置 built-in class，报 TypeError 异常</span>
+</span><span id="__span-19-9"><a id="__codelineno-19-9" name="__codelineno-19-9" href="#__codelineno-19-9"></a>&gt;&gt;&gt;<span class="w"> </span>inspect.getsourcefile<span class="o">(</span>str<span class="o">)</span>
+</span><span id="__span-19-10"><a id="__codelineno-19-10" name="__codelineno-19-10" href="#__codelineno-19-10"></a>Traceback<span class="w"> </span><span class="o">(</span>most<span class="w"> </span>recent<span class="w"> </span>call<span class="w"> </span>last<span class="o">)</span>:
+</span><span id="__span-19-11"><a id="__codelineno-19-11" name="__codelineno-19-11" href="#__codelineno-19-11"></a><span class="w">  </span>File<span class="w"> </span><span class="s2">&quot;&lt;stdin&gt;&quot;</span>,<span class="w"> </span>line<span class="w"> </span><span class="m">1</span>,<span class="w"> </span><span class="k">in</span><span class="w"> </span>&lt;module&gt;
+</span><span id="__span-19-12"><a id="__codelineno-19-12" name="__codelineno-19-12" href="#__codelineno-19-12"></a><span class="w">  </span>File<span class="w"> </span><span class="s2">&quot;/usr/local/Cellar/python/3.6.5/Frameworks/Python.framework/Versions/3.6/lib/python3.6/inspect.py&quot;</span>,<span class="w"> </span>line<span class="w"> </span><span class="m">684</span>,<span class="w"> </span><span class="k">in</span><span class="w"> </span>getsourcefile
+</span><span id="__span-19-13"><a id="__codelineno-19-13" name="__codelineno-19-13" href="#__codelineno-19-13"></a><span class="w">    </span><span class="nv">filename</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>getfile<span class="o">(</span>object<span class="o">)</span>
+</span><span id="__span-19-14"><a id="__codelineno-19-14" name="__codelineno-19-14" href="#__codelineno-19-14"></a><span class="w">  </span>File<span class="w"> </span><span class="s2">&quot;/usr/local/Cellar/python/3.6.5/Frameworks/Python.framework/Versions/3.6/lib/python3.6/inspect.py&quot;</span>,<span class="w"> </span>line<span class="w"> </span><span class="m">654</span>,<span class="w"> </span><span class="k">in</span><span class="w"> </span>getfile
+</span><span id="__span-19-15"><a id="__codelineno-19-15" name="__codelineno-19-15" href="#__codelineno-19-15"></a><span class="w">    </span>raise<span class="w"> </span>TypeError<span class="o">(</span><span class="s1">&#39;{!r} is a built-in class&#39;</span>.format<span class="o">(</span>object<span class="o">))</span>
+</span><span id="__span-19-16"><a id="__codelineno-19-16" name="__codelineno-19-16" href="#__codelineno-19-16"></a>TypeError:<span class="w"> </span>&lt;module<span class="w"> </span><span class="s1">&#39;builtins&#39;</span><span class="w"> </span><span class="o">(</span>built-in<span class="o">)</span>&gt;<span class="w"> </span>is<span class="w"> </span>a<span class="w"> </span>built-in<span class="w"> </span>class
+</span></code></pre></div>
+<h4 id="inspectgetsource">inspect.getsource<a class="headerlink" href="#inspectgetsource" title="Permanent link">#</a></h4>
+<p><code>inspect.getsource(object)</code> 接口用于获取 object（模块、类或函数）的 python 实现源码。</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>inspect.getsource<span class="o">(</span>object<span class="o">)</span>
+</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>Return<span class="w"> </span>the<span class="w"> </span>text<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span><span class="nb">source</span><span class="w"> </span>code<span class="w"> </span><span class="k">for</span><span class="w"> </span>an<span class="w"> </span>object.<span class="w"> </span>The<span class="w"> </span>argument<span class="w"> </span>may<span class="w"> </span>be<span class="w"> </span>a<span class="w"> </span>module,<span class="w"> </span>class,<span class="w"> </span>method,<span class="w"> </span><span class="k">function</span>,<span class="w"> </span>traceback,<span class="w"> </span>frame,<span class="w"> </span>or<span class="w"> </span>code<span class="w"> </span>object.<span class="w"> </span>The<span class="w"> </span><span class="nb">source</span><span class="w"> </span>code<span class="w"> </span>is<span class="w"> </span>returned<span class="w"> </span>as<span class="w"> </span>a<span class="w"> </span>single<span class="w"> </span>string.<span class="w"> </span>An<span class="w"> </span>OSError<span class="w"> </span>is<span class="w"> </span>raised<span class="w"> </span><span class="k">if</span><span class="w"> </span>the<span class="w"> </span><span class="nb">source</span><span class="w"> </span>code<span class="w"> </span>cannot<span class="w"> </span>be<span class="w"> </span>retrieved.
+</span></code></pre></div>
+<p>对于内置模块(builtins) 等以 so 形式未提供 python 源码，将报 TypeError 异常。</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>&gt;&gt;&gt;<span class="w"> </span><span class="c1"># 解释器控制台输出 string.Template.substitute 实现源码</span>
+</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>&gt;&gt;&gt;<span class="w"> </span>inspect.getsource<span class="o">(</span>string.Template.substitute<span class="o">))</span>
+</span><span id="__span-21-3"><a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a><span class="w">    </span>def<span class="w"> </span>substitute<span class="o">(</span>*args,<span class="w"> </span>**kws<span class="o">)</span>:
+</span><span id="__span-21-4"><a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a><span class="w">        </span><span class="k">if</span><span class="w"> </span>not<span class="w"> </span>args:
+</span><span id="__span-21-5"><a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a><span class="w">            </span>raise<span class="w"> </span>TypeError<span class="o">(</span><span class="s2">&quot;descriptor &#39;substitute&#39; of &#39;Template&#39; object &quot;</span>
+</span><span id="__span-21-6"><a id="__codelineno-21-6" name="__codelineno-21-6" href="#__codelineno-21-6"></a><span class="w">                            </span><span class="s2">&quot;needs an argument&quot;</span><span class="o">)</span>
+</span><span id="__span-21-7"><a id="__codelineno-21-7" name="__codelineno-21-7" href="#__codelineno-21-7"></a><span class="w">        </span>self,<span class="w"> </span>*args<span class="w"> </span><span class="o">=</span><span class="w"> </span>args<span class="w">  </span><span class="c1"># allow the &quot;self&quot; keyword be passed</span>
+</span><span id="__span-21-8"><a id="__codelineno-21-8" name="__codelineno-21-8" href="#__codelineno-21-8"></a><span class="w">        </span><span class="k">if</span><span class="w"> </span>len<span class="o">(</span>args<span class="o">)</span><span class="w"> </span>&gt;<span class="w"> </span><span class="m">1</span>:
+</span><span id="__span-21-9"><a id="__codelineno-21-9" name="__codelineno-21-9" href="#__codelineno-21-9"></a><span class="w">            </span>raise<span class="w"> </span>TypeError<span class="o">(</span><span class="s1">&#39;Too many positional arguments&#39;</span><span class="o">)</span>
+</span><span id="__span-21-10"><a id="__codelineno-21-10" name="__codelineno-21-10" href="#__codelineno-21-10"></a><span class="w">        </span><span class="k">if</span><span class="w"> </span>not<span class="w"> </span>args:
+</span><span id="__span-21-11"><a id="__codelineno-21-11" name="__codelineno-21-11" href="#__codelineno-21-11"></a><span class="w">            </span><span class="nv">mapping</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>kws
+</span><span id="__span-21-12"><a id="__codelineno-21-12" name="__codelineno-21-12" href="#__codelineno-21-12"></a><span class="w">        </span><span class="k">elif</span><span class="w"> </span>kws:
+</span><span id="__span-21-13"><a id="__codelineno-21-13" name="__codelineno-21-13" href="#__codelineno-21-13"></a><span class="w">            </span><span class="nv">mapping</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>_ChainMap<span class="o">(</span>kws,<span class="w"> </span>args<span class="o">[</span><span class="m">0</span><span class="o">])</span>
+</span><span id="__span-21-14"><a id="__codelineno-21-14" name="__codelineno-21-14" href="#__codelineno-21-14"></a><span class="w">        </span><span class="k">else</span>:
+</span><span id="__span-21-15"><a id="__codelineno-21-15" name="__codelineno-21-15" href="#__codelineno-21-15"></a><span class="w">            </span><span class="nv">mapping</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>args<span class="o">[</span><span class="m">0</span><span class="o">]</span>
+</span><span id="__span-21-16"><a id="__codelineno-21-16" name="__codelineno-21-16" href="#__codelineno-21-16"></a><span class="w">        </span><span class="c1"># Helper function for .sub()</span>
+</span><span id="__span-21-17"><a id="__codelineno-21-17" name="__codelineno-21-17" href="#__codelineno-21-17"></a><span class="w">        </span>def<span class="w"> </span>convert<span class="o">(</span>mo<span class="o">)</span>:
+</span><span id="__span-21-18"><a id="__codelineno-21-18" name="__codelineno-21-18" href="#__codelineno-21-18"></a><span class="w">            </span><span class="c1"># Check the most common path first.</span>
+</span><span id="__span-21-19"><a id="__codelineno-21-19" name="__codelineno-21-19" href="#__codelineno-21-19"></a><span class="w">            </span><span class="nv">named</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>mo.group<span class="o">(</span><span class="s1">&#39;named&#39;</span><span class="o">)</span><span class="w"> </span>or<span class="w"> </span>mo.group<span class="o">(</span><span class="s1">&#39;braced&#39;</span><span class="o">)</span>
+</span><span id="__span-21-20"><a id="__codelineno-21-20" name="__codelineno-21-20" href="#__codelineno-21-20"></a><span class="w">            </span><span class="k">if</span><span class="w"> </span>named<span class="w"> </span>is<span class="w"> </span>not<span class="w"> </span>None:
+</span><span id="__span-21-21"><a id="__codelineno-21-21" name="__codelineno-21-21" href="#__codelineno-21-21"></a><span class="w">                </span><span class="k">return</span><span class="w"> </span>str<span class="o">(</span>mapping<span class="o">[</span>named<span class="o">])</span>
+</span><span id="__span-21-22"><a id="__codelineno-21-22" name="__codelineno-21-22" href="#__codelineno-21-22"></a><span class="w">            </span><span class="k">if</span><span class="w"> </span>mo.group<span class="o">(</span><span class="s1">&#39;escaped&#39;</span><span class="o">)</span><span class="w"> </span>is<span class="w"> </span>not<span class="w"> </span>None:
+</span><span id="__span-21-23"><a id="__codelineno-21-23" name="__codelineno-21-23" href="#__codelineno-21-23"></a><span class="w">                </span><span class="k">return</span><span class="w"> </span>self.delimiter
+</span><span id="__span-21-24"><a id="__codelineno-21-24" name="__codelineno-21-24" href="#__codelineno-21-24"></a><span class="w">            </span><span class="k">if</span><span class="w"> </span>mo.group<span class="o">(</span><span class="s1">&#39;invalid&#39;</span><span class="o">)</span><span class="w"> </span>is<span class="w"> </span>not<span class="w"> </span>None:
+</span><span id="__span-21-25"><a id="__codelineno-21-25" name="__codelineno-21-25" href="#__codelineno-21-25"></a><span class="w">                </span>self._invalid<span class="o">(</span>mo<span class="o">)</span>
+</span><span id="__span-21-26"><a id="__codelineno-21-26" name="__codelineno-21-26" href="#__codelineno-21-26"></a><span class="w">            </span>raise<span class="w"> </span>ValueError<span class="o">(</span><span class="s1">&#39;Unrecognized named group in pattern&#39;</span>,
+</span><span id="__span-21-27"><a id="__codelineno-21-27" name="__codelineno-21-27" href="#__codelineno-21-27"></a><span class="w">                             </span>self.pattern<span class="o">)</span>
+</span><span id="__span-21-28"><a id="__codelineno-21-28" name="__codelineno-21-28" href="#__codelineno-21-28"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span>self.pattern.sub<span class="o">(</span>convert,<span class="w"> </span>self.template<span class="o">)</span>
+</span><span id="__span-21-29"><a id="__codelineno-21-29" name="__codelineno-21-29" href="#__codelineno-21-29"></a>&gt;&gt;&gt;<span class="w"> </span>
+</span><span id="__span-21-30"><a id="__codelineno-21-30" name="__codelineno-21-30" href="#__codelineno-21-30"></a>&gt;&gt;&gt;<span class="w"> </span><span class="c1"># array 模块以 so 提供，未提供 python 源码，报 TypeError 异常</span>
+</span><span id="__span-21-31"><a id="__codelineno-21-31" name="__codelineno-21-31" href="#__codelineno-21-31"></a>&gt;&gt;&gt;<span class="w"> </span>inspect.getsource<span class="o">(</span>array<span class="o">)</span>
+</span><span id="__span-21-32"><a id="__codelineno-21-32" name="__codelineno-21-32" href="#__codelineno-21-32"></a>Traceback<span class="w"> </span><span class="o">(</span>most<span class="w"> </span>recent<span class="w"> </span>call<span class="w"> </span>last<span class="o">)</span>:
+</span><span id="__span-21-33"><a id="__codelineno-21-33" name="__codelineno-21-33" href="#__codelineno-21-33"></a><span class="w">  </span>File<span class="w"> </span><span class="s2">&quot;&lt;stdin&gt;&quot;</span>,<span class="w"> </span>line<span class="w"> </span><span class="m">1</span>,<span class="w"> </span><span class="k">in</span><span class="w"> </span>&lt;module&gt;
+</span><span id="__span-21-34"><a id="__codelineno-21-34" name="__codelineno-21-34" href="#__codelineno-21-34"></a><span class="w">  </span>File<span class="w"> </span><span class="s2">&quot;/usr/local/Cellar/python/3.6.5/Frameworks/Python.framework/Versions/3.6/lib/python3.6/inspect.py&quot;</span>,<span class="w"> </span>line<span class="w"> </span><span class="m">968</span>,<span class="w"> </span><span class="k">in</span><span class="w"> </span>getsource
+</span><span id="__span-21-35"><a id="__codelineno-21-35" name="__codelineno-21-35" href="#__codelineno-21-35"></a><span class="w">    </span>lines,<span class="w"> </span><span class="nv">lnum</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>getsourcelines<span class="o">(</span>object<span class="o">)</span>
+</span><span id="__span-21-36"><a id="__codelineno-21-36" name="__codelineno-21-36" href="#__codelineno-21-36"></a><span class="w">  </span>File<span class="w"> </span><span class="s2">&quot;/usr/local/Cellar/python/3.6.5/Frameworks/Python.framework/Versions/3.6/lib/python3.6/inspect.py&quot;</span>,<span class="w"> </span>line<span class="w"> </span><span class="m">955</span>,<span class="w"> </span><span class="k">in</span><span class="w"> </span>getsourcelines
+</span><span id="__span-21-37"><a id="__codelineno-21-37" name="__codelineno-21-37" href="#__codelineno-21-37"></a><span class="w">    </span>lines,<span class="w"> </span><span class="nv">lnum</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>findsource<span class="o">(</span>object<span class="o">)</span>
+</span><span id="__span-21-38"><a id="__codelineno-21-38" name="__codelineno-21-38" href="#__codelineno-21-38"></a><span class="w">  </span>File<span class="w"> </span><span class="s2">&quot;/usr/local/Cellar/python/3.6.5/Frameworks/Python.framework/Versions/3.6/lib/python3.6/inspect.py&quot;</span>,<span class="w"> </span>line<span class="w"> </span><span class="m">778</span>,<span class="w"> </span><span class="k">in</span><span class="w"> </span>findsource
+</span><span id="__span-21-39"><a id="__codelineno-21-39" name="__codelineno-21-39" href="#__codelineno-21-39"></a><span class="w">    </span>raise<span class="w"> </span>OSError<span class="o">(</span><span class="s1">&#39;source code not available&#39;</span><span class="o">)</span>
+</span><span id="__span-21-40"><a id="__codelineno-21-40" name="__codelineno-21-40" href="#__codelineno-21-40"></a>OSError:<span class="w"> </span><span class="nb">source</span><span class="w"> </span>code<span class="w"> </span>not<span class="w"> </span>available
+</span><span id="__span-21-41"><a id="__codelineno-21-41" name="__codelineno-21-41" href="#__codelineno-21-41"></a>&gt;&gt;&gt;
+</span><span id="__span-21-42"><a id="__codelineno-21-42" name="__codelineno-21-42" href="#__codelineno-21-42"></a>&gt;&gt;&gt;<span class="w"> </span><span class="c1"># str 定义在内置模块(builtins)，以 so 提供，未提供 python 源码，报 TypeError 异常</span>
+</span><span id="__span-21-43"><a id="__codelineno-21-43" name="__codelineno-21-43" href="#__codelineno-21-43"></a>&gt;&gt;&gt;<span class="w"> </span>inspect.getsource<span class="o">(</span>str<span class="o">)</span>
+</span><span id="__span-21-44"><a id="__codelineno-21-44" name="__codelineno-21-44" href="#__codelineno-21-44"></a>Traceback<span class="w"> </span><span class="o">(</span>most<span class="w"> </span>recent<span class="w"> </span>call<span class="w"> </span>last<span class="o">)</span>:
+</span><span id="__span-21-45"><a id="__codelineno-21-45" name="__codelineno-21-45" href="#__codelineno-21-45"></a><span class="w">  </span>File<span class="w"> </span><span class="s2">&quot;&lt;stdin&gt;&quot;</span>,<span class="w"> </span>line<span class="w"> </span><span class="m">1</span>,<span class="w"> </span><span class="k">in</span><span class="w"> </span>&lt;module&gt;
+</span><span id="__span-21-46"><a id="__codelineno-21-46" name="__codelineno-21-46" href="#__codelineno-21-46"></a><span class="w">  </span>File<span class="w"> </span><span class="s2">&quot;/usr/local/Cellar/python/3.6.5/Frameworks/Python.framework/Versions/3.6/lib/python3.6/inspect.py&quot;</span>,<span class="w"> </span>line<span class="w"> </span><span class="m">968</span>,<span class="w"> </span><span class="k">in</span><span class="w"> </span>getsource
+</span><span id="__span-21-47"><a id="__codelineno-21-47" name="__codelineno-21-47" href="#__codelineno-21-47"></a><span class="w">    </span>lines,<span class="w"> </span><span class="nv">lnum</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>getsourcelines<span class="o">(</span>object<span class="o">)</span>
+</span><span id="__span-21-48"><a id="__codelineno-21-48" name="__codelineno-21-48" href="#__codelineno-21-48"></a><span class="w">  </span>File<span class="w"> </span><span class="s2">&quot;/usr/local/Cellar/python/3.6.5/Frameworks/Python.framework/Versions/3.6/lib/python3.6/inspect.py&quot;</span>,<span class="w"> </span>line<span class="w"> </span><span class="m">955</span>,<span class="w"> </span><span class="k">in</span><span class="w"> </span>getsourcelines
+</span><span id="__span-21-49"><a id="__codelineno-21-49" name="__codelineno-21-49" href="#__codelineno-21-49"></a><span class="w">    </span>lines,<span class="w"> </span><span class="nv">lnum</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>findsource<span class="o">(</span>object<span class="o">)</span>
+</span><span id="__span-21-50"><a id="__codelineno-21-50" name="__codelineno-21-50" href="#__codelineno-21-50"></a><span class="w">  </span>File<span class="w"> </span><span class="s2">&quot;/usr/local/Cellar/python/3.6.5/Frameworks/Python.framework/Versions/3.6/lib/python3.6/inspect.py&quot;</span>,<span class="w"> </span>line<span class="w"> </span><span class="m">768</span>,<span class="w"> </span><span class="k">in</span><span class="w"> </span>findsource
+</span><span id="__span-21-51"><a id="__codelineno-21-51" name="__codelineno-21-51" href="#__codelineno-21-51"></a><span class="w">    </span><span class="nv">file</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>getsourcefile<span class="o">(</span>object<span class="o">)</span>
+</span><span id="__span-21-52"><a id="__codelineno-21-52" name="__codelineno-21-52" href="#__codelineno-21-52"></a><span class="w">  </span>File<span class="w"> </span><span class="s2">&quot;/usr/local/Cellar/python/3.6.5/Frameworks/Python.framework/Versions/3.6/lib/python3.6/inspect.py&quot;</span>,<span class="w"> </span>line<span class="w"> </span><span class="m">684</span>,<span class="w"> </span><span class="k">in</span><span class="w"> </span>getsourcefile
+</span><span id="__span-21-53"><a id="__codelineno-21-53" name="__codelineno-21-53" href="#__codelineno-21-53"></a><span class="w">    </span><span class="nv">filename</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>getfile<span class="o">(</span>object<span class="o">)</span>
+</span><span id="__span-21-54"><a id="__codelineno-21-54" name="__codelineno-21-54" href="#__codelineno-21-54"></a><span class="w">  </span>File<span class="w"> </span><span class="s2">&quot;/usr/local/Cellar/python/3.6.5/Frameworks/Python.framework/Versions/3.6/lib/python3.6/inspect.py&quot;</span>,<span class="w"> </span>line<span class="w"> </span><span class="m">654</span>,<span class="w"> </span><span class="k">in</span><span class="w"> </span>getfile
+</span><span id="__span-21-55"><a id="__codelineno-21-55" name="__codelineno-21-55" href="#__codelineno-21-55"></a><span class="w">    </span>raise<span class="w"> </span>TypeError<span class="o">(</span><span class="s1">&#39;{!r} is a built-in class&#39;</span>.format<span class="o">(</span>object<span class="o">))</span>
+</span><span id="__span-21-56"><a id="__codelineno-21-56" name="__codelineno-21-56" href="#__codelineno-21-56"></a>TypeError:<span class="w"> </span>&lt;module<span class="w"> </span><span class="s1">&#39;builtins&#39;</span><span class="w"> </span><span class="o">(</span>built-in<span class="o">)</span>&gt;<span class="w"> </span>is<span class="w"> </span>a<span class="w"> </span>built-in<span class="w"> </span>class
+</span></code></pre></div>
+
+
+
+
+
+
+
+  
+  
+
+
+
+  
+
+
+  
+
+
+
+  <h2 id="__comments">评论</h2>
+  <!-- Insert generated snippet here -->
+  <script src="https://giscus.app/client.js"
+    data-repo="fan2/mkdocs"
+    data-repo-id="R_kgDOLltxSg"
+    data-category="Announcements"
+    data-category-id="DIC_kwDOLltxSs4CeURH"
+    data-mapping="pathname"
+    data-strict="0"
+    data-reactions-enabled="1"
+    data-emit-metadata="1"
+    data-input-position="top"
+    data-theme="preferred_color_scheme"
+    data-lang="zh-CN"
+    data-loading="lazy"
+    crossorigin="anonymous"
+    async>
+  </script>
+
+  <!-- Synchronize Giscus theme with palette -->
+  <script>
+    var giscus = document.querySelector("script[src*=giscus]")
+
+    // Set palette on initial load
+    var palette = __md_get("__palette")
+    if (palette && typeof palette.color === "object") {
+      var theme = palette.color.scheme === "slate"
+        ? "transparent_dark"
+        : "light"
+
+      // Instruct Giscus to set theme
+      giscus.setAttribute("data-theme", theme) 
+    }
+
+    // Register event handlers after documented loaded
+    document.addEventListener("DOMContentLoaded", function() {
+      var ref = document.querySelector("[data-md-component=palette]")
+      ref.addEventListener("change", function() {
+        var palette = __md_get("__palette")
+        if (palette && typeof palette.color === "object") {
+          var theme = palette.color.scheme === "slate"
+            ? "transparent_dark"
+            : "light"
+
+          // Instruct Giscus to change theme
+          var frame = document.querySelector(".giscus-frame")
+          frame.contentWindow.postMessage(
+            { giscus: { setConfig: { theme } } },
+            "https://giscus.app"
+          )
+        }
+      })
+    })
+  </script>
+
+      
+    </article>
+  </div>
+
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+        
+      
+      <nav class="md-footer__inner md-grid" aria-label="页脚" >
+        
+          
+          <a href="../2-python-module/" class="md-footer__link md-footer__link--prev" aria-label="上一页: python包和模块">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                上一页
+              </span>
+              <div class="md-ellipsis">
+                python包和模块
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../4-python-builtins/" class="md-footer__link md-footer__link--next" aria-label="下一页: python内置模块--builtins">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                下一页
+              </span>
+              <div class="md-ellipsis">
+                python内置模块--builtins
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2024- Cliff Fan
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["toc.follow", "header.autohide", "navigation.tabs", "navigation.top", "navigation.footer", "navigation.tracking", "content.code.copy", "content.code.select", "content.code.annotate"], "search": "../../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.bd41221c.min.js"></script>
+      
+        <script src="../../../javascripts/mathjax.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+        <script src="https://vercount.one/js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,2154 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="在别处或在路上">
+      
+      
+        <meta name="author" content="Cliff Fan">
+      
+      
+        <link rel="canonical" href="https://duetorun.com/blog/20191206/12-iterator/">
+      
+      
+        <link rel="prev" href="../11-logging/">
+      
+      
+        <link rel="next" href="../13-generator/">
+      
+      
+      <link rel="icon" href="../../../assets/hold_yourself.jpg">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.15">
+    
+    
+      
+        <title>python中的迭代器——iterator - ElseWhere</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.7e359304.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function n(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],n("js",new Date),n("config","G-XGW41EGL31"),document.addEventListener("DOMContentLoaded",function(){document.forms.search&&document.forms.search.query.addEventListener("blur",function(){this.value&&n("event","search",{search_term:this.value})}),document$.subscribe(function(){var a=document.forms.feedback;if(void 0!==a)for(var e of a.querySelectorAll("[type=submit]"))e.addEventListener("click",function(e){e.preventDefault();var t=document.location.pathname,e=this.getAttribute("data-md-value");n("event","feedback",{page:t,data:e}),a.firstElementChild.disabled=!0;e=a.querySelector(".md-feedback__note [data-md-value='"+e+"']");e&&(e.hidden=!1)}),a.hidden=!1}),location$.subscribe(function(e){n("config","G-XGW41EGL31",{page_path:e.pathname})})});var e=document.createElement("script");e.async=!0,e.src="https://www.googletagmanager.com/gtag/js?id=G-XGW41EGL31",document.getElementById("__analytics").insertAdjacentElement("afterEnd",e)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+    
+  
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#iterable" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../../.." title="ElseWhere" class="md-header__button md-logo" aria-label="ElseWhere" data-md-component="logo">
+      
+  <img src="../../../assets/hold_yourself.jpg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ElseWhere
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              python中的迭代器——iterator
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1M8 13h8v-2H8v2m9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1 0 1.71-1.39 3.1-3.1 3.1h-4V17h4a5 5 0 0 0 5-5 5 5 0 0 0-5-5Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="indigo"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5M7 15a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="标签" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../about/" class="md-tabs__link">
+        
+  
+    
+  
+  About
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../" class="md-tabs__link">
+          
+  
+  Blog
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../link/" class="md-tabs__link">
+        
+  
+    
+  
+  Link
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" hidden>
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="ElseWhere" class="md-nav__button md-logo" aria-label="ElseWhere" data-md-component="logo">
+      
+  <img src="../../../assets/hold_yourself.jpg" alt="logo">
+
+    </a>
+    ElseWhere
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../about/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    About
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Blog
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      <a href="../../" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Archive
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            Archive
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2024/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2024
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2022/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2022
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2019/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2019
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2018/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2018
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2017/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2017
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2015/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2015
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Categories
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            Categories
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/command/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    command
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/editor/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    editor
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/git/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    git
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/linux/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    linux
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/macos/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    macOS
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/markdown/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    markdown
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/material/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    material
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/mkdocs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    mkdocs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/nginx/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    nginx
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/python/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    python
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/shell/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    shell
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/ubuntu/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ubuntu
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/vim/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    vim
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/webdav/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    webDAV
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/wiki/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    wiki
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/zsh/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    zsh
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../link/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Link
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#iterable" class="md-nav__link">
+    <span class="md-ellipsis">
+      iterable
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="iterable">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sequence" class="md-nav__link">
+    <span class="md-ellipsis">
+      sequence
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#iterator" class="md-nav__link">
+    <span class="md-ellipsis">
+      iterator
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="iterator">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#concept" class="md-nav__link">
+    <span class="md-ellipsis">
+      concept
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fibonacci" class="md-nav__link">
+    <span class="md-ellipsis">
+      Fibonacci
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#iterate" class="md-nav__link">
+    <span class="md-ellipsis">
+      iterate
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="iterate">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#iter-next" class="md-nav__link">
+    <span class="md-ellipsis">
+      iter-next
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#enumerate" class="md-nav__link">
+    <span class="md-ellipsis">
+      enumerate
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#itertools" class="md-nav__link">
+    <span class="md-ellipsis">
+      itertools
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="itertools">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sorted" class="md-nav__link">
+    <span class="md-ellipsis">
+      sorted
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reversed" class="md-nav__link">
+    <span class="md-ellipsis">
+      reversed
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#map" class="md-nav__link">
+    <span class="md-ellipsis">
+      map
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="map">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#demo1_stringcapwords" class="md-nav__link">
+    <span class="md-ellipsis">
+      demo1: string.capwords
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo2_version_tuple_str2int" class="md-nav__link">
+    <span class="md-ellipsis">
+      demo2: version tuple str2int
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo3_sequence_calculation" class="md-nav__link">
+    <span class="md-ellipsis">
+      demo3: sequence calculation
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#filter" class="md-nav__link">
+    <span class="md-ellipsis">
+      filter
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#itertools_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      itertools
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+  <div class="md-content md-content--post" data-md-component="content">
+    <div class="md-sidebar md-sidebar--post" data-md-component="sidebar" data-md-type="navigation">
+      <div class="md-sidebar__scrollwrap">
+        <div class="md-sidebar__inner md-post">
+          <nav class="md-nav md-nav--primary">
+            <div class="md-post__back">
+              <div class="md-nav__title md-nav__container">
+                <a href="../../" class="md-nav__link">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+                  <span class="md-ellipsis">
+                    回到主页
+                  </span>
+                </a>
+              </div>
+            </div>
+            
+              <div class="md-post__authors md-typeset">
+                
+                  <div class="md-profile md-post__profile">
+                    <span class="md-author md-author--long">
+                      <img src="https://duetorun.com/assets/carve_yourself.jpg" alt="Cliff Fan">
+                    </span>
+                    <span class="md-profile__description">
+                      <strong>
+                        
+                          Cliff Fan
+                        
+                      </strong>
+                      <br>
+                      Just do IT
+                    </span>
+                  </div>
+                
+              </div>
+            
+            <ul class="md-post__meta md-nav__list">
+              <li class="md-nav__item md-nav__item--section">
+                <div class="md-post__title">
+                  <span class="md-ellipsis">
+                    元数据
+                  </span>
+                </div>
+                <nav class="md-nav">
+                  <ul class="md-nav__list">
+                    <li class="md-nav__item">
+                      <div class="md-nav__link">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 19H5V8h14m-3-7v2H8V1H6v2H5c-1.11 0-2 .89-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-1V1m-1 11h-5v5h5v-5Z"/></svg>
+                        <time datetime="2019-12-06 09:50:00" class="md-ellipsis">2019年12月6日</time>
+                      </div>
+                    </li>
+                    
+                    
+                      <li class="md-nav__item">
+                        <div class="md-nav__link">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 3v15h3V3H9m3 2 4 13 3-1-4-13-3 1M5 5v13h3V5H5M3 19v2h18v-2H3Z"/></svg>
+                          <span class="md-ellipsis">
+                            分类于
+                            
+                              <a href="../../category/python/">python</a></span>
+                        </div>
+                      </li>
+                    
+                    
+                      
+                      <li class="md-nav__item">
+                        <div class="md-nav__link">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7h1.5Z"/></svg>
+                          <span class="md-ellipsis">
+                            
+                              需要 11 分钟阅读时间
+                            
+                          </span>
+                        </div>
+                      </li>
+                    
+                    <!-- Add by Cliff.Fan, 29Mar24. -->
+                    <li class="md-nav__item">
+                      <div class="md-nav__link">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m19 1-5 5v11l5-4.5V1m2 4v13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V6c-1.45-1.1-3.55-1.5-5.5-1.5-1.95 0-4.05.4-5.5 1.5v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1M10 18.41C8.75 18.09 7.5 18 6.5 18c-1.06 0-2.32.19-3.5.5V7.13c.91-.4 2.14-.63 3.5-.63 1.36 0 2.59.23 3.5.63v11.28Z"/></svg>
+                        <span class="md-ellipsis" id="busuanzi_container_page_pv">
+                          阅读量：<span id="busuanzi_value_page_pv">N/A</span>
+                        </span>
+                      </div>
+                    </li>
+                  </ul>
+                </nav>
+              </li>
+            </ul>
+          </nav>
+          
+        </div>
+      </div>
+    </div>
+    <article class="md-content__inner md-typeset">
+      
+        
+  
+  
+
+<nav class="md-tags" >
+  
+    
+    
+    
+      <span class="md-tag">iterator</span>
+    
+  
+</nav>
+
+
+
+  <h1>python中的迭代器——iterator</h1>
+
+<p>本文梳理了 python 中的迭代器类——iterator，介绍了其基本概念和基础惯用法。</p>
+<!-- more -->
+
+<p><a href="https://docs.python.org/3/glossary.html#term-iterator">Glossary — iterator</a><br />
+<a href="https://docs.python.org/3/library/stdtypes.html#typeiter">Built-in Types — Iterator Types</a><br />
+<a href="https://docs.python.org/3/tutorial/classes.html#iterators">9.8. Iterators</a></p>
+<p>可借鉴参考《ES6 标准入门》第 15 章《iteraor 和 for...of 循环》。</p>
+<h2 id="iterable">iterable<a class="headerlink" href="#iterable" title="Permanent link">#</a></h2>
+<p>Python supports a concept of iteration over containers. This is implemented using two distinct methods; these are used to allow user-defined classes to support iteration. Sequences, described below in more detail, always support the iteration methods.</p>
+<p>One method needs to be defined for container objects to provide iterable support:</p>
+<blockquote>
+<p>container.<code>__iter__</code>()</p>
+<blockquote>
+<p>Return an iterator object. The object is required to support the iterator protocol described below. If a container supports different types of iteration, additional methods can be provided to specifically request iterators for those iteration types. (An example of an object supporting multiple forms of iteration would be a tree structure which supports both breadth-first and depth-first traversal.) This method corresponds to the tp_iter slot of the type structure for Python objects in the Python/C API.</p>
+</blockquote>
+</blockquote>
+<p>An object capable of returning its members one at a time. Examples of iterables include all sequence types (such as <a href="https://docs.python.org/3/library/stdtypes.html#list" title="list"><code>list</code></a>, <a href="https://docs.python.org/3/library/stdtypes.html#str" title="str"><code>str</code></a>, and <a href="https://docs.python.org/3/library/stdtypes.html#tuple" title="tuple"><code>tuple</code></a>) and some non-sequence types like <a href="https://docs.python.org/3/library/stdtypes.html#dict" title="dict"><code>dict</code></a>, <a href="https://docs.python.org/3/glossary.html#term-file-object">file objects</a>, and objects of any classes you define with an <a href="https://docs.python.org/3/library/stdtypes.html#iterator.__iter__" title="iterator.__iter__"><code>__iter__()</code></a> method or with a <a href="https://docs.python.org/3/reference/datamodel.html#object.__getitem__" title="object.__getitem__"><code>__getitem__()</code></a> method that implements <a href="https://docs.python.org/3/glossary.html#term-sequence">sequence</a> semantics.</p>
+<p>Iterables can be used in a <a href="https://docs.python.org/3/reference/compound_stmts.html#for"><code>for</code></a> loop and in many other places where a sequence is needed (<a href="https://docs.python.org/3/library/functions.html#zip" title="zip"><code>zip()</code></a>, <a href="https://docs.python.org/3/library/functions.html#map" title="map"><code>map()</code></a>, …). When an iterable object is passed as an argument to the built-in function <a href="https://docs.python.org/3/library/functions.html#iter" title="iter"><code>iter()</code></a>, it returns an iterator for the object. This iterator is good for one pass over the set of values. When using iterables, it is usually not necessary to call <a href="https://docs.python.org/3/library/functions.html#iter" title="iter"><code>iter()</code></a> or deal with iterator objects yourself. The <a href="https://docs.python.org/3/reference/compound_stmts.html#for"><code>for</code></a> statement does that automatically for you, creating a temporary unnamed variable to hold the iterator for the duration of the loop. See also <a href="https://docs.python.org/3/glossary.html#term-iterator">iterator</a>, <a href="https://docs.python.org/3/glossary.html#term-sequence">sequence</a>, and <a href="https://docs.python.org/3/glossary.html#term-generator">generator</a>.</p>
+<h3 id="sequence">sequence<a class="headerlink" href="#sequence" title="Permanent link">#</a></h3>
+<ul>
+<li>Sequence Types — list（mutable）, tuple（immutable）, range（immutable）</li>
+<li>Text Sequence Type — str（immutable）</li>
+</ul>
+<p>序列类 list、tuple、range、str 均实现了可迭代协议，具备 iterable 特性。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>&gt;&gt;&gt;<span class="w"> </span>help<span class="o">(</span>list<span class="o">)</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>__iter__<span class="o">(</span>self,<span class="w"> </span>/<span class="o">)</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w"> </span><span class="p">|</span><span class="w">      </span>Implement<span class="w"> </span>iter<span class="o">(</span>self<span class="o">)</span>.
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>----------------------------------------------------------------------
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>Class<span class="w"> </span>methods<span class="w"> </span>defined<span class="w"> </span>here:
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="w"> </span><span class="p">|</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>__class_getitem__<span class="o">(</span>...<span class="o">)</span><span class="w"> </span>from<span class="w"> </span>builtins.type
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="w"> </span><span class="p">|</span><span class="w">      </span>See<span class="w"> </span>PEP<span class="w"> </span><span class="m">585</span>
+</span></code></pre></div>
+<p>list、tuple、set 均支持传入 iterable object 构造，因此它们之间可以互相构造转换。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>class<span class="w"> </span>list<span class="o">(</span>object<span class="o">)</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>list<span class="o">(</span><span class="nv">iterable</span><span class="o">=()</span>,<span class="w"> </span>/<span class="o">)</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w"> </span><span class="p">|</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>Built-in<span class="w"> </span>mutable<span class="w"> </span>sequence.
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w"> </span><span class="p">|</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>If<span class="w"> </span>no<span class="w"> </span>argument<span class="w"> </span>is<span class="w"> </span>given,<span class="w"> </span>the<span class="w"> </span>constructor<span class="w"> </span>creates<span class="w"> </span>a<span class="w"> </span>new<span class="w"> </span>empty<span class="w"> </span>list.
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>The<span class="w"> </span>argument<span class="w"> </span>must<span class="w"> </span>be<span class="w"> </span>an<span class="w"> </span>iterable<span class="w"> </span><span class="k">if</span><span class="w"> </span>specified.
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>class<span class="w"> </span>tuple<span class="o">(</span>object<span class="o">)</span>
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>tuple<span class="o">(</span><span class="nv">iterable</span><span class="o">=()</span>,<span class="w"> </span>/<span class="o">)</span>
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w"> </span><span class="p">|</span>
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>Built-in<span class="w"> </span>immutable<span class="w"> </span>sequence.
+</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="w"> </span><span class="p">|</span>
+</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>If<span class="w"> </span>no<span class="w"> </span>argument<span class="w"> </span>is<span class="w"> </span>given,<span class="w"> </span>the<span class="w"> </span>constructor<span class="w"> </span>returns<span class="w"> </span>an<span class="w"> </span>empty<span class="w"> </span>tuple.
+</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>If<span class="w"> </span>iterable<span class="w"> </span>is<span class="w"> </span>specified<span class="w"> </span>the<span class="w"> </span>tuple<span class="w"> </span>is<span class="w"> </span>initialized<span class="w"> </span>from<span class="w"> </span>iterable<span class="err">&#39;</span>s<span class="w"> </span>items.
+</span><span id="__span-1-16"><a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="w"> </span><span class="p">|</span>
+</span><span id="__span-1-17"><a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>If<span class="w"> </span>the<span class="w"> </span>argument<span class="w"> </span>is<span class="w"> </span>a<span class="w"> </span>tuple,<span class="w"> </span>the<span class="w"> </span><span class="k">return</span><span class="w"> </span>value<span class="w"> </span>is<span class="w"> </span>the<span class="w"> </span>same<span class="w"> </span>object.
+</span><span id="__span-1-18"><a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>
+</span><span id="__span-1-19"><a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a>class<span class="w"> </span>set<span class="o">(</span>object<span class="o">)</span>
+</span><span id="__span-1-20"><a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>set<span class="o">()</span><span class="w"> </span>-&gt;<span class="w"> </span>new<span class="w"> </span>empty<span class="w"> </span><span class="nb">set</span><span class="w"> </span>object
+</span><span id="__span-1-21"><a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>set<span class="o">(</span>iterable<span class="o">)</span><span class="w"> </span>-&gt;<span class="w"> </span>new<span class="w"> </span><span class="nb">set</span><span class="w"> </span>object
+</span><span id="__span-1-22"><a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a><span class="w"> </span><span class="p">|</span>
+</span><span id="__span-1-23"><a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>Build<span class="w"> </span>an<span class="w"> </span>unordered<span class="w"> </span>collection<span class="w"> </span>of<span class="w"> </span>unique<span class="w"> </span>elements.
+</span></code></pre></div>
+<p>list 的 extend 接口传入 iterable object，逐个追加可迭代对象中的元素。</p>
+<blockquote>
+<p>list.extend(self, iterable, /): Extend list by appending elements from the iterable.</p>
+</blockquote>
+<p>由于 range 也是 iterable，因此也可以传入 list、tuple、set，range 常用于快捷初始化序列。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>&gt;&gt;&gt;<span class="w"> </span>list<span class="o">(</span>range<span class="o">(</span><span class="m">1</span>,11<span class="o">))</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="o">[</span><span class="m">1</span>,<span class="w"> </span><span class="m">2</span>,<span class="w"> </span><span class="m">3</span>,<span class="w"> </span><span class="m">4</span>,<span class="w"> </span><span class="m">5</span>,<span class="w"> </span><span class="m">6</span>,<span class="w"> </span><span class="m">7</span>,<span class="w"> </span><span class="m">8</span>,<span class="w"> </span><span class="m">9</span>,<span class="w"> </span><span class="m">10</span><span class="o">]</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>&gt;&gt;&gt;<span class="w"> </span>list<span class="o">(</span>range<span class="o">(</span><span class="m">1</span>,11,2<span class="o">))</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="o">[</span><span class="m">1</span>,<span class="w"> </span><span class="m">3</span>,<span class="w"> </span><span class="m">5</span>,<span class="w"> </span><span class="m">7</span>,<span class="w"> </span><span class="m">9</span><span class="o">]</span>
+</span></code></pre></div>
+<p>由于 str 也是 iterable，因此也可以传入 list、tuple、set，生成字符（串）序列。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>&gt;&gt;&gt;<span class="w"> </span>list<span class="o">(</span><span class="s1">&#39;string&#39;</span><span class="o">)</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="o">[</span><span class="s1">&#39;s&#39;</span>,<span class="w"> </span><span class="s1">&#39;t&#39;</span>,<span class="w"> </span><span class="s1">&#39;r&#39;</span>,<span class="w"> </span><span class="s1">&#39;i&#39;</span>,<span class="w"> </span><span class="s1">&#39;n&#39;</span>,<span class="w"> </span><span class="s1">&#39;g&#39;</span><span class="o">]</span>
+</span></code></pre></div>
+<p>str 的 join(self, iterable, /) 方法需要传入可迭代对象，将它们连接起来。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>&gt;&gt;&gt;<span class="w"> </span><span class="s1">&#39;,&#39;</span>.join<span class="o">((</span><span class="s1">&#39;Hello&#39;</span>,<span class="w"> </span><span class="s1">&#39;World&#39;</span><span class="o">))</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="s1">&#39;Hello,World&#39;</span>
+</span></code></pre></div>
+<h2 id="iterator">iterator<a class="headerlink" href="#iterator" title="Permanent link">#</a></h2>
+<p>An object representing a stream of data. Repeated calls to the iterator’s <a href="https://docs.python.org/3/library/stdtypes.html#iterator.__next__" title="iterator.__next__"><code>__next__()</code></a> method (or passing it to the built-in function <a href="https://docs.python.org/3/library/functions.html#next" title="next"><code>next()</code></a>) return successive items in the stream. When no more data are available a <a href="https://docs.python.org/3/library/exceptions.html#StopIteration" title="StopIteration"><code>StopIteration</code></a> exception is raised instead. At this point, the iterator object is exhausted and any further calls to its <code>__next__()</code> method just raise <a href="https://docs.python.org/3/library/exceptions.html#StopIteration" title="StopIteration"><code>StopIteration</code></a> again. Iterators are required to have an <a href="https://docs.python.org/3/library/stdtypes.html#iterator.__iter__" title="iterator.__iter__"><code>__iter__()</code></a> method that returns the iterator object itself so every iterator is also iterable and may be used in most places where other iterables are accepted. One notable exception is code which attempts multiple iteration passes. A container object (such as a <a href="https://docs.python.org/3/library/stdtypes.html#list" title="list"><code>list</code></a>) produces a fresh new iterator each time you pass it to the <a href="https://docs.python.org/3/library/functions.html#iter" title="iter"><code>iter()</code></a> function or use it in a <a href="https://docs.python.org/3/reference/compound_stmts.html#for"><code>for</code></a> loop. Attempting this with an iterator will just return the same exhausted iterator object used in the previous iteration pass, making it appear like an empty container.</p>
+<p>The <strong>iterator</strong> objects themselves are required to support the following two methods, which together form the <em>iterator protocol</em>:</p>
+<blockquote>
+<p>iterator.<code>__iter__</code>()</p>
+<blockquote>
+<p>Return the iterator object itself. This is required to allow both containers and iterators to be used with the for and in statements. This method corresponds to the tp_iter slot of the type structure for Python objects in the Python/C API.</p>
+</blockquote>
+<p>iterator.<code>__next__</code>()</p>
+<blockquote>
+<p>Return the next item from the iterator. If there are no further items, raise the StopIteration exception. This method corresponds to the tp_iternext slot of the type structure for Python objects in the Python/C API.</p>
+</blockquote>
+</blockquote>
+<p>Python defines several iterator objects to support iteration over general and specific sequence types, dictionaries, and other more specialized forms. The specific types are not important beyond their implementation of the iterator protocol.</p>
+<p>Once an iterator’s <code>__next__</code>() method raises <code>StopIteration</code>, it must continue to do so on subsequent calls. Implementations that do not obey this property are deemed broken.</p>
+<h3 id="concept">concept<a class="headerlink" href="#concept" title="Permanent link">#</a></h3>
+<p>iterator 迭代器（遍历器）就是这一种接口，为各种不同的数据结构提供统一的访问机制。<br />
+任何数据结构只要部署了 iterator 接口，就可以支持 for...in 循环遍历操作。</p>
+<p>任何可迭代（iterable）的对象都会定义 <code>__iter__</code> 和 <code>__next__</code> 方法，即实现迭代器协议。<br />
+更正规的定义是：实现了方法 <code>__iter__</code> 的对象是可迭代的，而实现了方法 <code>__next__</code> 的对象是迭代器。  </p>
+<p>方法 <code>__iter__</code> 返回一个迭代器，它是包含<code>__next__</code> 方法的对象。</p>
+<blockquote>
+<p><code>list</code> provide iterable support；<code>list_iterator</code> conform to iterator protocl.</p>
+</blockquote>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>&gt;&gt;&gt;<span class="w"> </span>hasattr<span class="o">(</span>list,<span class="w"> </span><span class="s1">&#39;__iter__&#39;</span><span class="o">)</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>True
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>&gt;&gt;&gt;<span class="w"> </span>hasattr<span class="o">(</span>list,<span class="w"> </span><span class="s1">&#39;__next__&#39;</span><span class="o">)</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>False
+</span></code></pre></div>
+<p>iterator 的遍历过程如下：</p>
+<ol>
+<li>创建一个指针对象，指向当前数据结构的起始位置。也就是说，遍历器对象本质上就是一个指针对象。</li>
+<li>第一次调用指针对象的 next 方法，可以将指针指向数据结构的第一个成员。</li>
+<li>第二次调用指针对象的 next 方法，指针就指向数据结构的第二个成员。</li>
+<li>不断调用指针对象的 next 方法，直到它指向数据结构的结束位置。</li>
+</ol>
+<p>每次调用 next 方法都会返回数据结构的当前成员的信息。</p>
+<h3 id="fibonacci">Fibonacci<a class="headerlink" href="#fibonacci" title="Permanent link">#</a></h3>
+<p>我们来看看经典的斐波那契数列，它具备典型的前向推导和迭代特性。</p>
+<p>先来看看原始定义：f(n)=f(n-1)+f(n-2)。</p>
+<div class="arithmatex">\[
+% abs
+f(n)=
+\begin{cases}
+        n, &amp; x&lt;2 \\
+        f(n-1)+f(n-2), &amp; x \ge 2
+\end{cases}
+\]</div>
+<p>之前基于 list.append 方法实现的斐波那契列表：</p>
+<div class="language-Python highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="k">def</span> <span class="nf">fibs</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">:</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>    <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;To make sense, n should be bigger than 2.&#39;</span><span class="p">)</span>
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>        <span class="k">return</span> <span class="kc">None</span>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>    <span class="k">else</span><span class="p">:</span>
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>        <span class="n">r</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">2</span><span class="p">):</span>
+</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>            <span class="n">r</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span><span class="o">+</span><span class="n">r</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+</span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>        <span class="k">return</span> <span class="n">r</span>
+</span></code></pre></div>
+<p>基于多重赋值（逐个计算右值表达式，再依次赋给左侧变量），稍作改进：</p>
+<div class="language-shell highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>&gt;&gt;&gt;<span class="w"> </span>def<span class="w"> </span>fib2<span class="o">(</span>n<span class="o">)</span>:<span class="w">  </span><span class="c1"># return Fibonacci series up to n</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>...<span class="w">     </span><span class="s2">&quot;&quot;&quot;Return a list containing the Fibonacci series up to n.&quot;&quot;&quot;</span>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>...<span class="w">     </span><span class="nv">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">[]</span>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>...<span class="w">     </span>a,<span class="w"> </span><span class="nv">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span>,<span class="w"> </span><span class="m">1</span>
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>...<span class="w">     </span><span class="k">while</span><span class="w"> </span>a<span class="w"> </span>&lt;<span class="w"> </span>n:
+</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>...<span class="w">         </span>result.append<span class="o">(</span>a<span class="o">)</span><span class="w">    </span><span class="c1"># see below</span>
+</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>...<span class="w">         </span>a,<span class="w"> </span><span class="nv">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>b,<span class="w"> </span>a+b
+</span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>...<span class="w">     </span><span class="k">return</span><span class="w"> </span>result
+</span><span id="__span-7-9"><a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>...<span class="w"> </span>
+</span><span id="__span-7-10"><a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a>&gt;&gt;&gt;<span class="w"> </span><span class="nv">f100</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>fib2<span class="o">(</span><span class="m">100</span><span class="o">)</span>
+</span><span id="__span-7-11"><a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a>&gt;&gt;&gt;<span class="w"> </span>f100
+</span><span id="__span-7-12"><a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a><span class="o">[</span><span class="m">0</span>,<span class="w"> </span><span class="m">1</span>,<span class="w"> </span><span class="m">1</span>,<span class="w"> </span><span class="m">2</span>,<span class="w"> </span><span class="m">3</span>,<span class="w"> </span><span class="m">5</span>,<span class="w"> </span><span class="m">8</span>,<span class="w"> </span><span class="m">13</span>,<span class="w"> </span><span class="m">21</span>,<span class="w"> </span><span class="m">34</span>,<span class="w"> </span><span class="m">55</span>,<span class="w"> </span><span class="m">89</span><span class="o">]</span>
+</span></code></pre></div>
+<p>以上将生成的斐波那契数列一一存储在列表中。但假如我们只想逐个地获取值，而不是使用列表一次性获取。<br />
+例如，只想找出第一个大于1000的斐波那契数，而不关注前向序列，如果用列表实现，非常耗费内存。<br />
+此时，使用迭代器实现更通用、更简单、更优雅。</p>
+<div class="language-Python highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="k">class</span> <span class="nc">Fibs</span><span class="p">:</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">a</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">b</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>    <span class="k">def</span> <span class="fm">__next__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">a</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">a</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">b</span>
+</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">a</span>
+</span><span id="__span-8-9"><a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a>
+</span><span id="__span-8-10"><a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a>    <span class="k">def</span> <span class="fm">__iter__</span> <span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span id="__span-8-11"><a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a>        <span class="k">return</span> <span class="bp">self</span>
+</span><span id="__span-8-12"><a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a>
+</span><span id="__span-8-13"><a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a><span class="n">fibs</span> <span class="o">=</span> <span class="n">Fibs</span><span class="p">()</span>
+</span><span id="__span-8-14"><a id="__codelineno-8-14" name="__codelineno-8-14" href="#__codelineno-8-14"></a><span class="k">for</span> <span class="n">fib</span> <span class="ow">in</span> <span class="n">fibs</span><span class="p">:</span>
+</span><span id="__span-8-15"><a id="__codelineno-8-15" name="__codelineno-8-15" href="#__codelineno-8-15"></a>    <span class="k">if</span> <span class="n">fib</span> <span class="o">&gt;</span> <span class="mi">1000</span><span class="p">:</span>
+</span><span id="__span-8-16"><a id="__codelineno-8-16" name="__codelineno-8-16" href="#__codelineno-8-16"></a>        <span class="nb">print</span><span class="p">(</span><span class="n">fib</span><span class="p">)</span>
+</span><span id="__span-8-17"><a id="__codelineno-8-17" name="__codelineno-8-17" href="#__codelineno-8-17"></a>        <span class="k">break</span>
+</span></code></pre></div>
+<p>这个循环之所以会停止，是因为其中包含 break 语句；否则，这个 for 循环将没完没了地执行。</p>
+<h2 id="iterate">iterate<a class="headerlink" href="#iterate" title="Permanent link">#</a></h2>
+<p><a href="https://docs.python.org/3/reference/compound_stmts.html#the-for-statement">8.3. The for statement</a>: The for statement is used to iterate over the elements of a sequence (such as a string, tuple or list) or other iterable object.</p>
+<h3 id="iter-next">iter-next<a class="headerlink" href="#iter-next" title="Permanent link">#</a></h3>
+<p>内置的 <code>iter()</code> 函数返回迭代器（iterator），<code>next()</code> 函数则遍历迭代器，解引用返回遍历到的位置对应的元素。</p>
+<p>不同的对象类型传递给 iter 返回各自类型的 iterator：</p>
+<ol>
+<li>iter(str) 返回 str_ascii_iterator</li>
+<li>iter(list) 返回 list_iterator</li>
+<li>iter(tuple) 返回 tuple_iterator</li>
+<li>iter(range) 返回 range_iterator</li>
+</ol>
+<p>对 iterator 调用 next，实际上等效于调用其 <code>__next__</code> 方法。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>Help<span class="w"> </span>on<span class="w"> </span>built-in<span class="w"> </span><span class="k">function</span><span class="w"> </span>iter<span class="w"> </span><span class="k">in</span><span class="w"> </span>module<span class="w"> </span>builtins:
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>iter<span class="o">(</span>...<span class="o">)</span>
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="w">    </span>Get<span class="w"> </span>an<span class="w"> </span>iterator<span class="w"> </span>from<span class="w"> </span>an<span class="w"> </span>object.
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>
+</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="w">    </span>In<span class="w"> </span>the<span class="w"> </span>first<span class="w"> </span>form,<span class="w"> </span>the<span class="w"> </span>argument<span class="w"> </span>must<span class="w"> </span>supply<span class="w"> </span>its<span class="w"> </span>own<span class="w"> </span>iterator,<span class="w"> </span>or<span class="w"> </span>be<span class="w"> </span>a<span class="w"> </span>sequence.
+</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="w">    </span>In<span class="w"> </span>the<span class="w"> </span>second<span class="w"> </span>form,<span class="w"> </span>the<span class="w"> </span>callable<span class="w"> </span>is<span class="w"> </span>called<span class="w"> </span><span class="k">until</span><span class="w"> </span>it<span class="w"> </span>returns<span class="w"> </span>the<span class="w"> </span>sentinel.
+</span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a>
+</span><span id="__span-9-9"><a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a>next<span class="o">(</span>...<span class="o">)</span>
+</span><span id="__span-9-10"><a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a><span class="w">    </span>Return<span class="w"> </span>the<span class="w"> </span>next<span class="w"> </span>item<span class="w"> </span>from<span class="w"> </span>the<span class="w"> </span>iterator.
+</span><span id="__span-9-11"><a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a>
+</span><span id="__span-9-12"><a id="__codelineno-9-12" name="__codelineno-9-12" href="#__codelineno-9-12"></a><span class="w">    </span>If<span class="w"> </span>default<span class="w"> </span>is<span class="w"> </span>given<span class="w"> </span>and<span class="w"> </span>the<span class="w"> </span>iterator<span class="w"> </span>is<span class="w"> </span>exhausted,
+</span><span id="__span-9-13"><a id="__codelineno-9-13" name="__codelineno-9-13" href="#__codelineno-9-13"></a><span class="w">    </span>it<span class="w"> </span>is<span class="w"> </span>returned<span class="w"> </span>instead<span class="w"> </span>of<span class="w"> </span>raising<span class="w"> </span>StopIteration.
+</span></code></pre></div>
+<p>以下示例使用 iter+next 迭代遍历访问列表：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>&gt;&gt;&gt;<span class="w"> </span><span class="nv">l</span><span class="o">=[</span><span class="s1">&#39;abc&#39;</span>,<span class="w"> </span><span class="m">2024</span>,<span class="w"> </span><span class="o">(</span><span class="m">3</span>,8<span class="o">)]</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>&gt;&gt;&gt;<span class="w"> </span><span class="nv">i</span><span class="o">=</span>iter<span class="o">(</span>l<span class="o">)</span>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>&gt;&gt;&gt;<span class="w"> </span>next<span class="o">(</span>i<span class="o">)</span>
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="s1">&#39;abc&#39;</span>
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>&gt;&gt;&gt;<span class="w"> </span>next<span class="o">(</span>i<span class="o">)</span>
+</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a><span class="m">2024</span>
+</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a>&gt;&gt;&gt;<span class="w"> </span>next<span class="o">(</span>i<span class="o">)</span>
+</span><span id="__span-10-8"><a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a><span class="o">(</span><span class="m">3</span>,<span class="w"> </span><span class="m">8</span><span class="o">)</span>
+</span><span id="__span-10-9"><a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a>&gt;&gt;&gt;<span class="w"> </span>next<span class="o">(</span>i<span class="o">)</span>
+</span><span id="__span-10-10"><a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a>Traceback<span class="w"> </span><span class="o">(</span>most<span class="w"> </span>recent<span class="w"> </span>call<span class="w"> </span>last<span class="o">)</span>:
+</span><span id="__span-10-11"><a id="__codelineno-10-11" name="__codelineno-10-11" href="#__codelineno-10-11"></a><span class="w">  </span>File<span class="w"> </span><span class="s2">&quot;&lt;stdin&gt;&quot;</span>,<span class="w"> </span>line<span class="w"> </span><span class="m">1</span>,<span class="w"> </span><span class="k">in</span><span class="w"> </span>&lt;module&gt;
+</span><span id="__span-10-12"><a id="__codelineno-10-12" name="__codelineno-10-12" href="#__codelineno-10-12"></a>StopIteration
+</span></code></pre></div>
+<p>调用 next 访问返回最后一个元素后，迭代完毕（exhausted），再次调用 next 将抛出 <code>StopIteration</code> 异常。<br />
+调用 iter 获取 iterator 后，逐次调用 next 比较繁琐，不切实际，建议使用循环迭代遍历。<br />
+可使用 while 循环调用 next 迭代，并捕获迭代溢出异常退出循环。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>&gt;&gt;&gt;<span class="w"> </span><span class="nv">l</span><span class="o">=[</span><span class="s1">&#39;abc&#39;</span>,<span class="w"> </span><span class="m">2024</span>,<span class="w"> </span><span class="o">(</span><span class="m">3</span>,8<span class="o">)]</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>&gt;&gt;&gt;<span class="w"> </span><span class="nv">it</span><span class="o">=</span>iter<span class="o">(</span>l<span class="o">)</span>
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>&gt;&gt;&gt;<span class="w"> </span><span class="k">while</span><span class="w"> </span>True:
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>...<span class="w">     </span>try:
+</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>...<span class="w">             </span><span class="nv">e</span><span class="o">=</span>next<span class="o">(</span>it<span class="o">)</span>
+</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>...<span class="w">             </span>print<span class="o">(</span>e<span class="o">)</span>
+</span><span id="__span-11-7"><a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a>...<span class="w">     </span>except<span class="w"> </span>StopIteration:
+</span><span id="__span-11-8"><a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a>...<span class="w">             </span><span class="k">break</span>
+</span><span id="__span-11-9"><a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a>...<span class="w"> </span>
+</span><span id="__span-11-10"><a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a>abc
+</span><span id="__span-11-11"><a id="__codelineno-11-11" name="__codelineno-11-11" href="#__codelineno-11-11"></a><span class="m">2024</span>
+</span><span id="__span-11-12"><a id="__codelineno-11-12" name="__codelineno-11-12" href="#__codelineno-11-12"></a><span class="o">(</span><span class="m">3</span>,<span class="w"> </span><span class="m">8</span><span class="o">)</span>
+</span></code></pre></div>
+<p><strong>注意</strong>：字典（dict）的迭代器是针对 键值对 进行的一维迭代。</p>
+<p>当然，由于 iterator 本身也实现了 <code>__iter__</code> 接口，也可直接对其执行 for 循环迭代：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>&gt;&gt;&gt;<span class="w"> </span><span class="nv">l</span><span class="o">=[</span><span class="s1">&#39;abc&#39;</span>,<span class="w"> </span><span class="m">2024</span>,<span class="w"> </span><span class="o">(</span><span class="m">3</span>,8<span class="o">)]</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>&gt;&gt;&gt;<span class="w"> </span><span class="nv">i</span><span class="o">=</span>iter<span class="o">(</span>l<span class="o">)</span>
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>&gt;&gt;&gt;<span class="w"> </span><span class="k">for</span><span class="w"> </span>x<span class="w"> </span><span class="k">in</span><span class="w"> </span>i:
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>...<span class="w">     </span>print<span class="o">(</span>x<span class="o">)</span>
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>...<span class="w"> </span>
+</span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a>abc
+</span><span id="__span-12-7"><a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a><span class="m">2024</span>
+</span><span id="__span-12-8"><a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a><span class="o">(</span><span class="m">3</span>,<span class="w"> </span><span class="m">8</span><span class="o">)</span>
+</span></code></pre></div>
+<p>当然，调用 iter 就多此一举，直接使用 for 循环对 iterable object 遍历迭代更简洁：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>&gt;&gt;&gt;<span class="w"> </span><span class="k">for</span><span class="w"> </span>i<span class="w"> </span><span class="k">in</span><span class="w"> </span>l:
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>...<span class="w">     </span>print<span class="o">(</span>i<span class="o">)</span>
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>...
+</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>abc
+</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a><span class="m">2024</span>
+</span><span id="__span-13-6"><a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a><span class="o">(</span><span class="m">3</span>,<span class="w"> </span><span class="m">8</span><span class="o">)</span>
+</span></code></pre></div>
+<h3 id="enumerate">enumerate<a class="headerlink" href="#enumerate" title="Permanent link">#</a></h3>
+<p>enumerate 类实现了 iterator protocol，可对返回的 enumerate 对象执行 for 循环遍历或调用 list() 构造转换。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>Help<span class="w"> </span>on<span class="w"> </span>class<span class="w"> </span>enumerate<span class="w"> </span><span class="k">in</span><span class="w"> </span>module<span class="w"> </span>builtins:
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>class<span class="w"> </span>enumerate<span class="o">(</span>object<span class="o">)</span>
+</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>enumerate<span class="o">(</span>iterable,<span class="w"> </span><span class="nv">start</span><span class="o">=</span><span class="m">0</span><span class="o">)</span>
+</span><span id="__span-14-5"><a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a><span class="w"> </span><span class="p">|</span>
+</span><span id="__span-14-6"><a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>Return<span class="w"> </span>an<span class="w"> </span>enumerate<span class="w"> </span>object.
+</span><span id="__span-14-7"><a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a><span class="w"> </span><span class="p">|</span>
+</span><span id="__span-14-8"><a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a><span class="w"> </span><span class="p">|</span><span class="w">    </span>iterable
+</span><span id="__span-14-9"><a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a><span class="w"> </span><span class="p">|</span><span class="w">      </span>an<span class="w"> </span>object<span class="w"> </span>supporting<span class="w"> </span>iteration
+</span><span id="__span-14-10"><a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a><span class="w"> </span><span class="p">|</span>
+</span><span id="__span-14-11"><a id="__codelineno-14-11" name="__codelineno-14-11" href="#__codelineno-14-11"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>The<span class="w"> </span>enumerate<span class="w"> </span>object<span class="w"> </span>yields<span class="w"> </span>pairs<span class="w"> </span>containing<span class="w"> </span>a<span class="w"> </span>count<span class="w"> </span><span class="o">(</span>from<span class="w"> </span>start,<span class="w"> </span>which
+</span><span id="__span-14-12"><a id="__codelineno-14-12" name="__codelineno-14-12" href="#__codelineno-14-12"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>defaults<span class="w"> </span>to<span class="w"> </span>zero<span class="o">)</span><span class="w"> </span>and<span class="w"> </span>a<span class="w"> </span>value<span class="w"> </span>yielded<span class="w"> </span>by<span class="w"> </span>the<span class="w"> </span>iterable<span class="w"> </span>argument.
+</span><span id="__span-14-13"><a id="__codelineno-14-13" name="__codelineno-14-13" href="#__codelineno-14-13"></a><span class="w"> </span><span class="p">|</span>
+</span><span id="__span-14-14"><a id="__codelineno-14-14" name="__codelineno-14-14" href="#__codelineno-14-14"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>enumerate<span class="w"> </span>is<span class="w"> </span>useful<span class="w"> </span><span class="k">for</span><span class="w"> </span>obtaining<span class="w"> </span>an<span class="w"> </span>indexed<span class="w"> </span>list:
+</span><span id="__span-14-15"><a id="__codelineno-14-15" name="__codelineno-14-15" href="#__codelineno-14-15"></a><span class="w"> </span><span class="p">|</span><span class="w">      </span><span class="o">(</span><span class="m">0</span>,<span class="w"> </span>seq<span class="o">[</span><span class="m">0</span><span class="o">])</span>,<span class="w"> </span><span class="o">(</span><span class="m">1</span>,<span class="w"> </span>seq<span class="o">[</span><span class="m">1</span><span class="o">])</span>,<span class="w"> </span><span class="o">(</span><span class="m">2</span>,<span class="w"> </span>seq<span class="o">[</span><span class="m">2</span><span class="o">])</span>,<span class="w"> </span>...
+</span><span id="__span-14-16"><a id="__codelineno-14-16" name="__codelineno-14-16" href="#__codelineno-14-16"></a><span class="w"> </span><span class="p">|</span>
+</span><span id="__span-14-17"><a id="__codelineno-14-17" name="__codelineno-14-17" href="#__codelineno-14-17"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>Methods<span class="w"> </span>defined<span class="w"> </span>here:
+</span><span id="__span-14-18"><a id="__codelineno-14-18" name="__codelineno-14-18" href="#__codelineno-14-18"></a><span class="w"> </span><span class="p">|</span>
+</span><span id="__span-14-19"><a id="__codelineno-14-19" name="__codelineno-14-19" href="#__codelineno-14-19"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>__getattribute__<span class="o">(</span>self,<span class="w"> </span>name,<span class="w"> </span>/<span class="o">)</span>
+</span><span id="__span-14-20"><a id="__codelineno-14-20" name="__codelineno-14-20" href="#__codelineno-14-20"></a><span class="w"> </span><span class="p">|</span><span class="w">      </span>Return<span class="w"> </span>getattr<span class="o">(</span>self,<span class="w"> </span>name<span class="o">)</span>.
+</span><span id="__span-14-21"><a id="__codelineno-14-21" name="__codelineno-14-21" href="#__codelineno-14-21"></a><span class="w"> </span><span class="p">|</span>
+</span><span id="__span-14-22"><a id="__codelineno-14-22" name="__codelineno-14-22" href="#__codelineno-14-22"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>__iter__<span class="o">(</span>self,<span class="w"> </span>/<span class="o">)</span>
+</span><span id="__span-14-23"><a id="__codelineno-14-23" name="__codelineno-14-23" href="#__codelineno-14-23"></a><span class="w"> </span><span class="p">|</span><span class="w">      </span>Implement<span class="w"> </span>iter<span class="o">(</span>self<span class="o">)</span>.
+</span><span id="__span-14-24"><a id="__codelineno-14-24" name="__codelineno-14-24" href="#__codelineno-14-24"></a><span class="w"> </span><span class="p">|</span>
+</span><span id="__span-14-25"><a id="__codelineno-14-25" name="__codelineno-14-25" href="#__codelineno-14-25"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>__next__<span class="o">(</span>self,<span class="w"> </span>/<span class="o">)</span>
+</span><span id="__span-14-26"><a id="__codelineno-14-26" name="__codelineno-14-26" href="#__codelineno-14-26"></a><span class="w"> </span><span class="p">|</span><span class="w">      </span>Implement<span class="w"> </span>next<span class="o">(</span>self<span class="o">)</span>.
+</span><span id="__span-14-27"><a id="__codelineno-14-27" name="__codelineno-14-27" href="#__codelineno-14-27"></a><span class="w"> </span><span class="p">|</span>
+</span><span id="__span-14-28"><a id="__codelineno-14-28" name="__codelineno-14-28" href="#__codelineno-14-28"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>__reduce__<span class="o">(</span>...<span class="o">)</span>
+</span><span id="__span-14-29"><a id="__codelineno-14-29" name="__codelineno-14-29" href="#__codelineno-14-29"></a><span class="w"> </span><span class="p">|</span><span class="w">      </span>Return<span class="w"> </span>state<span class="w"> </span>information<span class="w"> </span><span class="k">for</span><span class="w"> </span>pickling.
+</span><span id="__span-14-30"><a id="__codelineno-14-30" name="__codelineno-14-30" href="#__codelineno-14-30"></a><span class="w"> </span><span class="p">|</span>
+</span><span id="__span-14-31"><a id="__codelineno-14-31" name="__codelineno-14-31" href="#__codelineno-14-31"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>----------------------------------------------------------------------
+</span><span id="__span-14-32"><a id="__codelineno-14-32" name="__codelineno-14-32" href="#__codelineno-14-32"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>Class<span class="w"> </span>methods<span class="w"> </span>defined<span class="w"> </span>here:
+</span><span id="__span-14-33"><a id="__codelineno-14-33" name="__codelineno-14-33" href="#__codelineno-14-33"></a><span class="w"> </span><span class="p">|</span>
+</span><span id="__span-14-34"><a id="__codelineno-14-34" name="__codelineno-14-34" href="#__codelineno-14-34"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>__class_getitem__<span class="o">(</span>...<span class="o">)</span><span class="w"> </span>from<span class="w"> </span>builtins.type
+</span><span id="__span-14-35"><a id="__codelineno-14-35" name="__codelineno-14-35" href="#__codelineno-14-35"></a><span class="w"> </span><span class="p">|</span><span class="w">      </span>See<span class="w"> </span>PEP<span class="w"> </span><span class="m">585</span>
+</span><span id="__span-14-36"><a id="__codelineno-14-36" name="__codelineno-14-36" href="#__codelineno-14-36"></a><span class="w"> </span><span class="p">|</span>
+</span><span id="__span-14-37"><a id="__codelineno-14-37" name="__codelineno-14-37" href="#__codelineno-14-37"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>----------------------------------------------------------------------
+</span><span id="__span-14-38"><a id="__codelineno-14-38" name="__codelineno-14-38" href="#__codelineno-14-38"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>Static<span class="w"> </span>methods<span class="w"> </span>defined<span class="w"> </span>here:
+</span><span id="__span-14-39"><a id="__codelineno-14-39" name="__codelineno-14-39" href="#__codelineno-14-39"></a><span class="w"> </span><span class="p">|</span>
+</span><span id="__span-14-40"><a id="__codelineno-14-40" name="__codelineno-14-40" href="#__codelineno-14-40"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>__new__<span class="o">(</span>*args,<span class="w"> </span>**kwargs<span class="o">)</span><span class="w"> </span>from<span class="w"> </span>builtins.type
+</span><span id="__span-14-41"><a id="__codelineno-14-41" name="__codelineno-14-41" href="#__codelineno-14-41"></a><span class="w"> </span><span class="p">|</span><span class="w">      </span>Create<span class="w"> </span>and<span class="w"> </span><span class="k">return</span><span class="w"> </span>a<span class="w"> </span>new<span class="w"> </span>object.<span class="w">  </span>See<span class="w"> </span>help<span class="o">(</span><span class="nb">type</span><span class="o">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span>accurate<span class="w"> </span>signature.
+</span><span id="__span-14-42"><a id="__codelineno-14-42" name="__codelineno-14-42" href="#__codelineno-14-42"></a>lines<span class="w"> </span><span class="m">5</span>-41<span class="w"> </span>bytes<span class="w"> </span><span class="m">120</span>-1225<span class="w"> </span><span class="m">98</span>%<span class="w"> </span>of<span class="w"> </span>file<span class="w"> </span>-
+</span></code></pre></div>
+<p>enumerate(object) 函数返回 enumerate 对象实例，可传递给 list() 构造 indexed list。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>&gt;&gt;&gt;<span class="w"> </span><span class="nv">l</span><span class="o">=[</span><span class="s1">&#39;abc&#39;</span>,<span class="w"> </span><span class="m">2024</span>,<span class="w"> </span><span class="o">(</span><span class="m">3</span>,8<span class="o">)]</span>
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>&gt;&gt;&gt;<span class="w"> </span><span class="nv">en</span><span class="o">=</span>enumerate<span class="o">(</span>l<span class="o">)</span>
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>&gt;&gt;&gt;<span class="w"> </span><span class="o">[</span>*en<span class="o">]</span>
+</span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a><span class="o">[(</span><span class="m">0</span>,<span class="w"> </span><span class="s1">&#39;abc&#39;</span><span class="o">)</span>,<span class="w"> </span><span class="o">(</span><span class="m">1</span>,<span class="w"> </span><span class="m">2024</span><span class="o">)</span>,<span class="w"> </span><span class="o">(</span><span class="m">2</span>,<span class="w"> </span><span class="o">(</span><span class="m">3</span>,<span class="w"> </span><span class="m">8</span><span class="o">))]</span>
+</span><span id="__span-15-5"><a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a>&gt;&gt;&gt;<span class="w"> </span><span class="o">[</span>*en<span class="o">]</span><span class="w"> </span><span class="c1"># exhausted</span>
+</span><span id="__span-15-6"><a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a><span class="o">[]</span>
+</span></code></pre></div>
+<p>迭代遍历 enumerate 对象，每个元素为一个 tuple 二元组 (index, value)。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>&gt;&gt;&gt;<span class="w"> </span><span class="nv">en</span><span class="o">=</span>enumerate<span class="o">(</span>l<span class="o">)</span>
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>&gt;&gt;&gt;<span class="w"> </span><span class="k">for</span><span class="w"> </span>e<span class="w"> </span><span class="k">in</span><span class="w"> </span>en:
+</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>...<span class="w">     </span>print<span class="o">(</span>e<span class="o">)</span>
+</span><span id="__span-16-4"><a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a>...<span class="w"> </span>
+</span><span id="__span-16-5"><a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a><span class="o">(</span><span class="m">0</span>,<span class="w"> </span><span class="s1">&#39;abc&#39;</span><span class="o">)</span>
+</span><span id="__span-16-6"><a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a><span class="o">(</span><span class="m">1</span>,<span class="w"> </span><span class="m">2024</span><span class="o">)</span>
+</span><span id="__span-16-7"><a id="__codelineno-16-7" name="__codelineno-16-7" href="#__codelineno-16-7"></a><span class="o">(</span><span class="m">2</span>,<span class="w"> </span><span class="o">(</span><span class="m">3</span>,<span class="w"> </span><span class="m">8</span><span class="o">))</span>
+</span></code></pre></div>
+<p>对列表调用 <code>enumerate()</code> 可以获取每个元素的索引及其值，也可基于返回的枚举对象构造元组或列表。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>&gt;&gt;&gt;<span class="w"> </span><span class="nv">l</span><span class="o">=[</span>*range<span class="o">(</span><span class="m">1</span>,13,<span class="w"> </span><span class="m">2</span><span class="o">)]</span>
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>&gt;&gt;&gt;<span class="w"> </span>tuple<span class="o">(</span>enumerate<span class="o">(</span>l<span class="o">))</span>
+</span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a><span class="o">((</span><span class="m">0</span>,<span class="w"> </span><span class="m">1</span><span class="o">)</span>,<span class="w"> </span><span class="o">(</span><span class="m">1</span>,<span class="w"> </span><span class="m">3</span><span class="o">)</span>,<span class="w"> </span><span class="o">(</span><span class="m">2</span>,<span class="w"> </span><span class="m">5</span><span class="o">)</span>,<span class="w"> </span><span class="o">(</span><span class="m">3</span>,<span class="w"> </span><span class="m">7</span><span class="o">)</span>,<span class="w"> </span><span class="o">(</span><span class="m">4</span>,<span class="w"> </span><span class="m">9</span><span class="o">)</span>,<span class="w"> </span><span class="o">(</span><span class="m">5</span>,<span class="w"> </span><span class="m">11</span><span class="o">))</span>
+</span><span id="__span-17-4"><a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a>&gt;&gt;&gt;<span class="w"> </span>list<span class="o">(</span>enumerate<span class="o">(</span>l<span class="o">))</span>
+</span><span id="__span-17-5"><a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a><span class="o">[(</span><span class="m">0</span>,<span class="w"> </span><span class="m">1</span><span class="o">)</span>,<span class="w"> </span><span class="o">(</span><span class="m">1</span>,<span class="w"> </span><span class="m">3</span><span class="o">)</span>,<span class="w"> </span><span class="o">(</span><span class="m">2</span>,<span class="w"> </span><span class="m">5</span><span class="o">)</span>,<span class="w"> </span><span class="o">(</span><span class="m">3</span>,<span class="w"> </span><span class="m">7</span><span class="o">)</span>,<span class="w"> </span><span class="o">(</span><span class="m">4</span>,<span class="w"> </span><span class="m">9</span><span class="o">)</span>,<span class="w"> </span><span class="o">(</span><span class="m">5</span>,<span class="w"> </span><span class="m">11</span><span class="o">)]</span>
+</span></code></pre></div>
+<h2 id="itertools">itertools<a class="headerlink" href="#itertools" title="Permanent link">#</a></h2>
+<h3 id="sorted">sorted<a class="headerlink" href="#sorted" title="Permanent link">#</a></h3>
+<p>Python 内建模块 builtins 中的函数 <code>sorted</code> 支持对可迭代序列进行（升序）排序，返回排序后的 list。</p>
+<ul>
+<li>可指定参数 reverse=True 进行降序排列。</li>
+</ul>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="w">    </span>sorted<span class="o">(</span>iterable,<span class="w"> </span>/,<span class="w"> </span>*,<span class="w"> </span><span class="nv">key</span><span class="o">=</span>None,<span class="w"> </span><span class="nv">reverse</span><span class="o">=</span>False<span class="o">)</span>
+</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a><span class="w">        </span>Return<span class="w"> </span>a<span class="w"> </span>new<span class="w"> </span>list<span class="w"> </span>containing<span class="w"> </span>all<span class="w"> </span>items<span class="w"> </span>from<span class="w"> </span>the<span class="w"> </span>iterable<span class="w"> </span><span class="k">in</span><span class="w"> </span>ascending<span class="w"> </span>order.
+</span></code></pre></div>
+<p>以下代码片段在 [1,40] 之间随机挑选13个数，然后调用 sorted 函数进行排序：</p>
+<div class="language-Python highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>    <span class="n">l</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span> <span class="n">r</span> <span class="o">=</span> <span class="mi">40</span><span class="p">;</span> <span class="n">n</span> <span class="o">=</span> <span class="mi">13</span>
+</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a>    <span class="n">random</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="n">r</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+</span><span id="__span-19-3"><a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a>    <span class="n">rl</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">l</span><span class="p">,</span><span class="n">r</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span> <span class="n">n</span><span class="p">)</span>
+</span><span id="__span-19-4"><a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a>    <span class="n">srl</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">rl</span><span class="p">)</span> <span class="c1"># 默认升序</span>
+</span><span id="__span-19-5"><a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a>    <span class="c1"># srl = sorted(rl, reverse=True) # 降序</span>
+</span></code></pre></div>
+<p>对于 list(tuple) 和 dict 等符合可结合 lambda 指定排序的 key：</p>
+<div class="language-Python highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="n">a</span><span class="o">=</span><span class="p">[(</span><span class="s1">&#39;b&#39;</span><span class="p">,</span><span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;a&#39;</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;d&#39;</span><span class="p">,</span><span class="mi">4</span><span class="p">),</span> <span class="p">(</span><span class="s1">&#39;c&#39;</span><span class="p">,</span><span class="mi">1</span><span class="p">)]</span>
+</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a><span class="c1"># 按照第一个元素排序</span>
+</span><span id="__span-20-3"><a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a><span class="nb">sorted</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+</span><span id="__span-20-4"><a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a><span class="c1"># 按照第二个元素排序</span>
+</span><span id="__span-20-5"><a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a><span class="nb">sorted</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+</span></code></pre></div>
+<p><a href="https://www.geeksforgeeks.org/python-sort-python-dictionaries-by-key-or-value/">Python | Sort Python Dictionaries by Key or Value - GeeksforGeeks</a></p>
+<div class="language-Python highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="n">d</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;b&#39;</span><span class="p">:</span><span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">:</span><span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;d&#39;</span><span class="p">:</span><span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;c&#39;</span><span class="p">:</span><span class="mi">1</span><span class="p">}</span>
+</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a><span class="c1"># sort by keys</span>
+</span><span id="__span-21-3"><a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a><span class="nb">sorted</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+</span><span id="__span-21-4"><a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a>
+</span><span id="__span-21-5"><a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a><span class="c1"># sort by keys（列表推导）</span>
+</span><span id="__span-21-6"><a id="__codelineno-21-6" name="__codelineno-21-6" href="#__codelineno-21-6"></a><span class="n">ks</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+</span><span id="__span-21-7"><a id="__codelineno-21-7" name="__codelineno-21-7" href="#__codelineno-21-7"></a><span class="n">ks</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+</span><span id="__span-21-8"><a id="__codelineno-21-8" name="__codelineno-21-8" href="#__codelineno-21-8"></a><span class="n">sorted_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">d</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">ks</span><span class="p">}</span>
+</span><span id="__span-21-9"><a id="__codelineno-21-9" name="__codelineno-21-9" href="#__codelineno-21-9"></a>
+</span><span id="__span-21-10"><a id="__codelineno-21-10" name="__codelineno-21-10" href="#__codelineno-21-10"></a><span class="c1"># sort by values</span>
+</span><span id="__span-21-11"><a id="__codelineno-21-11" name="__codelineno-21-11" href="#__codelineno-21-11"></a><span class="nb">sorted</span><span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">items</span><span class="p">(),</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">kv</span><span class="p">:(</span><span class="n">kv</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">kv</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+</span></code></pre></div>
+<h3 id="reversed">reversed<a class="headerlink" href="#reversed" title="Permanent link">#</a></h3>
+<p>Python 内建模块 builtins 中的工具类 <code>reversed</code> 支持对可迭代序列进行逆序，根据输入的序列返回不同类型的迭代器。</p>
+<ul>
+<li>对返回的迭代器对象，可直接 for 循环遍历或调用 list() 构造转换。</li>
+</ul>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a>class<span class="w"> </span>reversed<span class="o">(</span>object<span class="o">)</span>
+</span><span id="__span-22-2"><a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>reversed<span class="o">(</span>sequence,<span class="w"> </span>/<span class="o">)</span>
+</span><span id="__span-22-3"><a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a><span class="w"> </span><span class="p">|</span>
+</span><span id="__span-22-4"><a id="__codelineno-22-4" name="__codelineno-22-4" href="#__codelineno-22-4"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>Return<span class="w"> </span>a<span class="w"> </span>reverse<span class="w"> </span>iterator<span class="w"> </span>over<span class="w"> </span>the<span class="w"> </span>values<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>given<span class="w"> </span>sequence.
+</span></code></pre></div>
+<p>以下代码片段将 str、range、tuple、list 传入 reversed() 返回对应的逆序列迭代器。</p>
+<div class="language-Python highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="n">s</span><span class="o">=</span><span class="s1">&#39;Hello, World!&#39;</span>
+</span><span id="__span-23-2"><a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a><span class="n">rs</span><span class="o">=</span><span class="nb">reversed</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+</span><span id="__span-23-3"><a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a><span class="nb">type</span><span class="p">(</span><span class="n">rs</span><span class="p">)</span> <span class="c1"># 返回 reversed</span>
+</span><span id="__span-23-4"><a id="__codelineno-23-4" name="__codelineno-23-4" href="#__codelineno-23-4"></a>
+</span><span id="__span-23-5"><a id="__codelineno-23-5" name="__codelineno-23-5" href="#__codelineno-23-5"></a><span class="n">r</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">11</span><span class="p">)</span>
+</span><span id="__span-23-6"><a id="__codelineno-23-6" name="__codelineno-23-6" href="#__codelineno-23-6"></a><span class="n">rr</span> <span class="o">=</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+</span><span id="__span-23-7"><a id="__codelineno-23-7" name="__codelineno-23-7" href="#__codelineno-23-7"></a><span class="nb">type</span><span class="p">(</span><span class="n">rr</span><span class="p">)</span> <span class="c1"># 返回 range_iterator</span>
+</span><span id="__span-23-8"><a id="__codelineno-23-8" name="__codelineno-23-8" href="#__codelineno-23-8"></a>
+</span><span id="__span-23-9"><a id="__codelineno-23-9" name="__codelineno-23-9" href="#__codelineno-23-9"></a><span class="n">t</span> <span class="o">=</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+</span><span id="__span-23-10"><a id="__codelineno-23-10" name="__codelineno-23-10" href="#__codelineno-23-10"></a><span class="n">rt</span> <span class="o">=</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+</span><span id="__span-23-11"><a id="__codelineno-23-11" name="__codelineno-23-11" href="#__codelineno-23-11"></a><span class="nb">type</span><span class="p">(</span><span class="n">rt</span><span class="p">)</span> <span class="c1"># 返回 reversed</span>
+</span><span id="__span-23-12"><a id="__codelineno-23-12" name="__codelineno-23-12" href="#__codelineno-23-12"></a>
+</span><span id="__span-23-13"><a id="__codelineno-23-13" name="__codelineno-23-13" href="#__codelineno-23-13"></a><span class="n">l</span> <span class="o">=</span> <span class="p">[</span><span class="o">*</span><span class="n">r</span><span class="p">]</span>
+</span><span id="__span-23-14"><a id="__codelineno-23-14" name="__codelineno-23-14" href="#__codelineno-23-14"></a><span class="n">rl</span> <span class="o">=</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
+</span><span id="__span-23-15"><a id="__codelineno-23-15" name="__codelineno-23-15" href="#__codelineno-23-15"></a><span class="nb">type</span><span class="p">(</span><span class="n">rl</span><span class="p">)</span> <span class="c1"># 返回 list_reverseiterator</span>
+</span></code></pre></div>
+<h3 id="map">map<a class="headerlink" href="#map" title="Permanent link">#</a></h3>
+<p>Python 内建模块 builtins 中的工具类 <code>map</code> 支持将序列中的元素做映射转换，func 为转换函数（converter）。<br />
+map 迭代遍历传入的 iterable object，对每个元素调用转换函数（func），映射生成新的的元素序列。<br />
+如果转换函数很简短且不必考虑复用，可改用 in-place 形式的 lambda 表达式。</p>
+<ul>
+<li>可对返回的 map 对象执行 for 循环遍历或调用 list() 构造转换。</li>
+</ul>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>Help<span class="w"> </span>on<span class="w"> </span>class<span class="w"> </span>map<span class="w"> </span><span class="k">in</span><span class="w"> </span>module<span class="w"> </span>builtins:
+</span><span id="__span-24-2"><a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a>
+</span><span id="__span-24-3"><a id="__codelineno-24-3" name="__codelineno-24-3" href="#__codelineno-24-3"></a>class<span class="w"> </span>map<span class="o">(</span>object<span class="o">)</span>
+</span><span id="__span-24-4"><a id="__codelineno-24-4" name="__codelineno-24-4" href="#__codelineno-24-4"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>map<span class="o">(</span>func,<span class="w"> </span>*iterables<span class="o">)</span><span class="w"> </span>--&gt;<span class="w"> </span>map<span class="w"> </span>object
+</span><span id="__span-24-5"><a id="__codelineno-24-5" name="__codelineno-24-5" href="#__codelineno-24-5"></a><span class="w"> </span><span class="p">|</span>
+</span><span id="__span-24-6"><a id="__codelineno-24-6" name="__codelineno-24-6" href="#__codelineno-24-6"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>Make<span class="w"> </span>an<span class="w"> </span>iterator<span class="w"> </span>that<span class="w"> </span>computes<span class="w"> </span>the<span class="w"> </span><span class="k">function</span><span class="w"> </span>using<span class="w"> </span>arguments<span class="w"> </span>from
+</span><span id="__span-24-7"><a id="__codelineno-24-7" name="__codelineno-24-7" href="#__codelineno-24-7"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>each<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>iterables.<span class="w">  </span>Stops<span class="w"> </span>when<span class="w"> </span>the<span class="w"> </span>shortest<span class="w"> </span>iterable<span class="w"> </span>is<span class="w"> </span>exhausted.
+</span><span id="__span-24-8"><a id="__codelineno-24-8" name="__codelineno-24-8" href="#__codelineno-24-8"></a><span class="w"> </span><span class="p">|</span>
+</span><span id="__span-24-9"><a id="__codelineno-24-9" name="__codelineno-24-9" href="#__codelineno-24-9"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>Methods<span class="w"> </span>defined<span class="w"> </span>here:
+</span><span id="__span-24-10"><a id="__codelineno-24-10" name="__codelineno-24-10" href="#__codelineno-24-10"></a><span class="w"> </span><span class="p">|</span>
+</span><span id="__span-24-11"><a id="__codelineno-24-11" name="__codelineno-24-11" href="#__codelineno-24-11"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>__getattribute__<span class="o">(</span>self,<span class="w"> </span>name,<span class="w"> </span>/<span class="o">)</span>
+</span><span id="__span-24-12"><a id="__codelineno-24-12" name="__codelineno-24-12" href="#__codelineno-24-12"></a><span class="w"> </span><span class="p">|</span><span class="w">      </span>Return<span class="w"> </span>getattr<span class="o">(</span>self,<span class="w"> </span>name<span class="o">)</span>.
+</span><span id="__span-24-13"><a id="__codelineno-24-13" name="__codelineno-24-13" href="#__codelineno-24-13"></a><span class="w"> </span><span class="p">|</span>
+</span><span id="__span-24-14"><a id="__codelineno-24-14" name="__codelineno-24-14" href="#__codelineno-24-14"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>__iter__<span class="o">(</span>self,<span class="w"> </span>/<span class="o">)</span>
+</span><span id="__span-24-15"><a id="__codelineno-24-15" name="__codelineno-24-15" href="#__codelineno-24-15"></a><span class="w"> </span><span class="p">|</span><span class="w">      </span>Implement<span class="w"> </span>iter<span class="o">(</span>self<span class="o">)</span>.
+</span><span id="__span-24-16"><a id="__codelineno-24-16" name="__codelineno-24-16" href="#__codelineno-24-16"></a><span class="w"> </span><span class="p">|</span>
+</span><span id="__span-24-17"><a id="__codelineno-24-17" name="__codelineno-24-17" href="#__codelineno-24-17"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>__next__<span class="o">(</span>self,<span class="w"> </span>/<span class="o">)</span>
+</span><span id="__span-24-18"><a id="__codelineno-24-18" name="__codelineno-24-18" href="#__codelineno-24-18"></a><span class="w"> </span><span class="p">|</span><span class="w">      </span>Implement<span class="w"> </span>next<span class="o">(</span>self<span class="o">)</span>.
+</span><span id="__span-24-19"><a id="__codelineno-24-19" name="__codelineno-24-19" href="#__codelineno-24-19"></a><span class="w"> </span><span class="p">|</span>
+</span><span id="__span-24-20"><a id="__codelineno-24-20" name="__codelineno-24-20" href="#__codelineno-24-20"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>__reduce__<span class="o">(</span>...<span class="o">)</span>
+</span><span id="__span-24-21"><a id="__codelineno-24-21" name="__codelineno-24-21" href="#__codelineno-24-21"></a><span class="w"> </span><span class="p">|</span><span class="w">      </span>Return<span class="w"> </span>state<span class="w"> </span>information<span class="w"> </span><span class="k">for</span><span class="w"> </span>pickling.
+</span><span id="__span-24-22"><a id="__codelineno-24-22" name="__codelineno-24-22" href="#__codelineno-24-22"></a><span class="w"> </span><span class="p">|</span>
+</span><span id="__span-24-23"><a id="__codelineno-24-23" name="__codelineno-24-23" href="#__codelineno-24-23"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>----------------------------------------------------------------------
+</span><span id="__span-24-24"><a id="__codelineno-24-24" name="__codelineno-24-24" href="#__codelineno-24-24"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>Static<span class="w"> </span>methods<span class="w"> </span>defined<span class="w"> </span>here:
+</span><span id="__span-24-25"><a id="__codelineno-24-25" name="__codelineno-24-25" href="#__codelineno-24-25"></a><span class="w"> </span><span class="p">|</span>
+</span><span id="__span-24-26"><a id="__codelineno-24-26" name="__codelineno-24-26" href="#__codelineno-24-26"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>__new__<span class="o">(</span>*args,<span class="w"> </span>**kwargs<span class="o">)</span><span class="w"> </span>from<span class="w"> </span>builtins.type
+</span><span id="__span-24-27"><a id="__codelineno-24-27" name="__codelineno-24-27" href="#__codelineno-24-27"></a><span class="w"> </span><span class="p">|</span><span class="w">      </span>Create<span class="w"> </span>and<span class="w"> </span><span class="k">return</span><span class="w"> </span>a<span class="w"> </span>new<span class="w"> </span>object.<span class="w">  </span>See<span class="w"> </span>help<span class="o">(</span><span class="nb">type</span><span class="o">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span>accurate<span class="w"> </span>signature.
+</span></code></pre></div>
+<h4 id="demo1_stringcapwords">demo1: string.capwords<a class="headerlink" href="#demo1_stringcapwords" title="Permanent link">#</a></h4>
+<p>string.py 中的 string.capwords 方法即使用 map 实现：</p>
+<div class="language-Python highlight"><pre><span></span><code><span id="__span-25-1"><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a><span class="c1"># Capitalize the words in a string, e.g. &quot; aBc  dEf &quot; -&gt; &quot;Abc Def&quot;.</span>
+</span><span id="__span-25-2"><a id="__codelineno-25-2" name="__codelineno-25-2" href="#__codelineno-25-2"></a><span class="k">def</span> <span class="nf">capwords</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+</span><span id="__span-25-3"><a id="__codelineno-25-3" name="__codelineno-25-3" href="#__codelineno-25-3"></a>    <span class="k">return</span> <span class="p">(</span><span class="n">sep</span> <span class="ow">or</span> <span class="s1">&#39; &#39;</span><span class="p">)</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="o">.</span><span class="n">capitalize</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">sep</span><span class="p">)))</span>
+</span></code></pre></div>
+<h4 id="demo2_version_tuple_str2int">demo2: version tuple str2int<a class="headerlink" href="#demo2_version_tuple_str2int" title="Permanent link">#</a></h4>
+<ol>
+<li>sysconfig.get_python_version() 输出 '3.9'，platform.python_version() 输出 '3.9.6'。</li>
+</ol>
+<p><code>version_str2tuple</code> 函数将版本号字符串按点号（<code>.</code>）分割成字符数组，再对字符数组调用 int 逐一映射为整数。</p>
+<div class="language-Python highlight"><pre><span></span><code><span id="__span-26-1"><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a><span class="k">def</span> <span class="nf">version_str2tuple</span><span class="p">(</span><span class="n">vs</span><span class="p">:</span><span class="nb">str</span><span class="p">):</span>
+</span><span id="__span-26-2"><a id="__codelineno-26-2" name="__codelineno-26-2" href="#__codelineno-26-2"></a>    <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">vs</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;.&quot;</span><span class="p">)))</span>
+</span><span id="__span-26-3"><a id="__codelineno-26-3" name="__codelineno-26-3" href="#__codelineno-26-3"></a>    <span class="c1"># list comprehension</span>
+</span><span id="__span-26-4"><a id="__codelineno-26-4" name="__codelineno-26-4" href="#__codelineno-26-4"></a>    <span class="c1"># return tuple([int(s) for s in vs.split(&#39;.&#39;)])</span>
+</span></code></pre></div>
+<ul>
+<li>version_str2tuple(sysconfig.get_python_version()) 输出 (3, 9)；</li>
+<li>version_str2tuple(platform.python_version()) 输出 (3, 9, 6)；</li>
+</ul>
+<ol start="2">
+<li>platform.python_version_tuple() 输出 ('3', '9', '6')，调用 <code>version_tuple_str2int</code> 函数将元组序列中的字符转成整数。</li>
+</ol>
+<div class="language-Python highlight"><pre><span></span><code><span id="__span-27-1"><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a><span class="k">def</span> <span class="nf">version_tuple_str2int</span><span class="p">(</span><span class="n">vst</span><span class="p">:</span><span class="nb">tuple</span><span class="p">):</span>
+</span><span id="__span-27-2"><a id="__codelineno-27-2" name="__codelineno-27-2" href="#__codelineno-27-2"></a>    <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="n">vst</span><span class="p">))</span>
+</span><span id="__span-27-3"><a id="__codelineno-27-3" name="__codelineno-27-3" href="#__codelineno-27-3"></a>    <span class="c1"># list comprehension</span>
+</span><span id="__span-27-4"><a id="__codelineno-27-4" name="__codelineno-27-4" href="#__codelineno-27-4"></a>    <span class="c1"># return tuple([int(s) for s in vst])</span>
+</span></code></pre></div>
+<ul>
+<li>version_tuple_str2int(platform.python_version_tuple()) 输出 (3, 9, 6)。</li>
+</ul>
+<p>将版本字符串转换成整数tuple后，即可直接与预期版本tuple进行比较匹配。</p>
+<div class="language-Python highlight"><pre><span></span><code><span id="__span-28-1"><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a><span class="c1"># &#39;3.9&#39;</span>
+</span><span id="__span-28-2"><a id="__codelineno-28-2" name="__codelineno-28-2" href="#__codelineno-28-2"></a><span class="n">version_str2tuple</span><span class="p">(</span><span class="n">sysconfig</span><span class="o">.</span><span class="n">get_python_version</span><span class="p">())</span> <span class="o">&gt;</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
+</span><span id="__span-28-3"><a id="__codelineno-28-3" name="__codelineno-28-3" href="#__codelineno-28-3"></a>
+</span><span id="__span-28-4"><a id="__codelineno-28-4" name="__codelineno-28-4" href="#__codelineno-28-4"></a><span class="c1"># &#39;3.9.6&#39;</span>
+</span><span id="__span-28-5"><a id="__codelineno-28-5" name="__codelineno-28-5" href="#__codelineno-28-5"></a><span class="n">version_str2tuple</span><span class="p">(</span><span class="n">platform</span><span class="o">.</span><span class="n">python_version</span><span class="p">())</span> <span class="o">&gt;</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+</span><span id="__span-28-6"><a id="__codelineno-28-6" name="__codelineno-28-6" href="#__codelineno-28-6"></a>
+</span><span id="__span-28-7"><a id="__codelineno-28-7" name="__codelineno-28-7" href="#__codelineno-28-7"></a><span class="c1"># (&#39;3&#39;, &#39;9&#39;, &#39;6&#39;)</span>
+</span><span id="__span-28-8"><a id="__codelineno-28-8" name="__codelineno-28-8" href="#__codelineno-28-8"></a><span class="n">version_tuple_str2int</span><span class="p">(</span><span class="n">platform</span><span class="o">.</span><span class="n">python_version_tuple</span><span class="p">())</span> <span class="o">&gt;</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+</span><span id="__span-28-9"><a id="__codelineno-28-9" name="__codelineno-28-9" href="#__codelineno-28-9"></a>
+</span><span id="__span-28-10"><a id="__codelineno-28-10" name="__codelineno-28-10" href="#__codelineno-28-10"></a><span class="c1"># (3, 9, 6, &#39;final&#39;, 0)</span>
+</span><span id="__span-28-11"><a id="__codelineno-28-11" name="__codelineno-28-11" href="#__codelineno-28-11"></a><span class="nb">tuple</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">version_info</span><span class="p">)</span> <span class="o">&gt;</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span> <span class="c1"># sys.version_info &gt; (3, 9, 6)</span>
+</span></code></pre></div>
+<p>以上示例中，字符串转整数，转换器为 int 类，传入字符串构造转换。<br />
+否则，需要自己编写转换器。如果转换器函数只使用一次（不考虑复用），可使用 lambda 表达式（匿名函数）。</p>
+<h4 id="demo3_sequence_calculation">demo3: sequence calculation<a class="headerlink" href="#demo3_sequence_calculation" title="Permanent link">#</a></h4>
+<p>例如，要生成 1-10 的平方，可使用 map 对 range(1,11) 序列执行映射转换：</p>
+<ul>
+<li>等效列表推导：[value**2 for value in range(1,11)]</li>
+</ul>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-29-1"><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a><span class="c1"># [1, 4,9, 16, 25, 36, 49, 64, 81, 100]</span>
+</span><span id="__span-29-2"><a id="__codelineno-29-2" name="__codelineno-29-2" href="#__codelineno-29-2"></a>&gt;&gt;&gt;<span class="w"> </span><span class="nv">square</span><span class="o">=</span>map<span class="o">(</span>lambda<span class="w"> </span>x:x**2,<span class="w"> </span>range<span class="o">(</span><span class="m">1</span>,11<span class="o">))</span>
+</span><span id="__span-29-3"><a id="__codelineno-29-3" name="__codelineno-29-3" href="#__codelineno-29-3"></a>&gt;&gt;&gt;<span class="w"> </span>next<span class="o">(</span>square<span class="o">)</span>
+</span><span id="__span-29-4"><a id="__codelineno-29-4" name="__codelineno-29-4" href="#__codelineno-29-4"></a><span class="m">1</span>
+</span><span id="__span-29-5"><a id="__codelineno-29-5" name="__codelineno-29-5" href="#__codelineno-29-5"></a>&gt;&gt;&gt;<span class="w"> </span>next<span class="o">(</span>square<span class="o">)</span>
+</span><span id="__span-29-6"><a id="__codelineno-29-6" name="__codelineno-29-6" href="#__codelineno-29-6"></a><span class="m">4</span>
+</span><span id="__span-29-7"><a id="__codelineno-29-7" name="__codelineno-29-7" href="#__codelineno-29-7"></a>&gt;&gt;&gt;<span class="w"> </span><span class="o">[</span>*square<span class="o">]</span><span class="w"> </span><span class="c1"># list(square)</span>
+</span><span id="__span-29-8"><a id="__codelineno-29-8" name="__codelineno-29-8" href="#__codelineno-29-8"></a><span class="o">[</span><span class="m">9</span>,<span class="w"> </span><span class="m">16</span>,<span class="w"> </span><span class="m">25</span>,<span class="w"> </span><span class="m">36</span>,<span class="w"> </span><span class="m">49</span>,<span class="w"> </span><span class="m">64</span>,<span class="w"> </span><span class="m">81</span>,<span class="w"> </span><span class="m">100</span><span class="o">]</span>
+</span><span id="__span-29-9"><a id="__codelineno-29-9" name="__codelineno-29-9" href="#__codelineno-29-9"></a>&gt;&gt;&gt;<span class="w"> </span>next<span class="o">(</span>square<span class="o">)</span>
+</span><span id="__span-29-10"><a id="__codelineno-29-10" name="__codelineno-29-10" href="#__codelineno-29-10"></a>Traceback<span class="w"> </span><span class="o">(</span>most<span class="w"> </span>recent<span class="w"> </span>call<span class="w"> </span>last<span class="o">)</span>:
+</span><span id="__span-29-11"><a id="__codelineno-29-11" name="__codelineno-29-11" href="#__codelineno-29-11"></a><span class="w">  </span>File<span class="w"> </span><span class="s2">&quot;&lt;stdin&gt;&quot;</span>,<span class="w"> </span>line<span class="w"> </span><span class="m">1</span>,<span class="w"> </span><span class="k">in</span><span class="w"> </span>&lt;module&gt;
+</span><span id="__span-29-12"><a id="__codelineno-29-12" name="__codelineno-29-12" href="#__codelineno-29-12"></a>StopIteration
+</span><span id="__span-29-13"><a id="__codelineno-29-13" name="__codelineno-29-13" href="#__codelineno-29-13"></a>&gt;&gt;&gt;<span class="w"> </span><span class="o">[</span>*square<span class="o">]</span>
+</span><span id="__span-29-14"><a id="__codelineno-29-14" name="__codelineno-29-14" href="#__codelineno-29-14"></a><span class="o">[]</span>
+</span></code></pre></div>
+<p>需要说明的是，对于 map 实例对象 square，传递给 list() 构造后，已经遍历完毕。<br />
+尝试再次调用 next 迭代，将抛出异常 StopIteration。</p>
+<p>来看一个日常生活中的实际应用案例。</p>
+<p><strong>需求</strong>：PDF文档，实际页数和文档标记页数存在误差，如何快速计算每一章节的准确跳转页码？<br />
+<strong>方案</strong>：先看看标记第一页和实际第一页之间的偏移offset。然后，通过TOC查看每章的标记页码，遍历加上偏移量即可得到每章的实际跳转页码。</p>
+<p><a href="https://www.geeksforgeeks.org/python-adding-k-to-each-element-in-a-list-of-integers/">Adding K to each element in a list of integers</a></p>
+<p>使用列表推导对页数进行矫正：</p>
+<div class="language-Python highlight"><pre><span></span><code><span id="__span-30-1"><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a><span class="n">page_no</span> <span class="o">=</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">11</span><span class="p">,</span><span class="mi">45</span><span class="p">,</span><span class="mi">65</span><span class="p">,</span><span class="mi">69</span><span class="p">,</span><span class="mi">85</span><span class="p">,</span><span class="mi">109</span><span class="p">,</span><span class="mi">127</span><span class="p">,</span><span class="mi">141</span><span class="p">,</span><span class="mi">163</span><span class="p">,</span><span class="mi">191</span><span class="p">,</span><span class="mi">195</span><span class="p">,</span><span class="mi">203</span><span class="p">,</span><span class="mi">227</span><span class="p">]</span>
+</span><span id="__span-30-2"><a id="__codelineno-30-2" name="__codelineno-30-2" href="#__codelineno-30-2"></a><span class="n">offset</span> <span class="o">=</span> <span class="mi">25</span>
+</span><span id="__span-30-3"><a id="__codelineno-30-3" name="__codelineno-30-3" href="#__codelineno-30-3"></a><span class="n">correct_page_no</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="o">+</span> <span class="n">offset</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">page_no</span><span class="p">]</span>
+</span></code></pre></div>
+<p>也可使用 map 结合 lambda 的函数式编程方式实现同样的目的。</p>
+<div class="language-Python highlight"><pre><span></span><code><span id="__span-31-1"><a id="__codelineno-31-1" name="__codelineno-31-1" href="#__codelineno-31-1"></a><span class="n">correct_page_no</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span><span class="n">x</span><span class="o">+</span><span class="n">offset</span><span class="p">,</span> <span class="n">page_no</span><span class="p">))</span>
+</span></code></pre></div>
+<hr />
+<p>现代 Python 更多地采用面向对象编程范式，建议尽量不采用这种函数式编程方式，当然 map、filter 本身也是类。<br />
+如果 map 和 filter 中转换/过滤逻辑简单到一行代码就能实现的，建议采用 lambda 表达式。<br />
+或直接采用列表推导等效实现，更加简洁且可读性更高（concise and readable）。</p>
+<h3 id="filter">filter<a class="headerlink" href="#filter" title="Permanent link">#</a></h3>
+<p>Python 内建模块 builtins 中的工具类 <code>filter</code> 支持对 iterable 对象实现过滤，筛选出符合条件的元素。<br />
+filter 迭代遍历传入的 object，对每个元素调用谓词函数（function）执行过滤，留下符合谓词条件的元素。<br />
+如果谓词函数很简短且不必考虑复用，可改用 in-place 形式的 lambda 表达式。</p>
+<ul>
+<li>可对返回的 filter 对象执行 for 循环遍历或调用 list() 构造转换。</li>
+</ul>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-32-1"><a id="__codelineno-32-1" name="__codelineno-32-1" href="#__codelineno-32-1"></a><span class="c1"># filter 的定义和 map 几乎一样。</span>
+</span><span id="__span-32-2"><a id="__codelineno-32-2" name="__codelineno-32-2" href="#__codelineno-32-2"></a>
+</span><span id="__span-32-3"><a id="__codelineno-32-3" name="__codelineno-32-3" href="#__codelineno-32-3"></a>Help<span class="w"> </span>on<span class="w"> </span>class<span class="w"> </span>filter<span class="w"> </span><span class="k">in</span><span class="w"> </span>module<span class="w"> </span>builtins:
+</span><span id="__span-32-4"><a id="__codelineno-32-4" name="__codelineno-32-4" href="#__codelineno-32-4"></a>
+</span><span id="__span-32-5"><a id="__codelineno-32-5" name="__codelineno-32-5" href="#__codelineno-32-5"></a>class<span class="w"> </span>filter<span class="o">(</span>object<span class="o">)</span>
+</span><span id="__span-32-6"><a id="__codelineno-32-6" name="__codelineno-32-6" href="#__codelineno-32-6"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>filter<span class="o">(</span><span class="k">function</span><span class="w"> </span>or<span class="w"> </span>None,<span class="w"> </span>iterable<span class="o">)</span><span class="w"> </span>--&gt;<span class="w"> </span>filter<span class="w"> </span>object
+</span><span id="__span-32-7"><a id="__codelineno-32-7" name="__codelineno-32-7" href="#__codelineno-32-7"></a><span class="w"> </span><span class="p">|</span>
+</span><span id="__span-32-8"><a id="__codelineno-32-8" name="__codelineno-32-8" href="#__codelineno-32-8"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>Return<span class="w"> </span>an<span class="w"> </span>iterator<span class="w"> </span>yielding<span class="w"> </span>those<span class="w"> </span>items<span class="w"> </span>of<span class="w"> </span>iterable<span class="w"> </span><span class="k">for</span><span class="w"> </span>which<span class="w"> </span><span class="k">function</span><span class="o">(</span>item<span class="o">)</span>
+</span><span id="__span-32-9"><a id="__codelineno-32-9" name="__codelineno-32-9" href="#__codelineno-32-9"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>is<span class="w"> </span>true.<span class="w"> </span>If<span class="w"> </span><span class="k">function</span><span class="w"> </span>is<span class="w"> </span>None,<span class="w"> </span><span class="k">return</span><span class="w"> </span>the<span class="w"> </span>items<span class="w"> </span>that<span class="w"> </span>are<span class="w"> </span>true.
+</span><span id="__span-32-10"><a id="__codelineno-32-10" name="__codelineno-32-10" href="#__codelineno-32-10"></a><span class="w"> </span><span class="p">|</span>
+</span><span id="__span-32-11"><a id="__codelineno-32-11" name="__codelineno-32-11" href="#__codelineno-32-11"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>Methods<span class="w"> </span>defined<span class="w"> </span>here:
+</span><span id="__span-32-12"><a id="__codelineno-32-12" name="__codelineno-32-12" href="#__codelineno-32-12"></a><span class="w"> </span><span class="p">|</span>
+</span><span id="__span-32-13"><a id="__codelineno-32-13" name="__codelineno-32-13" href="#__codelineno-32-13"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>__getattribute__<span class="o">(</span>self,<span class="w"> </span>name,<span class="w"> </span>/<span class="o">)</span>
+</span><span id="__span-32-14"><a id="__codelineno-32-14" name="__codelineno-32-14" href="#__codelineno-32-14"></a><span class="w"> </span><span class="p">|</span><span class="w">      </span>Return<span class="w"> </span>getattr<span class="o">(</span>self,<span class="w"> </span>name<span class="o">)</span>.
+</span><span id="__span-32-15"><a id="__codelineno-32-15" name="__codelineno-32-15" href="#__codelineno-32-15"></a><span class="w"> </span><span class="p">|</span>
+</span><span id="__span-32-16"><a id="__codelineno-32-16" name="__codelineno-32-16" href="#__codelineno-32-16"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>__iter__<span class="o">(</span>self,<span class="w"> </span>/<span class="o">)</span>
+</span><span id="__span-32-17"><a id="__codelineno-32-17" name="__codelineno-32-17" href="#__codelineno-32-17"></a><span class="w"> </span><span class="p">|</span><span class="w">      </span>Implement<span class="w"> </span>iter<span class="o">(</span>self<span class="o">)</span>.
+</span><span id="__span-32-18"><a id="__codelineno-32-18" name="__codelineno-32-18" href="#__codelineno-32-18"></a><span class="w"> </span><span class="p">|</span>
+</span><span id="__span-32-19"><a id="__codelineno-32-19" name="__codelineno-32-19" href="#__codelineno-32-19"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>__next__<span class="o">(</span>self,<span class="w"> </span>/<span class="o">)</span>
+</span><span id="__span-32-20"><a id="__codelineno-32-20" name="__codelineno-32-20" href="#__codelineno-32-20"></a><span class="w"> </span><span class="p">|</span><span class="w">      </span>Implement<span class="w"> </span>next<span class="o">(</span>self<span class="o">)</span>.
+</span><span id="__span-32-21"><a id="__codelineno-32-21" name="__codelineno-32-21" href="#__codelineno-32-21"></a><span class="w"> </span><span class="p">|</span>
+</span><span id="__span-32-22"><a id="__codelineno-32-22" name="__codelineno-32-22" href="#__codelineno-32-22"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>__reduce__<span class="o">(</span>...<span class="o">)</span>
+</span><span id="__span-32-23"><a id="__codelineno-32-23" name="__codelineno-32-23" href="#__codelineno-32-23"></a><span class="w"> </span><span class="p">|</span><span class="w">      </span>Return<span class="w"> </span>state<span class="w"> </span>information<span class="w"> </span><span class="k">for</span><span class="w"> </span>pickling.
+</span><span id="__span-32-24"><a id="__codelineno-32-24" name="__codelineno-32-24" href="#__codelineno-32-24"></a><span class="w"> </span><span class="p">|</span>
+</span><span id="__span-32-25"><a id="__codelineno-32-25" name="__codelineno-32-25" href="#__codelineno-32-25"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>----------------------------------------------------------------------
+</span><span id="__span-32-26"><a id="__codelineno-32-26" name="__codelineno-32-26" href="#__codelineno-32-26"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>Static<span class="w"> </span>methods<span class="w"> </span>defined<span class="w"> </span>here:
+</span><span id="__span-32-27"><a id="__codelineno-32-27" name="__codelineno-32-27" href="#__codelineno-32-27"></a><span class="w"> </span><span class="p">|</span>
+</span><span id="__span-32-28"><a id="__codelineno-32-28" name="__codelineno-32-28" href="#__codelineno-32-28"></a><span class="w"> </span><span class="p">|</span><span class="w">  </span>__new__<span class="o">(</span>*args,<span class="w"> </span>**kwargs<span class="o">)</span><span class="w"> </span>from<span class="w"> </span>builtins.type
+</span><span id="__span-32-29"><a id="__codelineno-32-29" name="__codelineno-32-29" href="#__codelineno-32-29"></a><span class="w"> </span><span class="p">|</span><span class="w">      </span>Create<span class="w"> </span>and<span class="w"> </span><span class="k">return</span><span class="w"> </span>a<span class="w"> </span>new<span class="w"> </span>object.<span class="w">  </span>See<span class="w"> </span>help<span class="o">(</span><span class="nb">type</span><span class="o">)</span><span class="w"> </span><span class="k">for</span><span class="w"> </span>accurate<span class="w"> </span>signature.
+</span></code></pre></div>
+<p>假如我们想过滤 1-10 中的偶数，可以使用 filter 过滤出序列中整除 2 的元素：</p>
+<ul>
+<li>基于列表推导的等效实现：[n for n in range(1,11) if n%2==0]</li>
+</ul>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-33-1"><a id="__codelineno-33-1" name="__codelineno-33-1" href="#__codelineno-33-1"></a>&gt;&gt;&gt;<span class="w"> </span><span class="nv">even</span><span class="o">=</span>filter<span class="o">(</span>lambda<span class="w"> </span>n:n%2<span class="o">==</span><span class="m">0</span>,<span class="w"> </span>range<span class="o">(</span><span class="m">1</span>,11<span class="o">))</span>
+</span><span id="__span-33-2"><a id="__codelineno-33-2" name="__codelineno-33-2" href="#__codelineno-33-2"></a>&gt;&gt;&gt;<span class="w"> </span><span class="o">[</span>*even<span class="o">]</span>
+</span><span id="__span-33-3"><a id="__codelineno-33-3" name="__codelineno-33-3" href="#__codelineno-33-3"></a><span class="o">[</span><span class="m">2</span>,<span class="w"> </span><span class="m">4</span>,<span class="w"> </span><span class="m">6</span>,<span class="w"> </span><span class="m">8</span>,<span class="w"> </span><span class="m">10</span><span class="o">]</span>
+</span><span id="__span-33-4"><a id="__codelineno-33-4" name="__codelineno-33-4" href="#__codelineno-33-4"></a>&gt;&gt;&gt;<span class="w"> </span><span class="o">[</span>*even<span class="o">]</span>
+</span><span id="__span-33-5"><a id="__codelineno-33-5" name="__codelineno-33-5" href="#__codelineno-33-5"></a><span class="o">[]</span>
+</span></code></pre></div>
+<p>同样，对于 filter 实例对象 even，传递给 list() 构造后，已经遍历完毕。<br />
+尝试再次调用 next 迭代，将抛出异常 StopIteration。</p>
+<p>下面通过 filter 过滤出了内置模块（builtins）中的公开符号：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-34-1"><a id="__codelineno-34-1" name="__codelineno-34-1" href="#__codelineno-34-1"></a>&gt;&gt;&gt;<span class="w"> </span>import<span class="w"> </span>builtins,<span class="w"> </span>pprint
+</span><span id="__span-34-2"><a id="__codelineno-34-2" name="__codelineno-34-2" href="#__codelineno-34-2"></a>&gt;&gt;&gt;<span class="w"> </span><span class="nv">builtin_sym</span><span class="o">=</span>filter<span class="o">(</span>lambda<span class="w"> </span>s:not<span class="w"> </span>s.startswith<span class="o">(</span><span class="s1">&#39;_&#39;</span><span class="o">)</span>,<span class="w"> </span>dir<span class="o">(</span>builtins<span class="o">))</span>
+</span><span id="__span-34-3"><a id="__codelineno-34-3" name="__codelineno-34-3" href="#__codelineno-34-3"></a>&gt;&gt;&gt;<span class="w"> </span>pprint.pp<span class="o">([</span>*builtin_sym<span class="o">])</span>
+</span></code></pre></div>
+<p>再使用 filter 过滤出以“is”开头的判断接口:</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-35-1"><a id="__codelineno-35-1" name="__codelineno-35-1" href="#__codelineno-35-1"></a>&gt;&gt;&gt;<span class="w"> </span><span class="nv">is_sym</span><span class="o">=</span>filter<span class="o">(</span>lambda<span class="w"> </span>s:s.startswith<span class="o">(</span><span class="s1">&#39;is&#39;</span><span class="o">)</span>,<span class="w"> </span>builtin_sym<span class="o">)</span>
+</span><span id="__span-35-2"><a id="__codelineno-35-2" name="__codelineno-35-2" href="#__codelineno-35-2"></a>&gt;&gt;&gt;<span class="w"> </span><span class="o">[</span>*is_sym<span class="o">]</span>
+</span><span id="__span-35-3"><a id="__codelineno-35-3" name="__codelineno-35-3" href="#__codelineno-35-3"></a><span class="o">[</span><span class="s1">&#39;isinstance&#39;</span>,<span class="w"> </span><span class="s1">&#39;issubclass&#39;</span><span class="o">]</span>
+</span></code></pre></div>
+<p>基于列表推导的等效实现：</p>
+<blockquote>
+<p>[n for n in dir(builtins) if not n.startswith('_') and n.startswith('is')]</p>
+</blockquote>
+<hr />
+<p><strong>谓词函数相关参考</strong>：</p>
+<blockquote>
+<p>C++ STL 中带有 <code>_if</code> 后缀的算法（std::find, std::find_if, std::find_if_not）需要带有谓词函数（UnaryPredicate）作为形参。</p>
+<p>在 IBM DB2 文档中，<a href="https://www.ibm.com/docs/zh/db2/9.7?topic=concepts-predicate">谓词</a> 是一个搜索条件的元素，它表示或隐含一个比较操作。谓词包括在以 WHERE 或 HAVING 开头的子句中。</p>
+<p>在 IBM i7.5 文档中，<a href="https://www.ibm.com/docs/zh/i/7.5?topic=steps-predicates">谓词</a> 由一个称为谓词表达式的表达式组成，该表达式括在方括号 ([]) 中。 谓词通过保留某些项并废弃其他项来过滤序列。针对序列中的每个项对谓词表达式求值一次。 谓词表达式的结果是一个称为谓词真值的 xs:boolean 值。 将保留谓词真值为 true 的那些项，并且将废弃谓词真值为 false 的那些项。</p>
+</blockquote>
+<h3 id="itertools_1">itertools<a class="headerlink" href="#itertools_1" title="Permanent link">#</a></h3>
+<p>如果想要过滤出 iterable object 符合条件的元素，除了可以调用内置的 filter 工具类外，也可调用 itertools 中的相关工具集。</p>
+<ul>
+<li>itertools.takewhile(predicate, iterable)</li>
+<li>itertools.filterfalse(predicate, iterable)</li>
+<li>itertools.dropwhile(predicate, iterable)</li>
+</ul>
+<p>以上接口返回可迭代对象 takewhile、filterfalse、dropwhile，需要对其调用 next 完成迭代。</p>
+<p><a href="https://docs.python.org/3.12/library/itertools.html">itertools — Functions creating iterators for efficient looping — Python 3.12.2 documentation</a></p>
+<p>takewhile 过滤出符合谓词逻辑 predicate 的元素，一旦遇到第一个不符合条件的即终止。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-36-1"><a id="__codelineno-36-1" name="__codelineno-36-1" href="#__codelineno-36-1"></a>&gt;&gt;&gt;<span class="w"> </span><span class="nv">x</span><span class="o">=</span>itertools.takewhile<span class="o">(</span>lambda<span class="w"> </span>x:x&lt;<span class="m">5</span>,<span class="w"> </span><span class="o">[</span><span class="m">1</span>,4,6,4,1<span class="o">])</span>
+</span><span id="__span-36-2"><a id="__codelineno-36-2" name="__codelineno-36-2" href="#__codelineno-36-2"></a>&gt;&gt;&gt;<span class="w"> </span>x
+</span><span id="__span-36-3"><a id="__codelineno-36-3" name="__codelineno-36-3" href="#__codelineno-36-3"></a>&lt;itertools.takewhile<span class="w"> </span>object<span class="w"> </span>at<span class="w"> </span>0x108f204c0&gt;
+</span><span id="__span-36-4"><a id="__codelineno-36-4" name="__codelineno-36-4" href="#__codelineno-36-4"></a>&gt;&gt;&gt;<span class="w"> </span>next<span class="o">(</span>x<span class="o">)</span>
+</span><span id="__span-36-5"><a id="__codelineno-36-5" name="__codelineno-36-5" href="#__codelineno-36-5"></a><span class="m">1</span>
+</span><span id="__span-36-6"><a id="__codelineno-36-6" name="__codelineno-36-6" href="#__codelineno-36-6"></a>&gt;&gt;&gt;<span class="w"> </span>next<span class="o">(</span>x<span class="o">)</span>
+</span><span id="__span-36-7"><a id="__codelineno-36-7" name="__codelineno-36-7" href="#__codelineno-36-7"></a><span class="m">4</span>
+</span><span id="__span-36-8"><a id="__codelineno-36-8" name="__codelineno-36-8" href="#__codelineno-36-8"></a>&gt;&gt;&gt;<span class="w"> </span>next<span class="o">(</span>x<span class="o">)</span>
+</span><span id="__span-36-9"><a id="__codelineno-36-9" name="__codelineno-36-9" href="#__codelineno-36-9"></a>Traceback<span class="w"> </span><span class="o">(</span>most<span class="w"> </span>recent<span class="w"> </span>call<span class="w"> </span>last<span class="o">)</span>:
+</span><span id="__span-36-10"><a id="__codelineno-36-10" name="__codelineno-36-10" href="#__codelineno-36-10"></a><span class="w">  </span>File<span class="w"> </span><span class="s2">&quot;&lt;stdin&gt;&quot;</span>,<span class="w"> </span>line<span class="w"> </span><span class="m">1</span>,<span class="w"> </span><span class="k">in</span><span class="w"> </span>&lt;module&gt;
+</span><span id="__span-36-11"><a id="__codelineno-36-11" name="__codelineno-36-11" href="#__codelineno-36-11"></a>StopIteration
+</span></code></pre></div>
+<p>filterfalse 过滤出所有不符合谓词逻辑 predicate 的元素。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-37-1"><a id="__codelineno-37-1" name="__codelineno-37-1" href="#__codelineno-37-1"></a>&gt;&gt;&gt;<span class="w"> </span><span class="nv">x</span><span class="o">=</span>itertools.filterfalse<span class="o">(</span>lambda<span class="w"> </span>x:<span class="w"> </span>x%2,<span class="w"> </span>range<span class="o">(</span><span class="m">10</span><span class="o">))</span>
+</span><span id="__span-37-2"><a id="__codelineno-37-2" name="__codelineno-37-2" href="#__codelineno-37-2"></a>&gt;&gt;&gt;<span class="w"> </span>next<span class="o">(</span>x<span class="o">)</span>
+</span><span id="__span-37-3"><a id="__codelineno-37-3" name="__codelineno-37-3" href="#__codelineno-37-3"></a><span class="m">0</span>
+</span><span id="__span-37-4"><a id="__codelineno-37-4" name="__codelineno-37-4" href="#__codelineno-37-4"></a>&gt;&gt;&gt;<span class="w"> </span>next<span class="o">(</span>x<span class="o">)</span>
+</span><span id="__span-37-5"><a id="__codelineno-37-5" name="__codelineno-37-5" href="#__codelineno-37-5"></a><span class="m">2</span>
+</span><span id="__span-37-6"><a id="__codelineno-37-6" name="__codelineno-37-6" href="#__codelineno-37-6"></a>&gt;&gt;&gt;<span class="w"> </span>next<span class="o">(</span>x<span class="o">)</span>
+</span><span id="__span-37-7"><a id="__codelineno-37-7" name="__codelineno-37-7" href="#__codelineno-37-7"></a><span class="m">4</span>
+</span><span id="__span-37-8"><a id="__codelineno-37-8" name="__codelineno-37-8" href="#__codelineno-37-8"></a>&gt;&gt;&gt;<span class="w"> </span>next<span class="o">(</span>x<span class="o">)</span>
+</span><span id="__span-37-9"><a id="__codelineno-37-9" name="__codelineno-37-9" href="#__codelineno-37-9"></a><span class="m">6</span>
+</span><span id="__span-37-10"><a id="__codelineno-37-10" name="__codelineno-37-10" href="#__codelineno-37-10"></a>&gt;&gt;&gt;<span class="w"> </span>next<span class="o">(</span>x<span class="o">)</span>
+</span><span id="__span-37-11"><a id="__codelineno-37-11" name="__codelineno-37-11" href="#__codelineno-37-11"></a><span class="m">8</span>
+</span><span id="__span-37-12"><a id="__codelineno-37-12" name="__codelineno-37-12" href="#__codelineno-37-12"></a>&gt;&gt;&gt;<span class="w"> </span>next<span class="o">(</span>x<span class="o">)</span>
+</span><span id="__span-37-13"><a id="__codelineno-37-13" name="__codelineno-37-13" href="#__codelineno-37-13"></a>Traceback<span class="w"> </span><span class="o">(</span>most<span class="w"> </span>recent<span class="w"> </span>call<span class="w"> </span>last<span class="o">)</span>:
+</span><span id="__span-37-14"><a id="__codelineno-37-14" name="__codelineno-37-14" href="#__codelineno-37-14"></a><span class="w">  </span>File<span class="w"> </span><span class="s2">&quot;&lt;stdin&gt;&quot;</span>,<span class="w"> </span>line<span class="w"> </span><span class="m">1</span>,<span class="w"> </span><span class="k">in</span><span class="w"> </span>&lt;module&gt;
+</span><span id="__span-37-15"><a id="__codelineno-37-15" name="__codelineno-37-15" href="#__codelineno-37-15"></a>StopIteration
+</span></code></pre></div>
+<p>takewhile 过滤掉符合谓词逻辑 predicate 的元素，一旦遇到第一个不符合条件的予以保留（至末尾）。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-38-1"><a id="__codelineno-38-1" name="__codelineno-38-1" href="#__codelineno-38-1"></a>&gt;&gt;&gt;<span class="w"> </span><span class="nv">x</span><span class="o">=</span>itertools.dropwhile<span class="o">(</span>lambda<span class="w"> </span>x:<span class="w"> </span>x&lt;<span class="m">5</span>,<span class="w"> </span><span class="o">[</span><span class="m">1</span>,4,6,4,1<span class="o">])</span>
+</span><span id="__span-38-2"><a id="__codelineno-38-2" name="__codelineno-38-2" href="#__codelineno-38-2"></a>&gt;&gt;&gt;<span class="w"> </span>next<span class="o">(</span>x<span class="o">)</span>
+</span><span id="__span-38-3"><a id="__codelineno-38-3" name="__codelineno-38-3" href="#__codelineno-38-3"></a><span class="m">6</span>
+</span><span id="__span-38-4"><a id="__codelineno-38-4" name="__codelineno-38-4" href="#__codelineno-38-4"></a>&gt;&gt;&gt;<span class="w"> </span>next<span class="o">(</span>x<span class="o">)</span>
+</span><span id="__span-38-5"><a id="__codelineno-38-5" name="__codelineno-38-5" href="#__codelineno-38-5"></a><span class="m">4</span>
+</span><span id="__span-38-6"><a id="__codelineno-38-6" name="__codelineno-38-6" href="#__codelineno-38-6"></a>&gt;&gt;&gt;<span class="w"> </span>next<span class="o">(</span>x<span class="o">)</span>
+</span><span id="__span-38-7"><a id="__codelineno-38-7" name="__codelineno-38-7" href="#__codelineno-38-7"></a><span class="m">1</span>
+</span><span id="__span-38-8"><a id="__codelineno-38-8" name="__codelineno-38-8" href="#__codelineno-38-8"></a>&gt;&gt;&gt;<span class="w"> </span>next<span class="o">(</span>x<span class="o">)</span>
+</span><span id="__span-38-9"><a id="__codelineno-38-9" name="__codelineno-38-9" href="#__codelineno-38-9"></a>Traceback<span class="w"> </span><span class="o">(</span>most<span class="w"> </span>recent<span class="w"> </span>call<span class="w"> </span>last<span class="o">)</span>:
+</span><span id="__span-38-10"><a id="__codelineno-38-10" name="__codelineno-38-10" href="#__codelineno-38-10"></a><span class="w">  </span>File<span class="w"> </span><span class="s2">&quot;&lt;stdin&gt;&quot;</span>,<span class="w"> </span>line<span class="w"> </span><span class="m">1</span>,<span class="w"> </span><span class="k">in</span><span class="w"> </span>&lt;module&gt;
+</span><span id="__span-38-11"><a id="__codelineno-38-11" name="__codelineno-38-11" href="#__codelineno-38-11"></a>StopIteration
+</span></code></pre></div>
+
+
+
+
+
+
+
+  
+  
+
+
+
+  
+
+
+  
+
+
+
+  <h2 id="__comments">评论</h2>
+  <!-- Insert generated snippet here -->
+  <script src="https://giscus.app/client.js"
+    data-repo="fan2/mkdocs"
+    data-repo-id="R_kgDOLltxSg"
+    data-category="Announcements"
+    data-category-id="DIC_kwDOLltxSs4CeURH"
+    data-mapping="pathname"
+    data-strict="0"
+    data-reactions-enabled="1"
+    data-emit-metadata="1"
+    data-input-position="top"
+    data-theme="preferred_color_scheme"
+    data-lang="zh-CN"
+    data-loading="lazy"
+    crossorigin="anonymous"
+    async>
+  </script>
+
+  <!-- Synchronize Giscus theme with palette -->
+  <script>
+    var giscus = document.querySelector("script[src*=giscus]")
+
+    // Set palette on initial load
+    var palette = __md_get("__palette")
+    if (palette && typeof palette.color === "object") {
+      var theme = palette.color.scheme === "slate"
+        ? "transparent_dark"
+        : "light"
+
+      // Instruct Giscus to set theme
+      giscus.setAttribute("data-theme", theme) 
+    }
+
+    // Register event handlers after documented loaded
+    document.addEventListener("DOMContentLoaded", function() {
+      var ref = document.querySelector("[data-md-component=palette]")
+      ref.addEventListener("change", function() {
+        var palette = __md_get("__palette")
+        if (palette && typeof palette.color === "object") {
+          var theme = palette.color.scheme === "slate"
+            ? "transparent_dark"
+            : "light"
+
+          // Instruct Giscus to change theme
+          var frame = document.querySelector(".giscus-frame")
+          frame.contentWindow.postMessage(
+            { giscus: { setConfig: { theme } } },
+            "https://giscus.app"
+          )
+        }
+      })
+    })
+  </script>
+
+      
+    </article>
+  </div>
+
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+        
+      
+      <nav class="md-footer__inner md-grid" aria-label="页脚" >
+        
+          
+          <a href="../11-logging/" class="md-footer__link md-footer__link--prev" aria-label="上一页: python中的日志类——logging">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                上一页
+              </span>
+              <div class="md-ellipsis">
+                python中的日志类——logging
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../13-generator/" class="md-footer__link md-footer__link--next" aria-label="下一页: python中的生成器——generator">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                下一页
+              </span>
+              <div class="md-ellipsis">
+                python中的生成器——generator
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2024- Cliff Fan
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["toc.follow", "header.autohide", "navigation.tabs", "navigation.top", "navigation.footer", "navigation.tracking", "content.code.copy", "content.code.select", "content.code.annotate"], "search": "../../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.bd41221c.min.js"></script>
+      
+        <script src="../../../javascripts/mathjax.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+        <script src="https://vercount.one/js"></script>
+      
+    
+  </body>
+</html>
