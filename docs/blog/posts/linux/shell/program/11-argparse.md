@@ -7,6 +7,8 @@ date:
 categories:
     - linux
     - shell
+tags:
+    - getopt
 comments: true
 ---
 

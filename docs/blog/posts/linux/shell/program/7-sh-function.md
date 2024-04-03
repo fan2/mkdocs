@@ -3,7 +3,7 @@ title: Linux Shell Program - function
 authors:
   - xman
 date:
-    created: 2019-11-06T09:30:00
+    created: 2019-11-06T09:40:00
 categories:
     - linux
     - shell
