@@ -100,6 +100,8 @@ extra:
 
 参考：[让Google搜索到自己的博客](https://zoharandroid.github.io/2019-08-03-%E8%AE%A9%E8%B0%B7%E6%AD%8C%E6%90%9C%E7%B4%A2%E5%88%B0%E8%87%AA%E5%B7%B1%E7%9A%84%E5%8D%9A%E5%AE%A2/)、[Hexo 个人博客 SEO 优化（3）：改造你的博客，提升搜索引擎排名](https://juejin.cn/post/6844903600485826567)。
 
+**BTW**: [Bing Webmaster Tools](https://www.bing.com/webmasters/): support import your sites from GSC
+
 ### Add a property
 
 1. 查看网站是否被收录: 搜索框输入 site:duetorun.com
