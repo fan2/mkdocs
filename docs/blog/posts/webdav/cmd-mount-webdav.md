@@ -49,9 +49,9 @@ $ diskutil umount /Volumes/webdav
 
 ```Shell
 # Ubuntu
-sudo apt-get install davfs2 -y
+$ sudo apt-get install davfs2 -y
 # CentOS
-sudo yum install davfs2 -y
+$ sudo yum install davfs2 -y
 ```
 
 2. 创建本地挂载点目录：
@@ -79,13 +79,13 @@ http://mbpa1398.local/webdav or hit enter for none.
 4. 直接编辑 WebDAV 上的文件，然后保存同步：
 
 ```Shell
-sudo vim /mnt/webdav@mbpa1398/test/test.c
+$ sudo vim /mnt/webdav@mbpa1398/test/test.c
 ```
 
 5. 用完之后，记得解除挂载：
 
 ```Shell
-sudo umount /mnt/webdav@mbpa1398
+$ sudo umount /mnt/webdav@mbpa1398
 ```
 
 6. 可考虑配置开机自动挂载，涉及以下配置文件：
@@ -94,15 +94,37 @@ sudo umount /mnt/webdav@mbpa1398
     - davfs2密码配置：/etc/davfs2/secrets
     - 自动挂载配置文件：/etc/fstab
 
+## WebDAV collaborative authoring verbs
+
+[RFC 4918 - HTTP Extensions for Web Distributed Authoring and Versioning (WebDAV)](https://datatracker.ietf.org/doc/html/rfc4918) @[RFC Reader](https://www.rfcreader.com/#rfc4918)
+
+WebDAV extends the set of standard HTTP verbs and headers allowed for request methods. The added verbs include:
+
+Verb      | Action
+----------|------------------
+COPY      | copy a resource from one uniform resource identifier (URI) to another
+LOCK      | put a lock on a resource. WebDAV supports both shared and exclusive locks.
+MKCOL     | create collections (also known as a directory)
+MOVE      | move a resource from one URI to another
+PROPFIND  | retrieve properties, stored as XML, from a web resource. It is also overloaded to allow one to retrieve the collection structure (also known as directory hierarchy) of a remote system.
+PROPPATCH | change and delete multiple properties on a resource in a single atomic act
+UNLOCK    | remove a lock from a resource
+
+WebDAV collaborative authoring in a compatible HTTP server:
+
+![WebDAV_collaborative_authoring](./images/WebDAV_collaborative_authoring.png)
+
 ## curl 命令行访问操作 WebDAV
 
 1. 认证方式可选 `--basic`，`--digest`，不指定相当于 `--anyauth`，让 cURL 自动选择。
 2. -u(--user) 后面可只指定用户名 `-u $username`，将提示输入密码；也可连带指定密码 `-u $username:$password`。
 
-1. **拉取文件列表**（也可指定其他目录，以/结尾）：
+### 拉取文件列表
+
+拉取文件列表，也可指定其他目录（以/结尾）：
 
 ```Shell
-curl -i --basic -u $username -X PROPFIND http://mbpa1398.local/webdav/ --upload-file - -H "Depth: 1" <<end
+$ curl -i --basic -u $username -X PROPFIND http://mbpa1398.local/webdav/ --upload-file - -H "Depth: 1" <<end
 <?xml version="1.0"?>
 <a:propfind xmlns:a="DAV:">
 <a:prop><a:resourcetype/></a:prop>
@@ -110,45 +132,85 @@ curl -i --basic -u $username -X PROPFIND http://mbpa1398.local/webdav/ --upload-
 end
 ```
 
-2. **新建目录**：
+可使用 python -m pip 安装 xmltojson 支持将 xml 转换为 json。
+
+!!! note "xmltojson"
+
+    [xmltojson](https://pypi.org/project/xmltojson/)（依赖 [utils](https://pypi.org/project/utils/)）: Python library and cli tool for converting XML to JSON.
+
+还可以安装 jq 命令行工具（macOS: `brew install jq`），将压缩/转义的 json 字符串转换为格式化的 JSON 对象。
+
+!!! note "jq"
+
+    [jq](https://jqlang.github.io/jq/) is a lightweight and flexible command-line JSON processor.
+
+以下命令拉取根目录xml，并依次管传给 xmltojson 和 jq，输出格式化良好的 json：
 
 ```Shell
-curl -v -u $username -X MKCOL http://mbpa1398.local/webdav/curltest/
+$ curl -i --basic -u $username -X PROPFIND http://mbpa1398.local/webdav/ -H "Depth: 1" | xmltojson --stdin | jq
 ```
 
-3. **上传文件**（也可在 url 后续接上传后的自定义目标文件名）：
+### 新建目录
+
+在根目录 /webdav 下新建文件夹 curltest：
 
 ```Shell
-curl -v -u $username -T test.txt http://mbpa1398.local/webdav/curltest/
+$ curl -v -u $username -X MKCOL http://mbpa1398.local/webdav/curltest/
 ```
 
-4. **移动文件**（同目录相当于重命名）：
+### 上传文件
+
+上传文件 test.txt 到目录 /webdav/curltest 下：
 
 ```Shell
-curl -v -u $username -X MOVE http://mbpa1398.local/webdav/curltest/test.txt --header 'Destination: http://mbpa1398.local/webdav/curltest/test2.txt'
+$ curl -v -u $username -T test.txt http://mbpa1398.local/webdav/curltest/
 ```
 
-5. **复制文件**：
+也可在 url 后续接自定义的目标文件名，将 test.txt 上传为 /webdav/curltest/upload.txt：
 
 ```Shell
-curl -v -u $username -X COPY http://mbpa1398.local/webdav/curltest/test2.txt --header 'Destination: http://mbpa1398.local/webdav/curltest/test3.txt'
+$ curl -v -u $username -T test.txt http://mbpa1398.local/webdav/curltest/upload.txt
 ```
 
-6. **下载文件**（或 > test2.txt，重定向 stdout 到文件；-v 是 stderr）：
+### 移动文件
+
+不同目录为移动，相同目录相当于重命名：
 
 ```Shell
-curl -v -u $username http://mbpa1398.local/webdav/curltest/test3.txt -o test3.txt
+$ curl -v -u $username -X MOVE http://mbpa1398.local/webdav/curltest/test.txt --header 'Destination: http://mbpa1398.local/webdav/curltest/test2.txt'
 ```
 
-7. **删除文件**（夹）：
+### 复制文件
+
+将 curltest/test2.txt 复制一份为 curltest/test3.txt：
 
 ```Shell
-curl -v -u $username -X DELETE http://mbpa1398.local/webdav/curltest/test3.txt
+$ curl -v -u $username -X COPY http://mbpa1398.local/webdav/curltest/test2.txt --header 'Destination: http://mbpa1398.local/webdav/curltest/test3.txt'
+```
+
+### 下载文件
+
+或 > test2.txt，重定向 stdout 到文件（-v 输出到 stderr）：
+
+```Shell
+$ curl -v -u $username http://mbpa1398.local/webdav/curltest/test3.txt -o test3.txt
+```
+
+### 删除文件(夹)
+
+删除 curltest 目录下的 test3.txt 文件：
+
+```Shell
+$ curl -v -u $username -X DELETE http://mbpa1398.local/webdav/curltest/test3.txt
 ```
 
 ## 参考
 
-[WEBDAV WITH CURL](https://code.blogs.iiidefix.net/posts/webdav-with-curl/)：[curl 测试 webdav](https://www.cnblogs.com/sky-cheng/p/16546837.html)，[学习 WebDav](https://www.cnblogs.com/janbar/p/13804097.html)
+[awesome-webdav: A curated list of awesome apps that support WebDAV and tools related to it.](https://github.com/WebDAVDevs/awesome-webdav)
+
+[WEBDAV WITH CURL](https://code.blogs.iiidefix.net/posts/webdav-with-curl/), [stokito/webdav_curl](https://gist.github.com/stokito/cf82ce965718ce87f36b78f7501d7940)
+
+[学习 WebDav](https://www.cnblogs.com/janbar/p/13804097.html), [curl 测试 webdav](https://www.cnblogs.com/sky-cheng/p/16546837.html)
 
 [如何在Ubuntu或CentOS将WebDAV挂载为本地磁盘](https://shipengliang.com/software-exp/%E5%A6%82%E4%BD%95%E5%9C%A8ubuntu%E6%88%96centos%E5%B0%86webdav%E6%8C%82%E8%BD%BD%E4%B8%BA%E6%9C%AC%E5%9C%B0%E7%A3%81%E7%9B%98.html)
 [Linux 挂载 WEBDAV](https://cloud.tencent.com/developer/article/2152260)，[Linux将WebDAV为本地磁盘](https://blog.lincloud.pro/archives/36.html)

@@ -195,7 +195,7 @@ domain.
 
 ## Finder 挂载 WebDAV 卡死问题
 
-macOS Finder 对 WebDAV 的支持貌似不是那么好，可考虑 Finder 的替代品 [QSpace](https://qspace.awehunt.com/en-us/index.html) 或使用专业的云盘加载工具软件 [Mountain Duck](https://mountainduck.io/)、[CloudMounter](https://cloudmounter.net/) 等。
+macOS Finder 对 WebDAV 的支持貌似不是那么好，可考虑 Finder 的替代品 [QSpace](https://qspace.awehunt.com/en-us/index.html) 或使用专业的云盘加载工具软件 [Cyberduck](https://cyberduck.io/)、[Mountain Duck](https://mountainduck.io/)、[CloudMounter](https://cloudmounter.net/) 等。
 
 从实际体验来看，iPad/iPhone 上的 PDF Expert 挂载局域网 WebDAV 后，工作得挺稳定，回写同步做得比较好。在 macOS 上编辑 PDF 文件，时不时转菊花，有时候等一会能恢复，有时候等了很久还是卡死。
 
