@@ -19,7 +19,6 @@ comments: true
 
 <!-- more -->
 
-
 !!! note "rclone works like a charm!"
 
     [rclone](https://rclone.org/): Rclone syncs your files to cloud storage
@@ -509,7 +508,7 @@ rcdir/
 
 ## copy
 
-基本语义同 bash shell 中的 `copy`，支持端到端的文件（夹）复制。
+基本语义同 bash shell 中的 `cp`，支持端到端的文件（夹）复制。
 
 | Command | Description |
 |---------|-------------|
@@ -517,33 +516,45 @@ rcdir/
 | [rclone copyto](https://rclone.org/commands/rclone_copyto/)   | Copy files from source to dest, skipping identical files.    |
 | [rclone copyurl](https://rclone.org/commands/rclone_copyurl/) | Copy the contents of the URL supplied content to dest\:path. |
 
-If dest\:path doesn't exist, it is created and the source\:path contents go there.
+**copy**:
 
-To copy single files, use the [copyto](https://rclone.org/commands/rclone_copyto/) command instead.
+1. If dest\:path doesn't exist, it is created and the source\:path contents go there.
+2. To copy single files, use the [copyto](https://rclone.org/commands/rclone_copyto/) command instead.
 
-This(copyto) can be used to upload single files to other than their current name.
+**copyto**:
+
+1. If source:path is a file or directory then it copies it to a file or directory *named* dest:path.
+2. This can be used to upload single files to other than their current name.
+3. If the source is a directory then it acts exactly like the [copy](https://rclone.org/commands/rclone_copy/) command.
 
 ### upload from local
 
-将当前目录下文件夹 mkdocs/script/ 复制到 test/script 目录：
+将当前目录下文件夹 mkdocs/script/ 中的所有文件复制到 test/script 目录下：
 
-*   如果目标目录不存在，会逐级创建目录（mkdir -p）。
+*   如果目标目录不存在，会逐级创建目录（mkdir -p test/script）。
 
 ```Shell
 $ rclone copy mkdocs/script/ webdav@rpi4b:test/script
 ```
 
-上传（copy/copyto）本地文件 test.txt 到目录 rcdir 下：
+将当前目录下的文件 test.txt 拷贝上传（copy upload）到目录 rcdir 下：
 
 ```Shell
-# rclone copy test.txt webdav@rpi4b:rcdir
-$ rclone copyto test.txt webdav@rpi4b:rcdir
+$ rclone copy test.txt webdav@rpi4b:rcdir
 
 $ rclone lsf webdav@rpi4b:rcdir
 test.txt
 ```
 
-也可在 remote\:path 后续接自定义的目标文件名，将 test.txt 上传为 test2.txt：
+**注意**：如果使用 copyto 命令，会将 rcdir 视作文件：
+
+```Shell
+# 将当前目录下的 test.txt 文件复制为远端文件 rcdir
+$ rclone copyto test.txt webdav@rpi4b:rcdir
+```
+
+使用 copyto 命令，dstpath 部分指定上传后的目标文件名。
+例如，将 test.txt 上传为 rcdir/test2.txt：
 
 ```Shell
 $ rclone copyto test.txt webdav@rpi4b:rcdir/test2.txt
@@ -575,7 +586,7 @@ test.txt
 $ rclone copy webdav@rpi4b:rcdir .
 ```
 
-将 rcdir 目录下的所有文件下载到当前目录（pwd）下的 rcdir 目录下：
+将 rcdir 目录下的所有文件下载到当前目录的 rcdir 文件夹下：
 
 *   如果当前目录下不存在 rcdir 文件夹，则自动创建。
 
@@ -640,6 +651,17 @@ test4.txt
 | [rclone move](https://rclone.org/commands/rclone_move/)     | Move files from source to dest.             |
 | [rclone moveto](https://rclone.org/commands/rclone_moveto/) | Move file or directory from source to dest. |
 
+**move**:
+
+1. Moves the contents of the source directory to the destination directory.
+2. To move single files, use the [moveto](https://rclone.org/commands/rclone_moveto/) command instead.
+
+**moveto**:
+
+1. If source:path is a file or directory then it moves it to a file or directory *named* dest:path.
+2. This can be used to rename files or upload single files to other than their existing name.
+3. If the source is a directory then it acts exactly like the [move](https://rclone.org/commands/rclone_move/) command.
+
 !!! note "move vs. copy"
 
     在上面使用 `copy` 的场合，都可以替换为 `move`。
@@ -692,8 +714,10 @@ $ rclone move --include "/*.{mp3,pdf}" webdav@rpi4b:English webdav@rpi4b:English
 
 | Command | Description |
 |---------|-------------|
-| [rclone delete](https://rclone.org/commands/rclone_delete/)         | Remove the files in path.         |
 | [rclone deletefile](https://rclone.org/commands/rclone_deletefile/) | Remove a single file from remote. |
+| [rclone delete](https://rclone.org/commands/rclone_delete/)         | Remove the files in path.         |
+
+deletefile 语义同 bash shell 中的 `rm -f file`；delete 语义同 bash shell 中的 `rm -rf folder`。
 
 删除远端文件 rcdir1/test.txt：
 
@@ -865,11 +889,9 @@ rclone sync webdav@mbpa1398: webdav@rpi4b:
 
 ## crontab
 
-[Bisync](https://rclone.org/bisync/)
+[Bisync](https://rclone.org/bisync/): On Linux or Mac, consider setting up a crontab entry. `bisync` can safely run in concurrent cron jobs thanks to lock files it maintains.
 
-On Linux or Mac, consider setting up a crontab entry. bisync can safely run in concurrent cron jobs thanks to lock files it maintains.
-
-可以通过 crontab 配置定时任务，每天自动执行同步。
+可以通过 [cron/crontab](https://en.wikipedia.org/wiki/Cron) 配置定时任务，每天自动执行同步。
 
 ## Flags & Filtering
 

@@ -2102,7 +2102,7 @@
 </span><span id="__span-12-14"><a id="__codelineno-12-14" name="__codelineno-12-14" href="#__codelineno-12-14"></a>rcdir/
 </span></code></pre></div>
 <h2 id="copy">copy<a class="headerlink" href="#copy" title="Permanent link">#</a></h2>
-<p>基本语义同 bash shell 中的 <code>copy</code>，支持端到端的文件（夹）复制。</p>
+<p>基本语义同 bash shell 中的 <code>cp</code>，支持端到端的文件（夹）复制。</p>
 <table>
 <thead>
 <tr>
@@ -2125,84 +2125,96 @@
 </tr>
 </tbody>
 </table>
-<p>If dest:path doesn't exist, it is created and the source:path contents go there.</p>
-<p>To copy single files, use the <a href="https://rclone.org/commands/rclone_copyto/">copyto</a> command instead.</p>
-<p>This(copyto) can be used to upload single files to other than their current name.</p>
+<p><strong>copy</strong>:</p>
+<ol>
+<li>If dest:path doesn't exist, it is created and the source:path contents go there.</li>
+<li>To copy single files, use the <a href="https://rclone.org/commands/rclone_copyto/">copyto</a> command instead.</li>
+</ol>
+<p><strong>copyto</strong>:</p>
+<ol>
+<li>If source:path is a file or directory then it copies it to a file or directory <em>named</em> dest:path.</li>
+<li>This can be used to upload single files to other than their current name.</li>
+<li>If the source is a directory then it acts exactly like the <a href="https://rclone.org/commands/rclone_copy/">copy</a> command.</li>
+</ol>
 <h3 id="upload_from_local">upload from local<a class="headerlink" href="#upload_from_local" title="Permanent link">#</a></h3>
-<p>将当前目录下文件夹 mkdocs/script/ 复制到 test/script 目录：</p>
+<p>将当前目录下文件夹 mkdocs/script/ 中的所有文件复制到 test/script 目录下：</p>
 <ul>
-<li>如果目标目录不存在，会逐级创建目录（mkdir -p）。</li>
+<li>如果目标目录不存在，会逐级创建目录（mkdir -p test/script）。</li>
 </ul>
 <div class="language-Shell highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>$<span class="w"> </span>rclone<span class="w"> </span>copy<span class="w"> </span>mkdocs/script/<span class="w"> </span>webdav@rpi4b:test/script
 </span></code></pre></div>
-<p>上传（copy/copyto）本地文件 test.txt 到目录 rcdir 下：</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="c1"># rclone copy test.txt webdav@rpi4b:rcdir</span>
-</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>$<span class="w"> </span>rclone<span class="w"> </span>copyto<span class="w"> </span>test.txt<span class="w"> </span>webdav@rpi4b:rcdir
-</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>
-</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a>$<span class="w"> </span>rclone<span class="w"> </span>lsf<span class="w"> </span>webdav@rpi4b:rcdir
-</span><span id="__span-14-5"><a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a>test.txt
+<p>将当前目录下的文件 test.txt 拷贝上传（copy upload）到目录 rcdir 下：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>$<span class="w"> </span>rclone<span class="w"> </span>copy<span class="w"> </span>test.txt<span class="w"> </span>webdav@rpi4b:rcdir
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>$<span class="w"> </span>rclone<span class="w"> </span>lsf<span class="w"> </span>webdav@rpi4b:rcdir
+</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a>test.txt
 </span></code></pre></div>
-<p>也可在 remote:path 后续接自定义的目标文件名，将 test.txt 上传为 test2.txt：</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>$<span class="w"> </span>rclone<span class="w"> </span>copyto<span class="w"> </span>test.txt<span class="w"> </span>webdav@rpi4b:rcdir/test2.txt
-</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>
-</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>$<span class="w"> </span>rclone<span class="w"> </span>lsf<span class="w"> </span>webdav@rpi4b:rcdir
-</span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a>test.txt
-</span><span id="__span-15-5"><a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a>test2.txt
+<p><strong>注意</strong>：如果使用 copyto 命令，会将 rcdir 视作文件：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="c1"># 将当前目录下的 test.txt 文件复制为远端文件 rcdir</span>
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>$<span class="w"> </span>rclone<span class="w"> </span>copyto<span class="w"> </span>test.txt<span class="w"> </span>webdav@rpi4b:rcdir
+</span></code></pre></div>
+<p>使用 copyto 命令，dstpath 部分指定上传后的目标文件名。<br />
+例如，将 test.txt 上传为 rcdir/test2.txt：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>$<span class="w"> </span>rclone<span class="w"> </span>copyto<span class="w"> </span>test.txt<span class="w"> </span>webdav@rpi4b:rcdir/test2.txt
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>
+</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>$<span class="w"> </span>rclone<span class="w"> </span>lsf<span class="w"> </span>webdav@rpi4b:rcdir
+</span><span id="__span-16-4"><a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a>test.txt
+</span><span id="__span-16-5"><a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a>test2.txt
 </span></code></pre></div>
 <p><strong>注意</strong>：如果使用 copy 命令，会将 test2.txt 视作目录：</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="c1"># 将当前目录下的 test.txt 文件复制到远端目录 rcdir/test2.txt/ 下</span>
-</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>$<span class="w"> </span>rclone<span class="w"> </span>copy<span class="w"> </span>test.txt<span class="w"> </span>webdav@rpi4b:rcdir/test2.txt
-</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>
-</span><span id="__span-16-4"><a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a>$<span class="w"> </span>rclone<span class="w"> </span>lsf<span class="w"> </span>webdav@rpi4b:rcdir
-</span><span id="__span-16-5"><a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a>test.txt
-</span><span id="__span-16-6"><a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a>test2.txt/
-</span><span id="__span-16-7"><a id="__codelineno-16-7" name="__codelineno-16-7" href="#__codelineno-16-7"></a>
-</span><span id="__span-16-8"><a id="__codelineno-16-8" name="__codelineno-16-8" href="#__codelineno-16-8"></a>$<span class="w"> </span>rclone<span class="w"> </span>lsf<span class="w"> </span>webdav@rpi4b:rcdir/test2.txt
-</span><span id="__span-16-9"><a id="__codelineno-16-9" name="__codelineno-16-9" href="#__codelineno-16-9"></a>test.txt
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="c1"># 将当前目录下的 test.txt 文件复制到远端目录 rcdir/test2.txt/ 下</span>
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>$<span class="w"> </span>rclone<span class="w"> </span>copy<span class="w"> </span>test.txt<span class="w"> </span>webdav@rpi4b:rcdir/test2.txt
+</span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>
+</span><span id="__span-17-4"><a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a>$<span class="w"> </span>rclone<span class="w"> </span>lsf<span class="w"> </span>webdav@rpi4b:rcdir
+</span><span id="__span-17-5"><a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a>test.txt
+</span><span id="__span-17-6"><a id="__codelineno-17-6" name="__codelineno-17-6" href="#__codelineno-17-6"></a>test2.txt/
+</span><span id="__span-17-7"><a id="__codelineno-17-7" name="__codelineno-17-7" href="#__codelineno-17-7"></a>
+</span><span id="__span-17-8"><a id="__codelineno-17-8" name="__codelineno-17-8" href="#__codelineno-17-8"></a>$<span class="w"> </span>rclone<span class="w"> </span>lsf<span class="w"> </span>webdav@rpi4b:rcdir/test2.txt
+</span><span id="__span-17-9"><a id="__codelineno-17-9" name="__codelineno-17-9" href="#__codelineno-17-9"></a>test.txt
 </span></code></pre></div>
 <h3 id="download_from_remote">download from remote<a class="headerlink" href="#download_from_remote" title="Permanent link">#</a></h3>
 <p>将 rcdir 目录下的所有文件下载到当前目录（pwd）：</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>$<span class="w"> </span>rclone<span class="w"> </span>copy<span class="w"> </span>webdav@rpi4b:rcdir<span class="w"> </span>.
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>$<span class="w"> </span>rclone<span class="w"> </span>copy<span class="w"> </span>webdav@rpi4b:rcdir<span class="w"> </span>.
 </span></code></pre></div>
-<p>将 rcdir 目录下的所有文件下载到当前目录（pwd）下的 rcdir 目录下：</p>
+<p>将 rcdir 目录下的所有文件下载到当前目录的 rcdir 文件夹下：</p>
 <ul>
 <li>如果当前目录下不存在 rcdir 文件夹，则自动创建。</li>
 </ul>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>$<span class="w"> </span>rclone<span class="w"> </span>copy<span class="w"> </span>webdav@rpi4b:rcdir<span class="w"> </span>./rcdir
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>$<span class="w"> </span>rclone<span class="w"> </span>copy<span class="w"> </span>webdav@rpi4b:rcdir<span class="w"> </span>./rcdir
 </span></code></pre></div>
 <p>将远端文件 rcdir/test2.txt 拷贝下载到当前目录（pwd）下：</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>$<span class="w"> </span>rclone<span class="w"> </span>copy<span class="w"> </span>webdav@rpi4b:rcdir/test2.txt<span class="w"> </span>.
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>$<span class="w"> </span>rclone<span class="w"> </span>copy<span class="w"> </span>webdav@rpi4b:rcdir/test2.txt<span class="w"> </span>.
 </span></code></pre></div>
 <p>将远端文件 rcdir/test2.txt 拷贝下载到当前目录（pwd），并命名为 test3.txt：</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>$<span class="w"> </span>rclone<span class="w"> </span>copyto<span class="w"> </span>webdav@rpi4b:rcdir/test2.txt<span class="w"> </span>./test3.txt
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>$<span class="w"> </span>rclone<span class="w"> </span>copyto<span class="w"> </span>webdav@rpi4b:rcdir/test2.txt<span class="w"> </span>./test3.txt
 </span></code></pre></div>
 <h3 id="server-side_copy">server-side copy<a class="headerlink" href="#server-side_copy" title="Permanent link">#</a></h3>
 <p>server-side copy 复制文件夹：</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>$<span class="w"> </span>rclone<span class="w"> </span>copy<span class="w"> </span>webdav@rpi4b:rcdir<span class="w"> </span>webdav@rpi4b:rcdir1
-</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>
-</span><span id="__span-21-3"><a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a>$<span class="w"> </span>rclone<span class="w"> </span>lsf<span class="w"> </span>webdav@rpi4b:
-</span><span id="__span-21-4"><a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a>CS/
-</span><span id="__span-21-5"><a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a>English_Docs/
-</span><span id="__span-21-6"><a id="__codelineno-21-6" name="__codelineno-21-6" href="#__codelineno-21-6"></a>The_Economist/
-</span><span id="__span-21-7"><a id="__codelineno-21-7" name="__codelineno-21-7" href="#__codelineno-21-7"></a>mkdocs/
-</span><span id="__span-21-8"><a id="__codelineno-21-8" name="__codelineno-21-8" href="#__codelineno-21-8"></a>rcdir/
-</span><span id="__span-21-9"><a id="__codelineno-21-9" name="__codelineno-21-9" href="#__codelineno-21-9"></a>rcdir1/
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a>$<span class="w"> </span>rclone<span class="w"> </span>copy<span class="w"> </span>webdav@rpi4b:rcdir<span class="w"> </span>webdav@rpi4b:rcdir1
+</span><span id="__span-22-2"><a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a>
+</span><span id="__span-22-3"><a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a>$<span class="w"> </span>rclone<span class="w"> </span>lsf<span class="w"> </span>webdav@rpi4b:
+</span><span id="__span-22-4"><a id="__codelineno-22-4" name="__codelineno-22-4" href="#__codelineno-22-4"></a>CS/
+</span><span id="__span-22-5"><a id="__codelineno-22-5" name="__codelineno-22-5" href="#__codelineno-22-5"></a>English_Docs/
+</span><span id="__span-22-6"><a id="__codelineno-22-6" name="__codelineno-22-6" href="#__codelineno-22-6"></a>The_Economist/
+</span><span id="__span-22-7"><a id="__codelineno-22-7" name="__codelineno-22-7" href="#__codelineno-22-7"></a>mkdocs/
+</span><span id="__span-22-8"><a id="__codelineno-22-8" name="__codelineno-22-8" href="#__codelineno-22-8"></a>rcdir/
+</span><span id="__span-22-9"><a id="__codelineno-22-9" name="__codelineno-22-9" href="#__codelineno-22-9"></a>rcdir1/
 </span></code></pre></div>
 <p>server-side copy 复制文件：</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a>$<span class="w"> </span>rclone<span class="w"> </span>copyto<span class="w"> </span>webdav@rpi4b:rcdir/test.txt<span class="w"> </span>webdav@rpi4b:rcdir/test3.txt
-</span><span id="__span-22-2"><a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a>
-</span><span id="__span-22-3"><a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a>$<span class="w"> </span>rclone<span class="w"> </span>lsf<span class="w"> </span>webdav@rpi4b:rcdir
-</span><span id="__span-22-4"><a id="__codelineno-22-4" name="__codelineno-22-4" href="#__codelineno-22-4"></a>test.txt
-</span><span id="__span-22-5"><a id="__codelineno-22-5" name="__codelineno-22-5" href="#__codelineno-22-5"></a>test2.txt
-</span><span id="__span-22-6"><a id="__codelineno-22-6" name="__codelineno-22-6" href="#__codelineno-22-6"></a>test3.txt
-</span><span id="__span-22-7"><a id="__codelineno-22-7" name="__codelineno-22-7" href="#__codelineno-22-7"></a>
-</span><span id="__span-22-8"><a id="__codelineno-22-8" name="__codelineno-22-8" href="#__codelineno-22-8"></a>$<span class="w"> </span>rclone<span class="w"> </span>copyto<span class="w"> </span>webdav@rpi4b:rcdir/test.txt<span class="w"> </span>webdav@rpi4b:rcdir/test4.txt
-</span><span id="__span-22-9"><a id="__codelineno-22-9" name="__codelineno-22-9" href="#__codelineno-22-9"></a>
-</span><span id="__span-22-10"><a id="__codelineno-22-10" name="__codelineno-22-10" href="#__codelineno-22-10"></a>$<span class="w"> </span>rclone<span class="w"> </span>lsf<span class="w"> </span>webdav@rpi4b:rcdir
-</span><span id="__span-22-11"><a id="__codelineno-22-11" name="__codelineno-22-11" href="#__codelineno-22-11"></a>test.txt
-</span><span id="__span-22-12"><a id="__codelineno-22-12" name="__codelineno-22-12" href="#__codelineno-22-12"></a>test2.txt
-</span><span id="__span-22-13"><a id="__codelineno-22-13" name="__codelineno-22-13" href="#__codelineno-22-13"></a>test3.txt
-</span><span id="__span-22-14"><a id="__codelineno-22-14" name="__codelineno-22-14" href="#__codelineno-22-14"></a>test4.txt
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>$<span class="w"> </span>rclone<span class="w"> </span>copyto<span class="w"> </span>webdav@rpi4b:rcdir/test.txt<span class="w"> </span>webdav@rpi4b:rcdir/test3.txt
+</span><span id="__span-23-2"><a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a>
+</span><span id="__span-23-3"><a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a>$<span class="w"> </span>rclone<span class="w"> </span>lsf<span class="w"> </span>webdav@rpi4b:rcdir
+</span><span id="__span-23-4"><a id="__codelineno-23-4" name="__codelineno-23-4" href="#__codelineno-23-4"></a>test.txt
+</span><span id="__span-23-5"><a id="__codelineno-23-5" name="__codelineno-23-5" href="#__codelineno-23-5"></a>test2.txt
+</span><span id="__span-23-6"><a id="__codelineno-23-6" name="__codelineno-23-6" href="#__codelineno-23-6"></a>test3.txt
+</span><span id="__span-23-7"><a id="__codelineno-23-7" name="__codelineno-23-7" href="#__codelineno-23-7"></a>
+</span><span id="__span-23-8"><a id="__codelineno-23-8" name="__codelineno-23-8" href="#__codelineno-23-8"></a>$<span class="w"> </span>rclone<span class="w"> </span>copyto<span class="w"> </span>webdav@rpi4b:rcdir/test.txt<span class="w"> </span>webdav@rpi4b:rcdir/test4.txt
+</span><span id="__span-23-9"><a id="__codelineno-23-9" name="__codelineno-23-9" href="#__codelineno-23-9"></a>
+</span><span id="__span-23-10"><a id="__codelineno-23-10" name="__codelineno-23-10" href="#__codelineno-23-10"></a>$<span class="w"> </span>rclone<span class="w"> </span>lsf<span class="w"> </span>webdav@rpi4b:rcdir
+</span><span id="__span-23-11"><a id="__codelineno-23-11" name="__codelineno-23-11" href="#__codelineno-23-11"></a>test.txt
+</span><span id="__span-23-12"><a id="__codelineno-23-12" name="__codelineno-23-12" href="#__codelineno-23-12"></a>test2.txt
+</span><span id="__span-23-13"><a id="__codelineno-23-13" name="__codelineno-23-13" href="#__codelineno-23-13"></a>test3.txt
+</span><span id="__span-23-14"><a id="__codelineno-23-14" name="__codelineno-23-14" href="#__codelineno-23-14"></a>test4.txt
 </span></code></pre></div>
 <h2 id="move">move<a class="headerlink" href="#move" title="Permanent link">#</a></h2>
 <p>基本语义同 bash shell 中的 <code>mv</code>，支持端到端的文件（夹）移动。</p>
@@ -2224,6 +2236,17 @@
 </tr>
 </tbody>
 </table>
+<p><strong>move</strong>:</p>
+<ol>
+<li>Moves the contents of the source directory to the destination directory.</li>
+<li>To move single files, use the <a href="https://rclone.org/commands/rclone_moveto/">moveto</a> command instead.</li>
+</ol>
+<p><strong>moveto</strong>:</p>
+<ol>
+<li>If source:path is a file or directory then it moves it to a file or directory <em>named</em> dest:path.</li>
+<li>This can be used to rename files or upload single files to other than their existing name.</li>
+<li>If the source is a directory then it acts exactly like the <a href="https://rclone.org/commands/rclone_move/">move</a> command.</li>
+</ol>
 <div class="admonition note">
 <p class="admonition-title">move vs. copy</p>
 <p>在上面使用 <code>copy</code> 的场合，都可以替换为 <code>move</code>。<br />
@@ -2231,31 +2254,31 @@
 </div>
 <p>server-side move：不同目录为移动，相同目录相当于重命名。</p>
 <p>将文件 rcdir1/test4.txt 重命名 rcdir1/test3.txt：</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>$<span class="w"> </span>rclone<span class="w"> </span>moveto<span class="w"> </span>webdav@rpi4b:rcdir1/test4.txt<span class="w"> </span>webdav@rpi4b:rcdir1/test3.txt
-</span><span id="__span-23-2"><a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a>
-</span><span id="__span-23-3"><a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a>rclone<span class="w"> </span>lsf<span class="w"> </span>webdav@rpi4b:rcdir1
-</span><span id="__span-23-4"><a id="__codelineno-23-4" name="__codelineno-23-4" href="#__codelineno-23-4"></a>test.txt
-</span><span id="__span-23-5"><a id="__codelineno-23-5" name="__codelineno-23-5" href="#__codelineno-23-5"></a>test2.txt
-</span><span id="__span-23-6"><a id="__codelineno-23-6" name="__codelineno-23-6" href="#__codelineno-23-6"></a>test3.txt
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>$<span class="w"> </span>rclone<span class="w"> </span>moveto<span class="w"> </span>webdav@rpi4b:rcdir1/test4.txt<span class="w"> </span>webdav@rpi4b:rcdir1/test3.txt
+</span><span id="__span-24-2"><a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a>
+</span><span id="__span-24-3"><a id="__codelineno-24-3" name="__codelineno-24-3" href="#__codelineno-24-3"></a>rclone<span class="w"> </span>lsf<span class="w"> </span>webdav@rpi4b:rcdir1
+</span><span id="__span-24-4"><a id="__codelineno-24-4" name="__codelineno-24-4" href="#__codelineno-24-4"></a>test.txt
+</span><span id="__span-24-5"><a id="__codelineno-24-5" name="__codelineno-24-5" href="#__codelineno-24-5"></a>test2.txt
+</span><span id="__span-24-6"><a id="__codelineno-24-6" name="__codelineno-24-6" href="#__codelineno-24-6"></a>test3.txt
 </span></code></pre></div>
 <p>将根目录下的 test 文件夹重命名为 test2：</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>$<span class="w"> </span>rclone<span class="w"> </span>move<span class="w"> </span>webdav@rpi4b:test<span class="w"> </span>webdav@rpi4b:test2
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-25-1"><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a>$<span class="w"> </span>rclone<span class="w"> </span>move<span class="w"> </span>webdav@rpi4b:test<span class="w"> </span>webdav@rpi4b:test2
 </span></code></pre></div>
 <p>将 rcdir/test4.txt 移动到 rcdir1 目录：</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-25-1"><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a>$<span class="w"> </span>rclone<span class="w"> </span>move<span class="w"> </span>webdav@rpi4b:rcdir/test4.txt<span class="w"> </span>webdav@rpi4b:rcdir1
-</span><span id="__span-25-2"><a id="__codelineno-25-2" name="__codelineno-25-2" href="#__codelineno-25-2"></a>
-</span><span id="__span-25-3"><a id="__codelineno-25-3" name="__codelineno-25-3" href="#__codelineno-25-3"></a>$<span class="w"> </span>rclone<span class="w"> </span>lsf<span class="w"> </span>webdav@rpi4b:rcdir
-</span><span id="__span-25-4"><a id="__codelineno-25-4" name="__codelineno-25-4" href="#__codelineno-25-4"></a>test.txt
-</span><span id="__span-25-5"><a id="__codelineno-25-5" name="__codelineno-25-5" href="#__codelineno-25-5"></a>test2.txt
-</span><span id="__span-25-6"><a id="__codelineno-25-6" name="__codelineno-25-6" href="#__codelineno-25-6"></a>test3.txt
-</span><span id="__span-25-7"><a id="__codelineno-25-7" name="__codelineno-25-7" href="#__codelineno-25-7"></a>
-</span><span id="__span-25-8"><a id="__codelineno-25-8" name="__codelineno-25-8" href="#__codelineno-25-8"></a>$<span class="w"> </span>rclone<span class="w"> </span>lsf<span class="w"> </span>webdav@rpi4b:rcdir1
-</span><span id="__span-25-9"><a id="__codelineno-25-9" name="__codelineno-25-9" href="#__codelineno-25-9"></a>test.txt
-</span><span id="__span-25-10"><a id="__codelineno-25-10" name="__codelineno-25-10" href="#__codelineno-25-10"></a>test2.txt
-</span><span id="__span-25-11"><a id="__codelineno-25-11" name="__codelineno-25-11" href="#__codelineno-25-11"></a>test4.txt
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-26-1"><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a>$<span class="w"> </span>rclone<span class="w"> </span>move<span class="w"> </span>webdav@rpi4b:rcdir/test4.txt<span class="w"> </span>webdav@rpi4b:rcdir1
+</span><span id="__span-26-2"><a id="__codelineno-26-2" name="__codelineno-26-2" href="#__codelineno-26-2"></a>
+</span><span id="__span-26-3"><a id="__codelineno-26-3" name="__codelineno-26-3" href="#__codelineno-26-3"></a>$<span class="w"> </span>rclone<span class="w"> </span>lsf<span class="w"> </span>webdav@rpi4b:rcdir
+</span><span id="__span-26-4"><a id="__codelineno-26-4" name="__codelineno-26-4" href="#__codelineno-26-4"></a>test.txt
+</span><span id="__span-26-5"><a id="__codelineno-26-5" name="__codelineno-26-5" href="#__codelineno-26-5"></a>test2.txt
+</span><span id="__span-26-6"><a id="__codelineno-26-6" name="__codelineno-26-6" href="#__codelineno-26-6"></a>test3.txt
+</span><span id="__span-26-7"><a id="__codelineno-26-7" name="__codelineno-26-7" href="#__codelineno-26-7"></a>
+</span><span id="__span-26-8"><a id="__codelineno-26-8" name="__codelineno-26-8" href="#__codelineno-26-8"></a>$<span class="w"> </span>rclone<span class="w"> </span>lsf<span class="w"> </span>webdav@rpi4b:rcdir1
+</span><span id="__span-26-9"><a id="__codelineno-26-9" name="__codelineno-26-9" href="#__codelineno-26-9"></a>test.txt
+</span><span id="__span-26-10"><a id="__codelineno-26-10" name="__codelineno-26-10" href="#__codelineno-26-10"></a>test2.txt
+</span><span id="__span-26-11"><a id="__codelineno-26-11" name="__codelineno-26-11" href="#__codelineno-26-11"></a>test4.txt
 </span></code></pre></div>
 <p>将 English 目录下的 mp3 和 pdf 文件（不递归子目录）移动到子文件夹 The_Economist 下：</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-26-1"><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a>$<span class="w"> </span>rclone<span class="w"> </span>move<span class="w"> </span>--include<span class="w"> </span><span class="s2">&quot;/*.{mp3,pdf}&quot;</span><span class="w"> </span>webdav@rpi4b:English<span class="w"> </span>webdav@rpi4b:English/The_Economist<span class="w"> </span>--dry-run
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-27-1"><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a>$<span class="w"> </span>rclone<span class="w"> </span>move<span class="w"> </span>--include<span class="w"> </span><span class="s2">&quot;/*.{mp3,pdf}&quot;</span><span class="w"> </span>webdav@rpi4b:English<span class="w"> </span>webdav@rpi4b:English/The_Economist<span class="w"> </span>--dry-run
 </span></code></pre></div>
 <h2 id="deletermdirpurge">delete/rmdir/purge<a class="headerlink" href="#deletermdirpurge" title="Permanent link">#</a></h2>
 <h3 id="delete">delete<a class="headerlink" href="#delete" title="Permanent link">#</a></h3>
@@ -2268,26 +2291,27 @@
 </thead>
 <tbody>
 <tr>
-<td><a href="https://rclone.org/commands/rclone_delete/">rclone delete</a></td>
-<td>Remove the files in path.</td>
-</tr>
-<tr>
 <td><a href="https://rclone.org/commands/rclone_deletefile/">rclone deletefile</a></td>
 <td>Remove a single file from remote.</td>
 </tr>
+<tr>
+<td><a href="https://rclone.org/commands/rclone_delete/">rclone delete</a></td>
+<td>Remove the files in path.</td>
+</tr>
 </tbody>
 </table>
+<p>deletefile 语义同 bash shell 中的 <code>rm -f file</code>；delete 语义同 bash shell 中的 <code>rm -rf folder</code>。</p>
 <p>删除远端文件 rcdir1/test.txt：</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-27-1"><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a>$<span class="w"> </span>rclone<span class="w"> </span>deletefile<span class="w"> </span>webdav@rpi4b:rcdir1/test.txt
-</span><span id="__span-27-2"><a id="__codelineno-27-2" name="__codelineno-27-2" href="#__codelineno-27-2"></a>
-</span><span id="__span-27-3"><a id="__codelineno-27-3" name="__codelineno-27-3" href="#__codelineno-27-3"></a>$<span class="w"> </span>rclone<span class="w"> </span>lsf<span class="w"> </span>webdav@rpi4b:rcdir1
-</span><span id="__span-27-4"><a id="__codelineno-27-4" name="__codelineno-27-4" href="#__codelineno-27-4"></a>test2.txt
-</span><span id="__span-27-5"><a id="__codelineno-27-5" name="__codelineno-27-5" href="#__codelineno-27-5"></a>test3.txt
-</span></code></pre></div>
-<p>删除远端文件夹 rcdir1 下的所有文件：</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-28-1"><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a>$<span class="w"> </span>rclone<span class="w"> </span>delete<span class="w"> </span>webdav@rpi4b:rcdir1
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-28-1"><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a>$<span class="w"> </span>rclone<span class="w"> </span>deletefile<span class="w"> </span>webdav@rpi4b:rcdir1/test.txt
 </span><span id="__span-28-2"><a id="__codelineno-28-2" name="__codelineno-28-2" href="#__codelineno-28-2"></a>
 </span><span id="__span-28-3"><a id="__codelineno-28-3" name="__codelineno-28-3" href="#__codelineno-28-3"></a>$<span class="w"> </span>rclone<span class="w"> </span>lsf<span class="w"> </span>webdav@rpi4b:rcdir1
+</span><span id="__span-28-4"><a id="__codelineno-28-4" name="__codelineno-28-4" href="#__codelineno-28-4"></a>test2.txt
+</span><span id="__span-28-5"><a id="__codelineno-28-5" name="__codelineno-28-5" href="#__codelineno-28-5"></a>test3.txt
+</span></code></pre></div>
+<p>删除远端文件夹 rcdir1 下的所有文件：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-29-1"><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a>$<span class="w"> </span>rclone<span class="w"> </span>delete<span class="w"> </span>webdav@rpi4b:rcdir1
+</span><span id="__span-29-2"><a id="__codelineno-29-2" name="__codelineno-29-2" href="#__codelineno-29-2"></a>
+</span><span id="__span-29-3"><a id="__codelineno-29-3" name="__codelineno-29-3" href="#__codelineno-29-3"></a>$<span class="w"> </span>rclone<span class="w"> </span>lsf<span class="w"> </span>webdav@rpi4b:rcdir1
 </span></code></pre></div>
 <h3 id="rmdir">rmdir<a class="headerlink" href="#rmdir" title="Permanent link">#</a></h3>
 <table>
@@ -2309,40 +2333,40 @@
 </tbody>
 </table>
 <p>再在根目录下创建个2文件夹 rcdir2、rcdir3</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-29-1"><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a>$<span class="w"> </span>rclone<span class="w"> </span>mkdir<span class="w"> </span>webdav@rpi4b:rcdir2
-</span><span id="__span-29-2"><a id="__codelineno-29-2" name="__codelineno-29-2" href="#__codelineno-29-2"></a>$<span class="w"> </span>rclone<span class="w"> </span>mkdir<span class="w"> </span>webdav@rpi4b:rcdir3
-</span><span id="__span-29-3"><a id="__codelineno-29-3" name="__codelineno-29-3" href="#__codelineno-29-3"></a>
-</span><span id="__span-29-4"><a id="__codelineno-29-4" name="__codelineno-29-4" href="#__codelineno-29-4"></a>$<span class="w"> </span>rclone<span class="w"> </span>lsf<span class="w"> </span>webdav@rpi4b:
-</span><span id="__span-29-5"><a id="__codelineno-29-5" name="__codelineno-29-5" href="#__codelineno-29-5"></a>CS/
-</span><span id="__span-29-6"><a id="__codelineno-29-6" name="__codelineno-29-6" href="#__codelineno-29-6"></a>English_Docs/
-</span><span id="__span-29-7"><a id="__codelineno-29-7" name="__codelineno-29-7" href="#__codelineno-29-7"></a>The_Economist/
-</span><span id="__span-29-8"><a id="__codelineno-29-8" name="__codelineno-29-8" href="#__codelineno-29-8"></a>mkdocs/
-</span><span id="__span-29-9"><a id="__codelineno-29-9" name="__codelineno-29-9" href="#__codelineno-29-9"></a>rcdir/
-</span><span id="__span-29-10"><a id="__codelineno-29-10" name="__codelineno-29-10" href="#__codelineno-29-10"></a>rcdir1/
-</span><span id="__span-29-11"><a id="__codelineno-29-11" name="__codelineno-29-11" href="#__codelineno-29-11"></a>rcdir2/
-</span><span id="__span-29-12"><a id="__codelineno-29-12" name="__codelineno-29-12" href="#__codelineno-29-12"></a>rcdir3/
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-30-1"><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a>$<span class="w"> </span>rclone<span class="w"> </span>mkdir<span class="w"> </span>webdav@rpi4b:rcdir2
+</span><span id="__span-30-2"><a id="__codelineno-30-2" name="__codelineno-30-2" href="#__codelineno-30-2"></a>$<span class="w"> </span>rclone<span class="w"> </span>mkdir<span class="w"> </span>webdav@rpi4b:rcdir3
+</span><span id="__span-30-3"><a id="__codelineno-30-3" name="__codelineno-30-3" href="#__codelineno-30-3"></a>
+</span><span id="__span-30-4"><a id="__codelineno-30-4" name="__codelineno-30-4" href="#__codelineno-30-4"></a>$<span class="w"> </span>rclone<span class="w"> </span>lsf<span class="w"> </span>webdav@rpi4b:
+</span><span id="__span-30-5"><a id="__codelineno-30-5" name="__codelineno-30-5" href="#__codelineno-30-5"></a>CS/
+</span><span id="__span-30-6"><a id="__codelineno-30-6" name="__codelineno-30-6" href="#__codelineno-30-6"></a>English_Docs/
+</span><span id="__span-30-7"><a id="__codelineno-30-7" name="__codelineno-30-7" href="#__codelineno-30-7"></a>The_Economist/
+</span><span id="__span-30-8"><a id="__codelineno-30-8" name="__codelineno-30-8" href="#__codelineno-30-8"></a>mkdocs/
+</span><span id="__span-30-9"><a id="__codelineno-30-9" name="__codelineno-30-9" href="#__codelineno-30-9"></a>rcdir/
+</span><span id="__span-30-10"><a id="__codelineno-30-10" name="__codelineno-30-10" href="#__codelineno-30-10"></a>rcdir1/
+</span><span id="__span-30-11"><a id="__codelineno-30-11" name="__codelineno-30-11" href="#__codelineno-30-11"></a>rcdir2/
+</span><span id="__span-30-12"><a id="__codelineno-30-12" name="__codelineno-30-12" href="#__codelineno-30-12"></a>rcdir3/
 </span></code></pre></div>
 <p>使用 <code>rmdir</code> 命令移除根目录下的空文件夹 rcdir1：</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-30-1"><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a>$<span class="w"> </span>rclone<span class="w"> </span>rmdir<span class="w"> </span>webdav@rpi4b:rcdir1
-</span><span id="__span-30-2"><a id="__codelineno-30-2" name="__codelineno-30-2" href="#__codelineno-30-2"></a>
-</span><span id="__span-30-3"><a id="__codelineno-30-3" name="__codelineno-30-3" href="#__codelineno-30-3"></a>$<span class="w"> </span>rclone<span class="w"> </span>lsf<span class="w"> </span>webdav@rpi4b:
-</span><span id="__span-30-4"><a id="__codelineno-30-4" name="__codelineno-30-4" href="#__codelineno-30-4"></a>CS/
-</span><span id="__span-30-5"><a id="__codelineno-30-5" name="__codelineno-30-5" href="#__codelineno-30-5"></a>English_Docs/
-</span><span id="__span-30-6"><a id="__codelineno-30-6" name="__codelineno-30-6" href="#__codelineno-30-6"></a>The_Economist/
-</span><span id="__span-30-7"><a id="__codelineno-30-7" name="__codelineno-30-7" href="#__codelineno-30-7"></a>mkdocs/
-</span><span id="__span-30-8"><a id="__codelineno-30-8" name="__codelineno-30-8" href="#__codelineno-30-8"></a>rcdir/
-</span><span id="__span-30-9"><a id="__codelineno-30-9" name="__codelineno-30-9" href="#__codelineno-30-9"></a>rcdir2/
-</span><span id="__span-30-10"><a id="__codelineno-30-10" name="__codelineno-30-10" href="#__codelineno-30-10"></a>rcdir3/
-</span></code></pre></div>
-<p>使用 <code>rmdirs</code> 子命令一次性移除根目录下所有的空文件夹（rcdir2、rcdir3）：</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-31-1"><a id="__codelineno-31-1" name="__codelineno-31-1" href="#__codelineno-31-1"></a>$<span class="w"> </span>rclone<span class="w"> </span>rmdirs<span class="w"> </span>webdav@rpi4b:
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-31-1"><a id="__codelineno-31-1" name="__codelineno-31-1" href="#__codelineno-31-1"></a>$<span class="w"> </span>rclone<span class="w"> </span>rmdir<span class="w"> </span>webdav@rpi4b:rcdir1
 </span><span id="__span-31-2"><a id="__codelineno-31-2" name="__codelineno-31-2" href="#__codelineno-31-2"></a>
-</span><span id="__span-31-3"><a id="__codelineno-31-3" name="__codelineno-31-3" href="#__codelineno-31-3"></a>rclone<span class="w"> </span>lsf<span class="w"> </span>webdav@rpi4b:
+</span><span id="__span-31-3"><a id="__codelineno-31-3" name="__codelineno-31-3" href="#__codelineno-31-3"></a>$<span class="w"> </span>rclone<span class="w"> </span>lsf<span class="w"> </span>webdav@rpi4b:
 </span><span id="__span-31-4"><a id="__codelineno-31-4" name="__codelineno-31-4" href="#__codelineno-31-4"></a>CS/
 </span><span id="__span-31-5"><a id="__codelineno-31-5" name="__codelineno-31-5" href="#__codelineno-31-5"></a>English_Docs/
 </span><span id="__span-31-6"><a id="__codelineno-31-6" name="__codelineno-31-6" href="#__codelineno-31-6"></a>The_Economist/
 </span><span id="__span-31-7"><a id="__codelineno-31-7" name="__codelineno-31-7" href="#__codelineno-31-7"></a>mkdocs/
 </span><span id="__span-31-8"><a id="__codelineno-31-8" name="__codelineno-31-8" href="#__codelineno-31-8"></a>rcdir/
+</span><span id="__span-31-9"><a id="__codelineno-31-9" name="__codelineno-31-9" href="#__codelineno-31-9"></a>rcdir2/
+</span><span id="__span-31-10"><a id="__codelineno-31-10" name="__codelineno-31-10" href="#__codelineno-31-10"></a>rcdir3/
+</span></code></pre></div>
+<p>使用 <code>rmdirs</code> 子命令一次性移除根目录下所有的空文件夹（rcdir2、rcdir3）：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-32-1"><a id="__codelineno-32-1" name="__codelineno-32-1" href="#__codelineno-32-1"></a>$<span class="w"> </span>rclone<span class="w"> </span>rmdirs<span class="w"> </span>webdav@rpi4b:
+</span><span id="__span-32-2"><a id="__codelineno-32-2" name="__codelineno-32-2" href="#__codelineno-32-2"></a>
+</span><span id="__span-32-3"><a id="__codelineno-32-3" name="__codelineno-32-3" href="#__codelineno-32-3"></a>rclone<span class="w"> </span>lsf<span class="w"> </span>webdav@rpi4b:
+</span><span id="__span-32-4"><a id="__codelineno-32-4" name="__codelineno-32-4" href="#__codelineno-32-4"></a>CS/
+</span><span id="__span-32-5"><a id="__codelineno-32-5" name="__codelineno-32-5" href="#__codelineno-32-5"></a>English_Docs/
+</span><span id="__span-32-6"><a id="__codelineno-32-6" name="__codelineno-32-6" href="#__codelineno-32-6"></a>The_Economist/
+</span><span id="__span-32-7"><a id="__codelineno-32-7" name="__codelineno-32-7" href="#__codelineno-32-7"></a>mkdocs/
+</span><span id="__span-32-8"><a id="__codelineno-32-8" name="__codelineno-32-8" href="#__codelineno-32-8"></a>rcdir/
 </span></code></pre></div>
 <h3 id="purge">purge<a class="headerlink" href="#purge" title="Permanent link">#</a></h3>
 <p>rmdir/rmdirs 命令只能删除空文件夹，如果想一步清理文件夹内容并删除文件夹，可以使用 <code>purge</code> 命令（≈ delete + rmdir）：</p>
@@ -2361,12 +2385,12 @@
 </tbody>
 </table>
 <p>删除远端目录 rcdir/test2.txt 下的所有文件及文件夹：</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-32-1"><a id="__codelineno-32-1" name="__codelineno-32-1" href="#__codelineno-32-1"></a>$<span class="w"> </span>rclone<span class="w"> </span>purge<span class="w"> </span>webdav@rpi4b:rcdir/test2.txt
-</span><span id="__span-32-2"><a id="__codelineno-32-2" name="__codelineno-32-2" href="#__codelineno-32-2"></a>
-</span><span id="__span-32-3"><a id="__codelineno-32-3" name="__codelineno-32-3" href="#__codelineno-32-3"></a>rclone<span class="w"> </span>lsf<span class="w"> </span>webdav@rpi4b:rcdir
-</span><span id="__span-32-4"><a id="__codelineno-32-4" name="__codelineno-32-4" href="#__codelineno-32-4"></a>test.txt
-</span><span id="__span-32-5"><a id="__codelineno-32-5" name="__codelineno-32-5" href="#__codelineno-32-5"></a>test1.txt
-</span><span id="__span-32-6"><a id="__codelineno-32-6" name="__codelineno-32-6" href="#__codelineno-32-6"></a>test3.txt
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-33-1"><a id="__codelineno-33-1" name="__codelineno-33-1" href="#__codelineno-33-1"></a>$<span class="w"> </span>rclone<span class="w"> </span>purge<span class="w"> </span>webdav@rpi4b:rcdir/test2.txt
+</span><span id="__span-33-2"><a id="__codelineno-33-2" name="__codelineno-33-2" href="#__codelineno-33-2"></a>
+</span><span id="__span-33-3"><a id="__codelineno-33-3" name="__codelineno-33-3" href="#__codelineno-33-3"></a>rclone<span class="w"> </span>lsf<span class="w"> </span>webdav@rpi4b:rcdir
+</span><span id="__span-33-4"><a id="__codelineno-33-4" name="__codelineno-33-4" href="#__codelineno-33-4"></a>test.txt
+</span><span id="__span-33-5"><a id="__codelineno-33-5" name="__codelineno-33-5" href="#__codelineno-33-5"></a>test1.txt
+</span><span id="__span-33-6"><a id="__codelineno-33-6" name="__codelineno-33-6" href="#__codelineno-33-6"></a>test3.txt
 </span></code></pre></div>
 <h2 id="syncbisync">sync/bisync<a class="headerlink" href="#syncbisync" title="Permanent link">#</a></h2>
 <table>
@@ -2390,12 +2414,12 @@
 <h3 id="sync">sync<a class="headerlink" href="#sync" title="Permanent link">#</a></h3>
 <p>Sync the source to the destination, changing the destination only. Doesn't transfer files that are identical on source and destination, testing by size and modification time or MD5SUM. Destination is updated to match source, including deleting files if necessary (except duplicate objects, see below). If you don't want to delete files from destination, use the <a href="https://rclone.org/commands/rclone_copy/">copy</a> command instead.</p>
 <p><strong>Important</strong>: Since this can cause data loss, test first with the <code>--dry-run</code> or the <code>--interactive</code>/<code>-i</code> flag.</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-33-1"><a id="__codelineno-33-1" name="__codelineno-33-1" href="#__codelineno-33-1"></a>rclone<span class="w"> </span>sync<span class="w"> </span>--interactive<span class="w"> </span>SOURCE<span class="w"> </span>remote:DESTINATION
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-34-1"><a id="__codelineno-34-1" name="__codelineno-34-1" href="#__codelineno-34-1"></a>rclone<span class="w"> </span>sync<span class="w"> </span>--interactive<span class="w"> </span>SOURCE<span class="w"> </span>remote:DESTINATION
 </span></code></pre></div>
 <p>Note that files in the destination won't be deleted if there were any errors at any point. Duplicate objects (files with the same name, on those providers that support it) are also not yet handled.</p>
 <p>本地目录（文件夹）想和云盘同步时，可采用 <code>sync</code> 命令。</p>
 <p>例如，将本地目录 <code>/usr/local/var/webdav/</code> 同步到 webDAV 云盘 webdav\@rpi4b:</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-34-1"><a id="__codelineno-34-1" name="__codelineno-34-1" href="#__codelineno-34-1"></a>rclone<span class="w"> </span>sync<span class="w"> </span>/usr/local/var/webdav/<span class="w"> </span>webdav@rpi4b:
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-35-1"><a id="__codelineno-35-1" name="__codelineno-35-1" href="#__codelineno-35-1"></a>rclone<span class="w"> </span>sync<span class="w"> </span>/usr/local/var/webdav/<span class="w"> </span>webdav@rpi4b:
 </span></code></pre></div>
 <p>也可根据实际需求，选择只同步某些子文件夹。</p>
 <div class="admonition note">
@@ -2415,12 +2439,12 @@
 </ul>
 <p>Bisync is <strong>in beta</strong> and is considered an <strong>advanced command</strong>, so use with care. Make sure you have read and understood the entire <a href="https://rclone.org/bisync">manual</a> (especially the <a href="https://rclone.org/bisync/#limitations">Limitations</a> section) before using, or data loss can result. Questions can be asked in the <a href="https://forum.rclone.org/">Rclone Forum</a>.</p>
 <p>See <a href="https://rclone.org/bisync/">full bisync description</a> for details.</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-35-1"><a id="__codelineno-35-1" name="__codelineno-35-1" href="#__codelineno-35-1"></a>rclone<span class="w"> </span>bisync<span class="w"> </span>remote1:path1<span class="w"> </span>remote2:path2<span class="w"> </span><span class="o">[</span>flags<span class="o">]</span>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-36-1"><a id="__codelineno-36-1" name="__codelineno-36-1" href="#__codelineno-36-1"></a>rclone<span class="w"> </span>bisync<span class="w"> </span>remote1:path1<span class="w"> </span>remote2:path2<span class="w"> </span><span class="o">[</span>flags<span class="o">]</span>
 </span></code></pre></div>
 <p>假设配置了两个云盘：webdav@mbpa1398 和 webdav@rpi4b，彼此之间相当于备份。</p>
 <p>在内网操作 webdav@mbpa1398，远程操作 webdav@rpi4b。</p>
 <p>可采用 <code>bisync</code> 命令执行双向同步：</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-36-1"><a id="__codelineno-36-1" name="__codelineno-36-1" href="#__codelineno-36-1"></a>rclone<span class="w"> </span>bisync<span class="w"> </span>webdav@mbpa1398:<span class="w"> </span>webdav@rpi4b:
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-37-1"><a id="__codelineno-37-1" name="__codelineno-37-1" href="#__codelineno-37-1"></a>rclone<span class="w"> </span>bisync<span class="w"> </span>webdav@mbpa1398:<span class="w"> </span>webdav@rpi4b:
 </span></code></pre></div>
 <p>假如某个文件基点为 file，在云盘 1 编辑为 file1，在云盘 2 编辑为 file2，双向同步时将以最后修改时间戳为准，没法自动合并？</p>
 <ul>
@@ -2430,12 +2454,11 @@
 </ul>
 <p>一种可能的安全的工作流是，每次开始编辑（或编辑完）任何一个云盘，总是执行 bisync （先）双向同步，确保数据同步。</p>
 <p>所以，最好以一个为主（编辑），另一个为辅（备份）。这样，相当于将主盘增量同步到备份盘。此时，退化为单向 sync：</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-37-1"><a id="__codelineno-37-1" name="__codelineno-37-1" href="#__codelineno-37-1"></a>rclone<span class="w"> </span>sync<span class="w"> </span>webdav@mbpa1398:<span class="w"> </span>webdav@rpi4b:
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-38-1"><a id="__codelineno-38-1" name="__codelineno-38-1" href="#__codelineno-38-1"></a>rclone<span class="w"> </span>sync<span class="w"> </span>webdav@mbpa1398:<span class="w"> </span>webdav@rpi4b:
 </span></code></pre></div>
 <h2 id="crontab">crontab<a class="headerlink" href="#crontab" title="Permanent link">#</a></h2>
-<p><a href="https://rclone.org/bisync/">Bisync</a></p>
-<p>On Linux or Mac, consider setting up a crontab entry. bisync can safely run in concurrent cron jobs thanks to lock files it maintains.</p>
-<p>可以通过 crontab 配置定时任务，每天自动执行同步。</p>
+<p><a href="https://rclone.org/bisync/">Bisync</a>: On Linux or Mac, consider setting up a crontab entry. <code>bisync</code> can safely run in concurrent cron jobs thanks to lock files it maintains.</p>
+<p>可以通过 <a href="https://en.wikipedia.org/wiki/Cron">cron/crontab</a> 配置定时任务，每天自动执行同步。</p>
 <h2 id="flags__filtering">Flags &amp; Filtering<a class="headerlink" href="#flags__filtering" title="Permanent link">#</a></h2>
 <p><a href="https://rclone.org/flags/">Global Flags</a>, <a href="https://rclone.org/filtering/">Rclone Filtering</a></p>
 <ul>

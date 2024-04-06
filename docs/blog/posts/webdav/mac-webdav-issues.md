@@ -238,3 +238,9 @@ $ sudo kill -9 3231
 # or
 $ sudo killall -9 webdavfs_agent
 ```
+
+参考：
+
+- [Webdav slowness problem on catalina and Big Sur (Finder)](https://www.reddit.com/r/MacOS/comments/ikr7jj/webdav_slowness_problem_on_catalina_and_big_sur/)
+
+- [How to forceably unmount stuck network share in Mac OS X?](https://superuser.com/questions/249611/how-to-forceably-unmount-stuck-network-share-in-mac-os-x)
