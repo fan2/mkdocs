@@ -22,7 +22,7 @@ comments: true
 
 ## macOS 下使用命令行挂载 WebDAV 云盘
 
-除了在 Finder 中手动连接服务器（Connect to Server），也可考虑改用内置的 mount 系列命令行（或第三方命令行工具 [rclone](https://rclone.org/) ）挂载/卸载 WebDAV：
+除了在 Finder 中手动连接服务器（Connect to Server），也可考虑改用内置的 mount 系列命令行挂载/卸载 WebDAV：
 
 ```Shell title="macOS 下使用 mount_webdav 子命令挂载 webdav"
 # 创建本地挂载点目录
@@ -116,6 +116,8 @@ WebDAV collaborative authoring in a compatible HTTP server:
 
 ## curl 命令行访问操作 WebDAV
 
+**BTW**: 专业命令行工具 rclone，被誉为“云存储的瑞士军刀”，参考 [使用rclone挂载操作WebDav云盘](./rclone-mount-webdav.md)。
+
 1. 认证方式可选 `--basic`，`--digest`，不指定相当于 `--anyauth`，让 cURL 自动选择。
 2. -u(--user) 后面可只指定用户名 `-u $username`，将提示输入密码；也可连带指定密码 `-u $username:$password`。
 
@@ -206,7 +208,10 @@ $ curl -v -u $username -X DELETE http://mbpa1398.local/webdav/curltest/test3.txt
 
 ## 参考
 
-[awesome-webdav: A curated list of awesome apps that support WebDAV and tools related to it.](https://github.com/WebDAVDevs/awesome-webdav)
+[WebDAVDevs/awesome-webdav](https://github.com/WebDAVDevs/awesome-webdav)
+
+- [webdav-browser-extension](https://github.com/WebDAVDevs/webdav-browser-extension)
+- [File Management - WebDav](https://chromewebstore.google.com/detail/file-management-webdav/famepaffkmmhdefbapbadnniioekdppm)
 
 [WEBDAV WITH CURL](https://code.blogs.iiidefix.net/posts/webdav-with-curl/), [stokito/webdav_curl](https://gist.github.com/stokito/cf82ce965718ce87f36b78f7501d7940)
 
