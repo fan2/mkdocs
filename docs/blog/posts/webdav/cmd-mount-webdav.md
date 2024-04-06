@@ -116,7 +116,7 @@ WebDAV collaborative authoring in a compatible HTTP server:
 
 ## curl 命令行访问操作 WebDAV
 
-**BTW**: 专业命令行工具 rclone，被誉为“云存储的瑞士军刀”，参考 [使用rclone挂载操作WebDav云盘](./rclone-mount-webdav.md)。
+**BTW**: 专业命令行工具 rclone，被誉为“云存储的瑞士军刀”，参考 [使用rclone挂载操作WebDav云盘](./rclone-access-webdav.md)。
 
 1. 认证方式可选 `--basic`，`--digest`，不指定相当于 `--anyauth`，让 cURL 自动选择。
 2. -u(--user) 后面可只指定用户名 `-u $username`，将提示输入密码；也可连带指定密码 `-u $username:$password`。

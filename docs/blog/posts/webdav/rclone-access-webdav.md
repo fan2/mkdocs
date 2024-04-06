@@ -640,7 +640,29 @@ test4.txt
 | [rclone move](https://rclone.org/commands/rclone_move/)     | Move files from source to dest.             |
 | [rclone moveto](https://rclone.org/commands/rclone_moveto/) | Move file or directory from source to dest. |
 
+!!! note "move vs. copy"
+
+    在上面使用 `copy` 的场合，都可以替换为 `move`。
+    区别在于 `copy` 是复制-粘贴，而 `move` 相当于剪切-粘贴。
+
 server-side move：不同目录为移动，相同目录相当于重命名。
+
+将文件 rcdir1/test4.txt 重命名 rcdir1/test3.txt：
+
+```Shell
+$ rclone moveto webdav@rpi4b:rcdir1/test4.txt webdav@rpi4b:rcdir1/test3.txt
+
+rclone lsf webdav@rpi4b:rcdir1
+test.txt
+test2.txt
+test3.txt
+```
+
+将根目录下的 test 文件夹重命名为 test2：
+
+```Shell
+$ rclone move webdav@rpi4b:test webdav@rpi4b:test2
+```
 
 将 rcdir/test4.txt 移动到 rcdir1 目录：
 
@@ -658,24 +680,7 @@ test2.txt
 test4.txt
 ```
 
-将 rcdir1/test4.txt 重命名 rcdir1/test3.txt：
-
-```Shell
-$ rclone moveto webdav@rpi4b:rcdir1/test4.txt webdav@rpi4b:rcdir1/test3.txt
-
-rclone lsf webdav@rpi4b:rcdir1
-test.txt
-test2.txt
-test3.txt
-```
-
-将根目录下的 test 文件夹重命名为 test2：
-
-```Shell
-$ rclone move webdav@rpi4b:test webdav@rpi4b:test2
-```
-
-以下将 English 目录下的 mp3 和 pdf 文件（不递归子目录）移动到子文件夹 The_Economist 下：
+将 English 目录下的 mp3 和 pdf 文件（不递归子目录）移动到子文件夹 The_Economist 下：
 
 ```Shell
 $ rclone move --include "/*.{mp3,pdf}" webdav@rpi4b:English webdav@rpi4b:English/The_Economist --dry-run
