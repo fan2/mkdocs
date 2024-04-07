@@ -1,0 +1,1837 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="在别处或在路上">
+      
+      
+        <meta name="author" content="Cliff Fan">
+      
+      
+        <link rel="canonical" href="https://duetorun.com/blog/20240318/ubuntu-config-samba/">
+      
+      
+        <link rel="prev" href="../nginx-control/">
+      
+      
+        <link rel="next" href="../../20240319/3-first-glance/">
+      
+      
+      <link rel="icon" href="../../../assets/hold_yourself.jpg">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.15">
+    
+    
+      
+        <title>rpi4b-ubuntu外挂硬盘配置samba共享服务 - ElseWhere</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.7e359304.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function n(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],n("js",new Date),n("config","G-XGW41EGL31"),document.addEventListener("DOMContentLoaded",function(){document.forms.search&&document.forms.search.query.addEventListener("blur",function(){this.value&&n("event","search",{search_term:this.value})}),document$.subscribe(function(){var a=document.forms.feedback;if(void 0!==a)for(var e of a.querySelectorAll("[type=submit]"))e.addEventListener("click",function(e){e.preventDefault();var t=document.location.pathname,e=this.getAttribute("data-md-value");n("event","feedback",{page:t,data:e}),a.firstElementChild.disabled=!0;e=a.querySelector(".md-feedback__note [data-md-value='"+e+"']");e&&(e.hidden=!1)}),a.hidden=!1}),location$.subscribe(function(e){n("config","G-XGW41EGL31",{page_path:e.pathname})})});var e=document.createElement("script");e.async=!0,e.src="https://www.googletagmanager.com/gtag/js?id=G-XGW41EGL31",document.getElementById("__analytics").insertAdjacentElement("afterEnd",e)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+    
+  
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#disk_info" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../../.." title="ElseWhere" class="md-header__button md-logo" aria-label="ElseWhere" data-md-component="logo">
+      
+  <img src="../../../assets/hold_yourself.jpg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ElseWhere
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              rpi4b-ubuntu外挂硬盘配置samba共享服务
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1M8 13h8v-2H8v2m9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1 0 1.71-1.39 3.1-3.1 3.1h-4V17h4a5 5 0 0 0 5-5 5 5 0 0 0-5-5Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="indigo"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5M7 15a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="标签" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../about/" class="md-tabs__link">
+        
+  
+    
+  
+  About
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../" class="md-tabs__link">
+          
+  
+  Blog
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../link/" class="md-tabs__link">
+        
+  
+    
+  
+  Link
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" hidden>
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="ElseWhere" class="md-nav__button md-logo" aria-label="ElseWhere" data-md-component="logo">
+      
+  <img src="../../../assets/hold_yourself.jpg" alt="logo">
+
+    </a>
+    ElseWhere
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../about/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    About
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Blog
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      <a href="../../" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Archive
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            Archive
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2024/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2024
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2022/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2022
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2019/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2019
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2018/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2018
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2017/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2017
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2015/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2015
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Categories
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            Categories
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/command/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    command
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/editor/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    editor
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/git/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    git
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/linux/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    linux
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/macos/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    macOS
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/markdown/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    markdown
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/material/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    material
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/mkdocs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    mkdocs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/nginx/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    nginx
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/python/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    python
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/samba/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    samba
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/shell/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    shell
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/ubuntu/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ubuntu
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/vim/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    vim
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/webdav/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    webDAV
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/wiki/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    wiki
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/zsh/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    zsh
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../link/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Link
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#disk_info" class="md-nav__link">
+    <span class="md-ellipsis">
+      disk info
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="disk info">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#lsblk" class="md-nav__link">
+    <span class="md-ellipsis">
+      lsblk
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fdisk" class="md-nav__link">
+    <span class="md-ellipsis">
+      fdisk
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mount_disk" class="md-nav__link">
+    <span class="md-ellipsis">
+      mount disk
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="mount disk">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#test_mkdir" class="md-nav__link">
+    <span class="md-ellipsis">
+      test mkdir
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#install_hfsprogs" class="md-nav__link">
+    <span class="md-ellipsis">
+      install hfsprogs
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#auto_mount" class="md-nav__link">
+    <span class="md-ellipsis">
+      auto mount
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#config_samba_for_wdhd" class="md-nav__link">
+    <span class="md-ellipsis">
+      config samba for WDHD
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="config samba for WDHD">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#install_samba" class="md-nav__link">
+    <span class="md-ellipsis">
+      install samba
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#config_samba" class="md-nav__link">
+    <span class="md-ellipsis">
+      config samba
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#smbpasswd" class="md-nav__link">
+    <span class="md-ellipsis">
+      smbpasswd
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#test_samba" class="md-nav__link">
+    <span class="md-ellipsis">
+      test samba
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#config_samba_for_wdtm" class="md-nav__link">
+    <span class="md-ellipsis">
+      config samba for WDTM
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="config samba for WDTM">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#set_as_macos_backup_disk" class="md-nav__link">
+    <span class="md-ellipsis">
+      set as macOS Backup Disk
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#refs" class="md-nav__link">
+    <span class="md-ellipsis">
+      refs
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+  <div class="md-content md-content--post" data-md-component="content">
+    <div class="md-sidebar md-sidebar--post" data-md-component="sidebar" data-md-type="navigation">
+      <div class="md-sidebar__scrollwrap">
+        <div class="md-sidebar__inner md-post">
+          <nav class="md-nav md-nav--primary">
+            <div class="md-post__back">
+              <div class="md-nav__title md-nav__container">
+                <a href="../../" class="md-nav__link">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+                  <span class="md-ellipsis">
+                    回到主页
+                  </span>
+                </a>
+              </div>
+            </div>
+            
+              <div class="md-post__authors md-typeset">
+                
+                  <div class="md-profile md-post__profile">
+                    <span class="md-author md-author--long">
+                      <img src="https://duetorun.com/assets/carve_yourself.jpg" alt="Cliff Fan">
+                    </span>
+                    <span class="md-profile__description">
+                      <strong>
+                        
+                          Cliff Fan
+                        
+                      </strong>
+                      <br>
+                      Just do IT
+                    </span>
+                  </div>
+                
+              </div>
+            
+            <ul class="md-post__meta md-nav__list">
+              <li class="md-nav__item md-nav__item--section">
+                <div class="md-post__title">
+                  <span class="md-ellipsis">
+                    元数据
+                  </span>
+                </div>
+                <nav class="md-nav">
+                  <ul class="md-nav__list">
+                    <li class="md-nav__item">
+                      <div class="md-nav__link">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 19H5V8h14m-3-7v2H8V1H6v2H5c-1.11 0-2 .89-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-1V1m-1 11h-5v5h5v-5Z"/></svg>
+                        <time datetime="2024-03-18 17:00:00" class="md-ellipsis">2024年3月18日</time>
+                      </div>
+                    </li>
+                    
+                    
+                      <li class="md-nav__item">
+                        <div class="md-nav__link">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 3v15h3V3H9m3 2 4 13 3-1-4-13-3 1M5 5v13h3V5H5M3 19v2h18v-2H3Z"/></svg>
+                          <span class="md-ellipsis">
+                            分类于
+                            
+                              <a href="../../category/ubuntu/">ubuntu</a>, 
+                              <a href="../../category/samba/">samba</a></span>
+                        </div>
+                      </li>
+                    
+                    
+                      
+                      <li class="md-nav__item">
+                        <div class="md-nav__link">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7h1.5Z"/></svg>
+                          <span class="md-ellipsis">
+                            
+                              需要 6 分钟阅读时间
+                            
+                          </span>
+                        </div>
+                      </li>
+                    
+                    <!-- Add by Cliff.Fan, 29Mar24. -->
+                    <li class="md-nav__item">
+                      <div class="md-nav__link">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m19 1-5 5v11l5-4.5V1m2 4v13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V6c-1.45-1.1-3.55-1.5-5.5-1.5-1.95 0-4.05.4-5.5 1.5v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1M10 18.41C8.75 18.09 7.5 18 6.5 18c-1.06 0-2.32.19-3.5.5V7.13c.91-.4 2.14-.63 3.5-.63 1.36 0 2.59.23 3.5.63v11.28Z"/></svg>
+                        <span class="md-ellipsis" id="busuanzi_container_page_pv">
+                          阅读量：<span id="busuanzi_value_page_pv">N/A</span>
+                        </span>
+                      </div>
+                    </li>
+                  </ul>
+                </nav>
+              </li>
+            </ul>
+          </nav>
+          
+        </div>
+      </div>
+    </div>
+    <article class="md-content__inner md-typeset">
+      
+        
+  
+  
+
+<nav class="md-tags" >
+  
+    
+    
+    
+      <span class="md-tag">ubuntu</span>
+    
+  
+    
+    
+    
+      <span class="md-tag">samba</span>
+    
+  
+</nav>
+
+
+
+  <h1>rpi4b-ubuntu外挂硬盘配置samba共享服务</h1>
+
+<p>本文梳理了为树莓派 RPI4B/Ubuntu 外挂硬盘配置 samba 局域网共享服务，并将其中一个分区作为 macOS TM 备份分区，实现局域网无线备份。</p>
+<!-- more -->
+
+<h2 id="disk_info">disk info<a class="headerlink" href="#disk_info" title="Permanent link">#</a></h2>
+<p>2T 的 WD 硬盘之前格式化为 macExt 格式，其中 1.5T 的 sda2 为 macOS 备份分区，0.5T 的 sda3 为普通分区。</p>
+<h3 id="lsblk">lsblk<a class="headerlink" href="#lsblk" title="Permanent link">#</a></h3>
+<p>lsblk - list block devices</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>$<span class="w"> </span>lsblk
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>NAME<span class="w">        </span>MAJ:MIN<span class="w"> </span>RM<span class="w">   </span>SIZE<span class="w"> </span>RO<span class="w"> </span>TYPE<span class="w"> </span>MOUNTPOINTS
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>loop0<span class="w">         </span><span class="m">7</span>:0<span class="w">    </span><span class="m">0</span><span class="w">  </span><span class="m">59</span>.7M<span class="w">  </span><span class="m">1</span><span class="w"> </span>loop<span class="w"> </span>/snap/core20/2186
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>loop1<span class="w">         </span><span class="m">7</span>:1<span class="w">    </span><span class="m">0</span><span class="w">    </span>59M<span class="w">  </span><span class="m">1</span><span class="w"> </span>loop<span class="w"> </span>/snap/core20/1638
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>loop2<span class="w">         </span><span class="m">7</span>:2<span class="w">    </span><span class="m">0</span><span class="w">  </span><span class="m">69</span>.2M<span class="w">  </span><span class="m">1</span><span class="w"> </span>loop<span class="w"> </span>/snap/core22/1125
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>loop3<span class="w">         </span><span class="m">7</span>:3<span class="w">    </span><span class="m">0</span><span class="w"> </span><span class="m">131</span>.9M<span class="w">  </span><span class="m">1</span><span class="w"> </span>loop<span class="w"> </span>/snap/lxd/23893
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>loop4<span class="w">         </span><span class="m">7</span>:4<span class="w">    </span><span class="m">0</span><span class="w"> </span><span class="m">134</span>.1M<span class="w">  </span><span class="m">1</span><span class="w"> </span>loop<span class="w"> </span>/snap/lxd/27054
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>loop5<span class="w">         </span><span class="m">7</span>:5<span class="w">    </span><span class="m">0</span><span class="w">    </span>34M<span class="w">  </span><span class="m">1</span><span class="w"> </span>loop<span class="w"> </span>/snap/snapd/21185
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>loop6<span class="w">         </span><span class="m">7</span>:6<span class="w">    </span><span class="m">0</span><span class="w">  </span><span class="m">35</span>.2M<span class="w">  </span><span class="m">1</span><span class="w"> </span>loop<span class="w"> </span>/snap/snapd/20674
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>sda<span class="w">           </span><span class="m">8</span>:0<span class="w">    </span><span class="m">0</span><span class="w">   </span><span class="m">1</span>.8T<span class="w">  </span><span class="m">0</span><span class="w"> </span>disk
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>├─sda1<span class="w">        </span><span class="m">8</span>:1<span class="w">    </span><span class="m">0</span><span class="w">   </span>200M<span class="w">  </span><span class="m">0</span><span class="w"> </span>part
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>├─sda2<span class="w">        </span><span class="m">8</span>:2<span class="w">    </span><span class="m">0</span><span class="w">   </span><span class="m">1</span>.4T<span class="w">  </span><span class="m">0</span><span class="w"> </span>part
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>└─sda3<span class="w">        </span><span class="m">8</span>:3<span class="w">    </span><span class="m">0</span><span class="w"> </span><span class="m">465</span>.6G<span class="w">  </span><span class="m">0</span><span class="w"> </span>part
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>mmcblk0<span class="w">     </span><span class="m">179</span>:0<span class="w">    </span><span class="m">0</span><span class="w">  </span><span class="m">59</span>.5G<span class="w">  </span><span class="m">0</span><span class="w"> </span>disk
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>├─mmcblk0p1<span class="w"> </span><span class="m">179</span>:1<span class="w">    </span><span class="m">0</span><span class="w">   </span>256M<span class="w">  </span><span class="m">0</span><span class="w"> </span>part<span class="w"> </span>/boot/firmware
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>└─mmcblk0p2<span class="w"> </span><span class="m">179</span>:2<span class="w">    </span><span class="m">0</span><span class="w">  </span><span class="m">59</span>.2G<span class="w">  </span><span class="m">0</span><span class="w"> </span>part<span class="w"> </span>/
+</span></code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">blkid</p>
+<p>blkid - locate/print block device attributes</p>
+<p>执行 <code>sudo blkid</code> 可以查看硬盘块设备 id 信息，包括 LABEL、UUID 和 TYPE（文件系统类型）。</p>
+</div>
+<h3 id="fdisk">fdisk<a class="headerlink" href="#fdisk" title="Permanent link">#</a></h3>
+<p>fdisk - manipulate disk partition table</p>
+<ul>
+<li><code>-l</code> / <code>--list</code>: List the partition tables for the specified devices and then exit.</li>
+</ul>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>$<span class="w"> </span>sudo<span class="w"> </span>fdisk<span class="w"> </span>-l
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>...
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>Device<span class="w">          </span>Start<span class="w">        </span>End<span class="w">    </span>Sectors<span class="w">   </span>Size<span class="w"> </span>Type
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>/dev/sda1<span class="w">          </span><span class="m">40</span><span class="w">     </span><span class="m">409639</span><span class="w">     </span><span class="m">409600</span><span class="w">   </span>200M<span class="w"> </span>EFI<span class="w"> </span>System
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>/dev/sda2<span class="w">      </span><span class="m">409640</span><span class="w"> </span><span class="m">2930008111</span><span class="w"> </span><span class="m">2929598472</span><span class="w">   </span><span class="m">1</span>.4T<span class="w"> </span>Apple<span class="w"> </span>HFS/HFS+
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>/dev/sda3<span class="w">  </span><span class="m">2930270256</span><span class="w"> </span><span class="m">3906701271</span><span class="w">  </span><span class="m">976431016</span><span class="w"> </span><span class="m">465</span>.6G<span class="w"> </span>Apple<span class="w"> </span>HFS/HFS+
+</span></code></pre></div>
+<h2 id="mount_disk">mount disk<a class="headerlink" href="#mount_disk" title="Permanent link">#</a></h2>
+<p>创建挂载点目录：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>$<span class="w"> </span>sudo<span class="w"> </span>mkdir<span class="w"> </span>/media/WDHD
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>$<span class="w"> </span>ls<span class="w"> </span>-l<span class="w"> </span>/media/
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>total<span class="w"> </span><span class="m">4</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>drwxr-xr-x<span class="w"> </span><span class="m">2</span><span class="w"> </span>root<span class="w"> </span>root<span class="w"> </span><span class="m">4096</span><span class="w"> </span>Apr<span class="w">  </span><span class="m">7</span><span class="w"> </span><span class="m">03</span>:22<span class="w"> </span>WDHD
+</span></code></pre></div>
+<p>修改挂载点目录的所有人为当前用户（组）：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>$<span class="w"> </span>sudo<span class="w"> </span>chown<span class="w"> </span>pifan:ubuntu<span class="w"> </span>/media/WDHD
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>$<span class="w"> </span>ls<span class="w"> </span>-l<span class="w"> </span>/media/
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>total<span class="w"> </span><span class="m">4</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>drwxr-xr-x<span class="w"> </span><span class="m">2</span><span class="w"> </span>pifan<span class="w"> </span>ubuntu<span class="w"> </span><span class="m">4096</span><span class="w"> </span>Apr<span class="w">  </span><span class="m">7</span><span class="w"> </span><span class="m">03</span>:22<span class="w"> </span>WDHD
+</span></code></pre></div>
+<p>挂载外接硬盘的 sda3 分区：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># sudo mount /dev/sda3 /media/WDHD</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>$<span class="w"> </span>sudo<span class="w"> </span>mount<span class="w"> </span>-o<span class="w"> </span><span class="nv">uid</span><span class="o">=</span>pifan,gid<span class="o">=</span>ubuntu<span class="w"> </span>/dev/sda3<span class="w"> </span>/media/WDHD
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>$<span class="w"> </span>df<span class="w"> </span>-h
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>Filesystem<span class="w">      </span>Size<span class="w">  </span>Used<span class="w"> </span>Avail<span class="w"> </span>Use%<span class="w"> </span>Mounted<span class="w"> </span>on
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>tmpfs<span class="w">           </span>781M<span class="w">  </span><span class="m">3</span>.1M<span class="w">  </span>778M<span class="w">   </span><span class="m">1</span>%<span class="w"> </span>/run
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>/dev/mmcblk0p2<span class="w">   </span>59G<span class="w">   </span>14G<span class="w">   </span>42G<span class="w">  </span><span class="m">25</span>%<span class="w"> </span>/
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>tmpfs<span class="w">           </span><span class="m">3</span>.9G<span class="w">     </span><span class="m">0</span><span class="w">  </span><span class="m">3</span>.9G<span class="w">   </span><span class="m">0</span>%<span class="w"> </span>/dev/shm
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>tmpfs<span class="w">           </span><span class="m">5</span>.0M<span class="w">     </span><span class="m">0</span><span class="w">  </span><span class="m">5</span>.0M<span class="w">   </span><span class="m">0</span>%<span class="w"> </span>/run/lock
+</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>/dev/mmcblk0p1<span class="w">  </span>253M<span class="w">  </span>138M<span class="w">  </span>115M<span class="w">  </span><span class="m">55</span>%<span class="w"> </span>/boot/firmware
+</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>tmpfs<span class="w">           </span>781M<span class="w">  </span><span class="m">4</span>.0K<span class="w">  </span>781M<span class="w">   </span><span class="m">1</span>%<span class="w"> </span>/run/user/1000
+</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a>/dev/sda3<span class="w">       </span>466G<span class="w">  </span>204G<span class="w">  </span>262G<span class="w">  </span><span class="m">44</span>%<span class="w"> </span>/media/WDHD
+</span></code></pre></div>
+<h3 id="test_mkdir">test mkdir<a class="headerlink" href="#test_mkdir" title="Permanent link">#</a></h3>
+<p>尝试在外挂硬盘上创建一个文件夹，提示“Read-only file system”：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>$<span class="w"> </span>mkdir<span class="w"> </span>/media/WDHD/test
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>$<span class="w"> </span>mkdir:<span class="w"> </span>cannot<span class="w"> </span>create<span class="w"> </span>directory<span class="w"> </span>‘/media/WDHD/test’:<span class="w"> </span>Read-only<span class="w"> </span>file<span class="w"> </span>system
+</span></code></pre></div>
+<h3 id="install_hfsprogs">install hfsprogs<a class="headerlink" href="#install_hfsprogs" title="Permanent link">#</a></h3>
+<p>参考 <a href="https://askubuntu.com/questions/332315/how-to-read-and-write-hfs-journaled-external-hdd-in-ubuntu-without-access-to-os">mount - How to read and write HFS+ journaled external HDD in Ubuntu without access to OS X? - Ask Ubuntu</a>。</p>
+<p>执行以下命令安装 hfsprogs（mkfs and fsck for HFS and HFS+ file systems）</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>$<span class="w"> </span>sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>hfsprogs<span class="w"> </span>-y
+</span></code></pre></div>
+<p>执行 fsck.hfsplus 检查磁盘状态：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>$<span class="w"> </span>sudo<span class="w"> </span>fsck.hfsplus<span class="w"> </span>/dev/sda3
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>**<span class="w"> </span>/dev/sda3
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="w">   </span>Executing<span class="w"> </span>fsck_hfs<span class="w"> </span><span class="o">(</span>version<span class="w"> </span><span class="m">540</span>.1-Linux<span class="o">)</span>.
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>**<span class="w"> </span>Checking<span class="w"> </span>Journaled<span class="w"> </span>HFS<span class="w"> </span>Plus<span class="w"> </span>volume.
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="w">   </span>The<span class="w"> </span>volume<span class="w"> </span>name<span class="w"> </span>is<span class="w"> </span>WDHD
+</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>**<span class="w"> </span>Checking<span class="w"> </span>extents<span class="w"> </span>overflow<span class="w"> </span>file.
+</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>**<span class="w"> </span>Checking<span class="w"> </span>catalog<span class="w"> </span>file.
+</span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>**<span class="w"> </span>Checking<span class="w"> </span>multi-linked<span class="w"> </span>files.
+</span><span id="__span-7-9"><a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>**<span class="w"> </span>Checking<span class="w"> </span>catalog<span class="w"> </span>hierarchy.
+</span><span id="__span-7-10"><a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a>**<span class="w"> </span>Checking<span class="w"> </span>extended<span class="w"> </span>attributes<span class="w"> </span>file.
+</span><span id="__span-7-11"><a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a>**<span class="w"> </span>Checking<span class="w"> </span>volume<span class="w"> </span>bitmap.
+</span><span id="__span-7-12"><a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a>**<span class="w"> </span>Checking<span class="w"> </span>volume<span class="w"> </span>information.
+</span><span id="__span-7-13"><a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a>**<span class="w"> </span>The<span class="w"> </span>volume<span class="w"> </span>WDHD<span class="w"> </span>appears<span class="w"> </span>to<span class="w"> </span>be<span class="w"> </span>OK.
+</span></code></pre></div>
+<p>执行以下命令重新加载硬盘：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>$<span class="w"> </span>sudo<span class="w"> </span>mount<span class="w"> </span>-t<span class="w"> </span>hfsplus<span class="w"> </span>-o<span class="w"> </span>remount,force,rw<span class="w"> </span>/media/WDHD
+</span></code></pre></div>
+<p>或者卸载后执行以下命令加载硬盘：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>$<span class="w"> </span>sudo<span class="w"> </span>umount<span class="w"> </span>/media/WDHD/
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>$<span class="w"> </span>sudo<span class="w"> </span>mount<span class="w"> </span>-t<span class="w"> </span>hfsplus<span class="w"> </span>-o<span class="w"> </span>force,rw,uid<span class="o">=</span>pifan,gid<span class="o">=</span>ubuntu<span class="w"> </span>/dev/sda3<span class="w"> </span>/media/WDHD
+</span></code></pre></div>
+<p>重新执行 <code>mkdir /media/WDHD/test</code> 创建文件夹成功。</p>
+<h3 id="auto_mount">auto mount<a class="headerlink" href="#auto_mount" title="Permanent link">#</a></h3>
+<p>编辑文件 <code>sudo vim /etc/fstab</code>，其格式条目如下：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="c1"># &lt;file system&gt; &lt;mount point&gt; &lt;file system type&gt; &lt;options&gt; &lt;dump&gt; &lt;pass&gt;</span>
+</span></code></pre></div>
+<p>在其中加入启动加载项 <code>UUID 指定目录 硬盘文件系统格式 defaults,nofail 0 0</code>：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="c1"># 执行 id 命令可查看当前用户的 uid/gid</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="nv">UUID</span><span class="o">=</span>8be03e5b-ebbe-4695-a698-f0c0b5cc9f39<span class="w"> </span>/media/WDHD<span class="w"> </span>hfsplus<span class="w"> </span>force,rw,uid<span class="o">=</span><span class="m">1000</span>,gid<span class="o">=</span><span class="m">1000</span><span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="m">0</span>
+</span></code></pre></div>
+<p>重启加载后，挂载点还是提示 Read-only！参考上一步，remount 或者 umount 后重新 mount 挂载。</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:3"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">参考配置 1</label><label for="__tabbed_1_2">参考配置 2</label><label for="__tabbed_1_3">参考配置 3</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p><a href="https://unix.stackexchange.com/questions/639476/how-to-mount-hfs-drive-as-read-write-on-startup">ubuntu - How to Mount HFS+ drive as read-write on startup</a></p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>/dev/disk/by-id/usb-Seagate_Expansion+_Desk_NA8B0LGL-0:0-part2<span class="w"> </span>/media/media/4tb<span class="w"> </span>auto<span class="w"> </span>nosuid,nodev,nofail,x-gvfs-show,force,rw<span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="m">0</span>
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<p><a href="https://raspberrypi.stackexchange.com/questions/29087/adding-hfsplus-file-system-to-fstab">raspbian - Adding hfsplus file system to fstab</a></p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="nv">UUID</span><span class="o">=</span><span class="m">12345</span><span class="w"> </span>/media/USBDrive/<span class="w"> </span>hfsplus<span class="w"> </span>force,rw
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<p><a href="https://ubuntuforums.org/showthread.php?t=1485096">SOLVED - Mounting hfs partition at boot</a></p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>/dev/sda3<span class="w"> </span>/media/sda3<span class="w"> </span>hfsplus<span class="w"> </span>defaults<span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="m">0</span>
+</span></code></pre></div>
+</div>
+</div>
+</div>
+<h2 id="config_samba_for_wdhd">config samba for WDHD<a class="headerlink" href="#config_samba_for_wdhd" title="Permanent link">#</a></h2>
+<h3 id="install_samba">install samba<a class="headerlink" href="#install_samba" title="Permanent link">#</a></h3>
+<p>samba - Server to provide AD and SMB/CIFS services to clients</p>
+<p>执行以下命令安装 samba：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>$<span class="w"> </span>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>samba<span class="w"> </span>-y
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>$<span class="w"> </span>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>samba-vfs-modules<span class="w"> </span>-y
+</span></code></pre></div>
+<ol>
+<li><code>samba -V</code>: 查看软件版本；</li>
+<li><code>samba --help</code>：查看帮助（usage）；</li>
+<li><code>man samba</code>：查看帮助手册（manual）；</li>
+</ol>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>$<span class="w"> </span>samba<span class="w"> </span>-V
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>Version<span class="w"> </span><span class="m">4</span>.15.13-Ubuntu
+</span></code></pre></div>
+<h3 id="config_samba">config samba<a class="headerlink" href="#config_samba" title="Permanent link">#</a></h3>
+<p>Samba配置文件通常在 /etc/samba/ 路径下：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>$<span class="w"> </span>ls<span class="w"> </span>-l<span class="w"> </span>/etc/samba/
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>total<span class="w"> </span><span class="m">20</span>
+</span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>-rw-r--r--<span class="w"> </span><span class="m">1</span><span class="w"> </span>root<span class="w"> </span>root<span class="w">    </span><span class="m">8</span><span class="w"> </span>Jan<span class="w">  </span><span class="m">5</span><span class="w"> </span><span class="m">21</span>:23<span class="w"> </span>gdbcommands
+</span><span id="__span-17-4"><a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a>-rw-r--r--<span class="w"> </span><span class="m">1</span><span class="w"> </span>root<span class="w"> </span>root<span class="w"> </span><span class="m">8950</span><span class="w"> </span>Apr<span class="w">  </span><span class="m">7</span><span class="w"> </span><span class="m">05</span>:00<span class="w"> </span>smb.conf
+</span><span id="__span-17-5"><a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a>drwxr-xr-x<span class="w"> </span><span class="m">2</span><span class="w"> </span>root<span class="w"> </span>root<span class="w"> </span><span class="m">4096</span><span class="w"> </span>Jan<span class="w">  </span><span class="m">5</span><span class="w"> </span><span class="m">21</span>:23<span class="w"> </span>tls
+</span></code></pre></div>
+<p>编辑 Samba 配置文件：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>$<span class="w"> </span>sudo<span class="w"> </span>vim<span class="w"> </span>/etc/samba/smb.conf
+</span></code></pre></div>
+<p>在配置文件底部添加如下配置（注意请移除行尾注释）：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="o">[</span>WDHD<span class="o">]</span>
+</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a><span class="w">    </span><span class="c1"># 共享描述</span>
+</span><span id="__span-19-3"><a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a><span class="w">    </span><span class="nv">comment</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>WD<span class="w"> </span>-<span class="w"> </span>Hard<span class="w"> </span>Disk
+</span><span id="__span-19-4"><a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a><span class="w">    </span><span class="c1"># 共享目录（mount point）</span>
+</span><span id="__span-19-5"><a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a><span class="w">    </span><span class="nv">path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>/media/WDHD
+</span><span id="__span-19-6"><a id="__codelineno-19-6" name="__codelineno-19-6" href="#__codelineno-19-6"></a><span class="w">    </span><span class="c1"># sudo smbpasswd -a pifan 创建共享用户密码</span>
+</span><span id="__span-19-7"><a id="__codelineno-19-7" name="__codelineno-19-7" href="#__codelineno-19-7"></a><span class="w">    </span>valid<span class="w"> </span><span class="nv">users</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>pifan
+</span><span id="__span-19-8"><a id="__codelineno-19-8" name="__codelineno-19-8" href="#__codelineno-19-8"></a><span class="w">    </span><span class="c1"># 可读写</span>
+</span><span id="__span-19-9"><a id="__codelineno-19-9" name="__codelineno-19-9" href="#__codelineno-19-9"></a><span class="w">    </span><span class="nv">browseable</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>yes
+</span><span id="__span-19-10"><a id="__codelineno-19-10" name="__codelineno-19-10" href="#__codelineno-19-10"></a><span class="w">    </span><span class="nb">read</span><span class="w"> </span><span class="nv">only</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>no
+</span><span id="__span-19-11"><a id="__codelineno-19-11" name="__codelineno-19-11" href="#__codelineno-19-11"></a><span class="w">    </span><span class="nv">writeable</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>yes
+</span><span id="__span-19-12"><a id="__codelineno-19-12" name="__codelineno-19-12" href="#__codelineno-19-12"></a><span class="w">    </span><span class="c1"># 不允许 guest 账户访问</span>
+</span><span id="__span-19-13"><a id="__codelineno-19-13" name="__codelineno-19-13" href="#__codelineno-19-13"></a><span class="w">    </span><span class="nv">public</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>no
+</span><span id="__span-19-14"><a id="__codelineno-19-14" name="__codelineno-19-14" href="#__codelineno-19-14"></a><span class="w">    </span>guest<span class="w"> </span><span class="nv">ok</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>no
+</span><span id="__span-19-15"><a id="__codelineno-19-15" name="__codelineno-19-15" href="#__codelineno-19-15"></a><span class="w">    </span><span class="c1"># 客户端上传文件的默认权限</span>
+</span><span id="__span-19-16"><a id="__codelineno-19-16" name="__codelineno-19-16" href="#__codelineno-19-16"></a><span class="w">    </span>create<span class="w"> </span><span class="nv">mask</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0777</span>
+</span><span id="__span-19-17"><a id="__codelineno-19-17" name="__codelineno-19-17" href="#__codelineno-19-17"></a><span class="w">    </span><span class="c1"># 客户端创建目录的默认权限</span>
+</span><span id="__span-19-18"><a id="__codelineno-19-18" name="__codelineno-19-18" href="#__codelineno-19-18"></a><span class="w">    </span>directory<span class="w"> </span><span class="nv">mask</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0777</span>
+</span></code></pre></div>
+<h3 id="smbpasswd">smbpasswd<a class="headerlink" href="#smbpasswd" title="Permanent link">#</a></h3>
+<p>配置完毕后执行 <code>sudo smbpasswd -a pifan</code> 来设置用户名密码。</p>
+<div class="admonition note">
+<p class="admonition-title">关于 Samba 账户</p>
+<p>Samba 需要 Linux 账户才能使用，可以使用 已有账户 或 创建新用户。虽然用户名可以和 Linux 系统共享，但 Samba 使用的是单独的密码管理。</p>
+</div>
+<p>设置完毕后重启 Samba 服务：<code>sudo samba restart</code> 或 <code>sudo systemctl restart smbd</code>。</p>
+<p>执行 <code>systemctl status smbd</code>（或 smbd.service）可查看 samba 服务状态。</p>
+<h3 id="test_samba">test samba<a class="headerlink" href="#test_samba" title="Permanent link">#</a></h3>
+<p>局域网 macOS 中打开 Finder，选择 菜单栏–前往–连接服务器（或者直接 Command + K），在弹出的窗口中输入 <code>smb://树莓派的IP地址</code> 后选择 「连接–输入设置」 的账户和密码后就能访问了。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>smb://192.168.0.202/
+</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>smb://rpi4b-ubuntu.local/
+</span><span id="__span-20-3"><a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a>smb://rpi4b-ubuntu.local/WDHD
+</span></code></pre></div>
+<h2 id="config_samba_for_wdtm">config samba for WDTM<a class="headerlink" href="#config_samba_for_wdtm" title="Permanent link">#</a></h2>
+<p>WD 硬盘的 sda3 分区是普通分区，挂载后局域网通过 smb 协议访问可直接读写。</p>
+<p>sda2 分区之前为 macOS 备份分区，将该分区挂载为 <code>/media/WDTM</code>：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="c1"># 1. 创建挂载点目录</span>
+</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>$<span class="w"> </span>sudo<span class="w"> </span>mkdir<span class="w"> </span>/media/WDTM
+</span><span id="__span-21-3"><a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a>
+</span><span id="__span-21-4"><a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a>$<span class="w"> </span>ls<span class="w"> </span>-l<span class="w"> </span>/media/
+</span><span id="__span-21-5"><a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a>total<span class="w"> </span><span class="m">0</span>
+</span><span id="__span-21-6"><a id="__codelineno-21-6" name="__codelineno-21-6" href="#__codelineno-21-6"></a>drwxrwxr-x<span class="w"> </span><span class="m">1</span><span class="w"> </span>pifan<span class="w"> </span>ubuntu<span class="w"> </span><span class="m">24</span><span class="w"> </span>Apr<span class="w">  </span><span class="m">7</span><span class="w"> </span><span class="m">04</span>:23<span class="w"> </span>WDHD
+</span><span id="__span-21-7"><a id="__codelineno-21-7" name="__codelineno-21-7" href="#__codelineno-21-7"></a>drwxrwxr-x<span class="w"> </span><span class="m">1</span><span class="w"> </span>root<span class="w"> </span>root<span class="w"> </span><span class="m">21</span><span class="w"> </span>Apr<span class="w">  </span><span class="m">7</span><span class="w"> </span><span class="m">10</span>:46<span class="w"> </span>WDTM
+</span><span id="__span-21-8"><a id="__codelineno-21-8" name="__codelineno-21-8" href="#__codelineno-21-8"></a>
+</span><span id="__span-21-9"><a id="__codelineno-21-9" name="__codelineno-21-9" href="#__codelineno-21-9"></a><span class="c1"># 2. 修改挂载点目录的所有人为当前用户（组）：</span>
+</span><span id="__span-21-10"><a id="__codelineno-21-10" name="__codelineno-21-10" href="#__codelineno-21-10"></a>$<span class="w"> </span>sudo<span class="w"> </span>chown<span class="w"> </span>pifan:ubuntu<span class="w"> </span>/media/WDTM
+</span><span id="__span-21-11"><a id="__codelineno-21-11" name="__codelineno-21-11" href="#__codelineno-21-11"></a>
+</span><span id="__span-21-12"><a id="__codelineno-21-12" name="__codelineno-21-12" href="#__codelineno-21-12"></a>$<span class="w"> </span>ls<span class="w"> </span>-l<span class="w"> </span>/media/
+</span><span id="__span-21-13"><a id="__codelineno-21-13" name="__codelineno-21-13" href="#__codelineno-21-13"></a>total<span class="w"> </span><span class="m">0</span>
+</span><span id="__span-21-14"><a id="__codelineno-21-14" name="__codelineno-21-14" href="#__codelineno-21-14"></a>drwxrwxr-x<span class="w"> </span><span class="m">1</span><span class="w"> </span>pifan<span class="w"> </span>ubuntu<span class="w"> </span><span class="m">24</span><span class="w"> </span>Apr<span class="w">  </span><span class="m">7</span><span class="w"> </span><span class="m">04</span>:23<span class="w"> </span>WDHD
+</span><span id="__span-21-15"><a id="__codelineno-21-15" name="__codelineno-21-15" href="#__codelineno-21-15"></a>drwxrwxr-x<span class="w"> </span><span class="m">1</span><span class="w"> </span>pifan<span class="w"> </span>ubuntu<span class="w"> </span><span class="m">21</span><span class="w"> </span>Apr<span class="w">  </span><span class="m">7</span><span class="w"> </span><span class="m">10</span>:46<span class="w"> </span>WDTM
+</span><span id="__span-21-16"><a id="__codelineno-21-16" name="__codelineno-21-16" href="#__codelineno-21-16"></a>
+</span><span id="__span-21-17"><a id="__codelineno-21-17" name="__codelineno-21-17" href="#__codelineno-21-17"></a><span class="c1"># 3. 挂载外接硬盘的 sda2 分区</span>
+</span><span id="__span-21-18"><a id="__codelineno-21-18" name="__codelineno-21-18" href="#__codelineno-21-18"></a>$<span class="w"> </span>sudo<span class="w"> </span>mount<span class="w"> </span>-t<span class="w"> </span>hfsplus<span class="w"> </span>-o<span class="w"> </span>force,rw,uid<span class="o">=</span>pifan,gid<span class="o">=</span>ubuntu<span class="w"> </span>/dev/sda2<span class="w"> </span>/media/WDTM
+</span></code></pre></div>
+<p>挂载成功后，查看挂载点及其目录内容：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a>$<span class="w"> </span>df<span class="w"> </span>-h
+</span><span id="__span-22-2"><a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a>Filesystem<span class="w">      </span>Size<span class="w">  </span>Used<span class="w"> </span>Avail<span class="w"> </span>Use%<span class="w"> </span>Mounted<span class="w"> </span>on
+</span><span id="__span-22-3"><a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a>tmpfs<span class="w">           </span>781M<span class="w">  </span><span class="m">5</span>.2M<span class="w">  </span>776M<span class="w">   </span><span class="m">1</span>%<span class="w"> </span>/run
+</span><span id="__span-22-4"><a id="__codelineno-22-4" name="__codelineno-22-4" href="#__codelineno-22-4"></a>/dev/mmcblk0p2<span class="w">   </span>59G<span class="w">   </span>14G<span class="w">   </span>42G<span class="w">  </span><span class="m">26</span>%<span class="w"> </span>/
+</span><span id="__span-22-5"><a id="__codelineno-22-5" name="__codelineno-22-5" href="#__codelineno-22-5"></a>tmpfs<span class="w">           </span><span class="m">3</span>.9G<span class="w">     </span><span class="m">0</span><span class="w">  </span><span class="m">3</span>.9G<span class="w">   </span><span class="m">0</span>%<span class="w"> </span>/dev/shm
+</span><span id="__span-22-6"><a id="__codelineno-22-6" name="__codelineno-22-6" href="#__codelineno-22-6"></a>tmpfs<span class="w">           </span><span class="m">5</span>.0M<span class="w">     </span><span class="m">0</span><span class="w">  </span><span class="m">5</span>.0M<span class="w">   </span><span class="m">0</span>%<span class="w"> </span>/run/lock
+</span><span id="__span-22-7"><a id="__codelineno-22-7" name="__codelineno-22-7" href="#__codelineno-22-7"></a>/dev/mmcblk0p1<span class="w">  </span>253M<span class="w">  </span>138M<span class="w">  </span>115M<span class="w">  </span><span class="m">55</span>%<span class="w"> </span>/boot/firmware
+</span><span id="__span-22-8"><a id="__codelineno-22-8" name="__codelineno-22-8" href="#__codelineno-22-8"></a>tmpfs<span class="w">           </span>781M<span class="w">  </span><span class="m">4</span>.0K<span class="w">  </span>781M<span class="w">   </span><span class="m">1</span>%<span class="w"> </span>/run/user/1000
+</span><span id="__span-22-9"><a id="__codelineno-22-9" name="__codelineno-22-9" href="#__codelineno-22-9"></a>/dev/sda3<span class="w">       </span>466G<span class="w">  </span>204G<span class="w">  </span>263G<span class="w">  </span><span class="m">44</span>%<span class="w"> </span>/media/WDHD
+</span><span id="__span-22-10"><a id="__codelineno-22-10" name="__codelineno-22-10" href="#__codelineno-22-10"></a>/dev/sda2<span class="w">       </span><span class="m">1</span>.4T<span class="w">  </span><span class="m">1</span>.3T<span class="w">  </span>135G<span class="w">  </span><span class="m">91</span>%<span class="w"> </span>/media/WDTM
+</span><span id="__span-22-11"><a id="__codelineno-22-11" name="__codelineno-22-11" href="#__codelineno-22-11"></a>
+</span><span id="__span-22-12"><a id="__codelineno-22-12" name="__codelineno-22-12" href="#__codelineno-22-12"></a>$<span class="w"> </span>ls<span class="w"> </span>-l<span class="w"> </span>/media/WDTM
+</span><span id="__span-22-13"><a id="__codelineno-22-13" name="__codelineno-22-13" href="#__codelineno-22-13"></a>total<span class="w"> </span><span class="m">288</span>
+</span><span id="__span-22-14"><a id="__codelineno-22-14" name="__codelineno-22-14" href="#__codelineno-22-14"></a>drwxr-xr-x<span class="w">  </span><span class="m">1</span><span class="w"> </span>faner<span class="w">  </span>staff<span class="w">   </span><span class="m">16384</span><span class="w"> </span>Mar<span class="w"> </span><span class="m">16</span><span class="w"> </span><span class="m">10</span>:38<span class="w"> </span>Backups.backupdb
+</span><span id="__span-22-15"><a id="__codelineno-22-15" name="__codelineno-22-15" href="#__codelineno-22-15"></a>dr-xr-xr-x<span class="w">  </span><span class="m">1</span><span class="w"> </span>faner<span class="w">  </span>staff<span class="w">   </span><span class="m">16384</span><span class="w"> </span>Sep<span class="w">  </span><span class="m">9</span><span class="w">  </span><span class="m">2017</span><span class="w"> </span>_HF2VN~W
+</span><span id="__span-22-16"><a id="__codelineno-22-16" name="__codelineno-22-16" href="#__codelineno-22-16"></a>-rwxr-xr-x<span class="w">  </span><span class="m">1</span><span class="w"> </span>faner<span class="w">  </span>staff<span class="w">  </span><span class="m">111620</span><span class="w"> </span>Feb<span class="w"> </span><span class="m">21</span><span class="w">  </span><span class="m">2017</span><span class="w"> </span>tmbootpicker.efi
+</span></code></pre></div>
+<p>再为 sda2 分区挂载点 /media/WDTM 配置 samba 共享服务，供局域网内的 macOS 无线备份。</p>
+<p>在配置文件 /etc/samba/smb.conf 的全局配置段（[global]）下增加如下设置，以禁用 SMB1 协议和支持 macOS 系统的拓展属性：</p>
+<blockquote>
+<p>Apple extensions ("AAPL") run under SMB2/3 protocol, make that the minimum (probably shouldn't be running SMB1 anyway...)</p>
+</blockquote>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="o">[</span>global<span class="o">]</span>
+</span><span id="__span-23-2"><a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a><span class="w">    </span><span class="c1"># 最小支持为 SMB2</span>
+</span><span id="__span-23-3"><a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a><span class="w">    </span>min<span class="w"> </span><span class="nv">protocol</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>SMB2
+</span><span id="__span-23-4"><a id="__codelineno-23-4" name="__codelineno-23-4" href="#__codelineno-23-4"></a><span class="w">    </span><span class="c1"># Apple 扩展需要支持扩展属性(xattr)</span>
+</span><span id="__span-23-5"><a id="__codelineno-23-5" name="__codelineno-23-5" href="#__codelineno-23-5"></a><span class="w">    </span>ea<span class="w"> </span><span class="nv">support</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>yes
+</span><span id="__span-23-6"><a id="__codelineno-23-6" name="__codelineno-23-6" href="#__codelineno-23-6"></a><span class="w">    </span><span class="c1"># smb encrypt = required</span>
+</span></code></pre></div>
+<p>在配置文件末尾添加 WDTM 配置：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a><span class="o">[</span>WDTM<span class="o">]</span>
+</span><span id="__span-24-2"><a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a><span class="w">    </span><span class="c1"># 共享描述</span>
+</span><span id="__span-24-3"><a id="__codelineno-24-3" name="__codelineno-24-3" href="#__codelineno-24-3"></a><span class="w">    </span><span class="nv">comment</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>WD<span class="w"> </span>-<span class="w"> </span>Time<span class="w"> </span>Machine
+</span><span id="__span-24-4"><a id="__codelineno-24-4" name="__codelineno-24-4" href="#__codelineno-24-4"></a><span class="w">    </span><span class="c1"># 共享目录（mount point）</span>
+</span><span id="__span-24-5"><a id="__codelineno-24-5" name="__codelineno-24-5" href="#__codelineno-24-5"></a><span class="w">    </span><span class="nv">path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>/media/WDTM
+</span><span id="__span-24-6"><a id="__codelineno-24-6" name="__codelineno-24-6" href="#__codelineno-24-6"></a><span class="w">    </span><span class="c1"># 可读写</span>
+</span><span id="__span-24-7"><a id="__codelineno-24-7" name="__codelineno-24-7" href="#__codelineno-24-7"></a><span class="w">    </span><span class="nv">browseable</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>yes
+</span><span id="__span-24-8"><a id="__codelineno-24-8" name="__codelineno-24-8" href="#__codelineno-24-8"></a><span class="w">    </span><span class="nb">read</span><span class="w"> </span><span class="nv">only</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>no
+</span><span id="__span-24-9"><a id="__codelineno-24-9" name="__codelineno-24-9" href="#__codelineno-24-9"></a><span class="w">    </span><span class="nv">writeable</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>yes
+</span><span id="__span-24-10"><a id="__codelineno-24-10" name="__codelineno-24-10" href="#__codelineno-24-10"></a><span class="w">    </span><span class="c1"># 不允许 guest 账户访问</span>
+</span><span id="__span-24-11"><a id="__codelineno-24-11" name="__codelineno-24-11" href="#__codelineno-24-11"></a><span class="w">    </span><span class="nv">public</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>no
+</span><span id="__span-24-12"><a id="__codelineno-24-12" name="__codelineno-24-12" href="#__codelineno-24-12"></a><span class="w">    </span>guest<span class="w"> </span><span class="nv">ok</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>no
+</span><span id="__span-24-13"><a id="__codelineno-24-13" name="__codelineno-24-13" href="#__codelineno-24-13"></a><span class="w">    </span><span class="c1"># valid users = pifan</span>
+</span><span id="__span-24-14"><a id="__codelineno-24-14" name="__codelineno-24-14" href="#__codelineno-24-14"></a><span class="w">    </span><span class="c1"># create mask = 0700</span>
+</span><span id="__span-24-15"><a id="__codelineno-24-15" name="__codelineno-24-15" href="#__codelineno-24-15"></a><span class="w">    </span><span class="c1"># vfs objects = fruit streams_xattr</span>
+</span><span id="__span-24-16"><a id="__codelineno-24-16" name="__codelineno-24-16" href="#__codelineno-24-16"></a><span class="w">    </span>vfs<span class="w"> </span><span class="nv">objects</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>catia<span class="w"> </span>fruit<span class="w"> </span>streams_xattr
+</span><span id="__span-24-17"><a id="__codelineno-24-17" name="__codelineno-24-17" href="#__codelineno-24-17"></a><span class="w">    </span>fruit:aapl<span class="w"> </span><span class="o">=</span><span class="w"> </span>yes
+</span><span id="__span-24-18"><a id="__codelineno-24-18" name="__codelineno-24-18" href="#__codelineno-24-18"></a><span class="w">    </span>fruit:time<span class="w"> </span><span class="nv">machine</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>yes
+</span><span id="__span-24-19"><a id="__codelineno-24-19" name="__codelineno-24-19" href="#__codelineno-24-19"></a><span class="w">    </span>fruit:metadata<span class="w"> </span><span class="o">=</span><span class="w"> </span>stream
+</span><span id="__span-24-20"><a id="__codelineno-24-20" name="__codelineno-24-20" href="#__codelineno-24-20"></a><span class="w">    </span>fruit:model<span class="w"> </span><span class="o">=</span><span class="w"> </span>MacSamba
+</span><span id="__span-24-21"><a id="__codelineno-24-21" name="__codelineno-24-21" href="#__codelineno-24-21"></a><span class="w">    </span><span class="c1"># 文件清理的一些配置</span>
+</span><span id="__span-24-22"><a id="__codelineno-24-22" name="__codelineno-24-22" href="#__codelineno-24-22"></a><span class="w">    </span>fruit:veto_appledouble<span class="w"> </span><span class="o">=</span><span class="w"> </span>no
+</span><span id="__span-24-23"><a id="__codelineno-24-23" name="__codelineno-24-23" href="#__codelineno-24-23"></a><span class="w">    </span>fruit:nfs_aces<span class="w"> </span><span class="o">=</span><span class="w"> </span>no
+</span><span id="__span-24-24"><a id="__codelineno-24-24" name="__codelineno-24-24" href="#__codelineno-24-24"></a><span class="w">    </span>fruit:posix_rename<span class="w"> </span><span class="o">=</span><span class="w"> </span>yes
+</span><span id="__span-24-25"><a id="__codelineno-24-25" name="__codelineno-24-25" href="#__codelineno-24-25"></a><span class="w">    </span>fruit:zero_file_id<span class="w"> </span><span class="o">=</span><span class="w"> </span>yes
+</span><span id="__span-24-26"><a id="__codelineno-24-26" name="__codelineno-24-26" href="#__codelineno-24-26"></a><span class="w">    </span>fruit:wipe_intentionally_left_blank_rfork<span class="w"> </span><span class="o">=</span><span class="w"> </span>yes
+</span><span id="__span-24-27"><a id="__codelineno-24-27" name="__codelineno-24-27" href="#__codelineno-24-27"></a><span class="w">    </span>fruit:delete_empty_adfiles<span class="w"> </span><span class="o">=</span><span class="w"> </span>yes
+</span></code></pre></div>
+<p>设置完毕后重启 Samba 服务：<code>sudo systemctl restart smbd</code>。<br />
+执行 <code>systemctl status smbd</code> 可查看 samba 服务状态。</p>
+<p>局域网 macOS 中打开 Finder，Command + K 输入 <code>smb://rpi4b-ubuntu.local/WDTM</code>，按照提示输入账户和密码就能访问了。</p>
+<h3 id="set_as_macos_backup_disk">set as macOS Backup Disk<a class="headerlink" href="#set_as_macos_backup_disk" title="Permanent link">#</a></h3>
+<p>系统设置中打开时间机器（Settings - General - Time Machine），点击 <code>Add Backup Disk...</code> 按钮：</p>
+<p><img alt="Add_Backup_Disk" src="../../linux/images/1-tm-Add_Backup_Disk.png" /></p>
+<p>点击弹出的 <code>WDTM on RPI4B-UBUNTU.local</code>：</p>
+<p><img alt="select-WDTM" src="../../linux/images/2-tm-select-WDTM.png" /></p>
+<p>点击加密（Encrypt Backup）开关关闭加密，Disk Usage Limit 默认最大：</p>
+<p><img alt="config-WDTM" src="../../linux/images/3-tm-config-WDTM.png" /></p>
+<p>确认点击 Done 后，Time Machine 面板出现新添加的备份网盘 WDTM - RPI4B-UBUNTU.local：</p>
+<p><img alt="TimeMachine-Panel" src="../../linux/images/4-tm-TimeMachine-Panel.png" /></p>
+<p>这样，随时随地进行局域网无线备份，再也不用专门为了备份而插拔硬盘。</p>
+<h2 id="refs">refs<a class="headerlink" href="#refs" title="Permanent link">#</a></h2>
+<p><a href="https://wiki.samba.org/index.php/Configure_Samba_to_Work_Better_with_Mac_OS_X">Configure Samba to Work Better with Mac OS X</a><br />
+<a href="https://linuxize.com/post/how-to-mount-cifs-windows-share-on-linux/">How to Mount Windows Share on Linux using CIFS</a></p>
+<p><a href="https://monsoir.github.io/Notes/RaspberryPie/raspberry-extend-storage.html">树莓派挂载移动硬盘 | Notes</a><br />
+<a href="https://sspai.com/post/69050">树莓派搭建低配版文件存储及家庭影音库 - 少数派</a><br />
+<a href="https://zhuanlan.zhihu.com/p/456124824">教女朋友一样教你用树莓派和移动硬盘搭NAS - 知乎</a></p>
+<p><a href="https://support.apple.com/en-hk/guide/mac-help/mh15139/mac">Types of disks you can use with Time Machine on Mac</a><br />
+<a href="https://www.jpatrickfulton.dev/blog/2023-06-23-samba-and-timemachine/">Samba and macOS Time Machine</a><br />
+<a href="https://sspai.com/post/69197">利用树莓派打造时间机器 - 少数派</a></p>
+<p><a href="https://www.cnblogs.com/huoyanCC/p/17281882.html">局域网内使用 Samba 搭建 macOS 时间机器的远程备份 - huoyanCC</a><br />
+<a href="https://huangxt.cn/manual/lan-macos-tmachine/">局域网内部署 SMB 服务器实现 macOS Time Machine 自动备份</a><br />
+<a href="https://zhuanlan.zhihu.com/p/628939584">Linux使用SMB给macOS做无线Time Machine备份 - 知乎</a></p>
+
+
+
+
+
+
+
+  
+  
+
+
+
+  
+
+
+  
+
+
+
+  <h2 id="__comments">评论</h2>
+  <!-- Insert generated snippet here -->
+  <script src="https://giscus.app/client.js"
+    data-repo="fan2/mkdocs"
+    data-repo-id="R_kgDOLltxSg"
+    data-category="Announcements"
+    data-category-id="DIC_kwDOLltxSs4CeURH"
+    data-mapping="pathname"
+    data-strict="0"
+    data-reactions-enabled="1"
+    data-emit-metadata="1"
+    data-input-position="top"
+    data-theme="preferred_color_scheme"
+    data-lang="zh-CN"
+    data-loading="lazy"
+    crossorigin="anonymous"
+    async>
+  </script>
+
+  <!-- Synchronize Giscus theme with palette -->
+  <script>
+    var giscus = document.querySelector("script[src*=giscus]")
+
+    // Set palette on initial load
+    var palette = __md_get("__palette")
+    if (palette && typeof palette.color === "object") {
+      var theme = palette.color.scheme === "slate"
+        ? "transparent_dark"
+        : "light"
+
+      // Instruct Giscus to set theme
+      giscus.setAttribute("data-theme", theme) 
+    }
+
+    // Register event handlers after documented loaded
+    document.addEventListener("DOMContentLoaded", function() {
+      var ref = document.querySelector("[data-md-component=palette]")
+      ref.addEventListener("change", function() {
+        var palette = __md_get("__palette")
+        if (palette && typeof palette.color === "object") {
+          var theme = palette.color.scheme === "slate"
+            ? "transparent_dark"
+            : "light"
+
+          // Instruct Giscus to change theme
+          var frame = document.querySelector(".giscus-frame")
+          frame.contentWindow.postMessage(
+            { giscus: { setConfig: { theme } } },
+            "https://giscus.app"
+          )
+        }
+      })
+    })
+  </script>
+
+      
+    </article>
+  </div>
+
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+        
+      
+      <nav class="md-footer__inner md-grid" aria-label="页脚" >
+        
+          
+          <a href="../nginx-control/" class="md-footer__link md-footer__link--prev" aria-label="上一页: nginx查看日志及控制命令">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                上一页
+              </span>
+              <div class="md-ellipsis">
+                nginx查看日志及控制命令
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../../20240319/3-first-glance/" class="md-footer__link md-footer__link--next" aria-label="下一页: Mkdocs初识">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                下一页
+              </span>
+              <div class="md-ellipsis">
+                Mkdocs初识
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2024- Cliff Fan
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["toc.follow", "header.autohide", "navigation.tabs", "navigation.top", "navigation.footer", "navigation.tracking", "content.code.copy", "content.code.select", "content.code.annotate"], "search": "../../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.bd41221c.min.js"></script>
+      
+        <script src="../../../javascripts/mathjax.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+        <script src="https://vercount.one/js"></script>
+      
+    
+  </body>
+</html>

@@ -457,6 +457,11 @@ English_Docs/
 The_Economist/
 mkdocs/
 
+# 过滤不显示 CS 和 mkdocs 目录
+$ rclone lsf webdav@rpi4b: --exclude "{CS/**,mkdocs/**}"
+English_Docs/
+The_Economist/
+
 $ rclone tree --max-depth 1 webdav@rpi4b:
 /
 ├── CS
@@ -598,7 +603,12 @@ $ rclone copy webdav@rpi4b:rcdir ./rcdir
 
 ```Shell
 $ rclone copy webdav@rpi4b:rcdir/test2.txt .
+```
 
+将远端文件夹 English/恋词考研英语-全真题源报刊7000词/ 拷贝到 Documents 同名目录：
+
+```Shell
+rclone copy webdav@rpi4b:English/恋词考研英语-全真题源报刊7000词/ Documents/English/恋词考研英语-全真题源报刊7000词/
 ```
 
 将远端文件 rcdir/test2.txt 拷贝下载到当前目录（pwd），并命名为 test3.txt：
@@ -831,10 +841,24 @@ Note that files in the destination won't be deleted if there were any errors at 
 
 本地目录（文件夹）想和云盘同步时，可采用 `sync` 命令。
 
-例如，将本地目录 `/usr/local/var/webdav/` 同步到 webDAV 云盘 webdav\@rpi4b:
+例1：将本地目录 `/usr/local/var/webdav/` 同步到 webDAV 云盘 webdav\@rpi4b:
 
 ```Shell
 rclone sync /usr/local/var/webdav/ webdav@rpi4b:
+```
+
+例2：将 ubuntu WebDAV 云盘 webdav\@rpi4b（除 C-C++/ 和 English/ 目录外）同步备份到外挂硬盘（/Volumes/WDHD/）下的文件夹 webdav@rpi4b：
+
+```Shell
+# --exclude "{C-C++/*, English/*}"
+# 2-stderr 重定向到 1-stdout，管传给 tee 输出控制台并且保存到日志文件。
+$ rclone sync -v webdav@rpi4b: /Volumes/WDHD/webdav@rpi4b --exclude "C-C++/" --exclude "English/" 2>&1 | tee ~/Downloads/output/rclone.log
+
+# 补充备份 English 文件夹
+$ rclone sync -v webdav@rpi4b:English /Volumes/WDHD/webdav@rpi4b/English 2>&1 | tee ~/Downloads/output/rclone.log
+
+# 补充备份 C-C++ 文件夹
+$ rclone sync -v webdav@rpi4b:C-C++ /Volumes/WDHD/webdav@rpi4b/C-C++ 2>&1 | tee ~/Downloads/output/rclone.log
 ```
 
 也可根据实际需求，选择只同步某些子文件夹。
