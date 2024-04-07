@@ -917,6 +917,36 @@ rclone sync webdav@mbpa1398: webdav@rpi4b:
 
 可以通过 [cron/crontab](https://en.wikipedia.org/wiki/Cron) 配置定时任务，每天自动执行同步。
 
+在 rpi4b-ubuntu 上首次执行 `crontab -e`，提示选择编辑器，选择 vim 打开编辑：
+
+```Shell
+$ pifan@rpi4b-ubuntu ~
+crontab -e
+no crontab for pifan - using an empty one
+
+Select an editor.  To change later, run 'select-editor'.
+  1. /usr/bin/vim.gtk3
+  2. /bin/nano        <---- easiest
+  3. /usr/bin/vim.basic
+  4. /usr/bin/vim.tiny
+  5. /bin/ed
+
+Choose 1-5 [2]: 3
+```
+
+在 cron table 末尾新增一条任务，每天凌晨 2:30 执行 rclone sync，将 webdav 云盘自动同步到外挂硬盘 /media/WDHD/：
+
+```Shell title="crontab -e"
+# auto backup at 2:30 a.m every day
+30 2 * * * rclone sync -v webdav-rpi4b: /media/WDHD/webdav@rpi4b >> ~/Downloads/output/rclone.log 2>&1
+```
+
+输入 `:wq` 保存退出 vim，命令行提示 `crontab: installing new crontab`。
+
+执行 `sudo systemctl restart cron.service` 重启定时任务使其生效。
+
+每天早上起来，检查日志文件 rclone.log，确认同步状态。
+
 ## Flags & Filtering
 
 [Global Flags](https://rclone.org/flags/), [Rclone Filtering](https://rclone.org/filtering/)

@@ -2501,6 +2501,27 @@
 <h2 id="crontab">crontab<a class="headerlink" href="#crontab" title="Permanent link">#</a></h2>
 <p><a href="https://rclone.org/bisync/">Bisync</a>: On Linux or Mac, consider setting up a crontab entry. <code>bisync</code> can safely run in concurrent cron jobs thanks to lock files it maintains.</p>
 <p>可以通过 <a href="https://en.wikipedia.org/wiki/Cron">cron/crontab</a> 配置定时任务，每天自动执行同步。</p>
+<p>在 rpi4b-ubuntu 上首次执行 <code>crontab -e</code>，提示选择编辑器，选择 vim 打开编辑：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-41-1"><a id="__codelineno-41-1" name="__codelineno-41-1" href="#__codelineno-41-1"></a>$<span class="w"> </span>pifan@rpi4b-ubuntu<span class="w"> </span>~
+</span><span id="__span-41-2"><a id="__codelineno-41-2" name="__codelineno-41-2" href="#__codelineno-41-2"></a>crontab<span class="w"> </span>-e
+</span><span id="__span-41-3"><a id="__codelineno-41-3" name="__codelineno-41-3" href="#__codelineno-41-3"></a>no<span class="w"> </span>crontab<span class="w"> </span><span class="k">for</span><span class="w"> </span>pifan<span class="w"> </span>-<span class="w"> </span>using<span class="w"> </span>an<span class="w"> </span>empty<span class="w"> </span>one
+</span><span id="__span-41-4"><a id="__codelineno-41-4" name="__codelineno-41-4" href="#__codelineno-41-4"></a>
+</span><span id="__span-41-5"><a id="__codelineno-41-5" name="__codelineno-41-5" href="#__codelineno-41-5"></a>Select<span class="w"> </span>an<span class="w"> </span>editor.<span class="w">  </span>To<span class="w"> </span>change<span class="w"> </span>later,<span class="w"> </span>run<span class="w"> </span><span class="s1">&#39;select-editor&#39;</span>.
+</span><span id="__span-41-6"><a id="__codelineno-41-6" name="__codelineno-41-6" href="#__codelineno-41-6"></a><span class="w">  </span><span class="m">1</span>.<span class="w"> </span>/usr/bin/vim.gtk3
+</span><span id="__span-41-7"><a id="__codelineno-41-7" name="__codelineno-41-7" href="#__codelineno-41-7"></a><span class="w">  </span><span class="m">2</span>.<span class="w"> </span>/bin/nano<span class="w">        </span>&lt;----<span class="w"> </span>easiest
+</span><span id="__span-41-8"><a id="__codelineno-41-8" name="__codelineno-41-8" href="#__codelineno-41-8"></a><span class="w">  </span><span class="m">3</span>.<span class="w"> </span>/usr/bin/vim.basic
+</span><span id="__span-41-9"><a id="__codelineno-41-9" name="__codelineno-41-9" href="#__codelineno-41-9"></a><span class="w">  </span><span class="m">4</span>.<span class="w"> </span>/usr/bin/vim.tiny
+</span><span id="__span-41-10"><a id="__codelineno-41-10" name="__codelineno-41-10" href="#__codelineno-41-10"></a><span class="w">  </span><span class="m">5</span>.<span class="w"> </span>/bin/ed
+</span><span id="__span-41-11"><a id="__codelineno-41-11" name="__codelineno-41-11" href="#__codelineno-41-11"></a>
+</span><span id="__span-41-12"><a id="__codelineno-41-12" name="__codelineno-41-12" href="#__codelineno-41-12"></a>Choose<span class="w"> </span><span class="m">1</span>-5<span class="w"> </span><span class="o">[</span><span class="m">2</span><span class="o">]</span>:<span class="w"> </span><span class="m">3</span>
+</span></code></pre></div>
+<p>在 cron table 末尾新增一条任务，每天凌晨 2:30 执行 rclone sync，将 webdav 云盘自动同步到外挂硬盘 /media/WDHD/：</p>
+<div class="language-Shell highlight"><span class="filename">crontab -e</span><pre><span></span><code><span id="__span-42-1"><a id="__codelineno-42-1" name="__codelineno-42-1" href="#__codelineno-42-1"></a><span class="c1"># auto backup at 2:30 a.m every day</span>
+</span><span id="__span-42-2"><a id="__codelineno-42-2" name="__codelineno-42-2" href="#__codelineno-42-2"></a><span class="m">30</span><span class="w"> </span><span class="m">2</span><span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>rclone<span class="w"> </span>sync<span class="w"> </span>-v<span class="w"> </span>webdav-rpi4b:<span class="w"> </span>/media/WDHD/webdav@rpi4b<span class="w"> </span>&gt;&gt;<span class="w"> </span>~/Downloads/output/rclone.log<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span>
+</span></code></pre></div>
+<p>输入 <code>:wq</code> 保存退出 vim，命令行提示 <code>crontab: installing new crontab</code>。</p>
+<p>执行 <code>sudo systemctl restart cron.service</code> 重启定时任务使其生效。</p>
+<p>每天早上起来，检查日志文件 rclone.log，确认同步状态。</p>
 <h2 id="flags__filtering">Flags &amp; Filtering<a class="headerlink" href="#flags__filtering" title="Permanent link">#</a></h2>
 <p><a href="https://rclone.org/flags/">Global Flags</a>, <a href="https://rclone.org/filtering/">Rclone Filtering</a></p>
 <ul>
