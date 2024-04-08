@@ -851,14 +851,14 @@ rclone sync /usr/local/var/webdav/ webdav@rpi4b:
 
 ```Shell
 # --exclude "{C-C++/*, English/*}"
-# 2-stderr 重定向到 1-stdout，管传给 tee 输出控制台并且保存到日志文件。
-$ rclone sync -v webdav@rpi4b: /Volumes/WDHD/webdav@rpi4b --exclude "C-C++/" --exclude "English/" 2>&1 | tee ~/Downloads/output/rclone.log
+# 2-stderr 重定向到 1-stdout，管传给 tee 输出控制台并且保存（-a: append）到日志文件。
+$ rclone sync -v webdav@rpi4b: /Volumes/WDHD/webdav@rpi4b --exclude "C-C++/" --exclude "English/" 2>&1 | tee -a ~/.config/rclone/rclone.log
 
 # 补充备份 English 文件夹
-$ rclone sync -v webdav@rpi4b:English /Volumes/WDHD/webdav@rpi4b/English 2>&1 | tee ~/Downloads/output/rclone.log
+$ rclone sync -v webdav@rpi4b:English /Volumes/WDHD/webdav@rpi4b/English 2>&1 | tee -a ~/.config/rclone/rclone.log
 
 # 补充备份 C-C++ 文件夹
-$ rclone sync -v webdav@rpi4b:C-C++ /Volumes/WDHD/webdav@rpi4b/C-C++ 2>&1 | tee ~/Downloads/output/rclone.log
+$ rclone sync -v webdav@rpi4b:C-C++ /Volumes/WDHD/webdav@rpi4b/C-C++ 2>&1 | tee -a ~/.config/rclone/rclone.log
 ```
 
 也可根据实际需求，选择只同步某些子文件夹。
@@ -915,9 +915,30 @@ rclone sync webdav@mbpa1398: webdav@rpi4b:
 
 [Bisync](https://rclone.org/bisync/): On Linux or Mac, consider setting up a crontab entry. `bisync` can safely run in concurrent cron jobs thanks to lock files it maintains.
 
-可以通过 [cron/crontab](https://en.wikipedia.org/wiki/Cron) 配置定时任务，每天自动执行同步。
+可以通过 [cron](https://en.wikipedia.org/wiki/Cron) / [crontab - tables for driving bcron](https://manpages.ubuntu.com/manpages/focal/en/man5/crontab.5.html) 配置定时任务，每天自动执行同步。
 
-在 rpi4b-ubuntu 上首次执行 `crontab -e`，提示选择编辑器，选择 vim 打开编辑：
+参考 [How to Use Cron to Automate Linux Jobs on Ubuntu 20.04](https://www.cherryservers.com/blog/how-to-use-cron-to-automate-linux-jobs-on-ubuntu-20-04) 和 [How do I set up a Cron job? - Ask Ubuntu](https://askubuntu.com/questions/2368/how-do-i-set-up-a-cron-job)。
+
+系统级别的 crontab 配置文件在 /etc/ 目录下（cron*）：
+
+```Shell
+# ls -l /etc/cron*
+$ ls -l /etc | grep cron
+drwxr-xr-x 2 root root       4096 Nov  6  2022 cron.d
+drwxr-xr-x 2 root root       4096 Apr  7 05:00 cron.daily
+drwxr-xr-x 2 root root       4096 Nov  6  2022 cron.hourly
+drwxr-xr-x 2 root root       4096 Nov  6  2022 cron.monthly
+-rw-r--r-- 1 root root       1136 Aug  6  2021 crontab
+drwxr-xr-x 2 root root       4096 Nov  6  2022 cron.weekly
+```
+
+每个用户有一个以用户名命名的 crontab 配置文件，存放在 `/var/spool/cron/crontabs` 目录下。
+
+### crontab -e
+
+用户可执行 `crontab -e` 打开一个类似 `/tmp/crontab.CNG0fm/crontab` 的临时文件，编辑 personal crontab。
+
+在 rpi4b-ubuntu 上首次执行 `crontab -e`（注意不要 sudo），提示选择编辑器，选择 vim 打开编辑：
 
 ```Shell
 $ pifan@rpi4b-ubuntu ~
@@ -934,18 +955,63 @@ Select an editor.  To change later, run 'select-editor'.
 Choose 1-5 [2]: 3
 ```
 
-在 cron table 末尾新增一条任务，每天凌晨 2:30 执行 rclone sync，将 webdav 云盘自动同步到外挂硬盘 /media/WDHD/：
+文档注释中有关于配置项的说明：
+
+```Shell title="crontab -e Cron Syntax"
+# To define the time you can provide concrete values for
+# minute (m), hour (h), day of month (dom), month (mon),
+# and day of week (dow) or use '*' in these fields (for 'any').
+#
+# For more information see the manual pages of crontab(5) and cron(8)
+#
+# m h  dom mon dow   command
+```
+
+在 cron table 末尾新增一条任务，每天凌晨 2:30 和中午 12:00 执行 rclone sync，将 webdav 云盘自动同步到外挂硬盘 /media/WDHD/：
 
 ```Shell title="crontab -e"
-# auto backup at 2:30 a.m every day
-30 2 * * * rclone sync -v webdav-rpi4b: /media/WDHD/webdav@rpi4b >> ~/Downloads/output/rclone.log 2>&1
+# auto backup at 2:30/12:00 a.m every day
+# 30 2 * * * rclone sync -v webdav-rpi4b: /media/WDHD/webdav@rpi4b >> /var/log/rclone.log 2>&1
+30 2 * * * rclone sync -v webdav-rpi4b: /media/WDHD/webdav@rpi4b --log-file=/home/pifan/.config/rclone/rclone.log
+0 12 * * * rclone sync -v webdav-rpi4b: /media/WDHD/webdav@rpi4b --log-file=/home/pifan/.config/rclone/rclone.log
 ```
+
+!!! note "关于运行日志路径"
+
+    建议通过 [--log-file=FILE](https://rclone.org/docs/#log-file-file) 选项为 rclone 指定用户级别的日志路径。
+    如果要使用全局日志路径 /var/log/rclone.log，则需要先 `sudo touch` 再 `sudo chown` 为当前用户组。
 
 输入 `:wq` 保存退出 vim，命令行提示 `crontab: installing new crontab`。
 
+编辑的 personal crontab 将自动追加到 `/var/spool/cron/crontabs/$USER` 文件中。
+
+!!! note "crontab list & remove"
+
+    执行 `crontab -l` 可以查看当前用户的任务列表，或通过 `-u` 选项查看指定用户的任务列表 `crontab -l -u pifan`。
+    执行 `crontab -r` 可以移除当前用户配置的任务列表，或 `crontab -ri` 带 interactive prompt 确认。
+
 执行 `sudo systemctl restart cron.service` 重启定时任务使其生效。
 
-每天早上起来，检查日志文件 rclone.log，确认同步状态。
+### confirm logs
+
+每天早上起来，检查日志文件，确认系统 cron 定时任务和 rclone sysnc 同步任务执行情况。
+
+系统日志 /var/log/syslog 中，应该有类似的条目：
+
+```dmesg
+$ grep -a CRON /var/log/syslog
+Apr  7 02:30:00 rpi4b-ubuntu CRON[62328]: (pifan) CMD (rclone sync -v webdav-rpi4b: /media/WDHD/webdav@rpi4b >> /var/log/rclone.log 2>&1)
+```
+
+也可以开启 cron 独立日志，这样后面可以直接查看 /var/log/cron.log。
+
+!!! note "Use Independent Crontab Logs"
+
+     1. `sudo vim /etc/rsyslog.d/50-default.conf`
+     2. uncomment the line starting with the `cron.*`
+     3. `sudo systemctl restart rsyslog`
+
+确认 cron 定时任务执行后，再检查 rclone 运行日志 /home/pifan/.config/rclone/rclone.log，查看同步情况。
 
 ## Flags & Filtering
 
