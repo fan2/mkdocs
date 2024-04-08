@@ -992,7 +992,7 @@ Choose 1-5 [2]: 3
 
 执行 `sudo systemctl restart cron.service` 重启定时任务使其生效。
 
-### confirm logs
+### check logs
 
 每天早上起来，检查日志文件，确认系统 cron 定时任务和 rclone sysnc 同步任务执行情况。
 
@@ -1000,7 +1000,7 @@ Choose 1-5 [2]: 3
 
 ```dmesg
 $ grep -a CRON /var/log/syslog
-Apr  7 02:30:00 rpi4b-ubuntu CRON[62328]: (pifan) CMD (rclone sync -v webdav-rpi4b: /media/WDHD/webdav@rpi4b >> /var/log/rclone.log 2>&1)
+Apr  7 02:30:00 rpi4b-ubuntu CRON[62328]: (pifan) CMD (rclone sync -v webdav-rpi4b: /media/WDHD/webdav@rpi4b --log-file=/home/pifan/.config/rclone/rclone.log)
 ```
 
 也可以开启 cron 独立日志，这样后面可以直接查看 /var/log/cron.log。
