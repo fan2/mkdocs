@@ -499,3 +499,5 @@ $ sudo ln -s /etc/nginx/sites-available/webdav.conf /etc/nginx/sites-enabled
 [Nginx安装webdav](https://blog.csdn.net/Abin17618/article/details/132580806) - Debian+OMV
 [Ubuntu使用nginx搭建webdav文件服务器的详细过程](https://juejin.cn/post/7290837333926477843)
 [Ubuntu使用nginx搭建webdav文件服务器的详细过程](https://www.cainiao.io/archives/1133)
+
+[Viewing and monitoring log files | Ubuntu](https://ubuntu.com/tutorials/viewing-and-monitoring-log-files)

@@ -967,19 +967,25 @@ Choose 1-5 [2]: 3
 # m h  dom mon dow   command
 ```
 
-在 cron table 末尾新增一条任务，每天凌晨 2:30 和中午 12:00 执行 rclone sync，将 webdav 云盘自动同步到外挂硬盘 /media/WDHD/：
+在 cron table 末尾新增一条任务，每天定点执行 rclone sync，将 webdav 云盘自动同步到外挂硬盘（`/media/WDHD/`）。
 
 ```Shell title="crontab -e"
 # auto backup at 2:30/12:00 a.m every day
 # 30 2 * * * rclone sync -v webdav-rpi4b: /media/WDHD/webdav@rpi4b >> /var/log/rclone.log 2>&1
-30 2 * * * rclone sync -v webdav-rpi4b: /media/WDHD/webdav@rpi4b --log-file=/home/pifan/.config/rclone/rclone.log
-0 12 * * * rclone sync -v webdav-rpi4b: /media/WDHD/webdav@rpi4b --log-file=/home/pifan/.config/rclone/rclone.log
+0 3 * * * rclone sync -v webdav-rpi4b: /media/WDHD/webdav@rpi4b --log-file=/home/pifan/.config/rclone/rclone-`date +\%Y\%m\%d`.log
+0 9 * * * rclone sync -v webdav-rpi4b: /media/WDHD/webdav@rpi4b --log-file=/home/pifan/.config/rclone/rclone-`date +\%Y\%m\%d`.log
+0 12 * * * rclone sync -v webdav-rpi4b: /media/WDHD/webdav@rpi4b --log-file=/home/pifan/.config/rclone/rclone-`date +\%Y\%m\%d`.log
+0 15 * * * rclone sync -v webdav-rpi4b: /media/WDHD/webdav@rpi4b --log-file=/home/pifan/.config/rclone/rclone-`date +\%Y\%m\%d`.log
+0 19 * * * rclone sync -v webdav-rpi4b: /media/WDHD/webdav@rpi4b --log-file=/home/pifan/.config/rclone/rclone-`date +\%Y\%m\%d`.log
+0 22 * * * rclone sync -v webdav-rpi4b: /media/WDHD/webdav@rpi4b --log-file=/home/pifan/.config/rclone/rclone-`date +\%Y\%m\%d`.log
 ```
 
-!!! note "关于运行日志路径"
+!!! note "关于 rclone 运行日志路径"
 
     建议通过 [--log-file=FILE](https://rclone.org/docs/#log-file-file) 选项为 rclone 指定用户级别的日志路径。
-    如果要使用全局日志路径 /var/log/rclone.log，则需要先 `sudo touch` 再 `sudo chown` 为当前用户组。
+    参考 [Sending cron output to a file with a timestamp in its name](https://serverfault.com/questions/117360/sending-cron-output-to-a-file-with-a-timestamp-in-its-name)，日志文件按天命名。
+    如若使用全局日志路径 /var/log/rclone.log，则需先 `sudo touch` 再 `sudo chown` 为当前用户组。
+    macOS 下的 rclone 运行日志可以考虑放到 /usr/local/var/log 目录下。
 
 输入 `:wq` 保存退出 vim，命令行提示 `crontab: installing new crontab`。
 
@@ -1011,7 +1017,7 @@ Apr  7 02:30:00 rpi4b-ubuntu CRON[62328]: (pifan) CMD (rclone sync -v webdav-rpi
      2. uncomment the line starting with the `cron.*`
      3. `sudo systemctl restart rsyslog`
 
-确认 cron 定时任务执行后，再检查 rclone 运行日志 /home/pifan/.config/rclone/rclone.log，查看同步情况。
+确认 cron 定时任务执行后，再检查 rclone 当天的运行日志 rclone-`date +\%Y\%m\%d`.log，查看同步情况。
 
 ## Flags & Filtering
 
