@@ -915,7 +915,7 @@ rclone sync webdav@mbpa1398: webdav@rpi4b:
 
 [Bisync](https://rclone.org/bisync/): On Linux or Mac, consider setting up a crontab entry. `bisync` can safely run in concurrent cron jobs thanks to lock files it maintains.
 
-可以通过 [cron](https://en.wikipedia.org/wiki/Cron) / [crontab - tables for driving bcron](https://manpages.ubuntu.com/manpages/focal/en/man5/crontab.5.html) 配置定时任务，每天自动执行同步。
+可以通过 [cron](https://en.wikipedia.org/wiki/Cron) / [crontab - tables for driving bcron](https://manpages.ubuntu.com/manpages/noble/en/man5/crontab.5.html) 配置定时任务，每天自动执行同步。
 
 参考 [How to Use Cron to Automate Linux Jobs on Ubuntu 20.04](https://www.cherryservers.com/blog/how-to-use-cron-to-automate-linux-jobs-on-ubuntu-20-04) 和 [How do I set up a Cron job? - Ask Ubuntu](https://askubuntu.com/questions/2368/how-do-i-set-up-a-cron-job)。
 
@@ -967,17 +967,56 @@ Choose 1-5 [2]: 3
 # m h  dom mon dow   command
 ```
 
+??? note "man 5 crontab"
+
+    ```Shell
+    Instead of the first five fields, one of eight special strings may appear:
+
+        string         meaning
+        ------         -------
+        @reboot        Run once, at startup.
+        @yearly        Run once a year, "0 0 1 1 *".
+        @annually      (same as @yearly)
+        @monthly       Run once a month, "0 0 1 * *".
+        @weekly        Run once a week, "0 0 * * 0".
+        @daily         Run once a day, "0 0 * * *".
+        @midnight      (same as @daily)
+        @hourly        Run once an hour, "0 * * * *".
+
+    `8-11` for an hours entry specifies execution at hours 8, 9, 10 and 11.
+
+    A list is a set of numbers (or ranges) separated by commas. Examples: `1,2,5,9`, `0-4,8-12`.
+
+    `0-23/2` can be used in the hours field to specify command execution every other hour
+
+    if you want to say ``every two hours'', just use `*/2`.
+
+    EXAMPLE CRON FILE
+           # run five minutes after midnight, every day
+           5 0 * * *       $HOME/bin/daily.job >> $HOME/tmp/out 2>&1
+           # run at 2:15pm on the first of every month — output mailed to paul
+           15 14 1 * *     $HOME/bin/monthly
+           # run at 10 pm on weekdays, annoy Joe
+           0 22 * * 1-5    mail -s "It's 10pm" joe%Joe,%%Where are your kids?%
+           23 0-23/2 * * * echo "run 23 minutes after midn, 2am, 4am ..., everyday"
+           5 4 * * sun     echo "run at 5 after 4 every Sunday"
+           0 */4 1 * mon   echo "run every 4th hour on the 1st and on every Monday"
+           0 0 */2 * sun   echo "run at midn on every Sunday that's an uneven date"
+           # Run on every second Saturday of the month
+           0 4 8-14 * *    test $(date +\%u) -eq 6 && echo "2nd Saturday"
+
+           # Execute a program and run a notification every day at 10:00 am
+           0 10 * * *  $HOME/bin/program | DISPLAY=:0 notify-send "Program run" "$(cat)"
+    ```
+
 在 cron table 末尾新增一条任务，每天定点执行 rclone sync，将 webdav 云盘自动同步到外挂硬盘（`/media/WDHD/`）。
 
 ```Shell title="crontab -e"
-# auto backup at 2:30/12:00 a.m every day
-# 30 2 * * * rclone sync -v webdav-rpi4b: /media/WDHD/webdav@rpi4b >> /var/log/rclone.log 2>&1
-0 3 * * * rclone sync -v webdav-rpi4b: /media/WDHD/webdav@rpi4b --log-file=/home/pifan/.config/rclone/rclone-`date +\%Y\%m\%d`.log
-0 9 * * * rclone sync -v webdav-rpi4b: /media/WDHD/webdav@rpi4b --log-file=/home/pifan/.config/rclone/rclone-`date +\%Y\%m\%d`.log
-0 12 * * * rclone sync -v webdav-rpi4b: /media/WDHD/webdav@rpi4b --log-file=/home/pifan/.config/rclone/rclone-`date +\%Y\%m\%d`.log
-0 15 * * * rclone sync -v webdav-rpi4b: /media/WDHD/webdav@rpi4b --log-file=/home/pifan/.config/rclone/rclone-`date +\%Y\%m\%d`.log
-0 19 * * * rclone sync -v webdav-rpi4b: /media/WDHD/webdav@rpi4b --log-file=/home/pifan/.config/rclone/rclone-`date +\%Y\%m\%d`.log
-0 22 * * * rclone sync -v webdav-rpi4b: /media/WDHD/webdav@rpi4b --log-file=/home/pifan/.config/rclone/rclone-`date +\%Y\%m\%d`.log
+# auto backup every two hours(0,2,4,6,8,10,12,14,16,18,20,22)
+# 0 */2 * * * rclone sync -v webdav-rpi4b: /media/WDHD/webdav@rpi4b >> /var/log/rclone.log 2>&1
+0 */2 * * * rclone sync -v webdav-rpi4b: /media/WDHD/webdav@rpi4b --log-file=/home/pifan/.config/rclone/rclone-`date +\%Y\%m\%d`.log
+# 白天每隔两小时（5,7,9,11,13,15,17,19,21,23）备份一下特定文件，并按时辰命名。
+0 5-23/2 * * * rclone copyto -v webdav-rpi4b:English/恋词考研英语-全真题源报刊7000词/恋词考研英语-全真题源报刊7000词-索引红版.pdf /media/WDHD/backups/English/恋词考研英语-全真题源报刊7000词-索引红版-`date +\%Y\%m\%d\%H`.pdf --log-file=/home/pifan/.config/rclone/rclone-`date +\%Y\%m\%d`.log
 ```
 
 !!! note "关于 rclone 运行日志路径"
