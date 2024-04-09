@@ -31,7 +31,7 @@ Rclone mounts any local, cloud or virtual filesystem as a disk on Windows, macOS
 
 Rclone is mature, open-source software originally inspired by rsync and written in [Go](https://golang.org/).
 
-## rclone install
+## install
 
 macOS 下使用包管理器 `brew` 搜索安装 rclone；ubuntu 下使用包管理器 `apt` 搜索安装 rclone。
 
@@ -75,7 +75,7 @@ macOS 下使用包管理器 `brew` 搜索安装 rclone；ubuntu 下使用包管�
 
 执行 `rclone config paths`、`rclone config show` 查看配置信息。
 
-## rclone docs
+## docs
 
 [Overview of cloud storage systems](https://rclone.org/overview/#optional-features)
 
@@ -90,13 +90,13 @@ macOS 下使用包管理器 `brew` 搜索安装 rclone；ubuntu 下使用包管�
 
 [Remote Control / API](https://rclone.org/rc/) - [GUI](https://rclone.org/gui/)
 
-[Usage](https://rclone.org/docs/)
+[Usage](https://rclone.org/docs/): [Filtering](https://rclone.org/filtering/), [Flags](https://rclone.org/flags/)
 
-## rclone config
+## config
 
 在命令行输入 `rclone config` 进入交互式配置会话。
 
-### rclone config webdav
+### config webdav
 
 以下使用 `rclone config` 交互式配置 webDAV 服务，其中高亮行是交互输入。
 
@@ -318,7 +318,7 @@ macOS 下使用包管理器 `brew` 搜索安装 rclone；ubuntu 下使用包管�
 
 如果中途不小心输错或后续想更改配置，可输入 `rclone config edit` 选择编辑已有的配置。
 
-### rclone config show
+### config show
 
 rclone config 配置完成后，可调用相关命令 dump/show 相关配置信息：
 
@@ -472,6 +472,12 @@ $ rclone tree --max-depth 1 webdav@rpi4b:
 0 directories, 0 files
 ```
 
+关于过滤，参考 [Filtering](https://rclone.org/filtering/) 选项参数。
+
+- [Include-from intersection of patterns](https://forum.rclone.org/t/include-from-intersection-of-patterns/13455)
+- [How to specify what folders to sync and what to exclude -- include, exclude, filter?](https://forum.rclone.org/t/how-to-specify-what-folders-to-sync-and-what-to-exclude-include-exclude-filter/21821)
+- [Rclone copy using regex expression using include multiple expression for file name](https://forum.rclone.org/t/rclone-copy-using-regex-expression-using-include-multiple-expression-for-file-name/26846?page=2)
+
 `lsjson` 命令以 json 格式列举目录：
 
 ```Shell
@@ -549,6 +555,11 @@ $ rclone copy test.txt webdav@rpi4b:rcdir
 
 $ rclone lsf webdav@rpi4b:rcdir
 test.txt
+```
+
+```Shell
+# 仅拷贝 srcpath 中 5s 之内有变动的文件
+$ rclone copy -v ~/Downloads/testdir webdav@mbpa2991:testdir --max-age 5
 ```
 
 **注意**：如果使用 copyto 命令，会将 rcdir 视作文件：
@@ -847,7 +858,13 @@ Note that files in the destination won't be deleted if there were any errors at 
 rclone sync /usr/local/var/webdav/ webdav@rpi4b:
 ```
 
-例2：将 ubuntu WebDAV 云盘 webdav\@rpi4b（除 C-C++/ 和 English/ 目录外）同步备份到外挂硬盘（/Volumes/WDHD/）下的文件夹 webdav@rpi4b：
+例2：仅同步 srcpath 中 1h 之内有变动的文件：
+
+```Shell
+rclone sync -v ~/Downloads/testdir webdav@mbpa2991:testdir --max-age 1h
+```
+
+例3：将 ubuntu WebDAV 云盘 webdav\@rpi4b（除 C-C++/ 和 English/ 目录外）同步备份到外挂硬盘（/Volumes/WDHD/）下的文件夹 webdav@rpi4b：
 
 ```Shell
 # --exclude "{C-C++/*, English/*}"
@@ -1011,12 +1028,24 @@ Choose 1-5 [2]: 3
 
 在 cron table 末尾新增一条任务，每天定点执行 rclone sync，将 webdav 云盘自动同步到外挂硬盘（`/media/WDHD/`）。
 
-```Shell title="crontab -e"
+```Shell title="crontab -e hourly"
 # auto backup every two hours(0,2,4,6,8,10,12,14,16,18,20,22)
 # 0 */2 * * * rclone sync -v webdav-rpi4b: /media/WDHD/webdav@rpi4b >> /var/log/rclone.log 2>&1
 0 */2 * * * rclone sync -v webdav-rpi4b: /media/WDHD/webdav@rpi4b --log-file=/home/pifan/.config/rclone/rclone-`date +\%Y\%m\%d`.log
-# 白天每隔两小时（5,7,9,11,13,15,17,19,21,23）备份一下特定文件，并按时辰命名。
-0 5-23/2 * * * rclone copyto -v webdav-rpi4b:English/恋词考研英语-全真题源报刊7000词/恋词考研英语-全真题源报刊7000词-索引红版.pdf /media/WDHD/backups/English/恋词考研英语-全真题源报刊7000词-索引红版-`date +\%Y\%m\%d\%H`.pdf --log-file=/home/pifan/.config/rclone/rclone-`date +\%Y\%m\%d`.log
+```
+
+如果后续文件改动不是那么频繁，可以改为每天同步一次，日志文件按月命名。
+
+```Shell title="crontab -e daily"
+# 每天凌晨1点同步备份
+0 1 * * * rclone sync -v webdav-rpi4b: /media/WDHD/webdav@rpi4b --log-file=/home/pifan/.config/rclone/rclone-`date +\%Y\%m`.log
+```
+
+以下为 macOS 下配置 crontab 任务，白天每隔两小时备份一下特定文件，并按时辰命名。
+
+```Shell
+# every two hour: 5,7,9,11,13,15,17,19,21,23
+0 5-23/2 * * * rclone copyto -v /Users/faner/Documents/English/LINKIN-WORDS-7000/恋词考研英语-全真题源报刊7000词-索引红版.pdf smbhd@rpi4b:WDHD/backups/English/恋词考研英语-全真题源报刊7000词-索引红版-`date +\%Y\%m\%d\%H`.pdf --log-file=/Users/faner/.config/rclone/rclone-`date +\%Y\%m`.log
 ```
 
 !!! note "关于 rclone 运行日志路径"
@@ -1058,14 +1087,6 @@ Apr  7 02:30:00 rpi4b-ubuntu CRON[62328]: (pifan) CMD (rclone sync -v webdav-rpi
 
 确认 cron 定时任务执行后，再检查 rclone 当天的运行日志 rclone-`date +\%Y\%m\%d`.log，查看同步情况。
 
-## Flags & Filtering
-
-[Global Flags](https://rclone.org/flags/), [Rclone Filtering](https://rclone.org/filtering/)
-
-- [Include-from intersection of patterns](https://forum.rclone.org/t/include-from-intersection-of-patterns/13455)
-- [How to specify what folders to sync and what to exclude -- include, exclude, filter?](https://forum.rclone.org/t/how-to-specify-what-folders-to-sync-and-what-to-exclude-include-exclude-filter/21821)
-- [Rclone copy using regex expression using include multiple expression for file name](https://forum.rclone.org/t/rclone-copy-using-regex-expression-using-include-multiple-expression-for-file-name/26846?page=2)
-
 ## refs
 
 [rclone mount](https://rclone.org/commands/rclone_mount/)
@@ -1075,4 +1096,8 @@ Apr  7 02:30:00 rpi4b-ubuntu CRON[62328]: (pifan) CMD (rclone sync -v webdav-rpi
 
 [备份同步神器 Rclone 使用教程](https://cloud.tencent.com/developer/article/2192254)
 
+[rclone 选项参数 --min-age/--max-age 的理解](https://blog.csdn.net/neowell/article/details/134009677)
+
 [macOS系统下自动挂载rclone远程存储：实现开机启动项](https://kpfd.com/macos%E7%B3%BB%E7%BB%9F%E4%B8%8B%E8%87%AA%E5%8A%A8%E6%8C%82%E8%BD%BDrclone%E8%BF%9C%E7%A8%8B%E5%AD%98%E5%82%A8%E5%AE%9E%E7%8E%B0%E5%BC%80%E6%9C%BA%E5%90%AF%E5%8A%A8%E9%A1%B9)
+
+[How to run your script on a schedule using crontab on macOS: A step-by-step guide](https://medium.com/@justin_ng/how-to-run-your-script-on-a-schedule-using-crontab-on-macos-a-step-by-step-guide-a7ba539acf76)
