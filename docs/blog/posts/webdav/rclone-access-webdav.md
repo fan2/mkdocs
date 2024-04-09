@@ -1026,6 +1026,14 @@ Choose 1-5 [2]: 3
            0 10 * * *  $HOME/bin/program | DISPLAY=:0 notify-send "Program run" "$(cat)"
     ```
 
+执行 `crontab -e` 在末尾新增一条测试任务，每分钟执行 echo 写入文件 time.txt。
+
+```Shell title="crontab -e test"
+*/1 * * * * echo "echo from crontab" >> /home/pifan/Downloads/time.txt
+```
+
+整点分钟，观察 time.txt 是否有追加内容，以验证 cron 任务正常执行。
+
 在 cron table 末尾新增一条任务，每天定点执行 rclone sync，将 webdav 云盘自动同步到外挂硬盘（`/media/WDHD/`）。
 
 ```Shell title="crontab -e hourly"
@@ -1039,13 +1047,6 @@ Choose 1-5 [2]: 3
 ```Shell title="crontab -e daily"
 # 每天凌晨1点同步备份
 0 1 * * * rclone sync -v webdav-rpi4b: /media/WDHD/webdav@rpi4b --log-file=/home/pifan/.config/rclone/rclone-`date +\%Y\%m`.log
-```
-
-以下为 macOS 下配置 crontab 任务，白天每隔两小时备份一下特定文件，并按时辰命名。
-
-```Shell
-# every two hour: 5,7,9,11,13,15,17,19,21,23
-0 5-23/2 * * * rclone copyto -v /Users/faner/Documents/English/LINKIN-WORDS-7000/恋词考研英语-全真题源报刊7000词-索引红版.pdf smbhd@rpi4b:WDHD/backups/English/恋词考研英语-全真题源报刊7000词-索引红版-`date +\%Y\%m\%d\%H`.pdf --log-file=/Users/faner/.config/rclone/rclone-`date +\%Y\%m`.log
 ```
 
 !!! note "关于 rclone 运行日志路径"
@@ -1087,6 +1088,162 @@ Apr  7 02:30:00 rpi4b-ubuntu CRON[62328]: (pifan) CMD (rclone sync -v webdav-rpi
 
 确认 cron 定时任务执行后，再检查 rclone 当天的运行日志 rclone-`date +\%Y\%m\%d`.log，查看同步情况。
 
+### macOS
+
+执行 `crontab -e` 在末尾新增一条测试任务，每分钟执行 date 写入文件 time.txt。
+
+```Shell title="crontab -e test"
+*/1 * * * * date >> /Users/faner/Downloads/time.txt
+```
+
+整点分钟，观察 time.txt 是否有追加内容，以验证 cron 任务正常执行。
+
+如果之前未在 macOS 上配置过 cron，大概率会失败，按照以下步骤配置。
+
+!!! note "macOS 下的 cron"
+
+    macOS 下的 cron 是系统启动服务（LaunchDaemons），每次执行 `crontab -e` 编辑保存，都提示需要授权终端管理员权限！
+
+首先从 launchctl list 中查找 cron 服务：
+
+```Shell
+$ sudo launchctl list | grep 'cron'
+86386	0	com.vix.cron
+```
+
+其中第一列是服务进程ID（pid）；第二列是服务状态，0代表正常；第三列是服务plist名。
+
+尝试执行 `locate com.vix.cron` 全局查找 cron 服务的配置文件位置：
+
+```Shell
+$ locate com.vix.cron
+
+WARNING: The locate database (/var/db/locate.database) does not exist.
+To create the database, run the following command:
+
+  sudo launchctl load -w /System/Library/LaunchDaemons/com.apple.locate.plist
+
+Please be aware that the database can take some time to generate; once
+the database has been created, this message will no longer appear.
+```
+
+按照提示执行加载 `com.apple.locate` 服务，创建一个database：
+
+```Shell
+$ sudo launchctl load -w /System/Library/LaunchDaemons/com.apple.locate.plist
+```
+
+然后，再次执行 `locate com.vix.cron` 查找到 cron 服务的配置文件位置：
+
+```Shell
+$ locate com.vix.cron
+/System/Library/LaunchDaemons/com.vix.cron.plist
+```
+
+执行 cat 或 vim 查看该配置文件，发现其 PathState 中的 `/etc/crontab` 配置文件默认不存在。
+
+??? info "com.vix.cron.plist"
+
+    ```xml
+     <?xml version="1.0" encoding="UTF-8"?>
+     <!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN"
+     	"http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+     <plist version="1.0">
+     <dict>
+     	<key>Label</key>
+     	<string>com.vix.cron</string>
+     	<key>ProgramArguments</key>
+     	<array>
+     		<string>/usr/sbin/cron</string>
+     	</array>
+     	<key>KeepAlive</key>
+     	<dict>
+     		<key>PathState</key>
+     		<dict>
+     			<key>/etc/crontab</key>
+     			<true/>
+     		</dict>
+     	</dict>
+     	<key>QueueDirectories</key>
+     	<array>
+     		<string>/usr/lib/cron/tabs</string>
+     	</array>
+     	<key>EnableTransactions</key>
+     	<true/>
+     </dict>
+     </plist>
+    ```
+
+执行 `sudo vim /etc/crontab` 创建 `/etc/crontab` 文件，参考 ubuntu 填入以下模版内容：
+
+```Shell title="/etc/crontab"
+SHELL=/bin/bash
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+MAILTO=root
+
+# For details see man 4 crontabs
+
+# Example of job definition:
+# .---------------- minute (0 - 59)
+# |  .------------- hour (0 - 23)
+# |  |  .---------- day of month (1 - 31)
+# |  |  |  .------- month (1 - 12) OR jan,feb,mar,apr ...
+# |  |  |  |  .---- day of week (0 - 6) (Sunday=0 or 7) OR sun,mon,tue,wed,thu,fri,sat
+# |  |  |  |  |
+# *  *  *  *  * user-name  command to be executed
+
+```
+
+执行完以上配置，再观察检查 time.txt。如果还没有内容，可能是该测试命令涉及到写磁盘文件，需要给 cron 授权。
+
+!!! note "授权 cron 写磁盘权限"
+
+     1. 执行 `which cron` 查找到 cron 命令的位置：/usr/sbin/cron。
+     2. 打开 macOS 设置(System Settings)，隐私与安全性(Privacy & Security)，点进完全磁盘访问权限(Full Disk Access)。
+     3. 点按左下角的 + 号，在打开的访达窗口按 ++shift+command+g++ 调出路径访问方式，输入 `/usr/sbin/cron` 回车，找到 cron 命令添加。
+
+正常情况下，到这一步，time.txt 中应该可以看到，每分钟追加写入了一行当前日期时间。
+
+接下来配置 crontab 定时任务，白天每隔两小时备份一下特定文件，并按时辰命名。
+
+```Shell
+# every two hour: 5,7,9,11,13,15,17,19,21,23
+0 5-23/2 * * * rclone copyto -v /Users/faner/Documents/English/LINKIN-WORDS-7000/恋词考研英语-全真题源报刊7000词-索引红版.pdf smbhd@rpi4b:WDHD/backups/English/恋词考研英语-全真题源报刊7000词-索引红版-`date +\%Y\%m\%d\%H`.pdf --log-file=/Users/faner/.config/rclone/rclone-`date +\%Y\%m`.log
+```
+
+先把调度时间改为每分钟，看看是否正常运行：
+
+```Shell
+*/1 * * * * rclone copyto -v /Users/faner/Documents/English/LINKIN-WORDS-7000/恋词考研英语-全真题源报刊7000词-索引红版.pdf smbhd@rpi4b:WDHD/backups/English/恋词考研英语-全真题源报刊7000词-索引红版-`date +\%Y\%m\%d\%H\%M`.pdf --log-file=/Users/faner/.config/rclone/rclone-`date +\%Y\%m`.log
+```
+
+等了几分钟，查看 rclone 日志文件没有相应运行日志，在 dstpath 中也没有看到预期同步的文件。
+
+cron 执行出错时默认会通过 MTA 服务给系统管理员发邮件，执行 `vim /var/mail/$USER` 检查当前用户的邮箱。
+
+果然，其中提示找不到 rclone 命令：
+
+```Shell
+/bin/sh: rclone: command not found
+```
+
+执行 `which rclone`，显示 brew 安装的 rclone 路径为 `/usr/local/bin/rclone`。
+
+可能系统服务启动的 shell 环境的 PATH 中并没有 /usr/local/bin。
+
+将 rclone 命令改为绝对路径 `/usr/local/bin/rclone`：
+
+```Shell
+*/1 * * * * /usr/local/bin/rclone copyto -v /Users/faner/Documents/English/LINKIN-WORDS-7000/恋词考研英语-全真题源报刊7000词-索引红版.pdf smbhd@rpi4b:WDHD/backups/English/恋词考研英语-全真题源报刊7000词-索引红版-`date +\%Y\%m\%d\%H\%M`.pdf --log-file=/Users/faner/.config/rclone/rclone-`date +\%Y\%m`.log
+```
+
+!!! note ""
+
+    由于以上命令是 rclone copyto remote（upload），读本地写远端，所以不涉及本地写磁盘权限问题。
+    如果是 rclone copyto local（download），可能涉及写磁盘权限问题，按照上面的步骤开启授权即可。
+
+验证任务生效后，将调度时间修改为预期的同步频率，后续核对日志校验定时备份任务执行情况。
+
 ## refs
 
 [rclone mount](https://rclone.org/commands/rclone_mount/)
@@ -1101,3 +1258,5 @@ Apr  7 02:30:00 rpi4b-ubuntu CRON[62328]: (pifan) CMD (rclone sync -v webdav-rpi
 [macOS系统下自动挂载rclone远程存储：实现开机启动项](https://kpfd.com/macos%E7%B3%BB%E7%BB%9F%E4%B8%8B%E8%87%AA%E5%8A%A8%E6%8C%82%E8%BD%BDrclone%E8%BF%9C%E7%A8%8B%E5%AD%98%E5%82%A8%E5%AE%9E%E7%8E%B0%E5%BC%80%E6%9C%BA%E5%90%AF%E5%8A%A8%E9%A1%B9)
 
 [How to run your script on a schedule using crontab on macOS: A step-by-step guide](https://medium.com/@justin_ng/how-to-run-your-script-on-a-schedule-using-crontab-on-macos-a-step-by-step-guide-a7ba539acf76)
+[记录一次macOS上crontab未成功执行问题的排查过程！](https://blog.humh.cn/?p=947)
+[macOS 电脑—设置 crontab](https://zhuanlan.zhihu.com/p/564215492)
