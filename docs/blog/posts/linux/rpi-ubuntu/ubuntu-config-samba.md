@@ -287,7 +287,19 @@ smb://rpi4b-ubuntu.local/WDHD
 
 WD 硬盘的 sda3 分区是普通分区，挂载后局域网通过 smb 协议访问可直接读写。
 
-sda2 分区之前为 macOS 备份分区，将该分区挂载为 `/media/WDTM`：
+sda2 分区之前为 macOS 备份分区，每次想要备份，都要插拔磁盘。
+
+这里将其挂载到树莓派，配置 samba 共享为局域网无线备份。
+
+!!! danger "直插备份盘迁移为samba无线备份的风险预警"
+
+    直插备份盘改为局域网外挂磁盘配置samba共享无线备份，可能会破坏之前备份盘的元数据，导致无法识别旧的备份数据（Backups.backupdb）。
+    参考 [Time Machine Notes](https://gist.github.com/martian111/e0d9885004eb56fd6abf3d1ba7671737) 中提供的 Migration from External HDD to Samba 方案，做好数据迁移的前置工作。
+    生命不止，折腾不息。硬盘有价，数据无价。“季文子三思而后行”，老子曰“知止不殆，可以长久”。
+    ---
+    此框大约浓缩了博主数年累积 1T 的血与泪 😱
+
+先创建挂载点，将该分区挂载为 `/media/WDTM`：
 
 ```Shell
 # 1. 创建挂载点目录
@@ -393,7 +405,7 @@ dr-xr-xr-x  1 faner  staff   16384 Sep  9  2017 _HF2VN~W
 
 ![select-WDTM](../images/2-tm-select-WDTM.png)
 
-点击加密（Encrypt Backup）开关关闭加密，Disk Usage Limit 默认最大：
+设置 Encrypt Backup 加密密码，Disk Usage Limit 默认最大：
 
 ![config-WDTM](../images/3-tm-config-WDTM.png)
 

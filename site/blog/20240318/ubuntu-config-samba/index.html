@@ -1311,7 +1311,7 @@
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7h1.5Z"/></svg>
                           <span class="md-ellipsis">
                             
-                              需要 6 分钟阅读时间
+                              需要 7 分钟阅读时间
                             
                           </span>
                         </div>
@@ -1555,7 +1555,17 @@
 </span></code></pre></div>
 <h2 id="config_samba_for_wdtm">config samba for WDTM<a class="headerlink" href="#config_samba_for_wdtm" title="Permanent link">#</a></h2>
 <p>WD 硬盘的 sda3 分区是普通分区，挂载后局域网通过 smb 协议访问可直接读写。</p>
-<p>sda2 分区之前为 macOS 备份分区，将该分区挂载为 <code>/media/WDTM</code>：</p>
+<p>sda2 分区之前为 macOS 备份分区，每次想要备份，都要插拔磁盘。</p>
+<p>这里将其挂载到树莓派，配置 samba 共享为局域网无线备份。</p>
+<div class="admonition danger">
+<p class="admonition-title">直插备份盘迁移为samba无线备份的风险预警</p>
+<p>直插备份盘改为局域网外挂磁盘配置samba共享无线备份，可能会破坏之前备份盘的元数据，导致无法识别旧的备份数据（Backups.backupdb）。<br />
+参考 <a href="https://gist.github.com/martian111/e0d9885004eb56fd6abf3d1ba7671737">Time Machine Notes</a> 中提供的 Migration from External HDD to Samba 方案，做好数据迁移的前置工作。<br />
+生命不止，折腾不息。硬盘有价，数据无价。“季文子三思而后行”，老子曰“知止不殆，可以长久”。</p>
+<hr />
+<p>此框大约浓缩了博主数年累积 1T 的血与泪 😱</p>
+</div>
+<p>先创建挂载点，将该分区挂载为 <code>/media/WDTM</code>：</p>
 <div class="language-Shell highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="c1"># 1. 创建挂载点目录</span>
 </span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>$<span class="w"> </span>sudo<span class="w"> </span>mkdir<span class="w"> </span>/media/WDTM
 </span><span id="__span-21-3"><a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a>
@@ -1642,7 +1652,7 @@
 <p><img alt="Add_Backup_Disk" src="../../linux/images/1-tm-Add_Backup_Disk.png" /></p>
 <p>点击弹出的 <code>WDTM on RPI4B-UBUNTU.local</code>：</p>
 <p><img alt="select-WDTM" src="../../linux/images/2-tm-select-WDTM.png" /></p>
-<p>点击加密（Encrypt Backup）开关关闭加密，Disk Usage Limit 默认最大：</p>
+<p>设置 Encrypt Backup 加密密码，Disk Usage Limit 默认最大：</p>
 <p><img alt="config-WDTM" src="../../linux/images/3-tm-config-WDTM.png" /></p>
 <p>确认点击 Done 后，Time Machine 面板出现新添加的备份网盘 WDTM - RPI4B-UBUNTU.local：</p>
 <p><img alt="TimeMachine-Panel" src="../../linux/images/4-tm-TimeMachine-Panel.png" /></p>

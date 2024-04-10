@@ -1,11 +1,13 @@
 ---
-title: 使用rclone访问操作WebDav云盘
+title: 使用rclone访问操作WebDav云盘并配置crontab定时自动同步
 authors:
   - xman
 date:
     created: 2024-03-18T15:30:00
+    updated: 2024-04-09T10:00:00
 categories:
     - macOS
+    - ubuntu
     - webDAV
 tags:
     - webDAV
@@ -16,6 +18,8 @@ comments: true
 在 [使用命令行挂载操作WebDav云盘](./cmd-mount-webdav.md) 中梳理了 macOS/Linux 下调用 mount 命令挂载 WebDAV 云盘到本地的基本操作，并且示例了如何使用 curl 命令行访问操作 WebDAV 云盘。
 
 本文让我们来看一看如何使用强大的 [rclone](https://rclone.org/) 命令行工具配置挂载 WebDAV 云盘，并对标 curl 梳理 rclone 访问操控 webDAV 云盘的常用命令。
+
+最后，在 macOS/ubuntu 下使用 cron 配置定时任务（crontab），实现本地与云盘之间同步备份自动化。
 
 <!-- more -->
 
@@ -317,6 +321,8 @@ macOS 下使用包管理器 `brew` 搜索安装 rclone；ubuntu 下使用包管�
 - 43 / SMB / CIFS \\ (smb)
 
 如果中途不小心输错或后续想更改配置，可输入 `rclone config edit` 选择编辑已有的配置。
+
+> ⚠️：在 ubuntu 中，remote name 中不能包含 @ 符号，可改为 - 替代：webdav-rpi4b。
 
 ### config show
 
@@ -936,7 +942,7 @@ rclone sync webdav@mbpa1398: webdav@rpi4b:
 
 参考 [How to Use Cron to Automate Linux Jobs on Ubuntu 20.04](https://www.cherryservers.com/blog/how-to-use-cron-to-automate-linux-jobs-on-ubuntu-20-04) 和 [How do I set up a Cron job? - Ask Ubuntu](https://askubuntu.com/questions/2368/how-do-i-set-up-a-cron-job)。
 
-系统级别的 crontab 配置文件在 /etc/ 目录下（cron*）：
+ubuntu 系统级别的 crontab 配置文件在 /etc/ 目录下（cron*）：
 
 ```Shell
 # ls -l /etc/cron*
@@ -951,7 +957,23 @@ drwxr-xr-x 2 root root       4096 Nov  6  2022 cron.weekly
 
 每个用户有一个以用户名命名的 crontab 配置文件，存放在 `/var/spool/cron/crontabs` 目录下。
 
-### crontab -e
+macOS 下执行 `man cron`，FILES 显示 Directory for personal crontab files 为 `/usr/lib/cron/tabs`。
+
+```Shell
+$ sudo ls -l /usr/lib/cron/
+total 0
+-rw-r--r--  1 root    wheel   0 Mar 30 15:19 at.deny
+-rw-r--r--  1 root    wheel   6 Mar 30 15:19 cron.deny
+drwxr-xr-x  2 daemon  wheel  64 Mar 30 15:19 jobs
+drwxr-xr-x  2 daemon  wheel  64 Mar 30 15:19 spool
+drwx------  3 root    wheel  96 Mar 30 15:19 tabs
+drwx------  2 root    wheel  64 Mar 30 15:19 tmp
+
+$ sudo ls -l /usr/lib/cron/tabs
+
+```
+
+### ubuntu
 
 用户可执行 `crontab -e` 打开一个类似 `/tmp/crontab.CNG0fm/crontab` 的临时文件，编辑 personal crontab。
 
@@ -1067,34 +1089,26 @@ Choose 1-5 [2]: 3
 
 执行 `sudo systemctl restart cron.service` 重启定时任务使其生效。
 
-### check logs
-
-每天早上起来，检查日志文件，确认系统 cron 定时任务和 rclone sysnc 同步任务执行情况。
-
-系统日志 /var/log/syslog 中，应该有类似的条目：
-
-```dmesg
-$ grep -a CRON /var/log/syslog
-Apr  7 02:30:00 rpi4b-ubuntu CRON[62328]: (pifan) CMD (rclone sync -v webdav-rpi4b: /media/WDHD/webdav@rpi4b --log-file=/home/pifan/.config/rclone/rclone.log)
-```
-
-也可以开启 cron 独立日志，这样后面可以直接查看 /var/log/cron.log。
-
-!!! note "Use Independent Crontab Logs"
-
-     1. `sudo vim /etc/rsyslog.d/50-default.conf`
-     2. uncomment the line starting with the `cron.*`
-     3. `sudo systemctl restart rsyslog`
-
-确认 cron 定时任务执行后，再检查 rclone 当天的运行日志 rclone-`date +\%Y\%m\%d`.log，查看同步情况。
-
 ### macOS
 
-执行 `crontab -e` 在末尾新增一条测试任务，每分钟执行 date 写入文件 time.txt。
+在 macOS 上首次执行 `crontab -e`，将临时打开一个空文件。
+在末尾新增一条测试任务，每分钟执行 date 写入文件 time.txt。
 
 ```Shell title="crontab -e test"
 */1 * * * * date >> /Users/faner/Downloads/time.txt
 ```
+
+保存退回到终端，命令行显示以下内容：
+
+```Shell
+$ crontab -e
+crontab: no crontab for faner - using an empty one
+crontab: installing new crontab
+```
+
+执行 `crontab -l` 可以查看配置内容。
+
+> personal crontab 目录下会多出一个以当前用户名（$USER）命名的配置文件，如 /usr/lib/cron/tabs/faner。
 
 整点分钟，观察 time.txt 是否有追加内容，以验证 cron 任务正常执行。
 
@@ -1191,13 +1205,26 @@ MAILTO=root
 # |  |  |  |  .---- day of week (0 - 6) (Sunday=0 or 7) OR sun,mon,tue,wed,thu,fri,sat
 # |  |  |  |  |
 # *  *  *  *  * user-name  command to be executed
-
 ```
+
+!!! note "macOS 重启 cron 服务"
+
+    1. cron 服务开启、关闭、重启：
+
+        - sudo /usr/sbin/cron start
+        - sudo /usr/sbin/cron stop
+        - sudo /usr/sbin/cron restart
+
+    2. 如果修改了配置文件，执行 launchctl load 命令（可添加 -w 选项）：
+
+        - sudo launchctl load /System/Library/LaunchDaemons/com.vix.cron.plist
+        - sudo launchctl unload /System/Library/LaunchDaemons/com.vix.cron.plist
 
 执行完以上配置，再观察检查 time.txt。如果还没有内容，可能是该测试命令涉及到写磁盘文件，需要给 cron 授权。
 
 !!! note "授权 cron 写磁盘权限"
 
+     [How to Fix Cron Permission Issues in macOS](https://osxdaily.com/2020/04/27/fix-cron-permissions-macos-full-disk-access/)
      1. 执行 `which cron` 查找到 cron 命令的位置：/usr/sbin/cron。
      2. 打开 macOS 设置(System Settings)，隐私与安全性(Privacy & Security)，点进完全磁盘访问权限(Full Disk Access)。
      3. 点按左下角的 + 号，在打开的访达窗口按 ++shift+command+g++ 调出路径访问方式，输入 `/usr/sbin/cron` 回车，找到 cron 命令添加。
@@ -1206,14 +1233,14 @@ MAILTO=root
 
 接下来配置 crontab 定时任务，白天每隔两小时备份一下特定文件，并按时辰命名。
 
-```Shell
+```Shell title="crontab -e"
 # every two hour: 5,7,9,11,13,15,17,19,21,23
 0 5-23/2 * * * rclone copyto -v /Users/faner/Documents/English/LINKIN-WORDS-7000/恋词考研英语-全真题源报刊7000词-索引红版.pdf smbhd@rpi4b:WDHD/backups/English/恋词考研英语-全真题源报刊7000词-索引红版-`date +\%Y\%m\%d\%H`.pdf --log-file=/Users/faner/.config/rclone/rclone-`date +\%Y\%m`.log
 ```
 
 先把调度时间改为每分钟，看看是否正常运行：
 
-```Shell
+```Shell title="crontab -e"
 */1 * * * * rclone copyto -v /Users/faner/Documents/English/LINKIN-WORDS-7000/恋词考研英语-全真题源报刊7000词-索引红版.pdf smbhd@rpi4b:WDHD/backups/English/恋词考研英语-全真题源报刊7000词-索引红版-`date +\%Y\%m\%d\%H\%M`.pdf --log-file=/Users/faner/.config/rclone/rclone-`date +\%Y\%m`.log
 ```
 
@@ -1233,7 +1260,7 @@ cron 执行出错时默认会通过 MTA 服务给系统管理员发邮件，执�
 
 将 rclone 命令改为绝对路径 `/usr/local/bin/rclone`：
 
-```Shell
+```Shell title="crontab -e"
 */1 * * * * /usr/local/bin/rclone copyto -v /Users/faner/Documents/English/LINKIN-WORDS-7000/恋词考研英语-全真题源报刊7000词-索引红版.pdf smbhd@rpi4b:WDHD/backups/English/恋词考研英语-全真题源报刊7000词-索引红版-`date +\%Y\%m\%d\%H\%M`.pdf --log-file=/Users/faner/.config/rclone/rclone-`date +\%Y\%m`.log
 ```
 
@@ -1244,19 +1271,57 @@ cron 执行出错时默认会通过 MTA 服务给系统管理员发邮件，执�
 
 验证任务生效后，将调度时间修改为预期的同步频率，后续核对日志校验定时备份任务执行情况。
 
+```Shell title="crontab -e"
+# 每隔 12h，即半天备份一次
+0 */12 * * * /usr/local/bin/rclone copyto -v /Users/faner/Documents/English/LINKIN-WORDS-7000/恋词考研英语-全真题源报刊7000词-索引红版.pdf smbhd@rpi4b:WDHD/backups/English/恋词考研英语-全真题源报刊7000词-索引红版-`date +\%Y\%m\%d\%H`.pdf --log-file=/Users/faner/.config/rclone/rclone-`date +\%Y\%m`.log
+```
+
+### check logs
+
+每天检查日志文件，确认系统 cron 定时任务和 rclone sysnc 同步任务执行情况。
+
+系统日志 /var/log/syslog 中，应该有类似的条目：
+
+```dmesg
+$ grep -a CRON /var/log/syslog
+Apr  7 02:30:00 rpi4b-ubuntu CRON[62328]: (pifan) CMD (rclone sync -v webdav-rpi4b: /media/WDHD/webdav@rpi4b --log-file=/home/pifan/.config/rclone/rclone.log)
+```
+
+也可以开启 cron 独立日志，后续直接查看 /var/log/cron.log。
+
+!!! note "Use Independent Crontab Logs"
+
+     1. `sudo vim /etc/rsyslog.d/50-default.conf`
+     2. uncomment the line starting with the `cron.*`
+     3. `sudo systemctl restart rsyslog`
+
+---
+
+macOS 的系统日志 /var/log/system.log 中没有搜到任何 cron 相关的运行日志。
+
+参考 [macos - Mac OS X cron log / tracking](https://stackoverflow.com/questions/5475800/mac-os-x-cron-log-tracking)，执行 `log show --process cron` 可以看到 crontab/cron 的 Activity 活动日志。
+
+!!! note "cron -x debugflag"
+
+    [macos - Log of cron actions on OS X](https://superuser.com/questions/134864/log-of-cron-actions-on-os-x) 中提到，参考 man cron 中的 `-x debugflag`，可修改 com.vix.cron.plist，为 ProgramArguments 添加 `-x` 调试选项，并配置 StandardErrorPath 为 /var/log/cron.log。尚未具体实践验证。
+
+---
+
+确认 cron 定时任务执行后，再检查配置目录 ~/.config/rclone/ 下当天/月的运行日志 rclone-`date`.log，查看同步情况。
+
 ## refs
 
 [rclone mount](https://rclone.org/commands/rclone_mount/)
 [rclone nfsmount](https://rclone.org/commands/rclone_nfsmount/)
 
 [Rclone云存储数据同步工具](https://www.cnblogs.com/varden/p/17181717.html)
-
 [备份同步神器 Rclone 使用教程](https://cloud.tencent.com/developer/article/2192254)
 
 [rclone 选项参数 --min-age/--max-age 的理解](https://blog.csdn.net/neowell/article/details/134009677)
-
 [macOS系统下自动挂载rclone远程存储：实现开机启动项](https://kpfd.com/macos%E7%B3%BB%E7%BB%9F%E4%B8%8B%E8%87%AA%E5%8A%A8%E6%8C%82%E8%BD%BDrclone%E8%BF%9C%E7%A8%8B%E5%AD%98%E5%82%A8%E5%AE%9E%E7%8E%B0%E5%BC%80%E6%9C%BA%E5%90%AF%E5%8A%A8%E9%A1%B9)
 
-[How to run your script on a schedule using crontab on macOS: A step-by-step guide](https://medium.com/@justin_ng/how-to-run-your-script-on-a-schedule-using-crontab-on-macos-a-step-by-step-guide-a7ba539acf76)
+[schedule using crontab on macOS: A step-by-step guide](https://medium.com/@justin_ng/how-to-run-your-script-on-a-schedule-using-crontab-on-macos-a-step-by-step-guide-a7ba539acf76)
+[Schedule job with crontab on macOS](https://chethansp.medium.com/schedule-job-with-crontab-on-macos-d47a1fda47e5)
+
 [记录一次macOS上crontab未成功执行问题的排查过程！](https://blog.humh.cn/?p=947)
 [macOS 电脑—设置 crontab](https://zhuanlan.zhihu.com/p/564215492)

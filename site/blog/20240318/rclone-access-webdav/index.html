@@ -26,7 +26,7 @@
     
     
       
-        <title>使用rclone访问操作WebDav云盘 - ElseWhere</title>
+        <title>使用rclone访问操作WebDav云盘并配置crontab定时自动同步 - ElseWhere</title>
       
     
     
@@ -123,7 +123,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              使用rclone访问操作WebDav云盘
+              使用rclone访问操作WebDav云盘并配置crontab定时自动同步
             
           </span>
         </div>
@@ -1279,18 +1279,9 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#crontab_-e" class="md-nav__link">
+  <a href="#ubuntu" class="md-nav__link">
     <span class="md-ellipsis">
-      crontab -e
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#check_logs" class="md-nav__link">
-    <span class="md-ellipsis">
-      check logs
+      ubuntu
     </span>
   </a>
   
@@ -1300,6 +1291,15 @@
   <a href="#macos" class="md-nav__link">
     <span class="md-ellipsis">
       macOS
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#check_logs" class="md-nav__link">
+    <span class="md-ellipsis">
+      check logs
     </span>
   </a>
   
@@ -1379,6 +1379,13 @@
                       </div>
                     </li>
                     
+                      <li class="md-nav__item">
+                        <div class="md-nav__link">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15 13h1.5v2.82l2.44 1.41-.75 1.3L15 16.69V13m4-5H5v11h4.67c-.43-.91-.67-1.93-.67-3a7 7 0 0 1 7-7c1.07 0 2.09.24 3 .67V8M5 21a2 2 0 0 1-2-2V5c0-1.11.89-2 2-2h1V1h2v2h8V1h2v2h1a2 2 0 0 1 2 2v6.1c1.24 1.26 2 2.99 2 4.9a7 7 0 0 1-7 7c-1.91 0-3.64-.76-4.9-2H5m11-9.85A4.85 4.85 0 0 0 11.15 16c0 2.68 2.17 4.85 4.85 4.85A4.85 4.85 0 0 0 20.85 16c0-2.68-2.17-4.85-4.85-4.85Z"/></svg>
+                          <time datetime="2024-04-09 10:00:00" class="md-ellipsis">2024年4月9日</time>
+                        </div>
+                      </li>
+                    
                     
                       <li class="md-nav__item">
                         <div class="md-nav__link">
@@ -1387,6 +1394,7 @@
                             分类于
                             
                               <a href="../../category/macos/">macOS</a>, 
+                              <a href="../../category/ubuntu/">ubuntu</a>, 
                               <a href="../../category/webdav/">webDAV</a></span>
                         </div>
                       </li>
@@ -1398,7 +1406,7 @@
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7h1.5Z"/></svg>
                           <span class="md-ellipsis">
                             
-                              需要 19 分钟阅读时间
+                              需要 20 分钟阅读时间
                             
                           </span>
                         </div>
@@ -1446,10 +1454,11 @@
 
 
 
-  <h1>使用rclone访问操作WebDav云盘</h1>
+  <h1>使用rclone访问操作WebDav云盘并配置crontab定时自动同步</h1>
 
 <p>在 <a href="../../20240317/cmd-mount-webdav/">使用命令行挂载操作WebDav云盘</a> 中梳理了 macOS/Linux 下调用 mount 命令挂载 WebDAV 云盘到本地的基本操作，并且示例了如何使用 curl 命令行访问操作 WebDAV 云盘。</p>
 <p>本文让我们来看一看如何使用强大的 <a href="https://rclone.org/">rclone</a> 命令行工具配置挂载 WebDAV 云盘，并对标 curl 梳理 rclone 访问操控 webDAV 云盘的常用命令。</p>
+<p>最后，在 macOS/ubuntu 下使用 cron 配置定时任务（crontab），实现本地与云盘之间同步备份自动化。</p>
 <!-- more -->
 
 <div class="admonition note">
@@ -1944,6 +1953,9 @@
 <li>43 / SMB / CIFS \ (smb)</li>
 </ul>
 <p>如果中途不小心输错或后续想更改配置，可输入 <code>rclone config edit</code> 选择编辑已有的配置。</p>
+<blockquote>
+<p>⚠️：在 ubuntu 中，remote name 中不能包含 @ 符号，可改为 - 替代：webdav-rpi4b。</p>
+</blockquote>
 <h3 id="config_show">config show<a class="headerlink" href="#config_show" title="Permanent link">#</a></h3>
 <p>rclone config 配置完成后，可调用相关命令 dump/show 相关配置信息：</p>
 <table>
@@ -2538,7 +2550,7 @@
 <p><a href="https://rclone.org/bisync/">Bisync</a>: On Linux or Mac, consider setting up a crontab entry. <code>bisync</code> can safely run in concurrent cron jobs thanks to lock files it maintains.</p>
 <p>可以通过 <a href="https://en.wikipedia.org/wiki/Cron">cron</a> / <a href="https://manpages.ubuntu.com/manpages/noble/en/man5/crontab.5.html">crontab - tables for driving bcron</a> 配置定时任务，每天自动执行同步。</p>
 <p>参考 <a href="https://www.cherryservers.com/blog/how-to-use-cron-to-automate-linux-jobs-on-ubuntu-20-04">How to Use Cron to Automate Linux Jobs on Ubuntu 20.04</a> 和 <a href="https://askubuntu.com/questions/2368/how-do-i-set-up-a-cron-job">How do I set up a Cron job? - Ask Ubuntu</a>。</p>
-<p>系统级别的 crontab 配置文件在 /etc/ 目录下（cron*）：</p>
+<p>ubuntu 系统级别的 crontab 配置文件在 /etc/ 目录下（cron*）：</p>
 <div class="language-Shell highlight"><pre><span></span><code><span id="__span-43-1"><a id="__codelineno-43-1" name="__codelineno-43-1" href="#__codelineno-43-1"></a><span class="c1"># ls -l /etc/cron*</span>
 </span><span id="__span-43-2"><a id="__codelineno-43-2" name="__codelineno-43-2" href="#__codelineno-43-2"></a>$<span class="w"> </span>ls<span class="w"> </span>-l<span class="w"> </span>/etc<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>cron
 </span><span id="__span-43-3"><a id="__codelineno-43-3" name="__codelineno-43-3" href="#__codelineno-43-3"></a>drwxr-xr-x<span class="w"> </span><span class="m">2</span><span class="w"> </span>root<span class="w"> </span>root<span class="w">       </span><span class="m">4096</span><span class="w"> </span>Nov<span class="w">  </span><span class="m">6</span><span class="w">  </span><span class="m">2022</span><span class="w"> </span>cron.d
@@ -2549,84 +2561,96 @@
 </span><span id="__span-43-8"><a id="__codelineno-43-8" name="__codelineno-43-8" href="#__codelineno-43-8"></a>drwxr-xr-x<span class="w"> </span><span class="m">2</span><span class="w"> </span>root<span class="w"> </span>root<span class="w">       </span><span class="m">4096</span><span class="w"> </span>Nov<span class="w">  </span><span class="m">6</span><span class="w">  </span><span class="m">2022</span><span class="w"> </span>cron.weekly
 </span></code></pre></div>
 <p>每个用户有一个以用户名命名的 crontab 配置文件，存放在 <code>/var/spool/cron/crontabs</code> 目录下。</p>
-<h3 id="crontab_-e">crontab -e<a class="headerlink" href="#crontab_-e" title="Permanent link">#</a></h3>
+<p>macOS 下执行 <code>man cron</code>，FILES 显示 Directory for personal crontab files 为 <code>/usr/lib/cron/tabs</code>。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-44-1"><a id="__codelineno-44-1" name="__codelineno-44-1" href="#__codelineno-44-1"></a>$<span class="w"> </span>sudo<span class="w"> </span>ls<span class="w"> </span>-l<span class="w"> </span>/usr/lib/cron/
+</span><span id="__span-44-2"><a id="__codelineno-44-2" name="__codelineno-44-2" href="#__codelineno-44-2"></a>total<span class="w"> </span><span class="m">0</span>
+</span><span id="__span-44-3"><a id="__codelineno-44-3" name="__codelineno-44-3" href="#__codelineno-44-3"></a>-rw-r--r--<span class="w">  </span><span class="m">1</span><span class="w"> </span>root<span class="w">    </span>wheel<span class="w">   </span><span class="m">0</span><span class="w"> </span>Mar<span class="w"> </span><span class="m">30</span><span class="w"> </span><span class="m">15</span>:19<span class="w"> </span>at.deny
+</span><span id="__span-44-4"><a id="__codelineno-44-4" name="__codelineno-44-4" href="#__codelineno-44-4"></a>-rw-r--r--<span class="w">  </span><span class="m">1</span><span class="w"> </span>root<span class="w">    </span>wheel<span class="w">   </span><span class="m">6</span><span class="w"> </span>Mar<span class="w"> </span><span class="m">30</span><span class="w"> </span><span class="m">15</span>:19<span class="w"> </span>cron.deny
+</span><span id="__span-44-5"><a id="__codelineno-44-5" name="__codelineno-44-5" href="#__codelineno-44-5"></a>drwxr-xr-x<span class="w">  </span><span class="m">2</span><span class="w"> </span>daemon<span class="w">  </span>wheel<span class="w">  </span><span class="m">64</span><span class="w"> </span>Mar<span class="w"> </span><span class="m">30</span><span class="w"> </span><span class="m">15</span>:19<span class="w"> </span><span class="nb">jobs</span>
+</span><span id="__span-44-6"><a id="__codelineno-44-6" name="__codelineno-44-6" href="#__codelineno-44-6"></a>drwxr-xr-x<span class="w">  </span><span class="m">2</span><span class="w"> </span>daemon<span class="w">  </span>wheel<span class="w">  </span><span class="m">64</span><span class="w"> </span>Mar<span class="w"> </span><span class="m">30</span><span class="w"> </span><span class="m">15</span>:19<span class="w"> </span>spool
+</span><span id="__span-44-7"><a id="__codelineno-44-7" name="__codelineno-44-7" href="#__codelineno-44-7"></a>drwx------<span class="w">  </span><span class="m">3</span><span class="w"> </span>root<span class="w">    </span>wheel<span class="w">  </span><span class="m">96</span><span class="w"> </span>Mar<span class="w"> </span><span class="m">30</span><span class="w"> </span><span class="m">15</span>:19<span class="w"> </span>tabs
+</span><span id="__span-44-8"><a id="__codelineno-44-8" name="__codelineno-44-8" href="#__codelineno-44-8"></a>drwx------<span class="w">  </span><span class="m">2</span><span class="w"> </span>root<span class="w">    </span>wheel<span class="w">  </span><span class="m">64</span><span class="w"> </span>Mar<span class="w"> </span><span class="m">30</span><span class="w"> </span><span class="m">15</span>:19<span class="w"> </span>tmp
+</span><span id="__span-44-9"><a id="__codelineno-44-9" name="__codelineno-44-9" href="#__codelineno-44-9"></a>
+</span><span id="__span-44-10"><a id="__codelineno-44-10" name="__codelineno-44-10" href="#__codelineno-44-10"></a>$<span class="w"> </span>sudo<span class="w"> </span>ls<span class="w"> </span>-l<span class="w"> </span>/usr/lib/cron/tabs
+</span></code></pre></div>
+<h3 id="ubuntu">ubuntu<a class="headerlink" href="#ubuntu" title="Permanent link">#</a></h3>
 <p>用户可执行 <code>crontab -e</code> 打开一个类似 <code>/tmp/crontab.CNG0fm/crontab</code> 的临时文件，编辑 personal crontab。</p>
 <p>在 rpi4b-ubuntu 上首次执行 <code>crontab -e</code>（注意不要 sudo），提示选择编辑器，选择 vim 打开编辑：</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-44-1"><a id="__codelineno-44-1" name="__codelineno-44-1" href="#__codelineno-44-1"></a>$<span class="w"> </span>pifan@rpi4b-ubuntu<span class="w"> </span>~
-</span><span id="__span-44-2"><a id="__codelineno-44-2" name="__codelineno-44-2" href="#__codelineno-44-2"></a>crontab<span class="w"> </span>-e
-</span><span id="__span-44-3"><a id="__codelineno-44-3" name="__codelineno-44-3" href="#__codelineno-44-3"></a>no<span class="w"> </span>crontab<span class="w"> </span><span class="k">for</span><span class="w"> </span>pifan<span class="w"> </span>-<span class="w"> </span>using<span class="w"> </span>an<span class="w"> </span>empty<span class="w"> </span>one
-</span><span id="__span-44-4"><a id="__codelineno-44-4" name="__codelineno-44-4" href="#__codelineno-44-4"></a>
-</span><span id="__span-44-5"><a id="__codelineno-44-5" name="__codelineno-44-5" href="#__codelineno-44-5"></a>Select<span class="w"> </span>an<span class="w"> </span>editor.<span class="w">  </span>To<span class="w"> </span>change<span class="w"> </span>later,<span class="w"> </span>run<span class="w"> </span><span class="s1">&#39;select-editor&#39;</span>.
-</span><span id="__span-44-6"><a id="__codelineno-44-6" name="__codelineno-44-6" href="#__codelineno-44-6"></a><span class="w">  </span><span class="m">1</span>.<span class="w"> </span>/usr/bin/vim.gtk3
-</span><span id="__span-44-7"><a id="__codelineno-44-7" name="__codelineno-44-7" href="#__codelineno-44-7"></a><span class="w">  </span><span class="m">2</span>.<span class="w"> </span>/bin/nano<span class="w">        </span>&lt;----<span class="w"> </span>easiest
-</span><span id="__span-44-8"><a id="__codelineno-44-8" name="__codelineno-44-8" href="#__codelineno-44-8"></a><span class="w">  </span><span class="m">3</span>.<span class="w"> </span>/usr/bin/vim.basic
-</span><span id="__span-44-9"><a id="__codelineno-44-9" name="__codelineno-44-9" href="#__codelineno-44-9"></a><span class="w">  </span><span class="m">4</span>.<span class="w"> </span>/usr/bin/vim.tiny
-</span><span id="__span-44-10"><a id="__codelineno-44-10" name="__codelineno-44-10" href="#__codelineno-44-10"></a><span class="w">  </span><span class="m">5</span>.<span class="w"> </span>/bin/ed
-</span><span id="__span-44-11"><a id="__codelineno-44-11" name="__codelineno-44-11" href="#__codelineno-44-11"></a>
-</span><span id="__span-44-12"><a id="__codelineno-44-12" name="__codelineno-44-12" href="#__codelineno-44-12"></a>Choose<span class="w"> </span><span class="m">1</span>-5<span class="w"> </span><span class="o">[</span><span class="m">2</span><span class="o">]</span>:<span class="w"> </span><span class="m">3</span>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-45-1"><a id="__codelineno-45-1" name="__codelineno-45-1" href="#__codelineno-45-1"></a>$<span class="w"> </span>pifan@rpi4b-ubuntu<span class="w"> </span>~
+</span><span id="__span-45-2"><a id="__codelineno-45-2" name="__codelineno-45-2" href="#__codelineno-45-2"></a>crontab<span class="w"> </span>-e
+</span><span id="__span-45-3"><a id="__codelineno-45-3" name="__codelineno-45-3" href="#__codelineno-45-3"></a>no<span class="w"> </span>crontab<span class="w"> </span><span class="k">for</span><span class="w"> </span>pifan<span class="w"> </span>-<span class="w"> </span>using<span class="w"> </span>an<span class="w"> </span>empty<span class="w"> </span>one
+</span><span id="__span-45-4"><a id="__codelineno-45-4" name="__codelineno-45-4" href="#__codelineno-45-4"></a>
+</span><span id="__span-45-5"><a id="__codelineno-45-5" name="__codelineno-45-5" href="#__codelineno-45-5"></a>Select<span class="w"> </span>an<span class="w"> </span>editor.<span class="w">  </span>To<span class="w"> </span>change<span class="w"> </span>later,<span class="w"> </span>run<span class="w"> </span><span class="s1">&#39;select-editor&#39;</span>.
+</span><span id="__span-45-6"><a id="__codelineno-45-6" name="__codelineno-45-6" href="#__codelineno-45-6"></a><span class="w">  </span><span class="m">1</span>.<span class="w"> </span>/usr/bin/vim.gtk3
+</span><span id="__span-45-7"><a id="__codelineno-45-7" name="__codelineno-45-7" href="#__codelineno-45-7"></a><span class="w">  </span><span class="m">2</span>.<span class="w"> </span>/bin/nano<span class="w">        </span>&lt;----<span class="w"> </span>easiest
+</span><span id="__span-45-8"><a id="__codelineno-45-8" name="__codelineno-45-8" href="#__codelineno-45-8"></a><span class="w">  </span><span class="m">3</span>.<span class="w"> </span>/usr/bin/vim.basic
+</span><span id="__span-45-9"><a id="__codelineno-45-9" name="__codelineno-45-9" href="#__codelineno-45-9"></a><span class="w">  </span><span class="m">4</span>.<span class="w"> </span>/usr/bin/vim.tiny
+</span><span id="__span-45-10"><a id="__codelineno-45-10" name="__codelineno-45-10" href="#__codelineno-45-10"></a><span class="w">  </span><span class="m">5</span>.<span class="w"> </span>/bin/ed
+</span><span id="__span-45-11"><a id="__codelineno-45-11" name="__codelineno-45-11" href="#__codelineno-45-11"></a>
+</span><span id="__span-45-12"><a id="__codelineno-45-12" name="__codelineno-45-12" href="#__codelineno-45-12"></a>Choose<span class="w"> </span><span class="m">1</span>-5<span class="w"> </span><span class="o">[</span><span class="m">2</span><span class="o">]</span>:<span class="w"> </span><span class="m">3</span>
 </span></code></pre></div>
 <p>文档注释中有关于配置项的说明：</p>
-<div class="language-Shell highlight"><span class="filename">crontab -e Cron Syntax</span><pre><span></span><code><span id="__span-45-1"><a id="__codelineno-45-1" name="__codelineno-45-1" href="#__codelineno-45-1"></a><span class="c1"># To define the time you can provide concrete values for</span>
-</span><span id="__span-45-2"><a id="__codelineno-45-2" name="__codelineno-45-2" href="#__codelineno-45-2"></a><span class="c1"># minute (m), hour (h), day of month (dom), month (mon),</span>
-</span><span id="__span-45-3"><a id="__codelineno-45-3" name="__codelineno-45-3" href="#__codelineno-45-3"></a><span class="c1"># and day of week (dow) or use &#39;*&#39; in these fields (for &#39;any&#39;).</span>
-</span><span id="__span-45-4"><a id="__codelineno-45-4" name="__codelineno-45-4" href="#__codelineno-45-4"></a><span class="c1">#</span>
-</span><span id="__span-45-5"><a id="__codelineno-45-5" name="__codelineno-45-5" href="#__codelineno-45-5"></a><span class="c1"># For more information see the manual pages of crontab(5) and cron(8)</span>
-</span><span id="__span-45-6"><a id="__codelineno-45-6" name="__codelineno-45-6" href="#__codelineno-45-6"></a><span class="c1">#</span>
-</span><span id="__span-45-7"><a id="__codelineno-45-7" name="__codelineno-45-7" href="#__codelineno-45-7"></a><span class="c1"># m h  dom mon dow   command</span>
+<div class="language-Shell highlight"><span class="filename">crontab -e Cron Syntax</span><pre><span></span><code><span id="__span-46-1"><a id="__codelineno-46-1" name="__codelineno-46-1" href="#__codelineno-46-1"></a><span class="c1"># To define the time you can provide concrete values for</span>
+</span><span id="__span-46-2"><a id="__codelineno-46-2" name="__codelineno-46-2" href="#__codelineno-46-2"></a><span class="c1"># minute (m), hour (h), day of month (dom), month (mon),</span>
+</span><span id="__span-46-3"><a id="__codelineno-46-3" name="__codelineno-46-3" href="#__codelineno-46-3"></a><span class="c1"># and day of week (dow) or use &#39;*&#39; in these fields (for &#39;any&#39;).</span>
+</span><span id="__span-46-4"><a id="__codelineno-46-4" name="__codelineno-46-4" href="#__codelineno-46-4"></a><span class="c1">#</span>
+</span><span id="__span-46-5"><a id="__codelineno-46-5" name="__codelineno-46-5" href="#__codelineno-46-5"></a><span class="c1"># For more information see the manual pages of crontab(5) and cron(8)</span>
+</span><span id="__span-46-6"><a id="__codelineno-46-6" name="__codelineno-46-6" href="#__codelineno-46-6"></a><span class="c1">#</span>
+</span><span id="__span-46-7"><a id="__codelineno-46-7" name="__codelineno-46-7" href="#__codelineno-46-7"></a><span class="c1"># m h  dom mon dow   command</span>
 </span></code></pre></div>
 <details class="note">
 <summary>man 5 crontab</summary>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-46-1"><a id="__codelineno-46-1" name="__codelineno-46-1" href="#__codelineno-46-1"></a>Instead<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>first<span class="w"> </span>five<span class="w"> </span>fields,<span class="w"> </span>one<span class="w"> </span>of<span class="w"> </span>eight<span class="w"> </span>special<span class="w"> </span>strings<span class="w"> </span>may<span class="w"> </span>appear:
-</span><span id="__span-46-2"><a id="__codelineno-46-2" name="__codelineno-46-2" href="#__codelineno-46-2"></a>
-</span><span id="__span-46-3"><a id="__codelineno-46-3" name="__codelineno-46-3" href="#__codelineno-46-3"></a><span class="w">    </span>string<span class="w">         </span>meaning
-</span><span id="__span-46-4"><a id="__codelineno-46-4" name="__codelineno-46-4" href="#__codelineno-46-4"></a><span class="w">    </span>------<span class="w">         </span>-------
-</span><span id="__span-46-5"><a id="__codelineno-46-5" name="__codelineno-46-5" href="#__codelineno-46-5"></a><span class="w">    </span>@reboot<span class="w">        </span>Run<span class="w"> </span>once,<span class="w"> </span>at<span class="w"> </span>startup.
-</span><span id="__span-46-6"><a id="__codelineno-46-6" name="__codelineno-46-6" href="#__codelineno-46-6"></a><span class="w">    </span>@yearly<span class="w">        </span>Run<span class="w"> </span>once<span class="w"> </span>a<span class="w"> </span>year,<span class="w"> </span><span class="s2">&quot;0 0 1 1 *&quot;</span>.
-</span><span id="__span-46-7"><a id="__codelineno-46-7" name="__codelineno-46-7" href="#__codelineno-46-7"></a><span class="w">    </span>@annually<span class="w">      </span><span class="o">(</span>same<span class="w"> </span>as<span class="w"> </span>@yearly<span class="o">)</span>
-</span><span id="__span-46-8"><a id="__codelineno-46-8" name="__codelineno-46-8" href="#__codelineno-46-8"></a><span class="w">    </span>@monthly<span class="w">       </span>Run<span class="w"> </span>once<span class="w"> </span>a<span class="w"> </span>month,<span class="w"> </span><span class="s2">&quot;0 0 1 * *&quot;</span>.
-</span><span id="__span-46-9"><a id="__codelineno-46-9" name="__codelineno-46-9" href="#__codelineno-46-9"></a><span class="w">    </span>@weekly<span class="w">        </span>Run<span class="w"> </span>once<span class="w"> </span>a<span class="w"> </span>week,<span class="w"> </span><span class="s2">&quot;0 0 * * 0&quot;</span>.
-</span><span id="__span-46-10"><a id="__codelineno-46-10" name="__codelineno-46-10" href="#__codelineno-46-10"></a><span class="w">    </span>@daily<span class="w">         </span>Run<span class="w"> </span>once<span class="w"> </span>a<span class="w"> </span>day,<span class="w"> </span><span class="s2">&quot;0 0 * * *&quot;</span>.
-</span><span id="__span-46-11"><a id="__codelineno-46-11" name="__codelineno-46-11" href="#__codelineno-46-11"></a><span class="w">    </span>@midnight<span class="w">      </span><span class="o">(</span>same<span class="w"> </span>as<span class="w"> </span>@daily<span class="o">)</span>
-</span><span id="__span-46-12"><a id="__codelineno-46-12" name="__codelineno-46-12" href="#__codelineno-46-12"></a><span class="w">    </span>@hourly<span class="w">        </span>Run<span class="w"> </span>once<span class="w"> </span>an<span class="w"> </span>hour,<span class="w"> </span><span class="s2">&quot;0 * * * *&quot;</span>.
-</span><span id="__span-46-13"><a id="__codelineno-46-13" name="__codelineno-46-13" href="#__codelineno-46-13"></a>
-</span><span id="__span-46-14"><a id="__codelineno-46-14" name="__codelineno-46-14" href="#__codelineno-46-14"></a><span class="sb">`</span><span class="m">8</span>-11<span class="sb">`</span><span class="w"> </span><span class="k">for</span><span class="w"> </span>an<span class="w"> </span>hours<span class="w"> </span>entry<span class="w"> </span>specifies<span class="w"> </span>execution<span class="w"> </span>at<span class="w"> </span>hours<span class="w"> </span><span class="m">8</span>,<span class="w"> </span><span class="m">9</span>,<span class="w"> </span><span class="m">10</span><span class="w"> </span>and<span class="w"> </span><span class="m">11</span>.
-</span><span id="__span-46-15"><a id="__codelineno-46-15" name="__codelineno-46-15" href="#__codelineno-46-15"></a>
-</span><span id="__span-46-16"><a id="__codelineno-46-16" name="__codelineno-46-16" href="#__codelineno-46-16"></a>A<span class="w"> </span>list<span class="w"> </span>is<span class="w"> </span>a<span class="w"> </span><span class="nb">set</span><span class="w"> </span>of<span class="w"> </span>numbers<span class="w"> </span><span class="o">(</span>or<span class="w"> </span>ranges<span class="o">)</span><span class="w"> </span>separated<span class="w"> </span>by<span class="w"> </span>commas.<span class="w"> </span>Examples:<span class="w"> </span><span class="sb">`</span><span class="m">1</span>,2,5,9<span class="sb">`</span>,<span class="w"> </span><span class="sb">`</span><span class="m">0</span>-4,8-12<span class="sb">`</span>.
-</span><span id="__span-46-17"><a id="__codelineno-46-17" name="__codelineno-46-17" href="#__codelineno-46-17"></a>
-</span><span id="__span-46-18"><a id="__codelineno-46-18" name="__codelineno-46-18" href="#__codelineno-46-18"></a><span class="sb">`</span><span class="m">0</span>-23/2<span class="sb">`</span><span class="w"> </span>can<span class="w"> </span>be<span class="w"> </span>used<span class="w"> </span><span class="k">in</span><span class="w"> </span>the<span class="w"> </span>hours<span class="w"> </span>field<span class="w"> </span>to<span class="w"> </span>specify<span class="w"> </span><span class="nb">command</span><span class="w"> </span>execution<span class="w"> </span>every<span class="w"> </span>other<span class="w"> </span>hour
-</span><span id="__span-46-19"><a id="__codelineno-46-19" name="__codelineno-46-19" href="#__codelineno-46-19"></a>
-</span><span id="__span-46-20"><a id="__codelineno-46-20" name="__codelineno-46-20" href="#__codelineno-46-20"></a><span class="k">if</span><span class="w"> </span>you<span class="w"> </span>want<span class="w"> </span>to<span class="w"> </span>say<span class="w"> </span><span class="sb">``</span>every<span class="w"> </span>two<span class="w"> </span>hours<span class="s1">&#39;&#39;</span>,<span class="w"> </span>just<span class="w"> </span>use<span class="w"> </span><span class="sb">`</span>*/2<span class="sb">`</span>.
-</span><span id="__span-46-21"><a id="__codelineno-46-21" name="__codelineno-46-21" href="#__codelineno-46-21"></a>
-</span><span id="__span-46-22"><a id="__codelineno-46-22" name="__codelineno-46-22" href="#__codelineno-46-22"></a>EXAMPLE<span class="w"> </span>CRON<span class="w"> </span>FILE
-</span><span id="__span-46-23"><a id="__codelineno-46-23" name="__codelineno-46-23" href="#__codelineno-46-23"></a><span class="w">       </span><span class="c1"># run five minutes after midnight, every day</span>
-</span><span id="__span-46-24"><a id="__codelineno-46-24" name="__codelineno-46-24" href="#__codelineno-46-24"></a><span class="w">       </span><span class="m">5</span><span class="w"> </span><span class="m">0</span><span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w">       </span><span class="nv">$HOME</span>/bin/daily.job<span class="w"> </span>&gt;&gt;<span class="w"> </span><span class="nv">$HOME</span>/tmp/out<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span>
-</span><span id="__span-46-25"><a id="__codelineno-46-25" name="__codelineno-46-25" href="#__codelineno-46-25"></a><span class="w">       </span><span class="c1"># run at 2:15pm on the first of every month — output mailed to paul</span>
-</span><span id="__span-46-26"><a id="__codelineno-46-26" name="__codelineno-46-26" href="#__codelineno-46-26"></a><span class="w">       </span><span class="m">15</span><span class="w"> </span><span class="m">14</span><span class="w"> </span><span class="m">1</span><span class="w"> </span>*<span class="w"> </span>*<span class="w">     </span><span class="nv">$HOME</span>/bin/monthly
-</span><span id="__span-46-27"><a id="__codelineno-46-27" name="__codelineno-46-27" href="#__codelineno-46-27"></a><span class="w">       </span><span class="c1"># run at 10 pm on weekdays, annoy Joe</span>
-</span><span id="__span-46-28"><a id="__codelineno-46-28" name="__codelineno-46-28" href="#__codelineno-46-28"></a><span class="w">       </span><span class="m">0</span><span class="w"> </span><span class="m">22</span><span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span><span class="m">1</span>-5<span class="w">    </span>mail<span class="w"> </span>-s<span class="w"> </span><span class="s2">&quot;It&#39;s 10pm&quot;</span><span class="w"> </span>joe%Joe,%%Where<span class="w"> </span>are<span class="w"> </span>your<span class="w"> </span>kids?%
-</span><span id="__span-46-29"><a id="__codelineno-46-29" name="__codelineno-46-29" href="#__codelineno-46-29"></a><span class="w">       </span><span class="m">23</span><span class="w"> </span><span class="m">0</span>-23/2<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;run 23 minutes after midn, 2am, 4am ..., everyday&quot;</span>
-</span><span id="__span-46-30"><a id="__codelineno-46-30" name="__codelineno-46-30" href="#__codelineno-46-30"></a><span class="w">       </span><span class="m">5</span><span class="w"> </span><span class="m">4</span><span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>sun<span class="w">     </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;run at 5 after 4 every Sunday&quot;</span>
-</span><span id="__span-46-31"><a id="__codelineno-46-31" name="__codelineno-46-31" href="#__codelineno-46-31"></a><span class="w">       </span><span class="m">0</span><span class="w"> </span>*/4<span class="w"> </span><span class="m">1</span><span class="w"> </span>*<span class="w"> </span>mon<span class="w">   </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;run every 4th hour on the 1st and on every Monday&quot;</span>
-</span><span id="__span-46-32"><a id="__codelineno-46-32" name="__codelineno-46-32" href="#__codelineno-46-32"></a><span class="w">       </span><span class="m">0</span><span class="w"> </span><span class="m">0</span><span class="w"> </span>*/2<span class="w"> </span>*<span class="w"> </span>sun<span class="w">   </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;run at midn on every Sunday that&#39;s an uneven date&quot;</span>
-</span><span id="__span-46-33"><a id="__codelineno-46-33" name="__codelineno-46-33" href="#__codelineno-46-33"></a><span class="w">       </span><span class="c1"># Run on every second Saturday of the month</span>
-</span><span id="__span-46-34"><a id="__codelineno-46-34" name="__codelineno-46-34" href="#__codelineno-46-34"></a><span class="w">       </span><span class="m">0</span><span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="m">8</span>-14<span class="w"> </span>*<span class="w"> </span>*<span class="w">    </span><span class="nb">test</span><span class="w"> </span><span class="k">$(</span>date<span class="w"> </span>+<span class="se">\%</span>u<span class="k">)</span><span class="w"> </span>-eq<span class="w"> </span><span class="m">6</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;2nd Saturday&quot;</span>
-</span><span id="__span-46-35"><a id="__codelineno-46-35" name="__codelineno-46-35" href="#__codelineno-46-35"></a>
-</span><span id="__span-46-36"><a id="__codelineno-46-36" name="__codelineno-46-36" href="#__codelineno-46-36"></a><span class="w">       </span><span class="c1"># Execute a program and run a notification every day at 10:00 am</span>
-</span><span id="__span-46-37"><a id="__codelineno-46-37" name="__codelineno-46-37" href="#__codelineno-46-37"></a><span class="w">       </span><span class="m">0</span><span class="w"> </span><span class="m">10</span><span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w">  </span><span class="nv">$HOME</span>/bin/program<span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="nv">DISPLAY</span><span class="o">=</span>:0<span class="w"> </span>notify-send<span class="w"> </span><span class="s2">&quot;Program run&quot;</span><span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span>cat<span class="k">)</span><span class="s2">&quot;</span>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-47-1"><a id="__codelineno-47-1" name="__codelineno-47-1" href="#__codelineno-47-1"></a>Instead<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>first<span class="w"> </span>five<span class="w"> </span>fields,<span class="w"> </span>one<span class="w"> </span>of<span class="w"> </span>eight<span class="w"> </span>special<span class="w"> </span>strings<span class="w"> </span>may<span class="w"> </span>appear:
+</span><span id="__span-47-2"><a id="__codelineno-47-2" name="__codelineno-47-2" href="#__codelineno-47-2"></a>
+</span><span id="__span-47-3"><a id="__codelineno-47-3" name="__codelineno-47-3" href="#__codelineno-47-3"></a><span class="w">    </span>string<span class="w">         </span>meaning
+</span><span id="__span-47-4"><a id="__codelineno-47-4" name="__codelineno-47-4" href="#__codelineno-47-4"></a><span class="w">    </span>------<span class="w">         </span>-------
+</span><span id="__span-47-5"><a id="__codelineno-47-5" name="__codelineno-47-5" href="#__codelineno-47-5"></a><span class="w">    </span>@reboot<span class="w">        </span>Run<span class="w"> </span>once,<span class="w"> </span>at<span class="w"> </span>startup.
+</span><span id="__span-47-6"><a id="__codelineno-47-6" name="__codelineno-47-6" href="#__codelineno-47-6"></a><span class="w">    </span>@yearly<span class="w">        </span>Run<span class="w"> </span>once<span class="w"> </span>a<span class="w"> </span>year,<span class="w"> </span><span class="s2">&quot;0 0 1 1 *&quot;</span>.
+</span><span id="__span-47-7"><a id="__codelineno-47-7" name="__codelineno-47-7" href="#__codelineno-47-7"></a><span class="w">    </span>@annually<span class="w">      </span><span class="o">(</span>same<span class="w"> </span>as<span class="w"> </span>@yearly<span class="o">)</span>
+</span><span id="__span-47-8"><a id="__codelineno-47-8" name="__codelineno-47-8" href="#__codelineno-47-8"></a><span class="w">    </span>@monthly<span class="w">       </span>Run<span class="w"> </span>once<span class="w"> </span>a<span class="w"> </span>month,<span class="w"> </span><span class="s2">&quot;0 0 1 * *&quot;</span>.
+</span><span id="__span-47-9"><a id="__codelineno-47-9" name="__codelineno-47-9" href="#__codelineno-47-9"></a><span class="w">    </span>@weekly<span class="w">        </span>Run<span class="w"> </span>once<span class="w"> </span>a<span class="w"> </span>week,<span class="w"> </span><span class="s2">&quot;0 0 * * 0&quot;</span>.
+</span><span id="__span-47-10"><a id="__codelineno-47-10" name="__codelineno-47-10" href="#__codelineno-47-10"></a><span class="w">    </span>@daily<span class="w">         </span>Run<span class="w"> </span>once<span class="w"> </span>a<span class="w"> </span>day,<span class="w"> </span><span class="s2">&quot;0 0 * * *&quot;</span>.
+</span><span id="__span-47-11"><a id="__codelineno-47-11" name="__codelineno-47-11" href="#__codelineno-47-11"></a><span class="w">    </span>@midnight<span class="w">      </span><span class="o">(</span>same<span class="w"> </span>as<span class="w"> </span>@daily<span class="o">)</span>
+</span><span id="__span-47-12"><a id="__codelineno-47-12" name="__codelineno-47-12" href="#__codelineno-47-12"></a><span class="w">    </span>@hourly<span class="w">        </span>Run<span class="w"> </span>once<span class="w"> </span>an<span class="w"> </span>hour,<span class="w"> </span><span class="s2">&quot;0 * * * *&quot;</span>.
+</span><span id="__span-47-13"><a id="__codelineno-47-13" name="__codelineno-47-13" href="#__codelineno-47-13"></a>
+</span><span id="__span-47-14"><a id="__codelineno-47-14" name="__codelineno-47-14" href="#__codelineno-47-14"></a><span class="sb">`</span><span class="m">8</span>-11<span class="sb">`</span><span class="w"> </span><span class="k">for</span><span class="w"> </span>an<span class="w"> </span>hours<span class="w"> </span>entry<span class="w"> </span>specifies<span class="w"> </span>execution<span class="w"> </span>at<span class="w"> </span>hours<span class="w"> </span><span class="m">8</span>,<span class="w"> </span><span class="m">9</span>,<span class="w"> </span><span class="m">10</span><span class="w"> </span>and<span class="w"> </span><span class="m">11</span>.
+</span><span id="__span-47-15"><a id="__codelineno-47-15" name="__codelineno-47-15" href="#__codelineno-47-15"></a>
+</span><span id="__span-47-16"><a id="__codelineno-47-16" name="__codelineno-47-16" href="#__codelineno-47-16"></a>A<span class="w"> </span>list<span class="w"> </span>is<span class="w"> </span>a<span class="w"> </span><span class="nb">set</span><span class="w"> </span>of<span class="w"> </span>numbers<span class="w"> </span><span class="o">(</span>or<span class="w"> </span>ranges<span class="o">)</span><span class="w"> </span>separated<span class="w"> </span>by<span class="w"> </span>commas.<span class="w"> </span>Examples:<span class="w"> </span><span class="sb">`</span><span class="m">1</span>,2,5,9<span class="sb">`</span>,<span class="w"> </span><span class="sb">`</span><span class="m">0</span>-4,8-12<span class="sb">`</span>.
+</span><span id="__span-47-17"><a id="__codelineno-47-17" name="__codelineno-47-17" href="#__codelineno-47-17"></a>
+</span><span id="__span-47-18"><a id="__codelineno-47-18" name="__codelineno-47-18" href="#__codelineno-47-18"></a><span class="sb">`</span><span class="m">0</span>-23/2<span class="sb">`</span><span class="w"> </span>can<span class="w"> </span>be<span class="w"> </span>used<span class="w"> </span><span class="k">in</span><span class="w"> </span>the<span class="w"> </span>hours<span class="w"> </span>field<span class="w"> </span>to<span class="w"> </span>specify<span class="w"> </span><span class="nb">command</span><span class="w"> </span>execution<span class="w"> </span>every<span class="w"> </span>other<span class="w"> </span>hour
+</span><span id="__span-47-19"><a id="__codelineno-47-19" name="__codelineno-47-19" href="#__codelineno-47-19"></a>
+</span><span id="__span-47-20"><a id="__codelineno-47-20" name="__codelineno-47-20" href="#__codelineno-47-20"></a><span class="k">if</span><span class="w"> </span>you<span class="w"> </span>want<span class="w"> </span>to<span class="w"> </span>say<span class="w"> </span><span class="sb">``</span>every<span class="w"> </span>two<span class="w"> </span>hours<span class="s1">&#39;&#39;</span>,<span class="w"> </span>just<span class="w"> </span>use<span class="w"> </span><span class="sb">`</span>*/2<span class="sb">`</span>.
+</span><span id="__span-47-21"><a id="__codelineno-47-21" name="__codelineno-47-21" href="#__codelineno-47-21"></a>
+</span><span id="__span-47-22"><a id="__codelineno-47-22" name="__codelineno-47-22" href="#__codelineno-47-22"></a>EXAMPLE<span class="w"> </span>CRON<span class="w"> </span>FILE
+</span><span id="__span-47-23"><a id="__codelineno-47-23" name="__codelineno-47-23" href="#__codelineno-47-23"></a><span class="w">       </span><span class="c1"># run five minutes after midnight, every day</span>
+</span><span id="__span-47-24"><a id="__codelineno-47-24" name="__codelineno-47-24" href="#__codelineno-47-24"></a><span class="w">       </span><span class="m">5</span><span class="w"> </span><span class="m">0</span><span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w">       </span><span class="nv">$HOME</span>/bin/daily.job<span class="w"> </span>&gt;&gt;<span class="w"> </span><span class="nv">$HOME</span>/tmp/out<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span>
+</span><span id="__span-47-25"><a id="__codelineno-47-25" name="__codelineno-47-25" href="#__codelineno-47-25"></a><span class="w">       </span><span class="c1"># run at 2:15pm on the first of every month — output mailed to paul</span>
+</span><span id="__span-47-26"><a id="__codelineno-47-26" name="__codelineno-47-26" href="#__codelineno-47-26"></a><span class="w">       </span><span class="m">15</span><span class="w"> </span><span class="m">14</span><span class="w"> </span><span class="m">1</span><span class="w"> </span>*<span class="w"> </span>*<span class="w">     </span><span class="nv">$HOME</span>/bin/monthly
+</span><span id="__span-47-27"><a id="__codelineno-47-27" name="__codelineno-47-27" href="#__codelineno-47-27"></a><span class="w">       </span><span class="c1"># run at 10 pm on weekdays, annoy Joe</span>
+</span><span id="__span-47-28"><a id="__codelineno-47-28" name="__codelineno-47-28" href="#__codelineno-47-28"></a><span class="w">       </span><span class="m">0</span><span class="w"> </span><span class="m">22</span><span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span><span class="m">1</span>-5<span class="w">    </span>mail<span class="w"> </span>-s<span class="w"> </span><span class="s2">&quot;It&#39;s 10pm&quot;</span><span class="w"> </span>joe%Joe,%%Where<span class="w"> </span>are<span class="w"> </span>your<span class="w"> </span>kids?%
+</span><span id="__span-47-29"><a id="__codelineno-47-29" name="__codelineno-47-29" href="#__codelineno-47-29"></a><span class="w">       </span><span class="m">23</span><span class="w"> </span><span class="m">0</span>-23/2<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;run 23 minutes after midn, 2am, 4am ..., everyday&quot;</span>
+</span><span id="__span-47-30"><a id="__codelineno-47-30" name="__codelineno-47-30" href="#__codelineno-47-30"></a><span class="w">       </span><span class="m">5</span><span class="w"> </span><span class="m">4</span><span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>sun<span class="w">     </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;run at 5 after 4 every Sunday&quot;</span>
+</span><span id="__span-47-31"><a id="__codelineno-47-31" name="__codelineno-47-31" href="#__codelineno-47-31"></a><span class="w">       </span><span class="m">0</span><span class="w"> </span>*/4<span class="w"> </span><span class="m">1</span><span class="w"> </span>*<span class="w"> </span>mon<span class="w">   </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;run every 4th hour on the 1st and on every Monday&quot;</span>
+</span><span id="__span-47-32"><a id="__codelineno-47-32" name="__codelineno-47-32" href="#__codelineno-47-32"></a><span class="w">       </span><span class="m">0</span><span class="w"> </span><span class="m">0</span><span class="w"> </span>*/2<span class="w"> </span>*<span class="w"> </span>sun<span class="w">   </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;run at midn on every Sunday that&#39;s an uneven date&quot;</span>
+</span><span id="__span-47-33"><a id="__codelineno-47-33" name="__codelineno-47-33" href="#__codelineno-47-33"></a><span class="w">       </span><span class="c1"># Run on every second Saturday of the month</span>
+</span><span id="__span-47-34"><a id="__codelineno-47-34" name="__codelineno-47-34" href="#__codelineno-47-34"></a><span class="w">       </span><span class="m">0</span><span class="w"> </span><span class="m">4</span><span class="w"> </span><span class="m">8</span>-14<span class="w"> </span>*<span class="w"> </span>*<span class="w">    </span><span class="nb">test</span><span class="w"> </span><span class="k">$(</span>date<span class="w"> </span>+<span class="se">\%</span>u<span class="k">)</span><span class="w"> </span>-eq<span class="w"> </span><span class="m">6</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;2nd Saturday&quot;</span>
+</span><span id="__span-47-35"><a id="__codelineno-47-35" name="__codelineno-47-35" href="#__codelineno-47-35"></a>
+</span><span id="__span-47-36"><a id="__codelineno-47-36" name="__codelineno-47-36" href="#__codelineno-47-36"></a><span class="w">       </span><span class="c1"># Execute a program and run a notification every day at 10:00 am</span>
+</span><span id="__span-47-37"><a id="__codelineno-47-37" name="__codelineno-47-37" href="#__codelineno-47-37"></a><span class="w">       </span><span class="m">0</span><span class="w"> </span><span class="m">10</span><span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w">  </span><span class="nv">$HOME</span>/bin/program<span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="nv">DISPLAY</span><span class="o">=</span>:0<span class="w"> </span>notify-send<span class="w"> </span><span class="s2">&quot;Program run&quot;</span><span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span>cat<span class="k">)</span><span class="s2">&quot;</span>
 </span></code></pre></div>
 </details>
 <p>执行 <code>crontab -e</code> 在末尾新增一条测试任务，每分钟执行 echo 写入文件 time.txt。</p>
-<div class="language-Shell highlight"><span class="filename">crontab -e test</span><pre><span></span><code><span id="__span-47-1"><a id="__codelineno-47-1" name="__codelineno-47-1" href="#__codelineno-47-1"></a>*/1<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;echo from crontab&quot;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>/home/pifan/Downloads/time.txt
+<div class="language-Shell highlight"><span class="filename">crontab -e test</span><pre><span></span><code><span id="__span-48-1"><a id="__codelineno-48-1" name="__codelineno-48-1" href="#__codelineno-48-1"></a>*/1<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;echo from crontab&quot;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>/home/pifan/Downloads/time.txt
 </span></code></pre></div>
 <p>整点分钟，观察 time.txt 是否有追加内容，以验证 cron 任务正常执行。</p>
 <p>在 cron table 末尾新增一条任务，每天定点执行 rclone sync，将 webdav 云盘自动同步到外挂硬盘（<code>/media/WDHD/</code>）。</p>
-<div class="language-Shell highlight"><span class="filename">crontab -e hourly</span><pre><span></span><code><span id="__span-48-1"><a id="__codelineno-48-1" name="__codelineno-48-1" href="#__codelineno-48-1"></a><span class="c1"># auto backup every two hours(0,2,4,6,8,10,12,14,16,18,20,22)</span>
-</span><span id="__span-48-2"><a id="__codelineno-48-2" name="__codelineno-48-2" href="#__codelineno-48-2"></a><span class="c1"># 0 */2 * * * rclone sync -v webdav-rpi4b: /media/WDHD/webdav@rpi4b &gt;&gt; /var/log/rclone.log 2&gt;&amp;1</span>
-</span><span id="__span-48-3"><a id="__codelineno-48-3" name="__codelineno-48-3" href="#__codelineno-48-3"></a><span class="m">0</span><span class="w"> </span>*/2<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>rclone<span class="w"> </span>sync<span class="w"> </span>-v<span class="w"> </span>webdav-rpi4b:<span class="w"> </span>/media/WDHD/webdav@rpi4b<span class="w"> </span>--log-file<span class="o">=</span>/home/pifan/.config/rclone/rclone-<span class="sb">`</span>date<span class="w"> </span>+<span class="se">\%</span>Y<span class="se">\%</span>m<span class="se">\%</span>d<span class="sb">`</span>.log
+<div class="language-Shell highlight"><span class="filename">crontab -e hourly</span><pre><span></span><code><span id="__span-49-1"><a id="__codelineno-49-1" name="__codelineno-49-1" href="#__codelineno-49-1"></a><span class="c1"># auto backup every two hours(0,2,4,6,8,10,12,14,16,18,20,22)</span>
+</span><span id="__span-49-2"><a id="__codelineno-49-2" name="__codelineno-49-2" href="#__codelineno-49-2"></a><span class="c1"># 0 */2 * * * rclone sync -v webdav-rpi4b: /media/WDHD/webdav@rpi4b &gt;&gt; /var/log/rclone.log 2&gt;&amp;1</span>
+</span><span id="__span-49-3"><a id="__codelineno-49-3" name="__codelineno-49-3" href="#__codelineno-49-3"></a><span class="m">0</span><span class="w"> </span>*/2<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>rclone<span class="w"> </span>sync<span class="w"> </span>-v<span class="w"> </span>webdav-rpi4b:<span class="w"> </span>/media/WDHD/webdav@rpi4b<span class="w"> </span>--log-file<span class="o">=</span>/home/pifan/.config/rclone/rclone-<span class="sb">`</span>date<span class="w"> </span>+<span class="se">\%</span>Y<span class="se">\%</span>m<span class="se">\%</span>d<span class="sb">`</span>.log
 </span></code></pre></div>
 <p>如果后续文件改动不是那么频繁，可以改为每天同步一次，日志文件按月命名。</p>
-<div class="language-Shell highlight"><span class="filename">crontab -e daily</span><pre><span></span><code><span id="__span-49-1"><a id="__codelineno-49-1" name="__codelineno-49-1" href="#__codelineno-49-1"></a><span class="c1"># 每天凌晨1点同步备份</span>
-</span><span id="__span-49-2"><a id="__codelineno-49-2" name="__codelineno-49-2" href="#__codelineno-49-2"></a><span class="m">0</span><span class="w"> </span><span class="m">1</span><span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>rclone<span class="w"> </span>sync<span class="w"> </span>-v<span class="w"> </span>webdav-rpi4b:<span class="w"> </span>/media/WDHD/webdav@rpi4b<span class="w"> </span>--log-file<span class="o">=</span>/home/pifan/.config/rclone/rclone-<span class="sb">`</span>date<span class="w"> </span>+<span class="se">\%</span>Y<span class="se">\%</span>m<span class="sb">`</span>.log
+<div class="language-Shell highlight"><span class="filename">crontab -e daily</span><pre><span></span><code><span id="__span-50-1"><a id="__codelineno-50-1" name="__codelineno-50-1" href="#__codelineno-50-1"></a><span class="c1"># 每天凌晨1点同步备份</span>
+</span><span id="__span-50-2"><a id="__codelineno-50-2" name="__codelineno-50-2" href="#__codelineno-50-2"></a><span class="m">0</span><span class="w"> </span><span class="m">1</span><span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>rclone<span class="w"> </span>sync<span class="w"> </span>-v<span class="w"> </span>webdav-rpi4b:<span class="w"> </span>/media/WDHD/webdav@rpi4b<span class="w"> </span>--log-file<span class="o">=</span>/home/pifan/.config/rclone/rclone-<span class="sb">`</span>date<span class="w"> </span>+<span class="se">\%</span>Y<span class="se">\%</span>m<span class="sb">`</span>.log
 </span></code></pre></div>
 <div class="admonition note">
 <p class="admonition-title">关于 rclone 运行日志路径</p>
@@ -2643,13 +2667,158 @@ macOS 下的 rclone 运行日志可以考虑放到 /usr/local/var/log 目录下�
 执行 <code>crontab -r</code> 可以移除当前用户配置的任务列表，或 <code>crontab -ri</code> 带 interactive prompt 确认。</p>
 </div>
 <p>执行 <code>sudo systemctl restart cron.service</code> 重启定时任务使其生效。</p>
-<h3 id="check_logs">check logs<a class="headerlink" href="#check_logs" title="Permanent link">#</a></h3>
-<p>每天早上起来，检查日志文件，确认系统 cron 定时任务和 rclone sysnc 同步任务执行情况。</p>
-<p>系统日志 /var/log/syslog 中，应该有类似的条目：</p>
-<div class="language-dmesg highlight"><pre><span></span><code><span id="__span-50-1"><a id="__codelineno-50-1" name="__codelineno-50-1" href="#__codelineno-50-1"></a><span class="err">$ grep -a CRON /var/log/syslog</span>
-</span><span id="__span-50-2"><a id="__codelineno-50-2" name="__codelineno-50-2" href="#__codelineno-50-2"></a><span class="err">Apr  7 02:30:00 rpi4b-ubuntu CRON[62328]: (pifan) CMD (rclone sync -v webdav-rpi4b: /media/WDHD/webdav@rpi4b --log-file=/home/pifan/.config/rclone/rclone.log)</span>
+<h3 id="macos">macOS<a class="headerlink" href="#macos" title="Permanent link">#</a></h3>
+<p>在 macOS 上首次执行 <code>crontab -e</code>，将临时打开一个空文件。<br />
+在末尾新增一条测试任务，每分钟执行 date 写入文件 time.txt。</p>
+<div class="language-Shell highlight"><span class="filename">crontab -e test</span><pre><span></span><code><span id="__span-51-1"><a id="__codelineno-51-1" name="__codelineno-51-1" href="#__codelineno-51-1"></a>*/1<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>date<span class="w"> </span>&gt;&gt;<span class="w"> </span>/Users/faner/Downloads/time.txt
 </span></code></pre></div>
-<p>也可以开启 cron 独立日志，这样后面可以直接查看 /var/log/cron.log。</p>
+<p>保存退回到终端，命令行显示以下内容：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-52-1"><a id="__codelineno-52-1" name="__codelineno-52-1" href="#__codelineno-52-1"></a>$<span class="w"> </span>crontab<span class="w"> </span>-e
+</span><span id="__span-52-2"><a id="__codelineno-52-2" name="__codelineno-52-2" href="#__codelineno-52-2"></a>crontab:<span class="w"> </span>no<span class="w"> </span>crontab<span class="w"> </span><span class="k">for</span><span class="w"> </span>faner<span class="w"> </span>-<span class="w"> </span>using<span class="w"> </span>an<span class="w"> </span>empty<span class="w"> </span>one
+</span><span id="__span-52-3"><a id="__codelineno-52-3" name="__codelineno-52-3" href="#__codelineno-52-3"></a>crontab:<span class="w"> </span>installing<span class="w"> </span>new<span class="w"> </span>crontab
+</span></code></pre></div>
+<p>执行 <code>crontab -l</code> 可以查看配置内容。</p>
+<blockquote>
+<p>personal crontab 目录下会多出一个以当前用户名（$USER）命名的配置文件，如 /usr/lib/cron/tabs/faner。</p>
+</blockquote>
+<p>整点分钟，观察 time.txt 是否有追加内容，以验证 cron 任务正常执行。</p>
+<p>如果之前未在 macOS 上配置过 cron，大概率会失败，按照以下步骤配置。</p>
+<div class="admonition note">
+<p class="admonition-title">macOS 下的 cron</p>
+<p>macOS 下的 cron 是系统启动服务（LaunchDaemons），每次执行 <code>crontab -e</code> 编辑保存，都提示需要授权终端管理员权限！</p>
+</div>
+<p>首先从 launchctl list 中查找 cron 服务：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-53-1"><a id="__codelineno-53-1" name="__codelineno-53-1" href="#__codelineno-53-1"></a>$<span class="w"> </span>sudo<span class="w"> </span>launchctl<span class="w"> </span>list<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s1">&#39;cron&#39;</span>
+</span><span id="__span-53-2"><a id="__codelineno-53-2" name="__codelineno-53-2" href="#__codelineno-53-2"></a><span class="m">86386</span><span class="w">   </span><span class="m">0</span><span class="w">   </span>com.vix.cron
+</span></code></pre></div>
+<p>其中第一列是服务进程ID（pid）；第二列是服务状态，0代表正常；第三列是服务plist名。</p>
+<p>尝试执行 <code>locate com.vix.cron</code> 全局查找 cron 服务的配置文件位置：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-54-1"><a id="__codelineno-54-1" name="__codelineno-54-1" href="#__codelineno-54-1"></a>$<span class="w"> </span>locate<span class="w"> </span>com.vix.cron
+</span><span id="__span-54-2"><a id="__codelineno-54-2" name="__codelineno-54-2" href="#__codelineno-54-2"></a>
+</span><span id="__span-54-3"><a id="__codelineno-54-3" name="__codelineno-54-3" href="#__codelineno-54-3"></a>WARNING:<span class="w"> </span>The<span class="w"> </span>locate<span class="w"> </span>database<span class="w"> </span><span class="o">(</span>/var/db/locate.database<span class="o">)</span><span class="w"> </span>does<span class="w"> </span>not<span class="w"> </span>exist.
+</span><span id="__span-54-4"><a id="__codelineno-54-4" name="__codelineno-54-4" href="#__codelineno-54-4"></a>To<span class="w"> </span>create<span class="w"> </span>the<span class="w"> </span>database,<span class="w"> </span>run<span class="w"> </span>the<span class="w"> </span>following<span class="w"> </span>command:
+</span><span id="__span-54-5"><a id="__codelineno-54-5" name="__codelineno-54-5" href="#__codelineno-54-5"></a>
+</span><span id="__span-54-6"><a id="__codelineno-54-6" name="__codelineno-54-6" href="#__codelineno-54-6"></a><span class="w">  </span>sudo<span class="w"> </span>launchctl<span class="w"> </span>load<span class="w"> </span>-w<span class="w"> </span>/System/Library/LaunchDaemons/com.apple.locate.plist
+</span><span id="__span-54-7"><a id="__codelineno-54-7" name="__codelineno-54-7" href="#__codelineno-54-7"></a>
+</span><span id="__span-54-8"><a id="__codelineno-54-8" name="__codelineno-54-8" href="#__codelineno-54-8"></a>Please<span class="w"> </span>be<span class="w"> </span>aware<span class="w"> </span>that<span class="w"> </span>the<span class="w"> </span>database<span class="w"> </span>can<span class="w"> </span>take<span class="w"> </span>some<span class="w"> </span><span class="nb">time</span><span class="w"> </span>to<span class="w"> </span>generate<span class="p">;</span><span class="w"> </span>once
+</span><span id="__span-54-9"><a id="__codelineno-54-9" name="__codelineno-54-9" href="#__codelineno-54-9"></a>the<span class="w"> </span>database<span class="w"> </span>has<span class="w"> </span>been<span class="w"> </span>created,<span class="w"> </span>this<span class="w"> </span>message<span class="w"> </span>will<span class="w"> </span>no<span class="w"> </span>longer<span class="w"> </span>appear.
+</span></code></pre></div>
+<p>按照提示执行加载 <code>com.apple.locate</code> 服务，创建一个database：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-55-1"><a id="__codelineno-55-1" name="__codelineno-55-1" href="#__codelineno-55-1"></a>$<span class="w"> </span>sudo<span class="w"> </span>launchctl<span class="w"> </span>load<span class="w"> </span>-w<span class="w"> </span>/System/Library/LaunchDaemons/com.apple.locate.plist
+</span></code></pre></div>
+<p>然后，再次执行 <code>locate com.vix.cron</code> 查找到 cron 服务的配置文件位置：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-56-1"><a id="__codelineno-56-1" name="__codelineno-56-1" href="#__codelineno-56-1"></a>$<span class="w"> </span>locate<span class="w"> </span>com.vix.cron
+</span><span id="__span-56-2"><a id="__codelineno-56-2" name="__codelineno-56-2" href="#__codelineno-56-2"></a>/System/Library/LaunchDaemons/com.vix.cron.plist
+</span></code></pre></div>
+<p>执行 cat 或 vim 查看该配置文件，发现其 PathState 中的 <code>/etc/crontab</code> 配置文件默认不存在。</p>
+<details class="info">
+<summary>com.vix.cron.plist</summary>
+<div class="language-xml highlight"><pre><span></span><code><span id="__span-57-1"><a id="__codelineno-57-1" name="__codelineno-57-1" href="#__codelineno-57-1"></a><span class="w"> </span><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
+</span><span id="__span-57-2"><a id="__codelineno-57-2" name="__codelineno-57-2" href="#__codelineno-57-2"></a><span class="w"> </span><span class="cp">&lt;!DOCTYPE plist PUBLIC &quot;-//Apple Computer//DTD PLIST 1.0//EN&quot;</span>
+</span><span id="__span-57-3"><a id="__codelineno-57-3" name="__codelineno-57-3" href="#__codelineno-57-3"></a><span class="cp">    &quot;http://www.apple.com/DTDs/PropertyList-1.0.dtd&quot;&gt;</span>
+</span><span id="__span-57-4"><a id="__codelineno-57-4" name="__codelineno-57-4" href="#__codelineno-57-4"></a><span class="w"> </span><span class="nt">&lt;plist</span><span class="w"> </span><span class="na">version=</span><span class="s">&quot;1.0&quot;</span><span class="nt">&gt;</span>
+</span><span id="__span-57-5"><a id="__codelineno-57-5" name="__codelineno-57-5" href="#__codelineno-57-5"></a><span class="w"> </span><span class="nt">&lt;dict&gt;</span>
+</span><span id="__span-57-6"><a id="__codelineno-57-6" name="__codelineno-57-6" href="#__codelineno-57-6"></a><span class="w">    </span><span class="nt">&lt;key&gt;</span>Label<span class="nt">&lt;/key&gt;</span>
+</span><span id="__span-57-7"><a id="__codelineno-57-7" name="__codelineno-57-7" href="#__codelineno-57-7"></a><span class="w">    </span><span class="nt">&lt;string&gt;</span>com.vix.cron<span class="nt">&lt;/string&gt;</span>
+</span><span id="__span-57-8"><a id="__codelineno-57-8" name="__codelineno-57-8" href="#__codelineno-57-8"></a><span class="w">    </span><span class="nt">&lt;key&gt;</span>ProgramArguments<span class="nt">&lt;/key&gt;</span>
+</span><span id="__span-57-9"><a id="__codelineno-57-9" name="__codelineno-57-9" href="#__codelineno-57-9"></a><span class="w">    </span><span class="nt">&lt;array&gt;</span>
+</span><span id="__span-57-10"><a id="__codelineno-57-10" name="__codelineno-57-10" href="#__codelineno-57-10"></a><span class="w">        </span><span class="nt">&lt;string&gt;</span>/usr/sbin/cron<span class="nt">&lt;/string&gt;</span>
+</span><span id="__span-57-11"><a id="__codelineno-57-11" name="__codelineno-57-11" href="#__codelineno-57-11"></a><span class="w">    </span><span class="nt">&lt;/array&gt;</span>
+</span><span id="__span-57-12"><a id="__codelineno-57-12" name="__codelineno-57-12" href="#__codelineno-57-12"></a><span class="w">    </span><span class="nt">&lt;key&gt;</span>KeepAlive<span class="nt">&lt;/key&gt;</span>
+</span><span id="__span-57-13"><a id="__codelineno-57-13" name="__codelineno-57-13" href="#__codelineno-57-13"></a><span class="w">    </span><span class="nt">&lt;dict&gt;</span>
+</span><span id="__span-57-14"><a id="__codelineno-57-14" name="__codelineno-57-14" href="#__codelineno-57-14"></a><span class="w">        </span><span class="nt">&lt;key&gt;</span>PathState<span class="nt">&lt;/key&gt;</span>
+</span><span id="__span-57-15"><a id="__codelineno-57-15" name="__codelineno-57-15" href="#__codelineno-57-15"></a><span class="w">        </span><span class="nt">&lt;dict&gt;</span>
+</span><span id="__span-57-16"><a id="__codelineno-57-16" name="__codelineno-57-16" href="#__codelineno-57-16"></a><span class="w">            </span><span class="nt">&lt;key&gt;</span>/etc/crontab<span class="nt">&lt;/key&gt;</span>
+</span><span id="__span-57-17"><a id="__codelineno-57-17" name="__codelineno-57-17" href="#__codelineno-57-17"></a><span class="w">            </span><span class="nt">&lt;true/&gt;</span>
+</span><span id="__span-57-18"><a id="__codelineno-57-18" name="__codelineno-57-18" href="#__codelineno-57-18"></a><span class="w">        </span><span class="nt">&lt;/dict&gt;</span>
+</span><span id="__span-57-19"><a id="__codelineno-57-19" name="__codelineno-57-19" href="#__codelineno-57-19"></a><span class="w">    </span><span class="nt">&lt;/dict&gt;</span>
+</span><span id="__span-57-20"><a id="__codelineno-57-20" name="__codelineno-57-20" href="#__codelineno-57-20"></a><span class="w">    </span><span class="nt">&lt;key&gt;</span>QueueDirectories<span class="nt">&lt;/key&gt;</span>
+</span><span id="__span-57-21"><a id="__codelineno-57-21" name="__codelineno-57-21" href="#__codelineno-57-21"></a><span class="w">    </span><span class="nt">&lt;array&gt;</span>
+</span><span id="__span-57-22"><a id="__codelineno-57-22" name="__codelineno-57-22" href="#__codelineno-57-22"></a><span class="w">        </span><span class="nt">&lt;string&gt;</span>/usr/lib/cron/tabs<span class="nt">&lt;/string&gt;</span>
+</span><span id="__span-57-23"><a id="__codelineno-57-23" name="__codelineno-57-23" href="#__codelineno-57-23"></a><span class="w">    </span><span class="nt">&lt;/array&gt;</span>
+</span><span id="__span-57-24"><a id="__codelineno-57-24" name="__codelineno-57-24" href="#__codelineno-57-24"></a><span class="w">    </span><span class="nt">&lt;key&gt;</span>EnableTransactions<span class="nt">&lt;/key&gt;</span>
+</span><span id="__span-57-25"><a id="__codelineno-57-25" name="__codelineno-57-25" href="#__codelineno-57-25"></a><span class="w">    </span><span class="nt">&lt;true/&gt;</span>
+</span><span id="__span-57-26"><a id="__codelineno-57-26" name="__codelineno-57-26" href="#__codelineno-57-26"></a><span class="w"> </span><span class="nt">&lt;/dict&gt;</span>
+</span><span id="__span-57-27"><a id="__codelineno-57-27" name="__codelineno-57-27" href="#__codelineno-57-27"></a><span class="w"> </span><span class="nt">&lt;/plist&gt;</span>
+</span></code></pre></div>
+</details>
+<p>执行 <code>sudo vim /etc/crontab</code> 创建 <code>/etc/crontab</code> 文件，参考 ubuntu 填入以下模版内容：</p>
+<div class="language-Shell highlight"><span class="filename">/etc/crontab</span><pre><span></span><code><span id="__span-58-1"><a id="__codelineno-58-1" name="__codelineno-58-1" href="#__codelineno-58-1"></a><span class="nv">SHELL</span><span class="o">=</span>/bin/bash
+</span><span id="__span-58-2"><a id="__codelineno-58-2" name="__codelineno-58-2" href="#__codelineno-58-2"></a><span class="nv">PATH</span><span class="o">=</span>/sbin:/bin:/usr/sbin:/usr/bin
+</span><span id="__span-58-3"><a id="__codelineno-58-3" name="__codelineno-58-3" href="#__codelineno-58-3"></a><span class="nv">MAILTO</span><span class="o">=</span>root
+</span><span id="__span-58-4"><a id="__codelineno-58-4" name="__codelineno-58-4" href="#__codelineno-58-4"></a>
+</span><span id="__span-58-5"><a id="__codelineno-58-5" name="__codelineno-58-5" href="#__codelineno-58-5"></a><span class="c1"># For details see man 4 crontabs</span>
+</span><span id="__span-58-6"><a id="__codelineno-58-6" name="__codelineno-58-6" href="#__codelineno-58-6"></a>
+</span><span id="__span-58-7"><a id="__codelineno-58-7" name="__codelineno-58-7" href="#__codelineno-58-7"></a><span class="c1"># Example of job definition:</span>
+</span><span id="__span-58-8"><a id="__codelineno-58-8" name="__codelineno-58-8" href="#__codelineno-58-8"></a><span class="c1"># .---------------- minute (0 - 59)</span>
+</span><span id="__span-58-9"><a id="__codelineno-58-9" name="__codelineno-58-9" href="#__codelineno-58-9"></a><span class="c1"># |  .------------- hour (0 - 23)</span>
+</span><span id="__span-58-10"><a id="__codelineno-58-10" name="__codelineno-58-10" href="#__codelineno-58-10"></a><span class="c1"># |  |  .---------- day of month (1 - 31)</span>
+</span><span id="__span-58-11"><a id="__codelineno-58-11" name="__codelineno-58-11" href="#__codelineno-58-11"></a><span class="c1"># |  |  |  .------- month (1 - 12) OR jan,feb,mar,apr ...</span>
+</span><span id="__span-58-12"><a id="__codelineno-58-12" name="__codelineno-58-12" href="#__codelineno-58-12"></a><span class="c1"># |  |  |  |  .---- day of week (0 - 6) (Sunday=0 or 7) OR sun,mon,tue,wed,thu,fri,sat</span>
+</span><span id="__span-58-13"><a id="__codelineno-58-13" name="__codelineno-58-13" href="#__codelineno-58-13"></a><span class="c1"># |  |  |  |  |</span>
+</span><span id="__span-58-14"><a id="__codelineno-58-14" name="__codelineno-58-14" href="#__codelineno-58-14"></a><span class="c1"># *  *  *  *  * user-name  command to be executed</span>
+</span></code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">macOS 重启 cron 服务</p>
+<ol>
+<li>
+<p>cron 服务开启、关闭、重启：</p>
+<ul>
+<li>sudo /usr/sbin/cron start</li>
+<li>sudo /usr/sbin/cron stop</li>
+<li>sudo /usr/sbin/cron restart</li>
+</ul>
+</li>
+<li>
+<p>如果修改了配置文件，执行 launchctl load 命令（可添加 -w 选项）：</p>
+<ul>
+<li>sudo launchctl load /System/Library/LaunchDaemons/com.vix.cron.plist</li>
+<li>sudo launchctl unload /System/Library/LaunchDaemons/com.vix.cron.plist</li>
+</ul>
+</li>
+</ol>
+</div>
+<p>执行完以上配置，再观察检查 time.txt。如果还没有内容，可能是该测试命令涉及到写磁盘文件，需要给 cron 授权。</p>
+<div class="admonition note">
+<p class="admonition-title">授权 cron 写磁盘权限</p>
+<p><a href="https://osxdaily.com/2020/04/27/fix-cron-permissions-macos-full-disk-access/">How to Fix Cron Permission Issues in macOS</a><br />
+ 1. 执行 <code>which cron</code> 查找到 cron 命令的位置：/usr/sbin/cron。<br />
+ 2. 打开 macOS 设置(System Settings)，隐私与安全性(Privacy &amp; Security)，点进完全磁盘访问权限(Full Disk Access)。<br />
+ 3. 点按左下角的 + 号，在打开的访达窗口按 <span class="keys"><kbd class="key-shift">Shift</kbd><span>+</span><kbd class="key-command">Cmd</kbd><span>+</span><kbd class="key-g">G</kbd></span> 调出路径访问方式，输入 <code>/usr/sbin/cron</code> 回车，找到 cron 命令添加。</p>
+</div>
+<p>正常情况下，到这一步，time.txt 中应该可以看到，每分钟追加写入了一行当前日期时间。</p>
+<p>接下来配置 crontab 定时任务，白天每隔两小时备份一下特定文件，并按时辰命名。</p>
+<div class="language-Shell highlight"><span class="filename">crontab -e</span><pre><span></span><code><span id="__span-59-1"><a id="__codelineno-59-1" name="__codelineno-59-1" href="#__codelineno-59-1"></a><span class="c1"># every two hour: 5,7,9,11,13,15,17,19,21,23</span>
+</span><span id="__span-59-2"><a id="__codelineno-59-2" name="__codelineno-59-2" href="#__codelineno-59-2"></a><span class="m">0</span><span class="w"> </span><span class="m">5</span>-23/2<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>rclone<span class="w"> </span>copyto<span class="w"> </span>-v<span class="w"> </span>/Users/faner/Documents/English/LINKIN-WORDS-7000/恋词考研英语-全真题源报刊7000词-索引红版.pdf<span class="w"> </span>smbhd@rpi4b:WDHD/backups/English/恋词考研英语-全真题源报刊7000词-索引红版-<span class="sb">`</span>date<span class="w"> </span>+<span class="se">\%</span>Y<span class="se">\%</span>m<span class="se">\%</span>d<span class="se">\%</span>H<span class="sb">`</span>.pdf<span class="w"> </span>--log-file<span class="o">=</span>/Users/faner/.config/rclone/rclone-<span class="sb">`</span>date<span class="w"> </span>+<span class="se">\%</span>Y<span class="se">\%</span>m<span class="sb">`</span>.log
+</span></code></pre></div>
+<p>先把调度时间改为每分钟，看看是否正常运行：</p>
+<div class="language-Shell highlight"><span class="filename">crontab -e</span><pre><span></span><code><span id="__span-60-1"><a id="__codelineno-60-1" name="__codelineno-60-1" href="#__codelineno-60-1"></a>*/1<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>rclone<span class="w"> </span>copyto<span class="w"> </span>-v<span class="w"> </span>/Users/faner/Documents/English/LINKIN-WORDS-7000/恋词考研英语-全真题源报刊7000词-索引红版.pdf<span class="w"> </span>smbhd@rpi4b:WDHD/backups/English/恋词考研英语-全真题源报刊7000词-索引红版-<span class="sb">`</span>date<span class="w"> </span>+<span class="se">\%</span>Y<span class="se">\%</span>m<span class="se">\%</span>d<span class="se">\%</span>H<span class="se">\%</span>M<span class="sb">`</span>.pdf<span class="w"> </span>--log-file<span class="o">=</span>/Users/faner/.config/rclone/rclone-<span class="sb">`</span>date<span class="w"> </span>+<span class="se">\%</span>Y<span class="se">\%</span>m<span class="sb">`</span>.log
+</span></code></pre></div>
+<p>等了几分钟，查看 rclone 日志文件没有相应运行日志，在 dstpath 中也没有看到预期同步的文件。</p>
+<p>cron 执行出错时默认会通过 MTA 服务给系统管理员发邮件，执行 <code>vim /var/mail/$USER</code> 检查当前用户的邮箱。</p>
+<p>果然，其中提示找不到 rclone 命令：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-61-1"><a id="__codelineno-61-1" name="__codelineno-61-1" href="#__codelineno-61-1"></a>/bin/sh:<span class="w"> </span>rclone:<span class="w"> </span><span class="nb">command</span><span class="w"> </span>not<span class="w"> </span>found
+</span></code></pre></div>
+<p>执行 <code>which rclone</code>，显示 brew 安装的 rclone 路径为 <code>/usr/local/bin/rclone</code>。</p>
+<p>可能系统服务启动的 shell 环境的 PATH 中并没有 /usr/local/bin。</p>
+<p>将 rclone 命令改为绝对路径 <code>/usr/local/bin/rclone</code>：</p>
+<div class="language-Shell highlight"><span class="filename">crontab -e</span><pre><span></span><code><span id="__span-62-1"><a id="__codelineno-62-1" name="__codelineno-62-1" href="#__codelineno-62-1"></a>*/1<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>/usr/local/bin/rclone<span class="w"> </span>copyto<span class="w"> </span>-v<span class="w"> </span>/Users/faner/Documents/English/LINKIN-WORDS-7000/恋词考研英语-全真题源报刊7000词-索引红版.pdf<span class="w"> </span>smbhd@rpi4b:WDHD/backups/English/恋词考研英语-全真题源报刊7000词-索引红版-<span class="sb">`</span>date<span class="w"> </span>+<span class="se">\%</span>Y<span class="se">\%</span>m<span class="se">\%</span>d<span class="se">\%</span>H<span class="se">\%</span>M<span class="sb">`</span>.pdf<span class="w"> </span>--log-file<span class="o">=</span>/Users/faner/.config/rclone/rclone-<span class="sb">`</span>date<span class="w"> </span>+<span class="se">\%</span>Y<span class="se">\%</span>m<span class="sb">`</span>.log
+</span></code></pre></div>
+<div class="admonition note">
+<p>由于以上命令是 rclone copyto remote（upload），读本地写远端，所以不涉及本地写磁盘权限问题。<br />
+如果是 rclone copyto local（download），可能涉及写磁盘权限问题，按照上面的步骤开启授权即可。</p>
+</div>
+<p>验证任务生效后，将调度时间修改为预期的同步频率，后续核对日志校验定时备份任务执行情况。</p>
+<div class="language-Shell highlight"><span class="filename">crontab -e</span><pre><span></span><code><span id="__span-63-1"><a id="__codelineno-63-1" name="__codelineno-63-1" href="#__codelineno-63-1"></a><span class="c1"># 每隔 12h，即半天备份一次</span>
+</span><span id="__span-63-2"><a id="__codelineno-63-2" name="__codelineno-63-2" href="#__codelineno-63-2"></a><span class="m">0</span><span class="w"> </span>*/12<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>/usr/local/bin/rclone<span class="w"> </span>copyto<span class="w"> </span>-v<span class="w"> </span>/Users/faner/Documents/English/LINKIN-WORDS-7000/恋词考研英语-全真题源报刊7000词-索引红版.pdf<span class="w"> </span>smbhd@rpi4b:WDHD/backups/English/恋词考研英语-全真题源报刊7000词-索引红版-<span class="sb">`</span>date<span class="w"> </span>+<span class="se">\%</span>Y<span class="se">\%</span>m<span class="se">\%</span>d<span class="se">\%</span>H<span class="sb">`</span>.pdf<span class="w"> </span>--log-file<span class="o">=</span>/Users/faner/.config/rclone/rclone-<span class="sb">`</span>date<span class="w"> </span>+<span class="se">\%</span>Y<span class="se">\%</span>m<span class="sb">`</span>.log
+</span></code></pre></div>
+<h3 id="check_logs">check logs<a class="headerlink" href="#check_logs" title="Permanent link">#</a></h3>
+<p>每天检查日志文件，确认系统 cron 定时任务和 rclone sysnc 同步任务执行情况。</p>
+<p>系统日志 /var/log/syslog 中，应该有类似的条目：</p>
+<div class="language-dmesg highlight"><pre><span></span><code><span id="__span-64-1"><a id="__codelineno-64-1" name="__codelineno-64-1" href="#__codelineno-64-1"></a><span class="err">$ grep -a CRON /var/log/syslog</span>
+</span><span id="__span-64-2"><a id="__codelineno-64-2" name="__codelineno-64-2" href="#__codelineno-64-2"></a><span class="err">Apr  7 02:30:00 rpi4b-ubuntu CRON[62328]: (pifan) CMD (rclone sync -v webdav-rpi4b: /media/WDHD/webdav@rpi4b --log-file=/home/pifan/.config/rclone/rclone.log)</span>
+</span></code></pre></div>
+<p>也可以开启 cron 独立日志，后续直接查看 /var/log/cron.log。</p>
 <div class="admonition note">
 <p class="admonition-title">Use Independent Crontab Logs</p>
 <ol>
@@ -2658,129 +2827,25 @@ macOS 下的 rclone 运行日志可以考虑放到 /usr/local/var/log 目录下�
 <li><code>sudo systemctl restart rsyslog</code></li>
 </ol>
 </div>
-<p>确认 cron 定时任务执行后，再检查 rclone 当天的运行日志 rclone-<code>date +\%Y\%m\%d</code>.log，查看同步情况。</p>
-<h3 id="macos">macOS<a class="headerlink" href="#macos" title="Permanent link">#</a></h3>
-<p>执行 <code>crontab -e</code> 在末尾新增一条测试任务，每分钟执行 date 写入文件 time.txt。</p>
-<div class="language-Shell highlight"><span class="filename">crontab -e test</span><pre><span></span><code><span id="__span-51-1"><a id="__codelineno-51-1" name="__codelineno-51-1" href="#__codelineno-51-1"></a>*/1<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>date<span class="w"> </span>&gt;&gt;<span class="w"> </span>/Users/faner/Downloads/time.txt
-</span></code></pre></div>
-<p>整点分钟，观察 time.txt 是否有追加内容，以验证 cron 任务正常执行。</p>
-<p>如果之前未在 macOS 上配置过 cron，大概率会失败，按照以下步骤配置。</p>
+<hr />
+<p>macOS 的系统日志 /var/log/system.log 中没有搜到任何 cron 相关的运行日志。</p>
+<p>参考 <a href="https://stackoverflow.com/questions/5475800/mac-os-x-cron-log-tracking">macos - Mac OS X cron log / tracking</a>，执行 <code>log show --process cron</code> 可以看到 crontab/cron 的 Activity 活动日志。</p>
 <div class="admonition note">
-<p class="admonition-title">macOS 下的 cron</p>
-<p>macOS 下的 cron 是系统启动服务（LaunchDaemons），每次执行 <code>crontab -e</code> 编辑保存，都提示需要授权终端管理员权限！</p>
+<p class="admonition-title">cron -x debugflag</p>
+<p><a href="https://superuser.com/questions/134864/log-of-cron-actions-on-os-x">macos - Log of cron actions on OS X</a> 中提到，参考 man cron 中的 <code>-x debugflag</code>，可修改 com.vix.cron.plist，为 ProgramArguments 添加 <code>-x</code> 调试选项，并配置 StandardErrorPath 为 /var/log/cron.log。尚未具体实践验证。</p>
 </div>
-<p>首先从 launchctl list 中查找 cron 服务：</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-52-1"><a id="__codelineno-52-1" name="__codelineno-52-1" href="#__codelineno-52-1"></a>$<span class="w"> </span>sudo<span class="w"> </span>launchctl<span class="w"> </span>list<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s1">&#39;cron&#39;</span>
-</span><span id="__span-52-2"><a id="__codelineno-52-2" name="__codelineno-52-2" href="#__codelineno-52-2"></a><span class="m">86386</span><span class="w">   </span><span class="m">0</span><span class="w">   </span>com.vix.cron
-</span></code></pre></div>
-<p>其中第一列是服务进程ID（pid）；第二列是服务状态，0代表正常；第三列是服务plist名。</p>
-<p>尝试执行 <code>locate com.vix.cron</code> 全局查找 cron 服务的配置文件位置：</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-53-1"><a id="__codelineno-53-1" name="__codelineno-53-1" href="#__codelineno-53-1"></a>$<span class="w"> </span>locate<span class="w"> </span>com.vix.cron
-</span><span id="__span-53-2"><a id="__codelineno-53-2" name="__codelineno-53-2" href="#__codelineno-53-2"></a>
-</span><span id="__span-53-3"><a id="__codelineno-53-3" name="__codelineno-53-3" href="#__codelineno-53-3"></a>WARNING:<span class="w"> </span>The<span class="w"> </span>locate<span class="w"> </span>database<span class="w"> </span><span class="o">(</span>/var/db/locate.database<span class="o">)</span><span class="w"> </span>does<span class="w"> </span>not<span class="w"> </span>exist.
-</span><span id="__span-53-4"><a id="__codelineno-53-4" name="__codelineno-53-4" href="#__codelineno-53-4"></a>To<span class="w"> </span>create<span class="w"> </span>the<span class="w"> </span>database,<span class="w"> </span>run<span class="w"> </span>the<span class="w"> </span>following<span class="w"> </span>command:
-</span><span id="__span-53-5"><a id="__codelineno-53-5" name="__codelineno-53-5" href="#__codelineno-53-5"></a>
-</span><span id="__span-53-6"><a id="__codelineno-53-6" name="__codelineno-53-6" href="#__codelineno-53-6"></a><span class="w">  </span>sudo<span class="w"> </span>launchctl<span class="w"> </span>load<span class="w"> </span>-w<span class="w"> </span>/System/Library/LaunchDaemons/com.apple.locate.plist
-</span><span id="__span-53-7"><a id="__codelineno-53-7" name="__codelineno-53-7" href="#__codelineno-53-7"></a>
-</span><span id="__span-53-8"><a id="__codelineno-53-8" name="__codelineno-53-8" href="#__codelineno-53-8"></a>Please<span class="w"> </span>be<span class="w"> </span>aware<span class="w"> </span>that<span class="w"> </span>the<span class="w"> </span>database<span class="w"> </span>can<span class="w"> </span>take<span class="w"> </span>some<span class="w"> </span><span class="nb">time</span><span class="w"> </span>to<span class="w"> </span>generate<span class="p">;</span><span class="w"> </span>once
-</span><span id="__span-53-9"><a id="__codelineno-53-9" name="__codelineno-53-9" href="#__codelineno-53-9"></a>the<span class="w"> </span>database<span class="w"> </span>has<span class="w"> </span>been<span class="w"> </span>created,<span class="w"> </span>this<span class="w"> </span>message<span class="w"> </span>will<span class="w"> </span>no<span class="w"> </span>longer<span class="w"> </span>appear.
-</span></code></pre></div>
-<p>按照提示执行加载 <code>com.apple.locate</code> 服务，创建一个database：</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-54-1"><a id="__codelineno-54-1" name="__codelineno-54-1" href="#__codelineno-54-1"></a>$<span class="w"> </span>sudo<span class="w"> </span>launchctl<span class="w"> </span>load<span class="w"> </span>-w<span class="w"> </span>/System/Library/LaunchDaemons/com.apple.locate.plist
-</span></code></pre></div>
-<p>然后，再次执行 <code>locate com.vix.cron</code> 查找到 cron 服务的配置文件位置：</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-55-1"><a id="__codelineno-55-1" name="__codelineno-55-1" href="#__codelineno-55-1"></a>$<span class="w"> </span>locate<span class="w"> </span>com.vix.cron
-</span><span id="__span-55-2"><a id="__codelineno-55-2" name="__codelineno-55-2" href="#__codelineno-55-2"></a>/System/Library/LaunchDaemons/com.vix.cron.plist
-</span></code></pre></div>
-<p>执行 cat 或 vim 查看该配置文件，发现其 PathState 中的 <code>/etc/crontab</code> 配置文件默认不存在。</p>
-<details class="info">
-<summary>com.vix.cron.plist</summary>
-<div class="language-xml highlight"><pre><span></span><code><span id="__span-56-1"><a id="__codelineno-56-1" name="__codelineno-56-1" href="#__codelineno-56-1"></a><span class="w"> </span><span class="cp">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span>
-</span><span id="__span-56-2"><a id="__codelineno-56-2" name="__codelineno-56-2" href="#__codelineno-56-2"></a><span class="w"> </span><span class="cp">&lt;!DOCTYPE plist PUBLIC &quot;-//Apple Computer//DTD PLIST 1.0//EN&quot;</span>
-</span><span id="__span-56-3"><a id="__codelineno-56-3" name="__codelineno-56-3" href="#__codelineno-56-3"></a><span class="cp">    &quot;http://www.apple.com/DTDs/PropertyList-1.0.dtd&quot;&gt;</span>
-</span><span id="__span-56-4"><a id="__codelineno-56-4" name="__codelineno-56-4" href="#__codelineno-56-4"></a><span class="w"> </span><span class="nt">&lt;plist</span><span class="w"> </span><span class="na">version=</span><span class="s">&quot;1.0&quot;</span><span class="nt">&gt;</span>
-</span><span id="__span-56-5"><a id="__codelineno-56-5" name="__codelineno-56-5" href="#__codelineno-56-5"></a><span class="w"> </span><span class="nt">&lt;dict&gt;</span>
-</span><span id="__span-56-6"><a id="__codelineno-56-6" name="__codelineno-56-6" href="#__codelineno-56-6"></a><span class="w">    </span><span class="nt">&lt;key&gt;</span>Label<span class="nt">&lt;/key&gt;</span>
-</span><span id="__span-56-7"><a id="__codelineno-56-7" name="__codelineno-56-7" href="#__codelineno-56-7"></a><span class="w">    </span><span class="nt">&lt;string&gt;</span>com.vix.cron<span class="nt">&lt;/string&gt;</span>
-</span><span id="__span-56-8"><a id="__codelineno-56-8" name="__codelineno-56-8" href="#__codelineno-56-8"></a><span class="w">    </span><span class="nt">&lt;key&gt;</span>ProgramArguments<span class="nt">&lt;/key&gt;</span>
-</span><span id="__span-56-9"><a id="__codelineno-56-9" name="__codelineno-56-9" href="#__codelineno-56-9"></a><span class="w">    </span><span class="nt">&lt;array&gt;</span>
-</span><span id="__span-56-10"><a id="__codelineno-56-10" name="__codelineno-56-10" href="#__codelineno-56-10"></a><span class="w">        </span><span class="nt">&lt;string&gt;</span>/usr/sbin/cron<span class="nt">&lt;/string&gt;</span>
-</span><span id="__span-56-11"><a id="__codelineno-56-11" name="__codelineno-56-11" href="#__codelineno-56-11"></a><span class="w">    </span><span class="nt">&lt;/array&gt;</span>
-</span><span id="__span-56-12"><a id="__codelineno-56-12" name="__codelineno-56-12" href="#__codelineno-56-12"></a><span class="w">    </span><span class="nt">&lt;key&gt;</span>KeepAlive<span class="nt">&lt;/key&gt;</span>
-</span><span id="__span-56-13"><a id="__codelineno-56-13" name="__codelineno-56-13" href="#__codelineno-56-13"></a><span class="w">    </span><span class="nt">&lt;dict&gt;</span>
-</span><span id="__span-56-14"><a id="__codelineno-56-14" name="__codelineno-56-14" href="#__codelineno-56-14"></a><span class="w">        </span><span class="nt">&lt;key&gt;</span>PathState<span class="nt">&lt;/key&gt;</span>
-</span><span id="__span-56-15"><a id="__codelineno-56-15" name="__codelineno-56-15" href="#__codelineno-56-15"></a><span class="w">        </span><span class="nt">&lt;dict&gt;</span>
-</span><span id="__span-56-16"><a id="__codelineno-56-16" name="__codelineno-56-16" href="#__codelineno-56-16"></a><span class="w">            </span><span class="nt">&lt;key&gt;</span>/etc/crontab<span class="nt">&lt;/key&gt;</span>
-</span><span id="__span-56-17"><a id="__codelineno-56-17" name="__codelineno-56-17" href="#__codelineno-56-17"></a><span class="w">            </span><span class="nt">&lt;true/&gt;</span>
-</span><span id="__span-56-18"><a id="__codelineno-56-18" name="__codelineno-56-18" href="#__codelineno-56-18"></a><span class="w">        </span><span class="nt">&lt;/dict&gt;</span>
-</span><span id="__span-56-19"><a id="__codelineno-56-19" name="__codelineno-56-19" href="#__codelineno-56-19"></a><span class="w">    </span><span class="nt">&lt;/dict&gt;</span>
-</span><span id="__span-56-20"><a id="__codelineno-56-20" name="__codelineno-56-20" href="#__codelineno-56-20"></a><span class="w">    </span><span class="nt">&lt;key&gt;</span>QueueDirectories<span class="nt">&lt;/key&gt;</span>
-</span><span id="__span-56-21"><a id="__codelineno-56-21" name="__codelineno-56-21" href="#__codelineno-56-21"></a><span class="w">    </span><span class="nt">&lt;array&gt;</span>
-</span><span id="__span-56-22"><a id="__codelineno-56-22" name="__codelineno-56-22" href="#__codelineno-56-22"></a><span class="w">        </span><span class="nt">&lt;string&gt;</span>/usr/lib/cron/tabs<span class="nt">&lt;/string&gt;</span>
-</span><span id="__span-56-23"><a id="__codelineno-56-23" name="__codelineno-56-23" href="#__codelineno-56-23"></a><span class="w">    </span><span class="nt">&lt;/array&gt;</span>
-</span><span id="__span-56-24"><a id="__codelineno-56-24" name="__codelineno-56-24" href="#__codelineno-56-24"></a><span class="w">    </span><span class="nt">&lt;key&gt;</span>EnableTransactions<span class="nt">&lt;/key&gt;</span>
-</span><span id="__span-56-25"><a id="__codelineno-56-25" name="__codelineno-56-25" href="#__codelineno-56-25"></a><span class="w">    </span><span class="nt">&lt;true/&gt;</span>
-</span><span id="__span-56-26"><a id="__codelineno-56-26" name="__codelineno-56-26" href="#__codelineno-56-26"></a><span class="w"> </span><span class="nt">&lt;/dict&gt;</span>
-</span><span id="__span-56-27"><a id="__codelineno-56-27" name="__codelineno-56-27" href="#__codelineno-56-27"></a><span class="w"> </span><span class="nt">&lt;/plist&gt;</span>
-</span></code></pre></div>
-</details>
-<p>执行 <code>sudo vim /etc/crontab</code> 创建 <code>/etc/crontab</code> 文件，参考 ubuntu 填入以下模版内容：</p>
-<div class="language-Shell highlight"><span class="filename">/etc/crontab</span><pre><span></span><code><span id="__span-57-1"><a id="__codelineno-57-1" name="__codelineno-57-1" href="#__codelineno-57-1"></a><span class="nv">SHELL</span><span class="o">=</span>/bin/bash
-</span><span id="__span-57-2"><a id="__codelineno-57-2" name="__codelineno-57-2" href="#__codelineno-57-2"></a><span class="nv">PATH</span><span class="o">=</span>/sbin:/bin:/usr/sbin:/usr/bin
-</span><span id="__span-57-3"><a id="__codelineno-57-3" name="__codelineno-57-3" href="#__codelineno-57-3"></a><span class="nv">MAILTO</span><span class="o">=</span>root
-</span><span id="__span-57-4"><a id="__codelineno-57-4" name="__codelineno-57-4" href="#__codelineno-57-4"></a>
-</span><span id="__span-57-5"><a id="__codelineno-57-5" name="__codelineno-57-5" href="#__codelineno-57-5"></a><span class="c1"># For details see man 4 crontabs</span>
-</span><span id="__span-57-6"><a id="__codelineno-57-6" name="__codelineno-57-6" href="#__codelineno-57-6"></a>
-</span><span id="__span-57-7"><a id="__codelineno-57-7" name="__codelineno-57-7" href="#__codelineno-57-7"></a><span class="c1"># Example of job definition:</span>
-</span><span id="__span-57-8"><a id="__codelineno-57-8" name="__codelineno-57-8" href="#__codelineno-57-8"></a><span class="c1"># .---------------- minute (0 - 59)</span>
-</span><span id="__span-57-9"><a id="__codelineno-57-9" name="__codelineno-57-9" href="#__codelineno-57-9"></a><span class="c1"># |  .------------- hour (0 - 23)</span>
-</span><span id="__span-57-10"><a id="__codelineno-57-10" name="__codelineno-57-10" href="#__codelineno-57-10"></a><span class="c1"># |  |  .---------- day of month (1 - 31)</span>
-</span><span id="__span-57-11"><a id="__codelineno-57-11" name="__codelineno-57-11" href="#__codelineno-57-11"></a><span class="c1"># |  |  |  .------- month (1 - 12) OR jan,feb,mar,apr ...</span>
-</span><span id="__span-57-12"><a id="__codelineno-57-12" name="__codelineno-57-12" href="#__codelineno-57-12"></a><span class="c1"># |  |  |  |  .---- day of week (0 - 6) (Sunday=0 or 7) OR sun,mon,tue,wed,thu,fri,sat</span>
-</span><span id="__span-57-13"><a id="__codelineno-57-13" name="__codelineno-57-13" href="#__codelineno-57-13"></a><span class="c1"># |  |  |  |  |</span>
-</span><span id="__span-57-14"><a id="__codelineno-57-14" name="__codelineno-57-14" href="#__codelineno-57-14"></a><span class="c1"># *  *  *  *  * user-name  command to be executed</span>
-</span></code></pre></div>
-<p>执行完以上配置，再观察检查 time.txt。如果还没有内容，可能是该测试命令涉及到写磁盘文件，需要给 cron 授权。</p>
-<div class="admonition note">
-<p class="admonition-title">授权 cron 写磁盘权限</p>
-<ol>
-<li>执行 <code>which cron</code> 查找到 cron 命令的位置：/usr/sbin/cron。</li>
-<li>打开 macOS 设置(System Settings)，隐私与安全性(Privacy &amp; Security)，点进完全磁盘访问权限(Full Disk Access)。</li>
-<li>点按左下角的 + 号，在打开的访达窗口按 <span class="keys"><kbd class="key-shift">Shift</kbd><span>+</span><kbd class="key-command">Cmd</kbd><span>+</span><kbd class="key-g">G</kbd></span> 调出路径访问方式，输入 <code>/usr/sbin/cron</code> 回车，找到 cron 命令添加。</li>
-</ol>
-</div>
-<p>正常情况下，到这一步，time.txt 中应该可以看到，每分钟追加写入了一行当前日期时间。</p>
-<p>接下来配置 crontab 定时任务，白天每隔两小时备份一下特定文件，并按时辰命名。</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-58-1"><a id="__codelineno-58-1" name="__codelineno-58-1" href="#__codelineno-58-1"></a><span class="c1"># every two hour: 5,7,9,11,13,15,17,19,21,23</span>
-</span><span id="__span-58-2"><a id="__codelineno-58-2" name="__codelineno-58-2" href="#__codelineno-58-2"></a><span class="m">0</span><span class="w"> </span><span class="m">5</span>-23/2<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>rclone<span class="w"> </span>copyto<span class="w"> </span>-v<span class="w"> </span>/Users/faner/Documents/English/LINKIN-WORDS-7000/恋词考研英语-全真题源报刊7000词-索引红版.pdf<span class="w"> </span>smbhd@rpi4b:WDHD/backups/English/恋词考研英语-全真题源报刊7000词-索引红版-<span class="sb">`</span>date<span class="w"> </span>+<span class="se">\%</span>Y<span class="se">\%</span>m<span class="se">\%</span>d<span class="se">\%</span>H<span class="sb">`</span>.pdf<span class="w"> </span>--log-file<span class="o">=</span>/Users/faner/.config/rclone/rclone-<span class="sb">`</span>date<span class="w"> </span>+<span class="se">\%</span>Y<span class="se">\%</span>m<span class="sb">`</span>.log
-</span></code></pre></div>
-<p>先把调度时间改为每分钟，看看是否正常运行：</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-59-1"><a id="__codelineno-59-1" name="__codelineno-59-1" href="#__codelineno-59-1"></a>*/1<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>rclone<span class="w"> </span>copyto<span class="w"> </span>-v<span class="w"> </span>/Users/faner/Documents/English/LINKIN-WORDS-7000/恋词考研英语-全真题源报刊7000词-索引红版.pdf<span class="w"> </span>smbhd@rpi4b:WDHD/backups/English/恋词考研英语-全真题源报刊7000词-索引红版-<span class="sb">`</span>date<span class="w"> </span>+<span class="se">\%</span>Y<span class="se">\%</span>m<span class="se">\%</span>d<span class="se">\%</span>H<span class="se">\%</span>M<span class="sb">`</span>.pdf<span class="w"> </span>--log-file<span class="o">=</span>/Users/faner/.config/rclone/rclone-<span class="sb">`</span>date<span class="w"> </span>+<span class="se">\%</span>Y<span class="se">\%</span>m<span class="sb">`</span>.log
-</span></code></pre></div>
-<p>等了几分钟，查看 rclone 日志文件没有相应运行日志，在 dstpath 中也没有看到预期同步的文件。</p>
-<p>cron 执行出错时默认会通过 MTA 服务给系统管理员发邮件，执行 <code>vim /var/mail/$USER</code> 检查当前用户的邮箱。</p>
-<p>果然，其中提示找不到 rclone 命令：</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-60-1"><a id="__codelineno-60-1" name="__codelineno-60-1" href="#__codelineno-60-1"></a>/bin/sh:<span class="w"> </span>rclone:<span class="w"> </span><span class="nb">command</span><span class="w"> </span>not<span class="w"> </span>found
-</span></code></pre></div>
-<p>执行 <code>which rclone</code>，显示 brew 安装的 rclone 路径为 <code>/usr/local/bin/rclone</code>。</p>
-<p>可能系统服务启动的 shell 环境的 PATH 中并没有 /usr/local/bin。</p>
-<p>将 rclone 命令改为绝对路径 <code>/usr/local/bin/rclone</code>：</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-61-1"><a id="__codelineno-61-1" name="__codelineno-61-1" href="#__codelineno-61-1"></a>*/1<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>/usr/local/bin/rclone<span class="w"> </span>copyto<span class="w"> </span>-v<span class="w"> </span>/Users/faner/Documents/English/LINKIN-WORDS-7000/恋词考研英语-全真题源报刊7000词-索引红版.pdf<span class="w"> </span>smbhd@rpi4b:WDHD/backups/English/恋词考研英语-全真题源报刊7000词-索引红版-<span class="sb">`</span>date<span class="w"> </span>+<span class="se">\%</span>Y<span class="se">\%</span>m<span class="se">\%</span>d<span class="se">\%</span>H<span class="se">\%</span>M<span class="sb">`</span>.pdf<span class="w"> </span>--log-file<span class="o">=</span>/Users/faner/.config/rclone/rclone-<span class="sb">`</span>date<span class="w"> </span>+<span class="se">\%</span>Y<span class="se">\%</span>m<span class="sb">`</span>.log
-</span></code></pre></div>
-<div class="admonition note">
-<p>由于以上命令是 rclone copyto remote（upload），读本地写远端，所以不涉及本地写磁盘权限问题。<br />
-如果是 rclone copyto local（download），可能涉及写磁盘权限问题，按照上面的步骤开启授权即可。</p>
-</div>
-<p>验证任务生效后，将调度时间修改为预期的同步频率，后续核对日志校验定时备份任务执行情况。</p>
+<hr />
+<p>确认 cron 定时任务执行后，再检查配置目录 ~/.config/rclone/ 下当天/月的运行日志 rclone-<code>date</code>.log，查看同步情况。</p>
 <h2 id="refs">refs<a class="headerlink" href="#refs" title="Permanent link">#</a></h2>
 <p><a href="https://rclone.org/commands/rclone_mount/">rclone mount</a><br />
 <a href="https://rclone.org/commands/rclone_nfsmount/">rclone nfsmount</a></p>
-<p><a href="https://www.cnblogs.com/varden/p/17181717.html">Rclone云存储数据同步工具</a></p>
-<p><a href="https://cloud.tencent.com/developer/article/2192254">备份同步神器 Rclone 使用教程</a></p>
-<p><a href="https://blog.csdn.net/neowell/article/details/134009677">rclone 选项参数 --min-age/--max-age 的理解</a></p>
-<p><a href="https://kpfd.com/macos%E7%B3%BB%E7%BB%9F%E4%B8%8B%E8%87%AA%E5%8A%A8%E6%8C%82%E8%BD%BDrclone%E8%BF%9C%E7%A8%8B%E5%AD%98%E5%82%A8%E5%AE%9E%E7%8E%B0%E5%BC%80%E6%9C%BA%E5%90%AF%E5%8A%A8%E9%A1%B9">macOS系统下自动挂载rclone远程存储：实现开机启动项</a></p>
-<p><a href="https://medium.com/@justin_ng/how-to-run-your-script-on-a-schedule-using-crontab-on-macos-a-step-by-step-guide-a7ba539acf76">How to run your script on a schedule using crontab on macOS: A step-by-step guide</a><br />
-<a href="https://blog.humh.cn/?p=947">记录一次macOS上crontab未成功执行问题的排查过程！</a><br />
+<p><a href="https://www.cnblogs.com/varden/p/17181717.html">Rclone云存储数据同步工具</a><br />
+<a href="https://cloud.tencent.com/developer/article/2192254">备份同步神器 Rclone 使用教程</a></p>
+<p><a href="https://blog.csdn.net/neowell/article/details/134009677">rclone 选项参数 --min-age/--max-age 的理解</a><br />
+<a href="https://kpfd.com/macos%E7%B3%BB%E7%BB%9F%E4%B8%8B%E8%87%AA%E5%8A%A8%E6%8C%82%E8%BD%BDrclone%E8%BF%9C%E7%A8%8B%E5%AD%98%E5%82%A8%E5%AE%9E%E7%8E%B0%E5%BC%80%E6%9C%BA%E5%90%AF%E5%8A%A8%E9%A1%B9">macOS系统下自动挂载rclone远程存储：实现开机启动项</a></p>
+<p><a href="https://medium.com/@justin_ng/how-to-run-your-script-on-a-schedule-using-crontab-on-macos-a-step-by-step-guide-a7ba539acf76">schedule using crontab on macOS: A step-by-step guide</a><br />
+<a href="https://chethansp.medium.com/schedule-job-with-crontab-on-macos-d47a1fda47e5">Schedule job with crontab on macOS</a></p>
+<p><a href="https://blog.humh.cn/?p=947">记录一次macOS上crontab未成功执行问题的排查过程！</a><br />
 <a href="https://zhuanlan.zhihu.com/p/564215492">macOS 电脑—设置 crontab</a></p>
 
 
