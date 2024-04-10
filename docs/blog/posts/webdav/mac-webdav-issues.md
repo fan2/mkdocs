@@ -195,7 +195,7 @@ domain.
 
 ## Finder 挂载 WebDAV 卡死问题
 
-macOS Finder 对 WebDAV 的支持貌似不是那么好，可考虑 Finder 的替代品 [QSpace](https://qspace.awehunt.com/en-us/index.html) 或使用专业的云盘加载工具软件 [Cyberduck](https://cyberduck.io/)、[Mountain Duck](https://mountainduck.io/)、[CloudMounter](https://cloudmounter.net/) 等。
+macOS Finder 对 WebDAV 的支持貌似不是那么好，可选择 Finder 的替代品 [QSpace](https://qspace.awehunt.com/en-us/index.html)，或使用免费的 [Cyberduck](https://cyberduck.io/)（[Help Docs](https://docs.duck.sh/)），或考虑专业的云盘加载工具软件 [Mountain Duck](https://mountainduck.io/)、[CloudMounter](https://cloudmounter.net/) 等。
 
 !!! note "WebDAVDevs/awesome-webdav"
 
@@ -244,3 +244,8 @@ $ sudo killall -9 webdavfs_agent
 - [Webdav slowness problem on catalina and Big Sur (Finder)](https://www.reddit.com/r/MacOS/comments/ikr7jj/webdav_slowness_problem_on_catalina_and_big_sur/)
 
 - [How to forceably unmount stuck network share in Mac OS X?](https://superuser.com/questions/249611/how-to-forceably-unmount-stuck-network-share-in-mac-os-x)
+
+---
+
+对于稍大一点文件的编辑同步，Finder 卡死问题频发，确实令人头痛不已。
+不想折腾，果断弃坑。现已改用 [Cyberduck](https://cyberduck.io/) + [Rclone](https://rclone.org/)，they just work like a charm!

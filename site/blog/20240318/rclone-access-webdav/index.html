@@ -1406,7 +1406,7 @@
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7h1.5Z"/></svg>
                           <span class="md-ellipsis">
                             
-                              需要 20 分钟阅读时间
+                              需要 21 分钟阅读时间
                             
                           </span>
                         </div>
@@ -2059,7 +2059,7 @@
 </tr>
 </tbody>
 </table>
-<p><a href="https://rclone.org/commands/rclone_ls/">rclone ls</a></p>
+<p><a href="https://rclone.org/commands/rclone_ls/">rclone ls</a>, <a href="https://rclone.org/commands/rclone_cat/">rclone cat</a></p>
 <p>There are several related list commands</p>
 <ul>
 <li><code>ls</code> to list size and path of objects only</li>
@@ -2809,14 +2809,51 @@ macOS 下的 rclone 运行日志可以考虑放到 /usr/local/var/log 目录下�
 如果是 rclone copyto local（download），可能涉及写磁盘权限问题，按照上面的步骤开启授权即可。</p>
 </div>
 <p>验证任务生效后，将调度时间修改为预期的同步频率，后续核对日志校验定时备份任务执行情况。</p>
-<div class="language-Shell highlight"><span class="filename">crontab -e</span><pre><span></span><code><span id="__span-63-1"><a id="__codelineno-63-1" name="__codelineno-63-1" href="#__codelineno-63-1"></a><span class="c1"># 每隔 12h，即半天备份一次</span>
-</span><span id="__span-63-2"><a id="__codelineno-63-2" name="__codelineno-63-2" href="#__codelineno-63-2"></a><span class="m">0</span><span class="w"> </span>*/12<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>/usr/local/bin/rclone<span class="w"> </span>copyto<span class="w"> </span>-v<span class="w"> </span>/Users/faner/Documents/English/LINKIN-WORDS-7000/恋词考研英语-全真题源报刊7000词-索引红版.pdf<span class="w"> </span>smbhd@rpi4b:WDHD/backups/English/恋词考研英语-全真题源报刊7000词-索引红版-<span class="sb">`</span>date<span class="w"> </span>+<span class="se">\%</span>Y<span class="se">\%</span>m<span class="se">\%</span>d<span class="se">\%</span>H<span class="sb">`</span>.pdf<span class="w"> </span>--log-file<span class="o">=</span>/Users/faner/.config/rclone/rclone-<span class="sb">`</span>date<span class="w"> </span>+<span class="se">\%</span>Y<span class="se">\%</span>m<span class="sb">`</span>.log
+<div class="language-Shell highlight"><span class="filename">crontab -e : 每隔 2h，执行同步脚本</span><pre><span></span><code><span id="__span-63-1"><a id="__codelineno-63-1" name="__codelineno-63-1" href="#__codelineno-63-1"></a><span class="m">0</span><span class="w"> </span>*/2<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>/usr/local/etc/scripts/rclone-sync.sh
 </span></code></pre></div>
+<p>需执行 <code>sudo chmod +x /usr/local/etc/scripts/rclone-sync.sh</code> 赋予其他用户对该脚本的可执行权限。</p>
+<p>备份脚本 <code>rclone-sync.sh</code> 检查文件最后修改时间，如果在 2h 定时周期内无改动则 dry-run，有改动才备份。</p>
+<div class="admonition note">
+<p class="admonition-title">Why not use filtering flag --max-age ?</p>
+<p>如果执行 sync 或 copy 同步目录，可使用 rclone 提供的 <code>--max-age 2h</code> 选项。<br />
+这里执行 copyto 命令备份特定文件，不适用 <code>--max-age</code> 选项，故自行等效实现。</p>
+</div>
+<details class="info">
+<summary>rclone-sync.sh</summary>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-64-1"><a id="__codelineno-64-1" name="__codelineno-64-1" href="#__codelineno-64-1"></a><span class="ch">#!/bin/bash</span>
+</span><span id="__span-64-2"><a id="__codelineno-64-2" name="__codelineno-64-2" href="#__codelineno-64-2"></a>
+</span><span id="__span-64-3"><a id="__codelineno-64-3" name="__codelineno-64-3" href="#__codelineno-64-3"></a><span class="nv">logfile</span><span class="o">=</span><span class="s2">&quot;/Users/faner/.config/rclone/rclone-</span><span class="k">$(</span>date<span class="w"> </span>+%Y%m<span class="k">)</span><span class="s2">.log&quot;</span>
+</span><span id="__span-64-4"><a id="__codelineno-64-4" name="__codelineno-64-4" href="#__codelineno-64-4"></a><span class="nv">filename</span><span class="o">=</span><span class="s2">&quot;恋词考研英语-全真题源报刊7000词-索引红版&quot;</span>
+</span><span id="__span-64-5"><a id="__codelineno-64-5" name="__codelineno-64-5" href="#__codelineno-64-5"></a><span class="nv">srcfile</span><span class="o">=</span><span class="s2">&quot;/Users/faner/Documents/English/LINKIN-WORDS-7000/</span><span class="nv">$filename</span><span class="s2">.pdf&quot;</span>
+</span><span id="__span-64-6"><a id="__codelineno-64-6" name="__codelineno-64-6" href="#__codelineno-64-6"></a><span class="nv">dstfile</span><span class="o">=</span><span class="s2">&quot;smbhd@rpi4b:WDHD/backups/English/</span><span class="nv">$filename</span><span class="s2">-</span><span class="k">$(</span>date<span class="w"> </span>+%Y%m%d%H<span class="k">)</span><span class="s2">.pdf&quot;</span>
+</span><span id="__span-64-7"><a id="__codelineno-64-7" name="__codelineno-64-7" href="#__codelineno-64-7"></a>
+</span><span id="__span-64-8"><a id="__codelineno-64-8" name="__codelineno-64-8" href="#__codelineno-64-8"></a><span class="nv">curdate</span><span class="o">=</span><span class="k">$(</span>date<span class="w"> </span>+%Y/%m/%d<span class="se">\ </span>%H:%M:%S<span class="k">)</span>
+</span><span id="__span-64-9"><a id="__codelineno-64-9" name="__codelineno-64-9" href="#__codelineno-64-9"></a><span class="nv">curdate_sec</span><span class="o">=</span><span class="s2">&quot;</span><span class="k">$(</span>date<span class="w"> </span>+%s<span class="k">)</span><span class="s2">&quot;</span>
+</span><span id="__span-64-10"><a id="__codelineno-64-10" name="__codelineno-64-10" href="#__codelineno-64-10"></a>
+</span><span id="__span-64-11"><a id="__codelineno-64-11" name="__codelineno-64-11" href="#__codelineno-64-11"></a><span class="nv">filedate</span><span class="o">=</span><span class="k">$(</span>date<span class="w"> </span>-r<span class="w"> </span><span class="nv">$srcfile</span><span class="w"> </span>+%Y/%m/%d<span class="se">\ </span>%H:%M:%S<span class="k">)</span>
+</span><span id="__span-64-12"><a id="__codelineno-64-12" name="__codelineno-64-12" href="#__codelineno-64-12"></a><span class="nv">filedate_sec</span><span class="o">=</span><span class="s2">&quot;</span><span class="k">$(</span>date<span class="w"> </span>-r<span class="w"> </span><span class="nv">$srcfile</span><span class="w"> </span>+%s<span class="k">)</span><span class="s2">&quot;</span>
+</span><span id="__span-64-13"><a id="__codelineno-64-13" name="__codelineno-64-13" href="#__codelineno-64-13"></a>
+</span><span id="__span-64-14"><a id="__codelineno-64-14" name="__codelineno-64-14" href="#__codelineno-64-14"></a><span class="nv">elapsed_sec</span><span class="o">=</span><span class="k">$((</span><span class="nv">curdate_sec</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nv">filedate_sec</span><span class="k">))</span>
+</span><span id="__span-64-15"><a id="__codelineno-64-15" name="__codelineno-64-15" href="#__codelineno-64-15"></a><span class="nv">elapsed_min</span><span class="o">=</span><span class="k">$((</span><span class="nv">elapsed_sec</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="m">60</span><span class="k">))</span>
+</span><span id="__span-64-16"><a id="__codelineno-64-16" name="__codelineno-64-16" href="#__codelineno-64-16"></a>
+</span><span id="__span-64-17"><a id="__codelineno-64-17" name="__codelineno-64-17" href="#__codelineno-64-17"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$curdate</span><span class="s2"> DEBUG  : </span><span class="nv">$filename</span><span class="s2">.pdf modification: </span><span class="nv">$filedate</span><span class="s2">, </span><span class="nv">$elapsed_min</span><span class="s2"> min ago.&quot;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$logfile</span><span class="s2">&quot;</span>
+</span><span id="__span-64-18"><a id="__codelineno-64-18" name="__codelineno-64-18" href="#__codelineno-64-18"></a>
+</span><span id="__span-64-19"><a id="__codelineno-64-19" name="__codelineno-64-19" href="#__codelineno-64-19"></a><span class="c1"># modification within two hours( --max-age 2h)</span>
+</span><span id="__span-64-20"><a id="__codelineno-64-20" name="__codelineno-64-20" href="#__codelineno-64-20"></a><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="nv">$elapsed_min</span><span class="w"> </span>-le<span class="w"> </span><span class="m">120</span><span class="w"> </span><span class="o">]</span>
+</span><span id="__span-64-21"><a id="__codelineno-64-21" name="__codelineno-64-21" href="#__codelineno-64-21"></a><span class="k">then</span>
+</span><span id="__span-64-22"><a id="__codelineno-64-22" name="__codelineno-64-22" href="#__codelineno-64-22"></a><span class="w">    </span><span class="c1"># echo &quot;rclone run for elapsed time &lt;= 120m&quot;</span>
+</span><span id="__span-64-23"><a id="__codelineno-64-23" name="__codelineno-64-23" href="#__codelineno-64-23"></a><span class="w">    </span>/usr/local/bin/rclone<span class="w"> </span>copyto<span class="w"> </span>-v<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$srcfile</span><span class="s2">&quot;</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$dstfile</span><span class="s2">&quot;</span><span class="w"> </span>--log-file<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$logfile</span><span class="s2">&quot;</span>
+</span><span id="__span-64-24"><a id="__codelineno-64-24" name="__codelineno-64-24" href="#__codelineno-64-24"></a><span class="k">else</span>
+</span><span id="__span-64-25"><a id="__codelineno-64-25" name="__codelineno-64-25" href="#__codelineno-64-25"></a><span class="w">    </span><span class="c1"># echo &quot;rclone dry-run for elapsed time &gt; 120m&quot;</span>
+</span><span id="__span-64-26"><a id="__codelineno-64-26" name="__codelineno-64-26" href="#__codelineno-64-26"></a><span class="w">    </span>/usr/local/bin/rclone<span class="w"> </span>copyto<span class="w"> </span>-v<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$srcfile</span><span class="s2">&quot;</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$dstfile</span><span class="s2">&quot;</span><span class="w"> </span>--log-file<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$logfile</span><span class="s2">&quot;</span><span class="w"> </span>--dry-run
+</span><span id="__span-64-27"><a id="__codelineno-64-27" name="__codelineno-64-27" href="#__codelineno-64-27"></a><span class="k">fi</span>
+</span></code></pre></div>
+</details>
 <h3 id="check_logs">check logs<a class="headerlink" href="#check_logs" title="Permanent link">#</a></h3>
 <p>每天检查日志文件，确认系统 cron 定时任务和 rclone sysnc 同步任务执行情况。</p>
 <p>系统日志 /var/log/syslog 中，应该有类似的条目：</p>
-<div class="language-dmesg highlight"><pre><span></span><code><span id="__span-64-1"><a id="__codelineno-64-1" name="__codelineno-64-1" href="#__codelineno-64-1"></a><span class="err">$ grep -a CRON /var/log/syslog</span>
-</span><span id="__span-64-2"><a id="__codelineno-64-2" name="__codelineno-64-2" href="#__codelineno-64-2"></a><span class="err">Apr  7 02:30:00 rpi4b-ubuntu CRON[62328]: (pifan) CMD (rclone sync -v webdav-rpi4b: /media/WDHD/webdav@rpi4b --log-file=/home/pifan/.config/rclone/rclone.log)</span>
+<div class="language-dmesg highlight"><pre><span></span><code><span id="__span-65-1"><a id="__codelineno-65-1" name="__codelineno-65-1" href="#__codelineno-65-1"></a><span class="err">$ grep -a CRON /var/log/syslog</span>
+</span><span id="__span-65-2"><a id="__codelineno-65-2" name="__codelineno-65-2" href="#__codelineno-65-2"></a><span class="err">Apr  7 02:30:00 rpi4b-ubuntu CRON[62328]: (pifan) CMD (rclone sync -v webdav-rpi4b: /media/WDHD/webdav@rpi4b --log-file=/home/pifan/.config/rclone/rclone.log)</span>
 </span></code></pre></div>
 <p>也可以开启 cron 独立日志，后续直接查看 /var/log/cron.log。</p>
 <div class="admonition note">

@@ -394,7 +394,7 @@ webdav@rpi4b:
 | [rclone lsl](https://rclone.org/commands/rclone_lsl/)       | List the objects in path with modification time, size and path.     |
 | [rclone tree](https://rclone.org/commands/rclone_tree/)     | List the contents of the remote in a tree like fashion. |
 
-[rclone ls](https://rclone.org/commands/rclone_ls/)
+[rclone ls](https://rclone.org/commands/rclone_ls/), [rclone cat](https://rclone.org/commands/rclone_cat/)
 
 There are several related list commands
 
@@ -1271,10 +1271,50 @@ cron 执行出错时默认会通过 MTA 服务给系统管理员发邮件，执�
 
 验证任务生效后，将调度时间修改为预期的同步频率，后续核对日志校验定时备份任务执行情况。
 
-```Shell title="crontab -e"
-# 每隔 12h，即半天备份一次
-0 */12 * * * /usr/local/bin/rclone copyto -v /Users/faner/Documents/English/LINKIN-WORDS-7000/恋词考研英语-全真题源报刊7000词-索引红版.pdf smbhd@rpi4b:WDHD/backups/English/恋词考研英语-全真题源报刊7000词-索引红版-`date +\%Y\%m\%d\%H`.pdf --log-file=/Users/faner/.config/rclone/rclone-`date +\%Y\%m`.log
+```Shell title="crontab -e : 每隔 2h，执行同步脚本"
+0 */2 * * * /usr/local/etc/scripts/rclone-sync.sh
 ```
+
+需执行 `sudo chmod +x /usr/local/etc/scripts/rclone-sync.sh` 赋予其他用户对该脚本的可执行权限。
+
+备份脚本 `rclone-sync.sh` 检查文件最后修改时间，如果在 2h 定时周期内无改动则 dry-run，有改动才备份。
+
+!!! note "Why not use filtering flag --max-age ?"
+
+    如果执行 sync 或 copy 同步目录，可使用 rclone 提供的 `--max-age 2h` 选项。
+    这里执行 copyto 命令备份特定文件，不适用 `--max-age` 选项，故自行等效实现。
+
+??? info "rclone-sync.sh"
+
+    ```Shell
+    #!/bin/bash
+
+    logfile="/Users/faner/.config/rclone/rclone-$(date +%Y%m).log"
+    filename="恋词考研英语-全真题源报刊7000词-索引红版"
+    srcfile="/Users/faner/Documents/English/LINKIN-WORDS-7000/$filename.pdf"
+    dstfile="smbhd@rpi4b:WDHD/backups/English/$filename-$(date +%Y%m%d%H).pdf"
+
+    curdate=$(date +%Y/%m/%d\ %H:%M:%S)
+    curdate_sec="$(date +%s)"
+
+    filedate=$(date -r $srcfile +%Y/%m/%d\ %H:%M:%S)
+    filedate_sec="$(date -r $srcfile +%s)"
+
+    elapsed_sec=$((curdate_sec - filedate_sec))
+    elapsed_min=$((elapsed_sec / 60))
+
+    echo "$curdate DEBUG  : $filename.pdf modification: $filedate, $elapsed_min min ago." >> "$logfile"
+
+    # modification within two hours( --max-age 2h)
+    if [ $elapsed_min -le 120 ]
+    then
+        # echo "rclone run for elapsed time <= 120m"
+        /usr/local/bin/rclone copyto -v "$srcfile" "$dstfile" --log-file="$logfile"
+    else
+        # echo "rclone dry-run for elapsed time > 120m"
+        /usr/local/bin/rclone copyto -v "$srcfile" "$dstfile" --log-file="$logfile" --dry-run
+    fi
+    ```
 
 ### check logs
 
