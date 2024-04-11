@@ -69,6 +69,8 @@ Device          Start        End    Sectors   Size Type
 
 ## mount disk
 
+> 关于 mount 命令用法，参考 [Ubuntu Manpage: mount - mount a filesystem](https://manpages.ubuntu.com/manpages/noble/en/man8/mount.8.html)。
+
 创建挂载点目录：
 
 ```Shell
@@ -104,6 +106,12 @@ tmpfs           5.0M     0  5.0M   0% /run/lock
 tmpfs           781M  4.0K  781M   1% /run/user/1000
 /dev/sda3       466G  204G  262G  44% /media/WDHD
 ```
+
+!!! note "uid/gid"
+
+    执行 `id` 命令可查看当前用户的 uid/gid。
+    mount 需指定和 mkdir 创建的挂载点目录一致的 uid/gid。
+    如不指定，默认加载 uid/gid=99，无写权限，需要 chmod 或 chown。
 
 ### test mkdir
 
@@ -162,24 +170,45 @@ $ sudo mount -t hfsplus -o force,rw,uid=pifan,gid=ubuntu /dev/sda3 /media/WDHD
 
 第三种修复失败（repair failure）的情况，尝试按照 [Force repair of external hfsplus HD](https://ubuntuforums.org/showthread.php?t=1632718)，抢救失败！
 
-请尽快拷贝数据备份，考虑使用 macOS 自带的 Disk Utility.app 或其他磁盘修复工具对分区重新格式化。
+请尽快拷贝数据备份，考虑使用 macOS 自带的 [diskutil/Disk Utility.app](https://qizhanming.com/blog/2021/12/13/how-to-use-diskutil-format-flash-disk-on-macos) 或其他磁盘修复工具对分区重新格式化。
 
-### auto mount
+### config mount in fstab
 
-编辑文件 `sudo vim /etc/fstab`，其格式条目如下：
+> 关于 fstab 命令，参考 [Ubuntu Manpage: fstab - static information about the filesystems](https://manpages.ubuntu.com/manpages/noble/en/man5/fstab.5.html)、[Fstab - Community Help Wiki](https://help.ubuntu.com/community/Fstab) 和 [An introduction to the Linux /etc/fstab file](https://www.redhat.com/sysadmin/etc-fstab)。
+
+!!! abstract "what is fstab?"
+
+    The filesystem table, aka fstab, contains descriptive information about the filesystems the system can mount.
+
+编辑文件 `sudo vim /etc/fstab`，其条目格式（syntax of a fstab entry）如下：
 
 ```Shell
-# <file system> <mount point> <file system type> <options> <dump> <pass>
+[Device] [Mount Point] [File System Type] [Options] [Dump] [Pass]
 ```
 
-参考：[linux mint - HFS+ file system being mounted as read-only](https://unix.stackexchange.com/questions/452062/hfs-file-system-being-mounted-as-read-only) 和 [ubuntu - How to Mount HFS+ drive as read-write on startup](https://unix.stackexchange.com/questions/639476/how-to-mount-hfs-drive-as-read-write-on-startup)，在其中加入启动加载项 `UUID 挂载点目录 硬盘文件系统格式 defaults,nofail 0 0`：
+第 1 列可以为 UUID（PARTUUID？）、LABEL、Network ID（samba: //server/share）和 Device（/dev/sda3，not recommended）。
+由于 UUID 可能会变，故下面采用 LABEL。
 
-```Shell
-# 执行 id 命令可查看当前用户的 uid/gid
-UUID=8be03e5b-ebbe-4695-a698-f0c0b5cc9f39 /media/WDHD auto nosuid,nodev,nofail,x-gvfs-show,force,rw 0 0
+参考 [linux mint - HFS+ file system being mounted as read-only](https://unix.stackexchange.com/questions/452062/hfs-file-system-being-mounted-as-read-only) 和 [ubuntu - How to Mount HFS+ drive as read-write on startup](https://unix.stackexchange.com/questions/639476/how-to-mount-hfs-drive-as-read-write-on-startup)，在 fstab 中加入启动加载项：
+
+```Shell title="/etc/fstab"
+LABEL=WDHD /media/WDHD auto uid=1000,gid=1000,nosuid,nodev,nofail,x-gvfs-show,force,rw 0 0
 ```
 
-重启加载后，挂载点还是提示 Read-only！参考上一步，remount 或者 umount 后重新 mount 挂载。
+`sudo reboot` 重启，成功挂载为 rw。
+
+!!! note "must disableJournal for HFS+ Volume?"
+
+    [Fstab - Community Help Wiki](https://help.ubuntu.com/community/Fstab) 中的 File System Specific Examples 部分有提到 HFS: 
+    if you want to write data on this partition, you **must** disable the journalization of this partition with `diskutil` under Mac OS.
+
+    关于 Hard Drive Journaling 参考以下网帖：
+
+    - [What is Mac Hard Drive Journaling and why it is important to have?](https://www.macintosh-data-recovery.com/blog/mac-hard-drive-journaling/)
+    - [Disabling Journalling for external drive](https://forums.macrumors.com/threads/disabling-journalling-for-external-drive.2019865/)
+    - [Can not disable external drive Journaling](https://discussions.apple.com/thread/7789814?sortBy=best)
+
+    我这里并未执行 `diskutil disableJournal /Volumes/WDHD`，具体不详。
 
 ## config samba for WDHD
 
@@ -377,6 +406,12 @@ dr-xr-xr-x  1 faner  staff   16384 Sep  9  2017 _HF2VN~W
 执行 `systemctl status smbd` 可查看 samba 服务状态。
 
 局域网 macOS 中打开 Finder，Command + K 输入 `smb://rpi4b-ubuntu.local/WDTM`，按照提示输入账户和密码就能访问了。
+
+编辑文件 `sudo vim /etc/fstab`，增加开机自启动条目：
+
+```Shell title="/etc/fstab"
+LABEL=WDTM /media/WDTM auto uid=1000,gid=1000,nosuid,nodev,nofail,x-gvfs-show,force,rw 0 0
+```
 
 ### set as macOS Backup Disk
 

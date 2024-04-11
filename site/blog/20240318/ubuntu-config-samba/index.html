@@ -1135,9 +1135,9 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#auto_mount" class="md-nav__link">
+  <a href="#config_mount_in_fstab" class="md-nav__link">
     <span class="md-ellipsis">
-      auto mount
+      config mount in fstab
     </span>
   </a>
   
@@ -1405,6 +1405,9 @@
 </span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>/dev/sda3<span class="w">  </span><span class="m">2930270256</span><span class="w"> </span><span class="m">3906701271</span><span class="w">  </span><span class="m">976431016</span><span class="w"> </span><span class="m">465</span>.6G<span class="w"> </span>Apple<span class="w"> </span>HFS/HFS+
 </span></code></pre></div>
 <h2 id="mount_disk">mount disk<a class="headerlink" href="#mount_disk" title="Permanent link">#</a></h2>
+<blockquote>
+<p>关于 mount 命令用法，参考 <a href="https://manpages.ubuntu.com/manpages/noble/en/man8/mount.8.html">Ubuntu Manpage: mount - mount a filesystem</a>。</p>
+</blockquote>
 <p>创建挂载点目录：</p>
 <div class="language-Shell highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>$<span class="w"> </span>sudo<span class="w"> </span>mkdir<span class="w"> </span>/media/WDHD
 </span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
@@ -1432,6 +1435,12 @@
 </span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>tmpfs<span class="w">           </span>781M<span class="w">  </span><span class="m">4</span>.0K<span class="w">  </span>781M<span class="w">   </span><span class="m">1</span>%<span class="w"> </span>/run/user/1000
 </span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a>/dev/sda3<span class="w">       </span>466G<span class="w">  </span>204G<span class="w">  </span>262G<span class="w">  </span><span class="m">44</span>%<span class="w"> </span>/media/WDHD
 </span></code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">uid/gid</p>
+<p>执行 <code>id</code> 命令可查看当前用户的 uid/gid。<br />
+mount 需指定和 mkdir 创建的挂载点目录一致的 uid/gid。<br />
+如不指定，默认加载 uid/gid=99，无写权限，需要 chmod 或 chown。</p>
+</div>
 <h3 id="test_mkdir">test mkdir<a class="headerlink" href="#test_mkdir" title="Permanent link">#</a></h3>
 <p>尝试在外挂硬盘上创建一个文件夹，提示“Read-only file system”：</p>
 <div class="language-Shell highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>$<span class="w"> </span>mkdir<span class="w"> </span>/media/WDHD/test
@@ -1471,16 +1480,36 @@
 </div>
 </div>
 <p>第三种修复失败（repair failure）的情况，尝试按照 <a href="https://ubuntuforums.org/showthread.php?t=1632718">Force repair of external hfsplus HD</a>，抢救失败！</p>
-<p>请尽快拷贝数据备份，考虑使用 macOS 自带的 Disk Utility.app 或其他磁盘修复工具对分区重新格式化。</p>
-<h3 id="auto_mount">auto mount<a class="headerlink" href="#auto_mount" title="Permanent link">#</a></h3>
-<p>编辑文件 <code>sudo vim /etc/fstab</code>，其格式条目如下：</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="c1"># &lt;file system&gt; &lt;mount point&gt; &lt;file system type&gt; &lt;options&gt; &lt;dump&gt; &lt;pass&gt;</span>
+<p>请尽快拷贝数据备份，考虑使用 macOS 自带的 <a href="https://qizhanming.com/blog/2021/12/13/how-to-use-diskutil-format-flash-disk-on-macos">diskutil/Disk Utility.app</a> 或其他磁盘修复工具对分区重新格式化。</p>
+<h3 id="config_mount_in_fstab">config mount in fstab<a class="headerlink" href="#config_mount_in_fstab" title="Permanent link">#</a></h3>
+<blockquote>
+<p>关于 fstab 命令，参考 <a href="https://manpages.ubuntu.com/manpages/noble/en/man5/fstab.5.html">Ubuntu Manpage: fstab - static information about the filesystems</a>、<a href="https://help.ubuntu.com/community/Fstab">Fstab - Community Help Wiki</a> 和 <a href="https://www.redhat.com/sysadmin/etc-fstab">An introduction to the Linux /etc/fstab file</a>。</p>
+</blockquote>
+<div class="admonition abstract">
+<p class="admonition-title">what is fstab?</p>
+<p>The filesystem table, aka fstab, contains descriptive information about the filesystems the system can mount.</p>
+</div>
+<p>编辑文件 <code>sudo vim /etc/fstab</code>，其条目格式（syntax of a fstab entry）如下：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="o">[</span>Device<span class="o">]</span><span class="w"> </span><span class="o">[</span>Mount<span class="w"> </span>Point<span class="o">]</span><span class="w"> </span><span class="o">[</span>File<span class="w"> </span>System<span class="w"> </span>Type<span class="o">]</span><span class="w"> </span><span class="o">[</span>Options<span class="o">]</span><span class="w"> </span><span class="o">[</span>Dump<span class="o">]</span><span class="w"> </span><span class="o">[</span>Pass<span class="o">]</span>
 </span></code></pre></div>
-<p>参考：<a href="https://unix.stackexchange.com/questions/452062/hfs-file-system-being-mounted-as-read-only">linux mint - HFS+ file system being mounted as read-only</a> 和 <a href="https://unix.stackexchange.com/questions/639476/how-to-mount-hfs-drive-as-read-write-on-startup">ubuntu - How to Mount HFS+ drive as read-write on startup</a>，在其中加入启动加载项 <code>UUID 挂载点目录 硬盘文件系统格式 defaults,nofail 0 0</code>：</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="c1"># 执行 id 命令可查看当前用户的 uid/gid</span>
-</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="nv">UUID</span><span class="o">=</span>8be03e5b-ebbe-4695-a698-f0c0b5cc9f39<span class="w"> </span>/media/WDHD<span class="w"> </span>auto<span class="w"> </span>nosuid,nodev,nofail,x-gvfs-show,force,rw<span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="m">0</span>
+<p>第 1 列可以为 UUID（PARTUUID？）、LABEL、Network ID（samba: //server/share）和 Device（/dev/sda3，not recommended）。<br />
+由于 UUID 可能会变，故下面采用 LABEL。</p>
+<p>参考 <a href="https://unix.stackexchange.com/questions/452062/hfs-file-system-being-mounted-as-read-only">linux mint - HFS+ file system being mounted as read-only</a> 和 <a href="https://unix.stackexchange.com/questions/639476/how-to-mount-hfs-drive-as-read-write-on-startup">ubuntu - How to Mount HFS+ drive as read-write on startup</a>，在 fstab 中加入启动加载项：</p>
+<div class="language-Shell highlight"><span class="filename">/etc/fstab</span><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="nv">LABEL</span><span class="o">=</span>WDHD<span class="w"> </span>/media/WDHD<span class="w"> </span>auto<span class="w"> </span><span class="nv">uid</span><span class="o">=</span><span class="m">1000</span>,gid<span class="o">=</span><span class="m">1000</span>,nosuid,nodev,nofail,x-gvfs-show,force,rw<span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="m">0</span>
 </span></code></pre></div>
-<p>重启加载后，挂载点还是提示 Read-only！参考上一步，remount 或者 umount 后重新 mount 挂载。</p>
+<p><code>sudo reboot</code> 重启，成功挂载为 rw。</p>
+<div class="admonition note">
+<p class="admonition-title">must disableJournal for HFS+ Volume?</p>
+<p><a href="https://help.ubuntu.com/community/Fstab">Fstab - Community Help Wiki</a> 中的 File System Specific Examples 部分有提到 HFS: <br />
+if you want to write data on this partition, you <strong>must</strong> disable the journalization of this partition with <code>diskutil</code> under Mac OS.</p>
+<p>关于 Hard Drive Journaling 参考以下网帖：</p>
+<ul>
+<li><a href="https://www.macintosh-data-recovery.com/blog/mac-hard-drive-journaling/">What is Mac Hard Drive Journaling and why it is important to have?</a></li>
+<li><a href="https://forums.macrumors.com/threads/disabling-journalling-for-external-drive.2019865/">Disabling Journalling for external drive</a></li>
+<li><a href="https://discussions.apple.com/thread/7789814?sortBy=best">Can not disable external drive Journaling</a></li>
+</ul>
+<p>我这里并未执行 <code>diskutil disableJournal /Volumes/WDHD</code>，具体不详。</p>
+</div>
 <h2 id="config_samba_for_wdhd">config samba for WDHD<a class="headerlink" href="#config_samba_for_wdhd" title="Permanent link">#</a></h2>
 <h3 id="install_samba">install samba<a class="headerlink" href="#install_samba" title="Permanent link">#</a></h3>
 <p>samba - Server to provide AD and SMB/CIFS services to clients</p>
@@ -1635,6 +1664,9 @@
 <p>设置完毕后重启 Samba 服务：<code>sudo systemctl restart smbd</code>。<br />
 执行 <code>systemctl status smbd</code> 可查看 samba 服务状态。</p>
 <p>局域网 macOS 中打开 Finder，Command + K 输入 <code>smb://rpi4b-ubuntu.local/WDTM</code>，按照提示输入账户和密码就能访问了。</p>
+<p>编辑文件 <code>sudo vim /etc/fstab</code>，增加开机自启动条目：</p>
+<div class="language-Shell highlight"><span class="filename">/etc/fstab</span><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="nv">LABEL</span><span class="o">=</span>WDTM<span class="w"> </span>/media/WDTM<span class="w"> </span>auto<span class="w"> </span><span class="nv">uid</span><span class="o">=</span><span class="m">1000</span>,gid<span class="o">=</span><span class="m">1000</span>,nosuid,nodev,nofail,x-gvfs-show,force,rw<span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="m">0</span>
+</span></code></pre></div>
 <h3 id="set_as_macos_backup_disk">set as macOS Backup Disk<a class="headerlink" href="#set_as_macos_backup_disk" title="Permanent link">#</a></h3>
 <p>系统设置中打开时间机器（Settings - General - Time Machine），点击 <code>Add Backup Disk...</code> 按钮：</p>
 <p><img alt="Add_Backup_Disk" src="../../linux/images/1-tm-Add_Backup_Disk.png" /></p>
