@@ -1091,7 +1091,7 @@ Choose 1-5 [2]: 3
 
 ### macOS
 
-在 macOS 上首次执行 `crontab -e`，将临时打开一个空文件。
+在 macOS 上首次执行 `crontab -e`，将临时打开一个空文件，默认使用编辑器 /usr/bin/vi。
 在末尾新增一条测试任务，每分钟执行 date 写入文件 time.txt。
 
 ```Shell title="crontab -e test"
@@ -1272,12 +1272,60 @@ cron 执行出错时默认会通过 MTA 服务给系统管理员发邮件，执�
 验证任务生效后，将调度时间修改为预期的同步频率，后续核对日志校验定时备份任务执行情况。
 
 ```Shell title="crontab -e : 每隔 2h，执行同步脚本"
-0 */2 * * * /usr/local/etc/scripts/rclone-sync.sh
+0 7-23/2 * * * /usr/local/etc/scripts/rclone-sync.sh
 ```
 
 需执行 `sudo chmod +x /usr/local/etc/scripts/rclone-sync.sh` 赋予其他用户对该脚本的可执行权限。
 
-备份脚本 `rclone-sync.sh` 检查文件最后修改时间，如果在 2h 定时周期内无改动则 dry-run，有改动才备份。
+备份脚本 `rclone-sync.sh` 使用 date 或 stat 命令检查文件最后修改时间。
+
+=== "date -r"
+
+    ```Shell
+    $ date -r test.txt
+    Sat Mar 16 16:53:38 CST 2024
+
+    $ date -r test.txt +%s
+    1710579218
+
+    $ date -r test.txt +%Y%m%d%H%M%S
+    20240316165338
+    ```
+
+=== "macOS: stat -f"
+
+    > `-f format`: Display information using the specified format.  See the Formats section for a description of valid formats.
+
+    ```Shell
+    # To display a file's modification time:
+    $ stat -f %m test.txt
+    1710579218
+
+    # To display the same modification time in a readable format
+    $ stat -f %Sm test.txt
+    Mar 16 16:53:38 2024
+
+    # To display the same modification time in a readable and sortable format
+    $ stat -f %Sm -t %Y%m%d%H%M%S test.txt
+    20240316165338
+    ```
+
+=== "ubuntu: stat -c"
+
+    > `-c` / --format=FORMAT: use the specified FORMAT instead of the default; output a newline after each use of FORMAT
+
+    ```Shell
+    $ stat -c %Y test.txt
+    1710579219
+
+    $ stat -c %y test.txt
+    2024-03-16 16:53:39.000000000 +0800
+
+    $ date -d "@$(stat -c %Y test.txt)" '+%Y%m%d%H%M%S'
+    20240316165339
+    ```
+
+如果在 2h 定时周期内无改动则 dry-run，有改动才备份。
 
 !!! note "Why not use filtering flag --max-age ?"
 

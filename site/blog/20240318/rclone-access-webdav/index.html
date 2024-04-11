@@ -2668,7 +2668,7 @@ macOS 下的 rclone 运行日志可以考虑放到 /usr/local/var/log 目录下�
 </div>
 <p>执行 <code>sudo systemctl restart cron.service</code> 重启定时任务使其生效。</p>
 <h3 id="macos">macOS<a class="headerlink" href="#macos" title="Permanent link">#</a></h3>
-<p>在 macOS 上首次执行 <code>crontab -e</code>，将临时打开一个空文件。<br />
+<p>在 macOS 上首次执行 <code>crontab -e</code>，将临时打开一个空文件，默认使用编辑器 /usr/bin/vi。<br />
 在末尾新增一条测试任务，每分钟执行 date 写入文件 time.txt。</p>
 <div class="language-Shell highlight"><span class="filename">crontab -e test</span><pre><span></span><code><span id="__span-51-1"><a id="__codelineno-51-1" name="__codelineno-51-1" href="#__codelineno-51-1"></a>*/1<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>date<span class="w"> </span>&gt;&gt;<span class="w"> </span>/Users/faner/Downloads/time.txt
 </span></code></pre></div>
@@ -2809,10 +2809,57 @@ macOS 下的 rclone 运行日志可以考虑放到 /usr/local/var/log 目录下�
 如果是 rclone copyto local（download），可能涉及写磁盘权限问题，按照上面的步骤开启授权即可。</p>
 </div>
 <p>验证任务生效后，将调度时间修改为预期的同步频率，后续核对日志校验定时备份任务执行情况。</p>
-<div class="language-Shell highlight"><span class="filename">crontab -e : 每隔 2h，执行同步脚本</span><pre><span></span><code><span id="__span-63-1"><a id="__codelineno-63-1" name="__codelineno-63-1" href="#__codelineno-63-1"></a><span class="m">0</span><span class="w"> </span>*/2<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>/usr/local/etc/scripts/rclone-sync.sh
+<div class="language-Shell highlight"><span class="filename">crontab -e : 每隔 2h，执行同步脚本</span><pre><span></span><code><span id="__span-63-1"><a id="__codelineno-63-1" name="__codelineno-63-1" href="#__codelineno-63-1"></a><span class="m">0</span><span class="w"> </span><span class="m">7</span>-23/2<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>*<span class="w"> </span>/usr/local/etc/scripts/rclone-sync.sh
 </span></code></pre></div>
 <p>需执行 <code>sudo chmod +x /usr/local/etc/scripts/rclone-sync.sh</code> 赋予其他用户对该脚本的可执行权限。</p>
-<p>备份脚本 <code>rclone-sync.sh</code> 检查文件最后修改时间，如果在 2h 定时周期内无改动则 dry-run，有改动才备份。</p>
+<p>备份脚本 <code>rclone-sync.sh</code> 使用 date 或 stat 命令检查文件最后修改时间。</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="3:3"><input checked="checked" id="__tabbed_3_1" name="__tabbed_3" type="radio" /><input id="__tabbed_3_2" name="__tabbed_3" type="radio" /><input id="__tabbed_3_3" name="__tabbed_3" type="radio" /><div class="tabbed-labels"><label for="__tabbed_3_1">date -r</label><label for="__tabbed_3_2">macOS: stat -f</label><label for="__tabbed_3_3">ubuntu: stat -c</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-64-1"><a id="__codelineno-64-1" name="__codelineno-64-1" href="#__codelineno-64-1"></a>$<span class="w"> </span>date<span class="w"> </span>-r<span class="w"> </span>test.txt
+</span><span id="__span-64-2"><a id="__codelineno-64-2" name="__codelineno-64-2" href="#__codelineno-64-2"></a>Sat<span class="w"> </span>Mar<span class="w"> </span><span class="m">16</span><span class="w"> </span><span class="m">16</span>:53:38<span class="w"> </span>CST<span class="w"> </span><span class="m">2024</span>
+</span><span id="__span-64-3"><a id="__codelineno-64-3" name="__codelineno-64-3" href="#__codelineno-64-3"></a>
+</span><span id="__span-64-4"><a id="__codelineno-64-4" name="__codelineno-64-4" href="#__codelineno-64-4"></a>$<span class="w"> </span>date<span class="w"> </span>-r<span class="w"> </span>test.txt<span class="w"> </span>+%s
+</span><span id="__span-64-5"><a id="__codelineno-64-5" name="__codelineno-64-5" href="#__codelineno-64-5"></a><span class="m">1710579218</span>
+</span><span id="__span-64-6"><a id="__codelineno-64-6" name="__codelineno-64-6" href="#__codelineno-64-6"></a>
+</span><span id="__span-64-7"><a id="__codelineno-64-7" name="__codelineno-64-7" href="#__codelineno-64-7"></a>$<span class="w"> </span>date<span class="w"> </span>-r<span class="w"> </span>test.txt<span class="w"> </span>+%Y%m%d%H%M%S
+</span><span id="__span-64-8"><a id="__codelineno-64-8" name="__codelineno-64-8" href="#__codelineno-64-8"></a><span class="m">20240316165338</span>
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<blockquote>
+<p><code>-f format</code>: Display information using the specified format.  See the Formats section for a description of valid formats.</p>
+</blockquote>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-65-1"><a id="__codelineno-65-1" name="__codelineno-65-1" href="#__codelineno-65-1"></a><span class="c1"># To display a file&#39;s modification time:</span>
+</span><span id="__span-65-2"><a id="__codelineno-65-2" name="__codelineno-65-2" href="#__codelineno-65-2"></a>$<span class="w"> </span>stat<span class="w"> </span>-f<span class="w"> </span>%m<span class="w"> </span>test.txt
+</span><span id="__span-65-3"><a id="__codelineno-65-3" name="__codelineno-65-3" href="#__codelineno-65-3"></a><span class="m">1710579218</span>
+</span><span id="__span-65-4"><a id="__codelineno-65-4" name="__codelineno-65-4" href="#__codelineno-65-4"></a>
+</span><span id="__span-65-5"><a id="__codelineno-65-5" name="__codelineno-65-5" href="#__codelineno-65-5"></a><span class="c1"># To display the same modification time in a readable format</span>
+</span><span id="__span-65-6"><a id="__codelineno-65-6" name="__codelineno-65-6" href="#__codelineno-65-6"></a>$<span class="w"> </span>stat<span class="w"> </span>-f<span class="w"> </span>%Sm<span class="w"> </span>test.txt
+</span><span id="__span-65-7"><a id="__codelineno-65-7" name="__codelineno-65-7" href="#__codelineno-65-7"></a>Mar<span class="w"> </span><span class="m">16</span><span class="w"> </span><span class="m">16</span>:53:38<span class="w"> </span><span class="m">2024</span>
+</span><span id="__span-65-8"><a id="__codelineno-65-8" name="__codelineno-65-8" href="#__codelineno-65-8"></a>
+</span><span id="__span-65-9"><a id="__codelineno-65-9" name="__codelineno-65-9" href="#__codelineno-65-9"></a><span class="c1"># To display the same modification time in a readable and sortable format</span>
+</span><span id="__span-65-10"><a id="__codelineno-65-10" name="__codelineno-65-10" href="#__codelineno-65-10"></a>$<span class="w"> </span>stat<span class="w"> </span>-f<span class="w"> </span>%Sm<span class="w"> </span>-t<span class="w"> </span>%Y%m%d%H%M%S<span class="w"> </span>test.txt
+</span><span id="__span-65-11"><a id="__codelineno-65-11" name="__codelineno-65-11" href="#__codelineno-65-11"></a><span class="m">20240316165338</span>
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<blockquote>
+<p><code>-c</code> / --format=FORMAT: use the specified FORMAT instead of the default; output a newline after each use of FORMAT</p>
+</blockquote>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-66-1"><a id="__codelineno-66-1" name="__codelineno-66-1" href="#__codelineno-66-1"></a>$<span class="w"> </span>stat<span class="w"> </span>-c<span class="w"> </span>%Y<span class="w"> </span>test.txt
+</span><span id="__span-66-2"><a id="__codelineno-66-2" name="__codelineno-66-2" href="#__codelineno-66-2"></a><span class="m">1710579219</span>
+</span><span id="__span-66-3"><a id="__codelineno-66-3" name="__codelineno-66-3" href="#__codelineno-66-3"></a>
+</span><span id="__span-66-4"><a id="__codelineno-66-4" name="__codelineno-66-4" href="#__codelineno-66-4"></a>$<span class="w"> </span>stat<span class="w"> </span>-c<span class="w"> </span>%y<span class="w"> </span>test.txt
+</span><span id="__span-66-5"><a id="__codelineno-66-5" name="__codelineno-66-5" href="#__codelineno-66-5"></a><span class="m">2024</span>-03-16<span class="w"> </span><span class="m">16</span>:53:39.000000000<span class="w"> </span>+0800
+</span><span id="__span-66-6"><a id="__codelineno-66-6" name="__codelineno-66-6" href="#__codelineno-66-6"></a>
+</span><span id="__span-66-7"><a id="__codelineno-66-7" name="__codelineno-66-7" href="#__codelineno-66-7"></a>$<span class="w"> </span>date<span class="w"> </span>-d<span class="w"> </span><span class="s2">&quot;@</span><span class="k">$(</span>stat<span class="w"> </span>-c<span class="w"> </span>%Y<span class="w"> </span>test.txt<span class="k">)</span><span class="s2">&quot;</span><span class="w"> </span><span class="s1">&#39;+%Y%m%d%H%M%S&#39;</span>
+</span><span id="__span-66-8"><a id="__codelineno-66-8" name="__codelineno-66-8" href="#__codelineno-66-8"></a><span class="m">20240316165339</span>
+</span></code></pre></div>
+</div>
+</div>
+</div>
+<p>如果在 2h 定时周期内无改动则 dry-run，有改动才备份。</p>
 <div class="admonition note">
 <p class="admonition-title">Why not use filtering flag --max-age ?</p>
 <p>如果执行 sync 或 copy 同步目录，可使用 rclone 提供的 <code>--max-age 2h</code> 选项。<br />
@@ -2820,40 +2867,40 @@ macOS 下的 rclone 运行日志可以考虑放到 /usr/local/var/log 目录下�
 </div>
 <details class="info">
 <summary>rclone-sync.sh</summary>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-64-1"><a id="__codelineno-64-1" name="__codelineno-64-1" href="#__codelineno-64-1"></a><span class="ch">#!/bin/bash</span>
-</span><span id="__span-64-2"><a id="__codelineno-64-2" name="__codelineno-64-2" href="#__codelineno-64-2"></a>
-</span><span id="__span-64-3"><a id="__codelineno-64-3" name="__codelineno-64-3" href="#__codelineno-64-3"></a><span class="nv">logfile</span><span class="o">=</span><span class="s2">&quot;/Users/faner/.config/rclone/rclone-</span><span class="k">$(</span>date<span class="w"> </span>+%Y%m<span class="k">)</span><span class="s2">.log&quot;</span>
-</span><span id="__span-64-4"><a id="__codelineno-64-4" name="__codelineno-64-4" href="#__codelineno-64-4"></a><span class="nv">filename</span><span class="o">=</span><span class="s2">&quot;恋词考研英语-全真题源报刊7000词-索引红版&quot;</span>
-</span><span id="__span-64-5"><a id="__codelineno-64-5" name="__codelineno-64-5" href="#__codelineno-64-5"></a><span class="nv">srcfile</span><span class="o">=</span><span class="s2">&quot;/Users/faner/Documents/English/LINKIN-WORDS-7000/</span><span class="nv">$filename</span><span class="s2">.pdf&quot;</span>
-</span><span id="__span-64-6"><a id="__codelineno-64-6" name="__codelineno-64-6" href="#__codelineno-64-6"></a><span class="nv">dstfile</span><span class="o">=</span><span class="s2">&quot;smbhd@rpi4b:WDHD/backups/English/</span><span class="nv">$filename</span><span class="s2">-</span><span class="k">$(</span>date<span class="w"> </span>+%Y%m%d%H<span class="k">)</span><span class="s2">.pdf&quot;</span>
-</span><span id="__span-64-7"><a id="__codelineno-64-7" name="__codelineno-64-7" href="#__codelineno-64-7"></a>
-</span><span id="__span-64-8"><a id="__codelineno-64-8" name="__codelineno-64-8" href="#__codelineno-64-8"></a><span class="nv">curdate</span><span class="o">=</span><span class="k">$(</span>date<span class="w"> </span>+%Y/%m/%d<span class="se">\ </span>%H:%M:%S<span class="k">)</span>
-</span><span id="__span-64-9"><a id="__codelineno-64-9" name="__codelineno-64-9" href="#__codelineno-64-9"></a><span class="nv">curdate_sec</span><span class="o">=</span><span class="s2">&quot;</span><span class="k">$(</span>date<span class="w"> </span>+%s<span class="k">)</span><span class="s2">&quot;</span>
-</span><span id="__span-64-10"><a id="__codelineno-64-10" name="__codelineno-64-10" href="#__codelineno-64-10"></a>
-</span><span id="__span-64-11"><a id="__codelineno-64-11" name="__codelineno-64-11" href="#__codelineno-64-11"></a><span class="nv">filedate</span><span class="o">=</span><span class="k">$(</span>date<span class="w"> </span>-r<span class="w"> </span><span class="nv">$srcfile</span><span class="w"> </span>+%Y/%m/%d<span class="se">\ </span>%H:%M:%S<span class="k">)</span>
-</span><span id="__span-64-12"><a id="__codelineno-64-12" name="__codelineno-64-12" href="#__codelineno-64-12"></a><span class="nv">filedate_sec</span><span class="o">=</span><span class="s2">&quot;</span><span class="k">$(</span>date<span class="w"> </span>-r<span class="w"> </span><span class="nv">$srcfile</span><span class="w"> </span>+%s<span class="k">)</span><span class="s2">&quot;</span>
-</span><span id="__span-64-13"><a id="__codelineno-64-13" name="__codelineno-64-13" href="#__codelineno-64-13"></a>
-</span><span id="__span-64-14"><a id="__codelineno-64-14" name="__codelineno-64-14" href="#__codelineno-64-14"></a><span class="nv">elapsed_sec</span><span class="o">=</span><span class="k">$((</span><span class="nv">curdate_sec</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nv">filedate_sec</span><span class="k">))</span>
-</span><span id="__span-64-15"><a id="__codelineno-64-15" name="__codelineno-64-15" href="#__codelineno-64-15"></a><span class="nv">elapsed_min</span><span class="o">=</span><span class="k">$((</span><span class="nv">elapsed_sec</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="m">60</span><span class="k">))</span>
-</span><span id="__span-64-16"><a id="__codelineno-64-16" name="__codelineno-64-16" href="#__codelineno-64-16"></a>
-</span><span id="__span-64-17"><a id="__codelineno-64-17" name="__codelineno-64-17" href="#__codelineno-64-17"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$curdate</span><span class="s2"> DEBUG  : </span><span class="nv">$filename</span><span class="s2">.pdf modification: </span><span class="nv">$filedate</span><span class="s2">, </span><span class="nv">$elapsed_min</span><span class="s2"> min ago.&quot;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$logfile</span><span class="s2">&quot;</span>
-</span><span id="__span-64-18"><a id="__codelineno-64-18" name="__codelineno-64-18" href="#__codelineno-64-18"></a>
-</span><span id="__span-64-19"><a id="__codelineno-64-19" name="__codelineno-64-19" href="#__codelineno-64-19"></a><span class="c1"># modification within two hours( --max-age 2h)</span>
-</span><span id="__span-64-20"><a id="__codelineno-64-20" name="__codelineno-64-20" href="#__codelineno-64-20"></a><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="nv">$elapsed_min</span><span class="w"> </span>-le<span class="w"> </span><span class="m">120</span><span class="w"> </span><span class="o">]</span>
-</span><span id="__span-64-21"><a id="__codelineno-64-21" name="__codelineno-64-21" href="#__codelineno-64-21"></a><span class="k">then</span>
-</span><span id="__span-64-22"><a id="__codelineno-64-22" name="__codelineno-64-22" href="#__codelineno-64-22"></a><span class="w">    </span><span class="c1"># echo &quot;rclone run for elapsed time &lt;= 120m&quot;</span>
-</span><span id="__span-64-23"><a id="__codelineno-64-23" name="__codelineno-64-23" href="#__codelineno-64-23"></a><span class="w">    </span>/usr/local/bin/rclone<span class="w"> </span>copyto<span class="w"> </span>-v<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$srcfile</span><span class="s2">&quot;</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$dstfile</span><span class="s2">&quot;</span><span class="w"> </span>--log-file<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$logfile</span><span class="s2">&quot;</span>
-</span><span id="__span-64-24"><a id="__codelineno-64-24" name="__codelineno-64-24" href="#__codelineno-64-24"></a><span class="k">else</span>
-</span><span id="__span-64-25"><a id="__codelineno-64-25" name="__codelineno-64-25" href="#__codelineno-64-25"></a><span class="w">    </span><span class="c1"># echo &quot;rclone dry-run for elapsed time &gt; 120m&quot;</span>
-</span><span id="__span-64-26"><a id="__codelineno-64-26" name="__codelineno-64-26" href="#__codelineno-64-26"></a><span class="w">    </span>/usr/local/bin/rclone<span class="w"> </span>copyto<span class="w"> </span>-v<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$srcfile</span><span class="s2">&quot;</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$dstfile</span><span class="s2">&quot;</span><span class="w"> </span>--log-file<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$logfile</span><span class="s2">&quot;</span><span class="w"> </span>--dry-run
-</span><span id="__span-64-27"><a id="__codelineno-64-27" name="__codelineno-64-27" href="#__codelineno-64-27"></a><span class="k">fi</span>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-67-1"><a id="__codelineno-67-1" name="__codelineno-67-1" href="#__codelineno-67-1"></a><span class="ch">#!/bin/bash</span>
+</span><span id="__span-67-2"><a id="__codelineno-67-2" name="__codelineno-67-2" href="#__codelineno-67-2"></a>
+</span><span id="__span-67-3"><a id="__codelineno-67-3" name="__codelineno-67-3" href="#__codelineno-67-3"></a><span class="nv">logfile</span><span class="o">=</span><span class="s2">&quot;/Users/faner/.config/rclone/rclone-</span><span class="k">$(</span>date<span class="w"> </span>+%Y%m<span class="k">)</span><span class="s2">.log&quot;</span>
+</span><span id="__span-67-4"><a id="__codelineno-67-4" name="__codelineno-67-4" href="#__codelineno-67-4"></a><span class="nv">filename</span><span class="o">=</span><span class="s2">&quot;恋词考研英语-全真题源报刊7000词-索引红版&quot;</span>
+</span><span id="__span-67-5"><a id="__codelineno-67-5" name="__codelineno-67-5" href="#__codelineno-67-5"></a><span class="nv">srcfile</span><span class="o">=</span><span class="s2">&quot;/Users/faner/Documents/English/LINKIN-WORDS-7000/</span><span class="nv">$filename</span><span class="s2">.pdf&quot;</span>
+</span><span id="__span-67-6"><a id="__codelineno-67-6" name="__codelineno-67-6" href="#__codelineno-67-6"></a><span class="nv">dstfile</span><span class="o">=</span><span class="s2">&quot;smbhd@rpi4b:WDHD/backups/English/</span><span class="nv">$filename</span><span class="s2">-</span><span class="k">$(</span>date<span class="w"> </span>+%Y%m%d%H<span class="k">)</span><span class="s2">.pdf&quot;</span>
+</span><span id="__span-67-7"><a id="__codelineno-67-7" name="__codelineno-67-7" href="#__codelineno-67-7"></a>
+</span><span id="__span-67-8"><a id="__codelineno-67-8" name="__codelineno-67-8" href="#__codelineno-67-8"></a><span class="nv">curdate</span><span class="o">=</span><span class="k">$(</span>date<span class="w"> </span>+%Y/%m/%d<span class="se">\ </span>%H:%M:%S<span class="k">)</span>
+</span><span id="__span-67-9"><a id="__codelineno-67-9" name="__codelineno-67-9" href="#__codelineno-67-9"></a><span class="nv">curdate_sec</span><span class="o">=</span><span class="s2">&quot;</span><span class="k">$(</span>date<span class="w"> </span>+%s<span class="k">)</span><span class="s2">&quot;</span>
+</span><span id="__span-67-10"><a id="__codelineno-67-10" name="__codelineno-67-10" href="#__codelineno-67-10"></a>
+</span><span id="__span-67-11"><a id="__codelineno-67-11" name="__codelineno-67-11" href="#__codelineno-67-11"></a><span class="nv">filedate</span><span class="o">=</span><span class="k">$(</span>date<span class="w"> </span>-r<span class="w"> </span><span class="nv">$srcfile</span><span class="w"> </span>+%Y/%m/%d<span class="se">\ </span>%H:%M:%S<span class="k">)</span>
+</span><span id="__span-67-12"><a id="__codelineno-67-12" name="__codelineno-67-12" href="#__codelineno-67-12"></a><span class="nv">filedate_sec</span><span class="o">=</span><span class="s2">&quot;</span><span class="k">$(</span>date<span class="w"> </span>-r<span class="w"> </span><span class="nv">$srcfile</span><span class="w"> </span>+%s<span class="k">)</span><span class="s2">&quot;</span>
+</span><span id="__span-67-13"><a id="__codelineno-67-13" name="__codelineno-67-13" href="#__codelineno-67-13"></a>
+</span><span id="__span-67-14"><a id="__codelineno-67-14" name="__codelineno-67-14" href="#__codelineno-67-14"></a><span class="nv">elapsed_sec</span><span class="o">=</span><span class="k">$((</span><span class="nv">curdate_sec</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="nv">filedate_sec</span><span class="k">))</span>
+</span><span id="__span-67-15"><a id="__codelineno-67-15" name="__codelineno-67-15" href="#__codelineno-67-15"></a><span class="nv">elapsed_min</span><span class="o">=</span><span class="k">$((</span><span class="nv">elapsed_sec</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="m">60</span><span class="k">))</span>
+</span><span id="__span-67-16"><a id="__codelineno-67-16" name="__codelineno-67-16" href="#__codelineno-67-16"></a>
+</span><span id="__span-67-17"><a id="__codelineno-67-17" name="__codelineno-67-17" href="#__codelineno-67-17"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$curdate</span><span class="s2"> DEBUG  : </span><span class="nv">$filename</span><span class="s2">.pdf modification: </span><span class="nv">$filedate</span><span class="s2">, </span><span class="nv">$elapsed_min</span><span class="s2"> min ago.&quot;</span><span class="w"> </span>&gt;&gt;<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$logfile</span><span class="s2">&quot;</span>
+</span><span id="__span-67-18"><a id="__codelineno-67-18" name="__codelineno-67-18" href="#__codelineno-67-18"></a>
+</span><span id="__span-67-19"><a id="__codelineno-67-19" name="__codelineno-67-19" href="#__codelineno-67-19"></a><span class="c1"># modification within two hours( --max-age 2h)</span>
+</span><span id="__span-67-20"><a id="__codelineno-67-20" name="__codelineno-67-20" href="#__codelineno-67-20"></a><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="nv">$elapsed_min</span><span class="w"> </span>-le<span class="w"> </span><span class="m">120</span><span class="w"> </span><span class="o">]</span>
+</span><span id="__span-67-21"><a id="__codelineno-67-21" name="__codelineno-67-21" href="#__codelineno-67-21"></a><span class="k">then</span>
+</span><span id="__span-67-22"><a id="__codelineno-67-22" name="__codelineno-67-22" href="#__codelineno-67-22"></a><span class="w">    </span><span class="c1"># echo &quot;rclone run for elapsed time &lt;= 120m&quot;</span>
+</span><span id="__span-67-23"><a id="__codelineno-67-23" name="__codelineno-67-23" href="#__codelineno-67-23"></a><span class="w">    </span>/usr/local/bin/rclone<span class="w"> </span>copyto<span class="w"> </span>-v<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$srcfile</span><span class="s2">&quot;</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$dstfile</span><span class="s2">&quot;</span><span class="w"> </span>--log-file<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$logfile</span><span class="s2">&quot;</span>
+</span><span id="__span-67-24"><a id="__codelineno-67-24" name="__codelineno-67-24" href="#__codelineno-67-24"></a><span class="k">else</span>
+</span><span id="__span-67-25"><a id="__codelineno-67-25" name="__codelineno-67-25" href="#__codelineno-67-25"></a><span class="w">    </span><span class="c1"># echo &quot;rclone dry-run for elapsed time &gt; 120m&quot;</span>
+</span><span id="__span-67-26"><a id="__codelineno-67-26" name="__codelineno-67-26" href="#__codelineno-67-26"></a><span class="w">    </span>/usr/local/bin/rclone<span class="w"> </span>copyto<span class="w"> </span>-v<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$srcfile</span><span class="s2">&quot;</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$dstfile</span><span class="s2">&quot;</span><span class="w"> </span>--log-file<span class="o">=</span><span class="s2">&quot;</span><span class="nv">$logfile</span><span class="s2">&quot;</span><span class="w"> </span>--dry-run
+</span><span id="__span-67-27"><a id="__codelineno-67-27" name="__codelineno-67-27" href="#__codelineno-67-27"></a><span class="k">fi</span>
 </span></code></pre></div>
 </details>
 <h3 id="check_logs">check logs<a class="headerlink" href="#check_logs" title="Permanent link">#</a></h3>
 <p>每天检查日志文件，确认系统 cron 定时任务和 rclone sysnc 同步任务执行情况。</p>
 <p>系统日志 /var/log/syslog 中，应该有类似的条目：</p>
-<div class="language-dmesg highlight"><pre><span></span><code><span id="__span-65-1"><a id="__codelineno-65-1" name="__codelineno-65-1" href="#__codelineno-65-1"></a><span class="err">$ grep -a CRON /var/log/syslog</span>
-</span><span id="__span-65-2"><a id="__codelineno-65-2" name="__codelineno-65-2" href="#__codelineno-65-2"></a><span class="err">Apr  7 02:30:00 rpi4b-ubuntu CRON[62328]: (pifan) CMD (rclone sync -v webdav-rpi4b: /media/WDHD/webdav@rpi4b --log-file=/home/pifan/.config/rclone/rclone.log)</span>
+<div class="language-dmesg highlight"><pre><span></span><code><span id="__span-68-1"><a id="__codelineno-68-1" name="__codelineno-68-1" href="#__codelineno-68-1"></a><span class="err">$ grep -a CRON /var/log/syslog</span>
+</span><span id="__span-68-2"><a id="__codelineno-68-2" name="__codelineno-68-2" href="#__codelineno-68-2"></a><span class="err">Apr  7 02:30:00 rpi4b-ubuntu CRON[62328]: (pifan) CMD (rclone sync -v webdav-rpi4b: /media/WDHD/webdav@rpi4b --log-file=/home/pifan/.config/rclone/rclone.log)</span>
 </span></code></pre></div>
 <p>也可以开启 cron 独立日志，后续直接查看 /var/log/cron.log。</p>
 <div class="admonition note">

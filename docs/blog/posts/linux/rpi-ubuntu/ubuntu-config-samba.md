@@ -116,30 +116,12 @@ $ mkdir: cannot create directory ‘/media/WDHD/test’: Read-only file system
 
 ### install hfsprogs
 
-参考 [mount - How to read and write HFS+ journaled external HDD in Ubuntu without access to OS X? - Ask Ubuntu](https://askubuntu.com/questions/332315/how-to-read-and-write-hfs-journaled-external-hdd-in-ubuntu-without-access-to-os)。
+参考 [mount - How to read and write HFS+ journaled external HDD in Ubuntu without access to OS X? - Ask Ubuntu](https://askubuntu.com/questions/332315/how-to-read-and-write-hfs-journaled-external-hdd-in-ubuntu-without-access-to-os) 和 [How to mount a HFS partition in Ubuntu as Read/Write?](https://www.racoonlab.com/2021/04/how-to-mount-a-hfs-partition-in-ubuntu-as-read-write/)。
 
 执行以下命令安装 hfsprogs（mkfs and fsck for HFS and HFS+ file systems）
 
 ```Shell
 $ sudo apt-get install hfsprogs -y
-```
-
-执行 fsck.hfsplus 检查磁盘状态：
-
-```Shell
-$ sudo fsck.hfsplus /dev/sda3
-** /dev/sda3
-   Executing fsck_hfs (version 540.1-Linux).
-** Checking Journaled HFS Plus volume.
-   The volume name is WDHD
-** Checking extents overflow file.
-** Checking catalog file.
-** Checking multi-linked files.
-** Checking catalog hierarchy.
-** Checking extended attributes file.
-** Checking volume bitmap.
-** Checking volume information.
-** The volume WDHD appears to be OK.
 ```
 
 执行以下命令重新加载硬盘：
@@ -157,6 +139,31 @@ $ sudo mount -t hfsplus -o force,rw,uid=pifan,gid=ubuntu /dev/sda3 /media/WDHD
 
 重新执行 `mkdir /media/WDHD/test` 创建文件夹成功。
 
+如果之前有暴力插拔非正常退出，可能导致分区部分损坏，导致 [无法挂载](https://juejin.cn/post/7065592541206282253) 或只能挂载为 read-only。
+此时，可以执行 `sudo fsck.hfsplus /dev/sda3` 命令检查磁盘状态，尝试修复。
+
+=== "OK"
+
+    ** The volume WDHD appears to be OK.
+
+=== "repaired successfully"
+
+    ** The volume WDHD was repaired successfully.
+
+=== "repaired unsuccessfully"
+
+    ```
+    ** Checking extended attributes file.
+       Keys out of order
+    (8, 5)
+    ** Rebuilding extended attributes B-tree.
+    ** The volume WDHD could not be repaired.
+    ```
+
+第三种修复失败（repair failure）的情况，尝试按照 [Force repair of external hfsplus HD](https://ubuntuforums.org/showthread.php?t=1632718)，抢救失败！
+
+请尽快拷贝数据备份，考虑使用 macOS 自带的 Disk Utility.app 或其他磁盘修复工具对分区重新格式化。
+
 ### auto mount
 
 编辑文件 `sudo vim /etc/fstab`，其格式条目如下：
@@ -165,38 +172,14 @@ $ sudo mount -t hfsplus -o force,rw,uid=pifan,gid=ubuntu /dev/sda3 /media/WDHD
 # <file system> <mount point> <file system type> <options> <dump> <pass>
 ```
 
-在其中加入启动加载项 `UUID 指定目录 硬盘文件系统格式 defaults,nofail 0 0`：
+参考：[linux mint - HFS+ file system being mounted as read-only](https://unix.stackexchange.com/questions/452062/hfs-file-system-being-mounted-as-read-only) 和 [ubuntu - How to Mount HFS+ drive as read-write on startup](https://unix.stackexchange.com/questions/639476/how-to-mount-hfs-drive-as-read-write-on-startup)，在其中加入启动加载项 `UUID 挂载点目录 硬盘文件系统格式 defaults,nofail 0 0`：
 
 ```Shell
 # 执行 id 命令可查看当前用户的 uid/gid
-UUID=8be03e5b-ebbe-4695-a698-f0c0b5cc9f39 /media/WDHD hfsplus force,rw,uid=1000,gid=1000 0 0
+UUID=8be03e5b-ebbe-4695-a698-f0c0b5cc9f39 /media/WDHD auto nosuid,nodev,nofail,x-gvfs-show,force,rw 0 0
 ```
 
 重启加载后，挂载点还是提示 Read-only！参考上一步，remount 或者 umount 后重新 mount 挂载。
-
-=== "参考配置 1"
-
-    [ubuntu - How to Mount HFS+ drive as read-write on startup](https://unix.stackexchange.com/questions/639476/how-to-mount-hfs-drive-as-read-write-on-startup)
-
-    ```Shell
-    /dev/disk/by-id/usb-Seagate_Expansion+_Desk_NA8B0LGL-0:0-part2 /media/media/4tb auto nosuid,nodev,nofail,x-gvfs-show,force,rw 0 0
-    ```
-
-=== "参考配置 2"
-
-    [raspbian - Adding hfsplus file system to fstab](https://raspberrypi.stackexchange.com/questions/29087/adding-hfsplus-file-system-to-fstab)
-
-    ```Shell
-    UUID=12345 /media/USBDrive/ hfsplus force,rw
-    ```
-
-=== "参考配置 3"
-
-    [SOLVED - Mounting hfs partition at boot](https://ubuntuforums.org/showthread.php?t=1485096)
-
-    ```Shell
-    /dev/sda3 /media/sda3 hfsplus defaults 0 0
-    ```
 
 ## config samba for WDHD
 
