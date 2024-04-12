@@ -4,7 +4,7 @@ authors:
   - xman
 date:
     created: 2017-10-18T11:20:00
-    updated: 2024-04-01T23:10:00
+    updated: 2024-04-11T10:10:00
 categories:
     - vim
     - editor
@@ -134,23 +134,17 @@ set et "expandtab
 set ai "autoindent
 ```
 
-### 查看不可见字符
+## 读取设置
 
-`:set list`：显示不可见字符  
-`:set nolist`：取消显示不可见字符
-
-> 在显示不可见字符的情况下，TAB 键显示为 `^I`；而换行符(LF)显示为 `$`。
-
-[Show invisibles](http://vimcasts.org/episodes/show-invisibles/)  
-[Vim: Show invisible characters](https://code-maven.com/slides/vim/show-invisible-characters)  
-[How to Display Hidden Characters in vim?](https://askubuntu.com/questions/74485/how-to-display-hidden-characters-in-vim)  
-[Make Vim show ALL white spaces as a character](https://stackoverflow.com/questions/1675688/make-vim-show-all-white-spaces-as-a-character)  
-
-## [读取设置](http://blog.chinaunix.net/uid-22188554-id-461603.html)
+[vim查看配置项的值以及查看环境变量的值](http://blog.chinaunix.net/uid-22188554-id-461603.html)
 
 要查询某个配置开关或选项的值，可以 set 该变量为问号(?)即可查询。  
 
 `:set <option> ?`：查看特定选项  
+
+[What's the difference between let and set?](https://vi.stackexchange.com/questions/2076/whats-the-difference-between-let-and-set)
+
+`:let g:netrw_liststyle`：读取查看全局 let 变量的值。  
 
 ### fileencodings
 
@@ -247,12 +241,6 @@ Sublime Text 的 `~/Library/Application Support/Sublime Text 3/Packages/Default/
 - Unix：Unix Line Endings(LF)
 - CR：Mac OS 9 Line Endings(CR)
 
-## let
-
-[What's the difference between let and set?](https://vi.stackexchange.com/questions/2076/whats-the-difference-between-let-and-set)
-
-`:let g:netrw_liststyle`：读取查看全局 let 变量的值。  
-
 ## ubuntu
 
 ubuntu 下 man vim，FILES 部分列出了配置文件和说明文档相关的文件路径：
@@ -298,6 +286,82 @@ endif
 ```
 
 我们可以新建 /etc/vim/vimrc.local，这样配置对 vim 和 sudo vim 全局生效。
+
+### 查看不可见字符
+
+[Show invisibles](http://vimcasts.org/episodes/show-invisibles/)  
+[Vim: Show invisible characters](https://code-maven.com/slides/vim/show-invisible-characters)  
+[How to Display Hidden Characters in vim?](https://askubuntu.com/questions/74485/how-to-display-hidden-characters-in-vim)  
+[Make Vim show ALL white spaces as a character](https://stackoverflow.com/questions/1675688/make-vim-show-all-white-spaces-as-a-character)  
+
+`:set list` / `:set nolist`：显示/取消显示不可见字符。
+
+在显示不可见字符的情况下，TAB 键显示为 `^I`；而换行符(LF)显示为 `$`。
+
+也可设置 listchars 选项定制特殊字符的显示，以下将 TAB 显示成 `>—`，而行尾多余的空白字符显示成 `-`。
+
+```vim
+:set listchars=tab:>-,trail:-
+:set list
+```
+
+某天重启树莓派（rpi4b-ubuntu）后，发现工作不正常，ssh 也连接不上，无奈只得插上 microHDMI 和无线键鼠。
+
+看到控制台提示进入紧急模式，需要以 root 身份登录进去维护。
+
+!!! warning "You are in emergency mode."
+
+    After logging in, type "journalctl -xb" to view system logs, "systemctl reboot" to reboot, or "exit" to boot into default mode.
+    Give root password for maintenance
+
+![rpi4b-ubuntu-boot-log](./images/rpi4b-ubuntu-boot-log.jpg)
+
+根据上下文是 Cloud-init 启动是加载某个 YAML 配置文件失败（Failed loading yaml blob.），可能是格式有问题（Invalid format）。
+
+参考 [cloud-init 介绍](https://xixiliguo.github.io/linux/cloud-init.html)，其采用 YAML 格式的配置文件，其配置文件为 `/etc/cloud/cloud.cfg`。
+
+YAML 格式的具体说明参见 [YAML 语言教程](http://www.ruanyifeng.com/blog/2016/07/yaml.html)，需要注意的是 YAML 不支持tab键，但支持空格。
+
+控制台显示 `found character '\t' that cannot start any token`，这个 tab 键（`\t`）就是问题的元凶。之前已有国际友人踩过坑 [I'm getting "found character that cannot start any token while scanning for the next token"](https://stackoverflow.com/questions/19356278/im-getting-found-character-that-cannot-start-any-token-while-scanning-for-the)。
+
+控制台显示的内容可以在系统日志 /var/log/syslog 中查看，接下来查看 cloud-init 日志文件 `/var/log/cloud-init.log`，定位显示是加载解析 `/boot/firmware/network-config` 出错。
+
+```Shell title="/var/log/cloud-init.log"
+2024-04-11 00:50:03,529 - util.py[DEBUG]: Read 1590 bytes from /boot/firmware//network-config
+2024-04-11 00:50:03,530 - util.py[DEBUG]: Attempting to load yaml from string of length 240 with allowed root types (<class 'dict'>,)
+2024-04-11 00:50:03,536 - util.py[DEBUG]: Attempting to load yaml from string of length 1590 with allowed root types (<class 'dict'>,)
+2024-04-11 00:50:03,553 - util.py[WARNING]: Failed loading yaml blob. Invalid format at line 44 column 1: "while scanning for the next token
+found character '\t' that cannot start any token
+  in "<unicode string>", line 44, column 1:
+        optional: true
+    ^"
+```
+
+`vim /boot/firmware/network-config` 打开 boot 网络配置文件，看起来第 44 行对齐和缩进没啥问题：
+
+![network-config-1](./images/network-config-1.png)
+
+输入 `:set list` 显示 tab 键，再看发现确实有非法的 tab 键：
+
+![network-config-2](./images/network-config-2.png)
+
+手刃 tab 替换为两个空格，或者 `:%s/\t/  /g` 解决问题。需要格外注意对齐层级。
+
+后来翻看系统日志，其实这个问题由来已久。当初制作 rpi4b-ubuntu 镜像时试图配置无线 WiFi 静态 IP，当时还纳闷为啥不成功。
+
+重启后问题依旧，cloud-init 日志显示 `schema.py[DEPRECATED]: Deprecated cloud-config provided`（refer to [askubuntu](https://askubuntu.com/questions/1423821/cloud-init-schema-py-invalid-cloud-config-provided)）。
+
+原来最近使用树莓派挂载硬盘，在 /etc/fstab 中配置了开机 auto mount 项。后来将硬盘拔下来重新格式化了某个分区，可能 mount 参数有问题抑或 UUID 有变。
+
+查看系统日志，看到有一些 systemd-udevd 模块的报错：
+
+```Shell title="/var/log/syslog"
+Apr 11 10:19:06 rpi4b-ubuntu systemd-udevd[462]: sda1: Process '/usr/bin/unshare -m /usr/bin/snap auto-import --mount=/dev/sda1' failed with exit code 1.
+Apr 11 10:19:06 rpi4b-ubuntu systemd-udevd[473]: sda3: Process '/usr/bin/unshare -m /usr/bin/snap auto-import --mount=/dev/sda3' failed with exit code 1.
+Apr 11 10:19:06 rpi4b-ubuntu systemd-udevd[463]: sda2: Process '/usr/bin/unshare -m /usr/bin/snap auto-import --mount=/dev/sda2' failed with exit code 1.
+```
+
+删除 /etc/fstab 中新近配置的 mount 条目，重启成功进入系统。后续修正了 /etc/fstab 中的 mount 条目，具体参考 [rpi4b-ubuntu外挂硬盘配置samba共享服务](../linux/rpi-ubuntu/ubuntu-config-samba.md)。
 
 ## 参考
 

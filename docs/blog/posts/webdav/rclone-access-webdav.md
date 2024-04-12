@@ -4,7 +4,7 @@ authors:
   - xman
 date:
     created: 2024-03-18T15:30:00
-    updated: 2024-04-09T10:00:00
+    updated: 2024-04-11T12:00:00
 categories:
     - macOS
     - ubuntu
@@ -1358,19 +1358,17 @@ cron 执行出错时默认会通过 MTA 服务给系统管理员发邮件，执�
 
     echo "$curdate DEBUG  : $filename.pdf modification: $filedate, $elapsed_min min ago." >> "$logfile"
 
-    # modification within two hours( --max-age 2h)
+    # check modification
     if [ $elapsed_min -le 120 ]
-    then
+    then # changed within two hours( --max-age 2h)
         if /usr/local/bin/rclone copyto -v "$srcfile" "$dstfile" --log-file="$logfile";
-        then
-            # delete old backups from 24h ago if success, else keep old backups
-            /usr/local/bin/rclone delete -v "$dstpath" --min-age 24h
-        # else
-            # /usr/local/bin/rclone delete -v "$dstpath" --min-age 24h --dry-run
+        then # delete old backups from 24h ago
+            /usr/local/bin/rclone delete -v "$dstpath" --min-age 24h --log-file="$logfile"
+        else
+            echo -e "backup failed, keep old backups.\n" >> "$logfile"
         fi
-    # else
-        # keep old backups if no recent changes
-        # /usr/local/bin/rclone copyto -v "$srcfile" "$dstfile" --log-file="$logfile" --dry-run
+    else # remain unchanged more than two hours
+        echo -e "no recent changes, keep old backups.\n" >> "$logfile"
     fi
     ```
 

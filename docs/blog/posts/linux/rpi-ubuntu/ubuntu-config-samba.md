@@ -4,6 +4,7 @@ authors:
   - xman
 date:
     created: 2024-03-18T17:00:00
+    updated: 2024-04-11T10:00:00
 categories:
     - ubuntu
     - samba
@@ -21,11 +22,16 @@ comments: true
 
 2T 的 WD 硬盘之前格式化为 macExt 格式，其中 1.5T 的 sda2 为 macOS 备份分区，0.5T 的 sda3 为普通分区。
 
-可以使用 [hdparm](https://manpages.ubuntu.com/manpages/noble/en/man8/hdparm.8.html) 命令获取或设置硬盘信息（get/set SATA/IDE device parameters），参考 [Master the Linux 'hdparm' Command: A Comprehensive Guide](https://hopeness.medium.com/master-the-linux-hdparm-command-a-comprehensive-guide-73214ba71219)。
+可使用 [hdparm](https://manpages.ubuntu.com/manpages/noble/en/man8/hdparm.8.html) 命令获取或设置硬盘信息（get/set SATA/IDE device parameters），参考 [Master the Linux 'hdparm' Command: A Comprehensive Guide](https://hopeness.medium.com/master-the-linux-hdparm-command-a-comprehensive-guide-73214ba71219)。
+
+也可使用 udev/udevadm 命令管理配置和查看设备相关信息：
+
+- [udev - Dynamic device management](https://manpages.ubuntu.com/manpages/noble/en/man7/udev.7.html)
+- [udevadm - udev management tool](https://manpages.ubuntu.com/manpages/noble/en/man8/udevadm.8.html)
 
 ### lsblk
 
-lsblk - list block devices
+[lsblk - list block devices](https://manpages.ubuntu.com/manpages/noble/en/man8/lsblk.8.html)
 
 ```Shell
 $ lsblk
@@ -48,13 +54,13 @@ mmcblk0     179:0    0  59.5G  0 disk
 
 !!! note "blkid"
 
-    blkid - locate/print block device attributes
+    [blkid - locate/print block device attributes](https://manpages.ubuntu.com/manpages/noble/en/man8/blkid.8.html)
 
     执行 `sudo blkid` 可以查看硬盘块设备 id 信息，包括 LABEL、UUID 和 TYPE（文件系统类型）。
 
 ### fdisk
 
-fdisk - manipulate disk partition table
+[fdisk - manipulate disk partition table](https://manpages.ubuntu.com/manpages/noble/en/man8/fdisk.8.html)
 
 - `-l` / `--list`: List the partition tables for the specified devices and then exit.
 
@@ -71,7 +77,7 @@ Device          Start        End    Sectors   Size Type
 
 ## mount disk
 
-> 关于 mount 命令用法，参考 [Ubuntu Manpage: mount - mount a filesystem](https://manpages.ubuntu.com/manpages/noble/en/man8/mount.8.html)。
+> 关于 mount 命令用法，参考 [mount - mount a filesystem](https://manpages.ubuntu.com/manpages/noble/en/man8/mount.8.html)。
 
 创建挂载点目录：
 
@@ -98,15 +104,6 @@ drwxr-xr-x 2 pifan ubuntu 4096 Apr  7 03:22 WDHD
 ```Shell
 # sudo mount /dev/sda3 /media/WDHD
 $ sudo mount -o uid=pifan,gid=ubuntu /dev/sda3 /media/WDHD
-$ df -h
-Filesystem      Size  Used Avail Use% Mounted on
-tmpfs           781M  3.1M  778M   1% /run
-/dev/mmcblk0p2   59G   14G   42G  25% /
-tmpfs           3.9G     0  3.9G   0% /dev/shm
-tmpfs           5.0M     0  5.0M   0% /run/lock
-/dev/mmcblk0p1  253M  138M  115M  55% /boot/firmware
-tmpfs           781M  4.0K  781M   1% /run/user/1000
-/dev/sda3       466G  204G  262G  44% /media/WDHD
 ```
 
 !!! note "uid/gid"
@@ -114,6 +111,20 @@ tmpfs           781M  4.0K  781M   1% /run/user/1000
     执行 `id` 命令可查看当前用户的 uid/gid。
     mount 需指定和 mkdir 创建的挂载点目录一致的 uid/gid。
     如不指定，默认加载 uid/gid=99，无写权限，需要 chmod 或 chown。
+
+执行 [df](https://manpages.ubuntu.com/manpages/noble/en/man1/df.1.html)（report file system space usage）命令查看挂载的文件设备使用情况：
+
+```Shell
+$ df -hT
+Filesystem     Type     Size  Used Avail Use% Mounted on
+tmpfs          tmpfs    781M  5.7M  776M   1% /run
+/dev/mmcblk0p2 ext4      59G   14G   43G  25% /
+tmpfs          tmpfs    3.9G     0  3.9G   0% /dev/shm
+tmpfs          tmpfs    5.0M     0  5.0M   0% /run/lock
+/dev/mmcblk0p1 vfat     253M  138M  115M  55% /boot/firmware
+tmpfs          tmpfs    781M  4.0K  781M   1% /run/user/1000
+/dev/sda3      hfsplus  466G  201G  265G  44% /media/WDHD
+```
 
 ### test writability
 
