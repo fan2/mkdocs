@@ -21,6 +21,8 @@ comments: true
 
 2T 的 WD 硬盘之前格式化为 macExt 格式，其中 1.5T 的 sda2 为 macOS 备份分区，0.5T 的 sda3 为普通分区。
 
+可以使用 [hdparm](https://manpages.ubuntu.com/manpages/noble/en/man8/hdparm.8.html) 命令获取或设置硬盘信息（get/set SATA/IDE device parameters），参考 [Master the Linux 'hdparm' Command: A Comprehensive Guide](https://hopeness.medium.com/master-the-linux-hdparm-command-a-comprehensive-guide-73214ba71219)。
+
 ### lsblk
 
 lsblk - list block devices
@@ -113,20 +115,30 @@ tmpfs           781M  4.0K  781M   1% /run/user/1000
     mount 需指定和 mkdir 创建的挂载点目录一致的 uid/gid。
     如不指定，默认加载 uid/gid=99，无写权限，需要 chmod 或 chown。
 
-### test mkdir
+### test writability
 
-尝试在外挂硬盘上创建一个文件夹，提示“Read-only file system”：
+最古朴的测验方式是尝试在外挂硬盘上创建一个文件夹，如果提示“Read-only file system”说明只读：
 
 ```Shell
 $ mkdir /media/WDHD/test
 $ mkdir: cannot create directory ‘/media/WDHD/test’: Read-only file system
 ```
 
+参考 Server Fault 上的陈年老铁 [linux - Determine if filesystem or partition is mounted RO or RW via Bash Script?](https://serverfault.com/questions/193971/determine-if-filesystem-or-partition-is-mounted-ro-or-rw-via-bash-script)，其中提供了更现代化和优雅的测试方式。
+
+```Shell
+$ grep 'sda[2,3]' /proc/mounts
+/dev/sda3 /media/WDHD hfsplus ro,nosuid,nodev,relatime,umask=22,uid=1000,gid=1000,nls=utf8 0 0
+
+$ [ -w /media/WDHD ] && echo "rw" || echo "ro"
+ro
+```
+
 ### install hfsprogs
 
 参考 [mount - How to read and write HFS+ journaled external HDD in Ubuntu without access to OS X? - Ask Ubuntu](https://askubuntu.com/questions/332315/how-to-read-and-write-hfs-journaled-external-hdd-in-ubuntu-without-access-to-os) 和 [How to mount a HFS partition in Ubuntu as Read/Write?](https://www.racoonlab.com/2021/04/how-to-mount-a-hfs-partition-in-ubuntu-as-read-write/)。
 
-执行以下命令安装 hfsprogs（mkfs and fsck for HFS and HFS+ file systems）
+执行以下命令安装 hfsprogs（mkfs and fsck for HFS and HFS+ file systems）：
 
 ```Shell
 $ sudo apt-get install hfsprogs -y
@@ -147,8 +159,28 @@ $ sudo mount -t hfsplus -o force,rw,uid=pifan,gid=ubuntu /dev/sda3 /media/WDHD
 
 重新执行 `mkdir /media/WDHD/test` 创建文件夹成功。
 
-如果之前有暴力插拔非正常退出，可能导致分区部分损坏，导致 [无法挂载](https://juejin.cn/post/7065592541206282253) 或只能挂载为 read-only。
-此时，可以执行 `sudo fsck.hfsplus /dev/sda3` 命令检查磁盘状态，尝试修复。
+如果之前有非正常操作，如暴力插拔或断电重启，系统检测到上一次磁盘没有正常卸载，也会挂载为只读。
+
+```Shell title="/var/log/syslog"
+5933 Apr  7 04:13:48 rpi4b-ubuntu kernel: [   50.634910] hfsplus: Filesystem was not cleanly unmounted, running fsck.hfsplus is recommended.  mounting read-only.
+5934 Apr  7 04:13:48 rpi4b-ubuntu kernel: [   50.657465] hfsplus: Filesystem was not cleanly unmounted, running fsck.hfsplus is recommended.  mounting read-only.
+```
+
+甚至可能分区损坏导致 [无法挂载](https://juejin.cn/post/7065592541206282253)，此时可执行 `sudo fsck.hfsplus /dev/sda3` 命令检查磁盘状态，尝试修复。
+
+!!! abstract "man fsck"
+
+    === "macOS"
+
+        `fsck` – filesystem consistency check and interactive repair
+        It should be noted that fsck is now essentially a wrapper that invokes other `fsck_XXX` utilities as needed.
+
+    === "ubuntu"
+
+        `fsck` - check and repair a Linux filesystem
+        In actuality, fsck is simply a front-end for the various filesystem checkers (fsck.fstype) available under Linux.
+
+fsck.hfsplus 检查的结果一般有以下三种：
 
 === "OK"
 
@@ -160,7 +192,7 @@ $ sudo mount -t hfsplus -o force,rw,uid=pifan,gid=ubuntu /dev/sda3 /media/WDHD
 
 === "repaired unsuccessfully"
 
-    ```
+    ```Shell
     ** Checking extended attributes file.
        Keys out of order
     (8, 5)
@@ -168,7 +200,17 @@ $ sudo mount -t hfsplus -o force,rw,uid=pifan,gid=ubuntu /dev/sda3 /media/WDHD
     ** The volume WDHD could not be repaired.
     ```
 
-第三种修复失败（repair failure）的情况，尝试按照 [Force repair of external hfsplus HD](https://ubuntuforums.org/showthread.php?t=1632718)，抢救失败！
+如果检查结果是前两种，可尝试 remount 或 umount/mount 重新挂载，正常的可写性检测结果如下：
+
+```Shell
+$ grep 'sda[2,3]' /proc/mounts
+/dev/sda3 /media/WDHD hfsplus rw,relatime,umask=22,uid=1000,gid=1000,nls=utf8 0 0
+
+$ [ -w /media/WDHD ] && echo "rw" || echo "ro"
+rw
+```
+
+如果是第三种修复失败（repair failure）的情况，尝试按照 [Force repair of external hfsplus HD](https://ubuntuforums.org/showthread.php?t=1632718)，抢救失败！
 
 请尽快拷贝数据备份，考虑使用 macOS 自带的 [diskutil/Disk Utility.app](https://qizhanming.com/blog/2021/12/13/how-to-use-diskutil-format-flash-disk-on-macos) 或其他磁盘修复工具对分区重新格式化。
 

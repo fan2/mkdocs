@@ -1117,9 +1117,9 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#test_mkdir" class="md-nav__link">
+  <a href="#test_writability" class="md-nav__link">
     <span class="md-ellipsis">
-      test mkdir
+      test writability
     </span>
   </a>
   
@@ -1311,7 +1311,7 @@
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7h1.5Z"/></svg>
                           <span class="md-ellipsis">
                             
-                              需要 7 分钟阅读时间
+                              需要 8 分钟阅读时间
                             
                           </span>
                         </div>
@@ -1366,6 +1366,7 @@
 
 <h2 id="disk_info">disk info<a class="headerlink" href="#disk_info" title="Permanent link">#</a></h2>
 <p>2T 的 WD 硬盘之前格式化为 macExt 格式，其中 1.5T 的 sda2 为 macOS 备份分区，0.5T 的 sda3 为普通分区。</p>
+<p>可以使用 <a href="https://manpages.ubuntu.com/manpages/noble/en/man8/hdparm.8.html">hdparm</a> 命令获取或设置硬盘信息（get/set SATA/IDE device parameters），参考 <a href="https://hopeness.medium.com/master-the-linux-hdparm-command-a-comprehensive-guide-73214ba71219">Master the Linux 'hdparm' Command: A Comprehensive Guide</a>。</p>
 <h3 id="lsblk">lsblk<a class="headerlink" href="#lsblk" title="Permanent link">#</a></h3>
 <p>lsblk - list block devices</p>
 <div class="language-Shell highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>$<span class="w"> </span>lsblk
@@ -1441,27 +1442,53 @@
 mount 需指定和 mkdir 创建的挂载点目录一致的 uid/gid。<br />
 如不指定，默认加载 uid/gid=99，无写权限，需要 chmod 或 chown。</p>
 </div>
-<h3 id="test_mkdir">test mkdir<a class="headerlink" href="#test_mkdir" title="Permanent link">#</a></h3>
-<p>尝试在外挂硬盘上创建一个文件夹，提示“Read-only file system”：</p>
+<h3 id="test_writability">test writability<a class="headerlink" href="#test_writability" title="Permanent link">#</a></h3>
+<p>最古朴的测验方式是尝试在外挂硬盘上创建一个文件夹，如果提示“Read-only file system”说明只读：</p>
 <div class="language-Shell highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>$<span class="w"> </span>mkdir<span class="w"> </span>/media/WDHD/test
 </span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>$<span class="w"> </span>mkdir:<span class="w"> </span>cannot<span class="w"> </span>create<span class="w"> </span>directory<span class="w"> </span>‘/media/WDHD/test’:<span class="w"> </span>Read-only<span class="w"> </span>file<span class="w"> </span>system
 </span></code></pre></div>
+<p>参考 Server Fault 上的陈年老铁 <a href="https://serverfault.com/questions/193971/determine-if-filesystem-or-partition-is-mounted-ro-or-rw-via-bash-script">linux - Determine if filesystem or partition is mounted RO or RW via Bash Script?</a>，其中提供了更现代化和优雅的测试方式。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>$<span class="w"> </span>grep<span class="w"> </span><span class="s1">&#39;sda[2,3]&#39;</span><span class="w"> </span>/proc/mounts
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>/dev/sda3<span class="w"> </span>/media/WDHD<span class="w"> </span>hfsplus<span class="w"> </span>ro,nosuid,nodev,relatime,umask<span class="o">=</span><span class="m">22</span>,uid<span class="o">=</span><span class="m">1000</span>,gid<span class="o">=</span><span class="m">1000</span>,nls<span class="o">=</span>utf8<span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="m">0</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>$<span class="w"> </span><span class="o">[</span><span class="w"> </span>-w<span class="w"> </span>/media/WDHD<span class="w"> </span><span class="o">]</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;rw&quot;</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;ro&quot;</span>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>ro
+</span></code></pre></div>
 <h3 id="install_hfsprogs">install hfsprogs<a class="headerlink" href="#install_hfsprogs" title="Permanent link">#</a></h3>
 <p>参考 <a href="https://askubuntu.com/questions/332315/how-to-read-and-write-hfs-journaled-external-hdd-in-ubuntu-without-access-to-os">mount - How to read and write HFS+ journaled external HDD in Ubuntu without access to OS X? - Ask Ubuntu</a> 和 <a href="https://www.racoonlab.com/2021/04/how-to-mount-a-hfs-partition-in-ubuntu-as-read-write/">How to mount a HFS partition in Ubuntu as Read/Write?</a>。</p>
-<p>执行以下命令安装 hfsprogs（mkfs and fsck for HFS and HFS+ file systems）</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>$<span class="w"> </span>sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>hfsprogs<span class="w"> </span>-y
+<p>执行以下命令安装 hfsprogs（mkfs and fsck for HFS and HFS+ file systems）：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>$<span class="w"> </span>sudo<span class="w"> </span>apt-get<span class="w"> </span>install<span class="w"> </span>hfsprogs<span class="w"> </span>-y
 </span></code></pre></div>
 <p>执行以下命令重新加载硬盘：</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>$<span class="w"> </span>sudo<span class="w"> </span>mount<span class="w"> </span>-t<span class="w"> </span>hfsplus<span class="w"> </span>-o<span class="w"> </span>remount,force,rw<span class="w"> </span>/media/WDHD
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>$<span class="w"> </span>sudo<span class="w"> </span>mount<span class="w"> </span>-t<span class="w"> </span>hfsplus<span class="w"> </span>-o<span class="w"> </span>remount,force,rw<span class="w"> </span>/media/WDHD
 </span></code></pre></div>
 <p>或者卸载后执行以下命令加载硬盘：</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>$<span class="w"> </span>sudo<span class="w"> </span>umount<span class="w"> </span>/media/WDHD/
-</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>$<span class="w"> </span>sudo<span class="w"> </span>mount<span class="w"> </span>-t<span class="w"> </span>hfsplus<span class="w"> </span>-o<span class="w"> </span>force,rw,uid<span class="o">=</span>pifan,gid<span class="o">=</span>ubuntu<span class="w"> </span>/dev/sda3<span class="w"> </span>/media/WDHD
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>$<span class="w"> </span>sudo<span class="w"> </span>umount<span class="w"> </span>/media/WDHD/
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>$<span class="w"> </span>sudo<span class="w"> </span>mount<span class="w"> </span>-t<span class="w"> </span>hfsplus<span class="w"> </span>-o<span class="w"> </span>force,rw,uid<span class="o">=</span>pifan,gid<span class="o">=</span>ubuntu<span class="w"> </span>/dev/sda3<span class="w"> </span>/media/WDHD
 </span></code></pre></div>
 <p>重新执行 <code>mkdir /media/WDHD/test</code> 创建文件夹成功。</p>
-<p>如果之前有暴力插拔非正常退出，可能导致分区部分损坏，导致 <a href="https://juejin.cn/post/7065592541206282253">无法挂载</a> 或只能挂载为 read-only。<br />
-此时，可以执行 <code>sudo fsck.hfsplus /dev/sda3</code> 命令检查磁盘状态，尝试修复。</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="1:3"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">OK</label><label for="__tabbed_1_2">repaired successfully</label><label for="__tabbed_1_3">repaired unsuccessfully</label></div>
+<p>如果之前有非正常操作，如暴力插拔或断电重启，系统检测到上一次磁盘没有正常卸载，也会挂载为只读。</p>
+<div class="language-Shell highlight"><span class="filename">/var/log/syslog</span><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="m">5933</span><span class="w"> </span>Apr<span class="w">  </span><span class="m">7</span><span class="w"> </span><span class="m">04</span>:13:48<span class="w"> </span>rpi4b-ubuntu<span class="w"> </span>kernel:<span class="w"> </span><span class="o">[</span><span class="w">   </span><span class="m">50</span>.634910<span class="o">]</span><span class="w"> </span>hfsplus:<span class="w"> </span>Filesystem<span class="w"> </span>was<span class="w"> </span>not<span class="w"> </span>cleanly<span class="w"> </span>unmounted,<span class="w"> </span>running<span class="w"> </span>fsck.hfsplus<span class="w"> </span>is<span class="w"> </span>recommended.<span class="w">  </span>mounting<span class="w"> </span>read-only.
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="m">5934</span><span class="w"> </span>Apr<span class="w">  </span><span class="m">7</span><span class="w"> </span><span class="m">04</span>:13:48<span class="w"> </span>rpi4b-ubuntu<span class="w"> </span>kernel:<span class="w"> </span><span class="o">[</span><span class="w">   </span><span class="m">50</span>.657465<span class="o">]</span><span class="w"> </span>hfsplus:<span class="w"> </span>Filesystem<span class="w"> </span>was<span class="w"> </span>not<span class="w"> </span>cleanly<span class="w"> </span>unmounted,<span class="w"> </span>running<span class="w"> </span>fsck.hfsplus<span class="w"> </span>is<span class="w"> </span>recommended.<span class="w">  </span>mounting<span class="w"> </span>read-only.
+</span></code></pre></div>
+<p>甚至可能分区损坏导致 <a href="https://juejin.cn/post/7065592541206282253">无法挂载</a>，此时可执行 <code>sudo fsck.hfsplus /dev/sda3</code> 命令检查磁盘状态，尝试修复。</p>
+<div class="admonition abstract">
+<p class="admonition-title">man fsck</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">macOS</label><label for="__tabbed_1_2">ubuntu</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<p><code>fsck</code> – filesystem consistency check and interactive repair<br />
+It should be noted that fsck is now essentially a wrapper that invokes other <code>fsck_XXX</code> utilities as needed.</p>
+</div>
+<div class="tabbed-block">
+<p><code>fsck</code> - check and repair a Linux filesystem<br />
+In actuality, fsck is simply a front-end for the various filesystem checkers (fsck.fstype) available under Linux.</p>
+</div>
+</div>
+</div>
+</div>
+<p>fsck.hfsplus 检查的结果一般有以下三种：</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="2:3"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><input id="__tabbed_2_3" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">OK</label><label for="__tabbed_2_2">repaired successfully</label><label for="__tabbed_2_3">repaired unsuccessfully</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
 <p>** The volume WDHD appears to be OK.</p>
@@ -1470,16 +1497,23 @@ mount 需指定和 mkdir 创建的挂载点目录一致的 uid/gid。<br />
 <p>** The volume WDHD was repaired successfully.</p>
 </div>
 <div class="tabbed-block">
-<div class="language-text highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>** Checking extended attributes file.
-</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>   Keys out of order
-</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>(8, 5)
-</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>** Rebuilding extended attributes B-tree.
-</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>** The volume WDHD could not be repaired.
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>**<span class="w"> </span>Checking<span class="w"> </span>extended<span class="w"> </span>attributes<span class="w"> </span>file.
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="w">   </span>Keys<span class="w"> </span>out<span class="w"> </span>of<span class="w"> </span>order
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="o">(</span><span class="m">8</span>,<span class="w"> </span><span class="m">5</span><span class="o">)</span>
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>**<span class="w"> </span>Rebuilding<span class="w"> </span>extended<span class="w"> </span>attributes<span class="w"> </span>B-tree.
+</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>**<span class="w"> </span>The<span class="w"> </span>volume<span class="w"> </span>WDHD<span class="w"> </span>could<span class="w"> </span>not<span class="w"> </span>be<span class="w"> </span>repaired.
 </span></code></pre></div>
 </div>
 </div>
 </div>
-<p>第三种修复失败（repair failure）的情况，尝试按照 <a href="https://ubuntuforums.org/showthread.php?t=1632718">Force repair of external hfsplus HD</a>，抢救失败！</p>
+<p>如果检查结果是前两种，可尝试 remount 或 umount/mount 重新挂载，正常的可写性检测结果如下：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>$<span class="w"> </span>grep<span class="w"> </span><span class="s1">&#39;sda[2,3]&#39;</span><span class="w"> </span>/proc/mounts
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>/dev/sda3<span class="w"> </span>/media/WDHD<span class="w"> </span>hfsplus<span class="w"> </span>rw,relatime,umask<span class="o">=</span><span class="m">22</span>,uid<span class="o">=</span><span class="m">1000</span>,gid<span class="o">=</span><span class="m">1000</span>,nls<span class="o">=</span>utf8<span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="m">0</span>
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>$<span class="w"> </span><span class="o">[</span><span class="w"> </span>-w<span class="w"> </span>/media/WDHD<span class="w"> </span><span class="o">]</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;rw&quot;</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;ro&quot;</span>
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>rw
+</span></code></pre></div>
+<p>如果是第三种修复失败（repair failure）的情况，尝试按照 <a href="https://ubuntuforums.org/showthread.php?t=1632718">Force repair of external hfsplus HD</a>，抢救失败！</p>
 <p>请尽快拷贝数据备份，考虑使用 macOS 自带的 <a href="https://qizhanming.com/blog/2021/12/13/how-to-use-diskutil-format-flash-disk-on-macos">diskutil/Disk Utility.app</a> 或其他磁盘修复工具对分区重新格式化。</p>
 <h3 id="config_mount_in_fstab">config mount in fstab<a class="headerlink" href="#config_mount_in_fstab" title="Permanent link">#</a></h3>
 <blockquote>
@@ -1490,12 +1524,12 @@ mount 需指定和 mkdir 创建的挂载点目录一致的 uid/gid。<br />
 <p>The filesystem table, aka fstab, contains descriptive information about the filesystems the system can mount.</p>
 </div>
 <p>编辑文件 <code>sudo vim /etc/fstab</code>，其条目格式（syntax of a fstab entry）如下：</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="o">[</span>Device<span class="o">]</span><span class="w"> </span><span class="o">[</span>Mount<span class="w"> </span>Point<span class="o">]</span><span class="w"> </span><span class="o">[</span>File<span class="w"> </span>System<span class="w"> </span>Type<span class="o">]</span><span class="w"> </span><span class="o">[</span>Options<span class="o">]</span><span class="w"> </span><span class="o">[</span>Dump<span class="o">]</span><span class="w"> </span><span class="o">[</span>Pass<span class="o">]</span>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="o">[</span>Device<span class="o">]</span><span class="w"> </span><span class="o">[</span>Mount<span class="w"> </span>Point<span class="o">]</span><span class="w"> </span><span class="o">[</span>File<span class="w"> </span>System<span class="w"> </span>Type<span class="o">]</span><span class="w"> </span><span class="o">[</span>Options<span class="o">]</span><span class="w"> </span><span class="o">[</span>Dump<span class="o">]</span><span class="w"> </span><span class="o">[</span>Pass<span class="o">]</span>
 </span></code></pre></div>
 <p>第 1 列可以为 UUID（PARTUUID？）、LABEL、Network ID（samba: //server/share）和 Device（/dev/sda3，not recommended）。<br />
 由于 UUID 可能会变，故下面采用 LABEL。</p>
 <p>参考 <a href="https://unix.stackexchange.com/questions/452062/hfs-file-system-being-mounted-as-read-only">linux mint - HFS+ file system being mounted as read-only</a> 和 <a href="https://unix.stackexchange.com/questions/639476/how-to-mount-hfs-drive-as-read-write-on-startup">ubuntu - How to Mount HFS+ drive as read-write on startup</a>，在 fstab 中加入启动加载项：</p>
-<div class="language-Shell highlight"><span class="filename">/etc/fstab</span><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="nv">LABEL</span><span class="o">=</span>WDHD<span class="w"> </span>/media/WDHD<span class="w"> </span>auto<span class="w"> </span><span class="nv">uid</span><span class="o">=</span><span class="m">1000</span>,gid<span class="o">=</span><span class="m">1000</span>,nosuid,nodev,nofail,x-gvfs-show,force,rw<span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="m">0</span>
+<div class="language-Shell highlight"><span class="filename">/etc/fstab</span><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="nv">LABEL</span><span class="o">=</span>WDHD<span class="w"> </span>/media/WDHD<span class="w"> </span>auto<span class="w"> </span><span class="nv">uid</span><span class="o">=</span><span class="m">1000</span>,gid<span class="o">=</span><span class="m">1000</span>,nosuid,nodev,nofail,x-gvfs-show,force,rw<span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="m">0</span>
 </span></code></pre></div>
 <p><code>sudo reboot</code> 重启，成功挂载为 rw。</p>
 <div class="admonition note">
@@ -1514,47 +1548,47 @@ if you want to write data on this partition, you <strong>must</strong> disable t
 <h3 id="install_samba">install samba<a class="headerlink" href="#install_samba" title="Permanent link">#</a></h3>
 <p>samba - Server to provide AD and SMB/CIFS services to clients</p>
 <p>执行以下命令安装 samba：</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>$<span class="w"> </span>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>samba<span class="w"> </span>-y
-</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>$<span class="w"> </span>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>samba-vfs-modules<span class="w"> </span>-y
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>$<span class="w"> </span>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>samba<span class="w"> </span>-y
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>$<span class="w"> </span>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>samba-vfs-modules<span class="w"> </span>-y
 </span></code></pre></div>
 <ol>
 <li><code>samba -V</code>: 查看软件版本；</li>
 <li><code>samba --help</code>：查看帮助（usage）；</li>
 <li><code>man samba</code>：查看帮助手册（manual）；</li>
 </ol>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>$<span class="w"> </span>samba<span class="w"> </span>-V
-</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>Version<span class="w"> </span><span class="m">4</span>.15.13-Ubuntu
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>$<span class="w"> </span>samba<span class="w"> </span>-V
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>Version<span class="w"> </span><span class="m">4</span>.15.13-Ubuntu
 </span></code></pre></div>
 <h3 id="config_samba">config samba<a class="headerlink" href="#config_samba" title="Permanent link">#</a></h3>
 <p>Samba配置文件通常在 /etc/samba/ 路径下：</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>$<span class="w"> </span>ls<span class="w"> </span>-l<span class="w"> </span>/etc/samba/
-</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>total<span class="w"> </span><span class="m">20</span>
-</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>-rw-r--r--<span class="w"> </span><span class="m">1</span><span class="w"> </span>root<span class="w"> </span>root<span class="w">    </span><span class="m">8</span><span class="w"> </span>Jan<span class="w">  </span><span class="m">5</span><span class="w"> </span><span class="m">21</span>:23<span class="w"> </span>gdbcommands
-</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a>-rw-r--r--<span class="w"> </span><span class="m">1</span><span class="w"> </span>root<span class="w"> </span>root<span class="w"> </span><span class="m">8950</span><span class="w"> </span>Apr<span class="w">  </span><span class="m">7</span><span class="w"> </span><span class="m">05</span>:00<span class="w"> </span>smb.conf
-</span><span id="__span-14-5"><a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a>drwxr-xr-x<span class="w"> </span><span class="m">2</span><span class="w"> </span>root<span class="w"> </span>root<span class="w"> </span><span class="m">4096</span><span class="w"> </span>Jan<span class="w">  </span><span class="m">5</span><span class="w"> </span><span class="m">21</span>:23<span class="w"> </span>tls
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>$<span class="w"> </span>ls<span class="w"> </span>-l<span class="w"> </span>/etc/samba/
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>total<span class="w"> </span><span class="m">20</span>
+</span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>-rw-r--r--<span class="w"> </span><span class="m">1</span><span class="w"> </span>root<span class="w"> </span>root<span class="w">    </span><span class="m">8</span><span class="w"> </span>Jan<span class="w">  </span><span class="m">5</span><span class="w"> </span><span class="m">21</span>:23<span class="w"> </span>gdbcommands
+</span><span id="__span-17-4"><a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a>-rw-r--r--<span class="w"> </span><span class="m">1</span><span class="w"> </span>root<span class="w"> </span>root<span class="w"> </span><span class="m">8950</span><span class="w"> </span>Apr<span class="w">  </span><span class="m">7</span><span class="w"> </span><span class="m">05</span>:00<span class="w"> </span>smb.conf
+</span><span id="__span-17-5"><a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a>drwxr-xr-x<span class="w"> </span><span class="m">2</span><span class="w"> </span>root<span class="w"> </span>root<span class="w"> </span><span class="m">4096</span><span class="w"> </span>Jan<span class="w">  </span><span class="m">5</span><span class="w"> </span><span class="m">21</span>:23<span class="w"> </span>tls
 </span></code></pre></div>
 <p>编辑 Samba 配置文件：</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>$<span class="w"> </span>sudo<span class="w"> </span>vim<span class="w"> </span>/etc/samba/smb.conf
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>$<span class="w"> </span>sudo<span class="w"> </span>vim<span class="w"> </span>/etc/samba/smb.conf
 </span></code></pre></div>
 <p>在配置文件底部添加如下配置（注意请移除行尾注释）：</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="o">[</span>WDHD<span class="o">]</span>
-</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a><span class="w">    </span><span class="c1"># 共享描述</span>
-</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a><span class="w">    </span><span class="nv">comment</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>WD<span class="w"> </span>-<span class="w"> </span>Hard<span class="w"> </span>Disk
-</span><span id="__span-16-4"><a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a><span class="w">    </span><span class="c1"># 共享目录（mount point）</span>
-</span><span id="__span-16-5"><a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a><span class="w">    </span><span class="nv">path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>/media/WDHD
-</span><span id="__span-16-6"><a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a><span class="w">    </span><span class="c1"># sudo smbpasswd -a pifan 创建共享用户密码</span>
-</span><span id="__span-16-7"><a id="__codelineno-16-7" name="__codelineno-16-7" href="#__codelineno-16-7"></a><span class="w">    </span>valid<span class="w"> </span><span class="nv">users</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>pifan
-</span><span id="__span-16-8"><a id="__codelineno-16-8" name="__codelineno-16-8" href="#__codelineno-16-8"></a><span class="w">    </span><span class="c1"># 可读写</span>
-</span><span id="__span-16-9"><a id="__codelineno-16-9" name="__codelineno-16-9" href="#__codelineno-16-9"></a><span class="w">    </span><span class="nv">browseable</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>yes
-</span><span id="__span-16-10"><a id="__codelineno-16-10" name="__codelineno-16-10" href="#__codelineno-16-10"></a><span class="w">    </span><span class="nb">read</span><span class="w"> </span><span class="nv">only</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>no
-</span><span id="__span-16-11"><a id="__codelineno-16-11" name="__codelineno-16-11" href="#__codelineno-16-11"></a><span class="w">    </span><span class="nv">writeable</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>yes
-</span><span id="__span-16-12"><a id="__codelineno-16-12" name="__codelineno-16-12" href="#__codelineno-16-12"></a><span class="w">    </span><span class="c1"># 不允许 guest 账户访问</span>
-</span><span id="__span-16-13"><a id="__codelineno-16-13" name="__codelineno-16-13" href="#__codelineno-16-13"></a><span class="w">    </span><span class="nv">public</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>no
-</span><span id="__span-16-14"><a id="__codelineno-16-14" name="__codelineno-16-14" href="#__codelineno-16-14"></a><span class="w">    </span>guest<span class="w"> </span><span class="nv">ok</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>no
-</span><span id="__span-16-15"><a id="__codelineno-16-15" name="__codelineno-16-15" href="#__codelineno-16-15"></a><span class="w">    </span><span class="c1"># 客户端上传文件的默认权限</span>
-</span><span id="__span-16-16"><a id="__codelineno-16-16" name="__codelineno-16-16" href="#__codelineno-16-16"></a><span class="w">    </span>create<span class="w"> </span><span class="nv">mask</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0777</span>
-</span><span id="__span-16-17"><a id="__codelineno-16-17" name="__codelineno-16-17" href="#__codelineno-16-17"></a><span class="w">    </span><span class="c1"># 客户端创建目录的默认权限</span>
-</span><span id="__span-16-18"><a id="__codelineno-16-18" name="__codelineno-16-18" href="#__codelineno-16-18"></a><span class="w">    </span>directory<span class="w"> </span><span class="nv">mask</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0777</span>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="o">[</span>WDHD<span class="o">]</span>
+</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a><span class="w">    </span><span class="c1"># 共享描述</span>
+</span><span id="__span-19-3"><a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a><span class="w">    </span><span class="nv">comment</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>WD<span class="w"> </span>-<span class="w"> </span>Hard<span class="w"> </span>Disk
+</span><span id="__span-19-4"><a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a><span class="w">    </span><span class="c1"># 共享目录（mount point）</span>
+</span><span id="__span-19-5"><a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a><span class="w">    </span><span class="nv">path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>/media/WDHD
+</span><span id="__span-19-6"><a id="__codelineno-19-6" name="__codelineno-19-6" href="#__codelineno-19-6"></a><span class="w">    </span><span class="c1"># sudo smbpasswd -a pifan 创建共享用户密码</span>
+</span><span id="__span-19-7"><a id="__codelineno-19-7" name="__codelineno-19-7" href="#__codelineno-19-7"></a><span class="w">    </span>valid<span class="w"> </span><span class="nv">users</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>pifan
+</span><span id="__span-19-8"><a id="__codelineno-19-8" name="__codelineno-19-8" href="#__codelineno-19-8"></a><span class="w">    </span><span class="c1"># 可读写</span>
+</span><span id="__span-19-9"><a id="__codelineno-19-9" name="__codelineno-19-9" href="#__codelineno-19-9"></a><span class="w">    </span><span class="nv">browseable</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>yes
+</span><span id="__span-19-10"><a id="__codelineno-19-10" name="__codelineno-19-10" href="#__codelineno-19-10"></a><span class="w">    </span><span class="nb">read</span><span class="w"> </span><span class="nv">only</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>no
+</span><span id="__span-19-11"><a id="__codelineno-19-11" name="__codelineno-19-11" href="#__codelineno-19-11"></a><span class="w">    </span><span class="nv">writeable</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>yes
+</span><span id="__span-19-12"><a id="__codelineno-19-12" name="__codelineno-19-12" href="#__codelineno-19-12"></a><span class="w">    </span><span class="c1"># 不允许 guest 账户访问</span>
+</span><span id="__span-19-13"><a id="__codelineno-19-13" name="__codelineno-19-13" href="#__codelineno-19-13"></a><span class="w">    </span><span class="nv">public</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>no
+</span><span id="__span-19-14"><a id="__codelineno-19-14" name="__codelineno-19-14" href="#__codelineno-19-14"></a><span class="w">    </span>guest<span class="w"> </span><span class="nv">ok</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>no
+</span><span id="__span-19-15"><a id="__codelineno-19-15" name="__codelineno-19-15" href="#__codelineno-19-15"></a><span class="w">    </span><span class="c1"># 客户端上传文件的默认权限</span>
+</span><span id="__span-19-16"><a id="__codelineno-19-16" name="__codelineno-19-16" href="#__codelineno-19-16"></a><span class="w">    </span>create<span class="w"> </span><span class="nv">mask</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0777</span>
+</span><span id="__span-19-17"><a id="__codelineno-19-17" name="__codelineno-19-17" href="#__codelineno-19-17"></a><span class="w">    </span><span class="c1"># 客户端创建目录的默认权限</span>
+</span><span id="__span-19-18"><a id="__codelineno-19-18" name="__codelineno-19-18" href="#__codelineno-19-18"></a><span class="w">    </span>directory<span class="w"> </span><span class="nv">mask</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0777</span>
 </span></code></pre></div>
 <h3 id="smbpasswd">smbpasswd<a class="headerlink" href="#smbpasswd" title="Permanent link">#</a></h3>
 <p>配置完毕后执行 <code>sudo smbpasswd -a pifan</code> 来设置用户名密码。</p>
@@ -1566,9 +1600,9 @@ if you want to write data on this partition, you <strong>must</strong> disable t
 <p>执行 <code>systemctl status smbd</code>（或 smbd.service）可查看 samba 服务状态。</p>
 <h3 id="test_samba">test samba<a class="headerlink" href="#test_samba" title="Permanent link">#</a></h3>
 <p>局域网 macOS 中打开 Finder，选择 菜单栏–前往–连接服务器（或者直接 Command + K），在弹出的窗口中输入 <code>smb://树莓派的IP地址</code> 后选择 「连接–输入设置」 的账户和密码后就能访问了。</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>smb://192.168.0.202/
-</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>smb://rpi4b-ubuntu.local/
-</span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>smb://rpi4b-ubuntu.local/WDHD
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>smb://192.168.0.202/
+</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>smb://rpi4b-ubuntu.local/
+</span><span id="__span-20-3"><a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a>smb://rpi4b-ubuntu.local/WDHD
 </span></code></pre></div>
 <h2 id="config_samba_for_wdtm">config samba for WDTM<a class="headerlink" href="#config_samba_for_wdtm" title="Permanent link">#</a></h2>
 <p>WD 硬盘的 sda3 分区是普通分区，挂载后局域网通过 smb 协议访问可直接读写。</p>
@@ -1583,89 +1617,89 @@ if you want to write data on this partition, you <strong>must</strong> disable t
 <p>此框大约浓缩了博主数年累积 1T 的血与泪 😱</p>
 </div>
 <p>先创建挂载点，将该分区挂载为 <code>/media/WDTM</code>：</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="c1"># 1. 创建挂载点目录</span>
-</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>$<span class="w"> </span>sudo<span class="w"> </span>mkdir<span class="w"> </span>/media/WDTM
-</span><span id="__span-18-3"><a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a>
-</span><span id="__span-18-4"><a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a>$<span class="w"> </span>ls<span class="w"> </span>-l<span class="w"> </span>/media/
-</span><span id="__span-18-5"><a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a>total<span class="w"> </span><span class="m">0</span>
-</span><span id="__span-18-6"><a id="__codelineno-18-6" name="__codelineno-18-6" href="#__codelineno-18-6"></a>drwxrwxr-x<span class="w"> </span><span class="m">1</span><span class="w"> </span>pifan<span class="w"> </span>ubuntu<span class="w"> </span><span class="m">24</span><span class="w"> </span>Apr<span class="w">  </span><span class="m">7</span><span class="w"> </span><span class="m">04</span>:23<span class="w"> </span>WDHD
-</span><span id="__span-18-7"><a id="__codelineno-18-7" name="__codelineno-18-7" href="#__codelineno-18-7"></a>drwxrwxr-x<span class="w"> </span><span class="m">1</span><span class="w"> </span>root<span class="w"> </span>root<span class="w"> </span><span class="m">21</span><span class="w"> </span>Apr<span class="w">  </span><span class="m">7</span><span class="w"> </span><span class="m">10</span>:46<span class="w"> </span>WDTM
-</span><span id="__span-18-8"><a id="__codelineno-18-8" name="__codelineno-18-8" href="#__codelineno-18-8"></a>
-</span><span id="__span-18-9"><a id="__codelineno-18-9" name="__codelineno-18-9" href="#__codelineno-18-9"></a><span class="c1"># 2. 修改挂载点目录的所有人为当前用户（组）：</span>
-</span><span id="__span-18-10"><a id="__codelineno-18-10" name="__codelineno-18-10" href="#__codelineno-18-10"></a>$<span class="w"> </span>sudo<span class="w"> </span>chown<span class="w"> </span>pifan:ubuntu<span class="w"> </span>/media/WDTM
-</span><span id="__span-18-11"><a id="__codelineno-18-11" name="__codelineno-18-11" href="#__codelineno-18-11"></a>
-</span><span id="__span-18-12"><a id="__codelineno-18-12" name="__codelineno-18-12" href="#__codelineno-18-12"></a>$<span class="w"> </span>ls<span class="w"> </span>-l<span class="w"> </span>/media/
-</span><span id="__span-18-13"><a id="__codelineno-18-13" name="__codelineno-18-13" href="#__codelineno-18-13"></a>total<span class="w"> </span><span class="m">0</span>
-</span><span id="__span-18-14"><a id="__codelineno-18-14" name="__codelineno-18-14" href="#__codelineno-18-14"></a>drwxrwxr-x<span class="w"> </span><span class="m">1</span><span class="w"> </span>pifan<span class="w"> </span>ubuntu<span class="w"> </span><span class="m">24</span><span class="w"> </span>Apr<span class="w">  </span><span class="m">7</span><span class="w"> </span><span class="m">04</span>:23<span class="w"> </span>WDHD
-</span><span id="__span-18-15"><a id="__codelineno-18-15" name="__codelineno-18-15" href="#__codelineno-18-15"></a>drwxrwxr-x<span class="w"> </span><span class="m">1</span><span class="w"> </span>pifan<span class="w"> </span>ubuntu<span class="w"> </span><span class="m">21</span><span class="w"> </span>Apr<span class="w">  </span><span class="m">7</span><span class="w"> </span><span class="m">10</span>:46<span class="w"> </span>WDTM
-</span><span id="__span-18-16"><a id="__codelineno-18-16" name="__codelineno-18-16" href="#__codelineno-18-16"></a>
-</span><span id="__span-18-17"><a id="__codelineno-18-17" name="__codelineno-18-17" href="#__codelineno-18-17"></a><span class="c1"># 3. 挂载外接硬盘的 sda2 分区</span>
-</span><span id="__span-18-18"><a id="__codelineno-18-18" name="__codelineno-18-18" href="#__codelineno-18-18"></a>$<span class="w"> </span>sudo<span class="w"> </span>mount<span class="w"> </span>-t<span class="w"> </span>hfsplus<span class="w"> </span>-o<span class="w"> </span>force,rw,uid<span class="o">=</span>pifan,gid<span class="o">=</span>ubuntu<span class="w"> </span>/dev/sda2<span class="w"> </span>/media/WDTM
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="c1"># 1. 创建挂载点目录</span>
+</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>$<span class="w"> </span>sudo<span class="w"> </span>mkdir<span class="w"> </span>/media/WDTM
+</span><span id="__span-21-3"><a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a>
+</span><span id="__span-21-4"><a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a>$<span class="w"> </span>ls<span class="w"> </span>-l<span class="w"> </span>/media/
+</span><span id="__span-21-5"><a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a>total<span class="w"> </span><span class="m">0</span>
+</span><span id="__span-21-6"><a id="__codelineno-21-6" name="__codelineno-21-6" href="#__codelineno-21-6"></a>drwxrwxr-x<span class="w"> </span><span class="m">1</span><span class="w"> </span>pifan<span class="w"> </span>ubuntu<span class="w"> </span><span class="m">24</span><span class="w"> </span>Apr<span class="w">  </span><span class="m">7</span><span class="w"> </span><span class="m">04</span>:23<span class="w"> </span>WDHD
+</span><span id="__span-21-7"><a id="__codelineno-21-7" name="__codelineno-21-7" href="#__codelineno-21-7"></a>drwxrwxr-x<span class="w"> </span><span class="m">1</span><span class="w"> </span>root<span class="w"> </span>root<span class="w"> </span><span class="m">21</span><span class="w"> </span>Apr<span class="w">  </span><span class="m">7</span><span class="w"> </span><span class="m">10</span>:46<span class="w"> </span>WDTM
+</span><span id="__span-21-8"><a id="__codelineno-21-8" name="__codelineno-21-8" href="#__codelineno-21-8"></a>
+</span><span id="__span-21-9"><a id="__codelineno-21-9" name="__codelineno-21-9" href="#__codelineno-21-9"></a><span class="c1"># 2. 修改挂载点目录的所有人为当前用户（组）：</span>
+</span><span id="__span-21-10"><a id="__codelineno-21-10" name="__codelineno-21-10" href="#__codelineno-21-10"></a>$<span class="w"> </span>sudo<span class="w"> </span>chown<span class="w"> </span>pifan:ubuntu<span class="w"> </span>/media/WDTM
+</span><span id="__span-21-11"><a id="__codelineno-21-11" name="__codelineno-21-11" href="#__codelineno-21-11"></a>
+</span><span id="__span-21-12"><a id="__codelineno-21-12" name="__codelineno-21-12" href="#__codelineno-21-12"></a>$<span class="w"> </span>ls<span class="w"> </span>-l<span class="w"> </span>/media/
+</span><span id="__span-21-13"><a id="__codelineno-21-13" name="__codelineno-21-13" href="#__codelineno-21-13"></a>total<span class="w"> </span><span class="m">0</span>
+</span><span id="__span-21-14"><a id="__codelineno-21-14" name="__codelineno-21-14" href="#__codelineno-21-14"></a>drwxrwxr-x<span class="w"> </span><span class="m">1</span><span class="w"> </span>pifan<span class="w"> </span>ubuntu<span class="w"> </span><span class="m">24</span><span class="w"> </span>Apr<span class="w">  </span><span class="m">7</span><span class="w"> </span><span class="m">04</span>:23<span class="w"> </span>WDHD
+</span><span id="__span-21-15"><a id="__codelineno-21-15" name="__codelineno-21-15" href="#__codelineno-21-15"></a>drwxrwxr-x<span class="w"> </span><span class="m">1</span><span class="w"> </span>pifan<span class="w"> </span>ubuntu<span class="w"> </span><span class="m">21</span><span class="w"> </span>Apr<span class="w">  </span><span class="m">7</span><span class="w"> </span><span class="m">10</span>:46<span class="w"> </span>WDTM
+</span><span id="__span-21-16"><a id="__codelineno-21-16" name="__codelineno-21-16" href="#__codelineno-21-16"></a>
+</span><span id="__span-21-17"><a id="__codelineno-21-17" name="__codelineno-21-17" href="#__codelineno-21-17"></a><span class="c1"># 3. 挂载外接硬盘的 sda2 分区</span>
+</span><span id="__span-21-18"><a id="__codelineno-21-18" name="__codelineno-21-18" href="#__codelineno-21-18"></a>$<span class="w"> </span>sudo<span class="w"> </span>mount<span class="w"> </span>-t<span class="w"> </span>hfsplus<span class="w"> </span>-o<span class="w"> </span>force,rw,uid<span class="o">=</span>pifan,gid<span class="o">=</span>ubuntu<span class="w"> </span>/dev/sda2<span class="w"> </span>/media/WDTM
 </span></code></pre></div>
 <p>挂载成功后，查看挂载点及其目录内容：</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>$<span class="w"> </span>df<span class="w"> </span>-h
-</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a>Filesystem<span class="w">      </span>Size<span class="w">  </span>Used<span class="w"> </span>Avail<span class="w"> </span>Use%<span class="w"> </span>Mounted<span class="w"> </span>on
-</span><span id="__span-19-3"><a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a>tmpfs<span class="w">           </span>781M<span class="w">  </span><span class="m">5</span>.2M<span class="w">  </span>776M<span class="w">   </span><span class="m">1</span>%<span class="w"> </span>/run
-</span><span id="__span-19-4"><a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a>/dev/mmcblk0p2<span class="w">   </span>59G<span class="w">   </span>14G<span class="w">   </span>42G<span class="w">  </span><span class="m">26</span>%<span class="w"> </span>/
-</span><span id="__span-19-5"><a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a>tmpfs<span class="w">           </span><span class="m">3</span>.9G<span class="w">     </span><span class="m">0</span><span class="w">  </span><span class="m">3</span>.9G<span class="w">   </span><span class="m">0</span>%<span class="w"> </span>/dev/shm
-</span><span id="__span-19-6"><a id="__codelineno-19-6" name="__codelineno-19-6" href="#__codelineno-19-6"></a>tmpfs<span class="w">           </span><span class="m">5</span>.0M<span class="w">     </span><span class="m">0</span><span class="w">  </span><span class="m">5</span>.0M<span class="w">   </span><span class="m">0</span>%<span class="w"> </span>/run/lock
-</span><span id="__span-19-7"><a id="__codelineno-19-7" name="__codelineno-19-7" href="#__codelineno-19-7"></a>/dev/mmcblk0p1<span class="w">  </span>253M<span class="w">  </span>138M<span class="w">  </span>115M<span class="w">  </span><span class="m">55</span>%<span class="w"> </span>/boot/firmware
-</span><span id="__span-19-8"><a id="__codelineno-19-8" name="__codelineno-19-8" href="#__codelineno-19-8"></a>tmpfs<span class="w">           </span>781M<span class="w">  </span><span class="m">4</span>.0K<span class="w">  </span>781M<span class="w">   </span><span class="m">1</span>%<span class="w"> </span>/run/user/1000
-</span><span id="__span-19-9"><a id="__codelineno-19-9" name="__codelineno-19-9" href="#__codelineno-19-9"></a>/dev/sda3<span class="w">       </span>466G<span class="w">  </span>204G<span class="w">  </span>263G<span class="w">  </span><span class="m">44</span>%<span class="w"> </span>/media/WDHD
-</span><span id="__span-19-10"><a id="__codelineno-19-10" name="__codelineno-19-10" href="#__codelineno-19-10"></a>/dev/sda2<span class="w">       </span><span class="m">1</span>.4T<span class="w">  </span><span class="m">1</span>.3T<span class="w">  </span>135G<span class="w">  </span><span class="m">91</span>%<span class="w"> </span>/media/WDTM
-</span><span id="__span-19-11"><a id="__codelineno-19-11" name="__codelineno-19-11" href="#__codelineno-19-11"></a>
-</span><span id="__span-19-12"><a id="__codelineno-19-12" name="__codelineno-19-12" href="#__codelineno-19-12"></a>$<span class="w"> </span>ls<span class="w"> </span>-l<span class="w"> </span>/media/WDTM
-</span><span id="__span-19-13"><a id="__codelineno-19-13" name="__codelineno-19-13" href="#__codelineno-19-13"></a>total<span class="w"> </span><span class="m">288</span>
-</span><span id="__span-19-14"><a id="__codelineno-19-14" name="__codelineno-19-14" href="#__codelineno-19-14"></a>drwxr-xr-x<span class="w">  </span><span class="m">1</span><span class="w"> </span>faner<span class="w">  </span>staff<span class="w">   </span><span class="m">16384</span><span class="w"> </span>Mar<span class="w"> </span><span class="m">16</span><span class="w"> </span><span class="m">10</span>:38<span class="w"> </span>Backups.backupdb
-</span><span id="__span-19-15"><a id="__codelineno-19-15" name="__codelineno-19-15" href="#__codelineno-19-15"></a>dr-xr-xr-x<span class="w">  </span><span class="m">1</span><span class="w"> </span>faner<span class="w">  </span>staff<span class="w">   </span><span class="m">16384</span><span class="w"> </span>Sep<span class="w">  </span><span class="m">9</span><span class="w">  </span><span class="m">2017</span><span class="w"> </span>_HF2VN~W
-</span><span id="__span-19-16"><a id="__codelineno-19-16" name="__codelineno-19-16" href="#__codelineno-19-16"></a>-rwxr-xr-x<span class="w">  </span><span class="m">1</span><span class="w"> </span>faner<span class="w">  </span>staff<span class="w">  </span><span class="m">111620</span><span class="w"> </span>Feb<span class="w"> </span><span class="m">21</span><span class="w">  </span><span class="m">2017</span><span class="w"> </span>tmbootpicker.efi
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a>$<span class="w"> </span>df<span class="w"> </span>-h
+</span><span id="__span-22-2"><a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a>Filesystem<span class="w">      </span>Size<span class="w">  </span>Used<span class="w"> </span>Avail<span class="w"> </span>Use%<span class="w"> </span>Mounted<span class="w"> </span>on
+</span><span id="__span-22-3"><a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a>tmpfs<span class="w">           </span>781M<span class="w">  </span><span class="m">5</span>.2M<span class="w">  </span>776M<span class="w">   </span><span class="m">1</span>%<span class="w"> </span>/run
+</span><span id="__span-22-4"><a id="__codelineno-22-4" name="__codelineno-22-4" href="#__codelineno-22-4"></a>/dev/mmcblk0p2<span class="w">   </span>59G<span class="w">   </span>14G<span class="w">   </span>42G<span class="w">  </span><span class="m">26</span>%<span class="w"> </span>/
+</span><span id="__span-22-5"><a id="__codelineno-22-5" name="__codelineno-22-5" href="#__codelineno-22-5"></a>tmpfs<span class="w">           </span><span class="m">3</span>.9G<span class="w">     </span><span class="m">0</span><span class="w">  </span><span class="m">3</span>.9G<span class="w">   </span><span class="m">0</span>%<span class="w"> </span>/dev/shm
+</span><span id="__span-22-6"><a id="__codelineno-22-6" name="__codelineno-22-6" href="#__codelineno-22-6"></a>tmpfs<span class="w">           </span><span class="m">5</span>.0M<span class="w">     </span><span class="m">0</span><span class="w">  </span><span class="m">5</span>.0M<span class="w">   </span><span class="m">0</span>%<span class="w"> </span>/run/lock
+</span><span id="__span-22-7"><a id="__codelineno-22-7" name="__codelineno-22-7" href="#__codelineno-22-7"></a>/dev/mmcblk0p1<span class="w">  </span>253M<span class="w">  </span>138M<span class="w">  </span>115M<span class="w">  </span><span class="m">55</span>%<span class="w"> </span>/boot/firmware
+</span><span id="__span-22-8"><a id="__codelineno-22-8" name="__codelineno-22-8" href="#__codelineno-22-8"></a>tmpfs<span class="w">           </span>781M<span class="w">  </span><span class="m">4</span>.0K<span class="w">  </span>781M<span class="w">   </span><span class="m">1</span>%<span class="w"> </span>/run/user/1000
+</span><span id="__span-22-9"><a id="__codelineno-22-9" name="__codelineno-22-9" href="#__codelineno-22-9"></a>/dev/sda3<span class="w">       </span>466G<span class="w">  </span>204G<span class="w">  </span>263G<span class="w">  </span><span class="m">44</span>%<span class="w"> </span>/media/WDHD
+</span><span id="__span-22-10"><a id="__codelineno-22-10" name="__codelineno-22-10" href="#__codelineno-22-10"></a>/dev/sda2<span class="w">       </span><span class="m">1</span>.4T<span class="w">  </span><span class="m">1</span>.3T<span class="w">  </span>135G<span class="w">  </span><span class="m">91</span>%<span class="w"> </span>/media/WDTM
+</span><span id="__span-22-11"><a id="__codelineno-22-11" name="__codelineno-22-11" href="#__codelineno-22-11"></a>
+</span><span id="__span-22-12"><a id="__codelineno-22-12" name="__codelineno-22-12" href="#__codelineno-22-12"></a>$<span class="w"> </span>ls<span class="w"> </span>-l<span class="w"> </span>/media/WDTM
+</span><span id="__span-22-13"><a id="__codelineno-22-13" name="__codelineno-22-13" href="#__codelineno-22-13"></a>total<span class="w"> </span><span class="m">288</span>
+</span><span id="__span-22-14"><a id="__codelineno-22-14" name="__codelineno-22-14" href="#__codelineno-22-14"></a>drwxr-xr-x<span class="w">  </span><span class="m">1</span><span class="w"> </span>faner<span class="w">  </span>staff<span class="w">   </span><span class="m">16384</span><span class="w"> </span>Mar<span class="w"> </span><span class="m">16</span><span class="w"> </span><span class="m">10</span>:38<span class="w"> </span>Backups.backupdb
+</span><span id="__span-22-15"><a id="__codelineno-22-15" name="__codelineno-22-15" href="#__codelineno-22-15"></a>dr-xr-xr-x<span class="w">  </span><span class="m">1</span><span class="w"> </span>faner<span class="w">  </span>staff<span class="w">   </span><span class="m">16384</span><span class="w"> </span>Sep<span class="w">  </span><span class="m">9</span><span class="w">  </span><span class="m">2017</span><span class="w"> </span>_HF2VN~W
+</span><span id="__span-22-16"><a id="__codelineno-22-16" name="__codelineno-22-16" href="#__codelineno-22-16"></a>-rwxr-xr-x<span class="w">  </span><span class="m">1</span><span class="w"> </span>faner<span class="w">  </span>staff<span class="w">  </span><span class="m">111620</span><span class="w"> </span>Feb<span class="w"> </span><span class="m">21</span><span class="w">  </span><span class="m">2017</span><span class="w"> </span>tmbootpicker.efi
 </span></code></pre></div>
 <p>再为 sda2 分区挂载点 /media/WDTM 配置 samba 共享服务，供局域网内的 macOS 无线备份。</p>
 <p>在配置文件 /etc/samba/smb.conf 的全局配置段（[global]）下增加如下设置，以禁用 SMB1 协议和支持 macOS 系统的拓展属性：</p>
 <blockquote>
 <p>Apple extensions ("AAPL") run under SMB2/3 protocol, make that the minimum (probably shouldn't be running SMB1 anyway...)</p>
 </blockquote>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="o">[</span>global<span class="o">]</span>
-</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a><span class="w">    </span><span class="c1"># 最小支持为 SMB2</span>
-</span><span id="__span-20-3"><a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a><span class="w">    </span>min<span class="w"> </span><span class="nv">protocol</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>SMB2
-</span><span id="__span-20-4"><a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a><span class="w">    </span><span class="c1"># Apple 扩展需要支持扩展属性(xattr)</span>
-</span><span id="__span-20-5"><a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a><span class="w">    </span>ea<span class="w"> </span><span class="nv">support</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>yes
-</span><span id="__span-20-6"><a id="__codelineno-20-6" name="__codelineno-20-6" href="#__codelineno-20-6"></a><span class="w">    </span><span class="c1"># smb encrypt = required</span>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="o">[</span>global<span class="o">]</span>
+</span><span id="__span-23-2"><a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a><span class="w">    </span><span class="c1"># 最小支持为 SMB2</span>
+</span><span id="__span-23-3"><a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a><span class="w">    </span>min<span class="w"> </span><span class="nv">protocol</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>SMB2
+</span><span id="__span-23-4"><a id="__codelineno-23-4" name="__codelineno-23-4" href="#__codelineno-23-4"></a><span class="w">    </span><span class="c1"># Apple 扩展需要支持扩展属性(xattr)</span>
+</span><span id="__span-23-5"><a id="__codelineno-23-5" name="__codelineno-23-5" href="#__codelineno-23-5"></a><span class="w">    </span>ea<span class="w"> </span><span class="nv">support</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>yes
+</span><span id="__span-23-6"><a id="__codelineno-23-6" name="__codelineno-23-6" href="#__codelineno-23-6"></a><span class="w">    </span><span class="c1"># smb encrypt = required</span>
 </span></code></pre></div>
 <p>在配置文件末尾添加 WDTM 配置：</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="o">[</span>WDTM<span class="o">]</span>
-</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a><span class="w">    </span><span class="c1"># 共享描述</span>
-</span><span id="__span-21-3"><a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a><span class="w">    </span><span class="nv">comment</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>WD<span class="w"> </span>-<span class="w"> </span>Time<span class="w"> </span>Machine
-</span><span id="__span-21-4"><a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a><span class="w">    </span><span class="c1"># 共享目录（mount point）</span>
-</span><span id="__span-21-5"><a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a><span class="w">    </span><span class="nv">path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>/media/WDTM
-</span><span id="__span-21-6"><a id="__codelineno-21-6" name="__codelineno-21-6" href="#__codelineno-21-6"></a><span class="w">    </span><span class="c1"># 可读写</span>
-</span><span id="__span-21-7"><a id="__codelineno-21-7" name="__codelineno-21-7" href="#__codelineno-21-7"></a><span class="w">    </span><span class="nv">browseable</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>yes
-</span><span id="__span-21-8"><a id="__codelineno-21-8" name="__codelineno-21-8" href="#__codelineno-21-8"></a><span class="w">    </span><span class="nb">read</span><span class="w"> </span><span class="nv">only</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>no
-</span><span id="__span-21-9"><a id="__codelineno-21-9" name="__codelineno-21-9" href="#__codelineno-21-9"></a><span class="w">    </span><span class="nv">writeable</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>yes
-</span><span id="__span-21-10"><a id="__codelineno-21-10" name="__codelineno-21-10" href="#__codelineno-21-10"></a><span class="w">    </span><span class="c1"># 不允许 guest 账户访问</span>
-</span><span id="__span-21-11"><a id="__codelineno-21-11" name="__codelineno-21-11" href="#__codelineno-21-11"></a><span class="w">    </span><span class="nv">public</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>no
-</span><span id="__span-21-12"><a id="__codelineno-21-12" name="__codelineno-21-12" href="#__codelineno-21-12"></a><span class="w">    </span>guest<span class="w"> </span><span class="nv">ok</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>no
-</span><span id="__span-21-13"><a id="__codelineno-21-13" name="__codelineno-21-13" href="#__codelineno-21-13"></a><span class="w">    </span><span class="c1"># valid users = pifan</span>
-</span><span id="__span-21-14"><a id="__codelineno-21-14" name="__codelineno-21-14" href="#__codelineno-21-14"></a><span class="w">    </span><span class="c1"># create mask = 0700</span>
-</span><span id="__span-21-15"><a id="__codelineno-21-15" name="__codelineno-21-15" href="#__codelineno-21-15"></a><span class="w">    </span><span class="c1"># vfs objects = fruit streams_xattr</span>
-</span><span id="__span-21-16"><a id="__codelineno-21-16" name="__codelineno-21-16" href="#__codelineno-21-16"></a><span class="w">    </span>vfs<span class="w"> </span><span class="nv">objects</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>catia<span class="w"> </span>fruit<span class="w"> </span>streams_xattr
-</span><span id="__span-21-17"><a id="__codelineno-21-17" name="__codelineno-21-17" href="#__codelineno-21-17"></a><span class="w">    </span>fruit:aapl<span class="w"> </span><span class="o">=</span><span class="w"> </span>yes
-</span><span id="__span-21-18"><a id="__codelineno-21-18" name="__codelineno-21-18" href="#__codelineno-21-18"></a><span class="w">    </span>fruit:time<span class="w"> </span><span class="nv">machine</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>yes
-</span><span id="__span-21-19"><a id="__codelineno-21-19" name="__codelineno-21-19" href="#__codelineno-21-19"></a><span class="w">    </span>fruit:metadata<span class="w"> </span><span class="o">=</span><span class="w"> </span>stream
-</span><span id="__span-21-20"><a id="__codelineno-21-20" name="__codelineno-21-20" href="#__codelineno-21-20"></a><span class="w">    </span>fruit:model<span class="w"> </span><span class="o">=</span><span class="w"> </span>MacSamba
-</span><span id="__span-21-21"><a id="__codelineno-21-21" name="__codelineno-21-21" href="#__codelineno-21-21"></a><span class="w">    </span><span class="c1"># 文件清理的一些配置</span>
-</span><span id="__span-21-22"><a id="__codelineno-21-22" name="__codelineno-21-22" href="#__codelineno-21-22"></a><span class="w">    </span>fruit:veto_appledouble<span class="w"> </span><span class="o">=</span><span class="w"> </span>no
-</span><span id="__span-21-23"><a id="__codelineno-21-23" name="__codelineno-21-23" href="#__codelineno-21-23"></a><span class="w">    </span>fruit:nfs_aces<span class="w"> </span><span class="o">=</span><span class="w"> </span>no
-</span><span id="__span-21-24"><a id="__codelineno-21-24" name="__codelineno-21-24" href="#__codelineno-21-24"></a><span class="w">    </span>fruit:posix_rename<span class="w"> </span><span class="o">=</span><span class="w"> </span>yes
-</span><span id="__span-21-25"><a id="__codelineno-21-25" name="__codelineno-21-25" href="#__codelineno-21-25"></a><span class="w">    </span>fruit:zero_file_id<span class="w"> </span><span class="o">=</span><span class="w"> </span>yes
-</span><span id="__span-21-26"><a id="__codelineno-21-26" name="__codelineno-21-26" href="#__codelineno-21-26"></a><span class="w">    </span>fruit:wipe_intentionally_left_blank_rfork<span class="w"> </span><span class="o">=</span><span class="w"> </span>yes
-</span><span id="__span-21-27"><a id="__codelineno-21-27" name="__codelineno-21-27" href="#__codelineno-21-27"></a><span class="w">    </span>fruit:delete_empty_adfiles<span class="w"> </span><span class="o">=</span><span class="w"> </span>yes
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a><span class="o">[</span>WDTM<span class="o">]</span>
+</span><span id="__span-24-2"><a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a><span class="w">    </span><span class="c1"># 共享描述</span>
+</span><span id="__span-24-3"><a id="__codelineno-24-3" name="__codelineno-24-3" href="#__codelineno-24-3"></a><span class="w">    </span><span class="nv">comment</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>WD<span class="w"> </span>-<span class="w"> </span>Time<span class="w"> </span>Machine
+</span><span id="__span-24-4"><a id="__codelineno-24-4" name="__codelineno-24-4" href="#__codelineno-24-4"></a><span class="w">    </span><span class="c1"># 共享目录（mount point）</span>
+</span><span id="__span-24-5"><a id="__codelineno-24-5" name="__codelineno-24-5" href="#__codelineno-24-5"></a><span class="w">    </span><span class="nv">path</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>/media/WDTM
+</span><span id="__span-24-6"><a id="__codelineno-24-6" name="__codelineno-24-6" href="#__codelineno-24-6"></a><span class="w">    </span><span class="c1"># 可读写</span>
+</span><span id="__span-24-7"><a id="__codelineno-24-7" name="__codelineno-24-7" href="#__codelineno-24-7"></a><span class="w">    </span><span class="nv">browseable</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>yes
+</span><span id="__span-24-8"><a id="__codelineno-24-8" name="__codelineno-24-8" href="#__codelineno-24-8"></a><span class="w">    </span><span class="nb">read</span><span class="w"> </span><span class="nv">only</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>no
+</span><span id="__span-24-9"><a id="__codelineno-24-9" name="__codelineno-24-9" href="#__codelineno-24-9"></a><span class="w">    </span><span class="nv">writeable</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>yes
+</span><span id="__span-24-10"><a id="__codelineno-24-10" name="__codelineno-24-10" href="#__codelineno-24-10"></a><span class="w">    </span><span class="c1"># 不允许 guest 账户访问</span>
+</span><span id="__span-24-11"><a id="__codelineno-24-11" name="__codelineno-24-11" href="#__codelineno-24-11"></a><span class="w">    </span><span class="nv">public</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>no
+</span><span id="__span-24-12"><a id="__codelineno-24-12" name="__codelineno-24-12" href="#__codelineno-24-12"></a><span class="w">    </span>guest<span class="w"> </span><span class="nv">ok</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>no
+</span><span id="__span-24-13"><a id="__codelineno-24-13" name="__codelineno-24-13" href="#__codelineno-24-13"></a><span class="w">    </span><span class="c1"># valid users = pifan</span>
+</span><span id="__span-24-14"><a id="__codelineno-24-14" name="__codelineno-24-14" href="#__codelineno-24-14"></a><span class="w">    </span><span class="c1"># create mask = 0700</span>
+</span><span id="__span-24-15"><a id="__codelineno-24-15" name="__codelineno-24-15" href="#__codelineno-24-15"></a><span class="w">    </span><span class="c1"># vfs objects = fruit streams_xattr</span>
+</span><span id="__span-24-16"><a id="__codelineno-24-16" name="__codelineno-24-16" href="#__codelineno-24-16"></a><span class="w">    </span>vfs<span class="w"> </span><span class="nv">objects</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>catia<span class="w"> </span>fruit<span class="w"> </span>streams_xattr
+</span><span id="__span-24-17"><a id="__codelineno-24-17" name="__codelineno-24-17" href="#__codelineno-24-17"></a><span class="w">    </span>fruit:aapl<span class="w"> </span><span class="o">=</span><span class="w"> </span>yes
+</span><span id="__span-24-18"><a id="__codelineno-24-18" name="__codelineno-24-18" href="#__codelineno-24-18"></a><span class="w">    </span>fruit:time<span class="w"> </span><span class="nv">machine</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>yes
+</span><span id="__span-24-19"><a id="__codelineno-24-19" name="__codelineno-24-19" href="#__codelineno-24-19"></a><span class="w">    </span>fruit:metadata<span class="w"> </span><span class="o">=</span><span class="w"> </span>stream
+</span><span id="__span-24-20"><a id="__codelineno-24-20" name="__codelineno-24-20" href="#__codelineno-24-20"></a><span class="w">    </span>fruit:model<span class="w"> </span><span class="o">=</span><span class="w"> </span>MacSamba
+</span><span id="__span-24-21"><a id="__codelineno-24-21" name="__codelineno-24-21" href="#__codelineno-24-21"></a><span class="w">    </span><span class="c1"># 文件清理的一些配置</span>
+</span><span id="__span-24-22"><a id="__codelineno-24-22" name="__codelineno-24-22" href="#__codelineno-24-22"></a><span class="w">    </span>fruit:veto_appledouble<span class="w"> </span><span class="o">=</span><span class="w"> </span>no
+</span><span id="__span-24-23"><a id="__codelineno-24-23" name="__codelineno-24-23" href="#__codelineno-24-23"></a><span class="w">    </span>fruit:nfs_aces<span class="w"> </span><span class="o">=</span><span class="w"> </span>no
+</span><span id="__span-24-24"><a id="__codelineno-24-24" name="__codelineno-24-24" href="#__codelineno-24-24"></a><span class="w">    </span>fruit:posix_rename<span class="w"> </span><span class="o">=</span><span class="w"> </span>yes
+</span><span id="__span-24-25"><a id="__codelineno-24-25" name="__codelineno-24-25" href="#__codelineno-24-25"></a><span class="w">    </span>fruit:zero_file_id<span class="w"> </span><span class="o">=</span><span class="w"> </span>yes
+</span><span id="__span-24-26"><a id="__codelineno-24-26" name="__codelineno-24-26" href="#__codelineno-24-26"></a><span class="w">    </span>fruit:wipe_intentionally_left_blank_rfork<span class="w"> </span><span class="o">=</span><span class="w"> </span>yes
+</span><span id="__span-24-27"><a id="__codelineno-24-27" name="__codelineno-24-27" href="#__codelineno-24-27"></a><span class="w">    </span>fruit:delete_empty_adfiles<span class="w"> </span><span class="o">=</span><span class="w"> </span>yes
 </span></code></pre></div>
 <p>设置完毕后重启 Samba 服务：<code>sudo systemctl restart smbd</code>。<br />
 执行 <code>systemctl status smbd</code> 可查看 samba 服务状态。</p>
 <p>局域网 macOS 中打开 Finder，Command + K 输入 <code>smb://rpi4b-ubuntu.local/WDTM</code>，按照提示输入账户和密码就能访问了。</p>
 <p>编辑文件 <code>sudo vim /etc/fstab</code>，增加开机自启动条目：</p>
-<div class="language-Shell highlight"><span class="filename">/etc/fstab</span><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="nv">LABEL</span><span class="o">=</span>WDTM<span class="w"> </span>/media/WDTM<span class="w"> </span>auto<span class="w"> </span><span class="nv">uid</span><span class="o">=</span><span class="m">1000</span>,gid<span class="o">=</span><span class="m">1000</span>,nosuid,nodev,nofail,x-gvfs-show,force,rw<span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="m">0</span>
+<div class="language-Shell highlight"><span class="filename">/etc/fstab</span><pre><span></span><code><span id="__span-25-1"><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a><span class="nv">LABEL</span><span class="o">=</span>WDTM<span class="w"> </span>/media/WDTM<span class="w"> </span>auto<span class="w"> </span><span class="nv">uid</span><span class="o">=</span><span class="m">1000</span>,gid<span class="o">=</span><span class="m">1000</span>,nosuid,nodev,nofail,x-gvfs-show,force,rw<span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="m">0</span>
 </span></code></pre></div>
 <h3 id="set_as_macos_backup_disk">set as macOS Backup Disk<a class="headerlink" href="#set_as_macos_backup_disk" title="Permanent link">#</a></h3>
 <p>系统设置中打开时间机器（Settings - General - Time Machine），点击 <code>Add Backup Disk...</code> 按钮：</p>

@@ -90,6 +90,8 @@ macOS 下使用包管理器 `brew` 搜索安装 rclone；ubuntu 下使用包管�
 
 - This is an index of all commands in rclone. Run `rclone command --help` to see the help for that command.
 
+[rclone mount](https://rclone.org/commands/rclone_mount/) / [nfsmount](https://rclone.org/commands/rclone_nfsmount/)
+
 [rclone serve](https://rclone.org/commands/rclone_serve/) - [webdav](https://rclone.org/commands/rclone_serve_webdav/)
 
 [Remote Control / API](https://rclone.org/rc/) - [GUI](https://rclone.org/gui/)
@@ -393,10 +395,9 @@ webdav@rpi4b:
 | [rclone lsjson](https://rclone.org/commands/rclone_lsjson/) | List directories and objects in the path in JSON format.            |
 | [rclone lsl](https://rclone.org/commands/rclone_lsl/)       | List the objects in path with modification time, size and path.     |
 | [rclone tree](https://rclone.org/commands/rclone_tree/)     | List the contents of the remote in a tree like fashion. |
+| [rclone cat](https://rclone.org/commands/rclone_cat/)       | Concatenates any files and sends them to stdout. |
 
-[rclone ls](https://rclone.org/commands/rclone_ls/), [rclone cat](https://rclone.org/commands/rclone_cat/)
-
-There are several related list commands
+There are several related list commands:
 
 *   `ls` to list size and path of objects only
 *   `lsl` to list modification time, size and path of objects only
@@ -406,7 +407,7 @@ There are several related list commands
 
 `ls`,`lsl`,`lsd` are designed to be human-readable. `lsf` is designed to be human and machine-readable. `lsjson` is designed to be machine-readable.
 
-Note that `ls` and `lsl` recurse by default - use `--max-depth 1` to stop the recursion.
+Note that `ls` and `lsl`** recurse** by default - use `--max-depth 1` to stop the recursion.
 
 The other list commands `lsd`,`lsf`,`lsjson` do not recurse by default - use `-R` to make them recurse.
 
@@ -1066,10 +1067,18 @@ Choose 1-5 [2]: 3
 
 如果后续文件改动不是那么频繁，可以改为每天同步一次，日志文件按月命名。
 
+> webdav 编辑大文件时经常出现同步问题导致文件损坏，可指定 `--min-size SizeSuffix` 选项，只备份大于 SizeSuffix（例如 10M）的大文件。
+
 ```Shell title="crontab -e daily"
 # 每天凌晨1点同步备份
 0 1 * * * rclone sync -v webdav-rpi4b: /media/WDHD/webdav@rpi4b --log-file=/home/pifan/.config/rclone/rclone-`date +\%Y\%m`.log
 ```
+
+输入 `:wq` 保存退出 vim，命令行提示 `crontab: installing new crontab`。
+
+编辑的 personal crontab 将自动追加到 `/var/spool/cron/crontabs/$USER` 文件中。
+
+执行 `sudo systemctl restart cron.service` 重启定时任务使其生效。
 
 !!! note "关于 rclone 运行日志路径"
 
@@ -1078,16 +1087,11 @@ Choose 1-5 [2]: 3
     如若使用全局日志路径 /var/log/rclone.log，则需先 `sudo touch` 再 `sudo chown` 为当前用户组。
     macOS 下的 rclone 运行日志可以考虑放到 /usr/local/var/log 目录下。
 
-输入 `:wq` 保存退出 vim，命令行提示 `crontab: installing new crontab`。
-
-编辑的 personal crontab 将自动追加到 `/var/spool/cron/crontabs/$USER` 文件中。
-
 !!! note "crontab list & remove"
 
     执行 `crontab -l` 可以查看当前用户的任务列表，或通过 `-u` 选项查看指定用户的任务列表 `crontab -l -u pifan`。
     执行 `crontab -r` 可以移除当前用户配置的任务列表，或 `crontab -ri` 带 interactive prompt 确认。
 
-执行 `sudo systemctl restart cron.service` 重启定时任务使其生效。
 
 ### macOS
 
@@ -1325,7 +1329,7 @@ cron 执行出错时默认会通过 MTA 服务给系统管理员发邮件，执�
     20240316165339
     ```
 
-如果在 2h 定时周期内无改动则 dry-run，有改动才备份。
+如果在 2h 定时周期内无改动则 dry-run，有改动才备份；备份成功后，老化删除一天之前的旧备份。
 
 !!! note "Why not use filtering flag --max-age ?"
 
@@ -1340,7 +1344,8 @@ cron 执行出错时默认会通过 MTA 服务给系统管理员发邮件，执�
     logfile="/Users/faner/.config/rclone/rclone-$(date +%Y%m).log"
     filename="恋词考研英语-全真题源报刊7000词-索引红版"
     srcfile="/Users/faner/Documents/English/LINKIN-WORDS-7000/$filename.pdf"
-    dstfile="smbhd@rpi4b:WDHD/backups/English/$filename-$(date +%Y%m%d%H).pdf"
+    dstpath="smbhd@rpi4b:WDHD/backups/English"
+    dstfile="$dstpath/$filename-$(date +%Y%m%d%H).pdf"
 
     curdate=$(date +%Y/%m/%d\ %H:%M:%S)
     curdate_sec="$(date +%s)"
@@ -1356,11 +1361,16 @@ cron 执行出错时默认会通过 MTA 服务给系统管理员发邮件，执�
     # modification within two hours( --max-age 2h)
     if [ $elapsed_min -le 120 ]
     then
-        # echo "rclone run for elapsed time <= 120m"
-        /usr/local/bin/rclone copyto -v "$srcfile" "$dstfile" --log-file="$logfile"
-    else
-        # echo "rclone dry-run for elapsed time > 120m"
-        /usr/local/bin/rclone copyto -v "$srcfile" "$dstfile" --log-file="$logfile" --dry-run
+        if /usr/local/bin/rclone copyto -v "$srcfile" "$dstfile" --log-file="$logfile";
+        then
+            # delete old backups from 24h ago if success, else keep old backups
+            /usr/local/bin/rclone delete -v "$dstpath" --min-age 24h
+        # else
+            # /usr/local/bin/rclone delete -v "$dstpath" --min-age 24h --dry-run
+        fi
+    # else
+        # keep old backups if no recent changes
+        # /usr/local/bin/rclone copyto -v "$srcfile" "$dstfile" --log-file="$logfile" --dry-run
     fi
     ```
 
@@ -1399,14 +1409,12 @@ macOS 的系统日志 /var/log/system.log 中没有搜到任何 cron 相关的�
 
 ## refs
 
-[rclone mount](https://rclone.org/commands/rclone_mount/)
-[rclone nfsmount](https://rclone.org/commands/rclone_nfsmount/)
-
 [Rclone云存储数据同步工具](https://www.cnblogs.com/varden/p/17181717.html)
 [备份同步神器 Rclone 使用教程](https://cloud.tencent.com/developer/article/2192254)
-
 [rclone 选项参数 --min-age/--max-age 的理解](https://blog.csdn.net/neowell/article/details/134009677)
-[macOS系统下自动挂载rclone远程存储：实现开机启动项](https://kpfd.com/macos%E7%B3%BB%E7%BB%9F%E4%B8%8B%E8%87%AA%E5%8A%A8%E6%8C%82%E8%BD%BDrclone%E8%BF%9C%E7%A8%8B%E5%AD%98%E5%82%A8%E5%AE%9E%E7%8E%B0%E5%BC%80%E6%9C%BA%E5%90%AF%E5%8A%A8%E9%A1%B9)
+
+[使用 RClone 实现 Unraid 的异地容灾](https://juejin.cn/post/7131650853307416589)
+[一个命令让Linux定时打包备份指定目录文件夹并同步备份到各大网盘](https://wzfou.com/vps-one-backup/)
 
 [schedule using crontab on macOS: A step-by-step guide](https://medium.com/@justin_ng/how-to-run-your-script-on-a-schedule-using-crontab-on-macos-a-step-by-step-guide-a7ba539acf76)
 [Schedule job with crontab on macOS](https://chethansp.medium.com/schedule-job-with-crontab-on-macos-d47a1fda47e5)
