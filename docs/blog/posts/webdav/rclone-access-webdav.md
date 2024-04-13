@@ -1353,22 +1353,38 @@ cron 执行出错时默认会通过 MTA 服务给系统管理员发邮件，执�
     filedate=$(date -r $srcfile +%Y/%m/%d\ %H:%M:%S)
     filedate_sec="$(date -r $srcfile +%s)"
 
-    elapsed_sec=$((curdate_sec - filedate_sec))
-    elapsed_min=$((elapsed_sec / 60))
+    passed_min=0
+    elapsed_min=0
+    elapsed_hour=0
+    elapsed_day=0
 
-    echo "$curdate DEBUG  : $filename.pdf modification: $filedate, $elapsed_min min ago." >> "$logfile"
+    elapsed_sec=$((curdate_sec - filedate_sec))
+    if [ $elapsed_sec -ge 60 ]; then
+      passed_min=$((elapsed_sec / 60))
+      elapsed_min=$passed_min
+      elapsed_sec=$((elapsed_sec % 60))
+      if [ $elapsed_min -ge 60 ]; then
+        elapsed_hour=$((elapsed_min / 60))
+        elapsed_min=$((elapsed_min % 60))
+        if [ $elapsed_hour -ge 24 ]; then
+          elapsed_day=$((elapsed_hour / 24))
+          elapsed_hour=$((elapsed_hour % 24))
+        fi
+      fi
+    fi
+
+    elapsed_time=$(printf '%sd-%sh-%sm' "$elapsed_day" "$elapsed_hour" "$elapsed_min")
+    echo "$curdate DEBUG : $filename.pdf, modification: $filedate, $elapsed_time ago." >>"$logfile"
 
     # check modification
-    if [ $elapsed_min -le 120 ]
-    then # changed within two hours( --max-age 2h)
-        if /usr/local/bin/rclone copyto -v "$srcfile" "$dstfile" --log-file="$logfile";
-        then # delete old backups from 24h ago
-            /usr/local/bin/rclone delete -v "$dstpath" --min-age 24h --log-file="$logfile"
-        else
-            echo -e "backup failed, keep old backups.\n" >> "$logfile"
-        fi
+    if [ $passed_min -le 120 ]; then                                                       # changed within two hours( --max-age 2h)
+      if /usr/local/bin/rclone copyto -v "$srcfile" "$dstfile" --log-file="$logfile"; then # delete old backups from 24h ago
+        /usr/local/bin/rclone delete -v "$dstpath" --min-age 24h --log-file="$logfile"
+      else
+        echo -e "backup failed, keep old backups.\n" >>"$logfile"
+      fi
     else # remain unchanged more than two hours
-        echo -e "no recent changes, keep old backups.\n" >> "$logfile"
+      echo -e "no recent changes, keep old backups.\n" >>"$logfile"
     fi
     ```
 

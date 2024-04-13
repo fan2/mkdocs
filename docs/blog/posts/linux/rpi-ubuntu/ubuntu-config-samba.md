@@ -173,11 +173,13 @@ $ sudo mount -t hfsplus -o force,rw,uid=pifan,gid=ubuntu /dev/sda3 /media/WDHD
 如果之前有非正常操作，如暴力插拔或断电重启，系统检测到上一次磁盘没有正常卸载，也会挂载为只读。
 
 ```Shell title="/var/log/syslog"
-5933 Apr  7 04:13:48 rpi4b-ubuntu kernel: [   50.634910] hfsplus: Filesystem was not cleanly unmounted, running fsck.hfsplus is recommended.  mounting read-only.
 5934 Apr  7 04:13:48 rpi4b-ubuntu kernel: [   50.657465] hfsplus: Filesystem was not cleanly unmounted, running fsck.hfsplus is recommended.  mounting read-only.
+
+7258 Apr  7 04:22:20 rpi4b-ubuntu kernel: [  457.863826] hfsplus: filesystem was not cleanly unmounted, running fsck.hfsplus is recommended.  leaving read-only.
+7259 Apr  7 04:22:52 rpi4b-ubuntu systemd[1]: media-WDHD.mount: Deactivated successfully.
 ```
 
-甚至可能分区损坏导致 [无法挂载](https://juejin.cn/post/7065592541206282253)，此时可执行 `sudo fsck.hfsplus /dev/sda3` 命令检查磁盘状态，尝试修复。
+分区损坏甚至导致 [无法挂载](https://juejin.cn/post/7065592541206282253)，此时可执行 `sudo fsck.hfsplus /dev/sda3` 命令检查磁盘状态，尝试修复。
 
 !!! abstract "man fsck"
 
