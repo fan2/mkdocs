@@ -43,4 +43,4 @@ comments: true
 
 ![我在深圳没空想你](./images/too-busy-to-think.jpg)
 
-[^1]: 本贾尼·斯特劳斯特卢普（Bjarne Stroustrup），C++ 之父。
+[^1]: 本贾尼·斯特劳斯特卢普（[Bjarne Stroustrup](https://www.stroustrup.com/index.html)），C++ 之父。
