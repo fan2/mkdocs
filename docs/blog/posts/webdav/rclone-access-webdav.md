@@ -98,6 +98,17 @@ macOS 下使用包管理器 `brew` 搜索安装 rclone；ubuntu 下使用包管�
 
 [Usage](https://rclone.org/docs/): [Filtering](https://rclone.org/filtering/), [Flags](https://rclone.org/flags/)
 
+[--log-file=FILE](https://rclone.org/docs/#log-file-file) / [log-level-level](https://rclone.org/docs/#log-level-level)
+
+!!! note "--log-level LEVEL"
+
+    This sets the log level for rclone. The default log level is *NOTICE*.
+
+    1. **DEBUG** is equivalent to ==-vv==. It outputs lots of debug info - useful for bug reports and really finding out what rclone is doing.
+    2. **INFO** is equivalent to ==-v==. It outputs information about each transfer and prints stats once a minute by default.
+    3. **NOTICE** is the default log level if no logging flags are supplied. It outputs very little when things are working normally. It outputs warnings and significant events.
+    4. **ERROR** is equivalent to `-q`. It only outputs error messages.
+
 ## config
 
 在命令行输入 `rclone config` 进入交互式配置会话。
@@ -1082,10 +1093,10 @@ Choose 1-5 [2]: 3
 
 !!! note "关于 rclone 运行日志路径"
 
-    建议通过 [--log-file=FILE](https://rclone.org/docs/#log-file-file) 选项为 rclone 指定用户级别的日志路径。
-    参考 [Sending cron output to a file with a timestamp in its name](https://serverfault.com/questions/117360/sending-cron-output-to-a-file-with-a-timestamp-in-its-name)，日志文件按天命名。
+    可通过 `--log-file=FILE` 选项指定用户级别的日志路径。
+    参考 [Sending cron output to a file with a timestamp in its name](https://serverfault.com/questions/117360/sending-cron-output-to-a-file-with-a-timestamp-in-its-name)，日志文件按天或月命名。
     如若使用全局日志路径 /var/log/rclone.log，则需先 `sudo touch` 再 `sudo chown` 为当前用户组。
-    macOS 下的 rclone 运行日志可以考虑放到 /usr/local/var/log 目录下。
+    macOS 下的 rclone 运行日志可考虑放到全局日志路径 /usr/local/var/log 下，或放在家目录配置文件夹下。
 
 !!! note "crontab list & remove"
 
@@ -1276,6 +1287,7 @@ cron 执行出错时默认会通过 MTA 服务给系统管理员发邮件，执�
 验证任务生效后，将调度时间修改为预期的同步频率，后续核对日志校验定时备份任务执行情况。
 
 ```Shell title="crontab -e : 每隔 2h，执行同步脚本"
+# 注意：系统休眠期间，cron 任务不会执行。
 0 7-23/2 * * * /usr/local/etc/scripts/rclone-sync.sh
 ```
 
@@ -1329,7 +1341,8 @@ cron 执行出错时默认会通过 MTA 服务给系统管理员发邮件，执�
     20240316165339
     ```
 
-如果在 2h 定时周期内无改动则 dry-run，有改动才备份；备份成功后，老化删除一天之前的旧备份。
+如果在最后修改时间到当前时间间隔内（往前-5s）已经有备份，说明最近没有改动，有改动才执行备份。
+每次备份成功后，执行 `delete` 滚动老化删除一天之前（--min-age 24h）的旧备份。
 
 !!! note "Why not use filtering flag --max-age ?"
 
@@ -1341,26 +1354,27 @@ cron 执行出错时默认会通过 MTA 服务给系统管理员发邮件，执�
     ```Shell
     #!/bin/bash
 
+    # predefined variables
     logfile="/Users/faner/.config/rclone/rclone-$(date +%Y%m).log"
     filename="恋词考研英语-全真题源报刊7000词-索引红版"
     srcfile="/Users/faner/Documents/English/LINKIN-WORDS-7000/$filename.pdf"
     dstpath="smbhd@rpi4b:WDHD/backups/English"
     dstfile="$dstpath/$filename-$(date +%Y%m%d%H).pdf"
 
-    curdate=$(date +%Y/%m/%d\ %H:%M:%S)
+    # curdate=$(date +%Y/%m/%d\ %H:%M:%S)
     curdate_sec="$(date +%s)"
 
     filedate=$(date -r $srcfile +%Y/%m/%d\ %H:%M:%S)
     filedate_sec="$(date -r $srcfile +%s)"
 
-    passed_sec=0
-    elapsed_sec=0
+    passed_sec=$((curdate_sec - filedate_sec))
+
+    elapsed_sec=$passed_sec
     elapsed_min=0
     elapsed_hour=0
     elapsed_day=0
     
-    passed_sec=$((curdate_sec - filedate_sec))
-    elapsed_sec=$passed_sec
+    # calculate datediff
     if [ $elapsed_sec -ge 60 ]; then
       elapsed_min=$((elapsed_sec / 60))
       elapsed_sec=$((elapsed_sec % 60))
@@ -1374,20 +1388,25 @@ cron 执行出错时默认会通过 MTA 服务给系统管理员发邮件，执�
       fi
     fi
     
-    elapsed_time=$(printf '%sd-%sh-%sm' "$elapsed_day" "$elapsed_hour" "$elapsed_min")
-    echo "$curdate DEBUG : $filename.pdf, modification: $filedate, $elapsed_time ago." >>"$logfile"
+    # format datediff
+    elapsed_time=$(printf '%sd-%sh-%sm-%ss' "$elapsed_day" "$elapsed_hour" "$elapsed_min" "$elapsed_sec")
+    echo "$(date +%Y/%m/%d\ %H:%M:%S) DEBUG : $filename.pdf, modification: $filedate, $elapsed_time ago." >> "$logfile"
     
-    checkpoint=$((passed_sec + 1)) # rewind for a second
-    backupcount=$(rclone lsf --max-age=$checkpoint $dstpath | wc -l)
+    # check copy during modification
+    checkpoint=$((passed_sec + 5)) # rewind for seconds
+    lastcopy=$(/usr/local/bin/rclone lsf --max-age=$checkpoint $dstpath)
+    # backupcount=$(/usr/local/bin/rclone lsf --max-age=$checkpoint $dstpath | wc -l)
     
-    if [ "$backupcount" -eq "0" ]; then # modified since last backup, execute backup
+    # check modification since last backup
+    if [ ${#lastcopy} -ne 0 ]; then # remain unchanged
+      echo -e "$(date +%Y/%m/%d\ %H:%M:%S) DEBUG : retain latest backup: $lastcopy\n" >> "$logfile"
+    else # spotted gap
+      echo -e "$(date +%Y/%m/%d\ %H:%M:%S) DEBUG : execute backup to fill the gap." >> "$logfile"
       if /usr/local/bin/rclone copyto -v "$srcfile" "$dstfile" --log-file="$logfile"; then
         /usr/local/bin/rclone delete -v "$dstpath" --min-age 24h --log-file="$logfile"
       else
-        echo -e "backup failed, keep old backups.\n" >>"$logfile"
+        echo -e "$(date +%Y/%m/%d\ %H:%M:%S) DEBUG : backup failed, keep old backups.\n" >> "$logfile"
       fi
-    else # remain unchanged since last backup
-      echo -e "remain unchanged, keep old backup: $(rclone lsf --max-age=$checkpoint $dstpath)\n" >>"$logfile"
     fi
     ```
 
