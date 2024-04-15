@@ -454,6 +454,12 @@ $ rclone lsl webdav@rpi4b:/mkdocs
       310 2024-04-01 18:05:18.000000000 hello-world-3.c
       310 2024-04-01 18:25:27.000000000 hello-world-4.c
       279 2024-04-01 18:02:26.000000000 hello-world.c
+
+# 过滤显示 2h 内有改动的文件
+$ rclone lsl webdav@rpi4b: --max-age 2h
+
+# 过滤显示大于 10M 的文件
+$ rclone lsl webdav@rpi4b: --min-size 10M
 ```
 
 `lsd` 命令显示指定路径（根目录）下的目录/容器/桶：
@@ -475,10 +481,11 @@ English_Docs/
 The_Economist/
 mkdocs/
 
+# 过滤只显示 CS- 开头的目录
+$ rclone lsf webdav@rpi4b: --include "CS-*/"
+
 # 过滤不显示 CS 和 mkdocs 目录
 $ rclone lsf webdav@rpi4b: --exclude "{CS/**,mkdocs/**}"
-English_Docs/
-The_Economist/
 
 $ rclone tree --max-depth 1 webdav@rpi4b:
 /
@@ -1060,15 +1067,24 @@ Choose 1-5 [2]: 3
            0 10 * * *  $HOME/bin/program | DISPLAY=:0 notify-send "Program run" "$(cat)"
     ```
 
-执行 `crontab -e` 在末尾新增一条测试任务，每分钟执行 echo 写入文件 time.txt。
+执行 `crontab -e` 在末尾新增一条测试任务，每分钟执行 echo 写入文件 crontab.log。
 
 ```Shell title="crontab -e test"
-*/1 * * * * echo "echo from crontab" >> /home/pifan/Downloads/time.txt
+*/1 * * * * echo "echo from crontab." >> /home/pifan/Downloads/output/crontab.log
+# */1 * * * * echo "$(date) : echo from crontab." >> /home/pifan/Downloads/output/crontab.log
 ```
 
-整点分钟，观察 time.txt 是否有追加内容，以验证 cron 任务正常执行。
+`tail -f crontab.log`，整点分钟观察 crontab.log 是否有追加内容，以验证 cron 任务正常调度。
 
-在 cron table 末尾新增一条任务，每天定点执行 rclone sync，将 webdav 云盘自动同步到外挂硬盘（`/media/WDHD/`）。
+确认 cron 任务调度正常后，在 cron table 末尾新增一条 rclone 命令测试任务：
+
+```Shell title="crontab -e test rclone"
+*/1 * * * * rclone version >> /home/pifan/Downloads/output/crontab.log
+```
+
+整点分钟，观察 crontab.log，确认 rclone version 被 cron 正常调度执行。
+
+每天定点执行 rclone sync，将 webdav 云盘自动同步到外挂硬盘（`/media/WDHD/`）。
 
 ```Shell title="crontab -e hourly"
 # auto backup every two hours(0,2,4,6,8,10,12,14,16,18,20,22)
@@ -1078,8 +1094,6 @@ Choose 1-5 [2]: 3
 
 如果后续文件改动不是那么频繁，可以改为每天同步一次，日志文件按月命名。
 
-> webdav 编辑大文件时经常出现同步问题导致文件损坏，可指定 `--min-size SizeSuffix` 选项，只备份大于 SizeSuffix（例如 10M）的大文件。
-
 ```Shell title="crontab -e daily"
 # 每天凌晨1点同步备份
 0 1 * * * rclone sync -v webdav-rpi4b: /media/WDHD/webdav@rpi4b --log-file=/home/pifan/.config/rclone/rclone-`date +\%Y\%m`.log
@@ -1087,9 +1101,7 @@ Choose 1-5 [2]: 3
 
 输入 `:wq` 保存退出 vim，命令行提示 `crontab: installing new crontab`。
 
-编辑的 personal crontab 将自动追加到 `/var/spool/cron/crontabs/$USER` 文件中。
-
-执行 `sudo systemctl restart cron.service` 重启定时任务使其生效。
+> webdav 编辑大文件时经常出现同步问题导致文件损坏，可指定 `--min-size SizeSuffix` 选项，只备份大于 SizeSuffix（例如 10M）的大文件。
 
 !!! note "关于 rclone 运行日志路径"
 
@@ -1097,6 +1109,10 @@ Choose 1-5 [2]: 3
     参考 [Sending cron output to a file with a timestamp in its name](https://serverfault.com/questions/117360/sending-cron-output-to-a-file-with-a-timestamp-in-its-name)，日志文件按天或月命名。
     如若使用全局日志路径 /var/log/rclone.log，则需先 `sudo touch` 再 `sudo chown` 为当前用户组。
     macOS 下的 rclone 运行日志可考虑放到全局日志路径 /usr/local/var/log 下，或放在家目录配置文件夹下。
+
+编辑的 personal crontab 将自动追加到 `/var/spool/cron/crontabs/$USER` 文件中。
+
+执行 `sudo systemctl restart cron.service` 重启定时任务使其生效。
 
 !!! note "crontab list & remove"
 
@@ -1107,10 +1123,11 @@ Choose 1-5 [2]: 3
 ### macOS
 
 在 macOS 上首次执行 `crontab -e`，将临时打开一个空文件，默认使用编辑器 /usr/bin/vi。
-在末尾新增一条测试任务，每分钟执行 date 写入文件 time.txt。
+在末尾新增一条测试任务，每分钟执行 echo(date) 写入文件 crontab.log。
 
 ```Shell title="crontab -e test"
-*/1 * * * * date >> /Users/faner/Downloads/time.txt
+*/1 * * * * echo "echo from crontab." >> /Users/faner/Downloads/output/crontab.log
+# */1 * * * * echo "$(date) : echo from crontab." >> /Users/faner/Downloads/output/crontab.log
 ```
 
 保存退回到终端，命令行显示以下内容：
@@ -1125,9 +1142,11 @@ crontab: installing new crontab
 
 > personal crontab 目录下会多出一个以当前用户名（$USER）命名的配置文件，如 /usr/lib/cron/tabs/faner。
 
-整点分钟，观察 time.txt 是否有追加内容，以验证 cron 任务正常执行。
+整点分钟，观察 crontab.log 是否有追加内容，以验证 cron 任务正常执行。
 
-如果之前未在 macOS 上配置过 cron，大概率会失败，按照以下步骤配置。
+如果之前未在 macOS 上配置过 cron 服务，大概率会失败，参照下文步骤配置。
+
+#### config cron service
 
 !!! note "macOS 下的 cron"
 
@@ -1235,31 +1254,31 @@ MAILTO=root
         - sudo launchctl load /System/Library/LaunchDaemons/com.vix.cron.plist
         - sudo launchctl unload /System/Library/LaunchDaemons/com.vix.cron.plist
 
-执行完以上配置，再观察检查 time.txt。如果还没有内容，可能是该测试命令涉及到写磁盘文件，需要给 cron 授权。
+执行完以上配置，再观察检查 crontab.log。
+
+如果还没有内容，可能是该测试命令涉及到写磁盘文件，需要给 cron 授权写磁盘权限。
+
+- [Crontab is not running /usr/local/bin/ script](https://stackoverflow.com/questions/59123499/crontab-is-not-running-local-bin-script-catalina-bigsur)
+- [How to Fix Cron Permission Issues in macOS](https://osxdaily.com/2020/04/27/fix-cron-permissions-macos-full-disk-access/)
+- [Fixing cron jobs in macOS](https://www.bejarano.io/fixing-cron-jobs-in-mojave/)
 
 !!! note "授权 cron 写磁盘权限"
 
-     [How to Fix Cron Permission Issues in macOS](https://osxdaily.com/2020/04/27/fix-cron-permissions-macos-full-disk-access/)
      1. 执行 `which cron` 查找到 cron 命令的位置：/usr/sbin/cron。
      2. 打开 macOS 设置(System Settings)，隐私与安全性(Privacy & Security)，点进完全磁盘访问权限(Full Disk Access)。
      3. 点按左下角的 + 号，在打开的访达窗口按 ++shift+command+g++ 调出路径访问方式，输入 `/usr/sbin/cron` 回车，找到 cron 命令添加。
 
-正常情况下，到这一步，time.txt 中应该可以看到，每分钟追加写入了一行当前日期时间。
+正常情况下，到这一步，`tail -f crontab.log` 应该可以看到每分钟追加写入了一行当前日期时间。
 
-接下来配置 crontab 定时任务，白天每隔两小时备份一下特定文件，并按时辰命名。
+#### cron test rclone
 
-```Shell title="crontab -e"
-# every two hour: 5,7,9,11,13,15,17,19,21,23
-0 5-23/2 * * * rclone copyto -v /Users/faner/Documents/English/LINKIN-WORDS-7000/恋词考研英语-全真题源报刊7000词-索引红版.pdf smbhd@rpi4b:WDHD/backups/English/恋词考研英语-全真题源报刊7000词-索引红版-`date +\%Y\%m\%d\%H`.pdf --log-file=/Users/faner/.config/rclone/rclone-`date +\%Y\%m`.log
+确认 cron 任务调度正常后，在 cron table 末尾新增一条 rclone 命令测试任务：
+
+```Shell title="crontab -e test rclone"
+*/1 * * * * rclone version >> /Users/faner/Downloads/output/crontab.log
 ```
 
-先把调度时间改为每分钟，看看是否正常运行：
-
-```Shell title="crontab -e"
-*/1 * * * * rclone copyto -v /Users/faner/Documents/English/LINKIN-WORDS-7000/恋词考研英语-全真题源报刊7000词-索引红版.pdf smbhd@rpi4b:WDHD/backups/English/恋词考研英语-全真题源报刊7000词-索引红版-`date +\%Y\%m\%d\%H\%M`.pdf --log-file=/Users/faner/.config/rclone/rclone-`date +\%Y\%m`.log
-```
-
-等了几分钟，查看 rclone 日志文件没有相应运行日志，在 dstpath 中也没有看到预期同步的文件。
+这一次，没有在 ubuntu 上那么幸运，整点分钟观察 crontab.log，rclone version 没有被 cron 调度执行。
 
 cron 执行出错时默认会通过 MTA 服务给系统管理员发邮件，执行 `vim /var/mail/$USER` 检查当前用户的邮箱。
 
@@ -1269,29 +1288,28 @@ cron 执行出错时默认会通过 MTA 服务给系统管理员发邮件，执�
 /bin/sh: rclone: command not found
 ```
 
-执行 `which rclone`，显示 brew 安装的 rclone 路径为 `/usr/local/bin/rclone`。
+!!! question "为啥 echo/date 和 ubuntu 下的 rclone 能找到呢？"
 
-可能系统服务启动的 shell 环境的 PATH 中并没有 /usr/local/bin。
+    1. echo 是内置命令（shell built-in command）。
+    2. root 启动的 shell 环境变量预定义在 macOS 下的 `/etc/paths` 和 ubuntu 下的 `/etc/environment`。
+    3. date 命令的 owner 为 root，其安装路径在 macOS 为 `/bin/date`，在 ubuntu 为 `/usr/bin/date`，均在 root shell PATH 中。
+    4. ubuntu 下执行 `sudo apt install rclone` 以 root 身份安装的 rclone，其 path 为 /usr/bin/rclone，亦在 root shell PATH 中。
 
-将 rclone 命令改为绝对路径 `/usr/local/bin/rclone`：
+在 macOS 下执行 `ls -l $(which rclone)` 或 `stat $(which rclone)` 可以看到当前用户通过 brew 安装的 rclone 路径为 `/usr/local/bin/rclone`，不在 root shell PATH 中，故 root 执行 cron 时找不到 rclone 命令。
+
+将 rclone 命令改为绝对路径 `/usr/local/bin/rclone`，cron 任务调度正常。
 
 ```Shell title="crontab -e"
-*/1 * * * * /usr/local/bin/rclone copyto -v /Users/faner/Documents/English/LINKIN-WORDS-7000/恋词考研英语-全真题源报刊7000词-索引红版.pdf smbhd@rpi4b:WDHD/backups/English/恋词考研英语-全真题源报刊7000词-索引红版-`date +\%Y\%m\%d\%H\%M`.pdf --log-file=/Users/faner/.config/rclone/rclone-`date +\%Y\%m`.log
+*/1 * * * * /usr/local/bin/rclone version >> /Users/faner/Downloads/output/crontab.log
 ```
 
-!!! note ""
+#### cron rclone sync
 
-    由于以上命令是 rclone copyto remote（upload），读本地写远端，所以不涉及本地写磁盘权限问题。
-    如果是 rclone copyto local（download），可能涉及写磁盘权限问题，按照上面的步骤开启授权即可。
+验证 cron 正常调度 rclone 后，接下来在 crontab 中配置 rclone 定时同步备份任务。
 
-验证任务生效后，将调度时间修改为预期的同步频率，后续核对日志校验定时备份任务执行情况。
+编写一个 shell 脚本 /usr/local/etc/scripts/rclone-sync.sh，定时将本地重要文件同步到局域网 SMB 共享盘（smbhd@rpi4b:）上。
 
-```Shell title="crontab -e : 每隔 2h，执行同步脚本"
-# 注意：系统休眠期间，cron 任务不会执行。
-0 7-23/2 * * * /usr/local/etc/scripts/rclone-sync.sh
-```
-
-需执行 `sudo chmod +x /usr/local/etc/scripts/rclone-sync.sh` 赋予其他用户对该脚本的可执行权限。
+需先执行 `sudo chmod +x rclone-sync.sh` 赋予其他用户对该脚本的可执行权限。
 
 备份脚本 `rclone-sync.sh` 使用 date 或 stat 命令检查文件最后修改时间。
 
@@ -1344,7 +1362,7 @@ cron 执行出错时默认会通过 MTA 服务给系统管理员发邮件，执�
 如果在最后修改时间到当前时间间隔内（往前-5s）已经有备份，说明最近没有改动，有改动才执行备份。
 每次备份成功后，执行 `delete` 滚动老化删除一天之前（--min-age 24h）的旧备份。
 
-!!! note "Why not use filtering flag --max-age ?"
+!!! question "Why not use filtering flag --max-age?"
 
     如果执行 sync 或 copy 同步目录，可使用 rclone 提供的 `--max-age 2h` 选项。
     这里执行 copyto 命令备份特定文件，不适用 `--max-age` 选项，故自行等效实现。
@@ -1409,6 +1427,35 @@ cron 执行出错时默认会通过 MTA 服务给系统管理员发邮件，执�
       fi
     fi
     ```
+
+调试阶段可以 `--dry-run` 相关 rclone 同步命令，先在终端以当前身份执行 rclone-sync.sh，确保运行和输出符合预期。
+
+然后，再在 `crontab -e` 中配置调度任务，先每分钟执行一次，验证调度执行情况。
+
+```Shell title="crontab -e test"
+*/1 * * * * /usr/local/etc/scripts/rclone-sync.sh
+```
+
+cron 调度任务调试验证 OK 后，再修改调度频率：
+
+```Shell title="crontab -e"
+# 1. 本地同步到 SMB, 每隔两小时（7,9,11,13,15,17,19,21,23）
+0 7-23/2 * * * /usr/local/etc/scripts/rclone-sync.sh
+```
+
+以上脚本执行 rclone copyto，copy from local to remote（upload），读本地写远端，不涉及本地写磁盘权限问题。
+
+我们再添加一条 rclone sync 调度任务，将远端 webdav 云盘定时同步到本地：
+
+```Shell title="crontab -e"
+# 1. 本地同步到 SMB, 每隔两小时（7,9,11,13,15,17,19,21,23）
+0 7-23/2 * * * /usr/local/etc/scripts/rclone-sync.sh
+
+# 2. webdav 同步到本地, 每隔两小时（8,10,12,14,16,18,20,22,0)
+0 8-0/2 * * * /usr/local/bin/rclone sync -v webdav@rpi4b: /Users/faner/Documents/webdav-backup --include "CS-*/" --log-file=/Users/faner/.config/rclone/rclone-`date +\%Y\%m`.log
+```
+
+rclone sync from remote to local（download），涉及写磁盘权限问题，需按照上文的步骤授权 rclone 写磁盘权限。
 
 ### check logs
 
