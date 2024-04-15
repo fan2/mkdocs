@@ -1452,7 +1452,7 @@ cron 调度任务调试验证 OK 后，再修改调度频率：
 0 7-23/2 * * * /usr/local/etc/scripts/rclone-sync.sh
 
 # 2. webdav 同步到本地, 每隔两小时（8,10,12,14,16,18,20,22,0)
-0 8-0/2 * * * /usr/local/bin/rclone sync -v webdav@rpi4b: /Users/faner/Documents/webdav-backup --include "CS-*/" --log-file=/Users/faner/.config/rclone/rclone-`date +\%Y\%m`.log
+0 0,8-23/2 * * * /usr/local/bin/rclone sync -v webdav@rpi4b: /Users/faner/Documents/webdav-backup --include "CS-*/" --log-file=/Users/faner/.config/rclone/rclone-`date +\%Y\%m`.log
 ```
 
 rclone sync from remote to local（download），涉及写磁盘权限问题，需按照上文的步骤授权 rclone 写磁盘权限。
@@ -1496,11 +1496,19 @@ macOS 的系统日志 /var/log/system.log 中没有搜到任何 cron 相关的�
 [备份同步神器 Rclone 使用教程](https://cloud.tencent.com/developer/article/2192254)
 [rclone 选项参数 --min-age/--max-age 的理解](https://blog.csdn.net/neowell/article/details/134009677)
 
+[调研-分布式任务调度（CRONTAB）](https://yuerblog.cc/2018/04/09/research-about-distributed-crontab/)
 [使用 RClone 实现 Unraid 的异地容灾](https://juejin.cn/post/7131650853307416589)
 [一个命令让Linux定时打包备份指定目录文件夹并同步备份到各大网盘](https://wzfou.com/vps-one-backup/)
 
-[schedule using crontab on macOS: A step-by-step guide](https://medium.com/@justin_ng/how-to-run-your-script-on-a-schedule-using-crontab-on-macos-a-step-by-step-guide-a7ba539acf76)
+[schedule using crontab on macOS](https://medium.com/@justin_ng/how-to-run-your-script-on-a-schedule-using-crontab-on-macos-a-step-by-step-guide-a7ba539acf76)
 [Schedule job with crontab on macOS](https://chethansp.medium.com/schedule-job-with-crontab-on-macos-d47a1fda47e5)
+[Linux Crontab: 15 Awesome Cron Job Examples](https://www.thegeekstuff.com/2009/06/15-practical-crontab-examples/)
 
 [记录一次macOS上crontab未成功执行问题的排查过程！](https://blog.humh.cn/?p=947)
 [macOS 电脑—设置 crontab](https://zhuanlan.zhihu.com/p/564215492)
+
+online cron schedule expression generator:
+
+- [Cron Guru](https://crontab.guru/)
+- [toolfk](https://www.toolfk.com/tools/generate-crontab.html)
+- [utils](https://utils.fun/crontab)
