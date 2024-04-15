@@ -410,17 +410,17 @@ webdav@rpi4b:
 
 There are several related list commands:
 
-*   `ls` to list size and path of objects only
-*   `lsl` to list modification time, size and path of objects only
-*   `lsd` to list directories only
-*   `lsf` to list objects and directories in easy to parse format
-*   `lsjson` to list objects and directories in JSON format
+*   `ls` to list size and path of objects only（文件）
+*   `lsl` to list modification time, size and path of objects only（文件）
+*   `lsd` to list directories only（目录）
+*   `lsf` to list objects and directories in easy to parse format（目录+文件）
+*   `lsjson` to list objects and directories in JSON format（目录+文件）
 
 `ls`,`lsl`,`lsd` are designed to be human-readable. `lsf` is designed to be human and machine-readable. `lsjson` is designed to be machine-readable.
 
-Note that `ls` and `lsl`** recurse** by default - use `--max-depth 1` to stop the recursion.
+### ls, lsl
 
-The other list commands `lsd`,`lsf`,`lsjson` do not recurse by default - use `-R` to make them recurse.
+Note that `ls` and `lsl`** recurse** by default - use `--max-depth 1` to stop the recursion.
 
 `ls` 命令递归列举根路径下的所有文件（大小和路径）：
 
@@ -432,7 +432,7 @@ $ rclone tree webdav@rpi4b:
       ...
 ```
 
-`ls` 命令递归列举 `/mkdocs` 下的所有文件（大小和路径）：
+`ls` 命令递归列举 `/mkdocs` 下的所有文件（显示大小和路径）：
 
 ```Shell
 $ rclone ls webdav@rpi4b:/mkdocs
@@ -454,13 +454,81 @@ $ rclone lsl webdav@rpi4b:/mkdocs
       310 2024-04-01 18:05:18.000000000 hello-world-3.c
       310 2024-04-01 18:25:27.000000000 hello-world-4.c
       279 2024-04-01 18:02:26.000000000 hello-world.c
+```
+
+`lsl` 命令递归列举指定目录下的所有文件，可以使用 `--max-depth` 限制递归层级：
+
+```Shell
+# 只列举显示一级目录下的文件
+$ rclone lsl webdav@rpi4b: --max-depth 2
+
+$ rclone lsl webdav@rpi4b: --include "/*/*"
+```
+
+还可以使用 `--include` 选项，过滤列举指定目录下的文件：
+
+```Shell
+# 只列举 CS 目录下的文件
+$ rclone lsl webdav@rpi4b: --include "CS/*"
+
+# 只列举以 CS- 为前缀的目录下的文件
+$ rclone lsl webdav@rpi4b: --include "CS-*/*"
+
+# 只列举 CS-System 和 CS-Network 目录下的文件
+$ rclone lsl webdav@rpi4b: --include "CS-{System, Network}/*"
+
+# 递归列举 CS 目录下的所有文件
+$ rclone lsl webdav@rpi4b: --include "CS/**"
+
+# 递归列举以 CS- 为前缀的目录下的所有文件
+$ rclone lsl webdav@rpi4b: --include "CS-*/**"
+
+# 只递归列举 CS-System 和 CS-Network 目录下的文件
+$ rclone lsl webdav@rpi4b: --include "CS-{System, Network}/**"
+```
+
+也可以使用 `--exclude` 选项，排除指定目录下的文件：
+
+```Shell
+# 不递归列举 CS 目录下的文件
+$ rclone lsl webdav@rpi4b: --exclude "CS/**"
+
+# 不递归列举以 CS- 为前缀的目录下的文件
+$ rclone lsl webdav@rpi4b: --exclude "CS-*/**"
+
+# 不递归列举 CS-System 和 CS-Network 目录下的文件
+$ rclone lsl webdav@rpi4b: --include "CS-{System, Network}/**"
+```
+
+除此之外，可以使用 `--min-age`/`--max-age` 按照最后改动时间过滤：
+
+```Shell
+# 过滤显示一年前最后改动（最近一年没有改动）的文件
+$ rclone lsl webdav@rpi4b: --min-age 1y
 
 # 过滤显示 2h 内有改动的文件
 $ rclone lsl webdav@rpi4b: --max-age 2h
+```
 
+还可以使用 `--min-size`/`--max-size` 按照文件大小过滤：
+
+```Shell
 # 过滤显示大于 10M 的文件
 $ rclone lsl webdav@rpi4b: --min-size 10M
+
+# 过滤显示小于 1M 的文件
+$ rclone lsl webdav@rpi4b: --max-size 1M
 ```
+
+关于过滤选项参数，参考官方文档 [Rclone Filtering](https://rclone.org/filtering/) 中的讲解和示例。
+
+- [Include-from intersection of patterns](https://forum.rclone.org/t/include-from-intersection-of-patterns/13455)
+- [How to specify what folders to sync and what to exclude -- include, exclude, filter?](https://forum.rclone.org/t/how-to-specify-what-folders-to-sync-and-what-to-exclude-include-exclude-filter/21821)
+- [Rclone copy using regex expression using include multiple expression for file name](https://forum.rclone.org/t/rclone-copy-using-regex-expression-using-include-multiple-expression-for-file-name/26846?page=2)
+
+### lsd, lsf, lsjson
+
+The other list commands `lsd`,`lsf`,`lsjson` do not recurse by default - use `-R` to make them recurse.
 
 `lsd` 命令显示指定路径（根目录）下的目录/容器/桶：
 
@@ -483,25 +551,13 @@ mkdocs/
 
 # 过滤只显示 CS- 开头的目录
 $ rclone lsf webdav@rpi4b: --include "CS-*/"
+# $ rclone lsf webdav@rpi4b: --include "CS-*/**"
 
-# 过滤不显示 CS 和 mkdocs 目录
-$ rclone lsf webdav@rpi4b: --exclude "{CS/**,mkdocs/**}"
+# 过滤不显示 CS-System 和 CS-Network 目录
+# $ rclone lsf webdav@rpi4b: --exclude "{CS-System/**,CS-Network/**}"
+$ rclone lsf webdav@rpi4b: --exclude "CS-{System, Network}/**"
 
-$ rclone tree --max-depth 1 webdav@rpi4b:
-/
-├── CS
-├── English_Docs
-├── The_Economist
-└── mkdocs
-
-0 directories, 0 files
 ```
-
-关于过滤，参考 [Filtering](https://rclone.org/filtering/) 选项参数。
-
-- [Include-from intersection of patterns](https://forum.rclone.org/t/include-from-intersection-of-patterns/13455)
-- [How to specify what folders to sync and what to exclude -- include, exclude, filter?](https://forum.rclone.org/t/how-to-specify-what-folders-to-sync-and-what-to-exclude-include-exclude-filter/21821)
-- [Rclone copy using regex expression using include multiple expression for file name](https://forum.rclone.org/t/rclone-copy-using-regex-expression-using-include-multiple-expression-for-file-name/26846?page=2)
 
 `lsjson` 命令以 json 格式列举目录：
 
@@ -513,6 +569,21 @@ $ rclone lsjson webdav@rpi4b:
 {"Path":"The_Economist","Name":"The_Economist","Size":-1,"MimeType":"inode/directory","ModTime":"2024-03-25T02:17:59Z","IsDir":true},
 {"Path":"mkdocs","Name":"mkdocs","Size":-1,"MimeType":"inode/directory","ModTime":"2024-04-01T10:25:31Z","IsDir":true}
 ]
+```
+
+除此之外，rclone 还提供了 tree 命令，支持以树形显示目录结构：
+
+```Shell
+$ rclone tree webdav@rpi4b: --max-depth 1
+/
+├── CS
+├── English_Docs
+├── The_Economist
+└── mkdocs
+
+0 directories, 0 files
+
+$ rclone tree webdav@rpi4b: --max-depth 2
 ```
 
 ## mkdir
@@ -1445,14 +1516,14 @@ cron 调度任务调试验证 OK 后，再修改调度频率：
 
 以上脚本执行 rclone copyto，copy from local to remote（upload），读本地写远端，不涉及本地写磁盘权限问题。
 
-我们再添加一条 rclone sync 调度任务，将远端 webdav 云盘定时同步到本地：
+再添加一条 rclone sync 调度任务，将远端 webdav 云盘定时同步到本地：
 
 ```Shell title="crontab -e"
 # 1. 本地同步到 SMB, 每隔两小时（7,9,11,13,15,17,19,21,23）
 0 7-23/2 * * * /usr/local/etc/scripts/rclone-sync.sh
 
 # 2. webdav 同步到本地, 每隔两小时（8,10,12,14,16,18,20,22,0)
-0 0,8-23/2 * * * /usr/local/bin/rclone sync -v webdav@rpi4b: /Users/faner/Documents/webdav-backup --include "CS-*/" --log-file=/Users/faner/.config/rclone/rclone-`date +\%Y\%m`.log
+0 0,8-23/2 * * * /usr/local/bin/rclone sync -v webdav@rpi4b: /Users/faner/Documents/webdav-backup --include "CS-*/**" --log-file=/Users/faner/.config/rclone/rclone-`date +\%Y\%m`.log
 ```
 
 rclone sync from remote to local（download），涉及写磁盘权限问题，需按照上文的步骤授权 rclone 写磁盘权限。
