@@ -4,7 +4,7 @@ authors:
   - xman
 date:
     created: 2024-03-18T15:30:00
-    updated: 2024-04-11T12:00:00
+    updated: 2024-04-15T17:00:00
 categories:
     - macOS
     - ubuntu
@@ -520,11 +520,13 @@ $ rclone lsl webdav@rpi4b: --min-size 10M
 $ rclone lsl webdav@rpi4b: --max-size 1M
 ```
 
-关于过滤选项参数，参考官方文档 [Rclone Filtering](https://rclone.org/filtering/) 中的讲解和示例。
+!!! note "Rclone Filtering"
 
-- [Include-from intersection of patterns](https://forum.rclone.org/t/include-from-intersection-of-patterns/13455)
-- [How to specify what folders to sync and what to exclude -- include, exclude, filter?](https://forum.rclone.org/t/how-to-specify-what-folders-to-sync-and-what-to-exclude-include-exclude-filter/21821)
-- [Rclone copy using regex expression using include multiple expression for file name](https://forum.rclone.org/t/rclone-copy-using-regex-expression-using-include-multiple-expression-for-file-name/26846?page=2)
+    关于过滤选项参数，参考官方文档 [Rclone Filtering](https://rclone.org/filtering/) 中的讲解示例和论坛中的相关讨论。
+
+    - [Include-from intersection of patterns](https://forum.rclone.org/t/include-from-intersection-of-patterns/13455)
+    - [How to specify what folders to sync and what to exclude -- include, exclude, filter?](https://forum.rclone.org/t/how-to-specify-what-folders-to-sync-and-what-to-exclude-include-exclude-filter/21821)
+    - [Rclone copy using regex expression using include multiple expression for file name](https://forum.rclone.org/t/rclone-copy-using-regex-expression-using-include-multiple-expression-for-file-name/26846)
 
 ### lsd, lsf, lsjson
 
@@ -1183,7 +1185,7 @@ Choose 1-5 [2]: 3
 
 编辑的 personal crontab 将自动追加到 `/var/spool/cron/crontabs/$USER` 文件中。
 
-执行 `sudo systemctl restart cron.service` 重启定时任务使其生效。
+执行 `sudo systemctl restart cron.service` 重启 cron 服务（可选）。
 
 !!! note "crontab list & remove"
 
@@ -1320,7 +1322,7 @@ MAILTO=root
         - sudo /usr/sbin/cron stop
         - sudo /usr/sbin/cron restart
 
-    2. 如果修改了配置文件，执行 launchctl load 命令（可添加 -w 选项）：
+    2. 如果修改了配置文件，执行 launchctl load 命令（可添加 -w 选项）重新加载配置：
 
         - sudo launchctl load /System/Library/LaunchDaemons/com.vix.cron.plist
         - sudo launchctl unload /System/Library/LaunchDaemons/com.vix.cron.plist

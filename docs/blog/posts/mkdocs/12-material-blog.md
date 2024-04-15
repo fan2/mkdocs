@@ -4,7 +4,7 @@ authors:
   - xman
 date:
     created: 2024-03-28
-    updated: 2024-04-02T09:30:00
+    updated: 2024-04-15T18:26:00
 categories:
     - mkdocs
     - material
@@ -342,7 +342,8 @@ Material for Mkdocs: [Blog](https://squidfunk.github.io/mkdocs-material/blog/) @
 - [Jeremy Feng](https://fengchao.pro/)
 - [华中农业大学作重计算平台用户手册](http://hpc.ncpgr.cn/)
 - [Dr. Yonghao Leo Wang Webpage](https://www.wyh.io/)
-- [Starfall Projects](https://www.starfallprojects.co.uk/)
 - [claassen.net](https://claassen.net/)
+- [Starfall Projects](https://www.starfallprojects.co.uk/)
+- [breadNET Documentation](https://documentation.breadnet.co.uk/)
 
 </div>

@@ -4,6 +4,7 @@ authors:
   - xman
 date:
     created: 2017-10-18T10:20:00
+    updated: 2024-04-15T18:00:00
 categories:
     - vim
     - editor
@@ -316,6 +317,23 @@ Arguments:
    --version		Print version information and exit
 ```
 
+#### + end
+
+运行 vim 带 `+` 选项，打开文件定位到末尾，这在浏览日志文件时比较有用。
+
+```Shell
+# 打开系统日志
+vim + /var/log/syslog
+vim + /var/log/cloud-init.log
+
+# 打开nginx日志
+vim + /var/log/nginx/access.log
+vim + /var/log/nginx/error.log
+
+# 打开rclone日志
+vim + ~/.config/rclone/rclone.log
+```
+
 ### vim 打开（新建）编辑
 
 1. 打开终端，输入 `vim hivim.txt`（假设当前家目录下尚不存在 hivim.txt 文件），vim默认为普通模式（normal mode）。vim将为 New File（`hivim.txt`）新建一个 **buffer**，此时尚不存在文件 `~/hivim.txt`。光标停留在第一行，下面的波浪线 `~` 表示空行。  
@@ -358,6 +376,8 @@ hello world from vim!
 ```shell
 ➜  ~  cd /usr/share/vim/vim[0-9][0-9]/tutor
 ➜  tutor  vim -R tutor.utf-8
+
+➜  ~  vim + -R ~/.config/rclone/rclone.log
 ```
 
 当 vim 以只读方式打开文件时：
@@ -405,6 +425,46 @@ hello world from vim!
 
 ```shell
 ➜  ~  vim -M /usr/share/vim/vim[0-9][0-9]/tutor/tutor.utf-8
+```
+
+macOS/ubuntu下以只读模式打开nginx默认配置文件：
+
+```Shell
+# 以只读模式打开nginx默认配置(macOS, ubuntu)
+$ vim -M /usr/local/etc/nginx/nginx.conf.default
+$ vim -M /etc/nginx/nginx.conf
+```
+
+macOS/ubuntu下以只读模式打开系统日志文件：
+
+```Shell
+# 以只读模式打开系统日志(macOS, ubuntu)
+$ vim + -M /var/log/system.log
+$ vim + -M /var/log/syslog
+```
+
+ubuntu下以只读模式打开其他系统日志：
+
+```Shell
+# boot.log, kern.log, cron.log, cloud-init.log, etc.
+$ vim + -M /var/log/dmesg
+```
+
+macOS下以只读模式打开apache日志：
+
+```Shell
+$ vim + -M /var/log/apache2/access_log
+$ vim + -M /var/log/apache2/error_log
+```
+
+macOS/ubuntu下以只读模式打开nginx日志：
+
+```Shell
+$ vim + -M /usr/local/var/log/nginx/access.log
+$ vim + -M /usr/local/var/log/nginx/error.log
+
+$ vim + -M /var/log/nginx/access.log
+$ vim + -M /var/log/nginx/error.log
 ```
 
 [^cat]: The **[cat](https://en.wikipedia.org/wiki/Cat_(Unix))** (short for “concatenate“) command reads one or more files and prints them to standard output.
