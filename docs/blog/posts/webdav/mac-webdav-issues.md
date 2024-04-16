@@ -1,9 +1,10 @@
 ---
-title: macOS上使用WebDav遇到的问题
+title: macOS上使用httpd/WebDav遇到的问题
 authors:
   - xman
 date:
     created: 2024-03-17T10:10:00
+    updated: 2024-04-16T17:42:00
 categories:
     - macOS
     - webDAV
@@ -248,4 +249,5 @@ $ sudo killall -9 webdavfs_agent
 ---
 
 对于稍大一点文件的编辑同步，Finder 卡死问题频发，确实令人头痛不已。
-不想折腾，果断弃坑。现已改用 [Cyberduck](https://cyberduck.io/) + [Rclone](https://rclone.org/)，they just work like a charm!
+不想折腾，果断弃坑，现已改装 nginx 配置 webdav 服务，参考 [macOS重装nginx-full并配置WebDav](./mac-install-nginx-full-config-webdav.md)。
+客户端改用免费的 [Cyberduck](https://cyberduck.io/)，搭配 [rclone+crontab](./rclone-access-webdav.md) 定时自动同步备份，they just work like a charm!

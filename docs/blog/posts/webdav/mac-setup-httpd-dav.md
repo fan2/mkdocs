@@ -4,6 +4,7 @@ authors:
   - xman
 date:
     created: 2024-03-16T23:10:00
+    updated: 2024-04-16T17:40:00
 categories:
     - macOS
     - webDAV
@@ -388,6 +389,12 @@ AH00014: Configuration check failed
 有条件的，可以进一步升级支持 HTTPS 安全访问，需要在 httpd.conf 引入 httpd-ssl.conf 并配置加载 ssl 相关模块，还得使用 openssl 创建自签名证书。
 
 如果家里的宽带有分配公网 IP，可以在路由器中配置端口映射，支持外网访问。这样，即使身在外边，也可远程访问家里的 WebDAV 服务。
+
+---
+
+关于食用体验问题，参考 [macOS上使用httpd/WebDav遇到的问题](./mac-webdav-issues.md)。
+现已改装 nginx 配置 webdav 服务，参考 [macOS重装nginx-full并配置WebDav](./mac-install-nginx-full-config-webdav.md)。
+客户端改用免费的 [Cyberduck](https://cyberduck.io/)，搭配 [rclone+crontab](./rclone-access-webdav.md) 定时自动同步备份，they just work like a charm!
 
 ## 参考
 
