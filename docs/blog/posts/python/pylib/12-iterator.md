@@ -4,6 +4,7 @@ authors:
   - xman
 date:
     created: 2019-12-06T09:50:00
+    updated: 2024-04-16T17:00:00
 categories:
     - python
 tags:
@@ -296,7 +297,7 @@ abc
 
 **注意**：字典（dict）的迭代器是针对 键值对 进行的一维迭代。
 
-当然，由于 iterator 本身也实现了 `__iter__` 接口，也可直接对其执行 for 循环迭代：
+由于 iterator 本身也实现了 `__iter__` 接口，也可直接对其执行 for 循环迭代：
 
 ```Shell
 >>> l=['abc', 2024, (3,8)]
@@ -309,7 +310,7 @@ abc
 (3, 8)
 ```
 
-当然，调用 iter 就多此一举，直接使用 for 循环对 iterable object 遍历迭代更简洁：
+当然，直接使用 for 循环对 iterable object 遍历迭代更简洁：
 
 ```Shell
 >>> for i in l:

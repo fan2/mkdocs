@@ -487,6 +487,14 @@ $ rclone lsl webdav@rpi4b: --include "CS-*/**"
 $ rclone lsl webdav@rpi4b: --include "CS-{System, Network}/**"
 ```
 
+以下按文件后缀过滤：
+
+```Shell
+rclone lsl smbhd@rpi4b:WDHD/backups/ --include "*.DS_Store"
+     6148 2024-04-17 15:55:15.000000000 .DS_Store
+     4096 2024-04-17 15:55:15.000000000 ._.DS_Store
+```
+
 也可以使用 `--exclude` 选项，排除指定目录下的文件：
 
 ```Shell
@@ -643,13 +651,13 @@ rcdir/
 *   如果目标目录不存在，会逐级创建目录（mkdir -p test/script）。
 
 ```Shell
-$ rclone copy mkdocs/script/ webdav@rpi4b:test/script
+$ rclone copy -v mkdocs/script/ webdav@rpi4b:test/script
 ```
 
 将当前目录下的文件 test.txt 拷贝上传（copy upload）到目录 rcdir 下：
 
 ```Shell
-$ rclone copy test.txt webdav@rpi4b:rcdir
+$ rclone copy -v test.txt webdav@rpi4b:rcdir
 
 $ rclone lsf webdav@rpi4b:rcdir
 test.txt
@@ -664,7 +672,7 @@ $ rclone copy -v ~/Downloads/testdir webdav@mbpa2991:testdir --max-age 5
 
 ```Shell
 # 将当前目录下的 test.txt 文件复制为远端文件 rcdir
-$ rclone copyto test.txt webdav@rpi4b:rcdir
+$ rclone copyto -v test.txt webdav@rpi4b:rcdir
 ```
 
 使用 copyto 命令，dstpath 部分指定上传后的目标文件名。
@@ -697,7 +705,7 @@ test.txt
 将 rcdir 目录下的所有文件下载到当前目录（pwd）：
 
 ```Shell
-$ rclone copy webdav@rpi4b:rcdir .
+$ rclone copy -v webdav@rpi4b:rcdir .
 ```
 
 将 rcdir 目录下的所有文件下载到当前目录的 rcdir 文件夹下：
@@ -705,25 +713,25 @@ $ rclone copy webdav@rpi4b:rcdir .
 *   如果当前目录下不存在 rcdir 文件夹，则自动创建。
 
 ```Shell
-$ rclone copy webdav@rpi4b:rcdir ./rcdir
+$ rclone copy -v webdav@rpi4b:rcdir ./rcdir
 ```
 
 将远端文件 rcdir/test2.txt 拷贝下载到当前目录（pwd）下：
 
 ```Shell
-$ rclone copy webdav@rpi4b:rcdir/test2.txt .
+$ rclone copy -v webdav@rpi4b:rcdir/test2.txt .
 ```
 
 将远端文件夹 English/恋词考研英语-全真题源报刊7000词/ 拷贝到 Documents 同名目录：
 
 ```Shell
-rclone copy webdav@rpi4b:English/恋词考研英语-全真题源报刊7000词/ Documents/English/恋词考研英语-全真题源报刊7000词/
+rclone copy -v webdav@rpi4b:English/恋词考研英语-全真题源报刊7000词/ Documents/English/恋词考研英语-全真题源报刊7000词/
 ```
 
 将远端文件 rcdir/test2.txt 拷贝下载到当前目录（pwd），并命名为 test3.txt：
 
 ```Shell
-$ rclone copyto webdav@rpi4b:rcdir/test2.txt ./test3.txt
+$ rclone copyto -v webdav@rpi4b:rcdir/test2.txt ./test3.txt
 ```
 
 ### server-side copy
@@ -731,7 +739,7 @@ $ rclone copyto webdav@rpi4b:rcdir/test2.txt ./test3.txt
 server-side copy 复制文件夹：
 
 ```Shell
-$ rclone copy webdav@rpi4b:rcdir webdav@rpi4b:rcdir1
+$ rclone copy -v webdav@rpi4b:rcdir webdav@rpi4b:rcdir1
 
 $ rclone lsf webdav@rpi4b:
 CS/
@@ -745,14 +753,14 @@ rcdir1/
 server-side copy 复制文件：
 
 ```Shell
-$ rclone copyto webdav@rpi4b:rcdir/test.txt webdav@rpi4b:rcdir/test3.txt
+$ rclone copyto -v webdav@rpi4b:rcdir/test.txt webdav@rpi4b:rcdir/test3.txt
 
 $ rclone lsf webdav@rpi4b:rcdir
 test.txt
 test2.txt
 test3.txt
 
-$ rclone copyto webdav@rpi4b:rcdir/test.txt webdav@rpi4b:rcdir/test4.txt
+$ rclone copyto -v webdav@rpi4b:rcdir/test.txt webdav@rpi4b:rcdir/test4.txt
 
 $ rclone lsf webdav@rpi4b:rcdir
 test.txt
@@ -791,7 +799,7 @@ server-side move：不同目录为移动，相同目录相当于重命名。
 将文件 rcdir1/test4.txt 重命名 rcdir1/test3.txt：
 
 ```Shell
-$ rclone moveto webdav@rpi4b:rcdir1/test4.txt webdav@rpi4b:rcdir1/test3.txt
+$ rclone moveto -v webdav@rpi4b:rcdir1/test4.txt webdav@rpi4b:rcdir1/test3.txt
 
 rclone lsf webdav@rpi4b:rcdir1
 test.txt
@@ -802,13 +810,13 @@ test3.txt
 将根目录下的 test 文件夹重命名为 test2：
 
 ```Shell
-$ rclone move webdav@rpi4b:test webdav@rpi4b:test2
+$ rclone move -v webdav@rpi4b:test webdav@rpi4b:test2
 ```
 
 将 rcdir/test4.txt 移动到 rcdir1 目录：
 
 ```Shell
-$ rclone move webdav@rpi4b:rcdir/test4.txt webdav@rpi4b:rcdir1
+$ rclone move -v webdav@rpi4b:rcdir/test4.txt webdav@rpi4b:rcdir1
 
 $ rclone lsf webdav@rpi4b:rcdir
 test.txt
@@ -824,7 +832,7 @@ test4.txt
 将 English 目录下的 mp3 和 pdf 文件（不递归子目录）移动到子文件夹 The_Economist 下：
 
 ```Shell
-$ rclone move --include "/*.{mp3,pdf}" webdav@rpi4b:English webdav@rpi4b:English/The_Economist --dry-run
+$ rclone move -v webdav@rpi4b:English webdav@rpi4b:English/The_Economist --include "/*.{mp3,pdf}" --dry-run
 ```
 
 ## delete/rmdir/purge
@@ -841,7 +849,7 @@ deletefile 语义同 bash shell 中的 `rm -f file`；delete 语义同 bash shel
 删除远端文件 rcdir1/test.txt：
 
 ```Shell
-$ rclone deletefile webdav@rpi4b:rcdir1/test.txt
+$ rclone deletefile -v webdav@rpi4b:rcdir1/test.txt
 
 $ rclone lsf webdav@rpi4b:rcdir1
 test2.txt
@@ -851,10 +859,17 @@ test3.txt
 删除远端文件夹 rcdir1 下的所有文件：
 
 ```Shell
-$ rclone delete webdav@rpi4b:rcdir1
+$ rclone delete -v webdav@rpi4b:rcdir1
 
 $ rclone lsf webdav@rpi4b:rcdir1
 
+```
+
+过滤删除指定目录下特定后缀的文件（请先 --dry-run 验证）：
+
+```Shell
+$ rclone lsl smbhd@rpi4b:WDHD --include "*.DS_Store"
+$ rclone delete -v smbhd@rpi4b:WDHD --include "*.DS_Store"
 ```
 
 ### rmdir
@@ -920,7 +935,7 @@ rmdir/rmdirs 命令只能删除空文件夹，如果想一步清理文件夹内�
 删除远端目录 rcdir/test2.txt 下的所有文件及文件夹：
 
 ```Shell
-$ rclone purge webdav@rpi4b:rcdir/test2.txt
+$ rclone purge -v webdav@rpi4b:rcdir/test2.txt
 
 rclone lsf webdav@rpi4b:rcdir
 test.txt
@@ -942,31 +957,32 @@ Sync the source to the destination, changing the destination only. Doesn't trans
 **Important**: Since this can cause data loss, test first with the `--dry-run` or the `--interactive`/`-i` flag.
 
 ```Shell
-rclone sync --interactive SOURCE remote:DESTINATION
-
+$ rclone sync --interactive SOURCE remote:DESTINATION
 ```
 
 Note that files in the destination won't be deleted if there were any errors at any point. Duplicate objects (files with the same name, on those providers that support it) are also not yet handled.
 
 本地目录（文件夹）想和云盘同步时，可采用 `sync` 命令。
 
-例1：将本地目录 `/usr/local/var/webdav/` 同步到 webDAV 云盘 webdav\@rpi4b:
+例1：将本地目录 `/usr/local/var/webdav/` 同步到 webDAV 云盘 webdav@rpi4b:
 
 ```Shell
-rclone sync /usr/local/var/webdav/ webdav@rpi4b:
+$ rclone sync -v /usr/local/var/webdav/ webdav@rpi4b:
+# 过滤掉特定文件
+$ rclone sync -v /usr/local/var/webdav/ webdav@rpi4b: --exclude ".DS_Store"
 ```
 
 例2：仅同步 srcpath 中 1h 之内有变动的文件：
 
 ```Shell
-rclone sync -v ~/Downloads/testdir webdav@mbpa2991:testdir --max-age 1h
+$ rclone sync -v ~/Downloads/testdir webdav@mbpa2991:testdir --max-age 1h
 ```
 
 例3：将 ubuntu WebDAV 云盘 webdav\@rpi4b（除 C-C++/ 和 English/ 目录外）同步备份到外挂硬盘（/Volumes/WDHD/）下的文件夹 webdav@rpi4b：
 
 ```Shell
 # --exclude "{C-C++/*, English/*}"
-# 2-stderr 重定向到 1-stdout，管传给 tee 输出控制台并且保存（-a: append）到日志文件。
+# 2-stderr 重定向到 1-stdout，管传给 tee 输出控制台并且保存（-a: append）到日志文件。 --exclude "{C-C++, English}/**"
 $ rclone sync -v webdav@rpi4b: /Volumes/WDHD/webdav@rpi4b --exclude "C-C++/" --exclude "English/" 2>&1 | tee -a ~/.config/rclone/rclone.log
 
 # 补充备份 English 文件夹
@@ -998,8 +1014,7 @@ Bisync is **in beta** and is considered an **advanced command**, so use with 
 See [full bisync description](https://rclone.org/bisync/) for details.
 
 ```Shell
-rclone bisync remote1:path1 remote2:path2 [flags]
-
+$ rclone bisync -v remote1:path1 remote2:path2 [flags]
 ```
 
 假设配置了两个云盘：webdav@mbpa1398 和 webdav@rpi4b，彼此之间相当于备份。
@@ -1009,7 +1024,7 @@ rclone bisync remote1:path1 remote2:path2 [flags]
 可采用 `bisync` 命令执行双向同步：
 
 ```Shell
-rclone bisync webdav@mbpa1398: webdav@rpi4b:
+$ rclone bisync -v webdav@mbpa1398: webdav@rpi4b:
 ```
 
 假如某个文件基点为 file，在云盘 1 编辑为 file1，在云盘 2 编辑为 file2，双向同步时将以最后修改时间戳为准，没法自动合并？
@@ -1023,7 +1038,7 @@ rclone bisync webdav@mbpa1398: webdav@rpi4b:
 所以，最好以一个为主（编辑），另一个为辅（备份）。这样，相当于将主盘增量同步到备份盘。此时，退化为单向 sync：
 
 ```Shell
-rclone sync webdav@mbpa1398: webdav@rpi4b:
+$ rclone sync -v webdav@mbpa1398: webdav@rpi4b:
 ```
 
 ## crontab
@@ -1525,7 +1540,7 @@ cron 调度任务调试验证 OK 后，再修改调度频率：
 0 7-23/2 * * * /usr/local/etc/scripts/rclone-sync.sh
 
 # 2. webdav 同步到本地, 每隔两小时（8,10,12,14,16,18,20,22,0)
-0 0,8-23/2 * * * /usr/local/bin/rclone sync -v webdav@rpi4b: /Users/faner/Documents/webdav-backup --include "CS-*/**" --log-file=/Users/faner/.config/rclone/rclone-`date +\%Y\%m`.log
+0 0,8-23/2 * * * /usr/local/bin/rclone sync -v webdav@rpi4b: /Users/faner/Documents/webdav-backup --log-file=/Users/faner/.config/rclone/rclone-`date +\%Y\%m`.log
 ```
 
 rclone sync from remote to local（download），涉及写磁盘权限问题，需按照上文的步骤授权 rclone 写磁盘权限。

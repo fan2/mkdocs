@@ -4,6 +4,7 @@ authors:
   - xman
 date:
     created: 2019-12-06T10:00:00
+    updated: 2024-04-17T09:00:00
 categories:
     - python
 tags:
@@ -11,7 +12,7 @@ tags:
 comments: true
 ---
 
-本文梳理了 python 中的迭代器类——iterator，介绍了其基本概念和基础惯用法。
+本文梳理了 python 中的生成器类——generator，介绍了其基本概念和基础惯用法。
 
 <!-- more -->
 
