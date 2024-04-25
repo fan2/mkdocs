@@ -87,6 +87,6 @@ PDF Drive is your search engine for PDF files.
 
 ## macOS App
 
-[TNT- XMac.App - Download crack app for mac](https://xmac.app/)
+[TNT - XMac.App - Download crack app for mac](https://xmac.app/)
 
 [HCiSO | AppNee Freeware Group.](https://appnee.com/tag/hciso/)
