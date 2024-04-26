@@ -81,6 +81,7 @@ sort <(ls $dir1) <(ls $dir2) | uniq -u
 任务：macOS 查找/usr/bin/ 和/Library/Developer/CommandLineTools/usr/bin/ 下的同名文件。
 
 ```Shell
+xcdevpath=`xcode-select -p`
 dir1=/Library/Developer/CommandLineTools/usr/bin
 dir2=/usr/bin
 
