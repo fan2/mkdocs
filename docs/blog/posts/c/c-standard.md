@@ -6,6 +6,9 @@ date:
     created: 2009-10-01T10:00:00
 categories:
     - c
+tags:
+    - standard
+    - library
 comments: true
 ---
 
@@ -13,9 +16,19 @@ C Programming Language Standard from ANSI C to ISO C and standard library.
 
 <!-- more -->
 
-## C
+## wiki
 
-[C (programming language)](https://en.wikipedia.org/wiki/C_%28programming_language)
+[C (programming language)](https://en.wikipedia.org/wiki/C_(programming_language))
+
+C is a general-purpose computer programming language.
+
+C is an imperative procedural language, supporting structured programming, lexical variable scope, and recursion, with a static type system.
+
+C is an imperative, procedural language in the [ALGOL](https://en.wikipedia.org/wiki/ALGOL) tradition. It has a static type system. In C, all executable code is contained within subroutines (also called "functions", though not in the sense of [functional programming](https://en.wikipedia.org/wiki/Functional_programming)).
+
+It was created in the 1970s by [Dennis Ritchie](https://www.bell-labs.com/usr/dmr/www/), and remains very widely used and influential. By design, C's features cleanly **reflect** the capabilities of the targeted CPUs. It has found lasting use in operating systems, device drivers, and protocol stacks, but its use in application software has been decreasing. C is commonly used on computer architectures that range from the largest supercomputers to the smallest microcontrollers and embedded systems.
+
+C has been standardized since 1989 by the American National Standards Institute (ANSI) and the International Organization for Standardization (ISO).
 
 ## ANSI C
 
@@ -48,9 +61,9 @@ The C standards committee puts a lot of effort into guaranteeing backward compat
 
 [C Programming Language Standard - GeeksforGeeks](https://www.geeksforgeeks.org/c-programming-language-standard/)
 
-## ANSI C and ISO C
+## ANSI C vs. ISO C
 
-[C (programming language)](https://en.wikipedia.org/wiki/C_%28programming_language) - [2.3 ANSI C and ISO C](https://en.wikipedia.org/wiki/C_(programming_language)#ANSI_C_and_ISO_C)
+[C (programming language)](https://en.wikipedia.org/wiki/C_(programming_language)) - [2.3 ANSI C and ISO C](https://en.wikipedia.org/wiki/C_(programming_language)#ANSI_C_and_ISO_C)
 
 During the late 1970s and 1980s, versions of C were implemented for a wide variety of mainframe computers, minicomputers, and microcomputers, including the IBM PC, as its popularity began to increase significantly.
 
@@ -60,17 +73,15 @@ In 1990, the ANSI C standard (with formatting changes) was ***adopted*** by the 
 
 ANSI, like other national standards bodies, no longer develops the C standard independently, but defers to the international C standard, maintained by the working group ISO/IEC JTC1/SC22/WG14. National adoption of an update to the international standard typically occurs within a year of ISO publication.
 
-### Difference between C and Ansi C
+---
 
 [Difference between C and Ansi C](https://developerinsider.co/difference-between-c-and-ansi-c/)
 
 [What is difference between ANSI C and C Programming Language?](https://stackoverflow.com/questions/25097010/what-is-difference-between-ansi-c-and-c-programming-language)
 
-### Microsoft ANSI C Conformance
-
 Microsoft Learn: [C++, C, and Assembler](https://learn.microsoft.com/en-us/cpp/?view=msvc-170) | [ANSI C Conformance](https://learn.microsoft.com/en-us/cpp/c-runtime-library/ansi-c-compliance?view=msvc-170)
 
-## C standard library
+## Standard Library
 
 [C standard library](https://en.wikipedia.org/wiki/C_standard_library)
 
@@ -79,68 +90,29 @@ Microsoft Learn: [C++, C, and Assembler](https://learn.microsoft.com/en-us/cpp/?
 
 The Open Group Unix [Headers Index](https://pubs.opengroup.org/onlinepubs/000095399/idx/headers.html)
 
-### libc vs. glibc
+## ref books
 
-GCC stands for GNU Compiler Collection.
+[C Programming Language, 2nd Edition - 1988](https://www.amazon.com/Programming-Language-2nd-Brian-Kernighan/dp/0131103628/)
 
-[The GNU C Library - GNU Project - Free Software Foundation](https://www.gnu.org/software/libc/)
+- Author: Brian W. Kernighan, Dennis M. Ritchie
+- @[princeton](https://www.cs.princeton.edu/~bwk/cbook.html), PDF@[nju](http://cslabcms.nju.edu.cn/problem_solving/images/c/cc/The_C_Programming_Language_%282nd_Edition_Ritchie_Kernighan%29.pdf)
 
-- [Index of /gnu/libc](https://ftp.gnu.org/gnu/libc/)
-- [Documentation for the GNU C Library](https://sourceware.org/glibc/manual/)
+Jens Gustedt - [Modern C](https://gustedt.gitlabpages.inria.fr/modern-c/)
 
-[c - What is the role of libc(glibc) in our linux app?](https://stackoverflow.com/questions/11372872/what-is-the-role-of-libcglibc-in-our-linux-app)
-[libc、glibc和glib的关系_libc和glibc-CSDN博客](https://blog.csdn.net/yasi_xi/article/details/9899599)
-[libc、glib、glibc简介 - 阿C - 博客园](https://www.cnblogs.com/arci/p/14591030.html)
-[【Linux】理清gcc、glibc、libc++/libstdc++的关系 - 简书](https://www.jianshu.com/p/a3c983edabd1)
+- [Modern C, Third Edition](https://www.manning.com/books/modern-c-third-edition)
 
-glibc 和 libc 都是 Linux 下的 C 函数库：
+[Modern C for Absolute Beginners: A Friendly Introduction to the C Programming Language](https://www.amazon.com/Modern-Absolute-Beginners-Introduction-Programming/dp/1484266420), 2e-2024
 
-1. libc 是 Linux 下的 ANSI C 函数库；
-2. glibc 是 Linux 下的 GUN C 函数库。
+Programming from the Ground Up: Bartlett, Jonathan
 
-glibc（即 GNU C Library）本身是GNU旗下的C标准库，后来逐渐成为了Linux的标准C库，而Linux下原来的标准C库libc逐渐不再被维护。
+- [2004](https://www.amazon.com/Programming-Ground-Up-Jonathan-Bartlett/dp/0975283847) - @[gnu.org](https://download-mirror.savannah.gnu.org/releases/pgubook/ProgrammingGroundUp-1-0-booksize.pdf)  
+- [2009](https://www.amazon.com/Programming-Ground-Up-Jonathan-Bartlett/dp/1616100648)  
 
-### stdc version
+[Low-Level Programming: C, Assembly, and Program Execution on Intel® 64 Architecture](https://www.amazon.com/Low-Level-Programming-Assembly-Execution-Architecture/dp/1484224027), 1e-2017
 
-[What is the default C -std standard version for the current GCC (especially on Ubuntu)? - Stack Overflow](https://stackoverflow.com/questions/14737104/what-is-the-default-c-std-standard-version-for-the-current-gcc-especially-on-u)
+- hservers PDF - [Low Level Programming.pdf](https://www.hservers.org/kobo/IT/Low%20Level%20Programming.pdf)
+- hservers webview - [Low Level Programming.pdf](https://hservers.org/pdfjs/web/viewer.html?file=/kobo/IT/Low%20Level%20Programming.pdf)
 
-```Shell title="__STDC_VERSION__"
-# ubuntu
-$ gcc -dM -E -x c /dev/null | grep -F __STDC_VERSION__
-#define __STDC_VERSION__ 201710L
-
-# macOS clang/gcc
-gcc -dM -E -x c /dev/null | grep -F __STDC_VERSION__
-#define __STDC_VERSION__ 201710L
-```
-
-If you feel like finding it out empirically without reading any manuals.
-
-```c title="stdc.c"
-#include <stdio.h>
-
-int main(void) {
-#ifdef __STDC_VERSION__
-    printf("__STDC_VERSION__ = %ld \n", __STDC_VERSION__);
-#endif
-#ifdef __STRICT_ANSI__
-    puts("__STRICT_ANSI__");
-#endif
-    return 0;
-}
-```
-
-Test with:
-
-```Shell
-#!/usr/bin/env bash
-for std in c89 c99 c11 c17 gnu89 gnu99 gnu11 gnu17; do
-  echo $std
-  gcc -std=$std -o c.out stdc.c
-  ./c.out
-  echo
-done
-echo default
-gcc -o c.out stdc.c
-./c.out
-```
+[《C语言深度解剖（第3版）》(陈正冲)](https://item.jd.com/12720594.html) - 2008,2012,2019
+[C语言标准与实现(姚新颜)-2004](https://att.newsmth.net/nForum/att/CProgramming/3213/245)
+[老码识途-从机器码到框架的系统观逆向修炼之路-2012](https://book.douban.com/subject/19930393/)

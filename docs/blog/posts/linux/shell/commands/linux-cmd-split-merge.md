@@ -18,6 +18,76 @@ linux 下分割和合并文件命令简介。
 
 <!-- more -->
 
+## diff
+
+[How to Compare Two Files in Bash Script](https://www.squash.io/how-to-compare-two-files-in-bash-script/)
+
+[unix - how to compare output of two ls in linux](https://stackoverflow.com/questions/13622107/how-to-compare-output-of-two-ls-in-linux)
+
+[Compare two files and output the differences](https://superuser.com/questions/805522/compare-two-files-and-output-the-differences)
+
+## join
+
+[Bash join ls output - Stack Overflow](https://stackoverflow.com/questions/4234366/bash-join-ls-output)
+
+No need to run ls twice, just put multiple file specifications as arguments.
+
+```Shell
+ls $dir1 $dir2
+
+(ls $dir1; ls $dir2) | sort
+
+{ ls $dir1 && ls $dir2; }
+
+find $dir1 $dir2 -mindepth 1 -maxdepth 1 | sort
+```
+
+## comm
+
+[Intersection of two lists in Bash - Stack Overflow](https://stackoverflow.com/questions/2696055/intersection-of-two-lists-in-bash)
+
+Use the [comm](https://www.man7.org/linux/man-pages/man1/comm.1.html) command:
+
+```Shell
+comm -12 <(ls $dir1) <(ls $dir2)
+```
+
+```Shell
+ls $dir1 | sort > /tmp/one_list
+ls $dir2 | sort > /tmp/two_list
+comm -12 /tmp/one_list /tmp/two_list
+```
+
+comm requires the inputs to be sorted. In this case, ls automatically sorts its output, but other uses may need to do this:
+
+```Shell
+comm -12 <(some-command | sort) <(some-other-command | sort)
+```
+
+Alternative with `sort`:
+
+Intersection of two lists: 
+
+```Shell
+sort <(ls $dir1) <(ls $dir2) | uniq -d
+```
+
+Symmetric difference of two lists:
+
+```Shell
+sort <(ls $dir1) <(ls $dir2) | uniq -u
+```
+
+任务：macOS 查找/usr/bin/ 和/Library/Developer/CommandLineTools/usr/bin/ 下的同名文件。
+
+```Shell
+dir1=/Library/Developer/CommandLineTools/usr/bin
+dir2=/usr/bin
+
+comm -12 <(ls $dir1) <(ls $dir2)
+sort <(ls $dir1) <(ls $dir2) | uniq -d
+```
+
 ## split
 
 [How to split a large text file into smaller files with equal number of lines?](https://stackoverflow.com/questions/2016894/how-to-split-a-large-text-file-into-smaller-files-with-equal-number-of-lines)
