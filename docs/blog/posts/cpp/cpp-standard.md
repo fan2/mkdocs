@@ -84,7 +84,7 @@ open-std : [C++ - Standards](https://www.open-std.org/jtc1/sc22/wg21/docs/standa
 [All C++20 core language features with examples--Oleksandr Koval : Standard C++](https://isocpp.org/blog/2021/04/all-cpp20-core-language-features-with-examples-oleksandr-koval)
 [20 Smaller yet Handy C++20 Features--Bartlomiej Filipek : Standard C++](https://isocpp.org/blog/2022/01/20-smaller-yet-handy-cpp20-features-bartlomiej-filipek)
 
-refs:
+refs: [C++ compiler support](http://en.cppreference.com/w/cpp/compiler_support)。
 
 - [A Tour of C++(3e)-2022](https://www.stroustrup.com/tour3.html) by Bjarne Stroustrup, 19.2 C++ Feature Evolution
 - [现代C++语言核心特性解析-2021](https://item.jd.com/12942311.html) + [cpp23](https://github.com/0cch/moderncpp_public/tree/main)，谢丙堃 著

@@ -4,6 +4,7 @@ authors:
   - xman
 date:
     created: 2009-10-04T10:00:00
+    updated: 2024-04-02T10:00:00
 categories:
     - toolchain
 comments: true
@@ -34,11 +35,18 @@ Mainstream Compiler: GNU/GCC, LLVM/Clang, Microsoft Visual Studio.
 [GCC, the GNU Compiler Collection](https://gcc.gnu.org/) - [wiki](https://en.wikipedia.org/wiki/GNU_Compiler_Collection)
 [GCC online documentation](https://gcc.gnu.org/onlinedocs/)
 
+- [Option Summary](https://gcc.gnu.org/onlinedocs/gcc/Option-Summary.html)
+- [Overall Options](https://gcc.gnu.org/onlinedocs/gcc/Overall-Options.html)
+
 ### Binutils
 
 [GNU Hurd / GNU Binutils](https://www.gnu.org/savannah-checkouts/gnu/hurd/binutils.html) - [GNU Binutils](https://www.gnu.org/software/binutils/)
 
 [cpp - The C Preprocessor](https://gcc.gnu.org/onlinedocs/cpp/)
+
+- [Options Controlling the Preprocessor](https://gcc.gnu.org/onlinedocs/gcc/Preprocessor-Options.html)
+
+compile C/C++:
 
 - compile C: `cc` / `gcc`
 
@@ -46,6 +54,14 @@ Mainstream Compiler: GNU/GCC, LLVM/Clang, Microsoft Visual Studio.
     - c99 - ANSI (1999) C compiler
 
 - compile C++: `c++` / `g++`
+
+!!! info "gcc or g++?"
+
+    [Invoking G++ - Compiling C++ Programs](https://gcc.gnu.org/onlinedocs/gcc/Invoking-G_002b_002b.html)
+
+    GCC recognizes C++ header/source files with these names and compiles them as C++ programs even if you call the compiler the same way as for compiling C programs (usually with the name `gcc`).
+
+    However, the use of `gcc` does not add the C++ library. `g++` is a program that calls GCC and automatically specifies linking against the C++ library. It treats ‘.c’, ‘.h’ and ‘.i’ files as C++ source files instead of C source files unless `-x` is used. This program is also useful when precompiling a C header file with a ‘.h’ extension for use in C++ compilations. On many systems, `g++` is also installed with the name `c++`.
 
 The GNU Binutils are a collection of binary tools. The main ones are:
 
@@ -70,12 +86,57 @@ But they also include:
 
 在 Linux(Ubuntu) 下，这些 GNU Binutils 被预装在 `/usr/bin/` 目录下。
 
+其他相命令：
+
+- `ldd` - print shared object dependencies
+
 ### Language Standards
 
 [Language Standards Supported by GCC](https://gcc.gnu.org/onlinedocs/gcc/Standards.html)
 
-- [Options Controlling C Dialect](https://gcc.gnu.org/onlinedocs/gcc/C-Dialect-Options.html)
-- [Options Controlling C++ Dialect](https://gcc.gnu.org/onlinedocs/gcc/C_002b_002b-Dialect-Options.html)
+[Options Controlling the Kind of Output](https://gcc.gnu.org/onlinedocs/gcc/Overall-Options.html)
+
+```Shell
+-x language
+Specify explicitly the language for the following input files (rather than letting the compiler choose a default based on the file name suffix). This option applies to all following input files until the next -x option.
+```
+
+[Options Controlling C Dialect](https://gcc.gnu.org/onlinedocs/gcc/C-Dialect-Options.html)
+
+```Shell
+-ansi
+In C mode, this is equivalent to -std=c90. In C++ mode, it is equivalent to -std=c++98.
+
+-std=
+Determine the language standard. See Language Standards Supported by GCC, for details of these standard versions. This option is currently only supported when compiling C or C++.
+```
+
+[Options Controlling C++ Dialect](https://gcc.gnu.org/onlinedocs/gcc/C_002b_002b-Dialect-Options.html)
+
+```Shell
+-stdlib=libstdc++,libc++
+When G++ is configured to support this option, it allows specification of alternate C++ runtime libraries. Two options are available: libstdc++ (the default, native C++ runtime for G++) and libc++ which is the C++ runtime installed on some operating systems (e.g. Darwin versions from Darwin11 onwards). The option switches G++ to use the headers from the specified library and to emit -lstdc++ or -lc++ respectively, when a C++ runtime is required for linking.
+```
+
+!!! question "c++11/gnu++11 有什么区别？"
+
+    -std=`c++11`: The 2011 ISO C++ standard plus amendments.
+    -std=`gnu++11`: GNU dialect of -std=c++11. ISO C 2011 with GNU extensions.
+
+    [What are the differences between -std=c++11 and -std=gnu++11?](https://stackoverflow.com/questions/10613126/what-are-the-differences-between-std-c11-and-std-gnu11)  
+
+    the difference between the two options is whether GNU extensions that violates the C++ standard are **enabled** or not. The GNU extensions are described [here](https://gcc.gnu.org/onlinedocs/gcc/C_002b_002b-Extensions.html).
+
+使用 gcc 编译链接的时候，默认是采用动态链接的方式。如果要指定 [静态链接](https://www.cnblogs.com/motadou/p/4471088.html)，有两种方式：
+
+1. 使用 `-static` 选项，开启全静态链接。
+2. 使用 `-Wl,-Bstatic`，`-Wl,-Bdynamic` 选项，将部分动态库设置为静态链接。
+
+参考 GCC [Link Options](https://gcc.gnu.org/onlinedocs/gcc/Link-Options.html) 相关选项：
+
+- -static
+- -static-libgcc
+- -static-libstdc++
 
 #### glibc
 
@@ -95,6 +156,43 @@ glibc 和 libc 都是 Linux 下的 C 函数库：
 
 glibc（即 GNU C Library）本身是GNU旗下的C标准库，后来逐渐成为了Linux的标准C库，而Linux下原来的标准C库 [libc](http://www.musl-libc.org/) 逐渐不再被维护。
 
+??? note "获取查看 glibc 版本号"
+
+    [glibc 查看版本号](https://www.cnblogs.com/motadou/p/4473966.html)：
+
+    通过 `getconf` 命令获取 GNU_LIBC_VERSION：
+
+    ```Shell
+    $ getconf GNU_LIBC_VERSION
+    glibc 2.35
+    ```
+
+    `ldd` 是 glibc 提供的命令，执行 `ldd --version` 会输出 glibc 的版本号：
+
+    ```Shell
+    $ ldd --version
+    ldd (Ubuntu GLIBC 2.35-0ubuntu3.7) 2.35
+    Copyright (C) 2022 Free Software Foundation, Inc.
+    This is free software; see the source for copying conditions.  There is NO
+    warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    Written by Roland McGrath and Ulrich Drepper.
+    ```
+
+    直接执行 libc.so，可以看到 GLIBC 版本为 2.35：
+
+    ```Shell
+    $ /lib/aarch64-linux-gnu/libc.so.6
+    GNU C Library (Ubuntu GLIBC 2.35-0ubuntu3.7) stable release version 2.35.
+    Copyright (C) 2022 Free Software Foundation, Inc.
+    This is free software; see the source for copying conditions.
+    There is NO warranty; not even for MERCHANTABILITY or FITNESS FOR A
+    PARTICULAR PURPOSE.
+    Compiled by GNU CC version 11.4.0.
+    libc ABIs: UNIQUE ABSOLUTE
+    For bug reporting instructions, please see:
+    <https://bugs.launchpad.net/ubuntu/+source/glibc/+bugs>.
+    ```
+
 #### libstdc++
 
 [The GNU C++ Library](https://gcc.gnu.org/onlinedocs/libstdc++/)
@@ -109,9 +207,13 @@ The GCC project includes an implementation of the C++ Standard Library called `l
 
 ### GDB
 
+[GCC Debugging Options](https://gcc.gnu.org/onlinedocs/gcc/Debugging-Options.html)
+
 [GNU Hurd / GNU GDB](https://www.gnu.org/savannah-checkouts/gnu/hurd/gdb.html) - [GDB](https://www.sourceware.org/gdb/) - [docs](https://sourceware.org/gdb/download/onlinedocs/) - [wiki](https://en.wikipedia.org/wiki/GNU_Debugger)
 
 [GDB online](https://www.onlinegdb.com/)
+
+用GDB调试程序：[（一）](https://haoel.blog.csdn.net/article/details/2879) ～ [（七）](https://haoel.blog.csdn.net/article/details/2885)
 
 ## LLVM/Clang
 
@@ -124,6 +226,9 @@ In 2006, [Chris Lattner](https://nondot.org/sabre/) started working on a new pro
 [Clang C Language Family Frontend for LLVM](https://clang.llvm.org/) - [wiki](https://en.wikipedia.org/wiki/Clang)
 
 - [Clang's documentation](https://clang.llvm.org/docs/)
+- [Clang Compiler User’s Manual](https://clang.llvm.org/docs/UsersManual.html)
+- [clang - the Clang C, C++, and Objective-C compiler](https://clang.llvm.org/docs/CommandGuide/clang.html)
+- [Clang command line argument reference](https://clang.llvm.org/docs/ClangCommandLineReference.html)
 
 ---
 
@@ -147,8 +252,6 @@ LLVM's Implementation of Three-Phase Design:
 
 ### Binutils
 
-[gcc - Is there a binutils for llvm? - Stack Overflow](https://stackoverflow.com/questions/5238582/is-there-a-binutils-for-llvm)
-
 !!! abstract "LLVM Linker"
 
     The `lld` subproject is an attempt to develop a built-in, platform-independent linker for LLVM. lld aims to remove dependence on a third-party linker. As of May 2017, lld supports [ELF](https://en.wikipedia.org/wiki/Executable_and_Linkable_Format), [PE/COFF](https://en.wikipedia.org/wiki/PE/COFF), [Mach-O](https://en.wikipedia.org/wiki/Mach-O), and [WebAssembly](https://en.wikipedia.org/wiki/WebAssembly) in descending order of completeness. lld is faster than both flavors of GNU ld.
@@ -157,9 +260,15 @@ LLVM's Implementation of Three-Phase Design:
 
 [Clang Performance and GCC compatibility](https://en.wikipedia.org/wiki/Clang#Performance_and_GCC_compatibility)
 
+> Clang Compiler Driver (Drop-in Substitute for GCC): The clang tool is the compiler driver and front-end, which is designed to be a drop-in replacement for the gcc command.
+
 !!! abstract "GCC compatibility"
 
     Clang is compatible with GCC. Its command-line interface shares many of GCC's flags and options. Clang implements many GNU language extensions and compiler intrinsics, some of which are purely for compatibility. For example, even though Clang implements atomic intrinsics which correspond exactly with C11 atomics, it also implements GCC's __sync_* intrinsics for compatibility with GCC and libstdc++. Clang also maintains ABI compatibility with GCC-generated object code. In practice, Clang is a drop-in replacement for GCC.
+
+[gcc - Is there a binutils for llvm? - Stack Overflow](https://stackoverflow.com/questions/5238582/is-there-a-binutils-for-llvm)
+
+[Preprocessor options](https://clang.llvm.org/docs/ClangCommandLineReference.html#preprocessor-options)
 
 #### llvm-gcc/llvm-g++
 
@@ -219,7 +328,7 @@ $ which g++
 /usr/bin/g++
 ```
 
-由 `gcc --version` 和 `g++ --version` 输出的 InstalledDir 可以看出，gcc 实际上是 XcodeDefault.xctoolchain 下 clang 的 [shims or wrapper](http://stackoverflow.com/questions/9329243/xcode-4-4-and-later-install-command-line-tools/) executables。
+由 `gcc --version` 和 `g++ --version` 输出的 InstalledDir 可以看出，gcc/g++ 实际上是 XcodeDefault.xctoolchain 下 clang/clang++ 的 [shims or wrapper](http://stackoverflow.com/questions/9329243/xcode-4-4-and-later-install-command-line-tools/) executables。
 
 cc、c++ 均为 clang 的软链：
 
@@ -290,12 +399,12 @@ clang 相比 gcc 多了以下命令：
 - `lipo` - create or operate on universal files
 - `lorder` – list dependencies for object files
 - `nmedit` - change global symbols to local symbols
-- `otool`(-classic) - object file displaying tool
+- `otool`(-classic) - object file displaying tool. `otool -L` 对应 Linux 下的 `ldd`。
 - `segedit` - extract and replace sections from object files
 - `unifdef`, unifdefall – remove preprocessor conditionals from code
 - `vtool` – Mach-O version number utility
 
-[Cross-compilation using Clang — Clang 19.0.0git documentation](https://clang.llvm.org/docs/CrossCompilation.html)
+[Cross-compilation using Clang](https://clang.llvm.org/docs/CrossCompilation.html)
 [Building Linux with Clang/LLVM — The Linux Kernel documentation](https://docs.kernel.org/kbuild/llvm.html)
 
 ```Shell
@@ -306,25 +415,93 @@ make CC=clang LD=ld.lld AR=llvm-ar NM=llvm-nm STRIP=llvm-strip \
 
 ### Language Standards
 
+[Clang - C Programming Language Status](https://clang.llvm.org/c_status.html)
+[Clang - C++ Programming Language Status](https://clang.llvm.org/cxx_status.html)
+
+[clang - the Clang C, C++, and Objective-C compiler](https://clang.llvm.org/docs/CommandGuide/clang.html)
+
+OPTIONS | Language Selection and Mode Options:
+
+```Shell
+-x <language>
+Treat subsequent input files as having type language.
+
+-ansi
+Same as -std=c89.
+
+-std=<standard>
+Specify the c/c++ language standard to compile for.
+
+The default C language standard is gnu17, except on PS4, where it is gnu99.
+The default C++ language standard is gnu++17.
+
+-stdlib=<library>
+Specify the C++ standard library to use; supported options are libstdc++ (GNU GCC) and libc++ (Clang). If not specified, platform default will be used.
+```
+
+[Clang command line argument reference](https://clang.llvm.org/docs/ClangCommandLineReference.html)
+
+Introduction:
+
+```Shell
+-std-default=<arg>
+-stdlib=<arg>, --stdlib=<arg>, --stdlib <arg>
+C++ standard library to use. <arg> must be ‘libc++’, ‘libstdc++’ or ‘platform’.
+```
+
+Compilation options:
+
+```Shell
+-std=<arg>, --std=<arg>, --std <arg>
+Language standard to compile for
+```
+
+[Compiler Specifics — alpaka 1.0.0-rc1 documentation](https://alpaka.readthedocs.io/en/latest/advanced/compiler.html)
+
+[C++ Language Support - Xcode - Apple Developer](https://developer.apple.com/xcode/cpp/)
+
+Apple supports C++ with the Apple `Clang` compiler (included in Xcode) and the `libc++` C++ standard library runtime (included in SDKs and operating systems). The compiler and runtime are regularly updated to offer new functionality, including many leading-edge features specified by the ISO C++ standard.
+
+关于静态链接，参考 [Clang command line argument reference](https://clang.llvm.org/docs/ClangCommandLineReference.html) 相关选项：
+
+- -static-libgcc
+- -static-libstdc++
+
 #### libc
 
-[Clang - C Programming Language Status](https://clang.llvm.org/c_status.html)
+[C Language Features](https://clang.llvm.org/docs/UsersManual.html#c-language-features)
 
 [llvm-libc](https://libc.llvm.org/) is an incomplete, upcoming, ABI independent C standard library designed by and for the LLVM project.
 
+Xcode Project Settings | Language | C Language Dialect 对应 project.pbxproj 中 buildSettings 字典的 key = `GCC_C_LANGUAGE_STANDARD`。
+
 #### libc++
 
-[Clang - C++ Programming Language Status](https://clang.llvm.org/cxx_status.html)
+[C++ Language Features](https://clang.llvm.org/docs/UsersManual.html#cxx)
 
 The LLVM project includes an implementation of the C++ Standard Library named [libc++](https://libcxx.llvm.org/), dual-licensed under the MIT License and the UIUC license.
 
+Xcode Project Settings | Language - C++:
+
+- C++ Language Dialect 对应 project.pbxproj 中 buildSettings 字典的 key = `CLANG_CXX_LANGUAGE_STANDARD`。
+- C++ Standard Library 对应 project.pbxproj 中 buildSettings 字典的 key = `CLANG_CXX_LIBRARY`。
+
 ### LLDB
+
+[Controlling Debug Information](https://clang.llvm.org/docs/UsersManual.html#controlling-debug-information)
+[Debug information generation](https://clang.llvm.org/docs/ClangCommandLineReference.html#debug-information-generation)
 
 [LLDB](https://lldb.llvm.org/) - [wiki](https://en.wikipedia.org/wiki/LLDB_(debugger))
 
 - [GDB to LLDB command map](https://lldb.llvm.org/use/map.html)
 - [Tutorial](https://lldb.llvm.org/use/tutorial.html)
 - [Debugging](https://lldb.llvm.org/resources/debugging.html)
+
+[Getting Started with LLDB](https://developer.apple.com/library/archive/documentation/IDEs/Conceptual/gdb_to_lldb_transition_guide/document/lldb-basics.html)
+[GDB and LLDB Command Examples](https://developer.apple.com/library/archive/documentation/IDEs/Conceptual/gdb_to_lldb_transition_guide/document/lldb-command-examples.html)
+
+[Dancing in the Debugger — A Waltz with LLDB](https://www.objc.io/issues/19-debugging/lldb-debugging/)
+[ObjC 中国 - 与调试器共舞 - LLDB 的华尔兹](https://objccn.io/issue-19-2/)
 
 ## MSVC
 
@@ -361,6 +538,8 @@ Win10 下安装的 VS2015，VC Binutils 在 `C:\Program Files (x86)\Microsoft Vi
 - [Clang/LLVM support in Visual Studio CMake projects](https://learn.microsoft.com/en-us/cpp/build/clang-support-cmake?view=msvc-170)
 
 ### Language Standards
+
+[/std (Specify Language Standard Version)](https://learn.microsoft.com/en-us/cpp/build/reference/std-specify-language-standard-version?view=msvc-170)
 
 [Microsoft C++ compiler versions](https://learn.microsoft.com/en-us/cpp/overview/compiler-versions?view=msvc-170)
 
