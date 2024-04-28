@@ -4,6 +4,7 @@ authors:
   - xman
 date:
     created: 2009-10-01T10:00:00
+    updated: 2024-03-29T10:00:00
 categories:
     - c
 tags:
@@ -88,7 +89,20 @@ Microsoft Learn: [C++, C, and Assembler](https://learn.microsoft.com/en-us/cpp/?
 - [C Standard Library header files - cppreference.com](https://en.cppreference.com/w/c/header)
 - [cplusplus.com/reference/clibrary/](https://cplusplus.com/reference/clibrary/)
 
+### GNU C
+
 The Open Group Unix [Headers Index](https://pubs.opengroup.org/onlinepubs/000095399/idx/headers.html)
+
+[The GNU C Library](https://www.gnu.org/software/libc/)
+[The GNU C Reference Manual](https://www.gnu.org/software/gnu-c-manual/gnu-c-manual.html)
+
+### Other
+
+[uClibc](https://www.uclibc.org/) - C library for developing embedded Linux systems
+[diet libc](https://www.fefe.de/dietlibc/) - a libc optimized for small size
+[musl libc](https://musl.libc.org/) - an implementation of the C standard library
+
+newlib-cygwin: [wiki](https://en.wikipedia.org/wiki/Newlib), @[git](git://sourceware.org/git/newlib-cygwin.git), @[github](https://github.com/mirror/newlib-cygwin)
 
 ## ref books
 

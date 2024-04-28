@@ -4,6 +4,7 @@ authors:
   - xman
 date:
     created: 2009-10-01T11:00:00
+    updated: 2024-03-30T10:00:00
 categories:
     - cpp
 tags:
@@ -97,8 +98,6 @@ refs: [C++ compiler support](http://en.cppreference.com/w/cpp/compiler_support)ã
 - [cppreference.com](https://en.cppreference.com/w/)
 - [cplusplus.com/reference/](https://cplusplus.com/reference/)
 
-The Open Group Unix [System Interfaces: Detailed ToC](https://pubs.opengroup.org/onlinepubs/9699919799/functions/contents.html)
-
 ### boost
 
 [boost.org](http://www.boost.org/) @[github](https://github.com/boostorg)
@@ -106,6 +105,13 @@ The Open Group Unix [System Interfaces: Detailed ToC](https://pubs.opengroup.org
 - [Boost Library Documentation](http://www.boost.org/doc/libs/)
 
 [Asio C++ Library](https://think-async.com/) @[github](https://github.com/chriskohlhoff/asio)
+
+### GNU C++
+
+The Open Group Unix [System Interfaces: Detailed ToC](https://pubs.opengroup.org/onlinepubs/9699919799/functions/contents.html)
+
+[The GNU C++ Library](https://gcc.gnu.org/onlinedocs/libstdc++/)
+[The GNU C++ Library Manual](https://gcc.gnu.org/onlinedocs/libstdc++/manual/index.html)
 
 ## ref books
 

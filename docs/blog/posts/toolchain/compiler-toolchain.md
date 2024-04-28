@@ -4,6 +4,7 @@ authors:
   - xman
 date:
     created: 2009-10-03T10:00:00
+    updated: 2024-04-01T10:00:00
 categories:
     - toolchain
 comments: true
@@ -91,6 +92,15 @@ From these three different machines, we distinguish *four* different types of to
     Sometimes the toolchain may involve a full IDE (like Microsoft VC++ Embedded or Hitachi's IDEs), often it is a **collection** of *command-line tools*, especially if the toolchain is hosted on Unix/Linux.
 
 ## refs
+
+[Arm GNU Toolchain](https://developer.arm.com/Tools%20and%20Software/GNU%20Toolchain)
+
+[RISC-V GNU Compiler Toolchain](https://github.com/riscv-collab/riscv-gnu-toolchain)
+
+- [WinLibs - GCC+MinGW-w64 compiler for Windows](https://winlibs.com/)
+- [x86_64-linux-gnu-gcc(1) - Linux man page](https://linux.die.net/man/1/x86_64-linux-gnu-gcc)
+- [arm-linux-gnu-gcc(1) - Linux man page](https://linux.die.net/man/1/arm-linux-gnu-gcc)
+- [aarch64-linux-gnu-gcc(1) - Linux man page](https://linux.die.net/man/1/aarch64-linux-gnu-gcc)
 
 [Buildroot - Making Embedded Linux Easy](https://buildroot.org/) - [wiki](https://en.wikipedia.org/wiki/Buildroot)
 

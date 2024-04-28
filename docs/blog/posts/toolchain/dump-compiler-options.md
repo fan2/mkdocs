@@ -142,7 +142,7 @@ echo // > foo.cpp; cl /nologo /Zc:preprocessor /PD /EHs /TP foo.cpp | sort; rm f
 
 [gcc - How can I tell what standard my C is in? - Software Engineering Stack Exchange](https://softwareengineering.stackexchange.com/questions/313882/how-can-i-tell-what-standard-my-c-is-in)
 
-[Standards (Using the GNU Compiler Collection (GCC))](https://gcc.gnu.org/onlinedocs/gcc/Standards.html)
+[Language Standards Supported by GCC](https://gcc.gnu.org/onlinedocs/gcc/Standards.html)
 
 > 2.1 C Language: The default, if no C language dialect options are given, is `-std=gnu17`.
 > 2.2 C++ Language: The default, if no C++ language dialect options are given, is `-std=gnu++17`.

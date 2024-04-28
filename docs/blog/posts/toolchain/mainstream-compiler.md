@@ -32,7 +32,8 @@ Mainstream Compiler: GNU/GCC, LLVM/Clang, Microsoft Visual Studio.
 
     We strive to provide regular, high quality [releases](https://gcc.gnu.org/releases.html), which we want to work well on a variety of native and cross targets (including GNU/Linux), and encourage everyone to contribute changes or help testing GCC.
 
-[GCC, the GNU Compiler Collection](https://gcc.gnu.org/) - [wiki](https://en.wikipedia.org/wiki/GNU_Compiler_Collection)
+[GCC, the GNU Compiler Collection](https://gcc.gnu.org/) @[git](git://gcc.gnu.org/git/gcc.git) - [wiki](https://en.wikipedia.org/wiki/GNU_Compiler_Collection)
+
 [GCC online documentation](https://gcc.gnu.org/onlinedocs/)
 
 - [Option Summary](https://gcc.gnu.org/onlinedocs/gcc/Option-Summary.html)
@@ -46,22 +47,44 @@ Mainstream Compiler: GNU/GCC, LLVM/Clang, Microsoft Visual Studio.
 
 - [Options Controlling the Preprocessor](https://gcc.gnu.org/onlinedocs/gcc/Preprocessor-Options.html)
 
-compile C/C++:
+#### gcc and g++
 
-- compile C: `cc` / `gcc`
+GNU C Compiler: `gcc` / `cc`
 
-    - c89 - ANSI (1989) C compiler
-    - c99 - ANSI (1999) C compiler
+- `c89` - ANSI (1989) C compiler
+- `c99` - ANSI (1999) C compiler
 
-- compile C++: `c++` / `g++`
+GNU C++ Compiler: `g++` / `c++`
 
-!!! info "gcc or g++?"
+[Invoking G++ - Compiling C++ Programs](https://gcc.gnu.org/onlinedocs/gcc/Invoking-G_002b_002b.html)
 
-    [Invoking G++ - Compiling C++ Programs](https://gcc.gnu.org/onlinedocs/gcc/Invoking-G_002b_002b.html)
+GCC recognizes C++ header/source files with these names and compiles them as C++ programs even if you call the compiler the same way as for compiling C programs (usually with the name `gcc`).
 
-    GCC recognizes C++ header/source files with these names and compiles them as C++ programs even if you call the compiler the same way as for compiling C programs (usually with the name `gcc`).
+However, the use of `gcc` does not add the C++ library. `g++` is a program that calls GCC and automatically specifies linking against the C++ library. It treats ‘.c’, ‘.h’ and ‘.i’ files as C++ source files instead of C source files unless `-x` is used. This program is also useful when precompiling a C header file with a ‘.h’ extension for use in C++ compilations. On many systems, `g++` is also installed with the name `c++`.
 
-    However, the use of `gcc` does not add the C++ library. `g++` is a program that calls GCC and automatically specifies linking against the C++ library. It treats ‘.c’, ‘.h’ and ‘.i’ files as C++ source files instead of C source files unless `-x` is used. This program is also useful when precompiling a C header file with a ‘.h’ extension for use in C++ compilations. On many systems, `g++` is also installed with the name `c++`.
+[What is the difference between g++ and gcc?](https://stackoverflow.com/questions/172587/what-is-the-difference-between-g-and-gcc)
+
+`g++` is roughly equivalent to `gcc -xc++ -lstdc++ -shared-libgcc` (the 1st is a compiler option, the 2nd two are linker options).
+
+- `-xc++`: Specify explicitly the language
+- `-lstdc++`: Search the library named `stdc++`(libstdc++) when linking
+- `-shared-libgcc`: G++ driver automatically adds this to use exceptions for C++ programs
+
+[Difference between GCC and G++](https://www.geeksforgeeks.org/difference-between-gcc-and-g/)
+
+g++ | gcc
+----|-----
+g++ is used to compile C++ program. | gcc is used to compile C program.
+g++ can compile any .c or .cpp files but they will be treated as C++ files only. | gcc can compile any .c or .cpp files but they will be treated as C and C++ respectively.
+Command to compile C++ program through g++ is `g++ fileName.cpp -o binary` | command to compile C program through gcc is `gcc fileName.c -o binary`
+Using g++ to link the object files, files automatically links in the std C++ libraries. | gcc does not do this.
+g++ compiles with more predefined macros. | gcc compiles C++ files with more number of predefined macros. Some of them are `#define __GXX_WEAK__ 1`, `#define __cplusplus 1`, `#define __DEPRECATED 1`, etc
+
+#### GNU binutils
+
+Computer Systems - A Programmer’s Perspective | Chapter 7: Linking - 7.14 Tools for Manipulating Object Files:
+
+> There are a number of tools available on Linux systems to help you understand and manipulate object ﬁles. In particular, the GNU *binutils* package is especially helpful and runs on every Linux platform.
 
 The GNU Binutils are a collection of binary tools. The main ones are:
 
@@ -79,16 +102,22 @@ But they also include:
 - `nm` - Lists symbols from object files.
 - `objcopy` - Copies and translates object files.
 - `objdump` - Displays information from object files.
+
+    - The mother of all binary tools.
+    - Can display *all* of the information in an object ﬁle. 
+    - Its most useful function is *disassembling* the binary instructions in the `.text` section.
+
 - `ranlib` - Generates an index to the contents of an archive.
 - `readelf` - Displays information from any ELF format object file.
+    - Subsumes the functionality of `size` and `nm`.
 - `size` - Lists the section sizes of an object or archive file.
 - `strip` - Discards symbols.
 
-在 Linux(Ubuntu) 下，这些 GNU Binutils 被预装在 `/usr/bin/` 目录下。
+Linux systems also provide the ldd program for manipulating shared libraries:
 
-其他相命令：
+- `ldd` - print shared object dependencies. Lists the shared libraries that an executable needs at run time.
 
-- `ldd` - print shared object dependencies
+在 Linux(Ubuntu) 下，这些 GNU Binutils 一般预装在 `/usr/bin/` 目录下。
 
 ### Language Standards
 
@@ -142,23 +171,37 @@ When G++ is configured to support this option, it allows specification of altern
 
 [The GNU C Library](https://www.gnu.org/software/libc/) - [wiki](https://en.wikipedia.org/wiki/Glibc)
 
-- [sourceware](https://sourceware.org/glibc/)
-- [Index of /gnu/libc](https://ftp.gnu.org/gnu/libc/)
 - [Documentation for the GNU C Library](https://sourceware.org/glibc/manual/)
+- [The GNU C Reference Manual](https://www.gnu.org/software/gnu-c-manual/gnu-c-manual.html)
 
-[libc、glib、glibc 简介](https://www.cnblogs.com/arci/p/14591030.html)，[libc、glibc 和 glib 的关系](https://blog.csdn.net/yasi_xi/article/details/9899599)
-[c - What is the role of libc(glibc) in our linux app?](https://stackoverflow.com/questions/11372872/what-is-the-role-of-libcglibc-in-our-linux-app)
+GNU C sourceware:
 
-glibc 和 libc 都是 Linux 下的 C 函数库：
+- @[sourceware](https://sourceware.org/glibc/), [git](git://sourceware.org/git/glibc.git)
+- [Index of /gnu/libc](https://ftp.gnu.org/gnu/libc/)
 
-1. libc 是 Linux 下的 ANSI C 函数库；
-2. glibc 是 Linux 下的 GUN C 函数库。
+[Linux的libc库](https://blog.csdn.net/Erice_s/article/details/106184779)，[libc、glibc 和 glib 的关系](https://blog.csdn.net/yasi_xi/article/details/9899599)
+[What is the role of libc(glibc) in our linux app?](https://stackoverflow.com/questions/11372872/what-is-the-role-of-libcglibc-in-our-linux-app)
+[Is the development of libc tied with Linux?](https://www.quora.com/Is-the-development-of-libc-tied-with-Linux-I-mean-is-libc-Linux-specific-I-thought-that-libc-is-a-standard-that-is-OS-independent-but-I-am-not-sure-Is-libc-updated-anytime-Linux-changes-its-syscalls)
 
-glibc（即 GNU C Library）本身是GNU旗下的C标准库，后来逐渐成为了Linux的标准C库，而Linux下原来的标准C库 [libc](http://www.musl-libc.org/) 逐渐不再被维护。
+> There is GNU Libc and the C standard library. The former is an implementation of the latter, but there are many other implementations. Even on Linux glibc is not the only option.
 
-??? note "获取查看 glibc 版本号"
+Linux/ubuntu 下可执行 `man libc` 或 `info libc` 查看 [libc(7) - Linux manual page](https://man7.org/linux/man-pages/man7/libc.7.html)。
 
-    [glibc 查看版本号](https://www.cnblogs.com/motadou/p/4473966.html)：
+- [Ubuntu Manpage: libc - overview of standard C libraries on Linux](https://manpages.ubuntu.com/manpages/bionic/man7/libc.7.html)
+
+!!! note "libc vs. glibc"
+
+    The term `libc` is commonly used as a shorthand for the “standard C library”.
+
+    By far the most widely used C library on Linux is the GNU C Library, often referred to as `glibc`.
+
+    In the early to mid 1990s, there was for a while *Linux libc*, a fork of glibc 1.x created by Linux developers who felt that glibc development at the time was not sufficing for the needs of Linux. Often, this library was referred to (ambiguously) as just `libc`.
+
+    However, notwithstanding the original motivations of the Linux libc effort, by the time glibc 2.0 was released (in 1997), it was clearly superior to Linux libc, and all major Linux distributions that had been using Linux libc soon **switched** back to `glibc`.
+
+??? info "获取查看 glibc 版本号"
+
+    [glibc 查看版本号](https://www.cnblogs.com/motadou/p/4473966.html), [Linux(Ubuntu/CentOS) 下查看 GLIBC 版本](https://blog.csdn.net/gatieme/article/details/108945425)
 
     通过 `getconf` 命令获取 GNU_LIBC_VERSION：
 
@@ -209,7 +252,9 @@ The GCC project includes an implementation of the C++ Standard Library called `l
 
 [GCC Debugging Options](https://gcc.gnu.org/onlinedocs/gcc/Debugging-Options.html)
 
-[GNU Hurd / GNU GDB](https://www.gnu.org/savannah-checkouts/gnu/hurd/gdb.html) - [GDB](https://www.sourceware.org/gdb/) - [docs](https://sourceware.org/gdb/download/onlinedocs/) - [wiki](https://en.wikipedia.org/wiki/GNU_Debugger)
+[GNU Hurd / GNU GDB](https://www.gnu.org/savannah-checkouts/gnu/hurd/gdb.html) - [docs](https://sourceware.org/gdb/download/onlinedocs/) - [wiki](https://en.wikipedia.org/wiki/GNU_Debugger)
+
+- @[sourceware](https://www.sourceware.org/gdb/), [git](git://sourceware.org/git/binutils-gdb.git)
 
 [GDB online](https://www.onlinegdb.com/)
 
@@ -273,105 +318,138 @@ LLVM's Implementation of Three-Phase Design:
 #### llvm-gcc/llvm-g++
 
 ```Shell
+$ which clang
+/usr/bin/clang
+
+# /usr/bin/clang --version
 $ clang --version
 Apple clang version 15.0.0 (clang-1500.3.9.4)
 Target: arm64-apple-darwin23.5.0
 Thread model: posix
 InstalledDir: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin
 
-$ which clang
-/usr/bin/clang
-
-$ clang++ --version
-Apple clang version 15.0.0 (clang-1500.3.9.4)
-Target: arm64-apple-darwin23.5.0
-Thread model: posix
-InstalledDir: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin
-
-$ which clang++
-/usr/bin/clang++
+# clang++ 是 clang 的替身软链（symbolic link）
+$ ls -l /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin | grep g++
+lrwxr-xr-x  1 root  wheel          5 Mar  6 13:04 clang++ -> clang
 ```
 
-在 macOS 中，`gcc` 以某种方式指向 llvm-gcc 编译器，g++ 亦如此。
+在 macOS 中，gcc 以某种方式指向 `llvm-gcc` 编译器。`llvm-gcc` 是 c/c++/oc 的编译器，用了 gcc 前端和命令行界面的 llvm。
 
-> In Apple's version of GCC, both cc and gcc are actually symbolic links to the llvm-gcc compiler. Similarly, c++ and g++ are links to llvm-g++.
+> llvm-gcc is a C, C++, Objective-C and Objective-C++ compiler.
+> llvm-gcc uses gcc front-end and gcc's command line interface.
+> In Apple's version of GCC, both cc and gcc are actually *symbolic links* to the llvm-gcc compiler.
 
-`llvm-gcc` 是 c/c++/oc 的编译器，用了 gcc 前端和命令行界面的 llvm。
+g++ 则以某种方式指向 `llvm-g++` 编译器。
 
-> llvm-gcc is a C, C++, Objective-C and Objective-C++ compiler. llvm-g++ is a compiler driver for C++. llvm-gcc uses gcc front-end and gcc's command line interface.
+> llvm-g++ is a compiler driver for C++.
+> Similarly, c++ and g++ are links to llvm-g++.
+
+由 `gcc --version` 和 `g++ --version` 输出的 InstalledDir 可以看出，gcc/g++ 实际上是 XcodeDefault.xctoolchain 下 clang/clang++ 的 [shims or wrapper](http://stackoverflow.com/questions/9329243/xcode-4-4-and-later-install-command-line-tools/) executables。
 
 ```Shell
+$ xcrun -f gcc
+/Applications/Xcode.app/Contents/Developer/usr/bin/gcc
 $ gcc --version
 Apple clang version 15.0.0 (clang-1500.3.9.4)
 Target: arm64-apple-darwin23.5.0
 Thread model: posix
 InstalledDir: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin
 
-$ which llvm-gcc
-/usr/bin/llvm-gcc
-
-$ which gcc
-/usr/bin/gcc
-```
-
-```Shell
+$ xcrun -f g++
+/Applications/Xcode.app/Contents/Developer/usr/bin/g++
 $ g++ --version
 Apple clang version 15.0.0 (clang-1500.3.9.4)
 Target: arm64-apple-darwin23.5.0
 Thread model: posix
 InstalledDir: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin
 
-$ which llvm-g++
-/usr/bin/llvm-g++
-
-$ which g++
-/usr/bin/g++
-```
-
-由 `gcc --version` 和 `g++ --version` 输出的 InstalledDir 可以看出，gcc/g++ 实际上是 XcodeDefault.xctoolchain 下 clang/clang++ 的 [shims or wrapper](http://stackoverflow.com/questions/9329243/xcode-4-4-and-later-install-command-line-tools/) executables。
-
-cc、c++ 均为 clang 的软链：
-
-```Shell
-$ xcrun -f cpp
-/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cpp
-
-$ cpp --version
-Apple clang version 15.0.0 (clang-1500.3.9.4)
-Target: arm64-apple-darwin23.5.0
-Thread model: posix
-InstalledDir: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin
-
-$ which cpp
-/usr/bin/cpp
-
 $ xcrun -f cc
 /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cc
-
-# print the path of the active developer directory
-xcdevpath=`xcode-select -p` # /Applications/Xcode.app/Contents/Developer
-$ readlink $xcdevpath/Toolchains/XcodeDefault.xctoolchain/usr/bin/cc
-clang
-
+$ xcrun -f cpp
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cpp
 $ xcrun -f c++
 /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++
-
-$ readlink $xcdevpath/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++
-clang
 ```
 
-#### llvm-gcc vs. GNU/gcc
-
-macOS 下有四个 */usr/bin 目录下散落着 llvm/clang 工具链：
+macOS 下 llvm/clang 的 compiler toolchain Binutils 散落在四个 */usr/bin 目录下：
 
 1. /usr/bin
-2. /Library/Developer/CommandLineTools/usr/bin - ref [CommandLineTools](https://osxdaily.com/2014/02/12/install-command-line-tools-mac-os-x/)
-3. $xcdevpath/usr/bin
-4. $xcdevpath/Toolchains/XcodeDefault.xctoolchain/usr/bin
+2. /Library/Developer/CommandLineTools/usr/bin
+3. /Applications/Xcode.app/Contents/Developer/usr/bin
+4. /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin
+
+对四个 */usr/bin 目录分支执行 `ls -l` 过滤出 clang, cc/gcc, g++/c++ 相关命令。
 
 ```Shell
 usrbin=/usr/bin
 cmdbin=/Library/Developer/CommandLineTools/usr/bin
+xcdevpath=`xcode-select -p` # /Applications/Xcode.app/Contents/Developer
+xcdevbin=$xcdevpath/usr/bin
+xctcbin=$xcdevpath/Toolchains/XcodeDefault.xctoolchain/usr/bin
+
+ls -l $usrbin | grep -E "clang|(cc|gcc)$|[g|c]\+\+"
+ls -l $cmdbin | grep -E "clang|(cc|gcc)$|[g|c]\+\+"
+ls -l $xcdevbin | grep -E "clang|(cc|gcc)$|[g|c]\+\+"
+ls -l $xctcbin | grep -E "clang|(cc|gcc)$|[g|c]\+\+"
+```
+
+=== "usrbin"
+
+    ```Shell
+    $ ls -l $usrbin | grep -E "clang|(cc|gcc)$|[g|c]\+\+"
+    -rwxr-xr-x  77 root   wheel    119008 Apr 20 12:52 c++
+    -rwxr-xr-x  77 root   wheel    119008 Apr 20 12:52 cc
+    -rwxr-xr-x  77 root   wheel    119008 Apr 20 12:52 clang
+    -rwxr-xr-x  77 root   wheel    119008 Apr 20 12:52 clang++
+    -rwxr-xr-x  77 root   wheel    119008 Apr 20 12:52 g++
+    -rwxr-xr-x  77 root   wheel    119008 Apr 20 12:52 gcc
+    -rwxr-xr-x  77 root   wheel    119008 Apr 20 12:52 llvm-g++
+    -rwxr-xr-x  77 root   wheel    119008 Apr 20 12:52 llvm-gcc
+    ```
+
+=== "cmdbin"
+
+    ```Shell
+    $ ls -l $cmdbin | grep -E "clang|(cc|gcc)$|[g|c]\+\+"
+    lrwxr-xr-x  1 root  wheel          5 Mar  8 00:55 c++ -> clang
+    lrwxr-xr-x  1 root  wheel          5 Mar  8 00:55 cc -> clang
+    -rwxr-xr-x  1 root  wheel  251484800 Feb 23 10:06 clang
+    lrwxr-xr-x  1 root  wheel          5 Mar  8 00:55 clang++ -> clang
+    lrwxr-xr-x  1 root  wheel          3 Mar  8 00:55 g++ -> gcc
+    -rwxr-xr-x  1 root  admin     101088 Feb 23 10:06 gcc
+    ```
+
+=== "xcdevbin"
+
+    ```Shell
+    $ ls -l $xcdevbin | grep -E "clang|(cc|gcc)$|[g|c]\+\+"
+    lrwxr-xr-x  1 root  wheel         3 Mar  6 13:05 g++ -> gcc
+    -rwxr-xr-x  1 root  wheel    101088 Feb 23 10:06 gcc
+    ```
+
+=== "xctcbin"
+
+    ```Shell
+    $ ls -l $xctcbin | grep -E "clang|(cc|gcc)$|[g|c]\+\+"
+    lrwxr-xr-x  1 root  wheel          5 Mar  6 13:04 c++ -> clang
+    lrwxr-xr-x  1 root  wheel          5 Mar  6 13:04 cc -> clang
+    -rwxr-xr-x  1 root  wheel  251484800 Feb 23 10:06 clang
+    lrwxr-xr-x  1 root  wheel          5 Mar  6 13:04 clang++ -> clang
+    ```
+
+从输出结果来看，有些是二进制实体文件，有些是软链替身。四个目录实际上是两套工具链：
+
+1. 系统 /usr/bin 下的 clang++, gcc/cc, g++/c++ 和 clang 是同一份实体（size 和 MD5 一致）。
+2. Xcode Command Line Tools（cmdbin）下，clang++ 和 cc/c++ 均指向 clang ，g++ 指向 gcc。
+
+#### llvm-gcc vs. gnu/gcc
+
+执行以下 Shell 命令，可以查看散落在四个 */usr/bin 目录下的 Binutils：
+
+```Shell
+usrbin=/usr/bin
+cmdbin=/Library/Developer/CommandLineTools/usr/bin
+xcdevpath=`xcode-select -p` # /Applications/Xcode.app/Contents/Developer
 xcdevbin=$xcdevpath/usr/bin
 xctcbin=$xcdevpath/Toolchains/XcodeDefault.xctoolchain/usr/bin
 
