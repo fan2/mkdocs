@@ -417,7 +417,10 @@ The `/std:c++14` option enables C++14 standard-specific features implemented by 
 #include "..." search starts here:
 #include <...> search starts here:
  /usr/local/include
- ...
+ /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/15.0.0/include
+ /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include
+ /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include
+ /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks (framework directory)
 End of search list.
 ```
 
@@ -435,6 +438,48 @@ $ echo | clang -x c++ -Wp,-v -stdlib=libc++ -fsyntax-only -
 
 1. [Preprocessor Options](https://gcc.gnu.org/onlinedocs/gcc/Preprocessor-Options.html) - `-Wp,option` : to bypass the compiler driver and pass option directly through to the preprocessor.
 2. [Warning Options](https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html) - `-fsyntax-only` : Check the code for syntax errors, but don’t do anything beyond that.
+
+=== "macOS <stdio.h\> / <iostream\>"
+
+    ```Shell
+    # gcc stdc.c -E -### : llvm-gcc 调用 clang -cc1 预处理
+    $ gcc stdc.c -E -v
+    /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/stdio.h
+
+    # g++ stdcpp.cpp -E -### : llvm-g++ 也是调用 clang -cc1 预处理
+    $ g++ stdcpp.cpp -E -v
+    /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/c++/v1/iostream
+    ```
+
+=== "rpi4b-ubuntu <stdio.h\> / <iostream\>"
+
+    ```Shell
+    # gcc stdc.c -E -### : 调用 /usr/lib/gcc/aarch64-linux-gnu/11/cc1 -E 预处理
+    $ gcc stdc.c -E -v
+
+    #include "..." search starts here:
+    #include <...> search starts here:
+     /usr/lib/gcc/aarch64-linux-gnu/11/include
+     /usr/local/include
+     /usr/include/aarch64-linux-gnu
+     /usr/include
+    End of search list.
+
+    /usr/include/stdio.h
+
+    COMPILER_PATH=/usr/lib/gcc/aarch64-linux-gnu/11/:/usr/lib/gcc/aarch64-linux-gnu/11/:/usr/lib/gcc/aarch64-linux-gnu/:/usr/lib/gcc/aarch64-linux-gnu/11/:/usr/lib/gcc/aarch64-linux-gnu/
+    LIBRARY_PATH=/usr/lib/gcc/aarch64-linux-gnu/11/:/usr/lib/gcc/aarch64-linux-gnu/11/../../../aarch64-linux-gnu/:/usr/lib/gcc/aarch64-linux-gnu/11/../../../../lib/:/lib/aarch64-linux-gnu/:/lib/../lib/:/usr/lib/aarch64-linux-gnu/:/usr/lib/../lib/:/usr/lib/gcc/aarch64-linux-gnu/11/../../../:/lib/:/usr/lib/
+    COLLECT_GCC_OPTIONS='-E' '-v' '-mlittle-endian' '-mabi=lp64'
+
+    # g++ stdcpp.cpp -E -### : 调用 /usr/lib/gcc/aarch64-linux-gnu/11/cc1plus -E 预处理
+    $ g++ stdcpp.cpp -E -v
+
+    /usr/include/c++/11/iostream
+
+    COMPILER_PATH=/usr/lib/gcc/aarch64-linux-gnu/11/:/usr/lib/gcc/aarch64-linux-gnu/11/:/usr/lib/gcc/aarch64-linux-gnu/:/usr/lib/gcc/aarch64-linux-gnu/11/:/usr/lib/gcc/aarch64-linux-gnu/
+    LIBRARY_PATH=/usr/lib/gcc/aarch64-linux-gnu/11/:/usr/lib/gcc/aarch64-linux-gnu/11/../../../aarch64-linux-gnu/:/usr/lib/gcc/aarch64-linux-gnu/11/../../../../lib/:/lib/aarch64-linux-gnu/:/lib/../lib/:/usr/lib/aarch64-linux-gnu/:/usr/lib/../lib/:/usr/lib/gcc/aarch64-linux-gnu/11/../../../:/lib/:/usr/lib/
+    COLLECT_GCC_OPTIONS='-E' '-v' '-shared-libgcc' '-mlittle-endian' '-mabi=lp64'
+    ```
 
 ---
 
@@ -481,18 +526,51 @@ clang: error: unable to execute command: Segmentation fault: 11
 clang: error: linker command failed due to signal (use -v to see invocation)
 ```
 
-Ubuntu 下执行 gcc 命令，输出调用 collect2 和 ld 链接，最终报错：
+!!! note "macOS 编译链接 C/C++"
 
-```Shell title="gcc -Xlinker -v @rpi4b-ubuntu"
-$ gcc -Xlinker -v /dev/null
-collect2 version 11.4.0
-/usr/bin/ld -plugin /usr/lib/gcc/aarch64-linux-gnu/11/liblto_plugin.so -plugin-opt=/usr/lib/gcc/aarch64-linux-gnu/11/lto-wrapper -plugin-opt=-fresolution=/tmp/cc2Mlb39.res -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s --build-id --eh-frame-hdr --hash-style=gnu --as-needed -dynamic-linker /lib/ld-linux-aarch64.so.1 -X -EL -maarch64linux --fix-cortex-a53-843419 -pie -z now -z relro /usr/lib/gcc/aarch64-linux-gnu/11/../../../aarch64-linux-gnu/Scrt1.o /usr/lib/gcc/aarch64-linux-gnu/11/../../../aarch64-linux-gnu/crti.o /usr/lib/gcc/aarch64-linux-gnu/11/crtbeginS.o -L/usr/lib/gcc/aarch64-linux-gnu/11 -L/usr/lib/gcc/aarch64-linux-gnu/11/../../../aarch64-linux-gnu -L/usr/lib/gcc/aarch64-linux-gnu/11/../../../../lib -L/lib/aarch64-linux-gnu -L/lib/../lib -L/usr/lib/aarch64-linux-gnu -L/usr/lib/../lib -L/usr/lib/gcc/aarch64-linux-gnu/11/../../.. -v -lgcc --push-state --as-needed -lgcc_s --pop-state -lc -lgcc --push-state --as-needed -lgcc_s --pop-state /usr/lib/gcc/aarch64-linux-gnu/11/crtendS.o /usr/lib/gcc/aarch64-linux-gnu/11/../../../aarch64-linux-gnu/crtn.o
-GNU ld (GNU Binutils for Ubuntu) 2.38
-/usr/bin/ld: /usr/lib/gcc/aarch64-linux-gnu/11/../../../aarch64-linux-gnu/Scrt1.o: in function `_start':
-(.text+0x1c): undefined reference to `main'
-/usr/bin/ld: (.text+0x20): undefined reference to `main'
-collect2: error: ld returned 1 exit status
-```
+    macOS 上编译链接 C 代码：dry-run: `gcc stdc.c -###`；compile: `gcc stdc.c -o c.out -v`。
+    macOS 上编译链接 C++ 代码：dry-run: `gcc stdcpp.cpp -###`；compile: `g++ stdcpp.cpp -o cpp.out -v`。
+
+    - gcc/g++ 都只调用了 `clang cc1` 和 `ld` 两步命令。
+    - gcc std.c 链接 `-lSystem`；g++ stdcpp.cpp 链接 `-lSystem` 和 `-lc++`（libc++）。
+    - 执行 `otool -L c.out` / `otool -L cpp.out` 可查看依赖的动态库（dylib）。
+
+Ubuntu 下执行 gcc/g++ 命令，调用 collect2 和 ld 链接，最终报错：
+
+=== "gcc collect2 -lc"
+
+    ```Shell
+    $ gcc -Xlinker -v /dev/null
+    collect2 version 11.4.0
+    /usr/bin/ld -plugin /usr/lib/gcc/aarch64-linux-gnu/11/liblto_plugin.so -plugin-opt=/usr/lib/gcc/aarch64-linux-gnu/11/lto-wrapper -plugin-opt=-fresolution=/tmp/cc2Mlb39.res -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lgcc_s --build-id --eh-frame-hdr --hash-style=gnu --as-needed -dynamic-linker /lib/ld-linux-aarch64.so.1 -X -EL -maarch64linux --fix-cortex-a53-843419 -pie -z now -z relro /usr/lib/gcc/aarch64-linux-gnu/11/../../../aarch64-linux-gnu/Scrt1.o /usr/lib/gcc/aarch64-linux-gnu/11/../../../aarch64-linux-gnu/crti.o /usr/lib/gcc/aarch64-linux-gnu/11/crtbeginS.o -L/usr/lib/gcc/aarch64-linux-gnu/11 -L/usr/lib/gcc/aarch64-linux-gnu/11/../../../aarch64-linux-gnu -L/usr/lib/gcc/aarch64-linux-gnu/11/../../../../lib -L/lib/aarch64-linux-gnu -L/lib/../lib -L/usr/lib/aarch64-linux-gnu -L/usr/lib/../lib -L/usr/lib/gcc/aarch64-linux-gnu/11/../../.. -v -lgcc --push-state --as-needed -lgcc_s --pop-state -lc -lgcc --push-state --as-needed -lgcc_s --pop-state /usr/lib/gcc/aarch64-linux-gnu/11/crtendS.o /usr/lib/gcc/aarch64-linux-gnu/11/../../../aarch64-linux-gnu/crtn.o
+    GNU ld (GNU Binutils for Ubuntu) 2.38
+    /usr/bin/ld: /usr/lib/gcc/aarch64-linux-gnu/11/../../../aarch64-linux-gnu/Scrt1.o: in function `_start':
+    (.text+0x1c): undefined reference to `main'
+    /usr/bin/ld: (.text+0x20): undefined reference to `main'
+    collect2: error: ld returned 1 exit status
+    ```
+
+=== "g++ collect2 -lstdc++"
+
+    ```Shell
+    $ g++ -x c++ -Xlinker -v /dev/null
+    collect2 version 11.4.0
+    /usr/bin/ld -plugin /usr/lib/gcc/aarch64-linux-gnu/11/liblto_plugin.so -plugin-opt=/usr/lib/gcc/aarch64-linux-gnu/11/lto-wrapper -plugin-opt=-fresolution=/tmp/ccx8f9Ks.res -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc -plugin-opt=-pass-through=-lc -plugin-opt=-pass-through=-lgcc_s -plugin-opt=-pass-through=-lgcc --build-id --eh-frame-hdr --hash-style=gnu --as-needed -dynamic-linker /lib/ld-linux-aarch64.so.1 -X -EL -maarch64linux --fix-cortex-a53-843419 -pie -z now -z relro /usr/lib/gcc/aarch64-linux-gnu/11/../../../aarch64-linux-gnu/Scrt1.o /usr/lib/gcc/aarch64-linux-gnu/11/../../../aarch64-linux-gnu/crti.o /usr/lib/gcc/aarch64-linux-gnu/11/crtbeginS.o -L/usr/lib/gcc/aarch64-linux-gnu/11 -L/usr/lib/gcc/aarch64-linux-gnu/11/../../../aarch64-linux-gnu -L/usr/lib/gcc/aarch64-linux-gnu/11/../../../../lib -L/lib/aarch64-linux-gnu -L/lib/../lib -L/usr/lib/aarch64-linux-gnu -L/usr/lib/../lib -L/usr/lib/gcc/aarch64-linux-gnu/11/../../.. -v /tmp/ccqgv1oL.o -lstdc++ -lm -lgcc_s -lgcc -lc -lgcc_s -lgcc /usr/lib/gcc/aarch64-linux-gnu/11/crtendS.o /usr/lib/gcc/aarch64-linux-gnu/11/../../../aarch64-linux-gnu/crtn.o
+    GNU ld (GNU Binutils for Ubuntu) 2.38
+    /usr/bin/ld: /usr/lib/gcc/aarch64-linux-gnu/11/../../../aarch64-linux-gnu/Scrt1.o: in function `_start':
+    (.text+0x1c): undefined reference to `main'
+    /usr/bin/ld: (.text+0x20): undefined reference to `main'
+    collect2: error: ld returned 1 exit status
+    ```
+
+!!! note "Ubuntu 编译链接 C/C++"
+
+    ubuntu 上编译链接 C 代码：dry-run: `gcc stdc.c -###`；compile: `gcc stdc.c -o c.out -v`。
+    ubuntu 上编译链接 C++ 代码：dry-run: `gcc stdcpp.cpp -###`；compile: `g++ stdcpp.cpp -o cpp.out -v`。
+
+    - gcc 依次调用 cc1->as->collect2，collect2 内部调用 ld 完成链接。
+    - g++ 依次调用 cc1plus->as->collect2，collect2 内部调用 ld 完成链接。
+    - gcc std.c 链接 `-lc`（[g]libc）；g++ stdcpp.cpp 链接 `-lc`,`-lm`（math）,`-lstdc++`（libstdc++）。
 
 ---
 
@@ -515,113 +593,6 @@ VC2015 的库文件 LIB 路径为：
 - [How to find out the dynamic libraries executables loads when run? - Unix & Linux Stack Exchange](https://unix.stackexchange.com/questions/120015/how-to-find-out-the-dynamic-libraries-executables-loads-when-run)
 
 [c++ - How do you find what version of libstdc++ library is installed on your linux machine? - Stack Overflow](https://stackoverflow.com/questions/10354636/how-do-you-find-what-version-of-libstdc-library-is-installed-on-your-linux-mac)
-
-### readelf
-
-`readelf -d`（--dynamic）: Displays the contents of the file's dynamic section, if it has one.
-
-> 其中 NEEDED 标记的是依赖的（动态）库：libc.so.6, libstdc++.so.6。
-
-=== "readelf -d c.out"
-
-    ```Shell
-    rpi4b-ubuntu $ readelf -d c.out
-
-    Dynamic section at offset 0xda0 contains 27 entries:
-      Tag        Type                         Name/Value
-     0x0000000000000001 (NEEDED)             Shared library: [libc.so.6]
-    ```
-
-=== "readelf -d cpp.out"
-
-    ```Shell
-    rpi4b-ubuntu $ readelf -d cpp.out
-
-    Dynamic section at offset 0xd60 contains 28 entries:
-      Tag        Type                         Name/Value
-     0x0000000000000001 (NEEDED)             Shared library: [libstdc++.so.6]
-     0x0000000000000001 (NEEDED)             Shared library: [libc.so.6]
-    ```
-
-### objdump
-
-`objdump -x`（--all-headers）: Display all available header information, including the symbol table and relocation entries.
-
-1. Dynamic Section: 中的 NEEDED 为依赖的（动态）库：libc.so.6, libstdc++.so.6。
-2. Version References: 中的 required 为依赖的（动态）库：GLIBC_2.17/GLIBC_2.34,GLIBCXX_3.4。
-3. 依赖的符号后面也有 @GLIBC_2.17/@GLIBC_2.34,@GLIBCXX_3.4 标记。
-
-=== "objdump -x c.out"
-
-    ```Shell
-    rpi4b-ubuntu $ objdump -x c.out
-
-    Dynamic Section:
-      NEEDED               libc.so.6
-
-    Version References:
-      required from libc.so.6:
-        0x06969197 0x00 03 GLIBC_2.17
-        0x069691b4 0x00 02 GLIBC_2.34
-
-    SYMBOL TABLE:
-
-    0000000000000000       F *UND*	0000000000000000              __libc_start_main@GLIBC_2.34
-    0000000000000000       F *UND*	0000000000000000              printf@GLIBC_2.17
-    ```
-
-=== "objdump -x cpp.out"
-
-    ```Shell
-    rpi4b-ubuntu $ objdump -x cpp.out
-
-    Dynamic Section:
-      NEEDED               libstdc++.so.6
-      NEEDED               libc.so.6
-
-    Version References:
-      required from libc.so.6:
-        0x069691b4 0x00 04 GLIBC_2.34
-        0x06969197 0x00 03 GLIBC_2.17
-      required from libstdc++.so.6:
-        0x08922974 0x00 02 GLIBCXX_3.4
-
-    SYMBOL TABLE:
-
-    0000000000000000       O *UND*	0000000000000000              _ZSt4cout@GLIBCXX_3.4
-    ```
-
-### nm
-
-`nm` - list symbols from object files.
-
-> 依赖的符号后面也有 @GLIBC_2.17/@GLIBC_2.34,@GLIBCXX_3.4 标记。
-
-=== "nm c.out"
-
-    ```Shell
-    rpi4b-ubuntu $ nm c.out
-
-    0000000000000790 R _IO_stdin_used
-                     w _ITM_deregisterTMCloneTable
-                     w _ITM_registerTMCloneTable
-                     U __libc_start_main@GLIBC_2.34
-    0000000000000754 T main
-                     U printf@GLIBC_2.17
-    ```
-
-=== "nm cpp.out"
-
-    ```Shell
-    rpi4b-ubuntu $ nm cpp.out
-    0000000000000a10 t _Z41__static_initialization_and_destruction_0ii
-                     U _ZNSolsEl@GLIBCXX_3.4
-                     U _ZNSolsEPFRSoS_E@GLIBCXX_3.4
-                     U _ZNSt8ios_base4InitC1Ev@GLIBCXX_3.4
-                     U _ZNSt8ios_base4InitD1Ev@GLIBCXX_3.4
-                     U _ZSt4cout@GLIBCXX_3.4
-                     U _ZSt4endlIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_@GLIBCXX_3.4
-    ```
 
 ### ldd
 
@@ -685,9 +656,11 @@ ldconfig -p 打印缓存中的动态共享库 libc.so.6, libstdc++.so.6。
     	libstdc++.so.6 (libc6,AArch64) => /lib/aarch64-linux-gnu/libstdc++.so.6
     ```
 
-### file
+### objdump
 
-执行 `file` 命令查看 libc.so 文件属性：
+#### -f
+
+执行 `file` 命令查看 libc.so 文件属性（determine file type）：
 
 ```Shell
 $ file /lib/aarch64-linux-gnu/libc.so.6
@@ -703,3 +676,133 @@ $ file /lib/aarch64-linux-gnu/libstdc++.so.6
 $ file /lib/aarch64-linux-gnu/libstdc++.so.6.0.30
 /lib/aarch64-linux-gnu/libstdc++.so.6.0.30: ELF 64-bit LSB shared object, ARM aarch64, version 1 (GNU/Linux), dynamically linked, BuildID[sha1]=a012b2bb77110e84b266cd7425b50e57427abb02, stripped
 ```
+
+`objdump -a` 查看 archive header；`objdump -f` 查看 file header。
+
+- `-a`, --archive-headers    Display archive header information
+- `-f`, --file-headers       Display the contents of the overall file header
+
+```Shell
+objdump -f /lib/aarch64-linux-gnu/libc.so.6
+
+/lib/aarch64-linux-gnu/libc.so.6:     file format elf64-littleaarch64
+architecture: aarch64, flags 0x00000150:
+HAS_SYMS, DYNAMIC, D_PAGED
+start address 0x00000000000275e0
+
+objdump -f /lib/aarch64-linux-gnu/libstdc++.so.6
+
+/lib/aarch64-linux-gnu/libstdc++.so.6:     file format elf64-littleaarch64
+architecture: aarch64, flags 0x00000150:
+HAS_SYMS, DYNAMIC, D_PAGED
+start address 0x0000000000000000
+```
+
+#### -x
+
+`objdump -x`（--all-headers）: Display all available header information, including the symbol table and relocation entries.
+
+1. Dynamic Section: 中的 NEEDED 为依赖的（动态）库：libc.so.6, libstdc++.so.6。
+2. Version References: 中的 required 为依赖的（动态）库：GLIBC_2.17/GLIBC_2.34,GLIBCXX_3.4。
+3. 依赖的符号后面也有 @GLIBC_2.17/@GLIBC_2.34,@GLIBCXX_3.4 标记。
+
+=== "objdump -x c.out"
+
+    ```Shell
+    rpi4b-ubuntu $ objdump -x c.out
+
+    Dynamic Section:
+      NEEDED               libc.so.6
+
+    Version References:
+      required from libc.so.6:
+        0x06969197 0x00 03 GLIBC_2.17
+        0x069691b4 0x00 02 GLIBC_2.34
+
+    SYMBOL TABLE:
+
+    0000000000000000       F *UND*	0000000000000000              __libc_start_main@GLIBC_2.34
+    0000000000000000       F *UND*	0000000000000000              printf@GLIBC_2.17
+    ```
+
+=== "objdump -x cpp.out"
+
+    ```Shell
+    rpi4b-ubuntu $ objdump -x cpp.out
+
+    Dynamic Section:
+      NEEDED               libstdc++.so.6
+      NEEDED               libc.so.6
+
+    Version References:
+      required from libc.so.6:
+        0x069691b4 0x00 04 GLIBC_2.34
+        0x06969197 0x00 03 GLIBC_2.17
+      required from libstdc++.so.6:
+        0x08922974 0x00 02 GLIBCXX_3.4
+
+    SYMBOL TABLE:
+
+    0000000000000000       O *UND*	0000000000000000              _ZSt4cout@GLIBCXX_3.4
+    ```
+
+### readelf
+
+`readelf -h`: Display the ELF file header.
+`readelf -a`: Displays the complete structure of an object ﬁle.
+`readelf -d`（--dynamic）: Displays the contents of the file's dynamic section, if it has one.
+
+> 其中 NEEDED 标记的是依赖的（动态）库：libc.so.6, libstdc++.so.6。
+
+=== "readelf -d c.out"
+
+    ```Shell
+    rpi4b-ubuntu $ readelf -d c.out
+
+    Dynamic section at offset 0xda0 contains 27 entries:
+      Tag        Type                         Name/Value
+     0x0000000000000001 (NEEDED)             Shared library: [libc.so.6]
+    ```
+
+=== "readelf -d cpp.out"
+
+    ```Shell
+    rpi4b-ubuntu $ readelf -d cpp.out
+
+    Dynamic section at offset 0xd60 contains 28 entries:
+      Tag        Type                         Name/Value
+     0x0000000000000001 (NEEDED)             Shared library: [libstdc++.so.6]
+     0x0000000000000001 (NEEDED)             Shared library: [libc.so.6]
+    ```
+
+### nm
+
+`nm` - list symbols from object files.
+
+> 依赖的符号后面也有 @GLIBC_2.17/@GLIBC_2.34,@GLIBCXX_3.4 标记。
+
+=== "nm c.out"
+
+    ```Shell
+    rpi4b-ubuntu $ nm c.out
+
+    0000000000000790 R _IO_stdin_used
+                     w _ITM_deregisterTMCloneTable
+                     w _ITM_registerTMCloneTable
+                     U __libc_start_main@GLIBC_2.34
+    0000000000000754 T main
+                     U printf@GLIBC_2.17
+    ```
+
+=== "nm cpp.out"
+
+    ```Shell
+    rpi4b-ubuntu $ nm cpp.out
+    0000000000000a10 t _Z41__static_initialization_and_destruction_0ii
+                     U _ZNSolsEl@GLIBCXX_3.4
+                     U _ZNSolsEPFRSoS_E@GLIBCXX_3.4
+                     U _ZNSt8ios_base4InitC1Ev@GLIBCXX_3.4
+                     U _ZNSt8ios_base4InitD1Ev@GLIBCXX_3.4
+                     U _ZSt4cout@GLIBCXX_3.4
+                     U _ZSt4endlIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_@GLIBCXX_3.4
+    ```

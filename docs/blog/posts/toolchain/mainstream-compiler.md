@@ -60,7 +60,7 @@ GNU C++ Compiler: `g++` / `c++`
 
 GCC recognizes C++ header/source files with these names and compiles them as C++ programs even if you call the compiler the same way as for compiling C programs (usually with the name `gcc`).
 
-However, the use of `gcc` does not add the C++ library. `g++` is a program that calls GCC and automatically specifies linking against the C++ library. It treats ‘.c’, ‘.h’ and ‘.i’ files as C++ source files instead of C source files unless `-x` is used. This program is also useful when precompiling a C header file with a ‘.h’ extension for use in C++ compilations. On many systems, `g++` is also installed with the name `c++`.
+However, the use of `gcc` does not add the C++ library. `g++` is a program that calls GCC and automatically specifies *linking* against the C++ library. It treats ‘.c’, ‘.h’ and ‘.i’ files as C++ source files instead of C source files unless `-x` is used. This program is also useful when precompiling a C header file with a ‘.h’ extension for use in C++ compilations. On many systems, `g++` is also installed with the name `c++`.
 
 [What is the difference between g++ and gcc?](https://stackoverflow.com/questions/172587/what-is-the-difference-between-g-and-gcc)
 
@@ -156,16 +156,35 @@ When G++ is configured to support this option, it allows specification of altern
 
     the difference between the two options is whether GNU extensions that violates the C++ standard are **enabled** or not. The GNU extensions are described [here](https://gcc.gnu.org/onlinedocs/gcc/C_002b_002b-Extensions.html).
 
-使用 gcc 编译链接的时候，默认是采用动态链接的方式。如果要指定 [静态链接](https://www.cnblogs.com/motadou/p/4471088.html)，有两种方式：
+使用 gcc 编译链接的时候，默认是采用动态链接的方式。如果要指定静态链接，有两种方式：
 
 1. 使用 `-static` 选项，开启全静态链接。
 2. 使用 `-Wl,-Bstatic`，`-Wl,-Bdynamic` 选项，将部分动态库设置为静态链接。
 
-参考 GCC [Link Options](https://gcc.gnu.org/onlinedocs/gcc/Link-Options.html) 相关选项：
+参考 [gcc 全静态链接](https://www.cnblogs.com/motadou/p/4471088.html)，[Q: linker "-static" flag usage](https://gcc.gnu.org/legacy-ml/gcc/2000-05/msg00517.html) 和 GCC [Link Options](https://gcc.gnu.org/onlinedocs/gcc/Link-Options.html) 中的相关选项说明。
 
 - -static
 - -static-libgcc
 - -static-libstdc++
+
+一些抑制/定制默认链接的选项：
+
+```Shell
+-nostartfiles
+Do not use the standard system startup files when linking.
+
+-nodefaultlibs
+Do not use the standard system libraries when linking.
+
+-nolibc
+Do not use the C library or system libraries tightly coupled with it when linking.
+
+-nostdlib
+Do not use the standard system startup files or libraries when linking.
+
+-nostdlib++
+Do not implicitly link with standard C++ libraries.
+```
 
 #### glibc
 
