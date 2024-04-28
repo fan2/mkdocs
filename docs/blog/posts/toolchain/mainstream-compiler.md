@@ -80,6 +80,44 @@ Command to compile C++ program through g++ is `g++ fileName.cpp -o binary` | com
 Using g++ to link the object files, files automatically links in the std C++ libraries. | gcc does not do this.
 g++ compiles with more predefined macros. | gcc compiles C++ files with more number of predefined macros. Some of them are `#define __GXX_WEAK__ 1`, `#define __cplusplus 1`, `#define __DEPRECATED 1`, etc
 
+下面是 rpi4b-ubuntu 的 /usr/bin 下 `cpp`、`gcc`、`g++` 命令，真身分别为 aarch64-linux-gnu-cpp-11、aarch64-linux-gnu-gcc-11、aarch64-linux-gnu-g++-11。
+
+- aarch64-linux-gnu-gcc-11、aarch64-linux-gnu-g++-11 这两个二进制文件 size 一样，但是 md5sum 不一致。
+
+```Shell
+$ ls -l /usr/bin | grep -E "cpp|cc|[g|c]\+\+"
+-rwxr-xr-x 1 root root         428 Nov 18  2020 c89-gcc
+-rwxr-xr-x 1 root root         454 Nov 18  2020 c99-gcc
+
+-rwxr-xr-x 1 root root      876656 May 13  2023 aarch64-linux-gnu-cpp-11
+lrwxrwxrwx 1 root root          24 May 13  2023 cpp-11 -> aarch64-linux-gnu-cpp-11
+lrwxrwxrwx 1 root root           6 Aug  5  2021 aarch64-linux-gnu-cpp -> cpp-11
+lrwxrwxrwx 1 root root           6 Aug  5  2021 cpp -> cpp-11
+
+-rwxr-xr-x 1 root root      872560 May 13  2023 aarch64-linux-gnu-gcc-11
+lrwxrwxrwx 1 root root          24 May 13  2023 gcc-11 -> aarch64-linux-gnu-gcc-11
+lrwxrwxrwx 1 root root           6 Aug  5  2021 aarch64-linux-gnu-gcc -> gcc-11
+lrwxrwxrwx 1 root root           6 Aug  5  2021 gcc -> gcc-11
+
+-rwxr-xr-x 1 root root      872560 May 13  2023 aarch64-linux-gnu-g++-11
+lrwxrwxrwx 1 root root          24 May 13  2023 g++-11 -> aarch64-linux-gnu-g++-11
+lrwxrwxrwx 1 root root           6 Aug  5  2021 aarch64-linux-gnu-g++ -> g++-11
+lrwxrwxrwx 1 root root           6 Aug  5  2021 g++ -> g++-11
+
+lrwxrwxrwx 1 root root          20 Feb 21 10:59 cc -> /etc/alternatives/cc
+lrwxrwxrwx 1 root root          21 Feb 21 10:59 c++ -> /etc/alternatives/c++
+```
+
+进一步验证，`cc`、`c++` 分别是 gcc、g++ 的软链。
+
+```Shell
+$ ls -l /etc/alternatives/cc
+lrwxrwxrwx 1 root root 12 Feb 21 10:59 /etc/alternatives/cc -> /usr/bin/gcc
+
+$ ls -l /etc/alternatives/c++
+lrwxrwxrwx 1 root root 12 Feb 21 10:59 /etc/alternatives/c++ -> /usr/bin/g++
+```
+
 #### GNU binutils
 
 Computer Systems - A Programmer’s Perspective | Chapter 7: Linking - 7.14 Tools for Manipulating Object Files:
@@ -271,8 +309,9 @@ The GCC project includes an implementation of the C++ Standard Library called `l
 
 [GCC Debugging Options](https://gcc.gnu.org/onlinedocs/gcc/Debugging-Options.html)
 
-[GNU Hurd / GNU GDB](https://www.gnu.org/savannah-checkouts/gnu/hurd/gdb.html) - [docs](https://sourceware.org/gdb/download/onlinedocs/) - [wiki](https://en.wikipedia.org/wiki/GNU_Debugger)
+[GNU Hurd / GNU GDB](https://www.gnu.org/savannah-checkouts/gnu/hurd/gdb.html) - [wiki](https://en.wikipedia.org/wiki/GNU_Debugger)
 
+- [docs](https://sourceware.org/gdb/download/onlinedocs/): [Debugging with GDB](https://sourceware.org/gdb/download/onlinedocs/gdb.html/index.html)
 - @[sourceware](https://www.sourceware.org/gdb/), [git](git://sourceware.org/git/binutils-gdb.git)
 
 [GDB online](https://www.onlinegdb.com/)
@@ -458,7 +497,7 @@ ls -l $xctcbin | grep -E "clang|(cc|gcc)$|[g|c]\+\+"
 
 从输出结果来看，有些是二进制实体文件，有些是软链替身。四个目录实际上是两套工具链：
 
-1. 系统 /usr/bin 下的 clang++, gcc/cc, g++/c++ 和 clang 是同一份实体（size 和 MD5 一致）。
+1. 系统 /usr/bin 下的 clang++, gcc/cc, g++/c++ 和 clang 是同一份实体（size 和 md5 一致）。
 2. Xcode Command Line Tools（cmdbin）下，clang++ 和 cc/c++ 均指向 clang ，g++ 指向 gcc。
 
 #### llvm-gcc vs. gnu/gcc

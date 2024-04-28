@@ -15,29 +15,24 @@ Records to facilitate future enquiries/reference.
 
 <!-- more -->
 
-## unix.com
+## Cmd Refs
 
-[LINUX Man Pages and LINUX Commands at the UNIX and Linux Forums](https://www.unix.com/)
+[The UNIX and Linux Forums](https://www.unix.com/)
 
 [Unix Commands - Man Pages](https://www.unix.com/unix-commands.php)
 
-## ss64.com
-
 [SS64 | Command line reference](https://ss64.com/)
-
-## Open Group
-
-[Open Group | Shell & Utilities: Detailed Toc](https://pubs.opengroup.org/onlinepubs/9699919799/utilities/contents.html)
 
 ## Linux Man
 
 [Linux Commands - Man Pages](https://www.unix.com/linux-commands.php)
 
-[LINUX Man Pages and LINUX Commands at the UNIX and Linux Forums](https://www.unix.com/man-page-collection.php?os=linux)
+[LINUX Man Pages and LINUX Commands](https://www.unix.com/man-page-collection.php?os=linux)
 
-[Linux man pages online](https://man7.org/linux/man-pages/index.html)
+[The Linux man-pages project](https://www.kernel.org/doc/man-pages/)
 
-[Linux Command Documentation](https://linuxcommand.org/lc3_man_page_index.php)
+- man7: [Linux man pages online](https://man7.org/linux/man-pages/index.html)
+- Hurricane Electric: [LINUX MAN PAGES ONLINE](http://www.he.net/)
 
 ## Debian/Ubuntu
 
@@ -57,9 +52,13 @@ Records to facilitate future enquiries/reference.
 
 [PowerShell Documentation - PowerShell](https://learn.microsoft.com/en-us/powershell/)
 
-## Shell
+## Linux Shell
 
 In-site ref links: [Linux Man](./linux-man.md)
+
+[Open Group | Shell & Utilities: Detailed Toc](https://pubs.opengroup.org/onlinepubs/9699919799/utilities/contents.html)
+
+[Linux Command Documentation](https://linuxcommand.org/lc3_man_page_index.php)
 
 [The Shell Scripting Tutorial](https://www.shellscript.sh/)
 
