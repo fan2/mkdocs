@@ -39,15 +39,34 @@ Mainstream Compiler: GNU/GCC, LLVM/Clang, Microsoft Visual Studio.
 - [Option Summary](https://gcc.gnu.org/onlinedocs/gcc/Option-Summary.html)
 - [Overall Options](https://gcc.gnu.org/onlinedocs/gcc/Overall-Options.html)
 
-### Binutils
+### Architecture
 
-[GNU Hurd / GNU Binutils](https://www.gnu.org/savannah-checkouts/gnu/hurd/binutils.html) - [GNU Binutils](https://www.gnu.org/software/binutils/)
+[GNU C Compiler Internals/Architecture](https://en.wikibooks.org/wiki/GNU_C_Compiler_Internals/GNU_C_Compiler_Architecture)
+
+For a C source file they are the preprocessor and compiler `cc1`, the assembler `as`, and the linker `collect2`. The first and the third programs come with a GCC *distribution*, the assembler is a part of the GNU *binutils* package.
+
+![GCC_Architecture](./images/GCC_Architecture.jpeg)
+
+[Developer Options](https://gcc.gnu.org/onlinedocs/gcc/Developer-Options.html): `-dumpspecs` : Print the compiler’s built-in  [Spec Files](https://gcc.gnu.org/onlinedocs/gcc/Spec-Files.html):
+
+- cpp : Options to pass to the C preprocessor
+- cc1 : Options to pass to the C compiler
+- cc1plus : Options to pass to the C++ compiler
 
 [cpp - The C Preprocessor](https://gcc.gnu.org/onlinedocs/cpp/)
 
-- [Options Controlling the Preprocessor](https://gcc.gnu.org/onlinedocs/gcc/Preprocessor-Options.html)
+- [Invocation](https://gcc.gnu.org/onlinedocs/cpp/Invocation.html): the preprocessor is actually *integrated* with the compiler rather than a separate program.
+- [Preprocessor Options](https://gcc.gnu.org/onlinedocs/gcc/Preprocessor-Options.html): `-no-integrated-cpp`: Perform preprocessing as a *separate* pass before compilation.
 
-#### gcc and g++
+[FAQ - GCC Wiki](https://gcc.gnu.org/wiki/FAQ#include_search_path): the GCC C compiler (`cc1`) and C++ compiler (`cc1cplus`)
+
+[Why cc1 is called cc1?](https://stackoverflow.com/questions/13753854/why-cc1-is-called-cc1) [Relationship between cc1 and gcc?](https://unix.stackexchange.com/questions/77779/relationship-between-cc1-and-gcc)
+
+> The 1 in `cc1` indicates that it is the first stage of the build process. The second stage is `collect2`.
+
+[Collect2 (GCC Internals)](https://gcc.gnu.org/onlinedocs/gccint/Collect2.html): The program `collect2` is installed as `ld` in the directory where the passes of the compiler are installed.
+
+### gcc and g++
 
 GNU C Compiler: `gcc` / `cc`
 
@@ -118,7 +137,9 @@ $ ls -l /etc/alternatives/c++
 lrwxrwxrwx 1 root root 12 Feb 21 10:59 /etc/alternatives/c++ -> /usr/bin/g++
 ```
 
-#### GNU binutils
+### GNU binutils
+
+[GNU Hurd / GNU Binutils](https://www.gnu.org/savannah-checkouts/gnu/hurd/binutils.html) - [GNU Binutils](https://www.gnu.org/software/binutils/)
 
 Computer Systems - A Programmer’s Perspective | Chapter 7: Linking - 7.14 Tools for Manipulating Object Files:
 
@@ -314,9 +335,10 @@ The GCC project includes an implementation of the C++ Standard Library called `l
 - [docs](https://sourceware.org/gdb/download/onlinedocs/): [Debugging with GDB](https://sourceware.org/gdb/download/onlinedocs/gdb.html/index.html)
 - @[sourceware](https://www.sourceware.org/gdb/), [git](git://sourceware.org/git/binutils-gdb.git)
 
-[GDB online](https://www.onlinegdb.com/)
-
+VisualGDB - [GDB Command Reference](https://visualgdb.com/gdbreference/commands/)
 用GDB调试程序：[（一）](https://haoel.blog.csdn.net/article/details/2879) ～ [（七）](https://haoel.blog.csdn.net/article/details/2885)
+
+[GDB online Debugger](https://www.onlinegdb.com/)
 
 ## LLVM/Clang
 
@@ -332,8 +354,9 @@ In 2006, [Chris Lattner](https://nondot.org/sabre/) started working on a new pro
 - [Clang Compiler User’s Manual](https://clang.llvm.org/docs/UsersManual.html)
 - [clang - the Clang C, C++, and Objective-C compiler](https://clang.llvm.org/docs/CommandGuide/clang.html)
 - [Clang command line argument reference](https://clang.llvm.org/docs/ClangCommandLineReference.html)
+- [Preprocessor options](https://clang.llvm.org/docs/ClangCommandLineReference.html#preprocessor-options)
 
----
+### Architecture
 
 [Introduction to the LLVM Compiler System](https://llvm.org/pubs/2008-10-04-ACAT-LLVM-Intro.html)
 
@@ -353,13 +376,13 @@ LLVM's Implementation of Three-Phase Design:
 
 ![LLVM's Implementation of the Three-Phase Design](https://aosabook.org/static/llvm/LLVMCompiler1.png)
 
-### Binutils
-
 !!! abstract "LLVM Linker"
 
     The `lld` subproject is an attempt to develop a built-in, platform-independent linker for LLVM. lld aims to remove dependence on a third-party linker. As of May 2017, lld supports [ELF](https://en.wikipedia.org/wiki/Executable_and_Linkable_Format), [PE/COFF](https://en.wikipedia.org/wiki/PE/COFF), [Mach-O](https://en.wikipedia.org/wiki/Mach-O), and [WebAssembly](https://en.wikipedia.org/wiki/WebAssembly) in descending order of completeness. lld is faster than both flavors of GNU ld.
 
     Unlike the GNU linkers, lld has built-in support for [link-time optimization](https://en.wikipedia.org/wiki/Link-time_optimization) (LTO). This allows for faster code generation as it bypasses the use of a linker plugin, but on the other hand prohibits interoperability with other flavors of LTO.
+
+### GCC compatibility
 
 [Clang Performance and GCC compatibility](https://en.wikipedia.org/wiki/Clang#Performance_and_GCC_compatibility)
 
@@ -371,9 +394,7 @@ LLVM's Implementation of Three-Phase Design:
 
 [gcc - Is there a binutils for llvm? - Stack Overflow](https://stackoverflow.com/questions/5238582/is-there-a-binutils-for-llvm)
 
-[Preprocessor options](https://clang.llvm.org/docs/ClangCommandLineReference.html#preprocessor-options)
-
-#### llvm-gcc/llvm-g++
+### llvm-gcc/llvm-g++
 
 ```Shell
 $ which clang
@@ -423,10 +444,10 @@ InstalledDir: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault
 
 $ xcrun -f cc
 /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cc
-$ xcrun -f cpp
-/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cpp
 $ xcrun -f c++
 /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++
+$ xcrun -f cpp
+/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cpp
 ```
 
 macOS 下 llvm/clang 的 compiler toolchain Binutils 散落在四个 */usr/bin 目录下：
@@ -454,11 +475,12 @@ ls -l $xctcbin | grep -E "clang|(cc|gcc)$|[g|c]\+\+"
 === "usrbin"
 
     ```Shell
-    $ ls -l $usrbin | grep -E "clang|(cc|gcc)$|[g|c]\+\+"
+    $ ls -l $usrbin | grep -E "clang|cpp|(cc|gcc)$|[g|c]\+\+"
     -rwxr-xr-x  77 root   wheel    119008 Apr 20 12:52 c++
     -rwxr-xr-x  77 root   wheel    119008 Apr 20 12:52 cc
     -rwxr-xr-x  77 root   wheel    119008 Apr 20 12:52 clang
     -rwxr-xr-x  77 root   wheel    119008 Apr 20 12:52 clang++
+    -rwxr-xr-x  77 root   wheel    119008 Apr 20 12:52 cpp
     -rwxr-xr-x  77 root   wheel    119008 Apr 20 12:52 g++
     -rwxr-xr-x  77 root   wheel    119008 Apr 20 12:52 gcc
     -rwxr-xr-x  77 root   wheel    119008 Apr 20 12:52 llvm-g++
@@ -468,19 +490,20 @@ ls -l $xctcbin | grep -E "clang|(cc|gcc)$|[g|c]\+\+"
 === "cmdbin"
 
     ```Shell
-    $ ls -l $cmdbin | grep -E "clang|(cc|gcc)$|[g|c]\+\+"
+    $ ls -l $cmdbin | grep -E "clang|cpp|(cc|gcc)$|[g|c]\+\+"
     lrwxr-xr-x  1 root  wheel          5 Mar  8 00:55 c++ -> clang
     lrwxr-xr-x  1 root  wheel          5 Mar  8 00:55 cc -> clang
     -rwxr-xr-x  1 root  wheel  251484800 Feb 23 10:06 clang
     lrwxr-xr-x  1 root  wheel          5 Mar  8 00:55 clang++ -> clang
     lrwxr-xr-x  1 root  wheel          3 Mar  8 00:55 g++ -> gcc
+    -rwxr-xr-x  1 root  admin       3344 Feb  3 02:02 cpp
     -rwxr-xr-x  1 root  admin     101088 Feb 23 10:06 gcc
     ```
 
 === "xcdevbin"
 
     ```Shell
-    $ ls -l $xcdevbin | grep -E "clang|(cc|gcc)$|[g|c]\+\+"
+    $ ls -l $xcdevbin | grep -E "clang|cpp|(cc|gcc)$|[g|c]\+\+"
     lrwxr-xr-x  1 root  wheel         3 Mar  6 13:05 g++ -> gcc
     -rwxr-xr-x  1 root  wheel    101088 Feb 23 10:06 gcc
     ```
@@ -488,19 +511,20 @@ ls -l $xctcbin | grep -E "clang|(cc|gcc)$|[g|c]\+\+"
 === "xctcbin"
 
     ```Shell
-    $ ls -l $xctcbin | grep -E "clang|(cc|gcc)$|[g|c]\+\+"
+    $ ls -l $xctcbin | grep -E "clang|cpp|(cc|gcc)$|[g|c]\+\+"
     lrwxr-xr-x  1 root  wheel          5 Mar  6 13:04 c++ -> clang
     lrwxr-xr-x  1 root  wheel          5 Mar  6 13:04 cc -> clang
     -rwxr-xr-x  1 root  wheel  251484800 Feb 23 10:06 clang
     lrwxr-xr-x  1 root  wheel          5 Mar  6 13:04 clang++ -> clang
+    -rwxr-xr-x  1 root  wheel       3344 Feb  3 02:01 cpp
     ```
 
 从输出结果来看，有些是二进制实体文件，有些是软链替身。四个目录实际上是两套工具链：
 
-1. 系统 /usr/bin 下的 clang++, gcc/cc, g++/c++ 和 clang 是同一份实体（size 和 md5 一致）。
+1. 系统 /usr/bin 下的 clang++, cpp, gcc/cc, g++/c++ 和 clang 是同一份实体（size 和 md5 一致）。
 2. Xcode Command Line Tools（cmdbin）下，clang++ 和 cc/c++ 均指向 clang ，g++ 指向 gcc。
 
-#### llvm-gcc vs. gnu/gcc
+### llvm-gcc binutils
 
 执行以下 Shell 命令，可以查看散落在四个 */usr/bin 目录下的 Binutils：
 

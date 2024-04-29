@@ -27,6 +27,8 @@ Inspect and dump mainstream compiler(gcc/clang/msvc) predefined macros, c/c++ st
 - [Standard Predefined Macros](https://gcc.gnu.org/onlinedocs/cpp/Standard-Predefined-Macros.html)
 - [Common Predefined Macros](https://gcc.gnu.org/onlinedocs/cpp/Common-Predefined-Macros.html)
 
+[Invocation (The C Preprocessor)](https://gcc.gnu.org/onlinedocs/cpp/Invocation.html): You can invoke the preprocessor either with the `cpp` command, or via `gcc -E`.
+
 [GCC Preprocessor Options](https://gcc.gnu.org/onlinedocs/gcc/Preprocessor-Options.html)
 
 `-dletters`: Says to make debugging dumps during compilation as specified by letters.
@@ -45,25 +47,30 @@ shows all the predefined macros.
 echo 空流预编译：
 
 ```Shell
+# echo | cpp -dM -
 # echo | gcc -E -dM -
-$ echo | g++ -x c -E -dM -
+# echo | g++ -E -dM -
+$ echo | gcc -x c -E -dM -
 $ echo | g++ -x c++ -E -dM -
 ```
 
 或指定空文件 /dev/null 预编译：
 
 ```Shell
+# cpp -dM - < /dev/null
 # gcc -E -dM - < /dev/null
-$ gcc -E -dM -x c - < /dev/null
-$ gcc -E -dM -x c++ - < /dev/null
-$ gcc -E -dM -x c /dev/null
-$ gcc -E -dM -x c++ /dev/null
+$ gcc -x c -E -dM - < /dev/null
+$ gcc -x c++ -E -dM - < /dev/null
+# or
+$ gcc -x c -E -dM /dev/null
+$ gcc -x c++ -E -dM /dev/null
 ```
 
 包含特定头文件：
 
 ```Shell
-$ echo "#include <sys/socket.h>" | gcc -E -dM -
+$ echo "#include <stdio.h>" | cpp -dM -
+# cpp -dM -include sys/socket.h - < /dev/null
 $ gcc -E -dM -include sys/socket.h - < /dev/null
 ```
 
@@ -566,11 +573,17 @@ Ubuntu 下执行 gcc/g++ 命令，调用 collect2 和 ld 链接，最终报错�
 !!! note "Ubuntu 编译链接 C/C++"
 
     ubuntu 上编译链接 C 代码：dry-run: `gcc stdc.c -###`；compile: `gcc stdc.c -o c.out -v`。
+
+    - gcc 依次调用 cc1->as->collect2，链接选项 `-lc`（[g]libc）。
+
     ubuntu 上编译链接 C++ 代码：dry-run: `gcc stdcpp.cpp -###`；compile: `g++ stdcpp.cpp -o cpp.out -v`。
 
-    - gcc 依次调用 cc1->as->collect2，collect2 内部调用 ld 完成链接。
-    - g++ 依次调用 cc1plus->as->collect2，collect2 内部调用 ld 完成链接。
-    - gcc std.c 链接 `-lc`（[g]libc）；g++ stdcpp.cpp 链接 `-lc`,`-lm`（math）,`-lstdc++`（libstdc++）。
+    - g++ 依次调用 cc1plus->as->collect2，链接选项 `-lc`,`-lm`（math）,`-lstdc++`（libstdc++）。
+
+    **说明**：
+
+    - gcc 的 `cc1` 已经集成了 `cpp` 的处理，无须额外调用 [cpp](https://gcc.gnu.org/onlinedocs/cpp/Invocation.html) 来进行预处理。
+    - [collect2](https://gcc.gnu.org/onlinedocs/gccint/Collect2.html) 内部调用 real `ld` 完成最终的链接工作。
 
 ---
 
