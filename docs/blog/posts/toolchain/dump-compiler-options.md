@@ -3,14 +3,14 @@ title: Dump Compiler Options
 authors:
   - xman
 date:
-    created: 2009-10-05T10:00:00
+    created: 2020-02-03T10:00:00
     updated: 2024-04-03T10:00:00
 categories:
     - toolchain
 comments: true
 ---
 
-Inspect and dump mainstream compiler(gcc/clang/msvc) predefined macros, c/c++ standard and search paths.
+Inspect and dump mainstream compilers(gcc/clang/msvc) predefined macros, c/c++ language standard and search paths.
 
 <!-- more -->
 

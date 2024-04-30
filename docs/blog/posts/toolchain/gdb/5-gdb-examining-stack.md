@@ -3,7 +3,7 @@ title: GDB Examining the Stack
 authors:
   - xman
 date:
-    created: 2022-04-25T10:00:00
+    created: 2020-02-08T10:00:00
 categories:
     - toolchain
 tags:

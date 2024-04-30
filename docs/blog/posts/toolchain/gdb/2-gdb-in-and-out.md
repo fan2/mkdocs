@@ -3,7 +3,7 @@ title: GDB Invocation & Quitting
 authors:
   - xman
 date:
-    created: 2022-04-22T10:00:00
+    created: 2020-02-05T10:00:00
 categories:
     - toolchain
 tags:
@@ -16,9 +16,11 @@ comments: true
 This article discusses how to start GDB, and how to get out of it.
 
 - type `gdb` to start GDB.
-- type `quit`, `exit` or <kbd>ctrl</kbd>+<kbd>d</kbd> to exit.
-
-And how to show source file info about the program being debugged.
+- Use `file` to change and load debugging FILE.
+- Use `info`/`list` to show info/src about the program.
+- Use the `run` command to start your program under GDB.
+- Use the `start` command to start debugging and to stop at main.
+- type `quit`, `exit` or <kbd>ctrl</kbd>+<kbd>d</kbd> to exit GDB console.
 
 <!-- more -->
 

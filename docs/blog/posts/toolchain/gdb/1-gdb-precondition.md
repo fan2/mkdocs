@@ -3,7 +3,7 @@ title: compiling for debugging with GDB
 authors:
   - xman
 date:
-    created: 2022-04-21T10:00:00
+    created: 2020-02-04T10:00:00
 categories:
     - toolchain
 tags:

@@ -3,14 +3,14 @@ title: Mainstream Compiler - gcc/clang/msvc
 authors:
   - xman
 date:
-    created: 2009-10-04T10:00:00
+    created: 2020-02-02T10:00:00
     updated: 2024-04-02T10:00:00
 categories:
     - toolchain
 comments: true
 ---
 
-Mainstream Compiler: GNU/GCC, LLVM/Clang, Microsoft Visual Studio.
+Try and tease out mainstream compilers(GNU/GCC, LLVM/Clang, Microsoft Visual Studio) architecture/framework, toolchain, binutils and language(C/C++) standards.
 
 <!-- more -->
 

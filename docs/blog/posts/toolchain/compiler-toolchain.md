@@ -3,14 +3,14 @@ title: Compiler Toolchain
 authors:
   - xman
 date:
-    created: 2009-10-03T10:00:00
+    created: 2020-02-01T10:00:00
     updated: 2024-04-01T10:00:00
 categories:
     - toolchain
 comments: true
 ---
 
-Concepts of Cross compiler and Toolchain.
+Overview of concepts of Toolchain, Cross Compiler and Cross Compiler Toolchain.
 
 <!-- more -->
 
