@@ -1,0 +1,2161 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="在别处或在路上">
+      
+      
+        <meta name="author" content="Cliff Fan">
+      
+      
+        <link rel="canonical" href="https://duetorun.com/blog/20220423/3-gdb-stop-and-continue/">
+      
+      
+        <link rel="prev" href="../../20220422/2-gdb-in-and-out/">
+      
+      
+        <link rel="next" href="../../20220424/4-gdb-examining-data/">
+      
+      
+      <link rel="icon" href="../../../assets/hold_yourself.jpg">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.15">
+    
+    
+      
+        <title>GDB Stop & Continue - ElseWhere</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.7e359304.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function n(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],n("js",new Date),n("config","G-XGW41EGL31"),document.addEventListener("DOMContentLoaded",function(){document.forms.search&&document.forms.search.query.addEventListener("blur",function(){this.value&&n("event","search",{search_term:this.value})}),document$.subscribe(function(){var a=document.forms.feedback;if(void 0!==a)for(var e of a.querySelectorAll("[type=submit]"))e.addEventListener("click",function(e){e.preventDefault();var t=document.location.pathname,e=this.getAttribute("data-md-value");n("event","feedback",{page:t,data:e}),a.firstElementChild.disabled=!0;e=a.querySelector(".md-feedback__note [data-md-value='"+e+"']");e&&(e.hidden=!1)}),a.hidden=!1}),location$.subscribe(function(e){n("config","G-XGW41EGL31",{page_path:e.pathname})})});var e=document.createElement("script");e.async=!0,e.src="https://www.googletagmanager.com/gtag/js?id=G-XGW41EGL31",document.getElementById("__analytics").insertAdjacentElement("afterEnd",e)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+    
+  
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#test_program" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../../.." title="ElseWhere" class="md-header__button md-logo" aria-label="ElseWhere" data-md-component="logo">
+      
+  <img src="../../../assets/hold_yourself.jpg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ElseWhere
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              GDB Stop & Continue
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1M8 13h8v-2H8v2m9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1 0 1.71-1.39 3.1-3.1 3.1h-4V17h4a5 5 0 0 0 5-5 5 5 0 0 0-5-5Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="indigo"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5M7 15a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="标签" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../about/" class="md-tabs__link">
+        
+  
+    
+  
+  About
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../" class="md-tabs__link">
+          
+  
+  Blog
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../link/" class="md-tabs__link">
+        
+  
+    
+  
+  Link
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" hidden>
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="ElseWhere" class="md-nav__button md-logo" aria-label="ElseWhere" data-md-component="logo">
+      
+  <img src="../../../assets/hold_yourself.jpg" alt="logo">
+
+    </a>
+    ElseWhere
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../about/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    About
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Blog
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      <a href="../../" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Archive
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            Archive
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2024/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2024
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2022/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2022
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2019/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2019
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2018/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2018
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2017/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2017
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2015/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2015
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2009/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2009
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Categories
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            Categories
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/c/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    c
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/command/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    command
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/cpp/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    cpp
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/editor/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    editor
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/excerpt/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    excerpt
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/git/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    git
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/linux/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    linux
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/macos/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    macOS
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/markdown/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    markdown
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/material/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    material
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/mkdocs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    mkdocs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/nginx/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    nginx
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/python/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    python
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/resource/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    resource
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/samba/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    samba
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/shell/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    shell
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/toolchain/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    toolchain
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/ubuntu/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ubuntu
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/vim/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    vim
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/webdav/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    webDAV
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/wiki/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    wiki
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/zsh/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    zsh
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../link/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Link
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#test_program" class="md-nav__link">
+    <span class="md-ellipsis">
+      test program
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#breakpoints_watchpoints_and_catchpoints" class="md-nav__link">
+    <span class="md-ellipsis">
+      Breakpoints, Watchpoints, and Catchpoints
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Breakpoints, Watchpoints, and Catchpoints">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#breakpoints" class="md-nav__link">
+    <span class="md-ellipsis">
+      breakpoints
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#watchpoints" class="md-nav__link">
+    <span class="md-ellipsis">
+      watchpoints
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#continuing_and_stepping" class="md-nav__link">
+    <span class="md-ellipsis">
+      Continuing and Stepping
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Continuing and Stepping">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#next" class="md-nav__link">
+    <span class="md-ellipsis">
+      next
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#continue" class="md-nav__link">
+    <span class="md-ellipsis">
+      continue
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#until" class="md-nav__link">
+    <span class="md-ellipsis">
+      until
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#stepfinish" class="md-nav__link">
+    <span class="md-ellipsis">
+      step/finish
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#skip" class="md-nav__link">
+    <span class="md-ellipsis">
+      skip
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#manage_breakpoints" class="md-nav__link">
+    <span class="md-ellipsis">
+      Manage Breakpoints
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Manage Breakpoints">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#enabledisable" class="md-nav__link">
+    <span class="md-ellipsis">
+      enable/disable
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delete" class="md-nav__link">
+    <span class="md-ellipsis">
+      delete
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+  <div class="md-content md-content--post" data-md-component="content">
+    <div class="md-sidebar md-sidebar--post" data-md-component="sidebar" data-md-type="navigation">
+      <div class="md-sidebar__scrollwrap">
+        <div class="md-sidebar__inner md-post">
+          <nav class="md-nav md-nav--primary">
+            <div class="md-post__back">
+              <div class="md-nav__title md-nav__container">
+                <a href="../../" class="md-nav__link">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+                  <span class="md-ellipsis">
+                    回到主页
+                  </span>
+                </a>
+              </div>
+            </div>
+            
+              <div class="md-post__authors md-typeset">
+                
+                  <div class="md-profile md-post__profile">
+                    <span class="md-author md-author--long">
+                      <img src="https://duetorun.com/assets/carve_yourself.jpg" alt="Cliff Fan">
+                    </span>
+                    <span class="md-profile__description">
+                      <strong>
+                        
+                          Cliff Fan
+                        
+                      </strong>
+                      <br>
+                      Just do IT
+                    </span>
+                  </div>
+                
+              </div>
+            
+            <ul class="md-post__meta md-nav__list">
+              <li class="md-nav__item md-nav__item--section">
+                <div class="md-post__title">
+                  <span class="md-ellipsis">
+                    元数据
+                  </span>
+                </div>
+                <nav class="md-nav">
+                  <ul class="md-nav__list">
+                    <li class="md-nav__item">
+                      <div class="md-nav__link">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 19H5V8h14m-3-7v2H8V1H6v2H5c-1.11 0-2 .89-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-1V1m-1 11h-5v5h5v-5Z"/></svg>
+                        <time datetime="2022-04-23 10:00:00" class="md-ellipsis">2022年4月23日</time>
+                      </div>
+                    </li>
+                    
+                    
+                      <li class="md-nav__item">
+                        <div class="md-nav__link">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 3v15h3V3H9m3 2 4 13 3-1-4-13-3 1M5 5v13h3V5H5M3 19v2h18v-2H3Z"/></svg>
+                          <span class="md-ellipsis">
+                            分类于
+                            
+                              <a href="../../category/toolchain/">toolchain</a></span>
+                        </div>
+                      </li>
+                    
+                    
+                      
+                      <li class="md-nav__item">
+                        <div class="md-nav__link">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7h1.5Z"/></svg>
+                          <span class="md-ellipsis">
+                            
+                              需要 11 分钟阅读时间
+                            
+                          </span>
+                        </div>
+                      </li>
+                    
+                    <!-- Add by Cliff.Fan, 29Mar24. -->
+                    <li class="md-nav__item">
+                      <div class="md-nav__link">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m19 1-5 5v11l5-4.5V1m2 4v13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V6c-1.45-1.1-3.55-1.5-5.5-1.5-1.95 0-4.05.4-5.5 1.5v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1M10 18.41C8.75 18.09 7.5 18 6.5 18c-1.06 0-2.32.19-3.5.5V7.13c.91-.4 2.14-.63 3.5-.63 1.36 0 2.59.23 3.5.63v11.28Z"/></svg>
+                        <span class="md-ellipsis" id="busuanzi_container_page_pv">
+                          阅读量：<span id="busuanzi_value_page_pv">N/A</span>
+                        </span>
+                      </div>
+                    </li>
+                  </ul>
+                </nav>
+              </li>
+            </ul>
+          </nav>
+          
+        </div>
+      </div>
+    </div>
+    <article class="md-content__inner md-typeset">
+      
+        
+  
+  
+
+<nav class="md-tags" >
+  
+    
+    
+    
+      <span class="md-tag">gdb</span>
+    
+  
+    
+    
+    
+      <span class="md-tag">breakpoint</span>
+    
+  
+</nav>
+
+
+
+  <h1>GDB Stop & Continue</h1>
+
+<p><a href="https://sourceware.org/gdb/current/onlinedocs/gdb.html/Stopping.html#Stopping">5 Stopping and Continuing</a></p>
+<p>在调试程序时，中断程序的运行是必须的。GDB 可以方便地暂停/继续程序的运行。</p>
+<p>通过设置断点，可以决定程序在哪行，在什么条件下，或者在收到什么信号时暂停，以便查验程序运行的流程和状态。</p>
+<p>程序暂停后，我们可以通过相关命令控制程序继续运行到下一个预设的中断点，在这种“暂停-继续”往复中调试验证程序设计的正确性。</p>
+<!-- more -->
+
+<h2 id="test_program">test program<a class="headerlink" href="#test_program" title="Permanent link">#</a></h2>
+<details class="info">
+<summary>test-gdb.c</summary>
+<div class="language-c highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-0-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-0-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-0-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-0-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-0-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-0-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-0-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-0-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-0-10">10</a></span>
+<span class="normal"><a href="#__codelineno-0-11">11</a></span>
+<span class="normal"><a href="#__codelineno-0-12">12</a></span>
+<span class="normal"><a href="#__codelineno-0-13">13</a></span>
+<span class="normal"><a href="#__codelineno-0-14">14</a></span>
+<span class="normal"><a href="#__codelineno-0-15">15</a></span>
+<span class="normal"><a href="#__codelineno-0-16">16</a></span>
+<span class="normal"><a href="#__codelineno-0-17">17</a></span>
+<span class="normal"><a href="#__codelineno-0-18">18</a></span>
+<span class="normal"><a href="#__codelineno-0-19">19</a></span>
+<span class="normal"><a href="#__codelineno-0-20">20</a></span>
+<span class="normal"><a href="#__codelineno-0-21">21</a></span>
+<span class="normal"><a href="#__codelineno-0-22">22</a></span>
+<span class="normal"><a href="#__codelineno-0-23">23</a></span>
+<span class="normal"><a href="#__codelineno-0-24">24</a></span>
+<span class="normal"><a href="#__codelineno-0-25">25</a></span>
+<span class="normal"><a href="#__codelineno-0-26">26</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2"></a>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3"></a><span class="kt">int</span><span class="w"> </span><span class="nf">func</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="p">)</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4"></a><span class="p">{</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5"></a><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">sum</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span><span class="n">i</span><span class="p">;</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6"></a><span class="w">    </span><span class="k">for</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">&lt;</span><span class="n">n</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7"></a><span class="w">    </span><span class="p">{</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8"></a><span class="w">        </span><span class="n">sum</span><span class="o">+=</span><span class="n">i</span><span class="p">;</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">sum</span><span class="p">;</span>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11"></a><span class="p">}</span>
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12"></a>
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13"></a><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">argv</span><span class="p">[])</span>
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14"></a><span class="p">{</span>
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15"></a><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="p">;</span>
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16"></a><span class="w">    </span><span class="kt">long</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17"></a><span class="w">    </span><span class="k">for</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">&lt;=</span><span class="mi">100</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
+</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18"></a><span class="w">    </span><span class="p">{</span>
+</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19"></a><span class="w">        </span><span class="n">result</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">i</span><span class="p">;</span>
+</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21"></a>
+</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22"></a><span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;result[1-100] = %ld</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">result</span><span class="w"> </span><span class="p">);</span>
+</span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23"></a><span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;result[1-250] = %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">func</span><span class="p">(</span><span class="mi">250</span><span class="p">)</span><span class="w"> </span><span class="p">);</span>
+</span><span id="__span-0-24"><a id="__codelineno-0-24" name="__codelineno-0-24"></a>
+</span><span id="__span-0-25"><a id="__codelineno-0-25" name="__codelineno-0-25"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+</span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26"></a><span class="p">}</span>
+</span></code></pre></div></td></tr></table></div>
+</details>
+<p>gcc 编译命令：<code>cc test-gdb.c -o test-gdb -g</code><br />
+启动 gdb 调试：<code>gdb test-gdb</code></p>
+<p>在 gdb 中输入 <code>list</code> 查看源代码，确认行号以便下断点。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>l<span class="w"> </span><span class="m">0</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="m">1</span><span class="w">   </span><span class="c1">#include &lt;stdio.h&gt;</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="m">2</span><span class="w">   </span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="m">3</span><span class="w">   </span>int<span class="w"> </span>func<span class="o">(</span>int<span class="w"> </span>n<span class="o">)</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="m">4</span><span class="w">   </span><span class="o">{</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="m">5</span><span class="w">       </span>int<span class="w"> </span><span class="nv">sum</span><span class="o">=</span><span class="m">0</span>,i<span class="p">;</span>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="m">6</span><span class="w">       </span><span class="k">for</span><span class="o">(</span><span class="nv">i</span><span class="o">=</span><span class="m">0</span><span class="p">;</span><span class="w"> </span>i&lt;n<span class="p">;</span><span class="w"> </span>i++<span class="o">)</span>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="m">7</span><span class="w">       </span><span class="o">{</span>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="m">8</span><span class="w">           </span><span class="nv">sum</span><span class="o">+=</span>i<span class="p">;</span>
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="m">9</span><span class="w">       </span><span class="o">}</span>
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="m">10</span><span class="w">      </span><span class="k">return</span><span class="w"> </span>sum<span class="p">;</span>
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="o">(</span>gdb<span class="o">)</span>
+</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="m">11</span><span class="w">  </span><span class="o">}</span>
+</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="m">12</span><span class="w">  </span>
+</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="m">13</span><span class="w">  </span>int<span class="w"> </span>main<span class="o">(</span>int<span class="w"> </span>argc,<span class="w"> </span>char*<span class="w"> </span>argv<span class="o">[])</span>
+</span><span id="__span-1-16"><a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="m">14</span><span class="w">  </span><span class="o">{</span>
+</span><span id="__span-1-17"><a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a><span class="m">15</span><span class="w">      </span>int<span class="w"> </span>i<span class="p">;</span>
+</span><span id="__span-1-18"><a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a><span class="m">16</span><span class="w">      </span>long<span class="w"> </span><span class="nv">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">;</span>
+</span><span id="__span-1-19"><a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a><span class="m">17</span><span class="w">      </span><span class="k">for</span><span class="o">(</span><span class="nv">i</span><span class="o">=</span><span class="m">1</span><span class="p">;</span><span class="w"> </span>i&lt;<span class="o">=</span><span class="m">100</span><span class="p">;</span><span class="w"> </span>i++<span class="o">)</span>
+</span><span id="__span-1-20"><a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a><span class="m">18</span><span class="w">      </span><span class="o">{</span>
+</span><span id="__span-1-21"><a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a><span class="m">19</span><span class="w">          </span><span class="nv">result</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span>i<span class="p">;</span>
+</span><span id="__span-1-22"><a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a><span class="m">20</span><span class="w">      </span><span class="o">}</span>
+</span><span id="__span-1-23"><a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a><span class="o">(</span>gdb<span class="o">)</span>
+</span><span id="__span-1-24"><a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a><span class="m">21</span><span class="w">  </span>
+</span><span id="__span-1-25"><a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a><span class="m">22</span><span class="w">      </span>printf<span class="o">(</span><span class="s2">&quot;result[1-100] = %ld\n&quot;</span>,<span class="w"> </span>result<span class="w"> </span><span class="o">)</span><span class="p">;</span>
+</span><span id="__span-1-26"><a id="__codelineno-1-26" name="__codelineno-1-26" href="#__codelineno-1-26"></a><span class="m">23</span><span class="w">      </span>printf<span class="o">(</span><span class="s2">&quot;result[1-250] = %d\n&quot;</span>,<span class="w"> </span>func<span class="o">(</span><span class="m">250</span><span class="o">)</span><span class="w"> </span><span class="o">)</span><span class="p">;</span>
+</span><span id="__span-1-27"><a id="__codelineno-1-27" name="__codelineno-1-27" href="#__codelineno-1-27"></a><span class="m">24</span><span class="w">  </span>
+</span><span id="__span-1-28"><a id="__codelineno-1-28" name="__codelineno-1-28" href="#__codelineno-1-28"></a><span class="m">25</span><span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="m">0</span><span class="p">;</span>
+</span><span id="__span-1-29"><a id="__codelineno-1-29" name="__codelineno-1-29" href="#__codelineno-1-29"></a><span class="m">26</span><span class="w">  </span><span class="o">}</span>
+</span><span id="__span-1-30"><a id="__codelineno-1-30" name="__codelineno-1-30" href="#__codelineno-1-30"></a><span class="o">(</span>gdb<span class="o">)</span>
+</span><span id="__span-1-31"><a id="__codelineno-1-31" name="__codelineno-1-31" href="#__codelineno-1-31"></a>Line<span class="w"> </span>number<span class="w"> </span><span class="m">27</span><span class="w"> </span>out<span class="w"> </span>of<span class="w"> </span>range<span class="p">;</span><span class="w"> </span>test-gdb.c<span class="w"> </span>has<span class="w"> </span><span class="m">26</span><span class="w"> </span>lines.
+</span></code></pre></div>
+<h2 id="breakpoints_watchpoints_and_catchpoints">Breakpoints, Watchpoints, and Catchpoints<a class="headerlink" href="#breakpoints_watchpoints_and_catchpoints" title="Permanent link">#</a></h2>
+<p><a href="https://sourceware.org/gdb/current/onlinedocs/gdb.html/Breakpoints.html#Breakpoints">5.1 Breakpoints, Watchpoints, and Catchpoints</a></p>
+<h3 id="breakpoints">breakpoints<a class="headerlink" href="#breakpoints" title="Permanent link">#</a></h3>
+<p><a href="https://sourceware.org/gdb/current/onlinedocs/gdb.html/Set-Breaks.html#Set-Breaks">5.1.1 Setting Breakpoints</a><br />
+<a href="https://sourceware.org/gdb/current/onlinedocs/gdb.html/Conditions.html#Conditions">5.1.6 Break Conditions</a></p>
+<p>输入 <code>help breakpoints</code> 查看设置断点相关命令。以下摘录断点相关常用命令。</p>
+<p>输入 <code>help break</code>，查看如何在特定位置设置断点（Set breakpoint at specified location.）。</p>
+<p><code>break</code> : b 不带任何参数，表示在下一条指令处停住。</p>
+<blockquote>
+<p>When called without any arguments, <code>break</code> sets a breakpoint at the next instruction to be executed in the selected stack frame (see <a href="https://sourceware.org/gdb/current/onlinedocs/gdb.html/Stack.html#Stack">Examining the Stack</a>).</p>
+</blockquote>
+<p><code>break locspec</code> : 在指定位置设置断点。</p>
+<blockquote>
+<p>Set a breakpoint at all the code locations in your program that result from resolving the given <em>locspec</em>. locspec can specify a function name, a line number, an address of an instruction, and more. See <a href="https://sourceware.org/gdb/current/onlinedocs/gdb.html/Location-Specifications.html#Location-Specifications">Location Specifications</a>, for the various forms of locspec. </p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>command</th>
+<th>description</th>
+<th>comment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>break &lt;function&gt;</td>
+<td>在进入指定函数后停住</td>
+<td>C++中可以使用 class::function 或 function(type,type) 格式来指定函数名。</td>
+</tr>
+<tr>
+<td>break &lt;linenum&gt;</td>
+<td>在指定行号停住。</td>
+<td></td>
+</tr>
+<tr>
+<td>break +offset <br /> break -offset</td>
+<td>在当前行号的前/后偏移offset行处停住</td>
+<td>offiset为自然数</td>
+</tr>
+<tr>
+<td>break filename:linenum</td>
+<td>在源文件filename的linenum行处停住。</td>
+<td></td>
+</tr>
+<tr>
+<td>break filename:function</td>
+<td>在源文件filename的function函数的入口处停住。</td>
+<td></td>
+</tr>
+<tr>
+<td>break *address</td>
+<td>在程序运行的内存地址处停住。</td>
+<td>*main + 4: fourth byte past main()</td>
+</tr>
+<tr>
+<td>break … if cond</td>
+<td>...可以是上述的参数。condition表示条件，在条件成立时停住。</td>
+<td>比如在循环境体中，可以设置 break if i==100，表示当i为100时停住程序。</td>
+</tr>
+</tbody>
+</table>
+<p>临时断点（temp break）：只命中一次。</p>
+<ul>
+<li><code>tbreak args</code>: Set a breakpoint enabled only for one stop. The args are the same as for the break command.</li>
+</ul>
+<p>正则断点（regex break）：正则匹配断点。</p>
+<ul>
+<li><code>rbreak regex</code>: Set breakpoints on all functions matching the regular expression regex.</li>
+<li><code>rbreak file:regex</code>: If rbreak is called with a filename qualification, it limits the search for functions matching the given regular expression to the specified file.</li>
+</ul>
+<p>在 main 函数、第 22 行、func 函数以及第 8 行下断点，其中第 8 行为条件断点。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>b<span class="w"> </span>main
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>Breakpoint<span class="w"> </span><span class="m">1</span><span class="w"> </span>at<span class="w"> </span>0x7b0:<span class="w"> </span>file<span class="w"> </span>test-gdb.c,<span class="w"> </span>line<span class="w"> </span><span class="m">16</span>.
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>b<span class="w"> </span><span class="m">22</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>Breakpoint<span class="w"> </span><span class="m">2</span><span class="w"> </span>at<span class="w"> </span>0x7e8:<span class="w"> </span>file<span class="w"> </span>test-gdb.c,<span class="w"> </span>line<span class="w"> </span><span class="m">22</span>.
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>b<span class="w"> </span>func
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>Breakpoint<span class="w"> </span><span class="m">3</span><span class="w"> </span>at<span class="w"> </span>0x75c:<span class="w"> </span>file<span class="w"> </span>test-gdb.c,<span class="w"> </span>line<span class="w"> </span><span class="m">5</span>.
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>b<span class="w"> </span><span class="m">8</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="nv">i</span><span class="o">==</span><span class="m">50</span>
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>Breakpoint<span class="w"> </span><span class="m">4</span><span class="w"> </span>at<span class="w"> </span>0x768:<span class="w"> </span>file<span class="w"> </span>test-gdb.c,<span class="w"> </span>line<span class="w"> </span><span class="m">8</span>.
+</span></code></pre></div>
+<p>可使用 info 命令，查看已经配置的断点信息：</p>
+<ul>
+<li>info breakpoints [list…]</li>
+<li>info break [list…]</li>
+</ul>
+<blockquote>
+<p>Print a table of all breakpoints, watchpoints, tracepoints, and catchpoints set and not deleted. Optional argument <code>n</code> means print information only about the specified breakpoint(s) (or watchpoint(s) or tracepoint(s) or catchpoint(s)).</p>
+</blockquote>
+<p>不指定断点号时，列出所有断点；否则只显示指定序号的断点信息，多个断点号之间以空格分开。</p>
+<p>执行 <code>i b</code> 查看所有断点：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>i<span class="w"> </span>b
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>Num<span class="w">     </span>Type<span class="w">           </span>Disp<span class="w"> </span>Enb<span class="w"> </span>Address<span class="w">            </span>What
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="m">1</span><span class="w">       </span>breakpoint<span class="w">     </span>keep<span class="w"> </span>y<span class="w">   </span>0x00000000000007b0<span class="w"> </span><span class="k">in</span><span class="w"> </span>main<span class="w"> </span>at<span class="w"> </span>test-gdb.c:16
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="m">2</span><span class="w">       </span>breakpoint<span class="w">     </span>keep<span class="w"> </span>y<span class="w">   </span>0x00000000000007e8<span class="w"> </span><span class="k">in</span><span class="w"> </span>main<span class="w"> </span>at<span class="w"> </span>test-gdb.c:22
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="m">3</span><span class="w">       </span>breakpoint<span class="w">     </span>keep<span class="w"> </span>y<span class="w">   </span>0x000000000000075c<span class="w"> </span><span class="k">in</span><span class="w"> </span>func<span class="w"> </span>at<span class="w"> </span>test-gdb.c:5
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="m">4</span><span class="w">       </span>breakpoint<span class="w">     </span>keep<span class="w"> </span>y<span class="w">   </span>0x0000000000000768<span class="w"> </span><span class="k">in</span><span class="w"> </span>func<span class="w"> </span>at<span class="w"> </span>test-gdb.c:8
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="w">    </span>stop<span class="w"> </span>only<span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="nv">i</span><span class="o">==</span><span class="m">50</span>
+</span></code></pre></div>
+<p>执行 <code>i b 1 3</code> 查看 1 号和 3 号断点：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>i<span class="w"> </span>b<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="m">3</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>Num<span class="w">     </span>Type<span class="w">           </span>Disp<span class="w"> </span>Enb<span class="w"> </span>Address<span class="w">            </span>What
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="m">1</span><span class="w">       </span>breakpoint<span class="w">     </span>keep<span class="w"> </span>y<span class="w">   </span>0x00000000000007b0<span class="w"> </span><span class="k">in</span><span class="w"> </span>main<span class="w"> </span>at<span class="w"> </span>test-gdb.c:16
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="m">3</span><span class="w">       </span>breakpoint<span class="w">     </span>keep<span class="w"> </span>y<span class="w">   </span>0x000000000000075c<span class="w"> </span><span class="k">in</span><span class="w"> </span>func<span class="w"> </span>at<span class="w"> </span>test-gdb.c:5
+</span></code></pre></div>
+<p>设置好断点后，执行 <code>run</code> 启动运行调试，测试断点的命中情况。</p>
+<p>首先命中 1 号断点，在 main 函数的第一条语句/指令停下。</p>
+<blockquote>
+<p>注意：int i 为暂时定义（tentative definition），实为声明，无指令。</p>
+</blockquote>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>r
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>Starting<span class="w"> </span>program:<span class="w"> </span>/home/pifan/Projects/cpp/test-gdb
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="o">[</span>Thread<span class="w"> </span>debugging<span class="w"> </span>using<span class="w"> </span>libthread_db<span class="w"> </span>enabled<span class="o">]</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>Using<span class="w"> </span>host<span class="w"> </span>libthread_db<span class="w"> </span>library<span class="w"> </span><span class="s2">&quot;/lib/aarch64-linux-gnu/libthread_db.so.1&quot;</span>.
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>Breakpoint<span class="w"> </span><span class="m">1</span>,<span class="w"> </span>main<span class="w"> </span><span class="o">(</span><span class="nv">argc</span><span class="o">=</span><span class="m">1</span>,<span class="w"> </span><span class="nv">argv</span><span class="o">=</span>0xfffffffff248<span class="o">)</span><span class="w"> </span>at<span class="w"> </span>test-gdb.c:16
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="m">16</span><span class="w">      </span>long<span class="w"> </span><span class="nv">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">;</span>
+</span></code></pre></div>
+<h3 id="watchpoints">watchpoints<a class="headerlink" href="#watchpoints" title="Permanent link">#</a></h3>
+<p><a href="https://sourceware.org/gdb/current/onlinedocs/gdb.html/Set-Watchpoints.html#Set-Watchpoints">5.1.2 Setting Watchpoints</a></p>
+<p>观察点一般来观察某个表达式（变量也是一种表达式）的值是否有变化了，如果有变 化，马上停住程序。我们有下面的几种方法来设置观察点：</p>
+<p><code>watch &lt;expr&gt;</code> 为表达式（变量）expr设置一个观察点。一旦表达式值有变化，马上停住程序。</p>
+<blockquote>
+<p>watch [-l|-location] expr [thread thread-id] [mask maskvalue] [task task-id] : Set a watchpoint for an expression. GDB will break when the expression expr is written into by the program and its value changes.</p>
+</blockquote>
+<p><code>rwatch &lt;expr&gt;</code> 当表达式（变量）expr被读时，停住程序。</p>
+<blockquote>
+<p>rwatch [-l|-location] expr [thread thread-id] [mask maskvalue] : Set a watchpoint that will break when the value of expr is read by the program.</p>
+</blockquote>
+<p><code>awatch &lt;expr&gt;</code> 当表达式（变量）的值被读或被写时，停住程序。</p>
+<blockquote>
+<p>awatch [-l|-location] expr [thread thread-id] [mask maskvalue] : Set a watchpoint that will break when expr is either read from or written into by the program.</p>
+</blockquote>
+<p><code>info watchpoints</code> 列出当前所设置了的所有观察点。</p>
+<blockquote>
+<p>info watchpoints [list…] : This command prints a list of watchpoints, using the same format as info break (see Set Breaks).</p>
+</blockquote>
+<h2 id="continuing_and_stepping">Continuing and Stepping<a class="headerlink" href="#continuing_and_stepping" title="Permanent link">#</a></h2>
+<p><a href="https://sourceware.org/gdb/current/onlinedocs/gdb.html/Continuing-and-Stepping.html#Continuing-and-Stepping">5.2 Continuing and Stepping</a></p>
+<h3 id="next">next<a class="headerlink" href="#next" title="Permanent link">#</a></h3>
+<p><code>next [count]</code>: Continue to the next source line in the current (innermost) stack frame. This is similar to step, but function calls that appear within the line of code are executed without stopping.</p>
+<p>在 1 号断点 main 函数处停下后，输入 <code>n</code>（next）执行下一条语句：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>n
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="m">17</span><span class="w">      </span><span class="k">for</span><span class="o">(</span><span class="nv">i</span><span class="o">=</span><span class="m">1</span><span class="p">;</span><span class="w"> </span>i&lt;<span class="o">=</span><span class="m">100</span><span class="p">;</span><span class="w"> </span>i++<span class="o">)</span>
+</span></code></pre></div>
+<p>不断输入 <code>n</code>，在 for 控制语句和循环体语句之间循环，直到循环结束（i=101）。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>n
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="m">19</span><span class="w">          </span><span class="nv">result</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span>i<span class="p">;</span>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>n
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="m">17</span><span class="w">      </span><span class="k">for</span><span class="o">(</span><span class="nv">i</span><span class="o">=</span><span class="m">1</span><span class="p">;</span><span class="w"> </span>i&lt;<span class="o">=</span><span class="m">100</span><span class="p">;</span><span class="w"> </span>i++<span class="o">)</span>
+</span></code></pre></div>
+<p>执行完一次循环（i=1），即将进行第二次循环。此时，可以使用 <code>print</code> 命令查看循环变量 i 的值。</p>
+<blockquote>
+<p><a href="https://sourceware.org/gdb/current/onlinedocs/gdb.html/Data.html#Data">10 Examining Data</a>: The usual way to examine data in your program is with the <code>print</code> command (abbreviated <code>p</code>), or its synonym <code>inspect</code>. It evaluates and prints the value of an expression of the language your program is written.</p>
+</blockquote>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>p<span class="w"> </span>i
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="nv">$6</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span>
+</span></code></pre></div>
+<p>执行 <code>n 6</code>，进行三轮循环后，i=4。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>n<span class="w"> </span><span class="m">6</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="m">17</span><span class="w">      </span><span class="k">for</span><span class="o">(</span><span class="nv">i</span><span class="o">=</span><span class="m">1</span><span class="p">;</span><span class="w"> </span>i&lt;<span class="o">=</span><span class="m">100</span><span class="p">;</span><span class="w"> </span>i++<span class="o">)</span>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>p<span class="w"> </span>i
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="nv">$7</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">4</span>
+</span></code></pre></div>
+<p><code>next</code> 命令是逐行源码（source line）执行，具体来说每次都停留在 C 语句对应的第一条机器指令处。</p>
+<blockquote>
+<p>The next command only stops at the <em>first</em> instruction of a source line.</p>
+</blockquote>
+<p>如果想逐条调试每句 C 代码背后的机器指令序列，则需要使用 <code>nexti</code> 指令。</p>
+<blockquote>
+<p><code>nexti</code> / <code>nexti arg</code>: Execute one machine instruction, but if it is a function call, proceed until the function returns.</p>
+</blockquote>
+<p>在执行 nexti 之前，先执行 <code>disassemble</code> 命令反汇编 C 代码（函数），看看一行 C <a href="https://sourceware.org/gdb/current/onlinedocs/gdb.html/Machine-Code.html#Machine-Code">源码背后对应的机器指令</a>。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span><span class="nb">help</span><span class="w"> </span>disassemble
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>Disassemble<span class="w"> </span>a<span class="w"> </span>specified<span class="w"> </span>section<span class="w"> </span>of<span class="w"> </span>memory.
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>Usage:<span class="w"> </span>disassemble<span class="o">[</span>/m<span class="p">|</span>/r<span class="p">|</span>/s<span class="o">]</span><span class="w"> </span>START<span class="w"> </span><span class="o">[</span>,<span class="w"> </span>END<span class="o">]</span>
+</span></code></pre></div>
+<p>执行 <code>disas /m main</code> 反汇编 main 函数，可以看到循环控制条件语句在 AARCH64 上对应 9 条机器指令，循环体语句 <code>result += i</code> 则对应 4 条机器指令。箭头指向当前 pc：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>disas<span class="w"> </span>/m<span class="w"> </span>main
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>Dump<span class="w"> </span>of<span class="w"> </span>assembler<span class="w"> </span>code<span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="k">function</span><span class="w"> </span>main:
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="m">17</span><span class="w">      </span><span class="k">for</span><span class="o">(</span><span class="nv">i</span><span class="o">=</span><span class="m">1</span><span class="p">;</span><span class="w"> </span>i&lt;<span class="o">=</span><span class="m">100</span><span class="p">;</span><span class="w"> </span>i++<span class="o">)</span>
+</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="w">   </span>0x0000aaaaaaaa07b4<span class="w"> </span>&lt;+20&gt;:<span class="w">    </span>mov<span class="w"> </span>w0,<span class="w"> </span><span class="c1">#0x1                    // #1</span>
+</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a><span class="w">   </span>0x0000aaaaaaaa07b8<span class="w"> </span>&lt;+24&gt;:<span class="w">    </span>str<span class="w"> </span>w0,<span class="w"> </span><span class="o">[</span>sp,<span class="w"> </span><span class="c1">#36]</span>
+</span><span id="__span-11-7"><a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a><span class="w">   </span>0x0000aaaaaaaa07bc<span class="w"> </span>&lt;+28&gt;:<span class="w">    </span>b<span class="w">   </span>0xaaaaaaaa07dc<span class="w"> </span>&lt;main+60&gt;
+</span><span id="__span-11-8"><a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a><span class="w">   </span>0x0000aaaaaaaa07d0<span class="w"> </span>&lt;+48&gt;:<span class="w">    </span>ldr<span class="w"> </span>w0,<span class="w"> </span><span class="o">[</span>sp,<span class="w"> </span><span class="c1">#36]</span>
+</span><span id="__span-11-9"><a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a><span class="w">   </span>0x0000aaaaaaaa07d4<span class="w"> </span>&lt;+52&gt;:<span class="w">    </span>add<span class="w"> </span>w0,<span class="w"> </span>w0,<span class="w"> </span><span class="c1">#0x1</span>
+</span><span id="__span-11-10"><a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a><span class="w">   </span>0x0000aaaaaaaa07d8<span class="w"> </span>&lt;+56&gt;:<span class="w">    </span>str<span class="w"> </span>w0,<span class="w"> </span><span class="o">[</span>sp,<span class="w"> </span><span class="c1">#36]</span>
+</span><span id="__span-11-11"><a id="__codelineno-11-11" name="__codelineno-11-11" href="#__codelineno-11-11"></a><span class="w">   </span>0x0000aaaaaaaa07dc<span class="w"> </span>&lt;+60&gt;:<span class="w">    </span>ldr<span class="w"> </span>w0,<span class="w"> </span><span class="o">[</span>sp,<span class="w"> </span><span class="c1">#36]</span>
+</span><span id="__span-11-12"><a id="__codelineno-11-12" name="__codelineno-11-12" href="#__codelineno-11-12"></a><span class="w">   </span>0x0000aaaaaaaa07e0<span class="w"> </span>&lt;+64&gt;:<span class="w">    </span>cmp<span class="w"> </span>w0,<span class="w"> </span><span class="c1">#0x64</span>
+</span><span id="__span-11-13"><a id="__codelineno-11-13" name="__codelineno-11-13" href="#__codelineno-11-13"></a><span class="w">   </span>0x0000aaaaaaaa07e4<span class="w"> </span>&lt;+68&gt;:<span class="w">    </span>b.le<span class="w">    </span>0xaaaaaaaa07c0<span class="w"> </span>&lt;main+32&gt;
+</span><span id="__span-11-14"><a id="__codelineno-11-14" name="__codelineno-11-14" href="#__codelineno-11-14"></a>
+</span><span id="__span-11-15"><a id="__codelineno-11-15" name="__codelineno-11-15" href="#__codelineno-11-15"></a><span class="m">18</span><span class="w">      </span><span class="o">{</span>
+</span><span id="__span-11-16"><a id="__codelineno-11-16" name="__codelineno-11-16" href="#__codelineno-11-16"></a><span class="m">19</span><span class="w">          </span><span class="nv">result</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span>i<span class="p">;</span>
+</span><span id="__span-11-17"><a id="__codelineno-11-17" name="__codelineno-11-17" href="#__codelineno-11-17"></a><span class="o">=</span>&gt;<span class="w"> </span>0x0000aaaaaaaa07c0<span class="w"> </span>&lt;+32&gt;:<span class="w">    </span>ldrsw<span class="w">   </span>x0,<span class="w"> </span><span class="o">[</span>sp,<span class="w"> </span><span class="c1">#36]</span>
+</span><span id="__span-11-18"><a id="__codelineno-11-18" name="__codelineno-11-18" href="#__codelineno-11-18"></a><span class="w">   </span>0x0000aaaaaaaa07c4<span class="w"> </span>&lt;+36&gt;:<span class="w">    </span>ldr<span class="w"> </span>x1,<span class="w"> </span><span class="o">[</span>sp,<span class="w"> </span><span class="c1">#40]</span>
+</span><span id="__span-11-19"><a id="__codelineno-11-19" name="__codelineno-11-19" href="#__codelineno-11-19"></a><span class="w">   </span>0x0000aaaaaaaa07c8<span class="w"> </span>&lt;+40&gt;:<span class="w">    </span>add<span class="w"> </span>x0,<span class="w"> </span>x1,<span class="w"> </span>x0
+</span><span id="__span-11-20"><a id="__codelineno-11-20" name="__codelineno-11-20" href="#__codelineno-11-20"></a><span class="w">   </span>0x0000aaaaaaaa07cc<span class="w"> </span>&lt;+44&gt;:<span class="w">    </span>str<span class="w"> </span>x0,<span class="w"> </span><span class="o">[</span>sp,<span class="w"> </span><span class="c1">#40]</span>
+</span><span id="__span-11-21"><a id="__codelineno-11-21" name="__codelineno-11-21" href="#__codelineno-11-21"></a>
+</span><span id="__span-11-22"><a id="__codelineno-11-22" name="__codelineno-11-22" href="#__codelineno-11-22"></a><span class="m">20</span><span class="w">      </span><span class="o">}</span>
+</span></code></pre></div>
+<p>执行 <code>nexti</code> 执行下一条指令，pc 箭头下移动：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>ni
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>0x0000aaaaaaaa07c4<span class="w">  </span><span class="m">19</span><span class="w">          </span><span class="nv">result</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span>i<span class="p">;</span>
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>disas<span class="w"> </span>/m<span class="w"> </span>main
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>Dump<span class="w"> </span>of<span class="w"> </span>assembler<span class="w"> </span>code<span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="k">function</span><span class="w"> </span>main:
+</span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a>
+</span><span id="__span-12-7"><a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a><span class="m">18</span><span class="w">      </span><span class="o">{</span>
+</span><span id="__span-12-8"><a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a><span class="m">19</span><span class="w">          </span><span class="nv">result</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span>i<span class="p">;</span>
+</span><span id="__span-12-9"><a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a><span class="w">   </span>0x0000aaaaaaaa07c0<span class="w"> </span>&lt;+32&gt;:<span class="w">    </span>ldrsw<span class="w">   </span>x0,<span class="w"> </span><span class="o">[</span>sp,<span class="w"> </span><span class="c1">#36]</span>
+</span><span id="__span-12-10"><a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a><span class="o">=</span>&gt;<span class="w"> </span>0x0000aaaaaaaa07c4<span class="w"> </span>&lt;+36&gt;:<span class="w">    </span>ldr<span class="w"> </span>x1,<span class="w"> </span><span class="o">[</span>sp,<span class="w"> </span><span class="c1">#40]</span>
+</span><span id="__span-12-11"><a id="__codelineno-12-11" name="__codelineno-12-11" href="#__codelineno-12-11"></a><span class="w">   </span>0x0000aaaaaaaa07c8<span class="w"> </span>&lt;+40&gt;:<span class="w">    </span>add<span class="w"> </span>x0,<span class="w"> </span>x1,<span class="w"> </span>x0
+</span><span id="__span-12-12"><a id="__codelineno-12-12" name="__codelineno-12-12" href="#__codelineno-12-12"></a><span class="w">   </span>0x0000aaaaaaaa07cc<span class="w"> </span>&lt;+44&gt;:<span class="w">    </span>str<span class="w"> </span>x0,<span class="w"> </span><span class="o">[</span>sp,<span class="w"> </span><span class="c1">#40]</span>
+</span><span id="__span-12-13"><a id="__codelineno-12-13" name="__codelineno-12-13" href="#__codelineno-12-13"></a>
+</span><span id="__span-12-14"><a id="__codelineno-12-14" name="__codelineno-12-14" href="#__codelineno-12-14"></a><span class="m">20</span><span class="w">      </span><span class="o">}</span>
+</span></code></pre></div>
+<p>执行 <code>info frame</code> 可查看当前栈帧信息（<a href="https://sourceware.org/gdb/current/onlinedocs/gdb.html/Frame-Info.html#Frame-Info">Frame Info</a>）: prints a verbose description of the selected stack frame.</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>i<span class="w"> </span>f
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>Stack<span class="w"> </span>level<span class="w"> </span><span class="m">0</span>,<span class="w"> </span>frame<span class="w"> </span>at<span class="w"> </span>0xfffffffff0d0:
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="w"> </span><span class="nv">pc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>0xaaaaaaaa07c4<span class="w"> </span><span class="k">in</span><span class="w"> </span>main<span class="w"> </span><span class="o">(</span>test-gdb.c:19<span class="o">)</span><span class="p">;</span><span class="w"> </span>saved<span class="w"> </span><span class="nv">pc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>0xfffff7e373fc
+</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="w"> </span><span class="nb">source</span><span class="w"> </span>language<span class="w"> </span>c.
+</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a><span class="w"> </span>Arglist<span class="w"> </span>at<span class="w"> </span>0xfffffffff0a0,<span class="w"> </span>args:<span class="w"> </span><span class="nv">argc</span><span class="o">=</span><span class="m">1</span>,<span class="w"> </span><span class="nv">argv</span><span class="o">=</span>0xfffffffff248
+</span><span id="__span-13-6"><a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a><span class="w"> </span>Locals<span class="w"> </span>at<span class="w"> </span>0xfffffffff0a0,<span class="w"> </span>Previous<span class="w"> </span>frame<span class="err">&#39;</span>s<span class="w"> </span>sp<span class="w"> </span>is<span class="w"> </span>0xfffffffff0d0
+</span><span id="__span-13-7"><a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a><span class="w"> </span>Saved<span class="w"> </span>registers:
+</span><span id="__span-13-8"><a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a><span class="w">  </span>x29<span class="w"> </span>at<span class="w"> </span>0xfffffffff0a0,<span class="w"> </span>x30<span class="w"> </span>at<span class="w"> </span>0xfffffffff0a8
+</span></code></pre></div>
+<h3 id="continue">continue<a class="headerlink" href="#continue" title="Permanent link">#</a></h3>
+<ul>
+<li>continue [ignore-count]</li>
+<li>fg [ignore-count]</li>
+</ul>
+<p>Resume program execution, at the address where your program last stopped; any breakpoints set at that address are bypassed.</p>
+<p>The optional argument <code>ignore-count</code> allows you to specify a further number of times to ignore a breakpoint at this location; its effect is like that of ignore.</p>
+<p>输入 <code>c</code>（continue），继续执行到下一个断点或结尾。这里命中第 22 行的 2 号断点。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>c
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>Continuing.
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>
+</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a>Breakpoint<span class="w"> </span><span class="m">2</span>,<span class="w"> </span>main<span class="w"> </span><span class="o">(</span><span class="nv">argc</span><span class="o">=</span><span class="m">1</span>,<span class="w"> </span><span class="nv">argv</span><span class="o">=</span>0xfffffffff248<span class="o">)</span><span class="w"> </span>at<span class="w"> </span>test-gdb.c:22
+</span><span id="__span-14-5"><a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a><span class="m">22</span><span class="w">      </span>printf<span class="o">(</span><span class="s2">&quot;result[1-100] = %ld\n&quot;</span>,<span class="w"> </span>result<span class="w"> </span><span class="o">)</span><span class="p">;</span>
+</span></code></pre></div>
+<p>继续执行到 3 号断点，命中 func 函数的第一条指令。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>c
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>Continuing.
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>result<span class="o">[</span><span class="m">1</span>-100<span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5050</span>
+</span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a>
+</span><span id="__span-15-5"><a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a>Breakpoint<span class="w"> </span><span class="m">3</span>,<span class="w"> </span>func<span class="w"> </span><span class="o">(</span><span class="nv">n</span><span class="o">=</span><span class="m">250</span><span class="o">)</span><span class="w"> </span>at<span class="w"> </span>test-gdb.c:5
+</span><span id="__span-15-6"><a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a><span class="m">5</span><span class="w">       </span>int<span class="w"> </span><span class="nv">sum</span><span class="o">=</span><span class="m">0</span>,i<span class="p">;</span>
+</span></code></pre></div>
+<p>继续执行第 8 行的 4 号条件断点：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>c
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>Continuing.
+</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>
+</span><span id="__span-16-4"><a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a>Breakpoint<span class="w"> </span><span class="m">4</span>,<span class="w"> </span>func<span class="w"> </span><span class="o">(</span><span class="nv">n</span><span class="o">=</span><span class="m">250</span><span class="o">)</span><span class="w"> </span>at<span class="w"> </span>test-gdb.c:8
+</span><span id="__span-16-5"><a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a><span class="m">8</span><span class="w">           </span><span class="nv">sum</span><span class="o">+=</span>i<span class="p">;</span>
+</span><span id="__span-16-6"><a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>p<span class="w"> </span>i
+</span><span id="__span-16-7"><a id="__codelineno-16-7" name="__codelineno-16-7" href="#__codelineno-16-7"></a><span class="nv">$1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">50</span>
+</span></code></pre></div>
+<h3 id="until">until<a class="headerlink" href="#until" title="Permanent link">#</a></h3>
+<p>当你厌倦了在一个循环体内单步跟踪时，<code>until</code> 命令可以运行程序直到退出循环体。</p>
+<blockquote>
+<p><code>until</code> / u: Continue running until a source line past the current line, in the current stack frame, is reached.</p>
+</blockquote>
+<p>执行 <a href="https://sourceware.org/gdb/current/onlinedocs/gdb.html/Frame-Info.html#Frame-Info">frame</a> 命令 prints a brief description of the currently selected stack frame，确认当前运行到了哪里（暂停的位置）。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>f
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a><span class="c1">#0  main (argc=1, argv=0xfffffffff248) at test-gdb.c:17</span>
+</span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a><span class="m">17</span><span class="w">      </span><span class="k">for</span><span class="o">(</span><span class="nv">i</span><span class="o">=</span><span class="m">1</span><span class="p">;</span><span class="w"> </span>i&lt;<span class="o">=</span><span class="m">100</span><span class="p">;</span><span class="w"> </span>i++<span class="o">)</span>
+</span><span id="__span-17-4"><a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>l
+</span><span id="__span-17-5"><a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a><span class="m">12</span><span class="w">  </span>
+</span><span id="__span-17-6"><a id="__codelineno-17-6" name="__codelineno-17-6" href="#__codelineno-17-6"></a><span class="m">13</span><span class="w">  </span>int<span class="w"> </span>main<span class="o">(</span>int<span class="w"> </span>argc,<span class="w"> </span>char*<span class="w"> </span>argv<span class="o">[])</span>
+</span><span id="__span-17-7"><a id="__codelineno-17-7" name="__codelineno-17-7" href="#__codelineno-17-7"></a><span class="m">14</span><span class="w">  </span><span class="o">{</span>
+</span><span id="__span-17-8"><a id="__codelineno-17-8" name="__codelineno-17-8" href="#__codelineno-17-8"></a><span class="m">15</span><span class="w">      </span>int<span class="w"> </span>i<span class="p">;</span>
+</span><span id="__span-17-9"><a id="__codelineno-17-9" name="__codelineno-17-9" href="#__codelineno-17-9"></a><span class="m">16</span><span class="w">      </span>long<span class="w"> </span><span class="nv">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span><span class="p">;</span>
+</span><span id="__span-17-10"><a id="__codelineno-17-10" name="__codelineno-17-10" href="#__codelineno-17-10"></a><span class="m">17</span><span class="w">      </span><span class="k">for</span><span class="o">(</span><span class="nv">i</span><span class="o">=</span><span class="m">1</span><span class="p">;</span><span class="w"> </span>i&lt;<span class="o">=</span><span class="m">100</span><span class="p">;</span><span class="w"> </span>i++<span class="o">)</span>
+</span><span id="__span-17-11"><a id="__codelineno-17-11" name="__codelineno-17-11" href="#__codelineno-17-11"></a><span class="m">18</span><span class="w">      </span><span class="o">{</span>
+</span><span id="__span-17-12"><a id="__codelineno-17-12" name="__codelineno-17-12" href="#__codelineno-17-12"></a><span class="m">19</span><span class="w">          </span><span class="nv">result</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span>i<span class="p">;</span>
+</span><span id="__span-17-13"><a id="__codelineno-17-13" name="__codelineno-17-13" href="#__codelineno-17-13"></a><span class="m">20</span><span class="w">      </span><span class="o">}</span>
+</span><span id="__span-17-14"><a id="__codelineno-17-14" name="__codelineno-17-14" href="#__codelineno-17-14"></a><span class="m">21</span><span class="w">  </span>
+</span><span id="__span-17-15"><a id="__codelineno-17-15" name="__codelineno-17-15" href="#__codelineno-17-15"></a><span class="o">(</span>gdb<span class="o">)</span>
+</span><span id="__span-17-16"><a id="__codelineno-17-16" name="__codelineno-17-16" href="#__codelineno-17-16"></a><span class="m">22</span><span class="w">      </span>printf<span class="o">(</span><span class="s2">&quot;result[1-100] = %ld\n&quot;</span>,<span class="w"> </span>result<span class="w"> </span><span class="o">)</span><span class="p">;</span>
+</span><span id="__span-17-17"><a id="__codelineno-17-17" name="__codelineno-17-17" href="#__codelineno-17-17"></a><span class="m">23</span><span class="w">      </span>printf<span class="o">(</span><span class="s2">&quot;result[1-250] = %d\n&quot;</span>,<span class="w"> </span>func<span class="o">(</span><span class="m">250</span><span class="o">)</span><span class="w"> </span><span class="o">)</span><span class="p">;</span>
+</span><span id="__span-17-18"><a id="__codelineno-17-18" name="__codelineno-17-18" href="#__codelineno-17-18"></a><span class="m">24</span><span class="w">  </span>
+</span><span id="__span-17-19"><a id="__codelineno-17-19" name="__codelineno-17-19" href="#__codelineno-17-19"></a><span class="m">25</span><span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="m">0</span><span class="p">;</span>
+</span><span id="__span-17-20"><a id="__codelineno-17-20" name="__codelineno-17-20" href="#__codelineno-17-20"></a><span class="m">26</span><span class="w">  </span><span class="o">}</span>
+</span></code></pre></div>
+<p>输入 <code>u</code>（或 <code>u 22</code>），跳出第 17-20 行的 for 循环，运行到第 22 行暂停。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>u
+</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>main<span class="w"> </span><span class="o">(</span><span class="nv">argc</span><span class="o">=</span><span class="m">1</span>,<span class="w"> </span><span class="nv">argv</span><span class="o">=</span>0xfffffffff248<span class="o">)</span><span class="w"> </span>at<span class="w"> </span>test-gdb.c:22
+</span><span id="__span-18-3"><a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a><span class="m">22</span><span class="w">      </span>printf<span class="o">(</span><span class="s2">&quot;result[1-100] = %ld\n&quot;</span>,<span class="w"> </span>result<span class="w"> </span><span class="o">)</span><span class="p">;</span>
+</span></code></pre></div>
+<p>此时，断在第 22 行的 printf 调用，执行 <code>next</code> 运行至第 23 行。</p>
+<p>此时，如果继续执行 <code>next</code> 不会进入 func 和 printf 函数内部，直接运行至 return 语句。</p>
+<p>要想进入 func 函数体内部进行调试，则需要改用 <code>step</code> 单步跟踪命令。</p>
+<h3 id="stepfinish">step/finish<a class="headerlink" href="#stepfinish" title="Permanent link">#</a></h3>
+<p><code>step</code>：单步跟踪，如果有函数调用，会进入该函数，类似VC等工具中的 step in。而 <code>next</code> 遇到函数调用，不会进入该函数。类似VC等工具中的 step over。</p>
+<blockquote>
+<p><code>step</code>: Continue running your program until control reaches a different source line, then stop it and return control to GDB. This command is abbreviated <code>s</code>.</p>
+<p><code>step count</code>: Continue running as in step, but do so count times. If a breakpoint is reached, or a signal not related to stepping occurs before count steps, stepping stops right away.</p>
+<p>与 nexti（ni）对应有 stepi（si）命令，支持机器指令级别的单步调试。</p>
+</blockquote>
+<p>执行 <code>step</code> 跟踪进入 func 函数体第 5 行代码。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>s
+</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a>func<span class="w"> </span><span class="o">(</span><span class="nv">n</span><span class="o">=</span><span class="m">250</span><span class="o">)</span><span class="w"> </span>at<span class="w"> </span>test-gdb.c:5
+</span><span id="__span-19-3"><a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a><span class="m">5</span><span class="w">       </span>int<span class="w"> </span><span class="nv">sum</span><span class="o">=</span><span class="m">0</span>,i<span class="p">;</span>
+</span></code></pre></div>
+<p>如果不想在 func 中逗留，可以执行 <code>finish</code> 命令运行至当前函数返回，并打印函数返回时的堆栈地址和返回值及参数值等信息。类似 VC 等工具中的 step out。</p>
+<blockquote>
+<p><code>finish</code>: Continue running until just after function in the selected stack frame returns. Print the returned value (if any). This command can be abbreviated as <code>fin</code>.</p>
+</blockquote>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>fin
+</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>Run<span class="w"> </span>till<span class="w"> </span><span class="nb">exit</span><span class="w"> </span>from<span class="w"> </span><span class="c1">#0  func (n=250) at test-gdb.c:5</span>
+</span><span id="__span-20-3"><a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a>0x0000aaaaaaaa0800<span class="w"> </span><span class="k">in</span><span class="w"> </span>main<span class="w"> </span><span class="o">(</span><span class="nv">argc</span><span class="o">=</span><span class="m">1</span>,<span class="w"> </span><span class="nv">argv</span><span class="o">=</span>0xfffffffff248<span class="o">)</span><span class="w"> </span>at<span class="w"> </span>test-gdb.c:23
+</span><span id="__span-20-4"><a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a><span class="m">23</span><span class="w">      </span>printf<span class="o">(</span><span class="s2">&quot;result[1-250] = %d\n&quot;</span>,<span class="w"> </span>func<span class="o">(</span><span class="m">250</span><span class="o">)</span><span class="w"> </span><span class="o">)</span><span class="p">;</span>
+</span><span id="__span-20-5"><a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a>Value<span class="w"> </span>returned<span class="w"> </span>is<span class="w"> </span><span class="nv">$10</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">31125</span>
+</span></code></pre></div>
+<p>从 func 返回到第 23 行的 printf 语句，如果继续 <code>step</code> 将深入 printf 函数内部，提示找不到源代码。<br />
+执行 finish 退出 printf 函数体，返回到第 25 行的 return 语句。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>s
+</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>__printf<span class="w"> </span><span class="o">(</span><span class="nv">format</span><span class="o">=</span>0xaaaaaaaa0850<span class="w"> </span><span class="s2">&quot;result[1-250] = %d\n&quot;</span><span class="o">)</span><span class="w"> </span>at<span class="w"> </span>./stdio-common/printf.c:28
+</span><span id="__span-21-3"><a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a><span class="m">28</span><span class="w">  </span>./stdio-common/printf.c:<span class="w"> </span>No<span class="w"> </span>such<span class="w"> </span>file<span class="w"> </span>or<span class="w"> </span>directory.
+</span><span id="__span-21-4"><a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a>
+</span><span id="__span-21-5"><a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>fin
+</span><span id="__span-21-6"><a id="__codelineno-21-6" name="__codelineno-21-6" href="#__codelineno-21-6"></a>Run<span class="w"> </span>till<span class="w"> </span><span class="nb">exit</span><span class="w"> </span>from<span class="w"> </span><span class="c1">#0  __printf (format=0xaaaaaaaa0850 &quot;result[1-250] = %d\n&quot;) at ./stdio-common/printf.c:28</span>
+</span><span id="__span-21-7"><a id="__codelineno-21-7" name="__codelineno-21-7" href="#__codelineno-21-7"></a>result<span class="o">[</span><span class="m">1</span>-250<span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">31125</span>
+</span><span id="__span-21-8"><a id="__codelineno-21-8" name="__codelineno-21-8" href="#__codelineno-21-8"></a>main<span class="w"> </span><span class="o">(</span><span class="nv">argc</span><span class="o">=</span><span class="m">1</span>,<span class="w"> </span><span class="nv">argv</span><span class="o">=</span>0xfffffffff248<span class="o">)</span><span class="w"> </span>at<span class="w"> </span>test-gdb.c:25
+</span><span id="__span-21-9"><a id="__codelineno-21-9" name="__codelineno-21-9" href="#__codelineno-21-9"></a><span class="m">25</span><span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="m">0</span><span class="p">;</span>
+</span><span id="__span-21-10"><a id="__codelineno-21-10" name="__codelineno-21-10" href="#__codelineno-21-10"></a>Value<span class="w"> </span>returned<span class="w"> </span>is<span class="w"> </span><span class="nv">$11</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">22</span>
+</span></code></pre></div>
+<h3 id="skip">skip<a class="headerlink" href="#skip" title="Permanent link">#</a></h3>
+<p><a href="https://sourceware.org/gdb/current/onlinedocs/gdb.html/Skipping-Over-Functions-and-Files.html#Skipping-Over-Functions-and-Files">5.3 Skipping Over Functions and Files</a></p>
+<p>The program you are debugging may contain some functions which are uninteresting to debug. The <code>skip</code> command lets you tell GDB to <em>skip</em> a function, all functions in a file or a particular function in a particular file when stepping.</p>
+<p>For example, consider the following C function:</p>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="mi">101</span><span class="w">     </span><span class="kt">int</span><span class="w"> </span><span class="n">func</span><span class="p">()</span>
+</span><span id="__span-22-2"><a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a><span class="mi">102</span><span class="w">     </span><span class="p">{</span>
+</span><span id="__span-22-3"><a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a><span class="mi">103</span><span class="w">         </span><span class="n">foo</span><span class="p">(</span><span class="n">boring</span><span class="p">());</span>
+</span><span id="__span-22-4"><a id="__codelineno-22-4" name="__codelineno-22-4" href="#__codelineno-22-4"></a><span class="mi">104</span><span class="w">         </span><span class="n">bar</span><span class="p">(</span><span class="n">boring</span><span class="p">());</span>
+</span><span id="__span-22-5"><a id="__codelineno-22-5" name="__codelineno-22-5" href="#__codelineno-22-5"></a><span class="mi">105</span><span class="w">     </span><span class="p">}</span>
+</span></code></pre></div>
+<p>Suppose you wish to step into the functions foo and bar, but you are not interested in stepping through boring. If you run step at line 103, you’ll enter boring(), but if you run next, you’ll step over both foo and boring!</p>
+<p>One solution is to <code>step</code> into boring and use the <code>finish</code> command to immediately exit it. But this can become tedious if boring is called from many places.</p>
+<p>A more flexible solution is to execute <code>skip boring</code>. This instructs GDB never to step into boring. Now when you execute step at line 103, you’ll step over boring and directly into foo.</p>
+<p>在上面执行 step 单步跟踪的例子中，可以 <code>skip printf</code> 不跟踪进入 printf 函数体。</p>
+<p>和 breakpoints/watchpoints 一样，skip points 也支持 info 查看和 enable/disable/delete 管理操作：</p>
+<ul>
+<li><code>info skip [range]</code>: Print details about the specified skip(s).</li>
+<li><code>skip delete [range]</code>:  Delete the specified skip(s). If range is not specified, delete all skips.</li>
+<li><code>skip enable [range]</code>: Enable the specified skip(s). If range is not specified, enable all skips.</li>
+<li><code>skip disable [range]</code>: Disable the specified skip(s). If range is not specified, disable all skips.</li>
+</ul>
+<h2 id="manage_breakpoints">Manage Breakpoints<a class="headerlink" href="#manage_breakpoints" title="Permanent link">#</a></h2>
+<p>对于设置的停止点，可以 disable 禁用，也可以 enable 重新启用，或者 delete 删除。</p>
+<h3 id="enabledisable">enable/disable<a class="headerlink" href="#enabledisable" title="Permanent link">#</a></h3>
+<p><a href="https://sourceware.org/gdb/current/onlinedocs/gdb.html/Disabling.html#Disabling">5.1.5 Disabling Breakpoints</a></p>
+<p>You can use the following commands to enable or disable breakpoints, watchpoints, tracepoints, and catchpoints:</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>disable<span class="w"> </span><span class="o">[</span>breakpoints<span class="o">]</span><span class="w"> </span><span class="o">[</span>list…<span class="o">]</span>
+</span><span id="__span-23-2"><a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a>Disable<span class="w"> </span>the<span class="w"> </span>specified<span class="w"> </span>breakpoints—or<span class="w"> </span>all<span class="w"> </span>breakpoints,<span class="w"> </span><span class="k">if</span><span class="w"> </span>none<span class="w"> </span>are<span class="w"> </span>listed.<span class="w"> </span>A<span class="w"> </span>disabled<span class="w"> </span>breakpoint<span class="w"> </span>has<span class="w"> </span>no<span class="w"> </span>effect<span class="w"> </span>but<span class="w"> </span>is<span class="w"> </span>not<span class="w"> </span>forgotten.<span class="w"> </span>All<span class="w"> </span>options<span class="w"> </span>such<span class="w"> </span>as<span class="w"> </span>ignore-counts,<span class="w"> </span>conditions<span class="w"> </span>and<span class="w"> </span>commands<span class="w"> </span>are<span class="w"> </span>remembered<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="k">case</span><span class="w"> </span>the<span class="w"> </span>breakpoint<span class="w"> </span>is<span class="w"> </span>enabled<span class="w"> </span>again<span class="w"> </span>later.<span class="w"> </span>You<span class="w"> </span>may<span class="w"> </span>abbreviate<span class="w"> </span>disable<span class="w"> </span>as<span class="w"> </span>dis.
+</span><span id="__span-23-3"><a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a>
+</span><span id="__span-23-4"><a id="__codelineno-23-4" name="__codelineno-23-4" href="#__codelineno-23-4"></a><span class="nb">enable</span><span class="w"> </span><span class="o">[</span>breakpoints<span class="o">]</span><span class="w"> </span><span class="o">[</span>list…<span class="o">]</span>
+</span><span id="__span-23-5"><a id="__codelineno-23-5" name="__codelineno-23-5" href="#__codelineno-23-5"></a>Enable<span class="w"> </span>the<span class="w"> </span>specified<span class="w"> </span>breakpoints<span class="w"> </span><span class="o">(</span>or<span class="w"> </span>all<span class="w"> </span>defined<span class="w"> </span>breakpoints<span class="o">)</span>.<span class="w"> </span>They<span class="w"> </span>become<span class="w"> </span>effective<span class="w"> </span>once<span class="w"> </span>again<span class="w"> </span><span class="k">in</span><span class="w"> </span>stopping<span class="w"> </span>your<span class="w"> </span>program.
+</span><span id="__span-23-6"><a id="__codelineno-23-6" name="__codelineno-23-6" href="#__codelineno-23-6"></a>
+</span><span id="__span-23-7"><a id="__codelineno-23-7" name="__codelineno-23-7" href="#__codelineno-23-7"></a><span class="nb">enable</span><span class="w"> </span><span class="o">[</span>breakpoints<span class="o">]</span><span class="w"> </span>once<span class="w"> </span>list…
+</span><span id="__span-23-8"><a id="__codelineno-23-8" name="__codelineno-23-8" href="#__codelineno-23-8"></a>Enable<span class="w"> </span>the<span class="w"> </span>specified<span class="w"> </span>breakpoints<span class="w"> </span>temporarily.<span class="w"> </span>GDB<span class="w"> </span>disables<span class="w"> </span>any<span class="w"> </span>of<span class="w"> </span>these<span class="w"> </span>breakpoints<span class="w"> </span>immediately<span class="w"> </span>after<span class="w"> </span>stopping<span class="w"> </span>your<span class="w"> </span>program.
+</span><span id="__span-23-9"><a id="__codelineno-23-9" name="__codelineno-23-9" href="#__codelineno-23-9"></a>
+</span><span id="__span-23-10"><a id="__codelineno-23-10" name="__codelineno-23-10" href="#__codelineno-23-10"></a><span class="nb">enable</span><span class="w"> </span><span class="o">[</span>breakpoints<span class="o">]</span><span class="w"> </span>count<span class="w"> </span>count<span class="w"> </span>list…
+</span><span id="__span-23-11"><a id="__codelineno-23-11" name="__codelineno-23-11" href="#__codelineno-23-11"></a>Enable<span class="w"> </span>the<span class="w"> </span>specified<span class="w"> </span>breakpoints<span class="w"> </span>temporarily.<span class="w"> </span>GDB<span class="w"> </span>records<span class="w"> </span>count<span class="w"> </span>with<span class="w"> </span>each<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>specified<span class="w"> </span>breakpoints,<span class="w"> </span>and<span class="w"> </span>decrements<span class="w"> </span>a<span class="w"> </span>breakpoint’s<span class="w"> </span>count<span class="w"> </span>when<span class="w"> </span>it<span class="w"> </span>is<span class="w"> </span>hit.<span class="w"> </span>When<span class="w"> </span>any<span class="w"> </span>count<span class="w"> </span>reaches<span class="w"> </span><span class="m">0</span>,<span class="w"> </span>GDB<span class="w"> </span>disables<span class="w"> </span>that<span class="w"> </span>breakpoint.<span class="w"> </span>If<span class="w"> </span>a<span class="w"> </span>breakpoint<span class="w"> </span>has<span class="w"> </span>an<span class="w"> </span>ignore<span class="w"> </span>count<span class="w"> </span><span class="o">(</span>see<span class="w"> </span>Break<span class="w"> </span>Conditions<span class="o">)</span>,<span class="w"> </span>that<span class="w"> </span>will<span class="w"> </span>be<span class="w"> </span>decremented<span class="w"> </span>to<span class="w"> </span><span class="m">0</span><span class="w"> </span>before<span class="w"> </span>count<span class="w"> </span>is<span class="w"> </span>affected.
+</span><span id="__span-23-12"><a id="__codelineno-23-12" name="__codelineno-23-12" href="#__codelineno-23-12"></a>
+</span><span id="__span-23-13"><a id="__codelineno-23-13" name="__codelineno-23-13" href="#__codelineno-23-13"></a><span class="nb">enable</span><span class="w"> </span><span class="o">[</span>breakpoints<span class="o">]</span><span class="w"> </span>delete<span class="w"> </span>list…
+</span><span id="__span-23-14"><a id="__codelineno-23-14" name="__codelineno-23-14" href="#__codelineno-23-14"></a>Enable<span class="w"> </span>the<span class="w"> </span>specified<span class="w"> </span>breakpoints<span class="w"> </span>to<span class="w"> </span>work<span class="w"> </span>once,<span class="w"> </span><span class="k">then</span><span class="w"> </span>die.<span class="w"> </span>GDB<span class="w"> </span>deletes<span class="w"> </span>any<span class="w"> </span>of<span class="w"> </span>these<span class="w"> </span>breakpoints<span class="w"> </span>as<span class="w"> </span>soon<span class="w"> </span>as<span class="w"> </span>your<span class="w"> </span>program<span class="w"> </span>stops<span class="w"> </span>there.<span class="w"> </span>Breakpoints<span class="w"> </span><span class="nb">set</span><span class="w"> </span>by<span class="w"> </span>the<span class="w"> </span>tbreak<span class="w"> </span><span class="nb">command</span><span class="w"> </span>start<span class="w"> </span>out<span class="w"> </span><span class="k">in</span><span class="w"> </span>this<span class="w"> </span>state.
+</span></code></pre></div>
+<h3 id="delete">delete<a class="headerlink" href="#delete" title="Permanent link">#</a></h3>
+<p><a href="https://sourceware.org/gdb/current/onlinedocs/gdb.html/Delete-Breaks.html#Delete-Breaks">5.1.4 Deleting Breakpoints</a></p>
+<p><code>clear</code>: 清除下一个停止点。</p>
+<p>Delete any breakpoints at the next instruction to be executed in the selected stack frame (see <a href="https://sourceware.org/gdb/current/onlinedocs/gdb.html/Selection.html#Selection">Selecting a Frame</a>). When the innermost frame is selected, this is a good way to delete a breakpoint where your program just stopped.</p>
+<p><code>clear locspec</code>，与 <code>break locspec</code> 对应，支持清除指定行号、函数和地址处的停止点。</p>
+<p>Delete any breakpoint with a code location that corresponds to locspec. See <a href="https://sourceware.org/gdb/current/onlinedocs/gdb.html/Location-Specifications.html#Location-Specifications">Location Specifications</a>, for the various forms of locspec.</p>
+<ul>
+<li>linenum</li>
+<li>filename:linenum</li>
+<li>-line linenum</li>
+<li>-source filename -line linenum</li>
+<li>*address</li>
+<li>function / -function function</li>
+</ul>
+<p><code>delete [breakpoints] [list…]</code></p>
+<p>Delete the breakpoints, watchpoints, tracepoints, or catchpoints of the breakpoint list specified as argument. If no argument is specified, delete <em>all</em> breakpoints, watchpoints, tracepoints, and catchpoints (GDB asks confirmation, unless you have <code>set confirm off</code>). You can abbreviate this command as <code>d</code>.</p>
+<p>删除指定的断点，breakpoints为断点号。如果不指定断点号，则表示删除所有的断点。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>i<span class="w"> </span>b
+</span><span id="__span-24-2"><a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a>Num<span class="w">     </span>Type<span class="w">           </span>Disp<span class="w"> </span>Enb<span class="w"> </span>Address<span class="w">            </span>What
+</span><span id="__span-24-3"><a id="__codelineno-24-3" name="__codelineno-24-3" href="#__codelineno-24-3"></a><span class="m">1</span><span class="w">       </span>breakpoint<span class="w">     </span>keep<span class="w"> </span>y<span class="w">   </span>0x0000aaaaaaaa07b0<span class="w"> </span><span class="k">in</span><span class="w"> </span>main<span class="w"> </span>at<span class="w"> </span>test-gdb.c:16
+</span><span id="__span-24-4"><a id="__codelineno-24-4" name="__codelineno-24-4" href="#__codelineno-24-4"></a><span class="w">    </span>breakpoint<span class="w"> </span>already<span class="w"> </span>hit<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="nb">time</span>
+</span><span id="__span-24-5"><a id="__codelineno-24-5" name="__codelineno-24-5" href="#__codelineno-24-5"></a><span class="m">2</span><span class="w">       </span>breakpoint<span class="w">     </span>keep<span class="w"> </span>y<span class="w">   </span>0x0000aaaaaaaa07e8<span class="w"> </span><span class="k">in</span><span class="w"> </span>main<span class="w"> </span>at<span class="w"> </span>test-gdb.c:22
+</span><span id="__span-24-6"><a id="__codelineno-24-6" name="__codelineno-24-6" href="#__codelineno-24-6"></a><span class="m">3</span><span class="w">       </span>breakpoint<span class="w">     </span>keep<span class="w"> </span>y<span class="w">   </span>0x0000aaaaaaaa075c<span class="w"> </span><span class="k">in</span><span class="w"> </span>func<span class="w"> </span>at<span class="w"> </span>test-gdb.c:5
+</span><span id="__span-24-7"><a id="__codelineno-24-7" name="__codelineno-24-7" href="#__codelineno-24-7"></a><span class="m">4</span><span class="w">       </span>breakpoint<span class="w">     </span>keep<span class="w"> </span>y<span class="w">   </span>0x0000aaaaaaaa0768<span class="w"> </span><span class="k">in</span><span class="w"> </span>func<span class="w"> </span>at<span class="w"> </span>test-gdb.c:8
+</span><span id="__span-24-8"><a id="__codelineno-24-8" name="__codelineno-24-8" href="#__codelineno-24-8"></a><span class="w">    </span>stop<span class="w"> </span>only<span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="nv">i</span><span class="o">==</span><span class="m">50</span>
+</span><span id="__span-24-9"><a id="__codelineno-24-9" name="__codelineno-24-9" href="#__codelineno-24-9"></a>
+</span><span id="__span-24-10"><a id="__codelineno-24-10" name="__codelineno-24-10" href="#__codelineno-24-10"></a><span class="c1"># 清除下一个断点（1 号断点）</span>
+</span><span id="__span-24-11"><a id="__codelineno-24-11" name="__codelineno-24-11" href="#__codelineno-24-11"></a><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>clear
+</span><span id="__span-24-12"><a id="__codelineno-24-12" name="__codelineno-24-12" href="#__codelineno-24-12"></a>Deleted<span class="w"> </span>breakpoint<span class="w"> </span><span class="m">1</span>
+</span><span id="__span-24-13"><a id="__codelineno-24-13" name="__codelineno-24-13" href="#__codelineno-24-13"></a>
+</span><span id="__span-24-14"><a id="__codelineno-24-14" name="__codelineno-24-14" href="#__codelineno-24-14"></a><span class="c1"># 删除 2 号断点</span>
+</span><span id="__span-24-15"><a id="__codelineno-24-15" name="__codelineno-24-15" href="#__codelineno-24-15"></a><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>d<span class="w"> </span><span class="m">2</span>
+</span><span id="__span-24-16"><a id="__codelineno-24-16" name="__codelineno-24-16" href="#__codelineno-24-16"></a>
+</span><span id="__span-24-17"><a id="__codelineno-24-17" name="__codelineno-24-17" href="#__codelineno-24-17"></a><span class="c1"># 删除第 8 行的停止点（4 号断点）</span>
+</span><span id="__span-24-18"><a id="__codelineno-24-18" name="__codelineno-24-18" href="#__codelineno-24-18"></a><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>clear<span class="w"> </span><span class="m">8</span>
+</span><span id="__span-24-19"><a id="__codelineno-24-19" name="__codelineno-24-19" href="#__codelineno-24-19"></a>Deleted<span class="w"> </span>breakpoint<span class="w"> </span><span class="m">4</span>
+</span><span id="__span-24-20"><a id="__codelineno-24-20" name="__codelineno-24-20" href="#__codelineno-24-20"></a>
+</span><span id="__span-24-21"><a id="__codelineno-24-21" name="__codelineno-24-21" href="#__codelineno-24-21"></a><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>i<span class="w"> </span>b
+</span><span id="__span-24-22"><a id="__codelineno-24-22" name="__codelineno-24-22" href="#__codelineno-24-22"></a>Num<span class="w">     </span>Type<span class="w">           </span>Disp<span class="w"> </span>Enb<span class="w"> </span>Address<span class="w">            </span>What
+</span><span id="__span-24-23"><a id="__codelineno-24-23" name="__codelineno-24-23" href="#__codelineno-24-23"></a><span class="m">3</span><span class="w">       </span>breakpoint<span class="w">     </span>keep<span class="w"> </span>y<span class="w">   </span>0x0000aaaaaaaa075c<span class="w"> </span><span class="k">in</span><span class="w"> </span>func<span class="w"> </span>at<span class="w"> </span>test-gdb.c:5
+</span><span id="__span-24-24"><a id="__codelineno-24-24" name="__codelineno-24-24" href="#__codelineno-24-24"></a>
+</span><span id="__span-24-25"><a id="__codelineno-24-25" name="__codelineno-24-25" href="#__codelineno-24-25"></a><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>d
+</span><span id="__span-24-26"><a id="__codelineno-24-26" name="__codelineno-24-26" href="#__codelineno-24-26"></a>Delete<span class="w"> </span>all<span class="w"> </span>breakpoints?<span class="w"> </span><span class="o">(</span>y<span class="w"> </span>or<span class="w"> </span>n<span class="o">)</span><span class="w"> </span>y
+</span></code></pre></div>
+
+
+
+
+
+
+
+  
+  
+
+
+
+  
+
+
+  
+
+
+
+  <h2 id="__comments">评论</h2>
+  <!-- Insert generated snippet here -->
+  <script src="https://giscus.app/client.js"
+    data-repo="fan2/mkdocs"
+    data-repo-id="R_kgDOLltxSg"
+    data-category="Announcements"
+    data-category-id="DIC_kwDOLltxSs4CeURH"
+    data-mapping="pathname"
+    data-strict="0"
+    data-reactions-enabled="1"
+    data-emit-metadata="1"
+    data-input-position="top"
+    data-theme="preferred_color_scheme"
+    data-lang="zh-CN"
+    data-loading="lazy"
+    crossorigin="anonymous"
+    async>
+  </script>
+
+  <!-- Synchronize Giscus theme with palette -->
+  <script>
+    var giscus = document.querySelector("script[src*=giscus]")
+
+    // Set palette on initial load
+    var palette = __md_get("__palette")
+    if (palette && typeof palette.color === "object") {
+      var theme = palette.color.scheme === "slate"
+        ? "transparent_dark"
+        : "light"
+
+      // Instruct Giscus to set theme
+      giscus.setAttribute("data-theme", theme) 
+    }
+
+    // Register event handlers after documented loaded
+    document.addEventListener("DOMContentLoaded", function() {
+      var ref = document.querySelector("[data-md-component=palette]")
+      ref.addEventListener("change", function() {
+        var palette = __md_get("__palette")
+        if (palette && typeof palette.color === "object") {
+          var theme = palette.color.scheme === "slate"
+            ? "transparent_dark"
+            : "light"
+
+          // Instruct Giscus to change theme
+          var frame = document.querySelector(".giscus-frame")
+          frame.contentWindow.postMessage(
+            { giscus: { setConfig: { theme } } },
+            "https://giscus.app"
+          )
+        }
+      })
+    })
+  </script>
+
+      
+    </article>
+  </div>
+
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+        
+      
+      <nav class="md-footer__inner md-grid" aria-label="页脚" >
+        
+          
+          <a href="../../20220422/2-gdb-in-and-out/" class="md-footer__link md-footer__link--prev" aria-label="上一页: GDB Invocation &amp; Quitting">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                上一页
+              </span>
+              <div class="md-ellipsis">
+                GDB Invocation & Quitting
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../../20220424/4-gdb-examining-data/" class="md-footer__link md-footer__link--next" aria-label="下一页: GDB Examining Data">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                下一页
+              </span>
+              <div class="md-ellipsis">
+                GDB Examining Data
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2024- Cliff Fan
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["toc.follow", "header.autohide", "navigation.tabs", "navigation.top", "navigation.footer", "navigation.tracking", "content.code.copy", "content.code.select", "content.code.annotate"], "search": "../../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.bd41221c.min.js"></script>
+      
+        <script src="../../../javascripts/mathjax.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+        <script src="https://vercount.one/js"></script>
+      
+    
+  </body>
+</html>

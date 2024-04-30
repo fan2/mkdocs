@@ -819,6 +819,7 @@ start address 0x0000000000000000
 `readelf -l`(--program-headers, --segments): Display the program headers
 `readelf -S`(--section-headers, --sections): Display the sections' header
 `readelf -e`(--headers): Equivalent to: -h -l -S
+`readelf -s`(--syms): Display the symbol table.
 `readelf -d`(--dynamic): Displays the contents of the file's dynamic section, if it has one.
 `readelf -a`(--all): Displays the complete structure of an object ﬁle.
 
