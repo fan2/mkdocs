@@ -47,7 +47,7 @@ For a C source file they are the preprocessor and compiler `cc1`, the assembler 
 
 ![GCC_Architecture](./images/GCC_Architecture.jpeg)
 
-[Developer Options](https://gcc.gnu.org/onlinedocs/gcc/Developer-Options.html): `-dumpspecs` : Print the compiler’s built-in  [Spec Files](https://gcc.gnu.org/onlinedocs/gcc/Spec-Files.html):
+[Developer Options](https://gcc.gnu.org/onlinedocs/gcc/Developer-Options.html): `-dumpspecs` : Print the compiler’s built-in [Spec Files](https://gcc.gnu.org/onlinedocs/gcc/Spec-Files.html):
 
 - cpp : Options to pass to the C preprocessor
 - cc1 : Options to pass to the C compiler

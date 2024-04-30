@@ -536,10 +536,10 @@ clang: error: linker command failed due to signal (use -v to see invocation)
 !!! note "macOS 编译链接 C/C++"
 
     macOS 上编译链接 C 代码：dry-run: `gcc stdc.c -###`；compile: `gcc stdc.c -o c.out -v`。
-    macOS 上编译链接 C++ 代码：dry-run: `gcc stdcpp.cpp -###`；compile: `g++ stdcpp.cpp -o cpp.out -v`。
+    macOS 上编译链接 C++ 代码：dry-run: `g++ stdcpp.cpp -###`；compile: `g++ stdcpp.cpp -o cpp.out -v`。
 
     - gcc/g++ 都只调用了 `clang cc1` 和 `ld` 两步命令。
-    - gcc std.c 链接 `-lSystem`；g++ stdcpp.cpp 链接 `-lSystem` 和 `-lc++`（libc++）。
+    - gcc std.c 链接 `libLTO.dylib`、`-lSystem` 和 `libclang_rt.osx.a`；g++ stdcpp.cpp 在 -lSystem 前面插增链接选项 `-lc++`。
     - 执行 `otool -L c.out` / `otool -L cpp.out` 可查看依赖的动态库（dylib）。
 
 Ubuntu 下执行 gcc/g++ 命令，调用 collect2 和 ld 链接，最终报错：
@@ -574,16 +574,17 @@ Ubuntu 下执行 gcc/g++ 命令，调用 collect2 和 ld 链接，最终报错�
 
     ubuntu 上编译链接 C 代码：dry-run: `gcc stdc.c -###`；compile: `gcc stdc.c -o c.out -v`。
 
-    - gcc 依次调用 cc1->as->collect2，链接选项 `-lc`（[g]libc）。
+    - gcc 依次调用 cc1->as->collect2，链接 Scrt1.o,crti.o,crtbeginS.o,`-lc`（[g]libc）,crtendS.o,crtn.o。
 
-    ubuntu 上编译链接 C++ 代码：dry-run: `gcc stdcpp.cpp -###`；compile: `g++ stdcpp.cpp -o cpp.out -v`。
+    ubuntu 上编译链接 C++ 代码：dry-run: `g++ stdcpp.cpp -###`；compile: `g++ stdcpp.cpp -o cpp.out -v`。
 
-    - g++ 依次调用 cc1plus->as->collect2，链接选项 `-lc`,`-lm`（math）,`-lstdc++`（libstdc++）。
+    - g++ 依次调用 cc1plus->as->collect2，链接 Scrt1.o,crti.o,crtbeginS.o,`-lstdc++`（libstdc++）,crtendS.o,crtn.o。
 
     **说明**：
 
-    - gcc 的 `cc1` 已经集成了 `cpp` 的处理，无须额外调用 [cpp](https://gcc.gnu.org/onlinedocs/cpp/Invocation.html) 来进行预处理。
-    - [collect2](https://gcc.gnu.org/onlinedocs/gccint/Collect2.html) 内部调用 real `ld` 完成最终的链接工作。
+    - gcc 的 `cc1` 已经集成了 [cpp](https://gcc.gnu.org/onlinedocs/cpp/Invocation.html) 预处理。
+    - [collect2](https://gcc.gnu.org/onlinedocs/gccint/Collect2.html) 内部调用 *real* `ld` 完成最终的链接工作。
+    - 关于 crt(C Runtime)，参考 [crtbegin.o vs. crtbeginS.o](https://stackoverflow.com/questions/22160888/what-is-the-difference-between-crtbegin-o-crtbegint-o-and-crtbegins-o) 和 [Mini FAQ about the misc libc/gcc crt files.](https://dev.gentoo.org/~vapier/crt.txt)。
 
 ---
 
@@ -634,6 +635,8 @@ ldd 打印依赖的动态共享库：libc.so.6, libstdc++.so.6。
     	libgcc_s.so.1 => /lib/aarch64-linux-gnu/libgcc_s.so.1 (0x0000ffff963c0000)
     ```
 
+---
+
 macOS 与 Linux 上的 ldd 对应的命令是 `otool -L`：
 
 ```Shell
@@ -646,6 +649,57 @@ cpp.out:
 	/usr/lib/libc++.1.dylib (compatibility version 1.0.0, current version 1700.255.0)
 	/usr/lib/libSystem.B.dylib (compatibility version 1.0.0, current version 1345.100.2)
 ```
+
+但 /usr/lib 下并没有找到这两个 dylib，参考：
+
+- [Why are my system libraries and frameworks not visible in macOS Monterey?](https://stackoverflow.com/questions/70549365/why-are-my-system-libraries-and-frameworks-not-visible-in-macos-monterey)
+- [Missing librairies in /usr/lib on Big Sur?](https://developer.apple.com/forums/thread/655588): Since Big Sur, it somehow all became virtual.
+
+在 macOS 上的 Library search paths 中过滤 libSystem 和 libc++，只搜到了 libSystem.B.tbd 和 libc++.1.tbd 及一堆软链替身（如 libc.tbd、libc++.tbd）：
+
+```Shell
+$ ls -l /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/lib | grep -E "lib(System|c\+\+)"
+-rw-r--r--    1 root  wheel  309826 Nov 17  2021 libSystem.B.tbd
+lrwxr-xr-x    1 root  wheel      15 Oct  7  2021 libSystem.tbd -> libSystem.B.tbd
+-rw-r--r--    1 root  wheel  145622 Nov 13  2021 libc++.1.tbd
+lrwxr-xr-x    1 root  wheel      12 Oct  7  2021 libc++.tbd -> libc++.1.tbd
+-rw-r--r--    1 root  wheel   10571 Nov 13  2021 libc++abi.tbd
+lrwxr-xr-x    1 root  wheel      13 Oct  7  2021 libc.tbd -> libSystem.tbd
+lrwxr-xr-x    1 root  wheel      13 Oct  7  2021 libdl.tbd -> libSystem.tbd
+lrwxr-xr-x    1 root  wheel      13 Oct  7  2021 libgcc_s.1.tbd -> libSystem.tbd
+lrwxr-xr-x    1 root  wheel      13 Oct  7  2021 libm.tbd -> libSystem.tbd
+lrwxr-xr-x    1 root  wheel      13 Oct  7  2021 libpoll.tbd -> libSystem.tbd
+lrwxr-xr-x    1 root  wheel      13 Oct  7  2021 libproc.tbd -> libSystem.tbd
+lrwxr-xr-x    1 root  wheel      13 Oct  7  2021 libpthread.tbd -> libSystem.tbd
+```
+
+查看 libSystem.B.tbd 可知，libSystem 不提供任何符号和代码，它链接了 /usr/lib/system 中的许多其他 dylib，并将它们的符号作为自己的符号重新导出（reexported-libraries）。
+
+
+```Shell
+$ tree /usr/lib/system
+/usr/lib/system
+├── introspection
+│   ├── libdispatch.dylib
+│   └── libsystem_pthread.dylib
+├── libsystem_kernel.dylib
+├── libsystem_platform.dylib
+├── libsystem_pthread.dylib
+└── wordexp-helper
+
+2 directories, 6 files
+```
+
+!!! note "tdb vs. dylib"
+
+    关于 tdb 和 dylib 的关系，参考：
+
+    - [Why Xcode 7 shows \*.tbd instead of \*.dylib?](https://stackoverflow.com/questions/31450690/why-xcode-7-shows-tbd-instead-of-dylib)
+    - [macOS/iOS dylib、tbd 和 Framework 库详解](https://juejin.cn/post/7143496837188550692)
+
+    `*.dylib` is the compiled binary that contains the machine code.
+    `TDB` is the acronym for "Text Based Dylib stubs".
+    `*.tbd` is a smaller text file, similar to a cross-platform module map.
 
 ### ldconfig
 
@@ -762,10 +816,11 @@ start address 0x0000000000000000
 ### readelf
 
 `readelf -h`: Display the ELF file header.
-`readelf -a`: Displays the complete structure of an object ﬁle.
-`readelf -d`（--dynamic）: Displays the contents of the file's dynamic section, if it has one.
-
-> 其中 NEEDED 标记的是依赖的（动态）库：libc.so.6, libstdc++.so.6。
+`readelf -l`(--program-headers, --segments): Display the program headers
+`readelf -S`(--section-headers, --sections): Display the sections' header
+`readelf -e`(--headers): Equivalent to: -h -l -S
+`readelf -d`(--dynamic): Displays the contents of the file's dynamic section, if it has one.
+`readelf -a`(--all): Displays the complete structure of an object ﬁle.
 
 === "readelf -d c.out"
 
@@ -787,6 +842,8 @@ start address 0x0000000000000000
      0x0000000000000001 (NEEDED)             Shared library: [libstdc++.so.6]
      0x0000000000000001 (NEEDED)             Shared library: [libc.so.6]
     ```
+
+> 其中 NEEDED 标记表示依赖（动态）库：libc.so.6, libstdc++.so.6。
 
 ### nm
 
@@ -819,3 +876,5 @@ start address 0x0000000000000000
                      U _ZSt4cout@GLIBCXX_3.4
                      U _ZSt4endlIcSt11char_traitsIcEERSt13basic_ostreamIT_T0_ES6_@GLIBCXX_3.4
     ```
+
+man nm 查看 [nm(1) - Linux manual page](https://man7.org/linux/man-pages/man1/nm.1.html)，其中有关于 symbol type 的详细说明。
