@@ -90,7 +90,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#machine_code" class="md-skip">
+        <a href="#disassemble" class="md-skip">
           跳转至
         </a>
       
@@ -1235,13 +1235,13 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#machine_code" class="md-nav__link">
+  <a href="#disassemble" class="md-nav__link">
     <span class="md-ellipsis">
-      Machine Code
+      disassemble
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Machine Code">
+    <nav class="md-nav" aria-label="disassemble">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -1268,9 +1268,9 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#auto_display_pc" class="md-nav__link">
+  <a href="#auto_display" class="md-nav__link">
     <span class="md-ellipsis">
-      auto display pc
+      auto display
     </span>
   </a>
   
@@ -1363,7 +1363,7 @@
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7h1.5Z"/></svg>
                           <span class="md-ellipsis">
                             
-                              需要 6 分钟阅读时间
+                              需要 7 分钟阅读时间
                             
                           </span>
                         </div>
@@ -1422,7 +1422,7 @@
 <!-- more -->
 
 <p><a href="https://stackoverflow.com/questions/67669438/how-to-debug-assembly">linux - How to debug assembly? - Stack Overflow</a></p>
-<h2 id="machine_code">Machine Code<a class="headerlink" href="#machine_code" title="Permanent link">#</a></h2>
+<h2 id="disassemble">disassemble<a class="headerlink" href="#disassemble" title="Permanent link">#</a></h2>
 <p><a href="https://sourceware.org/gdb/current/onlinedocs/gdb.html/Machine-Code.html#Machine-Code">9.6 Source and Machine Code</a></p>
 <p>help disassemble:</p>
 <div class="language-Shell highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span><span class="nb">help</span><span class="w"> </span>disas
@@ -1452,12 +1452,18 @@
 </span><span id="__span-0-25"><a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a><span class="s1">So, for example, if you want to disassemble function bar in file foo.c</span>
 </span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a><span class="s1">you must type &quot;disassemble &#39;</span>foo.c<span class="err">&#39;</span>::bar<span class="s2">&quot; and not &quot;</span>disassemble<span class="w"> </span>foo.c:bar<span class="s2">&quot;.</span>
 </span></code></pre></div>
-<p>showing mixed source+assembly with <code>/m</code> or <code>/s</code>.</p>
+<p>当不带参数执行 <code>disassemble</code> 命令时，默认反汇编当前 pc 周边的代码。</p>
+<blockquote>
+<p>The default memory range is the function surrounding the program counter of the selected frame.</p>
+</blockquote>
+<p>Show mixed source+assembly with <code>/m</code>(mixed source) or <code>/s</code>(source).</p>
+<p><code>/m</code> 为 source line order，忽略了一些内联展开（inlined code）和指令重排（re-ordered）优化，<code>/s</code> 为实际运行的 PC address order。</p>
+<p>初步学习对比 src 到 asm 的直接翻译，可以使用 <code>/m</code> 选项；考虑 ni/si 单步跟踪指令序列的实际运行，则建议使用 <code>/s</code> 选项。</p>
+<p>参考官网在线文档给出的示例，对比 disas /m main 和 disas /s main 输出，分析优化前后指令序列的区别。</p>
 <div class="admonition note">
 <p class="admonition-title">prefer /s to /m</p>
 <p>The <code>/m</code> option is <strong>deprecated</strong> as its output is not useful when there is either inlined code or re-ordered code. The <code>/s</code> option is the <strong>preferred</strong> choice. Here is an example for AMD x86-64 showing the difference between <code>/m</code> output and <code>/s</code> output. This example has one <em>inline</em> function defined in a header file, and the code is compiled with ‘-O2’ optimization. Note how the <code>/m</code> output is missing the disassembly of several instructions that are present in the <code>/s</code> output.</p>
 </div>
-<p>参考示例 disas /m main 和 disas /s main 的区别。</p>
 <h3 id="disas__start">disas _start<a class="headerlink" href="#disas__start" title="Permanent link">#</a></h3>
 <div class="language-Shell highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>b<span class="w"> </span>_start
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>Breakpoint<span class="w"> </span><span class="m">1</span><span class="w"> </span>at<span class="w"> </span>0x640
@@ -1521,7 +1527,7 @@
 </span><span id="__span-2-35"><a id="__codelineno-2-35" name="__codelineno-2-35" href="#__codelineno-2-35"></a>
 </span><span id="__span-2-36"><a id="__codelineno-2-36" name="__codelineno-2-36" href="#__codelineno-2-36"></a>End<span class="w"> </span>of<span class="w"> </span>assembler<span class="w"> </span>dump.
 </span></code></pre></div>
-<p><code>-r</code> 选项以十六进制显示原始机器指令（不显示源代码）：</p>
+<p><code>-r</code> 选项以十六进制显示原始机器指令（raw instructions），不显示源代码：</p>
 <div class="language-text highlight"><pre><span></span><code>(gdb) disas /r func
 Dump of assembler code for function func:
    0x0000000000000754 &lt;+0&gt;: ff 83 00 d1 sub sp, sp, #0x20
@@ -1544,7 +1550,7 @@ Dump of assembler code for function func:
    0x0000000000000798 &lt;+68&gt;:    ff 83 00 91 add sp, sp, #0x20
    0x000000000000079c &lt;+72&gt;:    c0 03 5f d6 ret
 </code></pre></div>
-<h2 id="auto_display_pc">auto display pc<a class="headerlink" href="#auto_display_pc" title="Permanent link">#</a></h2>
+<h2 id="auto_display">auto display<a class="headerlink" href="#auto_display" title="Permanent link">#</a></h2>
 <p><a href="https://sourceware.org/gdb/current/onlinedocs/gdb.html/Data.html#Data">10 Examining Data</a> - <a href="https://sourceware.org/gdb/current/onlinedocs/gdb.html/Auto-Display.html#Auto-Display">10.8 Automatic Display</a></p>
 <p><a href="https://redirect.cs.umbc.edu/~cpatel2/links/310/nasm/gdb_help.shtml">Using gdb for Assembly Language Debugging</a></p>
 <p>在 <a href="../../20200206/3-gdb-stop-and-continue/">Stopping and Continuing</a> 中，我们想单步跟踪调试第 19 行 for 循环体的机器指令，每次 si 后都要执行 <code>disas /m func</code> 查看 pc 箭头指向当前运行到了那一条机器指令。有没有办法在 GDB 控制台中同步显示当前源码及其对应的机器指令呢？</p>
@@ -1630,7 +1636,8 @@ Dump of assembler code for function func:
 <h2 id="tui_layout">tui layout<a class="headerlink" href="#tui_layout" title="Permanent link">#</a></h2>
 <p><a href="https://sourceware.org/gdb/current/onlinedocs/gdb.html/TUI-Commands.html">25.5 TUI-specific Commands</a></p>
 <p><a href="https://blog.csdn.net/zhangjs0322/article/details/10152279">gdb调试的layout使用</a></p>
-<p><code>tui enable</code> / <code>tui disable</code>: 开启（Enable）进入 / 禁用（Disable）退出 TUI 模式。</p>
+<p><code>show tui</code> 可以查看 TUI 配置变量（configuration variables）。</p>
+<p><code>tui enable</code> / <code>tui disable</code>: 开启进入 / 禁用退出 TUI 模式。</p>
 <div class="language-Shell highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span><span class="nb">help</span><span class="w"> </span>tui
 </span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>Text<span class="w"> </span>User<span class="w"> </span>Interface<span class="w"> </span>commands.
 </span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>
@@ -1646,8 +1653,8 @@ Dump of assembler code for function func:
 </span><span id="__span-8-13"><a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a>Type<span class="w"> </span><span class="s2">&quot;apropos -v word&quot;</span><span class="w"> </span><span class="k">for</span><span class="w"> </span>full<span class="w"> </span>documentation<span class="w"> </span>of<span class="w"> </span>commands<span class="w"> </span>related<span class="w"> </span>to<span class="w"> </span><span class="s2">&quot;word&quot;</span>.
 </span><span id="__span-8-14"><a id="__codelineno-8-14" name="__codelineno-8-14" href="#__codelineno-8-14"></a>Command<span class="w"> </span>name<span class="w"> </span>abbreviations<span class="w"> </span>are<span class="w"> </span>allowed<span class="w"> </span><span class="k">if</span><span class="w"> </span>unambiguous.
 </span></code></pre></div>
-<p>执行 <code>tui enable</code> 进入 TUI 模式，该模式主要涉及到  src（源码）、asm（汇编）、status（状态条） 和 cmd（命令）四个窗口（win）。</p>
-<p>执行 <code>info win</code> 可以列举当前显示的窗口（win），默认打开源码窗口，中间是 status 状态栏，底下是 cmd 窗口部分。</p>
+<p>执行 <code>tui enable</code> 进入 TUI 模式，该模式主要涉及到 src（源码）、asm（汇编）、status（状态条） 和 cmd（命令）四个窗口（win）。</p>
+<p>执行 <code>info win</code> 可以列举当前显示的窗口（win），默认打开 src 源码窗口，中间是 status 状态栏，底下是 cmd 窗口部分。</p>
 <div class="language-Shell highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>info<span class="w"> </span>win
 </span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>Name<span class="w">   </span>Lines<span class="w"> </span>Columns<span class="w"> </span>Focus
 </span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>src<span class="w">    </span><span class="m">34</span><span class="w">    </span><span class="m">100</span><span class="w">     </span><span class="o">(</span>has<span class="w"> </span>focus<span class="o">)</span>
@@ -1680,7 +1687,7 @@ Dump of assembler code for function func:
 </ul>
 <p>在 src 窗口，<code>layout next</code> 依次切换到 asm、src+asm（上下布局）、regs+src（上下布局）、regs+asm（上下布局）。</p>
 <p>在 split 模式下，同步显示 src+asm，非常方便 ni/si 单步跟踪调试机器指令。</p>
-<p>在 TUI 模式下，可以执行 <code>tui focus name</code> / <code>focus name</code> 切换窗口焦点。</p>
+<p>在 TUI 模式下，可以执行 <code>[tui] focus name</code> 切换窗口焦点。</p>
 <blockquote>
 <p>Changes which TUI window is currently active for scrolling.</p>
 </blockquote>

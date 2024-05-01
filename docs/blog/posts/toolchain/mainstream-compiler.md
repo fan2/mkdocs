@@ -332,7 +332,10 @@ The GCC project includes an implementation of the C++ Standard Library called `l
 
 [GNU Hurd / GNU GDB](https://www.gnu.org/savannah-checkouts/gnu/hurd/gdb.html) - [wiki](https://en.wikipedia.org/wiki/GNU_Debugger)
 
-- [docs](https://sourceware.org/gdb/download/onlinedocs/): [Debugging with GDB](https://sourceware.org/gdb/download/onlinedocs/gdb.html/index.html)
+[GDB: The GNU Project Debugger](https://sourceware.org/gdb/current/onlinedocs/)
+
+- [GDB’s Obsolete Annotations](https://sourceware.org/gdb/current/onlinedocs/annotate.html)
+- Debugging with GDB: [integrated](https://sourceware.org/gdb/current/onlinedocs/gdb), [index/toc](https://sourceware.org/gdb/current/onlinedocs/gdb.html/index.html)
 - @[sourceware](https://www.sourceware.org/gdb/), [git](git://sourceware.org/git/binutils-gdb.git)
 
 VisualGDB - [GDB Command Reference](https://visualgdb.com/gdbreference/commands/)

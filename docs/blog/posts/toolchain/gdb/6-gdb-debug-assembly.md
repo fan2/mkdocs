@@ -22,7 +22,7 @@ This article involves the following topics:
 
 [linux - How to debug assembly? - Stack Overflow](https://stackoverflow.com/questions/67669438/how-to-debug-assembly)
 
-## Machine Code
+## disassemble
 
 [9.6 Source and Machine Code](https://sourceware.org/gdb/current/onlinedocs/gdb.html/Machine-Code.html#Machine-Code)
 
@@ -57,13 +57,21 @@ So, for example, if you want to disassemble function bar in file foo.c
 you must type "disassemble 'foo.c'::bar" and not "disassemble foo.c:bar".
 ```
 
-showing mixed source+assembly with `/m` or `/s`.
+当不带参数执行 `disassemble` 命令时，默认反汇编当前 pc 周边的代码。
+
+> The default memory range is the function surrounding the program counter of the selected frame.
+
+Show mixed source+assembly with `/m`(mixed source) or `/s`(source).
+
+`/m` 为 source line order，忽略了一些内联展开（inlined code）和指令重排（re-ordered）优化，`/s` 为实际运行的 PC address order。
+
+初步学习对比 src 到 asm 的直接翻译，可以使用 `/m` 选项；考虑 ni/si 单步跟踪指令序列的实际运行，则建议使用 `/s` 选项。
+
+参考官网在线文档给出的示例，对比 disas /m main 和 disas /s main 输出，分析优化前后指令序列的区别。
 
 !!! note "prefer /s to /m"
 
     The `/m` option is **deprecated** as its output is not useful when there is either inlined code or re-ordered code. The `/s` option is the **preferred** choice. Here is an example for AMD x86-64 showing the difference between `/m` output and `/s` output. This example has one *inline* function defined in a header file, and the code is compiled with ‘-O2’ optimization. Note how the `/m` output is missing the disassembly of several instructions that are present in the `/s` output.
-
-参考示例 disas /m main 和 disas /s main 的区别。
 
 ### disas \_start
 
@@ -134,7 +142,7 @@ Dump of assembler code for function func:
 End of assembler dump.
 ```
 
-`-r` 选项以十六进制显示原始机器指令（不显示源代码）：
+`-r` 选项以十六进制显示原始机器指令（raw instructions），不显示源代码：
 
     (gdb) disas /r func
     Dump of assembler code for function func:
@@ -158,7 +166,7 @@ End of assembler dump.
        0x0000000000000798 <+68>:	ff 83 00 91	add	sp, sp, #0x20
        0x000000000000079c <+72>:	c0 03 5f d6	ret
 
-## auto display pc
+## auto display
 
 [10 Examining Data](https://sourceware.org/gdb/current/onlinedocs/gdb.html/Data.html#Data) - [10.8 Automatic Display](https://sourceware.org/gdb/current/onlinedocs/gdb.html/Auto-Display.html#Auto-Display)
 
@@ -269,7 +277,9 @@ si 单步跟踪 C 语句 `sum += i`，每次自动打印该步运行的机器指
 
 [gdb调试的layout使用](https://blog.csdn.net/zhangjs0322/article/details/10152279)
 
-`tui enable` / `tui disable`: 开启（Enable）进入 / 禁用（Disable）退出 TUI 模式。
+`show tui` 可以查看 TUI 配置变量（configuration variables）。
+
+`tui enable` / `tui disable`: 开启进入 / 禁用退出 TUI 模式。
 
 ```Shell
 (gdb) help tui
@@ -288,9 +298,9 @@ Type "apropos -v word" for full documentation of commands related to "word".
 Command name abbreviations are allowed if unambiguous.
 ```
 
-执行 `tui enable` 进入 TUI 模式，该模式主要涉及到  src（源码）、asm（汇编）、status（状态条） 和 cmd（命令）四个窗口（win）。
+执行 `tui enable` 进入 TUI 模式，该模式主要涉及到 src（源码）、asm（汇编）、status（状态条） 和 cmd（命令）四个窗口（win）。
 
-执行 `info win` 可以列举当前显示的窗口（win），默认打开源码窗口，中间是 status 状态栏，底下是 cmd 窗口部分。
+执行 `info win` 可以列举当前显示的窗口（win），默认打开 src 源码窗口，中间是 status 状态栏，底下是 cmd 窗口部分。
 
 ```Shell
 (gdb) info win
@@ -331,7 +341,7 @@ Command name abbreviations are allowed if unambiguous.
 
 在 split 模式下，同步显示 src+asm，非常方便 ni/si 单步跟踪调试机器指令。
 
-在 TUI 模式下，可以执行 `tui focus name` / `focus name` 切换窗口焦点。
+在 TUI 模式下，可以执行 `[tui] focus name` 切换窗口焦点。
 
 > Changes which TUI window is currently active for scrolling.
 

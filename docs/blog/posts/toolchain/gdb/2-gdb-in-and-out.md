@@ -28,14 +28,124 @@ This article discusses how to start GDB, and how to get out of it.
 
 [Invoking GDB (Debugging with GDB)](https://sourceware.org/gdb/current/onlinedocs/gdb.html/Invoking-GDB.html#Invoking-GDB)
 
-gcc 编译链接 C 代码，添加 `-g` 选项生成调试信息。
+=== "helloc.c"
+
+    ```c linenums="1"
+    #include <stdio.h>
+
+    int main(int argc, char *argv[]) {
+        printf("Hello world from c!\n");
+
+        return 0;
+    }
+    ```
+
+=== "hellocpp.cpp"
+
+    ```cpp linenums="1"
+    #include <iostream>
+
+    class Hello {
+    public:
+        Hello() {
+            std::cout << "Hello()" << std::endl;
+        }
+
+        ~Hello() {
+            std::cout << "~Hello()" << std::endl;
+        }
+    } h;
+
+    int main(int argc, char *argv[]) {
+        printf("Hello world from cpp!\n");
+
+        return 0;
+    }
+    ```
+
+gcc 编译链接 C/C++ 代码，添加 `-g` 选项生成调试信息。
+执行 `objdump -f` 查看 file header，执行 `file` 查看 file type info。
+
+=== "cc -g helloc.c"
+
+    ```Shell
+    $ cc helloc.c -o helloc -g
+
+    $ objdump -f helloc
+
+    helloc:     file format elf64-littleaarch64
+    architecture: aarch64, flags 0x00000150:
+    HAS_SYMS, DYNAMIC, D_PAGED
+    start address 0x0000000000000640
+
+    $ file helloc
+    helloc: ELF 64-bit LSB pie executable, ARM aarch64, version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux-aarch64.so.1, BuildID[sha1]=62f7c3d231acd23080c08c38a3734b466c3e4f28, for GNU/Linux 3.7.0, with debug_info, not stripped
+    ```
+
+=== "c++ -g helloc.c"
+
+    ```Shell
+    $ c++ hellocpp.cpp -o hellocpp -g
+
+    $ objdump -f hellocpp
+
+    hellocpp:     file format elf64-littleaarch64
+    architecture: aarch64, flags 0x00000150:
+    HAS_SYMS, DYNAMIC, D_PAGED
+    start address 0x00000000000009c0
+
+    $ file hellocpp
+    hellocpp: ELF 64-bit LSB pie executable, ARM aarch64, version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux-aarch64.so.1, BuildID[sha1]=9bf3258ef5383b9fb42b6f6c017205d12c38b3cb, for GNU/Linux 3.7.0, with debug_info, not stripped
+    ```
+
+执行 `gdb helloc` / `gdb hellocpp` 启动 gdb 调试 helloc/hellocpp。
+
+### show
+
+show 显示调试器本身的一些设置/配置信息，和 set 命令对应，相当于 get。
+以下摘取了一些看起来比较有用的子命令，具体有待后续实践按需取用。
 
 ```Shell
-cc helloc.c -o helloc -g
-c++ hellocpp.cpp -o hellocpp -g
+(gdb) help show
+show, info set
+Generic command for showing things about the debugger.
+
+List of show subcommands:
+
+show args -- Show argument list to give program being debugged when it is started.
+show breakpoint -- Breakpoint specific settings.
+show commands -- Show the history of commands you typed.
+show convenience, show conv -- Debugger convenience ("$foo") variables and functions.
+show cwd -- Show the current working directory that is used when the inferior is started.
+show data-directory -- Show GDB's data directory.
+show debug-file-directory -- Show the directories where separate debug symbols are searched for.
+show directories -- Show the search path for finding source files.
+show disassembler-options -- Show the disassembler options.
+show endian -- Show endianness of target.
+show environment -- The environment to give the program, or one variable's value.
+show language -- Show the current source language.
+show listsize -- Show number of source lines gdb will list by default.
+show paths -- Current search path for finding object files.
+show print, show pr, show p -- Generic command for showing print settings.
+show source -- Generic command for showing source settings.
+show step-mode -- Show mode of the step operation.
+show substitute-path -- Show one or all substitution rules rewriting the source directories.
+show tui -- TUI configuration variables.
+
 ```
 
-执行 `gdb helloc` 启动 gdb 调试 gcc 编译好的 helloc。
+以下调用部分 show subcommand 确认调试器的一些配置信息：
+
+```Shell
+(gdb) show language
+The current source language is "auto; currently c".
+(gdb) show endian
+The target endianness is set automatically (currently little endian).
+(gdb) show listsize
+Number of source lines gdb will list by default is 10.
+(gdb) show step-mode
+Mode of the step operation is off.
+```
 
 ### file
 
@@ -86,6 +196,11 @@ gdb program 1234
 
 ### info
 
+[16 Examining the Symbol Table](https://sourceware.org/gdb/current/onlinedocs/gdb.html/Symbols.html#Symbols)
+[18 GDB Files | 18.1 Commands to Specify Files](https://sourceware.org/gdb/current/onlinedocs/gdb.html/Files.html)
+
+`show` 命令用于显示调试器本身的信息，而 `info` 命令则可用于显示被调试任务的信息。
+
 ```Shell
 (gdb) help info
 info, inf, i
@@ -95,14 +210,33 @@ List of info subcommands:
 
 info files -- Names of targets and files being debugged.
 
+info line -- Core addresses of the code for a source line.
+
+info proc -- Show additional information about a process.
+info program -- Execution status of the program.
+
 info source -- Information about the current source file.
 info sources -- All source files in the program or those matching REGEXP.
 ```
 
-执行 `info file` 列举当前已加载符号的调试文件：
+Execute `info program` to show the execution status.
 
 ```Shell
-(gdb) info file
+(gdb) info program
+The program being debugged is not being run.
+```
+
+#### info file
+
+执行 `info files` 列举当前已加载符号的调试文件：
+
+```Shell
+(gdb) help info files
+Names of targets and files being debugged.
+Shows the entire stack of targets currently in use (including the exec-file,
+core-file, and process, if any), as well as the symbol file name.
+
+(gdb) info files
 Symbols from "/home/pifan/Projects/cpp/helloc".
 Local exec file:
 	`/home/pifan/Projects/cpp/helloc', file type elf64-littleaarch64.
@@ -112,6 +246,8 @@ Local exec file:
 ```
 
 > run/start 运行起来后，Entry point 会变成虚拟地址（VMA）。
+
+#### info source
 
 执行 `info source` 查看正在调试的源代码文件信息：
 
@@ -164,12 +300,13 @@ can be shown using "show listsize".
 ```
 
 `list 0` 从第 1 行开始显示源程序。
-`list +` 显示当前断点行后面的源程序，参数缺省行为。
+`list +` 显示当前断点行后面的源程序。
 `list -` 显示当前断点行前面的源程序。
 
 *   每次显示 10 行（由 listsize 控制）。
 
 ```Shell
+# 缺省为 list +
 (gdb) list
 1	#include <stdio.h>
 2	
@@ -269,6 +406,16 @@ Temporary breakpoint 1, main (argc=1, argv=0xfffffffff248) at helloc.c:4
 4	    printf("Hello world from c!\n");
 ```
 
+Execute `info program` to check the execution status.
+
+```Shell
+(gdb) info program
+	Using the running image of child Thread 0xfffff7ff7e60 (LWP 203218).
+Program stopped at 0xaaaaaaaa0764.
+It stopped at a breakpoint that has since been deleted.
+Type "info stack" or "info registers" for more information.
+```
+
 ### restart
 
 调试过程中，随时可以输入 `run` 或 `start` 从头开始执行。
@@ -283,7 +430,9 @@ The program being debugged has been started already.
 Start it from the beginning? (y or n)
 ```
 
-### info
+### info proc
+
+[Process Information (Debugging with GDB)](https://sourceware.org/gdb/current/onlinedocs/gdb.html/Process-Information.html#index-info-proc-files)
 
 执行 `info proc` 命令可查看进程信息：
 

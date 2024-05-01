@@ -22,7 +22,7 @@ comments: true
 
 <!-- more -->
 
-## test program
+## compile test program for debugging
 
 ??? info "test-gdb.c"
 
@@ -56,6 +56,19 @@ comments: true
     ```
 
 gcc 编译命令：`cc test-gdb.c -o test-gdb -g`
+
+```Shell title="test-gdb file format"
+$ objdump -f test-gdb
+
+test-gdb:     file format elf64-littleaarch64
+architecture: aarch64, flags 0x00000150:
+HAS_SYMS, DYNAMIC, D_PAGED
+start address 0x0000000000000640
+
+$ file test-gdb
+test-gdb: ELF 64-bit LSB pie executable, ARM aarch64, version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux-aarch64.so.1, BuildID[sha1]=65f667a433bbb8c27eeb9bab8db76816d07292dd, for GNU/Linux 3.7.0, with debug_info, not stripped
+```
+
 启动 gdb 调试：`gdb test-gdb`
 
 在 gdb 中输入 `list` 查看源代码，确认行号以便下断点。
@@ -415,7 +428,7 @@ main (argc=1, argv=0xfffffffff248) at test-gdb.c:22
 
 此时，断在第 22 行的 printf 调用，执行 `next` 运行至第 23 行。
 
-此时，如果继续执行 `next` 不会进入 func 和 printf 函数内部，直接运行至 return 语句。
+如果继续执行 `next` 不会进入 func 和 printf 函数内部，直接运行至 return 语句。
 
 要想进入 func 函数体内部进行调试，则需要改用 `step` 单步跟踪命令。
 
