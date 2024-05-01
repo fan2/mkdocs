@@ -127,6 +127,28 @@ set ts=4 "tabstop
 set et "expandtab
 ```
 
+[whitespace - Tab key == 4 spaces and auto-indent after curly braces in Vim](https://stackoverflow.com/questions/234564/tab-key-4-spaces-and-auto-indent-after-curly-braces-in-vim)
+[vi - Replace tabs with spaces in vim](https://stackoverflow.com/questions/426963/replace-tabs-with-spaces-in-vim)
+
+```vim
+filetype plugin indent on
+" show existing tab with 4 spaces width
+set tabstop=4
+" when indenting with '>', use 4 spaces width
+set shiftwidth=4
+" On pressing tab, insert 4 spaces
+set expandtab
+" NOT to use smartindent
+"set smartindent
+```
+
+[linux - vim技巧：详解tabstop、softtabstop、expandtab三个选项的区别](https://segmentfault.com/a/1190000021133524)
+
+```vim
+" 值为负数，与shiftwidth保持同步一致，方便统一缩进。
+set softtabstop=-1
+```
+
 ### 设置自动缩进（autoaudient）
 
 ```vim

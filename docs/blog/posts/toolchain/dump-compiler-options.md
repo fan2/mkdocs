@@ -154,7 +154,6 @@ echo // > foo.cpp; cl /nologo /Zc:preprocessor /PD /EHs /TP foo.cpp | sort; rm f
 > 2.1 C Language: The default, if no C language dialect options are given, is `-std=gnu17`.
 > 2.2 C++ Language: The default, if no C++ language dialect options are given, is `-std=gnu++17`.
 
-
 ```Shell title="gcc -std=c++ @rpi4b-ubuntu"
 $ gcc --version
 gcc (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0
@@ -213,77 +212,166 @@ $ g++ -x c++ -E -dM /dev/null | grep -F __cplusplus
 
 If you feel like finding it out empirically without reading any manuals.
 
-```c title="stdc.c"
-#include <stdio.h>
+- [Standard Predefined Macros](https://gcc.gnu.org/onlinedocs/cpp/Standard-Predefined-Macros.html) 中有关于 `__STDC_VERSION__` 和 `__cplusplus` 的说明。
+- [Common Predefined Macros](https://gcc.gnu.org/onlinedocs/cpp/Common-Predefined-Macros.html) 有关于宏 `__STRICT_ANSI__` 的说明。
 
-int main(void) {
-#ifdef __STDC_VERSION__
-    printf("__STDC_VERSION__ = %ld \n", __STDC_VERSION__);
-#endif
-#ifdef __STRICT_ANSI__
-    puts("__STRICT_ANSI__");
-#endif
-    return 0;
-}
-```
+=== "stdc.c"
 
-Test with:
+    ```c
+    #include <stdio.h>
 
-```Shell
-#!/usr/bin/env bash
-for std in c89 c99 c11 c17 gnu89 gnu99 gnu11 gnu17; do
-  echo $std
-  gcc -std=$std -o c.out stdc.c
-  ./c.out
-  echo
-done
-echo default
-gcc -o c.out stdc.c
-./c.out
-```
+    int main(void) {
+    #ifdef __STDC_VERSION__
+        printf("__STDC_VERSION__ = %ld \n", __STDC_VERSION__);
+    #endif
+    #ifdef __STRICT_ANSI__
+        puts("__STRICT_ANSI__");
+    #endif
+        return 0;
+    }
+    ```
 
-rpi4b-ubuntu 下输出：
+=== "stdc.sh"
 
-```Shell
-default
-__STDC_VERSION__ = 201710
-```
+    ```Shell
+    #!/usr/bin/env bash
 
-```cpp title="stdcpp.cpp"
-#include <iostream>
+    uname -a
+    echo
+    gcc --version
+    echo
 
-int main(void) {
-#ifdef __cplusplus
-    std::cout << __cplusplus << std::endl;
-#endif
-#ifdef __STRICT_ANSI__
-    std::cout << "__STRICT_ANSI__" << std::endl;
-#endif
-    return 0;
-}
-```
+    oname=stdc-`arch`.out
+    for std in c89 c99 c11 c17 gnu89 gnu99 gnu11 gnu17; do
+      echo $std
+      gcc stdc.c -std=$std -o $oname && ./$oname
+      echo
+    done
+    echo default
+    gcc stdc.c -o $oname && ./$oname
+    ```
 
-Test with:
+rpi4b-ubuntu 下输出结果如下：
 
-```Shell
-#!/usr/bin/env bash
-for std in c++98 c++11 c++14 c++17 gnu++98 gnu++11 gnu++14 gnu++17; do
-  echo $std
-  g++ -std=$std -o cpp.out stdcpp.cpp
-  ./cpp.out
-  echo
-done
-echo default
-g++ -o cpp.out stdcpp.cpp
-./cpp.out
-```
+??? info "__STDC_VERSION__ & __STRICT_ANSI__"
 
-rpi4b-ubuntu 下输出：
+    ```Shell
+    ./stdc.sh
+    Linux rpi4b-ubuntu 5.15.0-1053-raspi #56-Ubuntu SMP PREEMPT Mon Apr 15 18:50:10 UTC 2024 aarch64 aarch64 aarch64 GNU/Linux
 
-```Shell
-default
-201703
-```
+    gcc (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0
+    Copyright (C) 2021 Free Software Foundation, Inc.
+    This is free software; see the source for copying conditions.  There is NO
+    warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+
+    c89
+    __STRICT_ANSI__
+
+    c99
+    __STDC_VERSION__ = 199901
+    __STRICT_ANSI__
+
+    c11
+    __STDC_VERSION__ = 201112
+    __STRICT_ANSI__
+
+    c17
+    __STDC_VERSION__ = 201710
+    __STRICT_ANSI__
+
+    gnu89
+
+    gnu99
+    __STDC_VERSION__ = 199901
+
+    gnu11
+    __STDC_VERSION__ = 201112
+
+    gnu17
+    ```
+
+=== "stdcpp.cpp"
+
+    ```cpp
+    #include <iostream>
+
+    int main(void) {
+    #ifdef __cplusplus
+        std::cout << __cplusplus << std::endl;
+    #endif
+    #ifdef __STRICT_ANSI__
+        std::cout << "__STRICT_ANSI__" << std::endl;
+    #endif
+        return 0;
+    }
+    ```
+
+=== "stdcpp.sh"
+
+    ```Shell
+    #!/usr/bin/env bash
+
+    uname -a
+    echo
+    g++ --version
+    echo
+
+    oname=stdcpp-`arch`.out
+    for std in c++98 c++11 c++14 c++17 gnu++98 gnu++11 gnu++14 gnu++17; do
+      echo $std
+      g++ stdcpp.cpp -std=$std -o $oname && ./$oname
+      echo
+    done
+    echo default
+    g++ stdcpp.cpp -o $oname && ./$oname
+    ```
+
+rpi4b-ubuntu 下输出结果如下：
+
+??? info "__cplusplus & __STRICT_ANSI__"
+
+    ```Shell
+    ./stdcpp.sh
+    Linux rpi4b-ubuntu 5.15.0-1053-raspi #56-Ubuntu SMP PREEMPT Mon Apr 15 18:50:10 UTC 2024 aarch64 aarch64 aarch64 GNU/Linux
+
+    g++ (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0
+    Copyright (C) 2021 Free Software Foundation, Inc.
+    This is free software; see the source for copying conditions.  There is NO
+    warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+
+    c++98
+    199711
+    __STRICT_ANSI__
+
+    c++11
+    201103
+    __STRICT_ANSI__
+
+    c++14
+    201402
+    __STRICT_ANSI__
+
+    c++17
+    201703
+    __STRICT_ANSI__
+
+    gnu++98
+    199711
+
+    gnu++11
+    201103
+
+    gnu++14
+    201402
+
+    gnu++17
+    201703
+
+    default
+    201703
+    ```
 
 ### llvm/clang
 
@@ -318,17 +406,91 @@ g++ -E -dM -x c++ /dev/null | grep -F __cplusplus
 
 mbpa2991/macOS_Sonoma 下执行 `./stdc.sh` 输出：
 
-```Shell
-default
-__STDC_VERSION__ = 201710
-```
+??? info "__STDC_VERSION__ & __STRICT_ANSI__"
+
+    ```Shell
+    $ ./stdc.sh
+    Darwin mbpa2991.local 23.5.0 Darwin Kernel Version 23.5.0: Sat Apr 13 17:29:54 PDT 2024; root:xnu-10063.120.104~34/RELEASE_ARM64_T6031 arm64
+
+    Apple clang version 15.0.0 (clang-1500.3.9.4)
+    Target: arm64-apple-darwin23.5.0
+    Thread model: posix
+    InstalledDir: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin
+
+    c89
+    __STRICT_ANSI__
+
+    c99
+    __STDC_VERSION__ = 199901
+    __STRICT_ANSI__
+
+    c11
+    __STDC_VERSION__ = 201112
+    __STRICT_ANSI__
+
+    c17
+    __STDC_VERSION__ = 201710
+    __STRICT_ANSI__
+
+    gnu89
+
+    gnu99
+    __STDC_VERSION__ = 199901
+
+    gnu11
+    __STDC_VERSION__ = 201112
+
+    gnu17
+    __STDC_VERSION__ = 201710
+
+    default
+    __STDC_VERSION__ = 201710
+    ```
 
 mbpa2991/macOS_Sonoma 下执行 `./stdcpp.sh` 输出：
 
-```Shell
-default
-199711
-```
+??? info "__cplusplus & __STRICT_ANSI__"
+
+    ```Shell
+    $ ./stdcpp.sh
+    Darwin mbpa2991.local 23.5.0 Darwin Kernel Version 23.5.0: Sat Apr 13 17:29:54 PDT 2024; root:xnu-10063.120.104~34/RELEASE_ARM64_T6031 arm64
+
+    Apple clang version 15.0.0 (clang-1500.3.9.4)
+    Target: arm64-apple-darwin23.5.0
+    Thread model: posix
+    InstalledDir: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin
+
+    c++98
+    199711
+    __STRICT_ANSI__
+
+    c++11
+    201103
+    __STRICT_ANSI__
+
+    c++14
+    201402
+    __STRICT_ANSI__
+
+    c++17
+    201703
+    __STRICT_ANSI__
+
+    gnu++98
+    199711
+
+    gnu++11
+    201103
+
+    gnu++14
+    201402
+
+    gnu++17
+    201703
+
+    default
+    199711
+    ```
 
 #### _LIBCPP_VERSION
 
