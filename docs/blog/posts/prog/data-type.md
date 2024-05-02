@@ -6,6 +6,8 @@ date:
     created: 2009-10-02T14:00:00
 categories:
     - prog
+tags:
+    - data_type
 comments: true
 ---
 

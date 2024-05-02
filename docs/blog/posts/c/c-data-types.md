@@ -6,6 +6,8 @@ date:
     created: 2009-10-03T12:00:00
 categories:
     - c
+tags:
+    - data_type
 comments: true
 ---
 
