@@ -81,7 +81,7 @@ $ echo | gcc -x c++ -E -dM -std=c++11 -
 $ gcc -x c++ -E -dM -std=c++11 /dev/null
 ```
 
-### llvm/clang
+### clang/llvm
 
 [Clang Preprocessor options](https://clang.llvm.org/docs/ClangCommandLineReference.html#preprocessor-options)
 
@@ -373,7 +373,7 @@ rpi4b-ubuntu 下输出结果如下：
     201703
     ```
 
-### llvm/clang
+### clang/llvm
 
 [C Language Features](https://clang.llvm.org/docs/UsersManual.html#c-language-features)
 

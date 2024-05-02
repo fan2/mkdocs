@@ -149,6 +149,8 @@ set expandtab
 set softtabstop=-1
 ```
 
+修改配置开启 expandtab 后，vim 打开原来包含 tab 的文件，执行 `:%retab` 即可将所有的 tab 制表符展开为 4 个空格。
+
 ### 设置自动缩进（autoaudient）
 
 ```vim

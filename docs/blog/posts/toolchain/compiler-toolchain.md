@@ -93,14 +93,19 @@ From these three different machines, we distinguish *four* different types of to
 
 ## refs
 
+linux-gnu-gcc:
+
+- [x86_64-linux-gnu-gcc(1) - Linux man page](https://linux.die.net/man/1/x86_64-linux-gnu-gcc)
+- [arm-linux-gnu-gcc(1) - Linux man page](https://linux.die.net/man/1/arm-linux-gnu-gcc)
+- [aarch64-linux-gnu-gcc(1) - Linux man page](https://linux.die.net/man/1/aarch64-linux-gnu-gcc)
+
 [Arm GNU Toolchain](https://developer.arm.com/Tools%20and%20Software/GNU%20Toolchain)
 
 [RISC-V GNU Compiler Toolchain](https://github.com/riscv-collab/riscv-gnu-toolchain)
 
-- [WinLibs - GCC+MinGW-w64 compiler for Windows](https://winlibs.com/)
-- [x86_64-linux-gnu-gcc(1) - Linux man page](https://linux.die.net/man/1/x86_64-linux-gnu-gcc)
-- [arm-linux-gnu-gcc(1) - Linux man page](https://linux.die.net/man/1/arm-linux-gnu-gcc)
-- [aarch64-linux-gnu-gcc(1) - Linux man page](https://linux.die.net/man/1/aarch64-linux-gnu-gcc)
+[The ELLCC Embedded Compiler Collection](http://ellcc.org/)
+
+[WinLibs - GCC+MinGW-w64 compiler for Windows](https://winlibs.com/)
 
 [Buildroot - Making Embedded Linux Easy](https://buildroot.org/) - [wiki](https://en.wikipedia.org/wiki/Buildroot)
 

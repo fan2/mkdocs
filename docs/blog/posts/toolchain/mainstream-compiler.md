@@ -10,7 +10,13 @@ categories:
 comments: true
 ---
 
-Try and tease out mainstream compilers(GNU/GCC, LLVM/Clang, Microsoft Visual Studio) architecture/framework, toolchain, binutils and language(C/C++) standards.
+Try and tease out mainstream compilers(GNU/GCC, Clang/LLVM, Microsoft Visual Studio) architecture/framework, toolchain, binutils and language(C/C++) standards.
+
+The following concepts/topics will be involved:
+
+1. gcc/g++, glibc/libstdc++, gdb
+2. clang/clang++, llvm-gcc/llvm-g++, libc/libc++, lldb
+3. msvc/cl, windbg
 
 <!-- more -->
 
@@ -343,7 +349,7 @@ VisualGDB - [GDB Command Reference](https://visualgdb.com/gdbreference/commands/
 
 [GDB online Debugger](https://www.onlinegdb.com/)
 
-## LLVM/Clang
+## Clang/LLVM
 
 In 2006, [Chris Lattner](https://nondot.org/sabre/) started working on a new project named Clang. The combination of Clang *frontend* and LLVM *backend* is named Clang/LLVM or simply Clang.
 
@@ -358,6 +364,22 @@ In 2006, [Chris Lattner](https://nondot.org/sabre/) started working on a new pro
 - [clang - the Clang C, C++, and Objective-C compiler](https://clang.llvm.org/docs/CommandGuide/clang.html)
 - [Clang command line argument reference](https://clang.llvm.org/docs/ClangCommandLineReference.html)
 - [Preprocessor options](https://clang.llvm.org/docs/ClangCommandLineReference.html#preprocessor-options)
+
+作为 Apple Developer，往往首先需要在 macOS 开发机上安装 Xcode IDE，Clang/LLVM 编译器工具链包含在 Xcode command-line tools 中。
+
+!!! abstract "What is the Command Line Tools Package?"
+
+    [Technical Note TN2339: Building from the Command Line with Xcode FAQ](https://developer.apple.com/library/archive/technotes/tn2339/_index.html)
+
+    The Command Line Tools Package is a small self-contained package available for download separately from Xcode and that allows you to do command line development in macOS. It consists of the macOS SDK and command-line tools such as *Clang*, which are installed in the `/Library/Developer/CommandLineTools` directory.
+
+    > In macOS 10.9 and later, the Downloads pane of Xcode Preferences does not support downloading command-line tools.
+
+如果不是 Apple Native Developer，只是把 macOS 当做 User-friendly 的 Unix-like 开发机使用，可以自行前往 [Download for Apple Developers page](https://developer.apple.com/download/all/) 下载安装 Command Line Tools。在 macOS 上安装 homebrew 也会提示需要安装 Xcode Command Line Tools。
+
+!!! abstract "Command Line Tools for Xcode"
+
+    This package enables *UNIX-style* development via Terminal by installing command line developer tools, as well as macOS SDK frameworks and headers. Many useful tools are included, such as the Apple *LLVM* compiler, linker, and Make. If you use Xcode, these tools are also **embedded** within the Xcode IDE.
 
 ### Architecture
 
@@ -387,6 +409,14 @@ LLVM's Implementation of Three-Phase Design:
 
 ### GCC compatibility
 
+[xcode - Why can't I check my version of GCC compiler on OS X - Stack Overflow](https://stackoverflow.com/questions/20171095/why-cant-i-check-my-version-of-gcc-compiler-on-os-x)
+
+> Apple no longer distributes GCC with Xcode. They now use `Clang` as the default (and only!) compiler on Mac OS X. cc, gcc, and clang (as well as the C++ variants, c++, g++, and clang++) are now all **linked** to run clang under current versions of Xcode.
+
+[installation compiler cc or gcc in Mac OS 10.13.3 - Apple Community](https://discussions.apple.com/thread/8440495?sortBy=best)
+
+> Apple no longer includes GNU products due to their GPL3 licensing issues. The clang/llvm compiler technology does have limited, legacy (older) GNU C/C++ compatibility — even down to the gcc/g++ commands (**linked** to clang/llvm GNU compatibility mode) which can compile well-written C/C++ code that does not have specific GNU dependencies.
+
 [Clang Performance and GCC compatibility](https://en.wikipedia.org/wiki/Clang#Performance_and_GCC_compatibility)
 
 > Clang Compiler Driver (Drop-in Substitute for GCC): The clang tool is the compiler driver and front-end, which is designed to be a drop-in replacement for the gcc command.
@@ -399,6 +429,8 @@ LLVM's Implementation of Three-Phase Design:
 
 ### llvm-gcc/llvm-g++
 
+在 macOS 上执行 `which clang` 和 `clang --version` 检查 clang 的位置和版本。
+
 ```Shell
 $ which clang
 /usr/bin/clang
@@ -409,41 +441,138 @@ Apple clang version 15.0.0 (clang-1500.3.9.4)
 Target: arm64-apple-darwin23.5.0
 Thread model: posix
 InstalledDir: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin
-
-# clang++ 是 clang 的替身软链（symbolic link）
-$ ls -l /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin | grep g++
-lrwxr-xr-x  1 root  wheel          5 Mar  6 13:04 clang++ -> clang
 ```
 
-在 macOS 中，gcc 以某种方式指向 `llvm-gcc` 编译器。`llvm-gcc` 是 c/c++/oc 的编译器，用了 gcc 前端和命令行界面的 llvm。
+在 XcodeDefault.xctoolchain/usr/bin 下，clang 还有个软链替身（symbolic link）——clang++。
+
+[Clang is the name of the whole compiler](https://stackoverflow.com/questions/20047218/what-is-the-difference-clang-clang-std-c11). However, from a command-line point of view:
+
+- `clang` is the C compiler
+- `clang++` is the C++ compiler
+
+Clang is compatible with GCC. Its command-line interface shares many of GCC's flags and options.
+
+在 macOS 中，clang/[gcc](https://veryitman.com/2018/10/13/macOS-%E4%B8%AD%E7%A5%9E%E7%A7%98%E7%9A%84-GCC/) 以某种方式指向 `llvm-gcc` 编译器。
 
 > llvm-gcc is a C, C++, Objective-C and Objective-C++ compiler.
 > llvm-gcc uses gcc front-end and gcc's command line interface.
 > In Apple's version of GCC, both cc and gcc are actually *symbolic links* to the llvm-gcc compiler.
 
-g++ 则以某种方式指向 `llvm-g++` 编译器。
+而 clang/g++ 则以某种方式指向 `llvm-g++` 编译器。
 
 > llvm-g++ is a compiler driver for C++.
 > Similarly, c++ and g++ are links to llvm-g++.
 
-由 `gcc --version` 和 `g++ --version` 输出的 InstalledDir 可以看出，gcc/g++ 实际上是 XcodeDefault.xctoolchain 下 clang/clang++ 的 [shims or wrapper](http://stackoverflow.com/questions/9329243/xcode-4-4-and-later-install-command-line-tools/) executables。
+[llvmgcc](https://releases.llvm.org/2.8/docs/CommandGuide/html/llvmgcc.html): llvm-gcc - LLVM C front-end
+
+!!! abstract "llvm-gcc"
+
+    The **llvm-gcc** command is the LLVM C front end. It is a modified version of gcc that compiles C/ObjC programs into native objects, LLVM bitcode or LLVM assembly language, depending upon the options.
+
+    By default, **llvm-gcc** compiles to native objects just like GCC does. If the` -emit-llvm` and `-c` options are given then it will generate LLVM bitcode files instead. If `-emit-llvm` and `-S` are given, then it will generate LLVM assembly.
+
+    Being derived from the GNU Compiler Collection, **llvm-gcc** has many of gcc's features and accepts most of gcc's options. It handles a number of gcc's extensions to the C programming language. See the gcc documentation for details.
+
+[llvmgxx](https://releases.llvm.org/2.8/docs/CommandGuide/html/llvmgxx.html): llvm-g++ - LLVM C++ front-end
+
+!!! abstract "llvm-g++"
+
+    The **llvm-g++** command is the LLVM C++ front end. It is a modified version of g++ that compiles C++/ObjC++ programs into native code, LLVM bitcode or assembly language, depending upon the options.
+
+    By default, **llvm-g++** compiles to native objects just like GCC does. If the `-emit-llvm` option is given then it will generate LLVM bitcode files instead. If `-S` (assembly) is also given, then it will generate LLVM assembly.
+
+    Being derived from the GNU Compiler Collection, **llvm-g++** has many of g++'s features and accepts most of g++'s options. It handles a number of g++'s extensions to the C++ programming language.
+
+`which gcc` 和 `which g++` 输出位置为 `/usr/bin`；但是 `gcc --version` 和 `g++ --version` 输出的 InstalledDir 目录为 `$(xcode-select -p)/Toolchains/XcodeDefault.xctoolchain/usr/bin`。这两个目录有什么关联（猫腻）呢？
+
+=== "gcc --version"
+
+    ```Shell
+    $ which llvm-gcc
+    /usr/bin/llvm-gcc
+
+    $ which gcc
+    /usr/bin/gcc
+
+    # llvm-gcc --version
+    $ gcc --version
+    Apple clang version 15.0.0 (clang-1500.3.9.4)
+    Target: arm64-apple-darwin23.5.0
+    Thread model: posix
+    InstalledDir: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin
+    ```
+
+=== "g++ --version"
+
+    ```Shell
+    $ which llvm-g++
+    /usr/bin/llvm-g++
+
+    $ which g++
+    /usr/bin/g++
+
+    # llvm-g++ --version
+    $ g++ --version
+    Apple clang version 15.0.0 (clang-1500.3.9.4)
+    Target: arm64-apple-darwin23.5.0
+    Thread model: posix
+    InstalledDir: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin
+    ```
+
+!!! abstract "xcode command-line tools bundled shims or wrapper in /usr/bin"
+
+    [Technical Note TN2339: Building from the Command Line with Xcode FAQ](https://developer.apple.com/library/archive/technotes/tn2339/_index.html)
+
+    If Xcode is installed on your machine, then there is no need to install them. Xcode comes bundled with all your command-line tools. macOS 10.9 and later includes shims or wrapper executables. These shims, installed in `/usr/bin`, can map any tool included in `/usr/bin` to the corresponding one inside Xcode. `xcrun` is one of such shims, which allows you to find or run any tool inside Xcode from the command line. Use it to invoke any tool within Xcode from the command line.
+
+执行 `man xcode-select` 查看帮助，手册中的 Usage 部分和 FILES 有相关说明：
 
 ```Shell
+man xcode-select
+
+Usage
+
+       After setting a developer directory, all of the xcode-select provided developer tool shims (see
+       FILES) will automatically invoke the version of the tool inside the selected developer directory.
+       Your own scripts, makefiles, and other tools can also use xcrun(1) to easily lookup tools inside
+       the active developer directory, making it easy to switch them between different versions of the
+       Xcode tools and allowing them to function properly on systems where the Xcode application has
+       been installed to a non-default location.
+
+FILES
+
+       /usr/bin/git /usr/bin/make
+
+       /usr/bin/c89 /usr/bin/c99
+       /usr/bin/clang++ /usr/bin/clang
+       /usr/bin/cpp /usr/bin/ctags
+       /usr/bin/g++ /usr/bin/gcc
+
+       /usr/bin/as /usr/bin/ar
+       /usr/bin/ld /usr/bin/lldb
+       /usr/bin/nm /usr/bin/objdump
+       /usr/bin/ranlib /usr/bin/size
+       /usr/bin/strings /usr/bin/strip
+       Runs the matching BSD tool from with the active developer directory.
+```
+
+xcode-select 和 xcrun 命令：
+
+- `xcode-select -s`: Sets the active developer directory to the given path, for example /Applications/Xcode-beta.app.
+- `xcode-select -p`: Prints the path to the currently selected developer directory.
+- `xcrun` - Run or locate development tools and properties.
+
+use `xcrun` to easily lookup tools inside the active developer directory:
+
+```Shell
+# xcrun provide the absolute path
 $ xcrun -f gcc
 /Applications/Xcode.app/Contents/Developer/usr/bin/gcc
-$ gcc --version
-Apple clang version 15.0.0 (clang-1500.3.9.4)
-Target: arm64-apple-darwin23.5.0
-Thread model: posix
-InstalledDir: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin
+# xcrun gcc --version
 
 $ xcrun -f g++
 /Applications/Xcode.app/Contents/Developer/usr/bin/g++
-$ g++ --version
-Apple clang version 15.0.0 (clang-1500.3.9.4)
-Target: arm64-apple-darwin23.5.0
-Thread model: posix
-InstalledDir: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin
+# xcrun g++ --version
 
 $ xcrun -f cc
 /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cc
@@ -453,14 +582,14 @@ $ xcrun -f cpp
 /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cpp
 ```
 
-macOS 下 llvm/clang 的 compiler toolchain Binutils 散落在四个 */usr/bin 目录下：
+综上可知，macOS 下 clang/llvm 的 compiler toolchain Binutils 分布在四个 /usr/bin 目录下：
 
 1. /usr/bin
 2. /Library/Developer/CommandLineTools/usr/bin
 3. /Applications/Xcode.app/Contents/Developer/usr/bin
 4. /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin
 
-对四个 */usr/bin 目录分支执行 `ls -l` 过滤出 clang, cc/gcc, g++/c++ 相关命令。
+对四个 /usr/bin 目录分支执行 `ls -l` 过滤出 clang/clang++, gcc/cc, g++/c++ 相关命令。
 
 ```Shell
 usrbin=/usr/bin
@@ -522,10 +651,10 @@ ls -l $xctcbin | grep -E "clang|(cc|gcc)$|[g|c]\+\+"
     -rwxr-xr-x  1 root  wheel       3344 Feb  3 02:01 cpp
     ```
 
-从输出结果来看，有些是二进制实体文件，有些是软链替身。四个目录实际上是两套工具链：
+从输出结果来看，有些是实体文件，有些是软链替身：
 
-1. 系统 /usr/bin 下的 clang++, cpp, gcc/cc, g++/c++ 和 clang 是同一份实体（size 和 md5 一致）。
-2. Xcode Command Line Tools（cmdbin）下，clang++ 和 cc/c++ 均指向 clang ，g++ 指向 gcc。
+1. 系统 /usr/bin 下的 clang/clang++, cpp, gcc/cc, g++/c++ 等 size 和 md5 一致。执行 `strings` 命令查看其中的 plist 可知，它们均为 xcode_select.tool-shim。
+2. CommandLineTools（cmdbin）和 `xcode-select -p`（xcdevbin）下的 clang++ 和 cc/c++ 均指向 clang ，g++ 指向 gcc（貌似还是 xcode_select.tool-shim？）。
 
 ### llvm-gcc binutils
 
@@ -725,3 +854,13 @@ Win10 下安装的 VS2015，VC Binutils 在 `C:\Program Files (x86)\Microsoft Vi
 [WinDbg](http://www.windbg.org/) - [wiki](https://en.wikipedia.org/wiki/WinDbg)
 
 [Install WinDbg](https://learn.microsoft.com/en-us/windows-hardware/drivers/debugger/)
+
+## refs
+
+[The Edge of C++](https://accu.org/journals/overload/28/159/deak/)
+
+[Top C++ Compilers - Incredibuild](https://www.incredibuild.com/blog/top-c-compilers)
+
+[List of Top 10 C/C++ Compilers](https://terminalroot.com/list-of-top-10-c-cpp-compilers/)
+
+[GCC vs. Clang/LLVM: An In-Depth Comparison of C/C++ Compilers](https://alibabatech.medium.com/gcc-vs-clang-llvm-an-in-depth-comparison-of-c-c-compilers-899ede2be378)
