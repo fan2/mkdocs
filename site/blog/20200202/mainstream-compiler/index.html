@@ -1356,9 +1356,9 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#llvm-gcc_binutils" class="md-nav__link">
+  <a href="#clangllvm_binutils" class="md-nav__link">
     <span class="md-ellipsis">
-      llvm-gcc binutils
+      clang/llvm binutils
     </span>
   </a>
   
@@ -1982,7 +1982,7 @@ Similarly, c++ and g++ are links to llvm-g++.</p>
 <p>By default, <strong>llvm-g++</strong> compiles to native objects just like GCC does. If the <code>-emit-llvm</code> option is given then it will generate LLVM bitcode files instead. If <code>-S</code> (assembly) is also given, then it will generate LLVM assembly.</p>
 <p>Being derived from the GNU Compiler Collection, <strong>llvm-g++</strong> has many of g++'s features and accepts most of g++'s options. It handles a number of g++'s extensions to the C++ programming language.</p>
 </div>
-<p><code>which gcc</code> 和 <code>which g++</code> 输出位置为 <code>/usr/bin</code>；但是 <code>gcc --version</code> 和 <code>g++ --version</code> 输出的 InstalledDir 目录为 <code>$(xcode-select -p)/Toolchains/XcodeDefault.xctoolchain/usr/bin</code>。这两个目录有什么关联（猫腻）呢？</p>
+<p><code>which gcc</code> 和 <code>which g++</code> 输出位置为 <code>/usr/bin</code>；但是 <code>gcc --version</code> 和 <code>g++ --version</code> 输出的 InstalledDir 目录为 <code>$(xcode-select -p)/Toolchains/XcodeDefault.xctoolchain/usr/bin</code>。</p>
 <div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">gcc --version</label><label for="__tabbed_1_2">g++ --version</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
@@ -2017,9 +2017,13 @@ Similarly, c++ and g++ are links to llvm-g++.</p>
 </div>
 </div>
 </div>
+<p>这两个目录有什么关联（猫腻）呢？</p>
+<p>在 macOS 下执行 <code>cat /etc/paths</code> 可以看到环境变量中有 <code>/usr/local/bin</code> 和 <code>/usr/bin</code>，没有 Xcode 或 CommandLineTools 相关的 /usr/bin 目录。执行 <code>echo $PATH</code> 查看 PATH，其中也没有这些 Xcode Compiler Toolchain 目录。</p>
+<p>可以确定的是，llvm-gcc/llvm-g++ 来自 /usr/bin，至少从命令行执行层面来看是这样的。</p>
+<h3 id="clangllvm_binutils">clang/llvm binutils<a class="headerlink" href="#clangllvm_binutils" title="Permanent link">#</a></h3>
+<p><a href="https://developer.apple.com/library/archive/technotes/tn2339/_index.html">Technical Note TN2339: Building from the Command Line with Xcode FAQ</a></p>
 <div class="admonition abstract">
 <p class="admonition-title">xcode command-line tools bundled shims or wrapper in /usr/bin</p>
-<p><a href="https://developer.apple.com/library/archive/technotes/tn2339/_index.html">Technical Note TN2339: Building from the Command Line with Xcode FAQ</a></p>
 <p>If Xcode is installed on your machine, then there is no need to install them. Xcode comes bundled with all your command-line tools. macOS 10.9 and later includes shims or wrapper executables. These shims, installed in <code>/usr/bin</code>, can map any tool included in <code>/usr/bin</code> to the corresponding one inside Xcode. <code>xcrun</code> is one of such shims, which allows you to find or run any tool inside Xcode from the command line. Use it to invoke any tool within Xcode from the command line.</p>
 </div>
 <p>执行 <code>man xcode-select</code> 查看帮助，手册中的 Usage 部分和 FILES 有相关说明：</p>
@@ -2091,6 +2095,11 @@ Similarly, c++ and g++ are links to llvm-g++.</p>
 </span><span id="__span-14-8"><a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a>ls<span class="w"> </span>-l<span class="w"> </span><span class="nv">$cmdbin</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-E<span class="w"> </span><span class="s2">&quot;clang|(cc|gcc)</span>$<span class="s2">|[g|c]\+\+&quot;</span>
 </span><span id="__span-14-9"><a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a>ls<span class="w"> </span>-l<span class="w"> </span><span class="nv">$xcdevbin</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-E<span class="w"> </span><span class="s2">&quot;clang|(cc|gcc)</span>$<span class="s2">|[g|c]\+\+&quot;</span>
 </span><span id="__span-14-10"><a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a>ls<span class="w"> </span>-l<span class="w"> </span><span class="nv">$xctcbin</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-E<span class="w"> </span><span class="s2">&quot;clang|(cc|gcc)</span>$<span class="s2">|[g|c]\+\+&quot;</span>
+</span><span id="__span-14-11"><a id="__codelineno-14-11" name="__codelineno-14-11" href="#__codelineno-14-11"></a>
+</span><span id="__span-14-12"><a id="__codelineno-14-12" name="__codelineno-14-12" href="#__codelineno-14-12"></a><span class="c1"># 可以执行以下命令查看目录之间的公共分布</span>
+</span><span id="__span-14-13"><a id="__codelineno-14-13" name="__codelineno-14-13" href="#__codelineno-14-13"></a>comm<span class="w"> </span>-12<span class="w"> </span>&lt;<span class="o">(</span>ls<span class="w"> </span><span class="nv">$usrbin</span><span class="o">)</span><span class="w"> </span>&lt;<span class="o">(</span>ls<span class="w"> </span><span class="nv">$cmdbin</span><span class="o">)</span>
+</span><span id="__span-14-14"><a id="__codelineno-14-14" name="__codelineno-14-14" href="#__codelineno-14-14"></a>comm<span class="w"> </span>-12<span class="w"> </span>&lt;<span class="o">(</span>ls<span class="w"> </span><span class="nv">$usrbin</span><span class="o">)</span><span class="w"> </span>&lt;<span class="o">(</span>ls<span class="w"> </span><span class="nv">$xcdevbin</span><span class="o">)</span>
+</span><span id="__span-14-15"><a id="__codelineno-14-15" name="__codelineno-14-15" href="#__codelineno-14-15"></a>comm<span class="w"> </span>-12<span class="w"> </span>&lt;<span class="o">(</span>ls<span class="w"> </span><span class="nv">$usrbin</span><span class="o">)</span><span class="w"> </span>&lt;<span class="o">(</span>ls<span class="w"> </span><span class="nv">$xctcbin</span><span class="o">)</span>
 </span></code></pre></div>
 <div class="tabbed-set tabbed-alternate" data-tabs="2:4"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><input id="__tabbed_2_3" name="__tabbed_2" type="radio" /><input id="__tabbed_2_4" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">usrbin</label><label for="__tabbed_2_2">cmdbin</label><label for="__tabbed_2_3">xcdevbin</label><label for="__tabbed_2_4">xctcbin</label></div>
 <div class="tabbed-content">
@@ -2140,19 +2149,10 @@ Similarly, c++ and g++ are links to llvm-g++.</p>
 <li>系统 /usr/bin 下的 clang/clang++, cpp, gcc/cc, g++/c++ 等 size 和 md5 一致。执行 <code>strings</code> 命令查看其中的 plist 可知，它们均为 xcode_select.tool-shim。</li>
 <li>CommandLineTools（cmdbin）和 <code>xcode-select -p</code>（xcdevbin）下的 clang++ 和 cc/c++ 均指向 clang ，g++ 指向 gcc（貌似还是 xcode_select.tool-shim？）。</li>
 </ol>
-<h3 id="llvm-gcc_binutils">llvm-gcc binutils<a class="headerlink" href="#llvm-gcc_binutils" title="Permanent link">#</a></h3>
-<p>执行以下 Shell 命令，可以查看散落在四个 */usr/bin 目录下的 Binutils：</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="nv">usrbin</span><span class="o">=</span>/usr/bin
-</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a><span class="nv">cmdbin</span><span class="o">=</span>/Library/Developer/CommandLineTools/usr/bin
-</span><span id="__span-19-3"><a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a><span class="nv">xcdevpath</span><span class="o">=</span><span class="sb">`</span>xcode-select<span class="w"> </span>-p<span class="sb">`</span><span class="w"> </span><span class="c1"># /Applications/Xcode.app/Contents/Developer</span>
-</span><span id="__span-19-4"><a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a><span class="nv">xcdevbin</span><span class="o">=</span><span class="nv">$xcdevpath</span>/usr/bin
-</span><span id="__span-19-5"><a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a><span class="nv">xctcbin</span><span class="o">=</span><span class="nv">$xcdevpath</span>/Toolchains/XcodeDefault.xctoolchain/usr/bin
-</span><span id="__span-19-6"><a id="__codelineno-19-6" name="__codelineno-19-6" href="#__codelineno-19-6"></a>
-</span><span id="__span-19-7"><a id="__codelineno-19-7" name="__codelineno-19-7" href="#__codelineno-19-7"></a>comm<span class="w"> </span>-12<span class="w"> </span>&lt;<span class="o">(</span>ls<span class="w"> </span><span class="nv">$usrbin</span><span class="o">)</span><span class="w"> </span>&lt;<span class="o">(</span>ls<span class="w"> </span><span class="nv">$cmdbin</span><span class="o">)</span>
-</span><span id="__span-19-8"><a id="__codelineno-19-8" name="__codelineno-19-8" href="#__codelineno-19-8"></a>comm<span class="w"> </span>-12<span class="w"> </span>&lt;<span class="o">(</span>ls<span class="w"> </span><span class="nv">$usrbin</span><span class="o">)</span><span class="w"> </span>&lt;<span class="o">(</span>ls<span class="w"> </span><span class="nv">$xcdevbin</span><span class="o">)</span>
-</span><span id="__span-19-9"><a id="__codelineno-19-9" name="__codelineno-19-9" href="#__codelineno-19-9"></a>comm<span class="w"> </span>-12<span class="w"> </span>&lt;<span class="o">(</span>ls<span class="w"> </span><span class="nv">$usrbin</span><span class="o">)</span><span class="w"> </span>&lt;<span class="o">(</span>ls<span class="w"> </span><span class="nv">$xctcbin</span><span class="o">)</span>
-</span></code></pre></div>
-<p>clang 相比 gcc 少了以下命令：</p>
+<hr />
+<p>除了 llvm-gcc/llvm-g++ 编译器，从 <code>man xcode-select</code> 的 FILES 部分，可以看到 /usr/bin 下的 as、ar、ld、lldb、nm、objdump、ranlib、strings、size、strip 等 GNU compatible 同名 binutils 也是 xcode_select.tool-shim。当我们在执行 <code>objdump</code> 时，实际上等价于 <code>xcrun objdump</code>。</p>
+<p>下面稍微梳理对比一下 clang 和 gcc 提供的常用工具集（binutils）。</p>
+<p>clang 相比 gcc 少了以下命令，有些官方提供了 drop-in replacement：</p>
 <ul>
 <li><code>gold</code>: <a href="https://llvm.org/docs/GoldPlugin.html">The LLVM gold plugin</a></li>
 <li><code>addr2line</code>: <a href="https://llvm.org/docs/CommandGuide/llvm-addr2line.html">llvm-addr2line - a drop-in replacement for addr2line</a></li>
@@ -2160,7 +2160,7 @@ Similarly, c++ and g++ are links to llvm-g++.</p>
 <li><code>objcopy</code>: <a href="https://llvm.org/docs/CommandGuide/llvm-objcopy.html">llvm-objcopy - object copying and editing tool</a></li>
 <li><code>readelf</code>: <a href="https://llvm.org/docs/CommandGuide/llvm-readelf.html">llvm-readelf - GNU-style LLVM Object Reader</a></li>
 </ul>
-<p>clang 相比 gcc 多了以下命令：</p>
+<p>clang 相比 gcc 多了以下命令，有些是针对 <a href="https://en.wikipedia.org/wiki/Mach-O">Mach-O</a>（参考 <a href="https://developer.apple.com/library/archive/documentation/Performance/Conceptual/CodeFootprint/Articles/MachOOverview.html">Overview</a>，<a href="https://github.com/aidansteele/osx-abi-macho-file-format-reference">Reference</a>）格式特有的操作工具：</p>
 <ul>
 <li><code>cmpdylib</code> - compare two dynamic shared libraries for compatibility</li>
 <li><code>dsymutil</code> - manipulate archived DWARF debug symbol files</li>
@@ -2178,39 +2178,39 @@ Similarly, c++ and g++ are links to llvm-g++.</p>
 </ul>
 <p><a href="https://clang.llvm.org/docs/CrossCompilation.html">Cross-compilation using Clang</a><br />
 <a href="https://docs.kernel.org/kbuild/llvm.html">Building Linux with Clang/LLVM — The Linux Kernel documentation</a></p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>make<span class="w"> </span><span class="nv">CC</span><span class="o">=</span>clang<span class="w"> </span><span class="nv">LD</span><span class="o">=</span>ld.lld<span class="w"> </span><span class="nv">AR</span><span class="o">=</span>llvm-ar<span class="w"> </span><span class="nv">NM</span><span class="o">=</span>llvm-nm<span class="w"> </span><span class="nv">STRIP</span><span class="o">=</span>llvm-strip<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a><span class="w">  </span><span class="nv">OBJCOPY</span><span class="o">=</span>llvm-objcopy<span class="w"> </span><span class="nv">OBJDUMP</span><span class="o">=</span>llvm-objdump<span class="w"> </span><span class="nv">READELF</span><span class="o">=</span>llvm-readelf<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-20-3"><a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a><span class="w">  </span><span class="nv">HOSTCC</span><span class="o">=</span>clang<span class="w"> </span><span class="nv">HOSTCXX</span><span class="o">=</span>clang++<span class="w"> </span><span class="nv">HOSTAR</span><span class="o">=</span>llvm-ar<span class="w"> </span><span class="nv">HOSTLD</span><span class="o">=</span>ld.lld
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>make<span class="w"> </span><span class="nv">CC</span><span class="o">=</span>clang<span class="w"> </span><span class="nv">LD</span><span class="o">=</span>ld.lld<span class="w"> </span><span class="nv">AR</span><span class="o">=</span>llvm-ar<span class="w"> </span><span class="nv">NM</span><span class="o">=</span>llvm-nm<span class="w"> </span><span class="nv">STRIP</span><span class="o">=</span>llvm-strip<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a><span class="w">  </span><span class="nv">OBJCOPY</span><span class="o">=</span>llvm-objcopy<span class="w"> </span><span class="nv">OBJDUMP</span><span class="o">=</span>llvm-objdump<span class="w"> </span><span class="nv">READELF</span><span class="o">=</span>llvm-readelf<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-19-3"><a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a><span class="w">  </span><span class="nv">HOSTCC</span><span class="o">=</span>clang<span class="w"> </span><span class="nv">HOSTCXX</span><span class="o">=</span>clang++<span class="w"> </span><span class="nv">HOSTAR</span><span class="o">=</span>llvm-ar<span class="w"> </span><span class="nv">HOSTLD</span><span class="o">=</span>ld.lld
 </span></code></pre></div>
 <h3 id="language_standards_1">Language Standards<a class="headerlink" href="#language_standards_1" title="Permanent link">#</a></h3>
 <p><a href="https://clang.llvm.org/c_status.html">Clang - C Programming Language Status</a><br />
 <a href="https://clang.llvm.org/cxx_status.html">Clang - C++ Programming Language Status</a></p>
 <p><a href="https://clang.llvm.org/docs/CommandGuide/clang.html">clang - the Clang C, C++, and Objective-C compiler</a></p>
 <p>OPTIONS | Language Selection and Mode Options:</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>-x<span class="w"> </span>&lt;language&gt;
-</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>Treat<span class="w"> </span>subsequent<span class="w"> </span>input<span class="w"> </span>files<span class="w"> </span>as<span class="w"> </span>having<span class="w"> </span><span class="nb">type</span><span class="w"> </span>language.
-</span><span id="__span-21-3"><a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a>
-</span><span id="__span-21-4"><a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a>-ansi
-</span><span id="__span-21-5"><a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a>Same<span class="w"> </span>as<span class="w"> </span>-std<span class="o">=</span>c89.
-</span><span id="__span-21-6"><a id="__codelineno-21-6" name="__codelineno-21-6" href="#__codelineno-21-6"></a>
-</span><span id="__span-21-7"><a id="__codelineno-21-7" name="__codelineno-21-7" href="#__codelineno-21-7"></a>-std<span class="o">=</span>&lt;standard&gt;
-</span><span id="__span-21-8"><a id="__codelineno-21-8" name="__codelineno-21-8" href="#__codelineno-21-8"></a>Specify<span class="w"> </span>the<span class="w"> </span>c/c++<span class="w"> </span>language<span class="w"> </span>standard<span class="w"> </span>to<span class="w"> </span>compile<span class="w"> </span><span class="k">for</span>.
-</span><span id="__span-21-9"><a id="__codelineno-21-9" name="__codelineno-21-9" href="#__codelineno-21-9"></a>
-</span><span id="__span-21-10"><a id="__codelineno-21-10" name="__codelineno-21-10" href="#__codelineno-21-10"></a>The<span class="w"> </span>default<span class="w"> </span>C<span class="w"> </span>language<span class="w"> </span>standard<span class="w"> </span>is<span class="w"> </span>gnu17,<span class="w"> </span>except<span class="w"> </span>on<span class="w"> </span>PS4,<span class="w"> </span>where<span class="w"> </span>it<span class="w"> </span>is<span class="w"> </span>gnu99.
-</span><span id="__span-21-11"><a id="__codelineno-21-11" name="__codelineno-21-11" href="#__codelineno-21-11"></a>The<span class="w"> </span>default<span class="w"> </span>C++<span class="w"> </span>language<span class="w"> </span>standard<span class="w"> </span>is<span class="w"> </span>gnu++17.
-</span><span id="__span-21-12"><a id="__codelineno-21-12" name="__codelineno-21-12" href="#__codelineno-21-12"></a>
-</span><span id="__span-21-13"><a id="__codelineno-21-13" name="__codelineno-21-13" href="#__codelineno-21-13"></a>-stdlib<span class="o">=</span>&lt;library&gt;
-</span><span id="__span-21-14"><a id="__codelineno-21-14" name="__codelineno-21-14" href="#__codelineno-21-14"></a>Specify<span class="w"> </span>the<span class="w"> </span>C++<span class="w"> </span>standard<span class="w"> </span>library<span class="w"> </span>to<span class="w"> </span>use<span class="p">;</span><span class="w"> </span>supported<span class="w"> </span>options<span class="w"> </span>are<span class="w"> </span>libstdc++<span class="w"> </span><span class="o">(</span>GNU<span class="w"> </span>GCC<span class="o">)</span><span class="w"> </span>and<span class="w"> </span>libc++<span class="w"> </span><span class="o">(</span>Clang<span class="o">)</span>.<span class="w"> </span>If<span class="w"> </span>not<span class="w"> </span>specified,<span class="w"> </span>platform<span class="w"> </span>default<span class="w"> </span>will<span class="w"> </span>be<span class="w"> </span>used.
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>-x<span class="w"> </span>&lt;language&gt;
+</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>Treat<span class="w"> </span>subsequent<span class="w"> </span>input<span class="w"> </span>files<span class="w"> </span>as<span class="w"> </span>having<span class="w"> </span><span class="nb">type</span><span class="w"> </span>language.
+</span><span id="__span-20-3"><a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a>
+</span><span id="__span-20-4"><a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a>-ansi
+</span><span id="__span-20-5"><a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a>Same<span class="w"> </span>as<span class="w"> </span>-std<span class="o">=</span>c89.
+</span><span id="__span-20-6"><a id="__codelineno-20-6" name="__codelineno-20-6" href="#__codelineno-20-6"></a>
+</span><span id="__span-20-7"><a id="__codelineno-20-7" name="__codelineno-20-7" href="#__codelineno-20-7"></a>-std<span class="o">=</span>&lt;standard&gt;
+</span><span id="__span-20-8"><a id="__codelineno-20-8" name="__codelineno-20-8" href="#__codelineno-20-8"></a>Specify<span class="w"> </span>the<span class="w"> </span>c/c++<span class="w"> </span>language<span class="w"> </span>standard<span class="w"> </span>to<span class="w"> </span>compile<span class="w"> </span><span class="k">for</span>.
+</span><span id="__span-20-9"><a id="__codelineno-20-9" name="__codelineno-20-9" href="#__codelineno-20-9"></a>
+</span><span id="__span-20-10"><a id="__codelineno-20-10" name="__codelineno-20-10" href="#__codelineno-20-10"></a>The<span class="w"> </span>default<span class="w"> </span>C<span class="w"> </span>language<span class="w"> </span>standard<span class="w"> </span>is<span class="w"> </span>gnu17,<span class="w"> </span>except<span class="w"> </span>on<span class="w"> </span>PS4,<span class="w"> </span>where<span class="w"> </span>it<span class="w"> </span>is<span class="w"> </span>gnu99.
+</span><span id="__span-20-11"><a id="__codelineno-20-11" name="__codelineno-20-11" href="#__codelineno-20-11"></a>The<span class="w"> </span>default<span class="w"> </span>C++<span class="w"> </span>language<span class="w"> </span>standard<span class="w"> </span>is<span class="w"> </span>gnu++17.
+</span><span id="__span-20-12"><a id="__codelineno-20-12" name="__codelineno-20-12" href="#__codelineno-20-12"></a>
+</span><span id="__span-20-13"><a id="__codelineno-20-13" name="__codelineno-20-13" href="#__codelineno-20-13"></a>-stdlib<span class="o">=</span>&lt;library&gt;
+</span><span id="__span-20-14"><a id="__codelineno-20-14" name="__codelineno-20-14" href="#__codelineno-20-14"></a>Specify<span class="w"> </span>the<span class="w"> </span>C++<span class="w"> </span>standard<span class="w"> </span>library<span class="w"> </span>to<span class="w"> </span>use<span class="p">;</span><span class="w"> </span>supported<span class="w"> </span>options<span class="w"> </span>are<span class="w"> </span>libstdc++<span class="w"> </span><span class="o">(</span>GNU<span class="w"> </span>GCC<span class="o">)</span><span class="w"> </span>and<span class="w"> </span>libc++<span class="w"> </span><span class="o">(</span>Clang<span class="o">)</span>.<span class="w"> </span>If<span class="w"> </span>not<span class="w"> </span>specified,<span class="w"> </span>platform<span class="w"> </span>default<span class="w"> </span>will<span class="w"> </span>be<span class="w"> </span>used.
 </span></code></pre></div>
 <p><a href="https://clang.llvm.org/docs/ClangCommandLineReference.html">Clang command line argument reference</a></p>
 <p>Introduction:</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a>-std-default<span class="o">=</span>&lt;arg&gt;
-</span><span id="__span-22-2"><a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a>-stdlib<span class="o">=</span>&lt;arg&gt;,<span class="w"> </span>--stdlib<span class="o">=</span>&lt;arg&gt;,<span class="w"> </span>--stdlib<span class="w"> </span>&lt;arg&gt;
-</span><span id="__span-22-3"><a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a>C++<span class="w"> </span>standard<span class="w"> </span>library<span class="w"> </span>to<span class="w"> </span>use.<span class="w"> </span>&lt;arg&gt;<span class="w"> </span>must<span class="w"> </span>be<span class="w"> </span>‘libc++’,<span class="w"> </span>‘libstdc++’<span class="w"> </span>or<span class="w"> </span>‘platform’.
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>-std-default<span class="o">=</span>&lt;arg&gt;
+</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>-stdlib<span class="o">=</span>&lt;arg&gt;,<span class="w"> </span>--stdlib<span class="o">=</span>&lt;arg&gt;,<span class="w"> </span>--stdlib<span class="w"> </span>&lt;arg&gt;
+</span><span id="__span-21-3"><a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a>C++<span class="w"> </span>standard<span class="w"> </span>library<span class="w"> </span>to<span class="w"> </span>use.<span class="w"> </span>&lt;arg&gt;<span class="w"> </span>must<span class="w"> </span>be<span class="w"> </span>‘libc++’,<span class="w"> </span>‘libstdc++’<span class="w"> </span>or<span class="w"> </span>‘platform’.
 </span></code></pre></div>
 <p>Compilation options:</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>-std<span class="o">=</span>&lt;arg&gt;,<span class="w"> </span>--std<span class="o">=</span>&lt;arg&gt;,<span class="w"> </span>--std<span class="w"> </span>&lt;arg&gt;
-</span><span id="__span-23-2"><a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a>Language<span class="w"> </span>standard<span class="w"> </span>to<span class="w"> </span>compile<span class="w"> </span><span class="k">for</span>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a>-std<span class="o">=</span>&lt;arg&gt;,<span class="w"> </span>--std<span class="o">=</span>&lt;arg&gt;,<span class="w"> </span>--std<span class="w"> </span>&lt;arg&gt;
+</span><span id="__span-22-2"><a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a>Language<span class="w"> </span>standard<span class="w"> </span>to<span class="w"> </span>compile<span class="w"> </span><span class="k">for</span>
 </span></code></pre></div>
 <p><a href="https://alpaka.readthedocs.io/en/latest/advanced/compiler.html">Compiler Specifics — alpaka 1.0.0-rc1 documentation</a></p>
 <p><a href="https://developer.apple.com/xcode/cpp/">C++ Language Support - Xcode - Apple Developer</a></p>

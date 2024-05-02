@@ -483,7 +483,7 @@ Clang is compatible with GCC. Its command-line interface shares many of GCC's fl
 
     Being derived from the GNU Compiler Collection, **llvm-g++** has many of g++'s features and accepts most of g++'s options. It handles a number of g++'s extensions to the C++ programming language.
 
-`which gcc` 和 `which g++` 输出位置为 `/usr/bin`；但是 `gcc --version` 和 `g++ --version` 输出的 InstalledDir 目录为 `$(xcode-select -p)/Toolchains/XcodeDefault.xctoolchain/usr/bin`。这两个目录有什么关联（猫腻）呢？
+`which gcc` 和 `which g++` 输出位置为 `/usr/bin`；但是 `gcc --version` 和 `g++ --version` 输出的 InstalledDir 目录为 `$(xcode-select -p)/Toolchains/XcodeDefault.xctoolchain/usr/bin`。
 
 === "gcc --version"
 
@@ -519,9 +519,17 @@ Clang is compatible with GCC. Its command-line interface shares many of GCC's fl
     InstalledDir: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin
     ```
 
-!!! abstract "xcode command-line tools bundled shims or wrapper in /usr/bin"
+这两个目录有什么关联（猫腻）呢？
 
-    [Technical Note TN2339: Building from the Command Line with Xcode FAQ](https://developer.apple.com/library/archive/technotes/tn2339/_index.html)
+在 macOS 下执行 `cat /etc/paths` 可以看到环境变量中有 `/usr/local/bin` 和 `/usr/bin`，没有 Xcode 或 CommandLineTools 相关的 /usr/bin 目录。执行 `echo $PATH` 查看 PATH，其中也没有这些 Xcode Compiler Toolchain 目录。
+
+可以确定的是，llvm-gcc/llvm-g++ 来自 /usr/bin，至少从命令行执行层面来看是这样的。
+
+### clang/llvm binutils
+
+[Technical Note TN2339: Building from the Command Line with Xcode FAQ](https://developer.apple.com/library/archive/technotes/tn2339/_index.html)
+
+!!! abstract "xcode command-line tools bundled shims or wrapper in /usr/bin"
 
     If Xcode is installed on your machine, then there is no need to install them. Xcode comes bundled with all your command-line tools. macOS 10.9 and later includes shims or wrapper executables. These shims, installed in `/usr/bin`, can map any tool included in `/usr/bin` to the corresponding one inside Xcode. `xcrun` is one of such shims, which allows you to find or run any tool inside Xcode from the command line. Use it to invoke any tool within Xcode from the command line.
 
@@ -602,6 +610,11 @@ ls -l $usrbin | grep -E "clang|(cc|gcc)$|[g|c]\+\+"
 ls -l $cmdbin | grep -E "clang|(cc|gcc)$|[g|c]\+\+"
 ls -l $xcdevbin | grep -E "clang|(cc|gcc)$|[g|c]\+\+"
 ls -l $xctcbin | grep -E "clang|(cc|gcc)$|[g|c]\+\+"
+
+# 可以执行以下命令查看目录之间的公共分布
+comm -12 <(ls $usrbin) <(ls $cmdbin)
+comm -12 <(ls $usrbin) <(ls $xcdevbin)
+comm -12 <(ls $usrbin) <(ls $xctcbin)
 ```
 
 === "usrbin"
@@ -656,23 +669,13 @@ ls -l $xctcbin | grep -E "clang|(cc|gcc)$|[g|c]\+\+"
 1. 系统 /usr/bin 下的 clang/clang++, cpp, gcc/cc, g++/c++ 等 size 和 md5 一致。执行 `strings` 命令查看其中的 plist 可知，它们均为 xcode_select.tool-shim。
 2. CommandLineTools（cmdbin）和 `xcode-select -p`（xcdevbin）下的 clang++ 和 cc/c++ 均指向 clang ，g++ 指向 gcc（貌似还是 xcode_select.tool-shim？）。
 
-### llvm-gcc binutils
+---
 
-执行以下 Shell 命令，可以查看散落在四个 */usr/bin 目录下的 Binutils：
+除了 llvm-gcc/llvm-g++ 编译器，从 `man xcode-select` 的 FILES 部分，可以看到 /usr/bin 下的 as、ar、ld、lldb、nm、objdump、ranlib、strings、size、strip 等 GNU compatible 同名 binutils 也是 xcode_select.tool-shim。当我们在执行 `objdump` 时，实际上等价于 `xcrun objdump`。
 
-```Shell
-usrbin=/usr/bin
-cmdbin=/Library/Developer/CommandLineTools/usr/bin
-xcdevpath=`xcode-select -p` # /Applications/Xcode.app/Contents/Developer
-xcdevbin=$xcdevpath/usr/bin
-xctcbin=$xcdevpath/Toolchains/XcodeDefault.xctoolchain/usr/bin
+下面稍微梳理对比一下 clang 和 gcc 提供的常用工具集（binutils）。
 
-comm -12 <(ls $usrbin) <(ls $cmdbin)
-comm -12 <(ls $usrbin) <(ls $xcdevbin)
-comm -12 <(ls $usrbin) <(ls $xctcbin)
-```
-
-clang 相比 gcc 少了以下命令：
+clang 相比 gcc 少了以下命令，有些官方提供了 drop-in replacement：
 
 - `gold`: [The LLVM gold plugin](https://llvm.org/docs/GoldPlugin.html)
 - `addr2line`: [llvm-addr2line - a drop-in replacement for addr2line](https://llvm.org/docs/CommandGuide/llvm-addr2line.html)
@@ -680,7 +683,7 @@ clang 相比 gcc 少了以下命令：
 - `objcopy`: [llvm-objcopy - object copying and editing tool](https://llvm.org/docs/CommandGuide/llvm-objcopy.html)
 - `readelf`: [llvm-readelf - GNU-style LLVM Object Reader](https://llvm.org/docs/CommandGuide/llvm-readelf.html)
 
-clang 相比 gcc 多了以下命令：
+clang 相比 gcc 多了以下命令，有些是针对 [Mach-O](https://en.wikipedia.org/wiki/Mach-O)（参考 [Overview](https://developer.apple.com/library/archive/documentation/Performance/Conceptual/CodeFootprint/Articles/MachOOverview.html)，[Reference](https://github.com/aidansteele/osx-abi-macho-file-format-reference)）格式特有的操作工具：
 
 - `cmpdylib` - compare two dynamic shared libraries for compatibility
 - `dsymutil` - manipulate archived DWARF debug symbol files
