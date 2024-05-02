@@ -93,7 +93,7 @@ clang 兼容 gcc 大部分常规命令，可替代 gcc 执行 `-E -dM` 预处理
 
 clang 还可通过 `-arch` 选项指定 CPU 架构，输出对应 CPU 下的一些预定义宏。
 
-> 参考 [clang -print-targets](https://stackoverflow.com/questions/15036909/how-to-list-supported-target-architectures-in-clang) 中的 Registered Targets。
+> 参考 [clang -print-targets](https://stackoverflow.com/questions/15036909/how-to-list-supported-target-architectures-in-clang) 和 `objdump --version` 中输出的 Registered Targets。
 
 IA32（_ILP32）/IA64（_LP64）：
 

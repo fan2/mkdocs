@@ -169,7 +169,8 @@ But they also include:
 - `objdump` - Displays information from object files.
 
     - The mother of all binary tools.
-    - Can display *all* of the information in an object ﬁle. 
+    - Can display *all* of the information in an object ﬁle.
+    - `-f`/`-a`/`-h`/`-x`: display file/archive/section/all headers.
     - Its most useful function is *disassembling* the binary instructions in the `.text` section.
 
 - `ranlib` - Generates an index to the contents of an archive.
@@ -570,6 +571,8 @@ xcode-select 和 xcrun 命令：
 - `xcode-select -p`: Prints the path to the currently selected developer directory.
 - `xcrun` - Run or locate development tools and properties.
 
+#### xcode_select.tool-shim
+
 use `xcrun` to easily lookup tools inside the active developer directory:
 
 ```Shell
@@ -666,10 +669,10 @@ comm -12 <(ls $usrbin) <(ls $xctcbin)
 
 从输出结果来看，有些是实体文件，有些是软链替身：
 
-1. 系统 /usr/bin 下的 clang/clang++, cpp, gcc/cc, g++/c++ 等 size 和 md5 一致。执行 `strings` 命令查看其中的 plist 可知，它们均为 xcode_select.tool-shim。
+1. 系统 /usr/bin 下的 clang/clang++, cpp, gcc/cc, g++/c++ 等 size 和 md5 一致。执行 `strings` 命令或 `otool -P` 查看其中的 plist 可知，它们均为 xcode_select.tool-shim。
 2. CommandLineTools（cmdbin）和 `xcode-select -p`（xcdevbin）下的 clang++ 和 cc/c++ 均指向 clang ，g++ 指向 gcc（貌似还是 xcode_select.tool-shim？）。
 
----
+#### corresponding to GNU
 
 除了 llvm-gcc/llvm-g++ 编译器，从 `man xcode-select` 的 FILES 部分，可以看到 /usr/bin 下的 as、ar、ld、lldb、nm、objdump、ranlib、strings、size、strip 等 GNU compatible 同名 binutils 也是 xcode_select.tool-shim。当我们在执行 `objdump` 时，实际上等价于 `xcrun objdump`。
 
@@ -692,9 +695,16 @@ clang 相比 gcc 多了以下命令，有些是针对 [Mach-O](https://en.wikipe
 - `install_name_tool` - change dynamic shared library install names
 - `libtool` - create libraries
 - `lipo` - create or operate on universal files
+
+    - `lipo -info`: Display a brief description
+
 - `lorder` – list dependencies for object files
 - `nmedit` - change global symbols to local symbols
-- `otool`(-classic) - object file displaying tool. `otool -L` 对应 Linux 下的 `ldd`。
+- `otool`(-classic) - object file displaying tool
+
+    - `otool -h`: Display the Mach header
+    - `otool -L`: Display the shared libraries uses - 对应 Linux 下的 `ldd`
+
 - `segedit` - extract and replace sections from object files
 - `unifdef`, unifdefall – remove preprocessor conditionals from code
 - `vtool` – Mach-O version number utility
@@ -766,7 +776,11 @@ Apple supports C++ with the Apple `Clang` compiler (included in Xcode) and the `
 
 [C Language Features](https://clang.llvm.org/docs/UsersManual.html#c-language-features)
 
-[llvm-libc](https://libc.llvm.org/) is an incomplete, upcoming, ABI independent C standard library designed by and for the LLVM project.
+[The LLVM C Library](https://libc.llvm.org/) is an incomplete, upcoming, ABI independent C standard library designed by and for the LLVM project.
+
+!!! warning "libc incompleteness"
+
+    The `libc` is not complete. If you need a fully functioning C library right now, you should continue to use your standard system libraries.
 
 Xcode Project Settings | Language | C Language Dialect 对应 project.pbxproj 中 buildSettings 字典的 key = `GCC_C_LANGUAGE_STANDARD`。
 
@@ -774,7 +788,11 @@ Xcode Project Settings | Language | C Language Dialect 对应 project.pbxproj �
 
 [C++ Language Features](https://clang.llvm.org/docs/UsersManual.html#cxx)
 
-The LLVM project includes an implementation of the C++ Standard Library named [libc++](https://libcxx.llvm.org/), dual-licensed under the MIT License and the UIUC license.
+The LLVM project includes an implementation of the C++ Standard Library named `libc++`, dual-licensed under the MIT License and the UIUC license.
+
+[“libc++” C++ Standard Library — libc++ documentation](https://libcxx.llvm.org/)
+
+`libc++` is a new implementation of the C++ standard library, targeting C++11 and above.
 
 Xcode Project Settings | Language - C++:
 

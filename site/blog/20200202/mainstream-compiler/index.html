@@ -1362,6 +1362,30 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="clang/llvm binutils">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#xcode_selecttool-shim" class="md-nav__link">
+    <span class="md-ellipsis">
+      xcode_select.tool-shim
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#corresponding_to_gnu" class="md-nav__link">
+    <span class="md-ellipsis">
+      corresponding to GNU
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
           <li class="md-nav__item">
@@ -1733,7 +1757,8 @@
 <p><code>objdump</code> - Displays information from object files.</p>
 <ul>
 <li>The mother of all binary tools.</li>
-<li>Can display <em>all</em> of the information in an object ﬁle. </li>
+<li>Can display <em>all</em> of the information in an object ﬁle.</li>
+<li><code>-f</code>/<code>-a</code>/<code>-h</code>/<code>-x</code>: display file/archive/section/all headers.</li>
 <li>Its most useful function is <em>disassembling</em> the binary instructions in the <code>.text</code> section.</li>
 </ul>
 </li>
@@ -2060,6 +2085,7 @@ Similarly, c++ and g++ are links to llvm-g++.</p>
 <li><code>xcode-select -p</code>: Prints the path to the currently selected developer directory.</li>
 <li><code>xcrun</code> - Run or locate development tools and properties.</li>
 </ul>
+<h4 id="xcode_selecttool-shim">xcode_select.tool-shim<a class="headerlink" href="#xcode_selecttool-shim" title="Permanent link">#</a></h4>
 <p>use <code>xcrun</code> to easily lookup tools inside the active developer directory:</p>
 <div class="language-Shell highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="c1"># xcrun provide the absolute path</span>
 </span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>$<span class="w"> </span>xcrun<span class="w"> </span>-f<span class="w"> </span>gcc
@@ -2146,10 +2172,10 @@ Similarly, c++ and g++ are links to llvm-g++.</p>
 </div>
 <p>从输出结果来看，有些是实体文件，有些是软链替身：</p>
 <ol>
-<li>系统 /usr/bin 下的 clang/clang++, cpp, gcc/cc, g++/c++ 等 size 和 md5 一致。执行 <code>strings</code> 命令查看其中的 plist 可知，它们均为 xcode_select.tool-shim。</li>
+<li>系统 /usr/bin 下的 clang/clang++, cpp, gcc/cc, g++/c++ 等 size 和 md5 一致。执行 <code>strings</code> 命令或 <code>otool -P</code> 查看其中的 plist 可知，它们均为 xcode_select.tool-shim。</li>
 <li>CommandLineTools（cmdbin）和 <code>xcode-select -p</code>（xcdevbin）下的 clang++ 和 cc/c++ 均指向 clang ，g++ 指向 gcc（貌似还是 xcode_select.tool-shim？）。</li>
 </ol>
-<hr />
+<h4 id="corresponding_to_gnu">corresponding to GNU<a class="headerlink" href="#corresponding_to_gnu" title="Permanent link">#</a></h4>
 <p>除了 llvm-gcc/llvm-g++ 编译器，从 <code>man xcode-select</code> 的 FILES 部分，可以看到 /usr/bin 下的 as、ar、ld、lldb、nm、objdump、ranlib、strings、size、strip 等 GNU compatible 同名 binutils 也是 xcode_select.tool-shim。当我们在执行 <code>objdump</code> 时，实际上等价于 <code>xcrun objdump</code>。</p>
 <p>下面稍微梳理对比一下 clang 和 gcc 提供的常用工具集（binutils）。</p>
 <p>clang 相比 gcc 少了以下命令，有些官方提供了 drop-in replacement：</p>
@@ -2168,11 +2194,26 @@ Similarly, c++ and g++ are links to llvm-g++.</p>
 <li><code>indent</code> – indent and format C program source</li>
 <li><code>install_name_tool</code> - change dynamic shared library install names</li>
 <li><code>libtool</code> - create libraries</li>
-<li><code>lipo</code> - create or operate on universal files</li>
-<li><code>lorder</code> – list dependencies for object files</li>
+<li>
+<p><code>lipo</code> - create or operate on universal files</p>
+<ul>
+<li><code>lipo -info</code>: Display a brief description</li>
+</ul>
+</li>
+<li>
+<p><code>lorder</code> – list dependencies for object files</p>
+</li>
 <li><code>nmedit</code> - change global symbols to local symbols</li>
-<li><code>otool</code>(-classic) - object file displaying tool. <code>otool -L</code> 对应 Linux 下的 <code>ldd</code>。</li>
-<li><code>segedit</code> - extract and replace sections from object files</li>
+<li>
+<p><code>otool</code>(-classic) - object file displaying tool</p>
+<ul>
+<li><code>otool -h</code>: Display the Mach header</li>
+<li><code>otool -L</code>: Display the shared libraries uses - 对应 Linux 下的 <code>ldd</code></li>
+</ul>
+</li>
+<li>
+<p><code>segedit</code> - extract and replace sections from object files</p>
+</li>
 <li><code>unifdef</code>, unifdefall – remove preprocessor conditionals from code</li>
 <li><code>vtool</code> – Mach-O version number utility</li>
 </ul>
@@ -2222,11 +2263,17 @@ Similarly, c++ and g++ are links to llvm-g++.</p>
 </ul>
 <h4 id="libc">libc<a class="headerlink" href="#libc" title="Permanent link">#</a></h4>
 <p><a href="https://clang.llvm.org/docs/UsersManual.html#c-language-features">C Language Features</a></p>
-<p><a href="https://libc.llvm.org/">llvm-libc</a> is an incomplete, upcoming, ABI independent C standard library designed by and for the LLVM project.</p>
+<p><a href="https://libc.llvm.org/">The LLVM C Library</a> is an incomplete, upcoming, ABI independent C standard library designed by and for the LLVM project.</p>
+<div class="admonition warning">
+<p class="admonition-title">libc incompleteness</p>
+<p>The <code>libc</code> is not complete. If you need a fully functioning C library right now, you should continue to use your standard system libraries.</p>
+</div>
 <p>Xcode Project Settings | Language | C Language Dialect 对应 project.pbxproj 中 buildSettings 字典的 key = <code>GCC_C_LANGUAGE_STANDARD</code>。</p>
 <h4 id="libc_1">libc++<a class="headerlink" href="#libc_1" title="Permanent link">#</a></h4>
 <p><a href="https://clang.llvm.org/docs/UsersManual.html#cxx">C++ Language Features</a></p>
-<p>The LLVM project includes an implementation of the C++ Standard Library named <a href="https://libcxx.llvm.org/">libc++</a>, dual-licensed under the MIT License and the UIUC license.</p>
+<p>The LLVM project includes an implementation of the C++ Standard Library named <code>libc++</code>, dual-licensed under the MIT License and the UIUC license.</p>
+<p><a href="https://libcxx.llvm.org/">“libc++” C++ Standard Library — libc++ documentation</a></p>
+<p><code>libc++</code> is a new implementation of the C++ standard library, targeting C++11 and above.</p>
 <p>Xcode Project Settings | Language - C++:</p>
 <ul>
 <li>C++ Language Dialect 对应 project.pbxproj 中 buildSettings 字典的 key = <code>CLANG_CXX_LANGUAGE_STANDARD</code>。</li>
