@@ -47,7 +47,7 @@ shows all the predefined macros.
 echo 空流预编译：
 
 ```Shell
-# echo | cpp -dM -
+# echo | cpp -dM
 # echo | gcc -E -dM -
 # echo | g++ -E -dM -
 $ echo | gcc -x c -E -dM -
@@ -69,8 +69,8 @@ $ gcc -x c++ -E -dM /dev/null
 包含特定头文件：
 
 ```Shell
-$ echo "#include <stdio.h>" | cpp -dM -
-# cpp -dM -include sys/socket.h - < /dev/null
+$ echo "#include <stdio.h>" | cpp -dM
+# cpp -dM -include sys/socket.h < /dev/null
 $ gcc -E -dM -include sys/socket.h - < /dev/null
 ```
 
