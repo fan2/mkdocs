@@ -91,9 +91,10 @@ $ gcc -x c++ -E -dM -std=c++11 /dev/null
 
 clang 兼容 gcc 大部分常规命令，可替代 gcc 执行 `-E -dM` 预处理命令，输出预定义宏。
 
-clang 还可通过 `-arch` 选项指定 CPU 架构，输出对应 CPU 下的一些预定义宏。
+clang 还可通过 `-target` / `-arch` 选项指定 Cross-Compilation 的目标 CPU 架构，输出对应 CPU 下的一些预定义宏。
 
-> 参考 [clang -print-targets](https://stackoverflow.com/questions/15036909/how-to-list-supported-target-architectures-in-clang) 和 `objdump --version` 中输出的 Registered Targets。
+> [clang -print-targets](https://stackoverflow.com/questions/15036909/how-to-list-supported-target-architectures-in-clang) 和 `objdump --version` 输出 Registered Targets。
+> [clang --print-supported-cpus](https://clang.llvm.org/docs/CommandGuide/clang.html) 列出指定 target 支持的处理器。
 
 IA32（_ILP32）/IA64（_LP64）：
 
@@ -579,6 +580,39 @@ The `/std:c++14` option enables C++14 standard-specific features implemented by 
 ## Search Paths
 
 ### Header Search Paths
+
+[Preprocessor Options](https://gcc.gnu.org/onlinedocs/gcc/Preprocessor-Options.html): `-dI` : Output ‘#include’ directives in addition to the result of preprocessing.
+
+=== "macOS cpp -dI"
+
+    ```Shell
+    $ echo | cpp -dI
+    # 1 "<stdin>"
+    # 1 "<built-in>" 1
+    # 1 "<built-in>" 3
+    # 417 "<built-in>" 3
+    # 1 "<command line>" 1
+    # 1 "<built-in>" 2
+    # 1 "<stdin>" 2
+
+    # 查看导入 <stdio.h> 的依赖展开
+    $ echo "#include <stdio.h>" | cpp -dI
+    ```
+
+=== "rpi4b-ubuntu cpp -dI"
+
+    ```Shell
+    $ echo | cpp -dI
+    # 0 "<stdin>"
+    # 0 "<built-in>"
+    # 0 "<command-line>"
+    # 1 "/usr/include/stdc-predef.h" 1 3 4
+    # 0 "<command-line>" 2
+    # 1 "<stdin>"
+
+    # 查看导入 <stdio.h> 的依赖展开
+    $ echo "#include <stdio.h>" | cpp -dI
+    ```
 
 运行 `clang -v -x c -E /dev/null` 或 `clang -v -x c++ -E /dev/null` 执行预处理，可以查看 C/C++ 语言的 Header Search Paths。
 

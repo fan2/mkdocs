@@ -284,6 +284,13 @@ Linux/ubuntu 下可执行 `man libc` 或 `info libc` 查看 [libc(7) - Linux man
 
     However, notwithstanding the original motivations of the Linux libc effort, by the time glibc 2.0 was released (in 1997), it was clearly superior to Linux libc, and all major Linux distributions that had been using Linux libc soon **switched** back to `glibc`.
 
+GNU/Linux Options 中支持配置 C library 的选项：
+
+- `-mglibc`
+- `-muclibc`(*-*-linux-*uclibc*)
+- `-mmusl`(*-*-linux-*musl*)
+- `-mbionic`(*-*-linux-*android*)
+
 ??? info "获取查看 glibc 版本号"
 
     [glibc 查看版本号](https://www.cnblogs.com/motadou/p/4473966.html), [Linux(Ubuntu/CentOS) 下查看 GLIBC 版本](https://blog.csdn.net/gatieme/article/details/108945425)
