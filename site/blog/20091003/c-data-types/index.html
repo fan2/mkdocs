@@ -1319,6 +1319,39 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Data models">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#convention" class="md-nav__link">
+    <span class="md-ellipsis">
+      convention
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the_64-bit_evolution" class="md-nav__link">
+    <span class="md-ellipsis">
+      The 64-bit Evolution
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#platform_adaptation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Platform Adaptation
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
           <li class="md-nav__item">
@@ -1449,7 +1482,7 @@
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7h1.5Z"/></svg>
                           <span class="md-ellipsis">
                             
-                              需要 5 分钟阅读时间
+                              需要 6 分钟阅读时间
                             
                           </span>
                         </div>
@@ -1587,6 +1620,7 @@
 <li><code>__SIZEOF_POINTER__</code> / <code>__POINTER_WIDTH__</code></li>
 <li><code>__SIZEOF_LONG_LONG__</code></li>
 </ul>
+<p><a href="https://en.cppreference.com/w/cpp/language/types">Fundamental types</a> - Data Models:</p>
 <p>The choices made by each implementation about the sizes of the fundamental types are collectively known as <em>data model</em>. Four data models found wide acceptance:</p>
 <div class="admonition note">
 <p class="admonition-title">data model of 32 bit systems</p>
@@ -1611,11 +1645,137 @@
 <li>Unix and Unix-like systems (Linux, macOS)</li>
 </ul>
 </div>
-<p>机器的指针位数一般和机器字长相等：</p>
+<blockquote>
+<p>refer to the table corresponding to the width in bits by data model.</p>
+</blockquote>
+<h4 id="convention">convention<a class="headerlink" href="#convention" title="Permanent link">#</a></h4>
+<p>AIX - <a href="https://www.ibm.com/docs/en/aix/7.3?topic=assignment-data-models-32-bit-64-bit-processes">Data models for 32-bit and 64-bit processes</a><br />
+ZOS - <a href="https://www.ibm.com/docs/en/ent-metalc-zos/3.1?topic=environments-ilp32-lp64-data-models-data-type-sizes">ILP32 and LP64 data models and data type sizes</a></p>
 <ul>
-<li>sizeof(<code>__INTPTR_TYPE__</code>) = sizeof(<code>__UINTPTR_TYPE__</code>) = <code>__SIZEOF_POINTER__</code> = <code>__SIZEOF_LONG__</code></li>
-<li><code>__INTPTR_WIDTH__</code> = <code>__UINTPTR_WIDTH__</code> = <code>__POINTER_WIDTH__</code> = <code>LONG_BIT</code> = <code>__WORDSIZE</code></li>
+<li><code>ILP32</code>, acronym for integer, long, and pointer 32</li>
+<li><code>LP64</code>, acronym for long, and pointer 64</li>
 </ul>
+<p>Data Model：<a href="https://blog.csdn.net/wyywatdl/article/details/4683762">数据模型</a>，<a href="https://ryan0988.pixnet.net/blog/post/194111613">資料模型</a></p>
+<table>
+<thead>
+<tr>
+<th>TYPE</th>
+<th>LP32</th>
+<th>ILP32</th>
+<th>LP64</th>
+<th>ILP64</th>
+<th>LLP64</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>CHAR</td>
+<td>8</td>
+<td>8</td>
+<td>8</td>
+<td>8</td>
+<td>8</td>
+</tr>
+<tr>
+<td>SHORT</td>
+<td>16</td>
+<td>16</td>
+<td>16</td>
+<td>16</td>
+<td>16</td>
+</tr>
+<tr>
+<td>INT</td>
+<td>16</td>
+<td>32</td>
+<td>32</td>
+<td>64</td>
+<td>32</td>
+</tr>
+<tr>
+<td>LONG</td>
+<td>32</td>
+<td>32</td>
+<td>64</td>
+<td>64</td>
+<td>32</td>
+</tr>
+<tr>
+<td>LONG LONG</td>
+<td>64</td>
+<td>64</td>
+<td>64</td>
+<td>64</td>
+<td>64</td>
+</tr>
+<tr>
+<td>POINTER</td>
+<td>32</td>
+<td>32</td>
+<td>64</td>
+<td>64</td>
+<td>64</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li><code>LP32</code>: sizeof(long)=sizeof(pointer)=32</li>
+<li>
+<p><code>ILP32</code>: sizeof(int)=sizeof(long)=sizeof(pointer)=32</p>
+</li>
+<li>
+<p><code>LP64</code>: sizeof(long)=sizeof(pointer)=64</p>
+</li>
+<li><code>LLP64</code>: sizeof(long long)=sizeof(pointer)=64</li>
+<li>
+<p><code>ILP64</code>: sizeof(int)=sizeof(long)=sizeof(pointer)=64</p>
+<ul>
+<li><code>ILP64</code> model is very rare, only appeared in some early 64-bit Unix systems (e.g. UNICOS on Cray).</li>
+</ul>
+</li>
+</ul>
+<p><a href="https://scc.ustc.edu.cn/zlsc/czxt/200910/W020100308601263456982.pdf">ILP32 and LP64 data models.PDF</a> - HP-UX 64-bit data model</p>
+<ul>
+<li>hp C/HP-UX 32-bit and 64-bit base data types</li>
+<li>ILP32 and LP64 data alignment</li>
+</ul>
+<p>在 LP 数据模型下：</p>
+<ul>
+<li><code>__SIZEOF_POINTER__</code> = <code>__SIZEOF_LONG__</code></li>
+<li><code>__WORDSIZE</code> = <code>LONG_BIT</code></li>
+</ul>
+<h4 id="the_64-bit_evolution">The 64-bit Evolution<a class="headerlink" href="#the_64-bit_evolution" title="Permanent link">#</a></h4>
+<p><a href="https://www.deusinmachina.net/p/the-evolution-of-computing-from-8">The Evolution of Computing: From 8-bit to 64-bit</a><br />
+<a href="https://www.linkedin.com/pulse/evolution-cpus-exploring-dominance-32-bit-64-bit-devendar-pasula/">The Evolution of CPUs: Exploring the Dominance of 32-bit and 64-bit Architectures</a><br />
+<a href="https://www.computerworld.com/article/1692048/the-64-bit-evolution.html">The 64-bit Evolution – Computerworld</a></p>
+<p><a href="https://queue.acm.org/detail.cfm?id=1165766">The Long Road to 64 Bits</a> - <a href="https://dl.acm.org/doi/pdf/10.1145/1435417.1435431">PDF</a> - TABLE 1 Common C Data Types</p>
+<p><a href="http://nickdesaulniers.github.io/blog/2016/05/30/data-models-and-word-size/">Data Models and Word Size</a></p>
+<p><a href="https://unix.org/whitepapers/64bit.html">64-bit and Data Size Neutrality</a></p>
+<h4 id="platform_adaptation">Platform Adaptation<a class="headerlink" href="#platform_adaptation" title="Permanent link">#</a></h4>
+<p>opengroup - <a href="https://wiki.math.ntnu.no/_media/tma4280/2017v/1997_opengroup_64bitprogrammingmodels.pdf">64-Bit Programming Models: Why LP64?.PDF</a> - 1997</p>
+<p><a href="https://developer.apple.com/library/archive/documentation/Darwin/Conceptual/64bitPorting/transition/transition.html">Major 64-Bit Changes - Apple Developer</a> - 20121213</p>
+<p><a href="https://devblogs.microsoft.com/oldnewthing/20050131-00/?p=36563">Why did the Win64 team choose the LLP64 model?</a><br />
+<a href="https://stackoverflow.com/questions/384502/what-is-the-bit-size-of-long-on-64-bit-windows">What is the bit size of long on 64-bit Windows?</a></p>
+<blockquote>
+<p>All modern 64-bit Unix systems use <strong>LP64</strong>. MacOS X and Linux are both modern 64-bit systems.<br />
+Microsoft uses a different scheme for transitioning to 64-bit: <strong>LLP64</strong> ('long long, pointers are 64-bit'). <br />
+This has the merit of meaning that 32-bit software can be recompiled without change.  </p>
+</blockquote>
+<p><a href="https://learn.microsoft.com/en-us/windows/win32/winprog64/programming-guide-for-64-bit-windows">Programming Guide for 64-bit Windows</a><br />
+<a href="https://learn.microsoft.com/en-us/windows/win32/winprog64/getting-ready-for-64-bit-windows">Getting Ready for 64-bit Windows</a></p>
+<ul>
+<li><a href="https://learn.microsoft.com/en-us/windows/win32/winprog64/abstract-data-models">Abstract Data Models</a></li>
+<li><a href="https://learn.microsoft.com/en-us/windows/win32/winprog64/the-new-data-types">The New Data Types</a></li>
+</ul>
+<blockquote>
+<p>In the 32-bit programming model (known as the <strong>ILP32</strong> model), integer, long, and pointer data types are 32 bits in length.<br />
+In the <strong>LLP64</strong> data model, only pointers expand to 64 bits; all other basic data types (integer and long) remain 32 bits in length.</p>
+</blockquote>
+<p><a href="https://wiki.wireshark.org/Development/Win64">Wireshark Development/Win64</a>  </p>
+<blockquote>
+<p>32-bit UNX platforms, and 32-bit Windows, use the <strong>ILP32</strong> data model.<br />
+64-bit UNX platform use the <strong>LP64</strong> data model; however, 64-bit Windows uses the <strong>LLP64</strong> data model.  </p>
+</blockquote>
 <h3 id="__wordsize">__WORDSIZE<a class="headerlink" href="#__wordsize" title="Permanent link">#</a></h3>
 <p>Xcode 中 MacOSX.sdk 下 usr/include 的 i386 和 arm 下的 limits.h 中定义了 <code>WORD_BIT</code> 和 <code>LONG_BIT</code>：</p>
 <div class="language-c highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">$</span><span class="w"> </span><span class="n">cd</span><span class="w"> </span><span class="err">`</span><span class="n">xcrun</span><span class="w"> </span><span class="o">--</span><span class="n">show</span><span class="o">-</span><span class="n">sdk</span><span class="o">-</span><span class="n">path</span><span class="err">`</span>
@@ -1699,6 +1859,11 @@
 <ul>
 <li><code>intptr_t</code>: integer type capable of holding a pointer</li>
 <li><code>uintptr_t</code>: unsigned integer type capable of holding a pointer</li>
+</ul>
+<p>机器的指针位数一般和机器字长相等：</p>
+<ul>
+<li>sizeof(<code>__INTPTR_TYPE__</code>) = sizeof(<code>__UINTPTR_TYPE__</code>) = <code>__SIZEOF_POINTER__</code></li>
+<li><code>__INTPTR_WIDTH__</code> = <code>__UINTPTR_WIDTH__</code> = <code>__POINTER_WIDTH__</code> = <code>__WORDSIZE</code></li>
 </ul>
 <p>rpi4b-ubuntu 的 /usr/include/stdint.h 中定义了：</p>
 <div class="language-c highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="cp"># define INTPTR_WIDTH __WORDSIZE</span>

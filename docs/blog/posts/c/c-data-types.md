@@ -120,6 +120,8 @@ GNU [Layout of Source Language Data Types](https://gcc.gnu.org/onlinedocs/gccint
 - `__SIZEOF_POINTER__` / `__POINTER_WIDTH__`
 - `__SIZEOF_LONG_LONG__`
 
+[Fundamental types](https://en.cppreference.com/w/cpp/language/types) - Data Models:
+
 The choices made by each implementation about the sizes of the fundamental types are collectively known as *data model*. Four data models found wide acceptance:
 
 !!! note "data model of 32 bit systems"
@@ -143,10 +145,84 @@ The choices made by each implementation about the sizes of the fundamental types
 
     - Unix and Unix-like systems (Linux, macOS)
 
-机器的指针位数一般和机器字长相等：
+> refer to the table corresponding to the width in bits by data model.
 
-- sizeof(`__INTPTR_TYPE__`) = sizeof(`__UINTPTR_TYPE__`) = `__SIZEOF_POINTER__` = `__SIZEOF_LONG__`
-- `__INTPTR_WIDTH__` = `__UINTPTR_WIDTH__` = `__POINTER_WIDTH__` = `LONG_BIT` = `__WORDSIZE`
+#### convention
+
+AIX - [Data models for 32-bit and 64-bit processes](https://www.ibm.com/docs/en/aix/7.3?topic=assignment-data-models-32-bit-64-bit-processes)
+ZOS - [ILP32 and LP64 data models and data type sizes](https://www.ibm.com/docs/en/ent-metalc-zos/3.1?topic=environments-ilp32-lp64-data-models-data-type-sizes)
+
+- `ILP32`, acronym for integer, long, and pointer 32
+- `LP64`, acronym for long, and pointer 64
+
+Data Model：[数据模型](https://blog.csdn.net/wyywatdl/article/details/4683762)，[資料模型](https://ryan0988.pixnet.net/blog/post/194111613)
+
+TYPE      | LP32 | ILP32 | LP64 | ILP64 | LLP64
+----------|------|-------|------|-------|------
+CHAR      | 8    | 8     | 8    | 8     | 8
+SHORT     | 16   | 16    | 16   | 16    | 16
+INT       | 16   | 32    | 32   | 64    | 32
+LONG      | 32   | 32    | 64   | 64    | 32
+LONG LONG | 64   | 64    | 64   | 64    | 64
+POINTER   | 32   | 32    | 64   | 64    | 64 
+
+- `LP32`: sizeof(long)=sizeof(pointer)=32
+- `ILP32`: sizeof(int)=sizeof(long)=sizeof(pointer)=32
+
+- `LP64`: sizeof(long)=sizeof(pointer)=64
+- `LLP64`: sizeof(long long)=sizeof(pointer)=64
+- `ILP64`: sizeof(int)=sizeof(long)=sizeof(pointer)=64
+
+    - `ILP64` model is very rare, only appeared in some early 64-bit Unix systems (e.g. UNICOS on Cray).
+
+[ILP32 and LP64 data models.PDF](https://scc.ustc.edu.cn/zlsc/czxt/200910/W020100308601263456982.pdf) - HP-UX 64-bit data model
+
+- hp C/HP-UX 32-bit and 64-bit base data types
+- ILP32 and LP64 data alignment
+
+在 LP 数据模型下：
+
+- `__SIZEOF_POINTER__` = `__SIZEOF_LONG__`
+- `__WORDSIZE` = `LONG_BIT`
+
+#### The 64-bit Evolution
+
+[The Evolution of Computing: From 8-bit to 64-bit](https://www.deusinmachina.net/p/the-evolution-of-computing-from-8)
+[The Evolution of CPUs: Exploring the Dominance of 32-bit and 64-bit Architectures](https://www.linkedin.com/pulse/evolution-cpus-exploring-dominance-32-bit-64-bit-devendar-pasula/)
+[The 64-bit Evolution – Computerworld](https://www.computerworld.com/article/1692048/the-64-bit-evolution.html)
+
+[The Long Road to 64 Bits](https://queue.acm.org/detail.cfm?id=1165766) - [PDF](https://dl.acm.org/doi/pdf/10.1145/1435417.1435431) - TABLE 1 Common C Data Types
+
+[Data Models and Word Size](http://nickdesaulniers.github.io/blog/2016/05/30/data-models-and-word-size/)
+
+[64-bit and Data Size Neutrality](https://unix.org/whitepapers/64bit.html)
+
+#### Platform Adaptation
+
+opengroup - [64-Bit Programming Models: Why LP64?.PDF](https://wiki.math.ntnu.no/_media/tma4280/2017v/1997_opengroup_64bitprogrammingmodels.pdf) - 1997
+
+[Major 64-Bit Changes - Apple Developer](https://developer.apple.com/library/archive/documentation/Darwin/Conceptual/64bitPorting/transition/transition.html) - 20121213
+
+[Why did the Win64 team choose the LLP64 model?](https://devblogs.microsoft.com/oldnewthing/20050131-00/?p=36563)
+[What is the bit size of long on 64-bit Windows?](https://stackoverflow.com/questions/384502/what-is-the-bit-size-of-long-on-64-bit-windows)
+
+> All modern 64-bit Unix systems use **LP64**. MacOS X and Linux are both modern 64-bit systems.  
+> Microsoft uses a different scheme for transitioning to 64-bit: **LLP64** ('long long, pointers are 64-bit').   
+> This has the merit of meaning that 32-bit software can be recompiled without change.  
+
+[Programming Guide for 64-bit Windows](https://learn.microsoft.com/en-us/windows/win32/winprog64/programming-guide-for-64-bit-windows)
+[Getting Ready for 64-bit Windows](https://learn.microsoft.com/en-us/windows/win32/winprog64/getting-ready-for-64-bit-windows)
+
+- [Abstract Data Models](https://learn.microsoft.com/en-us/windows/win32/winprog64/abstract-data-models)
+- [The New Data Types](https://learn.microsoft.com/en-us/windows/win32/winprog64/the-new-data-types)
+
+> In the 32-bit programming model (known as the **ILP32** model), integer, long, and pointer data types are 32 bits in length.
+> In the **LLP64** data model, only pointers expand to 64 bits; all other basic data types (integer and long) remain 32 bits in length.
+
+[Wireshark Development/Win64](https://wiki.wireshark.org/Development/Win64)  
+
+> 32-bit UNX platforms, and 32-bit Windows, use the **ILP32** data model.  
+> 64-bit UNX platform use the **LP64** data model; however, 64-bit Windows uses the **LLP64** data model.  
 
 ### __WORDSIZE
 
@@ -250,6 +326,11 @@ rpi4b-ubuntu 的 /usr/include/stdint.h 中定义了：
 
 - `intptr_t`: integer type capable of holding a pointer
 - `uintptr_t`: unsigned integer type capable of holding a pointer
+
+机器的指针位数一般和机器字长相等：
+
+- sizeof(`__INTPTR_TYPE__`) = sizeof(`__UINTPTR_TYPE__`) = `__SIZEOF_POINTER__`
+- `__INTPTR_WIDTH__` = `__UINTPTR_WIDTH__` = `__POINTER_WIDTH__` = `__WORDSIZE`
 
 rpi4b-ubuntu 的 /usr/include/stdint.h 中定义了：
 
