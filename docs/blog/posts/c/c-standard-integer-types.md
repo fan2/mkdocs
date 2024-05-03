@@ -14,12 +14,12 @@ tags:
 comments: true
 ---
 
-在 C 语言刚刚被设计出来的时候，一共只有两种整数类型—— `char` 和 `int`。
+在 C 语言刚刚被设计出来的时候，一共只有两种整数类型 —— `char` 和 `int`。
 char 既不属于标准带符号整数类型也不属于标准无符号整数类型，它属于历史遗物。
+为什么 getchar 返回的类型是 int，而不是 char？
 
 C89 引入了两种新的整数类型 —— `short` 和 `long`，C99 再增加一种整数类型 —— long long，
-后来，随着 C 语言的进一步发展，K&R C 引入了无符号整数的概念以及 `unsigned` 关键字
-
+后来，随着 C 语言的进一步发展，K&R C 引入了无符号整数的概念以及 `unsigned` 关键字。
 C89 引入 `signed` 关键字后，显式声明 `signed char`（而不是 char），可以明确表达最小的标准带符号整数类型。
 
 <!-- more -->
@@ -133,6 +133,8 @@ UINT{==N==}_MAX | 2^N-1
 
 了解 C 语言的所有这些最重要的整数类型之后，下一个问题就是搞清楚编译器在怎样的情况下会把一个变量或者常数看作什么样的整数类型。
 
+## single char constant
+
 在 C 语言刚刚被设计出来的时候，一共只有两种整数类型—— `char` 和 `int`，在实际的运算当中，char 总是先被提升为 int。
 
 另外，在 C 语言中，单字节字符常数的类型从一开始到现在都是 int（单字节字符常数指 'A'、'\n'、'\045'、'\x33' 等常量）。本来大家很自然地以为 'A' 应该是 char 类型的，不是吗？例如：
@@ -161,6 +163,19 @@ sizeof('A') = 4
 ```
 
 显然，'A' 要占用4个字节，在32位平台上这恰好就是一个 int 的长度。综合上面所说，在 C 语言的早期，要确定一个表达式里的整型变量或者常数的具体类型并不复杂，原本就只有两种整数类型，在运算和传递参数时 char 又总是先被提升为 int，加上整型常数属于 int 类型、单字节字符常量也属于 int 类型——一切都非常清楚。
+
+
+最后，来看一下 [File input/output](https://en.cppreference.com/w/c/io) <stdio.h\> 中读写字符相关接口的参数类型：
+
+```c
+int fgetc( FILE *stream );
+int getc( FILE *stream );
+int getchar( void );
+int putchar( int ch );
+int ungetc( int ch, FILE *stream );
+```
+
+遥想当年初遇 getchar 时，关于其为什么返回 int 而不是 char 型的困惑至此应该有了答案。
 
 ## char: extend to signed
 
