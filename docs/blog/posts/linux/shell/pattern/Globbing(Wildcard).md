@@ -58,13 +58,14 @@ In software, a **wildcard character** is a kind of **placeholder** represented b
 
 Bash 中常用通配符只有3个: `*`, `?`, `[list]`。  
 
-> `**`：出现在路径中，匹配任意级别目录。  
+> `**`：出现在路径中，匹配任意级别目录（递归）。  
 
 #### *
 
 **`*`**（asterisk）: match any number of any characters  
 
 > matches zero or more of any character in a name, including spaces or other strange characters.  
+> `*`：出现在路径中，匹配一级子目录（不递归）。  
 
 #### ?
 
@@ -95,6 +96,32 @@ file?.log           # 匹配file1.log, file2.log, ...
 反斜杠(`\`)或引号(`'`, `"`)都会使通配符失效。
 
 如: `\*`, `'*'`, `"*"` 都表示 `*` 本身，不通配任何文件。
+
+```Shell
+# 匹配 usr/include 下的一级子目录（不递归）
+ls -d usr/include/*/
+# 匹配 usr/include 下的所有子目录（递归）
+ls -d usr/include/**/
+
+# 匹配 /etc/ 下一级子目录下的 conf 配置文件（不递归）
+ls -l /etc/*/*.conf
+# 匹配 /etc/ 下所有子目录下的 conf 配置文件（递归）
+ls -l /etc/**/*.conf
+```
+
+在 /usr/include 目录下（递归）查找名称为 wordsize.h 的文件。
+
+```Shell
+$ find /usr/include -type f -name wordsize.h
+/usr/include/aarch64-linux-gnu/bits/wordsize.h
+```
+
+如果知道这个头文件在旗下一级 target 的 bits 目录下，可以缩小范围通配查找：
+
+```Shell
+$ find /usr/include/*/bits -type f -name wordsize.h
+/usr/include/aarch64-linux-gnu/bits/wordsize.h
+```
 
 ### cheatsheet
 

@@ -4,6 +4,7 @@ authors:
   - xman
 date:
     created: 2009-10-03T12:00:00
+    updated: 2024-04-24T10:00:00
 categories:
     - c
 tags:
@@ -180,6 +181,13 @@ POINTER   | 32   | 32    | 64   | 64    | 64
 - hp C/HP-UX 32-bit and 64-bit base data types
 - ILP32 and LP64 data alignment
 
+[IA-64 Options](https://gcc.gnu.org/onlinedocs/gcc/IA-64-Options.html)
+
+```Shell
+-milp32 / -mlp64
+Generate code for a 32-bit or 64-bit environment. The 32-bit environment sets int, long and pointer to 32 bits. The 64-bit environment sets int to 32 bits and long and pointer to 64 bits. These are HP-UX specific flags.
+```
+
 在 LP 数据模型下：
 
 - `__SIZEOF_POINTER__` = `__SIZEOF_LONG__`
@@ -224,7 +232,11 @@ opengroup - [64-Bit Programming Models: Why LP64?.PDF](https://wiki.math.ntnu.no
 > 32-bit UNX platforms, and 32-bit Windows, use the **ILP32** data model.  
 > 64-bit UNX platform use the **LP64** data model; however, 64-bit Windows uses the **LLP64** data model.  
 
-### __WORDSIZE
+### WORD_BIT/LONG_BIT
+
+[linux kernel - WORD_BIT vs LONG_BIT](https://unix.stackexchange.com/questions/771686/word-bit-vs-long-bit)
+
+> POSIX [<limits.h\>](https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/limits.h.html) defines WORD_BIT and LONG_BIT as the number of bits in objects of types int and long respectively.
 
 Xcode 中 MacOSX.sdk 下 usr/include 的 i386 和 arm 下的 limits.h 中定义了 `WORD_BIT` 和 `LONG_BIT`：
 
@@ -243,11 +255,49 @@ $ vim usr/include/arm/limits.h
 #define WORD_BIT	32
 ```
 
-WORD_BIT 的值为 32，对应 int 类型的位宽（`__SIZEOF_INT__` * CHAR_BIT），LONG_BIT 的值则随机器 CPU 字长。
+WORD_BIT 的值为 32，对应 int 类型的位宽（`__SIZEOF_INT__` * CHAR_BIT），LONG_BIT 的值则跟随 Data Model。
 
-在 macOS、Linux 上可以执行 `getconf WORD_BIT` / `getconf LONG_BIT` 来 Query and retrieve system configuration variables。
+rpi4b-ubuntu 下没找到 `WORD_BIT`/`LONG_BIT` 的定义：
 
-Xcode 的 MacOSX.sdk 和 iPhoneOS.sdk 的 usr/include/stdint.h 根据 `__LP64__==1` 区分定义了机器字长 `__WORDSIZE`：
+- [Why is there no WORD_BIT in limits.h on Linux?](https://unix.stackexchange.com/questions/715751/why-is-there-no-word-bit-in-limits-h-on-linux)
+
+```Shell
+grep -R -H "#define WORD_BIT" /usr/include 2>/dev/null
+grep -R -H "#define LONG_BIT" /usr/include 2>/dev/null
+```
+
+在 macOS、Linux 上可以执行 `getconf WORD_BIT` / `getconf LONG_BIT` 查询获取系统配置的变量。
+
+### __WORDSIZE
+
+机器字长表示处理器一次处理数据的长度，主要由运算器、寄存器决定，如32位处理器，每个寄存器能存储32bit数据，加法器支持两个32bit数进行相加。
+
+在 macOS 上执行 `sysctl hw`，在 rpi4b-ubuntu 上执行 `lscpu` 查看硬件（CPU）信息：
+
+```Shell
+# sysctl -a | grep cpu
+$ sysctl hw
+
+hw.optional.arm64: 1
+
+hw.cpu64bit_capable: 1
+```
+
+```Shell
+$ lscpu
+Architecture:            aarch64
+  CPU op-mode(s):        32-bit, 64-bit
+  Byte Order:            Little Endian
+
+...
+```
+
+[default wordsize in UNIX/Linux](https://unix.stackexchange.com/questions/74648/default-wordsize-in-unix-linux)
+
+> In general wordsize is decided upon target architecture when compiling. Your compiler will normally compile using wordsize for current system.
+> Using gcc (among others), on a 64-bit host you can compile for 32-bit machine, or force 32-bit words.
+
+Xcode 的 MacOSX.sdk 和 iPhoneOS.sdk 的 usr/include/stdint.h 根据 Data Model 是否为 `__LP64__==1` 区分定义了 `__WORDSIZE`：
 
 ```c
 $ cd `xcrun --show-sdk-path`
@@ -259,16 +309,14 @@ $ vim usr/include/stdint.h
 #endif
 ```
 
-rpi4b-ubuntu 下没找到 `LONG_BIT`/`WORD_BIT` 的定义：
+在 rpi4b-ubuntu 下的 /usr/include 中查找宏 `__WORDSIZE` 定义所在的头文件：
 
 ```Shell
-grep -R -H "#define LONG_BIT" /usr/include 2>/dev/null
-grep -R -H "#define WORD_BIT" /usr/include 2>/dev/null
+$ grep -R -l "#*define __WORDSIZE" /usr/include 2>/dev/null
+/usr/include/aarch64-linux-gnu/bits/wordsize.h
 ```
 
-/usr/include/aarch64-linux-gnu/bits/wordsize.h 中根据 `__LP64__` 定义与否来区分定义机器字长 `__WORDSIZE`：
-
-- [default wordsize in UNIX/Linux](https://unix.stackexchange.com/questions/74648/default-wordsize-in-unix-linux)
+wordsize.h 中根据 Data Model（`__LP64__` 定义与否）来区分定义 `__WORDSIZE`。
 
 ```c
 // Determine the wordsize from the preprocessor defines.
@@ -280,8 +328,6 @@ grep -R -H "#define WORD_BIT" /usr/include 2>/dev/null
 # define __WORDSIZE32_PTRDIFF_LONG  1
 #endif
 ```
-
-LONG_BIT （= `__SIZEOF_LONG__` * CHAR_BIT）的值等于机器字长（`__WORDSIZE`），为 CPU GPRs（General-Purpose Registers，通用寄存器）的数据宽度：在32位CPU下为32，在64位CPU下为64。
 
 参考阅读：
 
@@ -327,7 +373,7 @@ rpi4b-ubuntu 的 /usr/include/stdint.h 中定义了：
 - `intptr_t`: integer type capable of holding a pointer
 - `uintptr_t`: unsigned integer type capable of holding a pointer
 
-机器的指针位数一般和机器字长相等：
+指针位数一般和 __WORDSIZE 相等：
 
 - sizeof(`__INTPTR_TYPE__`) = sizeof(`__UINTPTR_TYPE__`) = `__SIZEOF_POINTER__`
 - `__INTPTR_WIDTH__` = `__UINTPTR_WIDTH__` = `__POINTER_WIDTH__` = `__WORDSIZE`

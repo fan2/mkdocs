@@ -136,6 +136,20 @@ $ find . -iname '*OfflineFile*'
 $ find . -type f -name "*.proto"
 ```
 
+在 /usr/include 目录下（递归）查找名称为 wordsize.h 的文件。
+
+```Shell
+$ find /usr/include -type f -name wordsize.h
+/usr/include/aarch64-linux-gnu/bits/wordsize.h
+```
+
+如果知道这个头文件在旗下一级 target 的 bits 目录下，可以缩小范围通配查找：
+
+```Shell
+$ find /usr/include/*/bits -type f -name wordsize.h
+/usr/include/aarch64-linux-gnu/bits/wordsize.h
+```
+
 #### case-insensitive
 
 `-iname`：匹配名字时会忽略大小写。

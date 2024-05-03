@@ -173,6 +173,9 @@ Output control:
   -o, --only-matching
           Prints only the matching part of the lines.
 
+# 输出文件名+匹配行
+  -H, Always print filename headers with output lines.
+
 # 只列举（不）满足匹配条件的文件名，不输出具体的匹配行
   -L, --files-without-match  print only names of FILEs containing no match
   -l, --files-with-matches  print only names of FILEs containing matches
@@ -350,6 +353,30 @@ find . -type d -name src | xargs grep -rIm10 --exclude="*.o" --exclude="*.o.d" '
 grep -rIl --exclude-dir=dist 'InquiryEntrance' nodejs/src
 # 输出匹配的文件名和行及行号
 grep -rIn --exclude-dir=dist 'InquiryEntrance' nodejs/src
+```
+
+在 Xcode sdk-path 下的 usr/include 中查找宏 `WORD_BIT` 和 `__WORDSIZE` 定义所在的文件：
+
+```Shell
+$ cd `xcrun --show-sdk-path`
+# grep -R -H "#define LONG_BIT" usr/include 2>/dev/null
+$ grep -R -H "#define WORD_BIT" usr/include 2>/dev/null
+usr/include/i386/limits.h:#define WORD_BIT        32
+usr/include/arm/limits.h:#define WORD_BIT        32
+
+$ grep -R -l "#define __WORDSIZE" usr/include 2>/dev/null
+usr/include/stdint.h:#define __WORDSIZE 64
+usr/include/stdint.h:#define __WORDSIZE 32
+```
+
+在 rpi4b-ubuntu 下的 /usr/include 中查找宏 `WORD_BIT` 和 `__WORDSIZE` 定义所在的文件：
+
+```Shell
+# -l: 只输出匹配文件
+$ grep -R -l "#*define WORD_BIT" /usr/include 2>/dev/null
+
+$ grep -R -l "#*define __WORDSIZE" /usr/include 2>/dev/null
+/usr/include/aarch64-linux-gnu/bits/wordsize.h
 ```
 
 ### multiple patterns
