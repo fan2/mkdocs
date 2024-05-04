@@ -35,6 +35,10 @@ C++ is standardized by the International Organization for Standardization (ISO),
 
 - [C++ FAQ](https://isocpp.org/faq)
 
+[The C++ Standards Committee - ISOCPP](https://www.open-std.org/jtc1/sc22/wg21/)
+
+- [cplusplus/draft](https://github.com/cplusplus/draft)
+
 [C++ Core Guidelines](https://isocpp.github.io/CppCoreGuidelines/CppCoreGuidelines)
 
 [Meeting C++](https://meetingcpp.com/)

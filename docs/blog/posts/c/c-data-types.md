@@ -181,6 +181,10 @@ POINTER   | 32   | 32    | 64   | 64    | 64
 - hp C/HP-UX 32-bit and 64-bit base data types
 - ILP32 and LP64 data alignment
 
+ARM/Keil : [Basic data types in ARM C and C++](https://developer.arm.com/documentation/dui0375/g/C-and-C---Implementation-Details/Basic-data-types-in-ARM-C-and-C--)
+
+- Size and alignment of basic data types
+
 [IA-64 Options](https://gcc.gnu.org/onlinedocs/gcc/IA-64-Options.html)
 
 ```Shell
