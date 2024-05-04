@@ -4,6 +4,7 @@ authors:
   - xman
 date:
     created: 2022-12-12
+    updated: 2024-05-04T15:00:00
 categories:
     - mkdocs
     - markdown
@@ -207,6 +208,11 @@ $$f(x_1,x_2,\underbrace{\ldots}_{\rm ldots} ,x_n) = x_1^2 + x_2^2 + \underbrace{
 6. 用 `\overrightarrow{a}` 长箭头表示向量：`$\overrightarrow{AB}$`：$\overrightarrow{AB}$
 7. 用 `\hat x` 表示尖帽：`$\hat y=a\hat x+b$`：$\hat y=a\hat x+b$
 8. 多字符可以使用 `$\widehat {xy}$`：$\widehat {xy}$
+9. [采用多个等号连接](https://www.zhihu.com/question/500718670/answer/2510884968)，用 `\!` 减小其间距直至间隙消失，实现长等号（[long equal](https://groups.google.com/g/mathjax-users/c/atUInhVmKuY/m/a5tvpiOhAAAJ)）：`A =\!=\!= B`：$A =\!=\!= B$。
+10. 在上下编辑内容可以使用 overset/underset 或 [overunderset](https://docs.mathjax.org/en/latest/upgrading/whats-new-3.2.html#new-tex-packages)：
+
+    - 上下分布：`X\overset{a}{\underset{b}{\to}}Y` / `X\overunderset{a}{b}{\to}Y`: $X\overset{a}{\underset{b}{\to}}Y$
+    - 长等号上面写字（[extpfeil](https://docs.mathjax.org/en/latest/input/tex/extensions/extpfeil.html) - `\xlongequal{n=8}`）：`(2^{n-1}-1)-\lvert X \rvert \overset{\text{n=8}}{=\!=\!=} 127-\lvert -89 \rvert`: $(2^{n-1}-1)-\lvert X \rvert \overset{\text{n=8}}{=\!=\!=} 127-\lvert -89 \rvert$
 
 ## 向量夹角
 
