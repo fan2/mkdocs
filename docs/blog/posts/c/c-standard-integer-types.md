@@ -24,7 +24,7 @@ C89 引入 `signed` 关键字后，可显式声明 `signed char`，明确表达�
 
 <!-- more -->
 
-## storage representation
+## signedness representation
 
 粗略地概括，整数类型分为两大类：无符号整数（`unsigned` integer）和带符号整数（`signed` integer）。
 

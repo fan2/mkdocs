@@ -1,0 +1,2243 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="在别处或在路上">
+      
+      
+        <meta name="author" content="Cliff Fan">
+      
+      
+        <link rel="canonical" href="https://duetorun.com/blog/20091006/signedness-representation/">
+      
+      
+        <link rel="prev" href="../../20091005/c-standard-integer-types/">
+      
+      
+        <link rel="next" href="../../20151102/1-Markdown-Syntax/">
+      
+      
+      <link rel="icon" href="../../../assets/hold_yourself.jpg">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.15">
+    
+    
+      
+        <title>计算机中有符号数的表示 - ElseWhere</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.7e359304.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function n(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],n("js",new Date),n("config","G-XGW41EGL31"),document.addEventListener("DOMContentLoaded",function(){document.forms.search&&document.forms.search.query.addEventListener("blur",function(){this.value&&n("event","search",{search_term:this.value})}),document$.subscribe(function(){var a=document.forms.feedback;if(void 0!==a)for(var e of a.querySelectorAll("[type=submit]"))e.addEventListener("click",function(e){e.preventDefault();var t=document.location.pathname,e=this.getAttribute("data-md-value");n("event","feedback",{page:t,data:e}),a.firstElementChild.disabled=!0;e=a.querySelector(".md-feedback__note [data-md-value='"+e+"']");e&&(e.hidden=!1)}),a.hidden=!1}),location$.subscribe(function(e){n("config","G-XGW41EGL31",{page_path:e.pathname})})});var e=document.createElement("script");e.async=!0,e.src="https://www.googletagmanager.com/gtag/js?id=G-XGW41EGL31",document.getElementById("__analytics").insertAdjacentElement("afterEnd",e)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+    
+  
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#进制数制" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../../.." title="ElseWhere" class="md-header__button md-logo" aria-label="ElseWhere" data-md-component="logo">
+      
+  <img src="../../../assets/hold_yourself.jpg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ElseWhere
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              计算机中有符号数的表示
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1M8 13h8v-2H8v2m9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1 0 1.71-1.39 3.1-3.1 3.1h-4V17h4a5 5 0 0 0 5-5 5 5 0 0 0-5-5Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="indigo"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5M7 15a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="标签" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../about/" class="md-tabs__link">
+        
+  
+    
+  
+  About
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../" class="md-tabs__link">
+          
+  
+  Blog
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../link/" class="md-tabs__link">
+        
+  
+    
+  
+  Link
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" hidden>
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="ElseWhere" class="md-nav__button md-logo" aria-label="ElseWhere" data-md-component="logo">
+      
+  <img src="../../../assets/hold_yourself.jpg" alt="logo">
+
+    </a>
+    ElseWhere
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../about/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    About
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Blog
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      <a href="../../" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Archive
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            Archive
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2024/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2024
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2022/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2022
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2020/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2020
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2019/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2019
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2018/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2018
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2017/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2017
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2015/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2015
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2009/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2009
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Categories
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            Categories
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/c/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    c
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/command/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    command
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/cpp/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    cpp
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/editor/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    editor
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/excerpt/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    excerpt
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/git/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    git
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/linux/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    linux
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/macos/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    macOS
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/markdown/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    markdown
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/material/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    material
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/mkdocs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    mkdocs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/nginx/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    nginx
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/prog/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    prog
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/python/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    python
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/resource/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    resource
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/samba/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    samba
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/shell/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    shell
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/toolchain/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    toolchain
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/ubuntu/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ubuntu
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/vim/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    vim
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/webdav/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    webDAV
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/wiki/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    wiki
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/zsh/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    zsh
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../link/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Link
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#进制数制" class="md-nav__link">
+    <span class="md-ellipsis">
+      进制数制
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="进制数制">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#十进制" class="md-nav__link">
+    <span class="md-ellipsis">
+      十进制
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#二进制" class="md-nav__link">
+    <span class="md-ellipsis">
+      二进制
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#位模式" class="md-nav__link">
+    <span class="md-ellipsis">
+      位模式
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#无符号数的编码" class="md-nav__link">
+    <span class="md-ellipsis">
+      无符号数的编码
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#有符号数的编码" class="md-nav__link">
+    <span class="md-ellipsis">
+      有符号数的编码
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="有符号数的编码">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#原码sign-magnitude" class="md-nav__link">
+    <span class="md-ellipsis">
+      原码（Sign-Magnitude）
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#反码ones_complement" class="md-nav__link">
+    <span class="md-ellipsis">
+      反码（Ones' Complement）
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#补码twos_complement" class="md-nav__link">
+    <span class="md-ellipsis">
+      补码（Two's Complement）
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="补码（Two's Complement）">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#概念导读" class="md-nav__link">
+    <span class="md-ellipsis">
+      概念导读
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#编码格式" class="md-nav__link">
+    <span class="md-ellipsis">
+      编码格式
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#按权展开" class="md-nav__link">
+    <span class="md-ellipsis">
+      按权展开
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#补码加法" class="md-nav__link">
+    <span class="md-ellipsis">
+      补码加法
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#溢出判断" class="md-nav__link">
+    <span class="md-ellipsis">
+      溢出判断
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#扩展一个数字的位表示" class="md-nav__link">
+    <span class="md-ellipsis">
+      扩展一个数字的位表示
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#有符号数和无符号数之间的转换" class="md-nav__link">
+    <span class="md-ellipsis">
+      有符号数和无符号数之间的转换
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#参考" class="md-nav__link">
+    <span class="md-ellipsis">
+      参考
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+  <div class="md-content md-content--post" data-md-component="content">
+    <div class="md-sidebar md-sidebar--post" data-md-component="sidebar" data-md-type="navigation">
+      <div class="md-sidebar__scrollwrap">
+        <div class="md-sidebar__inner md-post">
+          <nav class="md-nav md-nav--primary">
+            <div class="md-post__back">
+              <div class="md-nav__title md-nav__container">
+                <a href="../../" class="md-nav__link">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+                  <span class="md-ellipsis">
+                    回到主页
+                  </span>
+                </a>
+              </div>
+            </div>
+            
+              <div class="md-post__authors md-typeset">
+                
+                  <div class="md-profile md-post__profile">
+                    <span class="md-author md-author--long">
+                      <img src="https://duetorun.com/assets/carve_yourself.jpg" alt="Cliff Fan">
+                    </span>
+                    <span class="md-profile__description">
+                      <strong>
+                        
+                          Cliff Fan
+                        
+                      </strong>
+                      <br>
+                      Just do IT
+                    </span>
+                  </div>
+                
+              </div>
+            
+            <ul class="md-post__meta md-nav__list">
+              <li class="md-nav__item md-nav__item--section">
+                <div class="md-post__title">
+                  <span class="md-ellipsis">
+                    元数据
+                  </span>
+                </div>
+                <nav class="md-nav">
+                  <ul class="md-nav__list">
+                    <li class="md-nav__item">
+                      <div class="md-nav__link">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 19H5V8h14m-3-7v2H8V1H6v2H5c-1.11 0-2 .89-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-1V1m-1 11h-5v5h5v-5Z"/></svg>
+                        <time datetime="2009-10-06 12:00:00" class="md-ellipsis">2009年10月6日</time>
+                      </div>
+                    </li>
+                    
+                      <li class="md-nav__item">
+                        <div class="md-nav__link">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15 13h1.5v2.82l2.44 1.41-.75 1.3L15 16.69V13m4-5H5v11h4.67c-.43-.91-.67-1.93-.67-3a7 7 0 0 1 7-7c1.07 0 2.09.24 3 .67V8M5 21a2 2 0 0 1-2-2V5c0-1.11.89-2 2-2h1V1h2v2h8V1h2v2h1a2 2 0 0 1 2 2v6.1c1.24 1.26 2 2.99 2 4.9a7 7 0 0 1-7 7c-1.91 0-3.64-.76-4.9-2H5m11-9.85A4.85 4.85 0 0 0 11.15 16c0 2.68 2.17 4.85 4.85 4.85A4.85 4.85 0 0 0 20.85 16c0-2.68-2.17-4.85-4.85-4.85Z"/></svg>
+                          <time datetime="2023-02-17 22:00:00" class="md-ellipsis">2023年2月17日</time>
+                        </div>
+                      </li>
+                    
+                    
+                      <li class="md-nav__item">
+                        <div class="md-nav__link">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 3v15h3V3H9m3 2 4 13 3-1-4-13-3 1M5 5v13h3V5H5M3 19v2h18v-2H3Z"/></svg>
+                          <span class="md-ellipsis">
+                            分类于
+                            
+                              <a href="../../category/prog/">prog</a></span>
+                        </div>
+                      </li>
+                    
+                    
+                      
+                      <li class="md-nav__item">
+                        <div class="md-nav__link">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7h1.5Z"/></svg>
+                          <span class="md-ellipsis">
+                            
+                              需要 13 分钟阅读时间
+                            
+                          </span>
+                        </div>
+                      </li>
+                    
+                    <!-- Add by Cliff.Fan, 29Mar24. -->
+                    <li class="md-nav__item">
+                      <div class="md-nav__link">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m19 1-5 5v11l5-4.5V1m2 4v13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V6c-1.45-1.1-3.55-1.5-5.5-1.5-1.95 0-4.05.4-5.5 1.5v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1M10 18.41C8.75 18.09 7.5 18 6.5 18c-1.06 0-2.32.19-3.5.5V7.13c.91-.4 2.14-.63 3.5-.63 1.36 0 2.59.23 3.5.63v11.28Z"/></svg>
+                        <span class="md-ellipsis" id="busuanzi_container_page_pv">
+                          阅读量：<span id="busuanzi_value_page_pv">N/A</span>
+                        </span>
+                      </div>
+                    </li>
+                  </ul>
+                </nav>
+              </li>
+            </ul>
+          </nav>
+          
+        </div>
+      </div>
+    </div>
+    <article class="md-content__inner md-typeset">
+      
+        
+  
+  
+
+<nav class="md-tags" >
+  
+    
+    
+    
+      <span class="md-tag">signedness</span>
+    
+  
+    
+    
+    
+      <span class="md-tag">binary_representation</span>
+    
+  
+    
+    
+    
+      <span class="md-tag">complement</span>
+    
+  
+</nav>
+
+
+
+  <h1>计算机中有符号数的表示</h1>
+
+<p>对于无符号整数，一般来说，所有的数位都被用来表示数值。<br />
+对于带符号整数，数位被划分为符号位（只能占一位）与数值位（剩余的其它位）。</p>
+<p>符号位的权值有不同的解释：</p>
+<ol>
+<li>权值是零（符号位是“1”则表示数值为负），称为“符号-绝对值”模式（Sign and magnitude）。</li>
+<li>权值是 –(2<sup>N-1</sup>-1)，“1的补码”方式（Ones’ complement）。</li>
+<li>权值是 –2<sup>N-1</sup>，“2的补码”方式（Two’s complement）。</li>
+</ol>
+<!-- more -->
+
+<h2 id="进制数制">进制数制<a class="headerlink" href="#进制数制" title="Permanent link">#</a></h2>
+<p>所谓<strong>数制</strong>是指计数的方法。</p>
+<h3 id="十进制">十进制<a class="headerlink" href="#十进制" title="Permanent link">#</a></h3>
+<p>人两手加起来共10根手指，故日常计数和做算术都使用十进制。大家熟悉并使用了一千多年的十进制起源于印度，在12世纪被阿拉伯数学家改进，并在13世纪被意大利数学家Leonardo Pisano（Fibonacci）带到西方。1、2、3的罗马计数法是Ⅰ、Ⅱ、Ⅲ，Ⅰ+Ⅱ=Ⅲ 直观展示了加法运算的含义。</p>
+<p>数据无论使用哪种进位制，都涉及两个基本要素：<strong>基数</strong>（radix）与各数位的 <strong>位权</strong>（weight）。<br />
+十进制数有两个特点：</p>
+<ol>
+<li>用0、1、2、3、...、9这10个基本符号表示；基本数字符号（数码）的个数叫<strong>基数</strong>。</li>
+<li>遵循“逢十进一”原则，每位计满十时向高位进一。</li>
+</ol>
+<p>一般地，任意一个十进制数 N 都可以表示为 <span class="arithmatex">\(\sum_{i=-m}^{n-1}K_i\ast10^i\)</span>：</p>
+<div class="arithmatex">\[
+N = K_{n-1}\ast10^{n-1} + K_{n-2}\ast10^{n-2} + \cdots + K_1\ast10^1 + K_0\ast10^0 + K_{-1}\ast10^{-1} + K_{-2}\ast10^{-2} + \cdots + K_{-m}\ast10^{-m}
+\]</div>
+<p>抛开小数部分，整数按权的展开式为：</p>
+<div class="arithmatex">\[
+N = \sum_{i=0}^{n-1}K_i\ast10^i = K_{n-1}\ast10^{n-1} + K_{n-2}\ast10^{n-2} + \cdots + K_1\ast10^1 + K_0\ast10^0
+\]</div>
+<p>一个数字符号在不同位时，代表的数值不同。在上述表达式中，数位 <span class="arithmatex">\(K_i\)</span> 的权为 <span class="arithmatex">\(10^i\)</span>（以基数<span class="arithmatex">\(10\)</span>为底，序号<span class="arithmatex">\(i\)</span>为指数），数字符号乘以其位权为这个数字符号所表示的真实数值（<span class="arithmatex">\(K_i\ast10^i\)</span>）。</p>
+<h3 id="二进制">二进制<a class="headerlink" href="#二进制" title="Permanent link">#</a></h3>
+<p>在 <a href="https://blog.csdn.net/phunxm/article/details/5080997">字节存储单元及struct内存分配</a> 中，我们介绍了二进制和以及字节存储单元。现代计算机存储和处理的信息以二值信号表示。这些微不足道的二进制数字，或者称为位（bit），形成了数字革命的基础。</p>
+<p>对于有10根手指的人来来说，使用十进制表示法是很自然的事情，但是当构造存储和处理信息的机器时，二进制工作得更好。在计算机内部，二进制总是存放在由具有两种相反状态的存储元件构成的寄存器或存储单元中，即二进制数码0和1是由存储元件的两种相反状态来表示的。这使得二值信号很容易地被表示、存储和传输。</p>
+<p>二值信号可以表示为导线上的高电压或低电压、晶体管的导通或截止、电子自旋的两个方向，或者顺时针或逆时针的磁场。<a href="https://blog.csdn.net/phunxm/article/details/8980808">指令集及流水线</a> 中提到，在上个世纪的打孔编程时代，纸带上的每个孔代表一位(bit)，穿孔（presence）表示1，未穿孔（absence）表示0，这些孔序列被扫描识别为机器指令的二进制位串。</p>
+<p>十进制数按权的展开式可以推广到任意进位计数制。二进制中只有0和1两个字符，基数为2，满足“逢二进一”。权用 <span class="arithmatex">\(2^i\)</span> 表示，二进制的按权展开式为 <span class="arithmatex">\(N = \sum_{i=0}^{n-1}K_i\ast2^i\)</span>。</p>
+<p>二进制与其他数制相比，有以下显著特点：</p>
+<ol>
+<li>数制简单，容易基于元器件的电子特性实现数字逻辑电路。</li>
+<li>由于二进制只有两种状态，因此抗干扰性强，可靠性、稳定性高。</li>
+<li>可以基于布尔逻辑代数进行分析和综合，运算规则相对简单易实现。</li>
+</ol>
+<blockquote>
+<p>基数为2的好处在于基本算术运算表很短，对比一下十进制和二进制的加法和乘法表，长短相形一目了然。</p>
+</blockquote>
+<h3 id="位模式">位模式<a class="headerlink" href="#位模式" title="Permanent link">#</a></h3>
+<p>2个比特可以组合出4（<span class="arithmatex">\(2^2\)</span>）种状态，可表示无符号数值范围[0,3]；32个比特可以组合出4294967296（<span class="arithmatex">\(2^{32}\)</span>）种状态，可表示无符号数值范围[0,4294967295]；……。</p>
+<p>由于一个位只能表示二元数值，所以单独一位的用处不大。当把位<strong>组合</strong>在一起，再加上某种解释（interpretation），即赋予不同的可能<strong>位模式</strong>以含意。通常将固定位数的位串作为一个基本存储单位，这样就可以存储范围较大的值。在有限范围内的可计量数值几乎都可以用二进制数码位串组合表示，计算机的内存由数以亿万计的比特位存储单元（晶体管）组成。</p>
+<p>大多数计算机使用8位的块，或者字节（byte），作为最小的可寻址的内存单位，而不是访问内存中单独的位（bit）。机器级程序将内存视作一个非常大的字节数组，内存的每个字节都由一个唯一的数字来标识，称为它的地址。</p>
+<p>每个程序对象可以简单地视为一个字节块，程序本身就是一个字节序列（机器指令序列）。</p>
+<h2 id="无符号数的编码">无符号数的编码<a class="headerlink" href="#无符号数的编码" title="Permanent link">#</a></h2>
+<p>粗略地概括，整数类型分为两大类：无符号整数（<code>unsigned</code> integer）和带符号整数（<code>signed</code> integer）。</p>
+<ol>
+<li>长短修饰符 <code>short</code> 和 <code>long</code> 用于修饰整形：默认为 long 长整形，短整形需显式指定 short。</li>
+<li>符号修饰符 <code>signed</code> 和 <code>unsigned</code> 用于修饰字符型和整形：缺省为 <code>signed</code> 有符号类型，无符号需显式指定 <code>unsigned</code> 修饰。</li>
+<li>当用 <code>signed</code> / <code>unsigned</code>、<code>short</code> / <code>long</code> 来修饰 int 整形时，int 可省略。</li>
+</ol>
+<p>以下是字符型、短整型、整型有无符号的区分表示：</p>
+<ul>
+<li>有符号字符型：char/signed char；无符号字符型：unsigned char</li>
+<li>有符号短整型：short [int] /signed short [int]；无符号短整型：unsigned short [int]</li>
+<li>有符号整型：int /signed [int]；无符号整型：unsigned [int]</li>
+</ul>
+<p>相关话题前置参考：</p>
+<ul>
+<li><a href="../../20091003/c-data-types/">C Data Types</a></li>
+<li><a href="../../20091004/c-binary-representation/">C Basic Types - Binary Representions</a></li>
+<li><a href="../../20091005/c-standard-integer-types/">C语言标准与实现之整数类型</a></li>
+</ul>
+<hr />
+<p>无符号整数编码基于传统的二进制表示法，一般所有的数位都被用来表示数值。</p>
+<p>假设有一个整数数据类型有 <span class="arithmatex">\(n\)</span> 位。我们可以将位向量写成 <span class="arithmatex">\(\vec{x}\)</span> 表示整个向量，或者写成 <span class="arithmatex">\([x_{n-1}, x_{n-2}, \cdots, x_0]\)</span>，表示向量中的每一位。把 <span class="arithmatex">\(\vec{x}\)</span> 看成一个二进制表示的数，就获得了  <span class="arithmatex">\(\vec{x}\)</span> 的无符号表示。在这个二进制编码中，每个位 <span class="arithmatex">\(x_i\)</span> 都取值0或1，后一种取值意味着数值   <span class="arithmatex">\(2^i\)</span> 应为数字值的一部分。我们用一个函数 <span class="arithmatex">\(B2U_n\)</span>（Binary to Unsigned的缩写，长度为<span class="arithmatex">\(n\)</span>）来表示。</p>
+<p>对位向量 <span class="arithmatex">\(\vec{x} = [x_{n-1}, x_{n-2}, \dotsc, x_0]\)</span>：</p>
+<div class="arithmatex">\[
+B2U_n(\vec{x}) \dot=\sum_{i=0}^{n-1}x_i\ast2^i
+\]</div>
+<p>在这个等式中，等号“<span class="arithmatex">\(\dot=\)</span>”表示左边被定义为等于右边。函数 <span class="arithmatex">\(B2U_n\)</span> 将一个长度为 <span class="arithmatex">\(n\)</span> 的0、1串映射到非负整数。</p>
+<p><span class="arithmatex">\(n\)</span> 位所能表示的最小值用位向量<span class="arithmatex">\([00\cdots0]\)</span>（全零）表示，也就是整数值0，而最大值是用位向量<span class="arithmatex">\([11\cdots1]\)</span>（全1），也就是整数值 <span class="arithmatex">\(UMax_n\dot=\sum_{i=0}^{n-1}x_i\ast2^i=2^n-1\)</span>。即<span class="arithmatex">\(n\)</span>位二进制位串所能表示的数值范围是 <span class="arithmatex">\([0, 2^n-1]\)</span>。</p>
+<p>在主流64位LP64架构实现中，unsigned char、unsigned short [int]、unsigned [int]、unsigned long [int]（或 long unsigned [int]）分别占1、2、4、8个字节（8、16、32、64位）。无符号字符（unsigned char）占用1个字节（8位），所能表示的数值范围是 <span class="arithmatex">\([0, 2^8-1] = [0, 255]\)</span>，共<span class="arithmatex">\(2^8\)</span>=256 个数。</p>
+<h2 id="有符号数的编码">有符号数的编码<a class="headerlink" href="#有符号数的编码" title="Permanent link">#</a></h2>
+<p>对于很多应用，我们还希望表示负数值。在计算机中，如何表示符号呢？</p>
+<p>对于带符号整数，数位被划分为符号位（只能占一位）与数值位（剩余的其它位）。</p>
+<p>在计算机中，对于数的符号（正号<code>+</code>和负号<code>-</code>）也只能用0和1这两位数字表示。通常用一个数的最高位作为符号位，最高位为0表示符号位为正；最高位为1表示符号位为负。这样，数的符号标识也“数码化”了。即带符号数的数值和符号统一用二进制数码形式来表示。</p>
+<p>在将数的符号用数码（0或1）表示后，数值部分究竟是保留原来的形式，还是按一定的规则做某些变化，这要取决于运算方法的需要，从而有四种常见的机器数形式：<em>原码</em>、<em>反码</em>、<em>补码</em> 和 <em>移码</em>。</p>
+<p>为了区别原来的数与它在机器中的表示形式，将一个数（连同符号）在机器中加以数码化后的形式，称为<strong>机器数</strong>或机器码，而把机器数所代表的实际数值称为<strong>真值</strong>。</p>
+<h3 id="原码sign-magnitude">原码（Sign-Magnitude）<a class="headerlink" href="#原码sign-magnitude" title="Permanent link">#</a></h3>
+<p>原码表示法比较直观，其数值部分保留其真值（的绝对值）。</p>
+<p><img alt="Sign-Magnitude" src="../../prog/images/signedness/Sign-Magnitude.png" /></p>
+<p>例如，正数89的二进制表示为 <span class="arithmatex">\(+1011001\)</span>，正号 <code>+</code> 直接用0代替，其机器原码表示为：</p>
+<p><img alt="Sign-Magnitude+89" src="../../prog/images/signedness/Sign-Magnitude%2B89.png" /></p>
+<p>负数-89的二进制表示为<span class="arithmatex">\(-1011001\)</span>（数值位宽为7），负号 <code>-</code> 直接用1代替，其机器原码表示为：</p>
+<p><img alt="Sign-Magnitude-89" src="../../prog/images/signedness/Sign-Magnitude-89.png" /></p>
+<p>若符号真值为X，最终机器原码的位向量 <span class="arithmatex">\(\vec{x} = [x_{n-1}, x_{n-2} ,\dotsc, x_0]\)</span> 宽度为 <span class="arithmatex">\(n\)</span>，除最高符号位 <span class="arithmatex">\(x_{n-1}\)</span> 外的数值位宽为 <span class="arithmatex">\(n-1\)</span>，则可将原码表示规则用表达式形式定义如下：</p>
+<div class="arithmatex">\[
+% 原码
+[X]_原=
+\begin{cases}
+        X，&amp;  X=+0 \quad || \quad 0 \lt X \lt 2^{n-1} \\
+        2^{n-1}-X = 2^{n-1}+\lvert X \rvert，&amp; X=-0 \quad || -2^{n-1} \lt X \lt 0 \\
+\end{cases}
+\]</div>
+<ul>
+<li>8位二进制原码表示的数值范围为 11111111-10000000,00000000-01111111，即 -127 - -0,+0 - +127。其中，“0”有-0和+0之分，<span class="arithmatex">\([-0]_原=1 0000000\)</span>，<span class="arithmatex">\([+0]_原=0 0000000\)</span>。</li>
+<li><span class="arithmatex">\([-89]_原=2^{8-1}-(-89) = 2^7+89 = 0b10000000+0b1011001 = 0b11011001\)</span>。</li>
+</ul>
+<blockquote>
+<p>原码表示法的优点是比较直观、简单易懂，后面在浮点数中有使用到原码编码。<br />
+原码的符号位不是数值的一部分，不能直接参与运算，导致加法运算复杂。<br />
+为了解决这些矛盾，人们引入了反码和补码。</p>
+</blockquote>
+<h3 id="反码ones_complement">反码（Ones' Complement）<a class="headerlink" href="#反码ones_complement" title="Permanent link">#</a></h3>
+<p>对于正数而言，其反码形式与其原码相同：最高位为符号位，用0表示正数，其余位为数值位不变。对于负数而言，其反码表示为：最高位符号位为1，其余数值位在原码的基础上按位取反。反码在机器中的表示形式如下：</p>
+<p><img alt="Ones-Complement" src="../../prog/images/signedness/Ones-Complement.png" /></p>
+<p>-89的二进制表示为 <span class="arithmatex">\(-1011001\)</span>，其原码表示为 <span class="arithmatex">\(1 1011001\)</span>，则其反码表示为 <span class="arithmatex">\(1 0100110\)</span>。</p>
+<p><img alt="Ones-Complement-89" src="../../prog/images/signedness/Ones-Complement-89.png" /></p>
+<p>若符号真值为X，最终机器反码的位向量 <span class="arithmatex">\(\vec{x} = [x_{n-1}, x_{n-2} ,\dotsc, x_0]\)</span> 宽度为 <span class="arithmatex">\(n\)</span>，除最高符号位 <span class="arithmatex">\(x_{n-1}\)</span> 外的数值位宽为 <span class="arithmatex">\(n-1\)</span>，则可将反码表示规则用表达式形式定义如下：</p>
+<div class="arithmatex">\[
+% 反码
+[X]_反=
+\begin{cases}
+        X，&amp;  X=+0 \quad || \quad 0 \lt X \lt 2^{n-1} \\
+        (2^n-1) + X = (2^n-1)- \lvert X \rvert，&amp; X=-0 \quad || -2^{n-1} \lt X \lt 0
+\end{cases}
+\]</div>
+<ul>
+<li>当 X&lt;0 或 X=-0 时，按照无符号数解析位向量，<span class="arithmatex">\(\lvert X \rvert + \overrightarrow{[X]_反}=2^n-1\)</span>（n位全1）。例如当n=8时，<span class="arithmatex">\(\lvert X \rvert + \overrightarrow{[X]_反}=0b11111111=255\)</span>。<span class="arithmatex">\(\overrightarrow{[X]_反}\)</span> 相当于 <span class="arithmatex">\(\lvert X \rvert\)</span> 的按位取反（bitwise inversion）= ~<span class="arithmatex">\(\lvert X \rvert\)</span>。</li>
+<li>8位二进制反码表示的数值范围为 10000000-11111111,00000000-01111111（负数数值部分求反复原：11111111-10000000,00000000-01111111），即 -127 - -0,+0 - +127。其中，“0”有-0和+0之分，<span class="arithmatex">\([-0]_反=1 1111111\)</span>，<span class="arithmatex">\([+0]_反=0 0000000\)</span>。</li>
+</ul>
+<p>求-89的8位反码时，无需按照“原码→反码”这个步骤，基于以上表达式即可计算出其反码的无符号真值，其对应的二进制位向量即为-89的反码。</p>
+<ul>
+<li><span class="arithmatex">\([-89]_反=(2^8-1)+(-89) = (2^8-1)-(89) = 166 = 0b10100110\)</span>。</li>
+<li><span class="arithmatex">\([-89]_反\)</span>=~(-89)=166=<span class="arithmatex">\(0b10100110\)</span>。</li>
+</ul>
+<blockquote>
+<p>虽然过去生产过基于反码表示的机器，但是几乎所有的现代机器都使用补码形式表示有符号整数。<br />
+现在通常已不再单独使用反码，而主要是作为求补码的一个<strong>中间步骤</strong>来使用。</p>
+</blockquote>
+<h3 id="补码twos_complement">补码（Two's Complement）<a class="headerlink" href="#补码twos_complement" title="Permanent link">#</a></h3>
+<p>在计算机中，最常见的有符号（整）数的表示方式是补码。采用补码运算可以将减法变成补码加法运算，在微处理器中只需加法的电路就可以实现加法、减法运算。</p>
+<h4 id="概念导读">概念导读<a class="headerlink" href="#概念导读" title="Permanent link">#</a></h4>
+<p>为了理解补码的概念，我们先来看看圆周运动的例子。</p>
+<p>在现实生活中，一个圆周的可视角度度量为0-2π（或0°-360°），以原点为起点的射线OA逆时针旋转一圈的弧度为2π。</p>
+<p>圆周运动具有周期性，即具有“周而复始”的变化规律。假设OA的初始弧度为α，终边OA每绕原点旋转一周，α增加2π弧度（旋转k周后，弧度变成α+k·2π），但OA位置不变。由三角函数的定义可知，终边相同的角的同一三角函数的值相等。</p>
+<div class="arithmatex">\[
+\begin{gather*}
+    \sin(\alpha+k·2\pi) = \sin\alpha \\
+    \cos(\alpha+k·2\pi) = \cos\alpha \\
+    \tan(\alpha+k·2\pi) = \tan\alpha
+\end{gather*}
+\]</div>
+<p>由上面的公式可知，可以把求任意角的三角函数值，转化为求0-2π（或0°-360°）角的三角函数值。射线OA逆时针旋转π和顺时针旋转π（-π）的终边是相同的，逆时针旋转5π/3和顺时针旋转π/3（-π/3）的终边是相同的。以下将负弧度的正弦计算转化到0-2π区间换算：</p>
+<div class="arithmatex">\[
+ \begin{gather*}
+    \sin(-\pi+2\pi) = \sin\pi \\
+    \sin(-\frac{\pi}{3}+2\pi) = \sin\frac{5\pi}{3}
+\end{gather*}
+\]</div>
+<hr />
+<p>我们再来进一步看看日常生活中校正时钟的例子。</p>
+<p>假定时钟停在7点，而正确时间是5点，要拨准时钟可以有两种不同的拨法：倒拨2个格或顺拨10个格。</p>
+<p>想象一下，龟兔在7点钟刻度背向而行，假设兔子的速度是乌龟的5倍，兔子顺时针跑10格，乌龟逆时针跑2格，它们将在5点刻度处迎面相遇。</p>
+<p><img alt="adjust-clock" src="../../prog/images/signedness/adjust-clock.png" /></p>
+<p>由于钟面的容量有限，其表盘刻度实际上是十二进制，12h以后又从0开始计数。倒拨2个格，即7-2=5（做减法）；顺拨10个格，即7+10=12+5（做加法）。而钟面上12=0，故12+5回归到刻度5。这就表明，在舍掉进位的情况下，“从7减去2”和“往7加上10”所得的结果是一样的。在十二进制下，12+5丢失进位12，此处12是溢出量，又称为<strong>模</strong>（mod）。而-2和10的绝对值之和恰好等于模数12，我们把10称为-2对于模数12的<strong>补数</strong>。在圆周运动中，每转动一周的 <span class="arithmatex">\(2\pi\)</span> 弧度可视为溢出量（模），<span class="arithmatex">\(\frac{5\pi}{3}\)</span> 为 <span class="arithmatex">\(-\frac{\pi}{3}\)</span> 对于模数 <span class="arithmatex">\(2\pi\)</span> 的补数。</p>
+<div class="arithmatex">\[
+\begin{align*}
+10 &amp; \equiv -2 &amp; \mod 12 \\
+\frac{5\pi}{3} &amp; \equiv -\frac{\pi}{3} &amp; \mod 2\pi
+\end{align*}
+\]</div>
+<p>在电脑和手机的日期和时间偏好设置中，通常可以设置显示24小时，因为地球自转一圈是一天（接近24h）。24h制的01点和13点（下午1点）都对应12h制钟表盘上的1点位：<span class="arithmatex">\(1 \equiv 13 \mod 12\)</span>。“天天向上”、“日复一日”中的“天”和“日”即为溢出量，每过24h（模）又将开启崭新的一天。假设现在是今天0点，则32h后就是明天上午8点：<span class="arithmatex">\(8 \equiv 32 \mod 24\)</span>。</p>
+<p>计算机中的运算受一定字长的限制，它的运算部件、寄存器和存储单元都有一定的位数，因而在运算过程中也会产生溢出量，<u>所产生的溢出量实际上就是模</u>。可见，计算机的运算也是一种<strong>有模运算</strong>。</p>
+<h4 id="编码格式">编码格式<a class="headerlink" href="#编码格式" title="Permanent link">#</a></h4>
+<p>对于正数而言，其补码形式与其原码、反码相同：最高位为符号位，用0表示正数，其余位为数值位不变。对于负数而言，其补码表示为：最高位符号位为1，其余数值位在原码的基础上按位取反并加1（反码+1）。补码在机器中的表示形式如下：</p>
+<p><img alt="Twos-Complement" src="../../prog/images/signedness/Twos-Complement.png" /></p>
+<p>-89的二进制表示为 <span class="arithmatex">\(-1011001\)</span>，其原码表示为 <span class="arithmatex">\(1 1011001\)</span>，其反码表示为 <span class="arithmatex">\(1 0100110\)</span>，则其补码表示为 <span class="arithmatex">\(1 0100111\)</span>。</p>
+<p><img alt="Twos-Complement-89" src="../../prog/images/signedness/Twos-Complement-89.png" /></p>
+<p>若符号真值为X，最终机器补码的位向量 <span class="arithmatex">\(\vec{x} = [x_{n-1}, x_{n-2} ,\dotsc, x_0]\)</span> 宽度为 <span class="arithmatex">\(n\)</span>，除最高符号位 <span class="arithmatex">\(x_{n-1}\)</span> 外的数值位宽为 <span class="arithmatex">\(n-1\)</span>，则可将反码表示规则用表达式形式定义如下：</p>
+<div class="arithmatex">\[
+% 补码
+[X]_补=
+\begin{cases}
+        X, &amp; 0 \le X \lt 2^{n-1} \\
+        2^n+X = 2^n- \lvert X \rvert, &amp; -2^{n-1} \le X \lt 0 \quad (\mod 2^n)
+\end{cases}
+\]</div>
+<ul>
+<li>当 X&lt;0 时，按照无符号数解析位向量，<span class="arithmatex">\(\lvert X \rvert+\overrightarrow{[X]_补}=2^n\)</span>（相对反码加1）。例如当n=8时，<span class="arithmatex">\(\lvert X \rvert+\overrightarrow{[X]_补}=2^8=256\)</span>。8位全1（0b11111111）时，能表示最大无符号数 <span class="arithmatex">\(2^8-1\)</span> 或最大有符号数(<span class="arithmatex">\(-1\)</span>)，再加1则会超出8位所能表示的最大值，变成9位二进制0b100000000，高位截断溢出为0b00000000，即超过256从零开始计数（<span class="arithmatex">\(0 \equiv 256 \mod 256\)</span>）。</li>
+<li>8位二进制补码表示的数值范围为 10000000-11111111,00000000-01111111，即 -128 - -1,+0 - +127。其中，无-0和+0之分，保证了0的唯一性。另外，取值范围为连贯区间 [-128, 127]，包含128个负数、128个非负数。负数、非负数各占一半，负数比正数多一个。</li>
+</ul>
+<p>设想一个有256个刻度的大笨钟，当采用补码重新编码刻度后，表盘的256个刻度被<strong>重新编码</strong>，划分成右边顺时针半盘[0,127]和左边逆时针半盘[-128,-1]。</p>
+<p><img alt="adjust-clock-complement" src="../../prog/images/signedness/adjust-clock-complement.png" /></p>
+<hr />
+<p>-89的二进制补码表示为 <span class="arithmatex">\(1 0100111\)</span>，按照无符号数解析位向量的值为167，满足：</p>
+<div class="arithmatex">\[
+\lvert -89 \rvert + 167 = 256 \implies 167 \equiv -89 \mod 256
+\]</div>
+<p>求-89的8位补码时，无需按照“原码→反码→+1”这个步骤，可基于以上表达式计算其补数：</p>
+<ul>
+<li><span class="arithmatex">\([-89]_补=2^8+(-89) = 2^8-89 = 167 \implies -89 \mod 256 = 256+(-89) \equiv 167\)</span></li>
+</ul>
+<p>负数-89对应的无符号补数167的二进制位向量 0b10100111，即为其补码。</p>
+<h4 id="按权展开">按权展开<a class="headerlink" href="#按权展开" title="Permanent link">#</a></h4>
+<p>-89的二进制表示为 <span class="arithmatex">\(-1011001\)</span>，其原码表示为 <span class="arithmatex">\(1 1011001\)</span>，其反码表示为 <span class="arithmatex">\(1 0100110\)</span>，其补码表示为 <span class="arithmatex">\(1 0100111\)</span>。</p>
+<p><span class="arithmatex">\(\lvert -89 \rvert\)</span> 的二进制位向量为 <span class="arithmatex">\(01011001\)</span>：</p>
+<ul>
+<li>不考虑最高符号位，根据反码的定义，反码数值部分位向量=</li>
+</ul>
+<div class="arithmatex">\[
+(2^{n-1}-1)-\lvert X \rvert \overset{\text{n=8}}{=\!=\!=} 127-\lvert -89 \rvert=0b01111111-0b01011001=0b00100110
+\]</div>
+<ul>
+<li>不考虑最高符号位，补码数值部分位向量=</li>
+</ul>
+<div class="arithmatex">\[
+(2^{n-1}-1)-\lvert X \rvert+1 = 2^{n-1}-\lvert X \rvert \overset{\text{n=8}}{=\!=\!=} 127-\lvert -89 \rvert+1=0b01111111-0b01011001+1=0b00100111
+\]</div>
+<p>补码高位符号位占1位，其余数值部分占 n-1 位。当将最高符号位解释为负权（<span class="arithmatex">\(-2^{n-1}\)</span>）时，整体位向量的真值即为原始负值：</p>
+<div class="arithmatex">\[
+\underbrace{-2^{n-1}}_{1} + \underbrace{2^{n-1}-\lvert X \rvert}_{n-1} = -\lvert X \rvert
+\]</div>
+<p>我们用一个函数 <span class="arithmatex">\(B2T_n\)</span>（Binary to Two's Complement 的缩写，长度为<span class="arithmatex">\(n\)</span>）来表示位向量 <span class="arithmatex">\(\vec{x} = [x_{n-1}, x_{n-2} , \dotsc, x_0]\)</span> 到补码的编码映射：</p>
+<div class="arithmatex">\[
+B2T_n(\vec{x}) \dot=-x_{n-1}\ast2^{n-1} + \sum_{i=0}^{n-2}x_i\ast2^i
+\]</div>
+<p>最高有效位 <span class="arithmatex">\(x_{n-1}\)</span> 称为符号位，它的“权重”为 <span class="arithmatex">\(-2^{n-1}\)</span>，是无符号表示中权重的负数。符号位被设置为1时，表示值为负，而当设置为0时，值为非负。</p>
+<p><span class="arithmatex">\(\lvert -89 \rvert\)</span> 的二进制位向量为 <span class="arithmatex">\(01011001\)</span>，-89的二进制补码表示为 <span class="arithmatex">\(1 0100111\)</span>，可基于 <span class="arithmatex">\(B2T_n\)</span> 函数按权展开复原补码的真值：</p>
+<div class="arithmatex">\[
+\begin{aligned}
+    &amp; B2T_8([0 1011001]) = -0\ast2^7+1\ast2^6+1\ast2^4+1\ast2^3+1\ast2^0=-0+64+16+8+1=89 \\
+    &amp; B2T_8([1 0100111]) = -1\ast2^7+1\ast2^5+1\ast2^2+1\ast2^1+1\ast2^0=-128+32+4+2+1=-89
+\end{aligned}
+\]</div>
+<p>让我们基于 <span class="arithmatex">\(B2T_n\)</span> 展开式，重新推导一下 <span class="arithmatex">\(n\)</span> 位补码所能表示的取值范围。</p>
+<ul>
+<li>最小值是位向量 <span class="arithmatex">\([10\cdots0]\)</span>，只设置负权，其他正权位清零，此种情形负得最多，其整数值为 <span class="arithmatex">\(TMin_{n}\dot=-2^{n-1}\)</span>。</li>
+<li>当设置了负权时，设置其他所有正权位，位向量为  <span class="arithmatex">\([11\cdots1]\)</span>。此种情形正权打满（负得最少），其整数值为 <span class="arithmatex">\(-2^{n-1}+\sum_{i=0}^{n-2}x_i\ast2^i=-2^{n-1}+(2^{n-1}-1)=-1\)</span>，即最大负整数。</li>
+<li>最大值是位向量 <span class="arithmatex">\([01\cdots1]\)</span>，清除负权（即为非负数），清除其他所有正权位，其值为0；若设置其他所有正权位，其整数值为 <span class="arithmatex">\(TMax_{n}\dot=\sum_{i=0}^{n-2}x_i\ast2^i=2^{n-1}-1\)</span>。</li>
+</ul>
+<p>以<span class="arithmatex">\(n=8\)</span>为例，一个字节（byte）的补码编码所能表示数值范围是 <span class="arithmatex">\([-2^{8-1}, 2^{8-1}-1]\)</span>，即 <span class="arithmatex">\([-128, 127]\)</span>，包含128个负数（-128 - -1）、128个非负数（0 - 127）。</p>
+<h4 id="补码加法">补码加法<a class="headerlink" href="#补码加法" title="Permanent link">#</a></h4>
+<p>我们在初中时代学习初等代数时，就引入负数这一重要的概念用来表示“相反意义的量”。有了负数的概念后，减法也可以理解为加法：<u>减去一个正数的等效表述是加了一个负数</u>。</p>
+<p>回想调拨钟表的例子，定义顺时针为正（加法），逆时针为负（减法）。假设初始刻度为x，减量为n（n&gt;0），加量为其补数 (12-n)，显然有 <span class="arithmatex">\(x-n \equiv x+(12-n) \mod 12\)</span>。令 n=2，在 mod12 的钟表盘上，逆时针回拨2格等效于顺时针拨动10格，殊途同归。</p>
+<p>计算机的表示法使用有限数量的位对一个数字编码，当结果太大以至不能表示时，某些运算就<br />
+会溢出（overflow）。因此，我们说计算机运算也是一种有模运算。当然，在计算机中不是像上述时钟例子那样以12为模，在定点小数的补码表示中是以 <span class="arithmatex">\(2\)</span> 为模，在定点整数中则以 <span class="arithmatex">\(2^n\)</span> 为模（n=8,16,32,64,...）。</p>
+<p>在计算机中，在字宽容量（模数）范围内，负数的补码表示是对数值位（或绝对值）取反+1，“取反”实际上已经暗含了减法，“+1” 则将补码进一步换算成了补数。假设 X&lt;0，其补码位向量的无符号值  <span class="arithmatex">\(\overrightarrow{[X]_补} = 2^n- \lvert X \rvert\)</span>，实际上就是<span class="arithmatex">\(\mod 2^n\)</span>。当 n=8 时, 就是<span class="arithmatex">\(\mod 256\)</span>。</p>
+<p>类比钟表调拨，减去正数可视作加上负数的补码。这样，在计算机中就不用单独设置减法器，而是基于补码一律按加法运算规则实现减法的等效计算。在这一过程中，操作数和运算结果都统一用补码表示。</p>
+<p>另一方面，补码的最高符号位统一按照负权解释，即补码的符号位可视作整体数值的一部分。从这个角度来讲，符号位直接参与运算貌似也是解释得通。</p>
+<div class="arithmatex">\[
+[X]_补+[Y]_补=
+\begin{cases}
+    X+(2^n+Y) &amp; \equiv X+Y &amp; \mod 2^n, \set{X,Y|X\gt0, Y\lt0} \\
+    (2^n+X)+(2^n+Y) &amp; \equiv X+Y &amp; \mod 2^n, \set{X,Y|X\lt0, Y\lt0} 
+\end{cases}
+\]</div>
+<p>【例1】已知X=+0000111（7），Y=-0010011（-19），求两数的补码之和。</p>
+<ul>
+<li><span class="arithmatex">\([X]_补=0 0000111，[Y]_补=1 1101101\)</span>，人工计算 Z=X+Y=7+(-19)=-12（补码为11110100）。</li>
+</ul>
+<p>若将 <span class="arithmatex">\(\overrightarrow{[Y]_补}\)</span> 也视作无符号数=237，将计算结果Z也视为无符号数<span class="arithmatex">\(\overrightarrow{[Z]_补}\)</span>=244，满足 7+237=244，而 <span class="arithmatex">\(244 \equiv -12 \mod 256\)</span>。</p>
+<p>还是借用256大笨钟来阐述，初始在刻度7点处，逆时针回拨19格和顺时针拨动237格，效果都是拨到刻度244处。当采用补码重新编码刻度后，原先的244点映射为左半盘的-12点位。换个角度来说，由于 <span class="arithmatex">\(\lvert -19 \rvert \gt \lvert 7 \rvert\)</span>，这里异号相加，负数占主导，也可以想象为初始刻度在左半盘-19点，+7表示顺时针拨动7格，将拨到-12点，仍然在左半盘（没有溢出）。</p>
+<p>补码可以视作无符号数直接参与竖式按位加计算，接下来重点看看补码加法的溢出问题、判断及处理。</p>
+<p>【例2】已知X=+1000000（64），Y=+1000001（65），求两数的补码之和。</p>
+<ul>
+<li>直接对补码列竖式计算如下：</li>
+</ul>
+<div class="arithmatex">\[
+\begin{array}{c|lcr}
+\:\:\:\:\: &amp; \: \quad 0\ 1 \qquad\qquad\qquad  (C_fC_0)\\
+\:\:\:\:\: [X]_补 &amp; \qquad 0\ 1000000 \qquad (+64的补码) \\
++) [Y]_补 &amp; \qquad 0\ 1000001 \qquad (+65的补码)  \\
+\hline
+\ &amp; \qquad 1\ 0000001  \qquad 129
+\end{array}
+\]</div>
+<ul>
+<li>两个正数相加，结果为负数！？补码之和是129，超出了 [0, 127]，即产生了溢出现象。此时，数值部分向符号位产生进位<span class="arithmatex">\(C_0=1\)</span>，符号位未向高位产生进位 <span class="arithmatex">\(C_f=0\)</span>。</li>
+</ul>
+<p>这里两个正数相加，结果超出了8位补码的非负数表示范围。竖式计算的结果为二进制位向量 10000001，无符号数值是 129，补码表示的真值为-127。</p>
+<blockquote>
+<p><span class="arithmatex">\(C_0=1\)</span> 表示有溢出，符号位从正变成负。</p>
+</blockquote>
+<p>还是借用256大笨钟来阐述，初始在刻度65点处，顺时针拨动64格后将到129点。但是，当采用补码表示时，129点越过右半盘（取值范围为[0,127]）的分界线127点两格，对应左半盘（取值范围为[-128,-1]）的-127点位：+127左溢一格是-128，再左溢一格是-127。</p>
+<p><img alt="adjust-clock-complement-overflow" src="../../prog/images/signedness/adjust-clock-complement-overflow.png" /></p>
+<p>用以下C语言代码测试验证，计算结果Z的位向量为0x81（即无符号数129），补码对应的真值=<span class="arithmatex">\(-127 \equiv 129 \mod 256\)</span>。</p>
+<div class="language-C highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="w">    </span><span class="kt">signed</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="n">X</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">64</span><span class="p">;</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">    </span><span class="kt">signed</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="n">Y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">65</span><span class="p">;</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">    </span><span class="kt">signed</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="n">Z</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">X</span><span class="o">+</span><span class="n">Y</span><span class="p">;</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Z=0x%hhx, %hhd</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">Z</span><span class="p">,</span><span class="w"> </span><span class="n">Z</span><span class="p">);</span>
+</span></code></pre></div>
+<p>【例3】已知X=-1111111（-127），Y=-0000010（-2），要求进行补码的加法运算。</p>
+<ul>
+<li>直接对补码列竖式计算如下：</li>
+</ul>
+<div class="arithmatex">\[
+\begin{array}{c|lcr}
+\:\:\:\:\: &amp; \: \quad 1\ 0 \qquad\qquad\qquad  (C_fC_0)\\
+\:\:\:\:\: [X]_补 &amp; \qquad 1\ 0000001 \qquad (-127的补码：129) \\
++) [Y]_补 &amp; \qquad 1\ 1111110 \qquad (-2的补码：254)  \\
+\hline
+\ &amp; \qquad 0\ 1111111  \qquad 127
+\end{array}
+\]</div>
+<ul>
+<li>两个负数相加，结果为正数！？预期的结果-129超出了8位补码所能表示的负数范围 [-128, -1]，即产生了溢出现象。此时，数值部分向符号位未产生进位 <span class="arithmatex">\(C_0=0\)</span>，符号位向高位产生进位 <span class="arithmatex">\(C_f=1\)</span>。</li>
+</ul>
+<p>这里两个负数相加，结果超出了8位补码的负数表示范围，溢出到了正数区。竖式计算的结果为二进制位向量 01111111，无符号数值即其补码真值为127。</p>
+<blockquote>
+<p><span class="arithmatex">\(C_f=1\)</span> 表示有溢出，符号位从负变成正。</p>
+</blockquote>
+<p>由于 <span class="arithmatex">\(\lvert -127 \rvert \gt \lvert -2 \rvert\)</span>，这里的负负相加，-127占主导。还是借用256大笨钟来阐述，当采用补码重新编码刻度后，想象初始刻度左半盘-127点处，-2表示逆时针拨动2格，越过左半盘分界线-128点一格，对应右半盘（取值范围为[0,127]）的127点位：-127右溢一格是-128，再右溢一格是+127。</p>
+<div class="arithmatex">\[
+[X]_补+[Y]_补=(2^n+X)+(2^n+Y)  \equiv X+Y \mod 2^n \\
+[-127]_{补8}+[-2]_{补8}=(256+(-127)) + (256+(-2)) = \\
+129+254 = 383 \mod 256 \equiv 127
+\]</div>
+<p>用以下C语言代码测试验证，计算结果Z的位向量为0x7f，补码对应的真值是127（383溢除模256）。</p>
+<div class="language-C highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="w">    </span><span class="kt">signed</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="n">X</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">-127</span><span class="p">;</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">    </span><span class="kt">signed</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="n">Y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">-2</span><span class="p">;</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">    </span><span class="kt">signed</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="n">Z</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">X</span><span class="o">+</span><span class="n">Y</span><span class="p">;</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Z=0x%hhx, %hhd</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">Z</span><span class="p">,</span><span class="w"> </span><span class="n">Z</span><span class="p">);</span>
+</span></code></pre></div>
+<p>以下是《C语言深度解剖（第2版）》附录中的C 语言基础测试题5，请思考输出结果。</p>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;string.h&gt;</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">arg</span><span class="p">[])</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">    </span><span class="kt">signed</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="n">a</span><span class="p">[</span><span class="mi">1000</span><span class="p">];</span>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="p">;</span>
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">&lt;</span><span class="mi">1000</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">        </span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">-1</span><span class="o">-</span><span class="n">i</span><span class="p">;</span>
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%lu&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">strlen</span><span class="p">((</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="p">)</span><span class="n">a</span><span class="p">));</span>
+</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>
+</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="p">}</span>
+</span></code></pre></div>
+<p>【例4】已知X=-0000011（-3），Y=-0000010（-2），要求进行补码的加法运算。</p>
+<ul>
+<li>直接对补码列竖式计算如下：</li>
+</ul>
+<div class="arithmatex">\[
+\begin{array}{c|lcr}
+\:\:\:\:\: &amp; \: \quad 1\ 1 \qquad\qquad\qquad  (C_fC_0)\\
+\:\:\:\:\: [X]_补 &amp; \qquad 1\ 1111101 \qquad (-3的补码：253) \\
++) [Y]_补 &amp; \qquad 1\ 1111110 \qquad (-2的补码：254)  \\
+\hline
+\ &amp; \qquad 1\ 1111011  \qquad (-5的补码：251)
+\end{array}
+\]</div>
+<ul>
+<li>直接补码运算产生的结果的无符号数值是251，正是预期结果-5的补码！此时，数值部分向符号位产生进位 <span class="arithmatex">\(C_0=1\)</span>，符号位向高位产生进位 <span class="arithmatex">\(C_f=1\)</span>。</li>
+</ul>
+<p>直观判断，两个小负数相加不会溢出。从单个溢出位判断：</p>
+<ol>
+<li>两个负数相加，总会导致 <span class="arithmatex">\(C_f=1\)</span>，符号位从负变成正。</li>
+<li>然后 <span class="arithmatex">\(C_0=1\)</span>，符号位又从正变成负。</li>
+</ol>
+<p>所以，整体上，符号位还是保持为负，即没有溢出。<br />
+下面来从数理角度来具体推导一下溢出判断逻辑。</p>
+<h4 id="溢出判断">溢出判断<a class="headerlink" href="#溢出判断" title="Permanent link">#</a></h4>
+<p>下面基于8位补码，根据符号的异同性，详细讨论上面四个例子对应的符号组合（<code>+、-</code>、<code>+、+</code>、<code>-、-</code>）时补码加法的溢出条件及判断逻辑。</p>
+<blockquote>
+<p>s1、s2 为补码最高符号位，取值0或1。<br />
+x、y 分别为 X、Y 除符号位的其他数值位的真值。</p>
+</blockquote>
+<p>​【例1】一正一负：假设 s1=1,s2=0, 按权展开相加 <span class="arithmatex">\(B2T_8(X)+B2T_8(Y) = (-2^7+x)+y = -2^7+(x+y)\)</span></p>
+<div class="arithmatex">\[
+0 \le x,y \le 2^7-1 \to 0 \le x+y \le 2^8-2 \implies \\
+-2^7 \le B2T_8(X)+B2T_8(Y) \le 2^7-2 \\ 
+\]</div>
+<ul>
+<li>结果 Z 的对应区间为 [-128, 126]，不会产生溢出。</li>
+<li>另外，s1+s2=1，当 <span class="arithmatex">\(C_0=0\)</span> 时，<span class="arithmatex">\(C_f=0\)</span>；当 <span class="arithmatex">\(C_0=1\)</span> 时，<span class="arithmatex">\(C_f=1\)</span>。</li>
+</ul>
+<p>【例2】两个正数：s1=s2=0，按权展开相加 B2T_8(X)+B2T_8(Y) = x+y</p>
+<div class="arithmatex">\[
+0 \le x,y \le 2^7-1 \to 0 \le x+y \le 2^8-2 \implies \\
+0 \le B2T_8(X)+B2T_8(Y) \le 2^8-2，
+\]</div>
+<ul>
+<li>结果 Z 的对应区间为 [0, 254] = [0,127]+[128,254]，当结果落入 [128,254] 时，有符号补码真值溢出为负值：<span class="arithmatex">\(Z \mod 256 \equiv Z-256\)</span> 对应区间 [-128, -2]。</li>
+<li>
+<p>另外，s1+s2=0，我们来看看进位情况：</p>
+<ul>
+<li>当 x+y 小于或等于最大正数127（0b11111111）时，无溢出，此时 <span class="arithmatex">\(C_0=0\)</span>，<span class="arithmatex">\(C_f=0\)</span>。</li>
+<li>当 x+y 大于最大正数127（0b11111111）时，溢出为负，此时 <span class="arithmatex">\(C_0=1\)</span>，<span class="arithmatex">\(C_f=0\)</span>。</li>
+</ul>
+</li>
+</ul>
+<p>【例3】两个负数，s1=s2=1，按权展开相加 <span class="arithmatex">\(B2T_8(X)+B2T_8(Y) = (-2^7+x)+(-2^7+y) = -2^8+(x+y)\)</span></p>
+<div class="arithmatex">\[
+0 \le x,y \le 2^7-1 \to 0 \le x+y \le 2^8-2 \implies \\
+-2^8 \le B2T_8(X)+B2T_8(Y) \le -2
+\]</div>
+<ul>
+<li>结果 Z 的对应区间为 [-256, -2] = [-256,-129]+[-128,-2]，当结果落入 [-256,-129] 时，有符号补码真值溢出为正值：<span class="arithmatex">\(Z \mod 256 \equiv Z+256\)</span> 对应区间 [0, 127]。</li>
+<li>
+<p>另外，s1+s2=0（<span class="arithmatex">\(C_f=1\)</span>），我们来看看进位情况：</p>
+<ul>
+<li>当数值部分和（x+y）小于等于127（小于128）时，<span class="arithmatex">\(Z \le -128\)</span>，溢出为正，此时 <span class="arithmatex">\(C_0=0\)</span>。</li>
+<li>当数值部分和（x+y）大于127（大于等于128）时，<span class="arithmatex">\(Z \gt -128\)</span>，无溢出，此时 <span class="arithmatex">\(C_0=1\)</span>。</li>
+</ul>
+</li>
+</ul>
+<hr />
+<p>以上例1和例4中，8位正数之和、8位负数之和未超出8位补码表示的数值范围时，没有产生溢出，结果正确。此时，满足 <span class="arithmatex">\(C_0=C_f\)</span>，同时为0或同时为1。<br />
+以上例2和例3中，8位正数之和、8位负数之和超出8位补码表示的数值范围时，产生了溢出，结果错误。此时，满足 <span class="arithmatex">\(C_0 \ne C_f\)</span>，一个为0且一个为1。</p>
+<p>综合以上，可用逻辑异或表达式 <span class="arithmatex">\(\boxed{OF = C_f \oplus C_0}\)</span> 来检验补码加法的溢出情况。</p>
+<h2 id="扩展一个数字的位表示">扩展一个数字的位表示<a class="headerlink" href="#扩展一个数字的位表示" title="Permanent link">#</a></h2>
+<p>一个常见的运算是在不同字长的整数之间转换，同时又保持数值不变。考虑从一个较小的数据类型转换到一个较大的类型，即扩大位宽。</p>
+<p>要将一个无符号数转换成一个更大的数据类型时，只要简单地在开头添加0。具体来说，原数值的字节保持在低（权）位不变，在新增的高（权）位补0。</p>
+<p>要将一个补码数字转换为一个更大的数据类型，可以执行一个符号扩展（sign extension）。具体来说，原数值的字节保持在低（权）位不变，在新增的高（权）位复制符号位。</p>
+<ol>
+<li>对于正数，高位复制符号位0，不影响其真值。</li>
+<li>对于负数，高位复制符号位1，也不影响真值。</li>
+</ol>
+<p>考虑负数的补码位向量 <span class="arithmatex">\(\vec{x} = [x_{n-1}, x_{n-2} ,\dotsc, x_0]\)</span>，其编码映射如下：</p>
+<div class="arithmatex">\[
+B2T_n(\vec{x}) \dot=-x_{n-1}\ast2^{n-1} + \sum_{i=0}^{n-2}x_i\ast2^i
+\]</div>
+<p>当复制高符号位 <span class="arithmatex">\(x_{n-1}\)</span> 时，位向量 <span class="arithmatex">\(\vec{x'} = [{ \underline{x_{n-1} ,\dotsc, x_{n-1}} }, x_{n-1}, x_{n-2} ,\dotsc, x_0]\)</span>，则有 <span class="arithmatex">\(B2T_n(\vec{x}) = B2T_{n'}(\vec{x'})\)</span>。</p>
+<hr />
+<p>以-89为例，其8位补码位向量为<span class="arithmatex">\([1 0100111]\)</span>，将其符号扩展为16位的位向量位<span class="arithmatex">\([{ 11111111 } 10100111]\)</span>：</p>
+<div class="arithmatex">\[
+\begin{aligned}
+&amp; B2T_8([1 0100111]) = -1\ast2^7+1\ast2^5+1\ast2^2+1\ast2^1+1\ast2^0 \\
+&amp; B2T_{16}([{ 11111111 } 10100111]) =-1\ast2^{15}+1\ast2^{14}+\cdots+1\ast2^8+1\ast2^7+1\ast2^5+1\ast2^2+1\ast2^1+1\ast2^0
+\end{aligned}
+\]</div>
+<p>设补码除符号位后的位数值为v，则</p>
+<div class="arithmatex">\[
+\begin{aligned}
+&amp; B2T_8([1 0100111]) =-1\ast2^7+v \\
+&amp; B2T_{16}([{ 11111111 } 10100111]) =-1\ast2^{15}+1\ast2^{14}+\cdots+1\ast2^8+1\ast2^7+v
+\end{aligned}
+\]</div>
+<p>更进一步有：</p>
+<div class="arithmatex">\[
+\begin{aligned}
+B2T_{16}([{ 11111111 } 10100111]) &amp; = 2^8(-2^7+2^6+\cdots+2^0)+2^7+v \\ 
+                                                   &amp; = 2^8(-2^7+(2^7-1))+2^7+v \\
+                                                   &amp; = -2^8+2^7+v \\
+                                                   &amp; = -2^7+v
+\end{aligned}
+\]</div>
+<p>对比可知，符号扩展前后的补码所表示的真值不变。</p>
+<h2 id="有符号数和无符号数之间的转换">有符号数和无符号数之间的转换<a class="headerlink" href="#有符号数和无符号数之间的转换" title="Permanent link">#</a></h2>
+<p>C语言允许在各种不同的数据类型之间做强制类型转换。例如，假设变量x声明为int，u声明为unsigned。表达式 <code>(unsigned)x</code> 会将x的值转换为一个无符号数值，而 <code>(int)u</code> 将u的值转换为一个有符号整数。</p>
+<p>考虑以下代码：</p>
+<div class="language-C highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="w">    </span><span class="kt">short</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">-12345</span><span class="p">;</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">    </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">short</span><span class="w"> </span><span class="n">uv</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">short</span><span class="p">)</span><span class="n">v</span><span class="p">;</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;v=%hd, uv=%hu</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">uv</span><span class="p">);</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;v=0x%hx, uv=0x%hx</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">uv</span><span class="p">);</span>
+</span></code></pre></div>
+<p>在一台采用补码的机器上，上述代码运行输出：</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>v=-12345, uv=53191
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>v=0xcfc7, uv=0xcfc7
+</span></code></pre></div>
+<p>可以看到，强制类型转换的结果保持位向量（位模组）不变，只是改变了解释这些位的方式。<br />
+v=-12345 的补码表示和 uv=53191 的无符号表示是完全一样的。</p>
+<p>以上代码片段示例演示了负数补码转换成无符号数。对于负数，补码中最高位作为符号位，本来解释为负权 <span class="arithmatex">\(-2^{n-1}\)</span>，按照无符号解释为正权数值位  <span class="arithmatex">\(2^{n-1}\)</span>。由于后面位的数值 <span class="arithmatex">\(v\)</span> 保持不变，相当于在补码表示的真值基础上加上 <span class="arithmatex">\(2^n\)</span>。</p>
+<p>对满足 <span class="arithmatex">\(TMin_n \le x \le TMax_n\)</span> 的 <span class="arithmatex">\(x\)</span> 有：</p>
+<div class="arithmatex">\[
+T2U_n(x)=
+\begin{cases}
+        x, &amp; x\ge0 \\
+        2^n+x（2^n- \lvert x \rvert）, &amp; x&lt;0
+\end{cases}
+\]</div>
+<p>简单推导如下：</p>
+<div class="arithmatex">\[
+\begin{aligned}
+B2U_n(x) - B2T_n(x) &amp; = (2^{n-1}+v)-(-2^{n-1}+v) = 2\ast2^{n-1}=2^n \\
+&amp; \implies B2U_n(x) = B2T_n(x) + 2^n
+\end{aligned}
+\]</div>
+<p>例如：<span class="arithmatex">\(T2U_{16}(-12345) = -12345+2^{16}=53191\)</span>。</p>
+<hr />
+<p>同理，无符号数的最高位解释为正权数值位  <span class="arithmatex">\(2^{n-1}\)</span>，当将其位向量解释成补码时，最高位将作为符号位，解释为负权 <span class="arithmatex">\(-2^{n-1}\)</span>。由于后面位的数值 <span class="arithmatex">\(v\)</span> 保持不变，相当于在无符号真值基础上减去 <span class="arithmatex">\(2^n\)</span>。</p>
+<p>对满足 <span class="arithmatex">\(0 \le u \le UMax_n\)</span> 的 <span class="arithmatex">\(u\)</span> 有：</p>
+<div class="arithmatex">\[
+U2T_n(u)=
+\begin{cases}
+        u, &amp; u \le TMax_n \\
+        u - 2^n, &amp; u&gt;TMax_n
+\end{cases}
+\]</div>
+<p>对于 <span class="arithmatex">\(n=8\)</span>，当 <span class="arithmatex">\(u \le TMax_n = 127\)</span> 时，即 <span class="arithmatex">\(0 \le u \le 127\)</span>，刚好落入8位补码所能表示的非负数区间 ；当 <span class="arithmatex">\(u \gt TMax_n = 127\)</span> 时，例如 <span class="arithmatex">\(128 \le u \le 255\)</span>，则原始高位1变成负号，补码释义为负数。原来位向量按无符号解释出的真值需减去 <span class="arithmatex">\(2^8=256\)</span>，换算出按补码解释的正确真值，对应负数区间 <span class="arithmatex">\([-1, -128]\)</span>。</p>
+<p>在数轴上把有符号数和无符号数画出来的话，就能很清晰的看出相对的关系：</p>
+<p><img alt="signedness-map" src="../../prog/images/signedness/signedness-map.png" /></p>
+<h2 id="参考">参考<a class="headerlink" href="#参考" title="Permanent link">#</a></h2>
+<p>《深入理解计算机系统》（第3版）<br />
+《计算机组成原理》（第3版），唐朔飞<br />
+《微机原理与接口技术》（第2版），王克义<br />
+《汇编语言程序设计》（第4版），文全刚</p>
+<p><a href="https://zhuanlan.zhihu.com/p/553246755">深入谈谈二进制</a><br />
+<a href="https://zhuanlan.zhihu.com/p/481479873">补码表示法的本质原理</a><br />
+<a href="https://wdxtub.com/csapp/thin-csapp-1/2016/04/16/">【读薄 CSAPP】壹 数据表示</a><br />
+<a href="https://blog.csdn.net/JWbonze/article/details/85075990">从晶体管开始聊聊计算机为什么采用二进制</a></p>
+
+
+
+
+
+
+
+  
+  
+
+
+
+  
+
+
+  
+
+
+
+  <h2 id="__comments">评论</h2>
+  <!-- Insert generated snippet here -->
+  <script src="https://giscus.app/client.js"
+    data-repo="fan2/mkdocs"
+    data-repo-id="R_kgDOLltxSg"
+    data-category="Announcements"
+    data-category-id="DIC_kwDOLltxSs4CeURH"
+    data-mapping="pathname"
+    data-strict="0"
+    data-reactions-enabled="1"
+    data-emit-metadata="1"
+    data-input-position="top"
+    data-theme="preferred_color_scheme"
+    data-lang="zh-CN"
+    data-loading="lazy"
+    crossorigin="anonymous"
+    async>
+  </script>
+
+  <!-- Synchronize Giscus theme with palette -->
+  <script>
+    var giscus = document.querySelector("script[src*=giscus]")
+
+    // Set palette on initial load
+    var palette = __md_get("__palette")
+    if (palette && typeof palette.color === "object") {
+      var theme = palette.color.scheme === "slate"
+        ? "transparent_dark"
+        : "light"
+
+      // Instruct Giscus to set theme
+      giscus.setAttribute("data-theme", theme) 
+    }
+
+    // Register event handlers after documented loaded
+    document.addEventListener("DOMContentLoaded", function() {
+      var ref = document.querySelector("[data-md-component=palette]")
+      ref.addEventListener("change", function() {
+        var palette = __md_get("__palette")
+        if (palette && typeof palette.color === "object") {
+          var theme = palette.color.scheme === "slate"
+            ? "transparent_dark"
+            : "light"
+
+          // Instruct Giscus to change theme
+          var frame = document.querySelector(".giscus-frame")
+          frame.contentWindow.postMessage(
+            { giscus: { setConfig: { theme } } },
+            "https://giscus.app"
+          )
+        }
+      })
+    })
+  </script>
+
+      
+    </article>
+  </div>
+
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+        
+      
+      <nav class="md-footer__inner md-grid" aria-label="页脚" >
+        
+          
+          <a href="../../20091005/c-standard-integer-types/" class="md-footer__link md-footer__link--prev" aria-label="上一页: C语言标准与实现之整数类型">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                上一页
+              </span>
+              <div class="md-ellipsis">
+                C语言标准与实现之整数类型
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../../20151102/1-Markdown-Syntax/" class="md-footer__link md-footer__link--next" aria-label="下一页: Markdown Syntax">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                下一页
+              </span>
+              <div class="md-ellipsis">
+                Markdown Syntax
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2024- Cliff Fan
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["toc.follow", "header.autohide", "navigation.tabs", "navigation.top", "navigation.footer", "navigation.tracking", "content.code.copy", "content.code.select", "content.code.annotate"], "search": "../../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.bd41221c.min.js"></script>
+      
+        <script src="../../../javascripts/mathjax.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+        <script src="https://vercount.one/js"></script>
+      
+    
+  </body>
+</html>
