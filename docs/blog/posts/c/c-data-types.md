@@ -123,7 +123,7 @@ GNU [Layout of Source Language Data Types](https://gcc.gnu.org/onlinedocs/gccint
 
 [Fundamental types](https://en.cppreference.com/w/cpp/language/types) - Data Models:
 
-The choices made by each implementation about the sizes of the fundamental types are collectively known as *data model*. Four data models found wide acceptance:
+The choices made by each *implementation* about the sizes of the fundamental types are collectively known as *data model*. Four data models found wide acceptance:
 
 !!! note "data model of 32 bit systems"
 
@@ -191,7 +191,7 @@ Generate code for a 32-bit or 64-bit environment. The 32-bit environment sets in
 在 LP 数据模型下：
 
 - `__SIZEOF_POINTER__` = `__SIZEOF_LONG__`
-- `__WORDSIZE` = `LONG_BIT`
+- `LONG_BIT` = `__WORDSIZE`
 
 #### The 64-bit Evolution
 
@@ -236,7 +236,7 @@ opengroup - [64-Bit Programming Models: Why LP64?.PDF](https://wiki.math.ntnu.no
 
 [linux kernel - WORD_BIT vs LONG_BIT](https://unix.stackexchange.com/questions/771686/word-bit-vs-long-bit)
 
-> POSIX [<limits.h\>](https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/limits.h.html) defines WORD_BIT and LONG_BIT as the number of bits in objects of types int and long respectively.
+> POSIX [<limits.h\>](https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/limits.h.html) defines `WORD_BIT` and `LONG_BIT` as the number of bits in objects of types `int` and `long` respectively.
 
 Xcode 中 MacOSX.sdk 下 usr/include 的 i386 和 arm 下的 limits.h 中定义了 `WORD_BIT` 和 `LONG_BIT`：
 
@@ -268,29 +268,105 @@ grep -R -H "#define LONG_BIT" /usr/include 2>/dev/null
 
 在 macOS、Linux 上可以执行 `getconf WORD_BIT` / `getconf LONG_BIT` 查询获取系统配置的变量。
 
+- `getconf` : to tell what architecture your CPU is presenting to the OS.
+- `getconf LONG_BIT` : check if the OS (kernel) is 32 bit or 64 bit.
+
 ### __WORDSIZE
 
 机器字长表示处理器一次处理数据的长度，主要由运算器、寄存器决定，如32位处理器，每个寄存器能存储32bit数据，加法器支持两个32bit数进行相加。
 
 在 macOS 上执行 `sysctl hw`，在 rpi4b-ubuntu 上执行 `lscpu` 查看硬件（CPU）信息：
 
-```Shell
-# sysctl -a | grep cpu
-$ sysctl hw
+=== "mbpa1398-x86_64"
 
-hw.optional.arm64: 1
+    ```Shell
+    # --kernel-name, --kernel-release, --processor, --machine
+    $ uname -srpm
+    Darwin 20.6.0 x86_64 i386
 
-hw.cpu64bit_capable: 1
-```
+    $ getconf LONG_BIT
+    64
 
-```Shell
-$ lscpu
-Architecture:            aarch64
-  CPU op-mode(s):        32-bit, 64-bit
-  Byte Order:            Little Endian
+    # sysctl -a | grep cpu
+    $ sysctl hw
 
-...
-```
+    hw.optional.x86_64: 1
+
+    hw.cpu64bit_capable: 1
+
+    hw.cpusubtype: 8
+    hw.cputype: 7
+    ```
+
+=== "mbpa2991-arm64"
+
+    ```Shell
+    # --operating-system, --kernel-name, --kernel-release, --machine, --processor
+    $ uname -osrmp
+    Darwin 23.5.0 arm64 arm
+
+    $ getconf LONG_BIT
+    64
+
+    # sysctl -a | grep cpu
+    $ sysctl hw
+
+    hw.optional.arm64: 1
+
+    hw.cpu64bit_capable: 1
+
+    hw.cputype: 16777228
+    hw.cpusubtype: 2
+    ```
+
+=== "rpi4b-ubuntu - aarch64"
+
+    ```Shell
+    # --operating-system, --kernel-release, --machine, --processor, --kernel-name
+    $ uname -srmpo
+    Linux 5.15.0-1053-raspi aarch64 aarch64 GNU/Linux
+
+    $ getconf LONG_BIT
+    64
+
+    # The width argument tells whether the Linux is 32- or 64-bit.
+    $ lshw | head -n 10
+    WARNING: you should run this program as super-user.
+    rpi4b-ubuntu
+        description: Computer
+        product: Raspberry Pi 4 Model B Rev 1.4
+        serial: 10000000a744c93f
+        width: 64 bits
+        capabilities: smp cp15_barrier setend swp tagged_addr_disabled
+      *-core
+           description: Motherboard
+           physical id: 0
+         *-cpu:0
+
+    $ lscpu | head -n 8
+    Architecture:                       aarch64
+    CPU op-mode(s):                     32-bit, 64-bit
+    Byte Order:                         Little Endian
+    CPU(s):                             4
+    On-line CPU(s) list:                0-3
+    Vendor ID:                          ARM
+    Model name:                         Cortex-A72
+    Model:                              3
+    ```
+
+!!! note "lscpu CPU op-mode(s)"
+
+    [32-bit, 64-bit CPU op-mode on Linux](https://unix.stackexchange.com/questions/77718/32-bit-64-bit-cpu-op-mode-on-linux)
+
+    If your kernel is a 32 bit linux kernel, you won't be able to run 64 bit programs, even if your processor supports it. Install a 64 bit kernel (and whole OS of course) to run 64 bit.
+
+    [How to determine whether a given Linux is 32 bit or 64 bit?](https://www.geeksforgeeks.org/how-to-determine-whether-a-given-linux-is-32-bit-or-64-bit/)
+
+    The `CPU op-mode(s)` option in the command output tells whether the given Linux is 32 or 64 bits.
+
+    If it shows 32-bit or 64-bit then Linux is 64 bits as it supports *both* 32- and 64-bit memory. If it shows only 32-bit then, then Linux is 32-bit.
+
+    The above Linux system is clearly 64 bits.
 
 [default wordsize in UNIX/Linux](https://unix.stackexchange.com/questions/74648/default-wordsize-in-unix-linux)
 
