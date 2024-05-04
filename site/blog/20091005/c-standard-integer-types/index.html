@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://duetorun.com/blog/20091005/c-standard-integer-types/">
       
       
-        <link rel="prev" href="../../20091004/c-data-types-basic-derived/">
+        <link rel="prev" href="../../20091004/c-binary-representation/">
       
       
         <link rel="next" href="../../20151102/1-Markdown-Syntax/">
@@ -1285,9 +1285,18 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#char_extend_to_signed" class="md-nav__link">
+  <a href="#char_signed_or_unsigned" class="md-nav__link">
     <span class="md-ellipsis">
-      char: extend to signed
+      char: signed or unsigned?
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#why_getchar_return_int" class="md-nav__link">
+    <span class="md-ellipsis">
+      why getchar() return int?
     </span>
   </a>
   
@@ -1378,7 +1387,7 @@
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7h1.5Z"/></svg>
                           <span class="md-ellipsis">
                             
-                              需要 4 分钟阅读时间
+                              需要 6 分钟阅读时间
                             
                           </span>
                         </div>
@@ -1633,15 +1642,7 @@ C89 引入 <code>signed</code> 关键字后，显式声明 <code>signed char</co
 </span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>sizeof<span class="o">(</span><span class="s1">&#39;A&#39;</span><span class="o">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">4</span>
 </span></code></pre></div>
 <p>显然，'A' 要占用4个字节，在32位平台上这恰好就是一个 int 的长度。综合上面所说，在 C 语言的早期，要确定一个表达式里的整型变量或者常数的具体类型并不复杂，原本就只有两种整数类型，在运算和传递参数时 char 又总是先被提升为 int，加上整型常数属于 int 类型、单字节字符常量也属于 int 类型——一切都非常清楚。</p>
-<p>最后，来看一下 <a href="https://en.cppreference.com/w/c/io">File input/output</a> &lt;stdio.h&gt; 中读写字符相关接口的参数类型：</p>
-<div class="language-c highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kt">int</span><span class="w"> </span><span class="nf">fgetc</span><span class="p">(</span><span class="w"> </span><span class="kt">FILE</span><span class="w"> </span><span class="o">*</span><span class="n">stream</span><span class="w"> </span><span class="p">);</span>
-</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="kt">int</span><span class="w"> </span><span class="nf">getc</span><span class="p">(</span><span class="w"> </span><span class="kt">FILE</span><span class="w"> </span><span class="o">*</span><span class="n">stream</span><span class="w"> </span><span class="p">);</span>
-</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="kt">int</span><span class="w"> </span><span class="nf">getchar</span><span class="p">(</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="p">);</span>
-</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="kt">int</span><span class="w"> </span><span class="nf">putchar</span><span class="p">(</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">ch</span><span class="w"> </span><span class="p">);</span>
-</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="kt">int</span><span class="w"> </span><span class="nf">ungetc</span><span class="p">(</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">ch</span><span class="p">,</span><span class="w"> </span><span class="kt">FILE</span><span class="w"> </span><span class="o">*</span><span class="n">stream</span><span class="w"> </span><span class="p">);</span>
-</span></code></pre></div>
-<p>遥想当年初遇 getchar 时，关于其为什么返回 int 而不是 char 型的困惑至此应该有了答案。</p>
-<h2 id="char_extend_to_signed">char: extend to signed<a class="headerlink" href="#char_extend_to_signed" title="Permanent link">#</a></h2>
+<h2 id="char_signed_or_unsigned">char: signed or unsigned?<a class="headerlink" href="#char_signed_or_unsigned" title="Permanent link">#</a></h2>
 <p>后来，随着 C 语言的进一步发展，K&amp;R C 引入了无符号整数的概念以及 <code>unsigned</code> 关键字，并增加了 short、long 两种整数类型。这时，C 语言已经拥有以下整数类型：</p>
 <ul>
 <li>char / unsigned char</li>
@@ -1649,15 +1650,71 @@ C89 引入 <code>signed</code> 关键字后，显式声明 <code>signed char</co
 <li>int / unsigned int</li>
 <li>long / unsigned long</li>
 </ul>
-<p>至此，情况开始变得复杂。在进一步分析 unsigned 引入的问题之前，我们先清算一下关于 <code>char</code> 的旧帐。在 D.M.Ritchie 设计 C 语言的早期，char 变量只是用来存放 ASCII 字符，由于 ASCII 是7位编码体系10，用最小的存储单位——字节来存放 char 变量完全足够。虽然 ASCII 字符值只占用一个字节的低7位从而使到一个 char 变量不应该出现负值，D.M.Ritchie 本人还是把 char 实现为带符号整数类型，允许 char 变量出现负值，也就是说，char 只不过是比 int 短一些的整数类型罢了。</p>
+<p>至此，情况开始变得复杂。在进一步分析 unsigned 引入的问题之前，我们先清算一下 <a href="https://stackoverflow.com/questions/2054939/is-char-signed-or-unsigned-by-default/2054941">关于 char 的旧账</a>。在 D.M.Ritchie 设计 C 语言的早期，char 变量只是用来存放 ASCII 字符，由于 ASCII 是7位编码体系10，用最小的存储单位——字节来存放 char 变量完全足够。虽然 ASCII 字符值只占用一个字节的低7位从而使到一个 char 变量不应该出现负值，D.M.Ritchie 本人还是把 char 实现为带符号整数类型，允许 char 变量出现负值，也就是说，<a href="https://www.reddit.com/r/learnprogramming/comments/p9pgxl/c_why_is_the_data_type_char_considered_an_integer/">char 只不过是比 int 短一些的整数类型罢了</a>。</p>
 <p>不过，其它一些 C 实现平台的做法有所不同。例如，某些平台使用8位的扩展编码体系，为了能够表达字符集里所有的字符，这些平台上的 char 变量连最高位也派上用场了。 在这种情形下，很难说服人们把最高位是“1”的 char 值看作负数，于是，在这部分的 C 实现中，char 的存在方式恰好和当初的设计目的不谋而合 —— char 值永不为负。0xFF 不是“-1”而是255。</p>
 <p>到了 K&amp;R C 引入 unsigned 关键字以后，基于 char 的分歧已经根深蒂固，unsigned char、unsigned short、unsigned int、unsigned long 都属于无符号整数类型，而 short、int、long 属于带符号整数类型，这些都毫无疑问，偏偏 char 例外。char 属于什么类型？在那些一直把 char 实现为带符号整数的平台上，char 属于带符号类型；而在另外那些使用8位字符编码的实现里，char 名副其实地拒绝负数的概念，很明显这些平台上的 char 相当于 unsigned char。</p>
 <p>大家可能会问，在那些坚持 char 永不为负的实现里岂不是少了一种8位带符号整数类型？因为在 char 被实现为带符号整数的平台上可以通过加上 unsigned 关键字来构造非负的 char 变量，但却没有办法让另外那些平台使用永远非负的 char 来存放负数啊。</p>
 <p>对，正因为如此，C89 才会引入 <code>signed</code> 关键字。如果不了解这段历史，大家肯定会认为 signed 关键字简直就是废物——已经专门有一个 unsigned 被发明出来表示无符号整数的概念，那只要不使用 unsigned 来修饰不就意味着带符号整数吗，何必再来一个 signed 呢？对于 short、int、long 这些类型来说，signed 真的是多余，但对于 char，关键字 signed 是必要的。否则大家就不知道自己的 char 变量在不同的平台会有什么表现，在一个平台上是负数，在另一个平台上又被解释为永远非负，这与 C 的标准化完全相抵。有了 signed，我们就能避开这个陷阱，明确表达自己究竟想怎样。</p>
-<div class="language-c highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kt">signed</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="n">x</span><span class="p">;</span><span class="w">      </span><span class="cm">/* 无论在哪里，x 都是带符号整型变量 */</span>
-</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="kt">unsigned</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="n">y</span><span class="p">;</span><span class="w">    </span><span class="cm">/* 无论在哪里，y 都是无符号整型变量 */</span>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kt">signed</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="n">x</span><span class="p">;</span><span class="w">      </span><span class="cm">/* 无论在哪里，x 都是带符号整型变量 */</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="kt">unsigned</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="n">y</span><span class="p">;</span><span class="w">    </span><span class="cm">/* 无论在哪里，y 都是无符号整型变量 */</span>
 </span></code></pre></div>
 <p>所以，前面在讲述标准整数类型时，笔者已经在注释里着重强调：属于标准带符号整数类型的是 signed char（而不是 char）！char 既不属于标准带符号整数类型也不属于标准无符号整数类型，它属于历史遗物。</p>
+<p>GCC <a href="https://gcc.gnu.org/onlinedocs/gcc/C-Dialect-Options.html">C Dialect Options</a> 中提供了 <code>-fsigned-char</code> 和 <code>-funsigned-char</code> 选项，支持明确指定 <code>char</code> 的符号类型。</p>
+<div class="admonition note">
+<p class="admonition-title">-fsigned-char &amp; -funsigned-char</p>
+<p><code>-fsigned-char</code></p>
+<p>Let the type char be signed, like signed char.</p>
+<p>Note that this is equivalent to -fno-unsigned-char, which is the negative form of -funsigned-char. Likewise, the option -fno-signed-char is equivalent to -funsigned-char.</p>
+<p><code>-funsigned-char</code></p>
+<p>Let the type char be unsigned, like unsigned char.</p>
+<p>Each kind of machine has a default for what char should be. It is either like unsigned char by default or like signed char by default.</p>
+<p>Ideally, a portable program should always use signed char or unsigned char when it depends on the signedness of an object. But many programs have been written to use plain char and expect it to be signed, or expect it to be unsigned, depending on the machines they were written for. This option, and its inverse, let you make such a program work with the opposite default.</p>
+<p>The type char is always a distinct type from each of signed char or unsigned char, even though its behavior is always just like one of those two.</p>
+</div>
+<h2 id="why_getchar_return_int">why getchar() return int?<a class="headerlink" href="#why_getchar_return_int" title="Permanent link">#</a></h2>
+<p>最后，来看一下 <a href="https://en.cppreference.com/w/c/io">File input/output</a> - <a href="https://pubs.opengroup.org/onlinepubs/009695299/basedefs/stdio.h.html">&lt;stdio.h&gt;</a> 中读写字符相关接口的参数类型：</p>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kt">int</span><span class="w"> </span><span class="nf">fgetc</span><span class="p">(</span><span class="w"> </span><span class="kt">FILE</span><span class="w"> </span><span class="o">*</span><span class="n">stream</span><span class="w"> </span><span class="p">);</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="kt">int</span><span class="w"> </span><span class="nf">getc</span><span class="p">(</span><span class="w"> </span><span class="kt">FILE</span><span class="w"> </span><span class="o">*</span><span class="n">stream</span><span class="w"> </span><span class="p">);</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="kt">int</span><span class="w"> </span><span class="nf">getchar</span><span class="p">(</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="p">);</span>
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="kt">int</span><span class="w"> </span><span class="nf">putchar</span><span class="p">(</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">ch</span><span class="w"> </span><span class="p">);</span>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="kt">int</span><span class="w"> </span><span class="nf">ungetc</span><span class="p">(</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">ch</span><span class="p">,</span><span class="w"> </span><span class="kt">FILE</span><span class="w"> </span><span class="o">*</span><span class="n">stream</span><span class="w"> </span><span class="p">);</span>
+</span></code></pre></div>
+<p>遥想当年初学 C 语言，相信不少人对于 <code>getchar()</code> 函数家族的返回类型都会有所困惑。</p>
+<p><a href="https://stackoverflow.com/questions/39341213/why-is-getchar-function-in-c-an-integer">Why is getchar() function in C an Integer?</a></p>
+<blockquote>
+<p><code>getchar()</code> and family return an integer so that the <code>EOF</code> -1 is distinguishable from <code>(char)-1</code> or <code>(unsigned char)255</code>.</p>
+</blockquote>
+<p><a href="https://stackoverflow.com/questions/35356322/difference-between-int-and-char-in-getchar-fgetc-and-putchar-fputc">Difference between int and char in getchar/fgetc and putchar/fputc?</a></p>
+<div class="admonition quote">
+<p class="admonition-title">JohnLM</p>
+<p><a href="https://stackoverflow.com/a/35356510/3721132">JohnLM</a>:</p>
+<p>Always use <code>int</code> to save character from <code>getchar()</code> as <code>EOF</code> constant is of int type. If you use <code>char</code> then the comparison against <code>EOF</code> is not correct.</p>
+<p>You can safely pass <code>char</code> to <code>putchar()</code> though as it will be promoted to <code>int</code> automatically.</p>
+</div>
+<div class="admonition quote">
+<p class="admonition-title">Antti Haapala</p>
+<p><a href="https://stackoverflow.com/a/35356684/3721132">Antti Haapala -- Слава Україні</a>:</p>
+<p>The reason why you must use <code>int</code> to store the return value of both <code>getchar</code> and <code>putchar</code> is that when the end-of-file condition is reached (or an I/O error occurs), both of them return the value of the macro <code>EOF</code> which is a negative integer constant, (usually -1).</p>
+<p>For <code>getchar</code>, if the return value is not <code>EOF</code>, it is the read <em>unsigned char</em> zero-extended to an <code>int</code>. That is, assuming 8-bit characters, the values returned can be <code>0...255</code> or the value of the macro <code>EOF</code>; again assuming 8-bit char, there is no way to squeeze these 257 distinct values into 256 so that each of them could be identified uniquely.</p>
+</div>
+<p><a href="https://ee.hawaii.edu/~tep/EE160/Book/chap4/subsection2.1.1.3.html">4.1.3 Character I/O Using getchar() and putchar()</a></p>
+<div class="admonition note">
+<p class="admonition-title">to accommodate EOF</p>
+<p>The function <code>getchar()</code> reads a single character from the standard input and returns the character value as the value of the function, but to <strong>accommodate</strong> a possible negative value for <code>EOF</code>, the type of the value returned is <code>int</code>. (Recall, EOF may be either 0 or -1 depending on implementation). So we could use <code>getchar()</code> to read a character and assign the returned value to an integer variable:</p>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">c</span><span class="p">;</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="w">    </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">getchar</span><span class="p">();</span>
+</span></code></pre></div>
+<p>If, after executing this statement, c equals EOF, we have reached the end of the input file; otherwise, c is the ASCII value of the next character in the input stream.</p>
+<p>While int type can be used to store the ASCII value of a character, programs can become <em>confusing</em> to read - we expect that the int data type is used for numeric integer data and that char data type is used for character data. The problem is that char type, depending on implementation, may or may not allow negative values. To resolve this, C allows us to explicitly declare a signed char data type for a variable, which can store negative values as well as positive ASCII values:</p>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="w">    </span><span class="kt">signed</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="n">c</span><span class="p">;</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="w">    </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">getchar</span><span class="p">();</span>
+</span></code></pre></div>
+<p>An explicit signed char variable ensures that a character is stored in a character type object while allowing a possible negative value for EOF. The keyword signed is called a <strong>type qualifier</strong>.</p>
+<p>A similar routine for character output is <code>putchar()</code>, which outputs its argument as a character to the standard output. Thus,</p>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="n">putchar</span><span class="p">(</span><span class="n">c</span><span class="p">);</span>
+</span></code></pre></div>
+<p>outputs the ASCII character whose value is in c to the standard output. The argument of putchar() is expected to be an integer; however, the variable c may be either char type or int type (ASCII value) since the value of a char type is really an integer ASCII value.</p>
+</div>
 <hr />
 <p>本文节选自 《<a href="https://att.newsmth.net/nForum/att/CProgramming/3213/245">C语言标准与实现(姚新颜)-2004</a>》 #2 数值运算 | 12 整数类型。</p>
 
@@ -1759,7 +1816,7 @@ C89 引入 <code>signed</code> 关键字后，显式声明 <code>signed char</co
       <nav class="md-footer__inner md-grid" aria-label="页脚" >
         
           
-          <a href="../../20091004/c-data-types-basic-derived/" class="md-footer__link md-footer__link--prev" aria-label="上一页: C Data Types - Basic &amp; Derived">
+          <a href="../../20091004/c-binary-representation/" class="md-footer__link md-footer__link--prev" aria-label="上一页: C Basic Types - Binary Representions">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
@@ -1769,7 +1826,7 @@ C89 引入 <code>signed</code> 关键字后，显式声明 <code>signed char</co
                 上一页
               </span>
               <div class="md-ellipsis">
-                C Data Types - Basic & Derived
+                C Basic Types - Binary Representions
               </div>
             </div>
           </a>

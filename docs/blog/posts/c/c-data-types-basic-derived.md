@@ -12,43 +12,27 @@ tags:
 comments: true
 ---
 
-- 5 Basic values and data
-    - 5.1 The abstract state machine - Values & Types
-    - 5.2 Basic types
-- 6 Derived data types
+All basic C types are kinds of numbers, but not all of them can be used directly for arithmetic.
 
 <!-- more -->
 
-## 5.1 The abstract state machine
+## 5 Basic values and data
+
+We will now change our focus from “how things are to be done” (statements and expressions) to the things on which C programs operate: `values` and `data`. A concrete program at an instance in time has to *represent* values.
+
+Similarly, representations of values on a computer can vary “culturally” from architecture to architecture or are determined by the *type* the programmer gave to the value. Therefore, we should try to reason primarily about values and not about representations if we want to write portable code.
+
+!!! note "TAKEAWAY 5.1"
+
+    TAKEAWAY 5.1 C programs primarily reason about values and not about their representation.
+
+The representation that a particular value has should in most cases not be your concern; the compiler is there to organize the translation back and forth between values and representations.
+
+### 5.1 The abstract state machine
 
 To explain the abstract state machine, we ﬁrst have to look into the concepts of a *value* (what state are we in), the *type* (what this state represents), and the *representation* (how state is distinguished). As the term abstract suggests, C’s mechanism allows different platforms to realize the abstract state machine of a given program differently according to their needs and capacities.
 
-A *value* in C is an abstract entity that usually exists beyond your program, the particular implementation of that program, and the representation of the value during a particular run of the program.
-
-So far, most of our examples of values have been some kind of numbers. This is not an accident, but relates to one of the major concepts of C.
-
-!!! note "TAKEAWAY 5.2"
-
-    TAKEAWAY 5.2 All values are numbers or translate to numbers.
-
-The *data* of a program execution consists of all the assembled values of all objects at a given moment.
-
-The *state* of the program execution is determined by:
-
-- The executable
-- The current point of execution
-- The data
-- Outside intervention, such as IO from the user
-
-A *type* is an additional property that C associates with values. Up to now, we have seen several such types, most prominently **size_t**, but also **double** and **bool**.
-
-!!! note "TAKEAWAY 5.3~5.5"
-
-    - TAKEAWAY 5.3 All values have a type that is statically determined.
-    - TAKEAWAY 5.4 Possible operations on a value are determined by its type.
-    - TAKEAWAY 5.5 A value’s type determines the results of all operations.
-
-## 5.2 Basic types
+### 5.2 Basic types
 
 C has a series of basic types and means of constructing derived types from them.
 

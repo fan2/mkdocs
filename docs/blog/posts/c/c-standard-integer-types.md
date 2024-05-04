@@ -164,20 +164,7 @@ sizeof('A') = 4
 
 显然，'A' 要占用4个字节，在32位平台上这恰好就是一个 int 的长度。综合上面所说，在 C 语言的早期，要确定一个表达式里的整型变量或者常数的具体类型并不复杂，原本就只有两种整数类型，在运算和传递参数时 char 又总是先被提升为 int，加上整型常数属于 int 类型、单字节字符常量也属于 int 类型——一切都非常清楚。
 
-
-最后，来看一下 [File input/output](https://en.cppreference.com/w/c/io) <stdio.h\> 中读写字符相关接口的参数类型：
-
-```c
-int fgetc( FILE *stream );
-int getc( FILE *stream );
-int getchar( void );
-int putchar( int ch );
-int ungetc( int ch, FILE *stream );
-```
-
-遥想当年初遇 getchar 时，关于其为什么返回 int 而不是 char 型的困惑至此应该有了答案。
-
-## char: extend to signed
+## char: signed or unsigned?
 
 后来，随着 C 语言的进一步发展，K&R C 引入了无符号整数的概念以及 `unsigned` 关键字，并增加了 short、long 两种整数类型。这时，C 语言已经拥有以下整数类型：
 
@@ -186,7 +173,7 @@ int ungetc( int ch, FILE *stream );
 - int / unsigned int
 - long / unsigned long
 
-至此，情况开始变得复杂。在进一步分析 unsigned 引入的问题之前，我们先清算一下关于 `char` 的旧帐。在 D.M.Ritchie 设计 C 语言的早期，char 变量只是用来存放 ASCII 字符，由于 ASCII 是7位编码体系10，用最小的存储单位——字节来存放 char 变量完全足够。虽然 ASCII 字符值只占用一个字节的低7位从而使到一个 char 变量不应该出现负值，D.M.Ritchie 本人还是把 char 实现为带符号整数类型，允许 char 变量出现负值，也就是说，char 只不过是比 int 短一些的整数类型罢了。
+至此，情况开始变得复杂。在进一步分析 unsigned 引入的问题之前，我们先清算一下 [关于 char 的旧账](https://stackoverflow.com/questions/2054939/is-char-signed-or-unsigned-by-default/2054941)。在 D.M.Ritchie 设计 C 语言的早期，char 变量只是用来存放 ASCII 字符，由于 ASCII 是7位编码体系10，用最小的存储单位——字节来存放 char 变量完全足够。虽然 ASCII 字符值只占用一个字节的低7位从而使到一个 char 变量不应该出现负值，D.M.Ritchie 本人还是把 char 实现为带符号整数类型，允许 char 变量出现负值，也就是说，[char 只不过是比 int 短一些的整数类型罢了](https://www.reddit.com/r/learnprogramming/comments/p9pgxl/c_why_is_the_data_type_char_considered_an_integer/)。
 
 不过，其它一些 C 实现平台的做法有所不同。例如，某些平台使用8位的扩展编码体系，为了能够表达字符集里所有的字符，这些平台上的 char 变量连最高位也派上用场了。 在这种情形下，很难说服人们把最高位是“1”的 char 值看作负数，于是，在这部分的 C 实现中，char 的存在方式恰好和当初的设计目的不谋而合 —— char 值永不为负。0xFF 不是“-1”而是255。
 
@@ -202,6 +189,92 @@ unsigned char y;    /* 无论在哪里，y 都是无符号整型变量 */
 ```
 
 所以，前面在讲述标准整数类型时，笔者已经在注释里着重强调：属于标准带符号整数类型的是 signed char（而不是 char）！char 既不属于标准带符号整数类型也不属于标准无符号整数类型，它属于历史遗物。
+
+GCC [C Dialect Options](https://gcc.gnu.org/onlinedocs/gcc/C-Dialect-Options.html) 中提供了 `-fsigned-char` 和 `-funsigned-char` 选项，支持明确指定 `char` 的符号类型。
+
+!!! note "-fsigned-char & -funsigned-char"
+
+    `-fsigned-char`
+
+    Let the type char be signed, like signed char.
+
+    Note that this is equivalent to -fno-unsigned-char, which is the negative form of -funsigned-char. Likewise, the option -fno-signed-char is equivalent to -funsigned-char.
+
+    `-funsigned-char`
+
+    Let the type char be unsigned, like unsigned char.
+
+    Each kind of machine has a default for what char should be. It is either like unsigned char by default or like signed char by default.
+
+    Ideally, a portable program should always use signed char or unsigned char when it depends on the signedness of an object. But many programs have been written to use plain char and expect it to be signed, or expect it to be unsigned, depending on the machines they were written for. This option, and its inverse, let you make such a program work with the opposite default.
+
+    The type char is always a distinct type from each of signed char or unsigned char, even though its behavior is always just like one of those two.
+
+## why getchar() return int?
+
+最后，来看一下 [File input/output](https://en.cppreference.com/w/c/io) - [<stdio.h\>](https://pubs.opengroup.org/onlinepubs/009695299/basedefs/stdio.h.html) 中读写字符相关接口的参数类型：
+
+```c
+int fgetc( FILE *stream );
+int getc( FILE *stream );
+int getchar( void );
+int putchar( int ch );
+int ungetc( int ch, FILE *stream );
+```
+
+遥想当年初学 C 语言，相信不少人对于 `getchar()` 函数家族的返回类型都会有所困惑。
+
+[Why is getchar() function in C an Integer?](https://stackoverflow.com/questions/39341213/why-is-getchar-function-in-c-an-integer)
+
+> `getchar()` and family return an integer so that the `EOF` -1 is distinguishable from `(char)-1` or `(unsigned char)255`.
+
+[Difference between int and char in getchar/fgetc and putchar/fputc?](https://stackoverflow.com/questions/35356322/difference-between-int-and-char-in-getchar-fgetc-and-putchar-fputc)
+
+!!! quote "JohnLM"
+
+    [JohnLM](https://stackoverflow.com/a/35356510/3721132):
+
+    Always use `int` to save character from `getchar()` as `EOF` constant is of int type. If you use `char` then the comparison against `EOF` is not correct.
+
+    You can safely pass `char` to `putchar()` though as it will be promoted to `int` automatically.
+
+!!! quote "Antti Haapala"
+
+    [Antti Haapala -- Слава Україні](https://stackoverflow.com/a/35356684/3721132):
+
+    The reason why you must use `int` to store the return value of both `getchar` and `putchar` is that when the end-of-file condition is reached (or an I/O error occurs), both of them return the value of the macro `EOF` which is a negative integer constant, (usually -1).
+
+    For `getchar`, if the return value is not `EOF`, it is the read *unsigned char* zero-extended to an `int`. That is, assuming 8-bit characters, the values returned can be `0...255` or the value of the macro `EOF`; again assuming 8-bit char, there is no way to squeeze these 257 distinct values into 256 so that each of them could be identified uniquely.
+
+[4.1.3 Character I/O Using getchar() and putchar()](https://ee.hawaii.edu/~tep/EE160/Book/chap4/subsection2.1.1.3.html)
+
+!!! note "to accommodate EOF"
+
+    The function `getchar()` reads a single character from the standard input and returns the character value as the value of the function, but to **accommodate** a possible negative value for `EOF`, the type of the value returned is `int`. (Recall, EOF may be either 0 or -1 depending on implementation). So we could use `getchar()` to read a character and assign the returned value to an integer variable:
+
+    ```c
+        int c;
+        c = getchar();
+    ```
+
+    If, after executing this statement, c equals EOF, we have reached the end of the input file; otherwise, c is the ASCII value of the next character in the input stream.
+
+    While int type can be used to store the ASCII value of a character, programs can become *confusing* to read - we expect that the int data type is used for numeric integer data and that char data type is used for character data. The problem is that char type, depending on implementation, may or may not allow negative values. To resolve this, C allows us to explicitly declare a signed char data type for a variable, which can store negative values as well as positive ASCII values:
+
+    ```c
+        signed char c;
+        c = getchar();
+    ```
+
+    An explicit signed char variable ensures that a character is stored in a character type object while allowing a possible negative value for EOF. The keyword signed is called a **type qualifier**.
+
+    A similar routine for character output is `putchar()`, which outputs its argument as a character to the standard output. Thus,
+
+    ```c
+    putchar(c);
+    ```
+
+    outputs the ASCII character whose value is in c to the standard output. The argument of putchar() is expected to be an integer; however, the variable c may be either char type or int type (ASCII value) since the value of a char type is really an integer ASCII value.
 
 ---
 
