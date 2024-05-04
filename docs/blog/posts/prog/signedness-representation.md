@@ -6,7 +6,7 @@ date:
     created: 2009-10-06T12:00:00
     updated: 2023-02-17T22:00:00
 categories:
-    - prog
+    - CS
 tags:
     - signedness
     - binary_representation

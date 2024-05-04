@@ -7,7 +7,6 @@ date:
 categories:
     - wiki
     - linux
-    - command
 tags:
     - iconv
     - enca

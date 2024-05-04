@@ -7,7 +7,6 @@ date:
 categories:
     - wiki
     - linux
-    - command
 tags:
     - 7z
 comments: true

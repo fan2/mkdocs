@@ -8,7 +8,6 @@ date:
 categories:
     - wiki
     - linux
-    - command
 tags:
     - compress
     - gzip
