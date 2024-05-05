@@ -350,6 +350,21 @@ smb://rpi4b-ubuntu.local/
 smb://rpi4b-ubuntu.local/WDHD
 ```
 
+[How to Mount SMB Share from Command Line on Mac](https://osxdaily.com/2023/02/13/mount-smb-share-command-line-mac/)
+
+```Shell
+# 创建挂载点
+$ mkdir $HOME/WDHD
+
+# 挂载samba
+# mount_smbfs is alias of mount -t smbfs
+$ mount -t smbfs //pifan@rpi4b-ubuntu.local/WDHD $HOME/WDHD
+Password for rpi4b-ubuntu.local:
+
+# 卸载samba
+$ umount $HOME/WDHD
+```
+
 ## config samba for WDTM
 
 WD 硬盘的 sda3 分区是普通分区，挂载后局域网通过 smb 协议访问可直接读写。

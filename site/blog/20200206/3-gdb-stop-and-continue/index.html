@@ -1935,12 +1935,16 @@
 <p><a href="https://sourceware.org/gdb/current/onlinedocs/gdb.html/Skipping-Over-Functions-and-Files.html#Skipping-Over-Functions-and-Files">5.3 Skipping Over Functions and Files</a></p>
 <p>The program you are debugging may contain some functions which are uninteresting to debug. The <code>skip</code> command lets you tell GDB to <em>skip</em> a function, all functions in a file or a particular function in a particular file when stepping.</p>
 <p>For example, consider the following C function:</p>
-<div class="language-c highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="mi">101</span><span class="w">     </span><span class="kt">int</span><span class="w"> </span><span class="n">func</span><span class="p">()</span>
-</span><span id="__span-23-2"><a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a><span class="mi">102</span><span class="w">     </span><span class="p">{</span>
-</span><span id="__span-23-3"><a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a><span class="mi">103</span><span class="w">         </span><span class="n">foo</span><span class="p">(</span><span class="n">boring</span><span class="p">());</span>
-</span><span id="__span-23-4"><a id="__codelineno-23-4" name="__codelineno-23-4" href="#__codelineno-23-4"></a><span class="mi">104</span><span class="w">         </span><span class="n">bar</span><span class="p">(</span><span class="n">boring</span><span class="p">());</span>
-</span><span id="__span-23-5"><a id="__codelineno-23-5" name="__codelineno-23-5" href="#__codelineno-23-5"></a><span class="mi">105</span><span class="w">     </span><span class="p">}</span>
-</span></code></pre></div>
+<div class="language-c highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-23-101">101</a></span>
+<span class="normal"><a href="#__codelineno-23-102">102</a></span>
+<span class="normal"><a href="#__codelineno-23-103">103</a></span>
+<span class="normal"><a href="#__codelineno-23-104">104</a></span>
+<span class="normal"><a href="#__codelineno-23-105">105</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-23-101"><a id="__codelineno-23-101" name="__codelineno-23-101"></a><span class="kt">int</span><span class="w"> </span><span class="nf">func</span><span class="p">()</span>
+</span><span id="__span-23-102"><a id="__codelineno-23-102" name="__codelineno-23-102"></a><span class="p">{</span>
+</span><span id="__span-23-103"><a id="__codelineno-23-103" name="__codelineno-23-103"></a><span class="w">    </span><span class="n">foo</span><span class="p">(</span><span class="n">boring</span><span class="p">());</span>
+</span><span id="__span-23-104"><a id="__codelineno-23-104" name="__codelineno-23-104"></a><span class="w">    </span><span class="n">bar</span><span class="p">(</span><span class="n">boring</span><span class="p">());</span>
+</span><span id="__span-23-105"><a id="__codelineno-23-105" name="__codelineno-23-105"></a><span class="p">}</span>
+</span></code></pre></div></td></tr></table></div>
 <p>Suppose you wish to step into the functions foo and bar, but you are not interested in stepping through boring. If you run step at line 103, you’ll enter boring(), but if you run next, you’ll step over both foo and boring!</p>
 <p>One solution is to <code>step</code> into boring and use the <code>finish</code> command to immediately exit it. But this can become tedious if boring is called from many places.</p>
 <p>A more flexible solution is to execute <code>skip boring</code>. This instructs GDB never to step into boring. Now when you execute step at line 103, you’ll step over boring and directly into foo.</p>

@@ -397,7 +397,7 @@ $$
 
 用以下C语言代码测试验证，计算结果Z的位向量为0x81（即无符号数129），补码对应的真值=$-127 \equiv 129 \mod 256$。
 
-```C
+```c title="signed+overflow.c"
     signed char X = 64;
     signed char Y = 65;
     signed char Z = X+Y;
@@ -434,7 +434,7 @@ $$
 
 用以下C语言代码测试验证，计算结果Z的位向量为0x7f，补码对应的真值是127（383溢除模256）。
 
-```C
+```c title="signed-overflow.c"
     signed char X = -127;
     signed char Y = -2;
     signed char Z = X+Y;
@@ -443,7 +443,7 @@ $$
 
 以下是《C语言深度解剖（第2版）》附录中的C 语言基础测试题5，请思考输出结果。
 
-```c
+```c title="signed-char-array.c"
 #include <stdio.h>
 #include <string.h>
 
@@ -590,7 +590,7 @@ C语言允许在各种不同的数据类型之间做强制类型转换。例如�
 
 考虑以下代码：
 
-```C
+```c title="signed-convertion.c"
     short int v = -12345;
     unsigned short uv = (unsigned short)v;
     printf("v=%hd, uv=%hu\n", v, uv);

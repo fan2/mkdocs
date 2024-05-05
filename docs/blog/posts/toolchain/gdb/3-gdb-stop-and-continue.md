@@ -486,12 +486,12 @@ The program you are debugging may contain some functions which are uninteresting
 
 For example, consider the following C function:
 
-```c
-101     int func()
-102     {
-103         foo(boring());
-104         bar(boring());
-105     }
+```c linenums="101"
+int func()
+{
+    foo(boring());
+    bar(boring());
+}
 ```
 
 Suppose you wish to step into the functions foo and bar, but you are not interested in stepping through boring. If you run step at line 103, you’ll enter boring(), but if you run next, you’ll step over both foo and boring!

@@ -71,7 +71,7 @@ The ﬁrst two nowadays probably only have historical or exotic relevance: for s
 
 Commonly used on modern platforms is the two’s complement representation. It performs exactly the same arithmetic as we have seen for unsigned types, but the upper half of unsigned values (those with a high-order bit of 1) is interpreted as being negative. The following two functions are basically all that is needed to interpret unsigned values as signed values:
 
-```c
+```c title="is_signed_less.c" linenums="1"
 # inclue <limits.h>
 
 bool is_negative(unsigned a) {
@@ -141,7 +141,7 @@ Basically, what we have discussed up to this chapter always had well-deﬁned be
 
 For signed types, bit operations work with the binary representation. So the value of a bit operation depends in particular on the sign representation. In fact, bit operations even allow us to detect the sign representation:
 
-```c
+```c title="signed_magic.c" linenums="1"
 char const * sign_rep[4] =
 {
     [1] = ”sign and magnitude”,

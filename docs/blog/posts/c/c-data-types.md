@@ -257,7 +257,7 @@ opengroup - [64-Bit Programming Models: Why LP64?.PDF](https://wiki.math.ntnu.no
 
 Xcode 中 MacOSX.sdk 下 usr/include 的 i386 和 arm 下的 limits.h 中定义了 `WORD_BIT` 和 `LONG_BIT`：
 
-```c
+```c title="limits.h"
 $ cd `xcrun --show-sdk-path`
 $ vim usr/include/i386/limits.h
 $ vim usr/include/arm/limits.h
@@ -392,7 +392,7 @@ grep -R -H "#define LONG_BIT" /usr/include 2>/dev/null
 
 Xcode 的 MacOSX.sdk 和 iPhoneOS.sdk 的 usr/include/stdint.h 根据 Data Model 是否为 `__LP64__==1` 区分定义了 `__WORDSIZE`：
 
-```c
+```c title="stdint.h"
 $ cd `xcrun --show-sdk-path`
 $ vim usr/include/stdint.h
 #if __LP64__
@@ -411,7 +411,7 @@ $ grep -R -l "#*define __WORDSIZE" /usr/include 2>/dev/null
 
 wordsize.h 中根据 Data Model（`__LP64__` 定义与否）来区分定义 `__WORDSIZE`。
 
-```c
+```c title="wordsize.h"
 // Determine the wordsize from the preprocessor defines.
 #ifdef __LP64__
 # define __WORDSIZE         64

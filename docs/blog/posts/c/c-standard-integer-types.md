@@ -49,7 +49,7 @@ C89 引入 `signed` 关键字后，可显式声明 `signed char`，明确表达�
 
 很多时候人们容易忘记无符号整数的一个最基本的特性：**永不为负**，于是在某些场合一不小心就出现愚蠢的错误，其中比较常见的是计数器变量（下面的代码试图从大到小打印 [0，99] 区间内的所有整数）：
 
-```c
+```c title="unsigned-decrement-gteq.c"
 unsigned i;
 for (i = 99; i >= 0; --i) /* 看出问题吗？ */
     printf("%u\n", i);
@@ -59,7 +59,7 @@ for (i = 99; i >= 0; --i) /* 看出问题吗？ */
 
 但是，计数器 i 是无符号整数，编译器会用相应的指令去判断 i 是否大于或等于零，结果很清楚，作为无符号整数的 i 一定是永远大于或等于零的，就是说，上面的 for 语句是一个死循环。对于无符号整数，尽量避免使用 <，>，<=，>= 等运算符而优先选用 != ：
 
-```c
+```c title="unsigned-decrement-inequation.c"
 unsigned i = 100;
 while (i != 0) /* OK */
 {
@@ -145,7 +145,7 @@ char c = 'A';
 
 上面这个表达式的确引起了我们的错觉。'A' 明显代表一个单字节字符值，把这个代表字符的值赋给 char 变量，可谓“门当户对”的事啊……然而，'A'虽然代表一个单字节字符值，但同时它的值必须要用与 int 等长的空间来存储，因此它的身份是不折不扣的 int。这也是 char 变量必须提升为 int 再参与运算的规则的另一个反映——反正到头来还是得提升为 int，索性一开始就给它 int 的身份！至于上面那个表达式，它的作用相当于把一个曾经提升为 int 类型的 char 数值还原回 char 而已，完全没有问题。虽然 C89 开始确立了一系列的新规则，但 `单字节字符常量的类型是 int` 这个惯例仍然被保留下来，即使到了 C99也同样如此：
 
-```c
+```c title="sizeof-char-literal.c"
 #include <stdio.h>
 
 int main(int argc, char* argv[]) {
@@ -228,6 +228,69 @@ Character types are integer types used for a *character* representation.
 > `unsigned char` — type for unsigned character representation. Also used to inspect [object representations](https://en.cppreference.com/w/cpp/language/object) (raw memory).
 > `char` — type for character representation which can be most efficiently processed on the target system (has the same representation and alignment as either `signed char` or `unsigned char`, but is always a *distinct* type).
 > The signedness of char depends on the compiler and the target platform: the defaults for ARM and PowerPC are typically **unsigned**, the defaults for x86 and x64 are typically **signed**.
+
+根据 <climits\> 中定义的宏 CHAR_MIN 和 CHAR_MAX，可以用以下两种方式简单判断 char 默认的符号：
+
+1. 判断 CHAR_MIN == SCHAR_MIN 或 CHAR_MIN == UCHAR_MIN。
+2. 判断 CHAR_MAX 最高位，如果为 0 则表示最高位 MSB 为符号位，为 signed；否则最高位 MSB 为数值位，为 unsigned。
+
+测试代码：
+
+=== "char-range.c"
+
+    ```c
+    #include <stdio.h>
+    #include <limits.h>
+
+    int main(int argc, char* argv[]) {
+        int chmin = CHAR_MIN;
+        int chmax = CHAR_MAX;
+
+        printf("CHAR_MIN = %d, CHAR_MAX = %d\n", chmin, chmax);
+        printf("(CHAR_MIN == SCHAR_MIN) = %d\n", CHAR_MIN==SCHAR_MIN);
+        printf("CHAR_MAX >> 7 = %d\n", CHAR_MAX >> 7);
+
+        return 0;
+    }
+    ```
+
+=== "char-range.cpp"
+
+    ```c
+    #include <iostream>
+    #include <climits>
+
+    int main(int argc, char* argv[]) {
+        std::cout << "CHAR_MIN = " << CHAR_MIN << ", CHAR_MAX = " << CHAR_MAX << std::endl;
+        std::cout << "(CHAR_MIN == SCHAR_MIN) = " << (CHAR_MIN == SCHAR_MIN) << std::endl;
+        std::cout << "CHAR_MAX >> 7 = " << (CHAR_MAX >> 7) << std::endl;
+
+        return 0;
+    }
+    ```
+
+测试结果：
+
+=== "macOS(arm64, x86_64)"
+
+    ```Shell
+    # mbpa2991/arm64, mbpa1398/x86_64
+    # cc char-range.c -o char-range && ./char-range
+    $ c++ char-range.cpp -o char-range && ./char-range
+    CHAR_MIN = -128, CHAR_MAX = 127
+    (CHAR_MIN == SCHAR_MIN) = 1
+    CHAR_MAX >> 7 = 0 # MSB as sign
+    ```
+
+=== "rpi4b-ubuntu/aarch64"
+
+    ```Shell
+    # cc char-range.c -o char-range && ./char-range
+    $ c++ char-range.cpp -o char-range && ./char-range
+    CHAR_MIN = 0, CHAR_MAX = 255
+    (CHAR_MIN == SCHAR_MIN) = 0
+    CHAR_MAX >> 7 = 1 # MSB as value
+    ```
 
 ## why getchar() return int?
 
