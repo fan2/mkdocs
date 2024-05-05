@@ -231,8 +231,8 @@ Character types are integer types used for a *character* representation.
 
 根据 <climits\> 中定义的宏 CHAR_MIN 和 CHAR_MAX，可以用以下两种方式简单判断 char 默认的符号：
 
-1. 判断 CHAR_MIN == SCHAR_MIN 或 CHAR_MIN == UCHAR_MIN。
-2. 判断 CHAR_MAX 最高位，如果为 0 则表示最高位 MSB 为符号位，为 signed；否则最高位 MSB 为数值位，为 unsigned。
+1. 判断 CHAR_MAX == UCHAR_MAX（或 CHAR_MAX == SCHAR_MAX），直观评判。
+2. 判断 CHAR_MAX 最高位 MSB（most-signiﬁcant bit set），为 0 表示最高位为符号位，为 signed；否则，最高位为数值位，为 unsigned。
 
 测试代码：
 
@@ -247,7 +247,7 @@ Character types are integer types used for a *character* representation.
         int chmax = CHAR_MAX;
 
         printf("CHAR_MIN = %d, CHAR_MAX = %d\n", chmin, chmax);
-        printf("(CHAR_MIN == SCHAR_MIN) = %d\n", CHAR_MIN==SCHAR_MIN);
+        printf("(CHAR_MAX == UCHAR_MAX) = %d\n", CHAR_MAX == UCHAR_MAX);
         printf("CHAR_MAX >> 7 = %d\n", CHAR_MAX >> 7);
 
         return 0;
@@ -262,7 +262,7 @@ Character types are integer types used for a *character* representation.
 
     int main(int argc, char* argv[]) {
         std::cout << "CHAR_MIN = " << CHAR_MIN << ", CHAR_MAX = " << CHAR_MAX << std::endl;
-        std::cout << "(CHAR_MIN == SCHAR_MIN) = " << (CHAR_MIN == SCHAR_MIN) << std::endl;
+        std::cout << "(CHAR_MAX == UCHAR_MAX) = " << (CHAR_MAX == UCHAR_MAX) << std::endl;
         std::cout << "CHAR_MAX >> 7 = " << (CHAR_MAX >> 7) << std::endl;
 
         return 0;
@@ -278,8 +278,8 @@ Character types are integer types used for a *character* representation.
     # cc char-range.c -o char-range && ./char-range
     $ c++ char-range.cpp -o char-range && ./char-range
     CHAR_MIN = -128, CHAR_MAX = 127
-    (CHAR_MIN == SCHAR_MIN) = 1
-    CHAR_MAX >> 7 = 0 # MSB as sign
+    (CHAR_MAX == UCHAR_MAX) = 0
+    CHAR_MAX >> 7 = 0
     ```
 
 === "rpi4b-ubuntu/aarch64"
@@ -288,8 +288,8 @@ Character types are integer types used for a *character* representation.
     # cc char-range.c -o char-range && ./char-range
     $ c++ char-range.cpp -o char-range && ./char-range
     CHAR_MIN = 0, CHAR_MAX = 255
-    (CHAR_MIN == SCHAR_MIN) = 0
-    CHAR_MAX >> 7 = 1 # MSB as value
+    (CHAR_MAX == UCHAR_MAX) = 1
+    CHAR_MAX >> 7 = 1
     ```
 
 ## why getchar() return int?

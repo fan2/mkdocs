@@ -27,11 +27,31 @@ The *binary representation* of a type is a *model* that describes the possible v
 
 We have seen that unsigned integer types are those arithmetic types for which the standard arithmetic operations have a nice, closed mathematical description. They are closed under arithmetic operations:
 
-!!! note "TAKEAWAY 5.50~5.52"
+!!! note "Unsigned wrap"
 
     TAKEAWAY 5.50 Unsigned arithmetic wraps nicely.
-    TAKEAWAY 5.51 The maximum value of any integer type is of the form 2^N^ − 1.
-    TAKEAWAY 5.52 Arithmetic on an unsigned integer type is determined by its precision.
+
+In mathematical terms, they implement a *ring*, $\Bbb{z}$~N~, the set of integers modulo some number $N$. The values that are representable are $0, \ldots, N−1$. The maximum value $N−1$ completely determines such an unsigned integer type and is made available through a macro with terminating `_MAX` in the name. For the basic unsigned integer types, these are `UINT_MAX`, `ULONG_MAX`, and `ULLONG_MAX` , and they are provided through <limits.h\>. As we have seen, the one for `size_t` is `SIZE_MAX` from <stdint.h\>.
+
+The binary representation for non-negative integer values is always exactly what the term indicates: such a number is represented by binary digits $b_0, b_1, \ldots, b_{p-1}$ called ***bits***. Each of the bits has a value of 0 or 1. The value of such a number is computed as
+
+$$
+\sum_{i=0}^{p-1}b_i\ast2^i
+$$
+
+The value *p* in that binary representation is called the ***precision*** of the underlying type. Bit $b_0$ is called the ***least-signiﬁcant bit***, and LSB, $b_{p−1}$ is the ***most-signiﬁcant bit***(MSB).
+
+Of the bits $b_i$ that are 1, the one with minimal index *i* is called the ***least-signiﬁcant bit set***, and the one with the highest index is the ***most-signiﬁcant bit set***. For example, for an unsigned type with $p = 16$, the value 240 would have $b_4 = 1, b_5 = 1, b_6 = 1$, and $b_7 = 1$. All other bits of the binary representation are 0, the least-signiﬁcant bit set *i* is $b_4$, and the most-signiﬁcant bit set is $b_7$. From (5.1), we see immediately that $2^p$ is the ﬁrst value that cannot be represented with the type. Thus $N = 2^p$ and
+
+!!! note "TAKEAWAY 5.51"
+
+    The maximum value of any integer type is of the form $2^p − 1$.
+
+Observe that for this discussion of the representation of non-negative values, we haven’t argued about the signedness of the type. These rules apply *equally* to signed and unsigned types. Only for unsigned types, we are lucky, and what we have said so far completely sufﬁces to describe such an unsigned type.
+
+!!! note "TAKEAWAY 5.52"
+
+    Arithmetic on an unsigned integer type is determined by its precision.
 
 Finally, table 5.4 shows the bounds of some of the commonly used scalars throughout this book.
 
