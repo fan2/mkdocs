@@ -1764,6 +1764,20 @@ The signedness of char depends on the compiler and the target platform: the defa
 </span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="kt">int</span><span class="w"> </span><span class="nf">ungetc</span><span class="p">(</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">ch</span><span class="p">,</span><span class="w"> </span><span class="kt">FILE</span><span class="w"> </span><span class="o">*</span><span class="n">stream</span><span class="w"> </span><span class="p">);</span>
 </span></code></pre></div>
 <p>遥想当年初学 C 语言，相信不少人对于 <code>getchar()</code> 函数家族的返回类型都会有所困惑。</p>
+<p>先来看一道《C 语言深度解剖》附录 1 中的 C 语言基础测试题：</p>
+<ol start="19">
+<li>下面的代码有什么问题？为什么？</li>
+</ol>
+<div class="language-c highlight"><span class="filename">getchar.c</span><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="kt">char</span><span class="w"> </span><span class="n">c</span><span class="p">;</span>
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">getchar</span><span class="p">();</span>
+</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">EOF</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">c</span><span class="p">)</span>
+</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a><span class="p">{</span>
+</span><span id="__span-11-7"><a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a><span class="w">    </span><span class="n">do_something</span><span class="p">();</span>
+</span><span id="__span-11-8"><a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a><span class="p">}</span>
+</span></code></pre></div>
+<p>此为本节标题问题的衍生问题，弄清楚了标题问题，该测试题的答案自然明了。</p>
 <p><a href="https://stackoverflow.com/questions/39341213/why-is-getchar-function-in-c-an-integer">Why is getchar() function in C an Integer?</a></p>
 <blockquote>
 <p><code>getchar()</code> and family return an integer so that the <code>EOF</code> -1 is distinguishable from <code>(char)-1</code> or <code>(unsigned char)255</code>.</p>
@@ -1785,17 +1799,17 @@ The signedness of char depends on the compiler and the target platform: the defa
 <div class="admonition note">
 <p class="admonition-title">to accommodate EOF</p>
 <p>The function <code>getchar()</code> reads a single character from the standard input and returns the character value as the value of the function, but to <strong>accommodate</strong> a possible negative value for <code>EOF</code>, the type of the value returned is <code>int</code>. (Recall, EOF may be either 0 or -1 depending on implementation). So we could use <code>getchar()</code> to read a character and assign the returned value to an integer variable:</p>
-<div class="language-c highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">c</span><span class="p">;</span>
-</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="w">    </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">getchar</span><span class="p">();</span>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">c</span><span class="p">;</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="w">    </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">getchar</span><span class="p">();</span>
 </span></code></pre></div>
 <p>If, after executing this statement, c equals EOF, we have reached the end of the input file; otherwise, c is the ASCII value of the next character in the input stream.</p>
 <p>While int type can be used to store the ASCII value of a character, programs can become <em>confusing</em> to read - we expect that the int data type is used for numeric integer data and that char data type is used for character data. The problem is that char type, depending on implementation, may or may not allow negative values. To resolve this, C allows us to explicitly declare a signed char data type for a variable, which can store negative values as well as positive ASCII values:</p>
-<div class="language-c highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="w">    </span><span class="kt">signed</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="n">c</span><span class="p">;</span>
-</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="w">    </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">getchar</span><span class="p">();</span>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="w">    </span><span class="kt">signed</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="n">c</span><span class="p">;</span>
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="w">    </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">getchar</span><span class="p">();</span>
 </span></code></pre></div>
 <p>An explicit signed char variable ensures that a character is stored in a character type object while allowing a possible negative value for EOF. The keyword signed is called a <strong>type qualifier</strong>.</p>
 <p>A similar routine for character output is <code>putchar()</code>, which outputs its argument as a character to the standard output. Thus,</p>
-<div class="language-c highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="n">putchar</span><span class="p">(</span><span class="n">c</span><span class="p">);</span>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="n">putchar</span><span class="p">(</span><span class="n">c</span><span class="p">);</span>
 </span></code></pre></div>
 <p>outputs the ASCII character whose value is in c to the standard output. The argument of putchar() is expected to be an integer; however, the variable c may be either char type or int type (ASCII value) since the value of a char type is really an integer ASCII value.</p>
 </div>

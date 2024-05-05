@@ -20,6 +20,13 @@ macOS 软件清单备忘（macOS Software Inventory）。
 - 畅快清理 · 全新体验
 - 匠心打磨清理体验，一键释放磁盘空间
 
+[iTerm2 - macOS Terminal Replacement](https://iterm2.com/)
+[Warp: Your terminal, reimagined](https://www.warp.dev)
+
+- Warp is a modern, Rust-based terminal with AI built in so you and your team can build great software, faster.
+
+## Tools
+
 Macroplant [iExplorer](https://macroplant.com/iexplorer)
 
 - The Ultimate iPhone, iPad, and iPod File Transfer Utility for Mac and Windows.
@@ -54,10 +61,9 @@ softorino [WALTR PRO](https://softorino.com/waltr/)
 
 ## Messager
 
-[微信，是一个生活方式](https://weixin.qq.com/)
-[WeChat - Free messaging and calling app](https://www.wechat.com/)
+[微信，是一个生活方式](https://weixin.qq.com/) - [WeChat](https://www.wechat.com/)
 
-- Connecting a billion people with calls, chats, and more.
+- Free messaging and calling app
 
 [Telegram Messenger](https://telegram.org/)
 
@@ -65,7 +71,7 @@ softorino [WALTR PRO](https://softorino.com/waltr/)
 
 ## Image & Diagram
 
-内置截图 OCR 识别。
+macOS 截图预览内置 OCR 识别。
 
 [Snagit | TechSmith](https://www.techsmith.com/screen-capture.html)
 
@@ -88,7 +94,7 @@ softorino [WALTR PRO](https://softorino.com/waltr/)
 
 ## Audio & Video
 
-[VLC: Official site - Free multimedia solutions for all OS! - VideoLAN](https://www.videolan.org/)
+[VLC: Free multimedia solutions for all OS! - VideoLAN](https://www.videolan.org/)
 
 - VLC is a free and open source cross-platform multimedia player and framework that plays most multimedia files as well as DVDs, Audio CDs, VCDs, and various streaming protocols.
 
@@ -136,8 +142,7 @@ Stickies.app: [Stickies User Guide for Mac](https://support.apple.com/en-hk/guid
 
 - Marked is a previewer for Markdown and other plain text markups.
 
-[Sublime Text - Text Editing, Done Right](https://www.sublimetext.com/) - retired.
-
+[Sublime Text - Text Editing, Done Right](https://www.sublimetext.com/)
 [Visual Studio Code - Code Editing. Redefined](https://code.visualstudio.com/)
 
 - [Markdown Preview Enhanced](https://marketplace.visualstudio.com/items?itemName=shd101wyy.markdown-preview-enhanced)

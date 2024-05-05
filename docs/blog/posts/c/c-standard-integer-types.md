@@ -306,6 +306,23 @@ int ungetc( int ch, FILE *stream );
 
 遥想当年初学 C 语言，相信不少人对于 `getchar()` 函数家族的返回类型都会有所困惑。
 
+先来看一道《C 语言深度解剖》附录 1 中的 C 语言基础测试题：
+
+19. 下面的代码有什么问题？为什么？
+
+```c title="getchar.c"
+#include <stdio.h>
+
+char c;
+c = getchar();
+if (EOF == c)
+{
+    do_something();
+}
+```
+
+此为本节标题问题的衍生问题，弄清楚了标题问题，该测试题的答案自然明了。
+
 [Why is getchar() function in C an Integer?](https://stackoverflow.com/questions/39341213/why-is-getchar-function-in-c-an-integer)
 
 > `getchar()` and family return an integer so that the `EOF` -1 is distinguishable from `(char)-1` or `(unsigned char)255`.
