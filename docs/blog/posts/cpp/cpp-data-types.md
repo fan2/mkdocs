@@ -20,19 +20,97 @@ Types built out of the built-in types using C++’s abstraction mechanisms are c
 
 ## C++ Type
 
-[C++ Type](http://en.cppreference.com/w/cpp/language/type)
+C++ language Basic Concepts - [Type](http://en.cppreference.com/w/cpp/language/type)
 
-> The signedness of char depends on the compiler and the target platform: the defaults for ARM and PowerPC are typically **unsigned**, the defaults for x86 and x64 are typically **signed**.
+Objects, references, functions including function template specializations, and expressions have a property called ***type***, which both restricts the *operations* that are permitted for those entities and provides *semantic meaning* to the otherwise generic sequences of bits.
+
+-  Type classification
+-  Program-defined type
+-  Type naming
+-  Elaborated type specifier
+-  Static type
+-  Dynamic type
+-  Incomplete type
+
+There are fundamental types and compound types.
+
+- **Fundamental types** are the arithmetic types, void, and std::nullptr_t.  
+- **Compound types** are arrays, functions, pointers, references, classes, unions, enumerations, and pointers to non-static members.  
 
 ![cpp_types](https://upload.cppreference.com/mwiki/images/9/96/cpp_types.svg)
 
-[C++ Fundamental types](https://en.cppreference.com/w/cpp/language/types?cf_lbyyhhwhyjj5l3rs65cb3w=6d3uam2jwchpcfhhfnoiwc)
+C++ language Basic Concepts - [Fundamental types](https://en.cppreference.com/w/cpp/language/types)
+
+- Void type
+- std::nullptr_t (since C++11)
+- Data models
+- Integral types
+- Floating-point types
+- Range of values
+
+C++ Utilities library - [Type support (basic types, RTTI)](https://en.cppreference.com/w/cpp/types)
+
+- Additional basic types and macros
+- Fixed width integer types (since C++11)
+- Fixed width floating-point types (since C++23)
+- Numeric limits
+- Runtime type identification
+
+[C++98](http://www.cplusplus.com/doc/oldtutorial/) : [Variables. Data Types.](http://www.cplusplus.com/doc/oldtutorial/variables/)
+[C++ Language: Variables and types](https://cplusplus.com/doc/tutorial/variables/)
+
+### Integral types
+
+Modifies the basic integer type. Can be mixed in any order. Only one of each group can be present in type name.
+
+**Signedness**:
+
+- `signed` — target type will have signed representation (this is the default if omitted)
+- `unsigned` — target type will have unsigned representation
+
+**Size**:
+
+- `short` — target type will be optimized for space and will have width of at *least* 16 bits.
+- `long` — target type will have width of at *least* 32 bits.
+- `long long` — target type will have width of at least 64 bits. (since C++11)
+
+!!! note "Modifiers Order Indiference"
+
+    as with all type specifiers, any order is permitted: unsigned long long int and long int unsigned long name the same type.
+
+**Properties**:
+
+The following table summarizes all available standard integer types and their properties in various common data models:
 
 ![stdint-properties](./images/stdint-properties.png)
 
-GCC libstdc++ [Types](https://gcc.gnu.org/onlinedocs/libstdc++/manual/support.html)
+### Type straits and Constraints
 
-[C++98](http://www.cplusplus.com/doc/oldtutorial/) : [Variables. Data Types.](http://www.cplusplus.com/doc/oldtutorial/variables/)
+[Type traits and metaprogramming library](https://en.cppreference.com/w/cpp/meta#Type_traits)
+
+Type traits define compile-time template-based interfaces to **query** the properties of types.
+
+[<type_traits\>](http://www.cplusplus.com/reference/type_traits/): This header defines a series of classes to **obtain** type information on compile-time.
+
+- Helper classes: Standard classes to assist in creating compile-time constants.
+- Type traits: Classes to obtain characteristics of types in the form of compile-time constant values.
+- Type transformations: Classes to obtain new types by applying specific transformations to existing types.
+
+A basic trait for types is the categories in which they can be classified. This is a chart on how these categories overlap:
+
+- `*` = excluding unions
+
+![basic-trait-categories-overlap](./images/basic-trait-categories-overlap.png)
+
+[Constraints and concepts](https://en.cppreference.com/w/cpp/language/constraints) & [Concepts library](https://en.cppreference.com/w/cpp/concepts) (since C++20)
+
+Class templates, function templates, and non-template functions (typically members of class templates) might be associated with a *constraint*, which specifies the *requirements* on template arguments, which can be used to select the most appropriate function overloads and template specializations.
+
+Named sets of such requirements are called ***concepts***. Each concept is a *predicate*, evaluated at compile time, and becomes a part of the interface of a template where it is used as a constraint.
+
+### Compiler Conformances
+
+GCC libstdc++ [Types](https://gcc.gnu.org/onlinedocs/libstdc++/manual/support.html)
 
 MSDN - [C++ Type System](https://learn.microsoft.com/en-us/cpp/cpp/cpp-type-system-modern-cpp)
 
@@ -50,6 +128,8 @@ MSDN - [Built-in types (C++)](https://learn.microsoft.com/en-us/cpp/cpp/fundamen
 - Integer types
 - Sizes of built-in types
 
+[LLVM Features](https://en.wikipedia.org/wiki/LLVM): The type system consists of basic types such as `integer` or `floating-point` numbers and five derived types: `pointers`, `arrays`, `vectors`, `structures`, and `functions`. A type construct in a concrete language can be represented by combining these basic types in LLVM. For example, a class in C++ can be represented by a *mix* of structures, functions and arrays of function pointers.
+
 ## TC++PL4
 
 [A Tour of C++(3e)-2022](https://www.stroustrup.com/tour3.html)
@@ -57,6 +137,14 @@ MSDN - [Built-in types (C++)](https://learn.microsoft.com/en-us/cpp/cpp/fundamen
 
 - 2.2 The Basics | 2.2.2 Types, Variables, and Arithmetic
 - 2.3 User-Deﬁned Types : Structures; Classes; Enumerations
+
+[C++ Data Types](https://www.geeksforgeeks.org/cpp-data-types/):
+
+![DatatypesInC](https://media.geeksforgeeks.org/wp-content/cdn-uploads/20191113115600/DatatypesInC.png)
+
+[TypeHiearchy.pdf](https://howardhinnant.github.io/TypeHiearchy.pdf):
+
+![Cpp-Type-Classification](./images/Cpp-Type-Classification.jpg)
 
 ### 2.2 The Basics
 

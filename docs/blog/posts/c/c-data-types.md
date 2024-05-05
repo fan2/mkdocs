@@ -61,7 +61,7 @@ C 语言包含的数据类型[如图所示](https://item.jd.com/12720594.html)�
 
 ## Type support
 
-[Type](https://en.cppreference.com/w/c/language/type)
+C language Basic Concepts - [Type](https://en.cppreference.com/w/c/language/type)
 
 - Type classification
 - Compatible types
@@ -69,7 +69,20 @@ C 语言包含的数据类型[如图所示](https://item.jd.com/12720594.html)�
 - Incomplete types
 - Type names
 
-[Type support](https://en.cppreference.com/w/c/types) - Basic types
+Type groups
+
+*   *object types*: all types that aren't function types
+*   *character types*: char, signed char, unsigned char
+*   *integer types*: char, signed integer types, unsigned integer types, enumerated types
+*   *real types*: integer types and real floating types
+*   [arithmetic types](https://en.cppreference.com/w/c/language/arithmetic_types "c/language/arithmetic types"): integer types and floating types
+*   *scalar types*: arithmetic types, pointer types, and [nullptr\_t](https://en.cppreference.com/w/c/types/nullptr_t "c/types/nullptr t")(since C23)
+*   *aggregate types*: array types and structure types
+*   *derived declarator types*: array types, function types, and pointer types
+
+Constructing a complete object type such that the number of bytes in its object representation is not representable in the type [size\_t](https://en.cppreference.com/w/c/types/size_t "c/types/size t") (i.e. the result type of [`sizeof`](https://en.cppreference.com/w/c/language/sizeof "c/language/sizeof") operator), including forming such a VLA type at runtime,(since C99) is undefined behavior.
+
+[Type support](https://en.cppreference.com/w/c/types)
 
 - Additional basic types and convenience macros: [<stddef.h\>](https://en.cppreference.com/w/c/types)
 - [Fixed width integer types (since C99)](https://en.cppreference.com/w/c/types/integer)

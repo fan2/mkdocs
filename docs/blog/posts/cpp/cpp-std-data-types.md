@@ -194,7 +194,7 @@ $$
 
 [basic.type.qualifier]
 
-1. Each type other than a function or reference type is part of a group of four distinct, but related, types: a `cv-unqualified` version, a `const-qualified` version, a `volatile-qualified` version, and a `const-volatile-qualified` version. The types in each such group shall have the same representation and alignment requirements (6.7.6). A function or reference type is always cv-unqualified.
+1. Each type other than a function or reference type is part of a group of four distinct, but related, types: a `cv-unqualified` version, a `const-qualified` version, a `volatile-qualified` version, and a `const-volatile-qualified` version. The types in each such group shall have the same representation and alignment requirements (6.7.6). A function or reference type is always [cv-unqualified](https://stackoverflow.com/questions/15413037/what-does-cv-unqualified-mean-in-c).
 
 - A `const` object is an object of type const T or a non-mutable subobject of a const object.
 - A `volatile` object is an object of type volatile T or a subobject of a volatile object.

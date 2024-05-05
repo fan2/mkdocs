@@ -727,6 +727,8 @@ make CC=clang LD=ld.lld AR=llvm-ar NM=llvm-nm STRIP=llvm-strip \
 
 ### Language Standards
 
+[LLVM Language Reference Manual](https://llvm.org/docs/LangRef.html)
+
 [Clang - C Programming Language Status](https://clang.llvm.org/c_status.html)
 [Clang - C++ Programming Language Status](https://clang.llvm.org/cxx_status.html)
 

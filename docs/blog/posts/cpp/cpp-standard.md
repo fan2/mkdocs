@@ -100,7 +100,7 @@ refs: [C++ compiler support](http://en.cppreference.com/w/cpp/compiler_support)ã
 [C++ Standard Library](https://en.wikipedia.org/wiki/C%2B%2B_Standard_Library)
 
 - [cppreference.com](https://en.cppreference.com/w/)
-- [cplusplus.com/reference/](https://cplusplus.com/reference/)
+- [cplusplus.com](https://cplusplus.com/reference/) : [Reference](https://cplusplus.com/reference/) & [Tutorials](https://cplusplus.com/doc/tutorial/)
 
 ### boost
 

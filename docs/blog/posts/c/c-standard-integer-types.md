@@ -190,6 +190,10 @@ unsigned char y;    /* 无论在哪里，y 都是无符号整型变量 */
 
 所以，前面在讲述标准整数类型时，笔者已经在注释里着重强调：属于标准带符号整数类型的是 signed char（而不是 char）！char 既不属于标准带符号整数类型也不属于标准无符号整数类型，它属于历史遗物。
 
+## signedness of char
+
+### GCC C Dialect Options
+
 GCC [C Dialect Options](https://gcc.gnu.org/onlinedocs/gcc/C-Dialect-Options.html) 中提供了 `-fsigned-char` 和 `-funsigned-char` 选项，支持明确指定 `char` 的符号类型。
 
 !!! note "-fsigned-char & -funsigned-char"
@@ -209,6 +213,21 @@ GCC [C Dialect Options](https://gcc.gnu.org/onlinedocs/gcc/C-Dialect-Options.htm
     Ideally, a portable program should always use signed char or unsigned char when it depends on the signedness of an object. But many programs have been written to use plain char and expect it to be signed, or expect it to be unsigned, depending on the machines they were written for. This option, and its inverse, let you make such a program work with the opposite default.
 
     The type char is always a distinct type from each of signed char or unsigned char, even though its behavior is always just like one of those two.
+
+### C++ standard specs
+
+20230510 - [ISO/IEC-N4950](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/n4950.pdf) - 6.8.2 Fundamental types
+
+> Clause 7: Type `char` is a distinct type that has an implementation-defined choice of `signed char` or `unsigned char` as its underlying type. The three types `char`, `signed char`, and `unsigned char` are collectively called *ordinary character types*. The ordinary character types and `char8_t` are collectively called *narrow character types*.
+
+[C++ Fundamental types](https://en.cppreference.com/w/cpp/language/types?cf_lbyyhhwhyjj5l3rs65cb3w=6d3uam2jwchpcfhhfnoiwc)
+
+Character types are integer types used for a *character* representation.
+
+> `signed char` — type for signed character representation.
+> `unsigned char` — type for unsigned character representation. Also used to inspect [object representations](https://en.cppreference.com/w/cpp/language/object) (raw memory).
+> `char` — type for character representation which can be most efficiently processed on the target system (has the same representation and alignment as either `signed char` or `unsigned char`, but is always a *distinct* type).
+> The signedness of char depends on the compiler and the target platform: the defaults for ARM and PowerPC are typically **unsigned**, the defaults for x86 and x64 are typically **signed**.
 
 ## why getchar() return int?
 

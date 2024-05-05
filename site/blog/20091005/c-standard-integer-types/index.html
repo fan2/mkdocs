@@ -1271,6 +1271,39 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#signedness_of_char" class="md-nav__link">
+    <span class="md-ellipsis">
+      signedness of char
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="signedness of char">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gcc_c_dialect_options" class="md-nav__link">
+    <span class="md-ellipsis">
+      GCC C Dialect Options
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c_standard_specs" class="md-nav__link">
+    <span class="md-ellipsis">
+      C++ standard specs
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#why_getchar_return_int" class="md-nav__link">
     <span class="md-ellipsis">
       why getchar() return int?
@@ -1364,7 +1397,7 @@
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7h1.5Z"/></svg>
                           <span class="md-ellipsis">
                             
-                              需要 6 分钟阅读时间
+                              需要 7 分钟阅读时间
                             
                           </span>
                         </div>
@@ -1634,6 +1667,8 @@
 </span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="kt">unsigned</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="n">y</span><span class="p">;</span><span class="w">    </span><span class="cm">/* 无论在哪里，y 都是无符号整型变量 */</span>
 </span></code></pre></div>
 <p>所以，前面在讲述标准整数类型时，笔者已经在注释里着重强调：属于标准带符号整数类型的是 signed char（而不是 char）！char 既不属于标准带符号整数类型也不属于标准无符号整数类型，它属于历史遗物。</p>
+<h2 id="signedness_of_char">signedness of char<a class="headerlink" href="#signedness_of_char" title="Permanent link">#</a></h2>
+<h3 id="gcc_c_dialect_options">GCC C Dialect Options<a class="headerlink" href="#gcc_c_dialect_options" title="Permanent link">#</a></h3>
 <p>GCC <a href="https://gcc.gnu.org/onlinedocs/gcc/C-Dialect-Options.html">C Dialect Options</a> 中提供了 <code>-fsigned-char</code> 和 <code>-funsigned-char</code> 选项，支持明确指定 <code>char</code> 的符号类型。</p>
 <div class="admonition note">
 <p class="admonition-title">-fsigned-char &amp; -funsigned-char</p>
@@ -1646,6 +1681,19 @@
 <p>Ideally, a portable program should always use signed char or unsigned char when it depends on the signedness of an object. But many programs have been written to use plain char and expect it to be signed, or expect it to be unsigned, depending on the machines they were written for. This option, and its inverse, let you make such a program work with the opposite default.</p>
 <p>The type char is always a distinct type from each of signed char or unsigned char, even though its behavior is always just like one of those two.</p>
 </div>
+<h3 id="c_standard_specs">C++ standard specs<a class="headerlink" href="#c_standard_specs" title="Permanent link">#</a></h3>
+<p>20230510 - <a href="https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/n4950.pdf">ISO/IEC-N4950</a> - 6.8.2 Fundamental types</p>
+<blockquote>
+<p>Clause 7: Type <code>char</code> is a distinct type that has an implementation-defined choice of <code>signed char</code> or <code>unsigned char</code> as its underlying type. The three types <code>char</code>, <code>signed char</code>, and <code>unsigned char</code> are collectively called <em>ordinary character types</em>. The ordinary character types and <code>char8_t</code> are collectively called <em>narrow character types</em>.</p>
+</blockquote>
+<p><a href="https://en.cppreference.com/w/cpp/language/types?cf_lbyyhhwhyjj5l3rs65cb3w=6d3uam2jwchpcfhhfnoiwc">C++ Fundamental types</a></p>
+<p>Character types are integer types used for a <em>character</em> representation.</p>
+<blockquote>
+<p><code>signed char</code> — type for signed character representation.<br />
+<code>unsigned char</code> — type for unsigned character representation. Also used to inspect <a href="https://en.cppreference.com/w/cpp/language/object">object representations</a> (raw memory).<br />
+<code>char</code> — type for character representation which can be most efficiently processed on the target system (has the same representation and alignment as either <code>signed char</code> or <code>unsigned char</code>, but is always a <em>distinct</em> type).<br />
+The signedness of char depends on the compiler and the target platform: the defaults for ARM and PowerPC are typically <strong>unsigned</strong>, the defaults for x86 and x64 are typically <strong>signed</strong>.</p>
+</blockquote>
 <h2 id="why_getchar_return_int">why getchar() return int?<a class="headerlink" href="#why_getchar_return_int" title="Permanent link">#</a></h2>
 <p>最后，来看一下 <a href="https://en.cppreference.com/w/c/io">File input/output</a> - <a href="https://pubs.opengroup.org/onlinepubs/009695299/basedefs/stdio.h.html">&lt;stdio.h&gt;</a> 中读写字符相关接口的参数类型：</p>
 <div class="language-c highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kt">int</span><span class="w"> </span><span class="nf">fgetc</span><span class="p">(</span><span class="w"> </span><span class="kt">FILE</span><span class="w"> </span><span class="o">*</span><span class="n">stream</span><span class="w"> </span><span class="p">);</span>
