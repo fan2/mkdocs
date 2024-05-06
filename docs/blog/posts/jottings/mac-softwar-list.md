@@ -190,22 +190,26 @@ PDF Expert，搭配内置 Preview 查看扫描件。
 ## Chrome Extensions
 
 [Tampermonkey](https://chromewebstore.google.com/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo)
-
 [Vimium](https://chromewebstore.google.com/detail/vimium/dbepggeogbaibhgnhhndojpepiihcmeb)
+
 [Prevent Duplicate Tabs](https://chromewebstore.google.com/detail/prevent-duplicate-tabs/eednccpckdkpojaiemedoejdngappaag)
 [Smart TOC](https://chromewebstore.google.com/detail/smart-toc/lifgeihcfpkmmlfjbailfpfhbahhibba)
 
 [Simple Allow Copy](https://chromewebstore.google.com/detail/simple-allow-copy/aefehdhdciieocakfobpaaolhipkcpgc)
 [Copy as Markdown](https://chromewebstore.google.com/detail/copy-as-markdown/fkeaekngjflipcockcnpobkpbbfbhmdn)
-[PrintFriendly - Print and PDF Web Pages](https://chromewebstore.google.com/detail/printfriendly-print-and-p/ohlencieiipommannpdfcmfdpjjmeolj)
+[MarkDownload](https://chromewebstore.google.com/detail/markdownload-markdown-web/pcmpcfapbekmbjjkdalcgopdkipoggdi)
 
 [Google Mail Checker](https://chromewebstore.google.com/detail/google-mail-checker/mihcahmgecmbnbcchbopgniflfhgnkff)
 [Talking Clock](https://chromewebstore.google.com/detail/talking-clock/babblknbggnkbadcnoeoendifjkbkflj)
-[ImageAssistant Batch Image Downloader](https://chromewebstore.google.com/detail/imageassistant-batch-imag/dbjbempljhcmhlfpfacalomonjpalpko) 内置 QR Code Generator。
+[ImageAssistant](https://chromewebstore.google.com/detail/imageassistant-batch-imag/dbjbempljhcmhlfpfacalomonjpalpko) 内置 QR Code Generator。
 [Voice Control for ChatGPT x Mia AI](https://chromewebstore.google.com/detail/voice-control-for-chatgpt/eollffkcakegifhacjnlnegohfdlidhn)：不支持 Arc Browser。
 
-[iamadamdev/bypass-paywalls-chrome](https://github.com/iamadamdev/bypass-paywalls-chrome/blob/master/README.md)
+[bypass-paywalls](https://github.com/iamadamdev/bypass-paywalls-chrome/blob/master/README.md)
+[PaywallHub](https://chromewebstore.google.com/detail/paywallhub/iimagbhmhkinjaaammedekiocfphhhca) - [archive.today](https://archive.today/) / [archive.is](https://archive.is/)
+
 [ChatGPT » Summarize & Chat](https://chromewebstore.google.com/detail/chatgpt-%C2%BB-summarize-chat/cbgecfllfhmmnknmamkejadjmnmpfjmp)
+[Video Downloader Professional](https://chromewebstore.google.com/detail/elicpjhcidhpjomhibiffojpinpmmpil)
+[PrintFriendly - Print and PDF Web Pages](https://chromewebstore.google.com/detail/printfriendly-print-and-p/ohlencieiipommannpdfcmfdpjjmeolj)
 
 [划词翻译](https://chromewebstore.google.com/detail/%E5%88%92%E8%AF%8D%E7%BF%BB%E8%AF%91/ikhdkkncnoglghljlkmcimlnlhkeamad)
 

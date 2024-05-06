@@ -56,6 +56,12 @@ C++ Utilities library - [Type support (basic types, RTTI)](https://en.cppreferen
 - Numeric limits
 - Runtime type identification
 
+[Numerics library](https://en.cppreference.com/w/cpp/numeric)
+
+- Mathematical functions and types
+- Numeric algorithms
+- Miscellanous
+
 [C++98](http://www.cplusplus.com/doc/oldtutorial/) : [Variables. Data Types.](http://www.cplusplus.com/doc/oldtutorial/variables/)
 [C++ Language: Variables and types](https://cplusplus.com/doc/tutorial/variables/)
 
