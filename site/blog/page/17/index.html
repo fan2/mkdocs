@@ -501,18 +501,18 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#计算机中有符号数的表示" class="md-nav__link">
+  <a href="#byte_orderendianess" class="md-nav__link">
     <span class="md-ellipsis">
-      计算机中有符号数的表示
+      Byte Order(Endianess)
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#c语言标准与实现之整数类型" class="md-nav__link">
+  <a href="#the_c_memory_model" class="md-nav__link">
     <span class="md-ellipsis">
-      C语言标准与实现之整数类型
+      The C Memory Model
     </span>
   </a>
   
@@ -1437,18 +1437,18 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#计算机中有符号数的表示" class="md-nav__link">
+  <a href="#byte_orderendianess" class="md-nav__link">
     <span class="md-ellipsis">
-      计算机中有符号数的表示
+      Byte Order(Endianess)
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#c语言标准与实现之整数类型" class="md-nav__link">
+  <a href="#the_c_memory_model" class="md-nav__link">
     <span class="md-ellipsis">
-      C语言标准与实现之整数类型
+      The C Memory Model
     </span>
   </a>
   
@@ -1874,7 +1874,7 @@
     <div class="md-post__meta md-meta">
       <ul class="md-meta__list">
         <li class="md-meta__item">
-          <time datetime="2009-10-06 12:00:00">2009年10月6日</time></li>
+          <time datetime="2009-10-09 10:00:00">2009年10月9日</time></li>
         
           <li class="md-meta__item">
             分类于
@@ -1885,7 +1885,7 @@
           
           <li class="md-meta__item">
             
-              需要 13 分钟阅读时间
+              需要 7 分钟阅读时间
             
           </li>
         
@@ -1894,19 +1894,18 @@
     </div>
   </header>
   <div class="md-post__content md-typeset">
-    <h2 id="计算机中有符号数的表示"><a class="toclink" href="../../20091006/signedness-representation/">计算机中有符号数的表示</a></h2>
-<p>对于无符号整数，一般来说，所有的数位都被用来表示数值。<br />
-对于带符号整数，数位被划分为符号位（只能占一位）与数值位（剩余的其它位）。</p>
-<p>符号位的权值有不同的解释：</p>
+    <h2 id="byte_orderendianess"><a class="toclink" href="../../20091009/byte-order-endianess/">Byte Order(Endianess)</a></h2>
+<p>在 <a href="../../20091007/binary-bitset-bytes/">Binary —— Bitset &amp; Bytes</a> 中，我们通过打印 bitset 和 byte array，直观感受了二进制的位模式（bit pattern &amp; binary representation）。然后，遗留下了三个问题：</p>
 <ol>
-<li>权值是零（符号位是“1”则表示数值为负），称为“符号-绝对值”模式（Sign and magnitude）。</li>
-<li>权值是 –(2<sup>N-1</sup>-1)，“1的补码”方式（Ones’ complement）。</li>
-<li>权值是 –2<sup>N-1</sup>，“2的补码”方式（Two’s complement）。</li>
+<li>hex(2010) 输出十六进制是 0x7da，hexdump(2010) 输出内存中的字节数组是 {0xda, 0x7}，字节顺序为什么不同？</li>
+<li>每2个byte组合而成的短整型 short array [0] 为什么是 <code>0x3130</code>，而非 <code>0x3031</code>？</li>
+<li>程序 test-conversion-narrow-down.c 输出结果是怎样的？</li>
 </ol>
+<p>这三个问题的答案都涉及到字节序（Byte Order）问题。</p>
 
     
       <nav class="md-post__action">
-        <a href="../../20091006/signedness-representation/">
+        <a href="../../20091009/byte-order-endianess/">
           继续阅读
         </a>
       </nav>
@@ -1928,18 +1927,18 @@
     <div class="md-post__meta md-meta">
       <ul class="md-meta__list">
         <li class="md-meta__item">
-          <time datetime="2009-10-05 12:00:00">2009年10月5日</time></li>
+          <time datetime="2009-10-08 10:00:00">2009年10月8日</time></li>
         
           <li class="md-meta__item">
             分类于
             
-              <a href="../../category/c/" class="md-meta__link">c</a></li>
+              <a href="../../category/cs/" class="md-meta__link">CS</a></li>
         
         
           
           <li class="md-meta__item">
             
-              需要 8 分钟阅读时间
+              需要 6 分钟阅读时间
             
           </li>
         
@@ -1948,15 +1947,12 @@
     </div>
   </header>
   <div class="md-post__content md-typeset">
-    <h2 id="c语言标准与实现之整数类型"><a class="toclink" href="../../20091005/c-standard-integer-types/">C语言标准与实现之整数类型</a></h2>
-<p>在 C 语言刚刚被设计出来的时候，一共只有两种整数类型 —— <code>char</code> 和 <code>int</code>。C89 引入了两种新的整数类型 —— <code>short</code> 和 <code>long</code>，C99 再增加一种整数类型 —— long long。</p>
-<p>后来，随着 C 语言的进一步发展，K&amp;R C 引入了无符号整数的概念以及 <code>unsigned</code> 关键字。<code>char</code> 既不属于标准带符号整数类型也不属于标准无符号整数类型，它属于历史遗物。</p>
-<p>C89 引入 <code>signed</code> 关键字后，可显式声明 <code>signed char</code>，明确表达最小的标准带符号整数类型。</p>
-<p>为什么 <code>getchar()</code> 返回的类型是 int，而不是 char？</p>
+    <h2 id="the_c_memory_model"><a class="toclink" href="../../20091008/c-memory-model/">The C Memory Model</a></h2>
+<p>Pointers present us with a certain abstraction of the environment and state in which our program is executed, the <em>C memory model</em>. We may apply the unary operator &amp; to (almost) all objects to retrieve their address and use it to inspect and change the state of our execution.</p>
 
     
       <nav class="md-post__action">
-        <a href="../../20091005/c-standard-integer-types/">
+        <a href="../../20091008/c-memory-model/">
           继续阅读
         </a>
       </nav>
@@ -1971,7 +1967,7 @@
 
 
 <nav class="md-pagination">
-  <a class="md-pagination__link" href="../../"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18.41 7.41 17 6l-6 6 6 6 1.41-1.41L13.83 12l4.58-4.59m-6 0L11 6l-6 6 6 6 1.41-1.41L7.83 12l4.58-4.59Z"/></svg></a> <a class="md-pagination__link" href="../16/"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15.41 16.58 10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.42Z"/></svg></a> <a class="md-pagination__link" href="../../">1</a> <span class="md-pagination__dots">..</span> <a class="md-pagination__link" href="../15/">15</a> <a class="md-pagination__link" href="../16/">16</a> <span class="md-pagination__current">17</span> <a class="md-pagination__link" href="../18/">18</a> <a class="md-pagination__link" href="../18/"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58 13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.42Z"/></svg></a> <a class="md-pagination__link" href="../18/"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5.59 7.41 7 6l6 6-6 6-1.41-1.41L10.17 12 5.59 7.41m6 0L13 6l6 6-6 6-1.41-1.41L16.17 12l-4.58-4.59Z"/></svg></a>
+  <a class="md-pagination__link" href="../../"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18.41 7.41 17 6l-6 6 6 6 1.41-1.41L13.83 12l4.58-4.59m-6 0L11 6l-6 6 6 6 1.41-1.41L7.83 12l4.58-4.59Z"/></svg></a> <a class="md-pagination__link" href="../16/"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15.41 16.58 10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.42Z"/></svg></a> <a class="md-pagination__link" href="../../">1</a> <span class="md-pagination__dots">..</span> <a class="md-pagination__link" href="../15/">15</a> <a class="md-pagination__link" href="../16/">16</a> <span class="md-pagination__current">17</span> <a class="md-pagination__link" href="../18/">18</a> <a class="md-pagination__link" href="../19/">19</a> <a class="md-pagination__link" href="../18/"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M8.59 16.58 13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.42Z"/></svg></a> <a class="md-pagination__link" href="../19/"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5.59 7.41 7 6l6 6-6 6-1.41-1.41L10.17 12 5.59 7.41m6 0L13 6l6 6-6 6-1.41-1.41L16.17 12l-4.58-4.59Z"/></svg></a>
 </nav>
         
       

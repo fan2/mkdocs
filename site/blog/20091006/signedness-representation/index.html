@@ -18,7 +18,7 @@
         <link rel="prev" href="../../20091005/c-standard-integer-types/">
       
       
-        <link rel="next" href="../../20151102/1-Markdown-Syntax/">
+        <link rel="next" href="../../20091007/binary-bitset-bytes/">
       
       
       <link rel="icon" href="../../../assets/hold_yourself.jpg">
@@ -90,7 +90,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#进制数制" class="md-skip">
+        <a href="#无符号数的编码" class="md-skip">
           跳转至
         </a>
       
@@ -1235,48 +1235,6 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#进制数制" class="md-nav__link">
-    <span class="md-ellipsis">
-      进制数制
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="进制数制">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#十进制" class="md-nav__link">
-    <span class="md-ellipsis">
-      十进制
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#二进制" class="md-nav__link">
-    <span class="md-ellipsis">
-      二进制
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#位模式" class="md-nav__link">
-    <span class="md-ellipsis">
-      位模式
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#无符号数的编码" class="md-nav__link">
     <span class="md-ellipsis">
       无符号数的编码
@@ -1391,6 +1349,15 @@
   <a href="#有符号数和无符号数之间的转换" class="md-nav__link">
     <span class="md-ellipsis">
       有符号数和无符号数之间的转换
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#signed_arithmetic_overflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      signed arithmetic overflow
     </span>
   </a>
   
@@ -1556,44 +1523,6 @@
 </ol>
 <!-- more -->
 
-<h2 id="进制数制">进制数制<a class="headerlink" href="#进制数制" title="Permanent link">#</a></h2>
-<p>所谓<strong>数制</strong>是指计数的方法。</p>
-<h3 id="十进制">十进制<a class="headerlink" href="#十进制" title="Permanent link">#</a></h3>
-<p>人两手加起来共10根手指，故日常计数和做算术都使用十进制。大家熟悉并使用了一千多年的十进制起源于印度，在12世纪被阿拉伯数学家改进，并在13世纪被意大利数学家Leonardo Pisano（Fibonacci）带到西方。1、2、3的罗马计数法是Ⅰ、Ⅱ、Ⅲ，Ⅰ+Ⅱ=Ⅲ 直观展示了加法运算的含义。</p>
-<p>数据无论使用哪种进位制，都涉及两个基本要素：<strong>基数</strong>（radix）与各数位的 <strong>位权</strong>（weight）。<br />
-十进制数有两个特点：</p>
-<ol>
-<li>用0、1、2、3、...、9这10个基本符号表示；基本数字符号（数码）的个数叫<strong>基数</strong>。</li>
-<li>遵循“逢十进一”原则，每位计满十时向高位进一。</li>
-</ol>
-<p>一般地，任意一个十进制数 N 都可以表示为 <span class="arithmatex">\(\sum_{i=-m}^{n-1}K_i\ast10^i\)</span>：</p>
-<div class="arithmatex">\[
-N = K_{n-1}\ast10^{n-1} + K_{n-2}\ast10^{n-2} + \cdots + K_1\ast10^1 + K_0\ast10^0 + K_{-1}\ast10^{-1} + K_{-2}\ast10^{-2} + \cdots + K_{-m}\ast10^{-m}
-\]</div>
-<p>抛开小数部分，整数按权的展开式为：</p>
-<div class="arithmatex">\[
-N = \sum_{i=0}^{n-1}K_i\ast10^i = K_{n-1}\ast10^{n-1} + K_{n-2}\ast10^{n-2} + \cdots + K_1\ast10^1 + K_0\ast10^0
-\]</div>
-<p>一个数字符号在不同位时，代表的数值不同。在上述表达式中，数位 <span class="arithmatex">\(K_i\)</span> 的权为 <span class="arithmatex">\(10^i\)</span>（以基数<span class="arithmatex">\(10\)</span>为底，序号<span class="arithmatex">\(i\)</span>为指数），数字符号乘以其位权为这个数字符号所表示的真实数值（<span class="arithmatex">\(K_i\ast10^i\)</span>）。</p>
-<h3 id="二进制">二进制<a class="headerlink" href="#二进制" title="Permanent link">#</a></h3>
-<p>在 <a href="https://blog.csdn.net/phunxm/article/details/5080997">字节存储单元及struct内存分配</a> 中，我们介绍了二进制和以及字节存储单元。现代计算机存储和处理的信息以二值信号表示。这些微不足道的二进制数字，或者称为位（bit），形成了数字革命的基础。</p>
-<p>对于有10根手指的人来来说，使用十进制表示法是很自然的事情，但是当构造存储和处理信息的机器时，二进制工作得更好。在计算机内部，二进制总是存放在由具有两种相反状态的存储元件构成的寄存器或存储单元中，即二进制数码0和1是由存储元件的两种相反状态来表示的。这使得二值信号很容易地被表示、存储和传输。</p>
-<p>二值信号可以表示为导线上的高电压或低电压、晶体管的导通或截止、电子自旋的两个方向，或者顺时针或逆时针的磁场。<a href="https://blog.csdn.net/phunxm/article/details/8980808">指令集及流水线</a> 中提到，在上个世纪的打孔编程时代，纸带上的每个孔代表一位(bit)，穿孔（presence）表示1，未穿孔（absence）表示0，这些孔序列被扫描识别为机器指令的二进制位串。</p>
-<p>十进制数按权的展开式可以推广到任意进位计数制。二进制中只有0和1两个字符，基数为2，满足“逢二进一”。权用 <span class="arithmatex">\(2^i\)</span> 表示，二进制的按权展开式为 <span class="arithmatex">\(N = \sum_{i=0}^{n-1}K_i\ast2^i\)</span>。</p>
-<p>二进制与其他数制相比，有以下显著特点：</p>
-<ol>
-<li>数制简单，容易基于元器件的电子特性实现数字逻辑电路。</li>
-<li>由于二进制只有两种状态，因此抗干扰性强，可靠性、稳定性高。</li>
-<li>可以基于布尔逻辑代数进行分析和综合，运算规则相对简单易实现。</li>
-</ol>
-<blockquote>
-<p>基数为2的好处在于基本算术运算表很短，对比一下十进制和二进制的加法和乘法表，长短相形一目了然。</p>
-</blockquote>
-<h3 id="位模式">位模式<a class="headerlink" href="#位模式" title="Permanent link">#</a></h3>
-<p>2个比特可以组合出4（<span class="arithmatex">\(2^2\)</span>）种状态，可表示无符号数值范围[0,3]；32个比特可以组合出4294967296（<span class="arithmatex">\(2^{32}\)</span>）种状态，可表示无符号数值范围[0,4294967295]；……。</p>
-<p>由于一个位只能表示二元数值，所以单独一位的用处不大。当把位<strong>组合</strong>在一起，再加上某种解释（interpretation），即赋予不同的可能<strong>位模式</strong>以含意。通常将固定位数的位串作为一个基本存储单位，这样就可以存储范围较大的值。在有限范围内的可计量数值几乎都可以用二进制数码位串组合表示，计算机的内存由数以亿万计的比特位存储单元（晶体管）组成。</p>
-<p>大多数计算机使用8位的块，或者字节（byte），作为最小的可寻址的内存单位，而不是访问内存中单独的位（bit）。机器级程序将内存视作一个非常大的字节数组，内存的每个字节都由一个唯一的数字来标识，称为它的地址。</p>
-<p>每个程序对象可以简单地视为一个字节块，程序本身就是一个字节序列（机器指令序列）。</p>
 <h2 id="无符号数的编码">无符号数的编码<a class="headerlink" href="#无符号数的编码" title="Permanent link">#</a></h2>
 <p>粗略地概括，整数类型分为两大类：无符号整数（<code>unsigned</code> integer）和带符号整数（<code>signed</code> integer）。</p>
 <ol>
@@ -1865,20 +1794,6 @@ B2T_n(\vec{x}) \dot=-x_{n-1}\ast2^{n-1} + \sum_{i=0}^{n-2}x_i\ast2^i
 </span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">    </span><span class="kt">signed</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="n">Z</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">X</span><span class="o">+</span><span class="n">Y</span><span class="p">;</span>
 </span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Z=0x%hhx, %hhd</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">Z</span><span class="p">,</span><span class="w"> </span><span class="n">Z</span><span class="p">);</span>
 </span></code></pre></div>
-<p>以下是《C语言深度解剖（第2版）》附录中的C 语言基础测试题5，请思考输出结果。</p>
-<div class="language-c highlight"><span class="filename">signed-char-array.c</span><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;string.h&gt;</span>
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
-</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">arg</span><span class="p">[])</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">    </span><span class="kt">signed</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="n">a</span><span class="p">[</span><span class="mi">1000</span><span class="p">];</span>
-</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="p">;</span>
-</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">&lt;</span><span class="mi">1000</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
-</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">        </span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">-1</span><span class="o">-</span><span class="n">i</span><span class="p">;</span>
-</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%lu&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">strlen</span><span class="p">((</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="p">)</span><span class="n">a</span><span class="p">));</span>
-</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>
-</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
-</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="p">}</span>
-</span></code></pre></div>
 <p>【例4】已知X=-0000011（-3），Y=-0000010（-2），要求进行补码的加法运算。</p>
 <ul>
 <li>直接对补码列竖式计算如下：</li>
@@ -1992,14 +1907,14 @@ B2T_{16}([{ 11111111 } 10100111]) &amp; = 2^8(-2^7+2^6+\cdots+2^0)+2^7+v \\
 <h2 id="有符号数和无符号数之间的转换">有符号数和无符号数之间的转换<a class="headerlink" href="#有符号数和无符号数之间的转换" title="Permanent link">#</a></h2>
 <p>C语言允许在各种不同的数据类型之间做强制类型转换。例如，假设变量x声明为int，u声明为unsigned。表达式 <code>(unsigned)x</code> 会将x的值转换为一个无符号数值，而 <code>(int)u</code> 将u的值转换为一个有符号整数。</p>
 <p>考虑以下代码：</p>
-<div class="language-c highlight"><span class="filename">signed-convertion.c</span><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="w">    </span><span class="kt">short</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">-12345</span><span class="p">;</span>
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">    </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">short</span><span class="w"> </span><span class="n">uv</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">short</span><span class="p">)</span><span class="n">v</span><span class="p">;</span>
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;v=%hd, uv=%hu</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">uv</span><span class="p">);</span>
-</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;v=0x%hx, uv=0x%hx</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">uv</span><span class="p">);</span>
+<div class="language-c highlight"><span class="filename">signed-convertion.c</span><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="w">    </span><span class="kt">short</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">v</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">-12345</span><span class="p">;</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">    </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">short</span><span class="w"> </span><span class="n">uv</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">short</span><span class="p">)</span><span class="n">v</span><span class="p">;</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;v=%hd, uv=%hu</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">uv</span><span class="p">);</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;v=0x%hx, uv=0x%hx</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">uv</span><span class="p">);</span>
 </span></code></pre></div>
 <p>在一台采用补码的机器上，上述代码运行输出：</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>v=-12345, uv=53191
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>v=0xcfc7, uv=0xcfc7
+<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>v=-12345, uv=53191
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>v=0xcfc7, uv=0xcfc7
 </span></code></pre></div>
 <p>可以看到，强制类型转换的结果保持位向量（位模组）不变，只是改变了解释这些位的方式。<br />
 v=-12345 的补码表示和 uv=53191 的无符号表示是完全一样的。</p>
@@ -2033,6 +1948,77 @@ U2T_n(u)=
 <p>对于 <span class="arithmatex">\(n=8\)</span>，当 <span class="arithmatex">\(u \le TMax_n = 127\)</span> 时，即 <span class="arithmatex">\(0 \le u \le 127\)</span>，刚好落入8位补码所能表示的非负数区间 ；当 <span class="arithmatex">\(u \gt TMax_n = 127\)</span> 时，例如 <span class="arithmatex">\(128 \le u \le 255\)</span>，则原始高位1变成负号，补码释义为负数。原来位向量按无符号解释出的真值需减去 <span class="arithmatex">\(2^8=256\)</span>，换算出按补码解释的正确真值，对应负数区间 <span class="arithmatex">\([-1, -128]\)</span>。</p>
 <p>在数轴上把有符号数和无符号数画出来的话，就能很清晰的看出相对的关系：</p>
 <p><img alt="signedness-map" src="../../cs/images/signedness/signedness-map.png" /></p>
+<h2 id="signed_arithmetic_overflow">signed arithmetic overflow<a class="headerlink" href="#signed_arithmetic_overflow" title="Permanent link">#</a></h2>
+<p><a href="../../20091004/c-binary-representation/">C Basic Types - Binary Representions</a>:</p>
+<blockquote>
+<p>TAKEAWAY 5.49 The same value may have different binary representations.</p>
+</blockquote>
+<p>The following two functions are basically all that is needed to interpret unsigned values as signed values:</p>
+<div class="language-c highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">is_signed_less.c</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-4-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-4-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-4-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-4-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-4-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-4-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-4-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-4-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-4-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-4-10">10</a></span>
+<span class="normal"><a href="#__codelineno-4-11">11</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1"></a><span class="cp"># inclue &lt;limits.h&gt;</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2"></a>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3"></a><span class="kt">bool</span><span class="w"> </span><span class="nf">is_negative</span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="n">a</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4"></a><span class="w">    </span><span class="kt">unsigned</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">int_max</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">UINT_MAX</span><span class="o">/</span><span class="mi">2</span><span class="p">;</span>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="n">int_max</span><span class="p">;</span>
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6"></a><span class="p">}</span>
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7"></a>
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8"></a><span class="kt">bool</span><span class="w"> </span><span class="nf">is_signed_less</span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="n">b</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">is_negative</span><span class="p">(</span><span class="n">b</span><span class="p">)</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="o">!</span><span class="n">is_negative</span><span class="p">(</span><span class="n">a</span><span class="p">))</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10"></a><span class="w">    </span><span class="k">else</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">b</span><span class="p">;</span>
+</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11"></a><span class="p">}</span>
+</span></code></pre></div></td></tr></table></div>
+<p><a href="../../20091005/c-standard-integer-types/">C语言标准与实现之整数类型</a>:</p>
+<p>下面的代码试图从大到小打印 [0，99] 区间内的所有整数，请思考可能存在的问题。</p>
+<div class="language-c highlight"><span class="filename">unsigned-decrement-gteq.c</span><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kt">unsigned</span><span class="w"> </span><span class="n">i</span><span class="p">;</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">99</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="o">--</span><span class="n">i</span><span class="p">)</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%u</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">i</span><span class="p">);</span>
+</span></code></pre></div>
+<p>以下是《C语言深度解剖（第2版）》附录中的 C 语言基础测试题5，请思考输出结果。</p>
+<div class="language-c highlight"><span class="filename">signed-char-array.c</span><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;string.h&gt;</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">arg</span><span class="p">[])</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="w">    </span><span class="kt">signed</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="n">a</span><span class="p">[</span><span class="mi">1000</span><span class="p">];</span>
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="p">;</span>
+</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">&lt;</span><span class="mi">1000</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
+</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="w">        </span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">-1</span><span class="o">-</span><span class="n">i</span><span class="p">;</span>
+</span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%lu&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">strlen</span><span class="p">((</span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="p">)</span><span class="n">a</span><span class="p">));</span>
+</span><span id="__span-6-10"><a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a>
+</span><span id="__span-6-11"><a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+</span><span id="__span-6-12"><a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a><span class="p">}</span>
+</span></code></pre></div>
+<p><a href="../../20091004/c-binary-representation/">C Basic Types - Binary Representions</a>:</p>
+<blockquote>
+<p>TAKEAWAY 5.50 Unsigned arithmetic wraps nicely.</p>
+</blockquote>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="cm">/*incremented up to UINT_MAX and then wraps around to 0*/</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="n">do_something</span><span class="p">();</span>
+</span></code></pre></div>
+<blockquote>
+<p>TAKEAWAY 5.57 Signed arithmetic may trap badly.</p>
+</blockquote>
+<p>Where unsigned values are forced to wrap around, the behavior of a signed overﬂow is <strong><em>undeﬁned</em></strong>.</p>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">signed</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="n">do_something</span><span class="p">();</span>
+</span></code></pre></div>
+<p>The as-if Rule (takeaway 5.8) allows it to optimize the second loop to an <code>while(true)</code> inﬁnite loop.</p>
+<blockquote>
+<p>TAKEAWAY 5.56 It is your responsibility to avoid undeﬁned behavior of all operations.</p>
+</blockquote>
+<p><a href="../../20091003/cpp-std-data-types/">C++ Standard - Data Types</a></p>
+<p><a href="https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/n4950.pdf">ISO/IEC-N4950</a> - 6.8.2 Fundamental types</p>
+<div class="admonition note">
+<p class="admonition-title">signed arithmetic overflow</p>
+<p>Unsigned arithmetic does not overflow. Overflow for signed arithmetic yields undefined behavior (7.1).</p>
+</div>
 <h2 id="参考">参考<a class="headerlink" href="#参考" title="Permanent link">#</a></h2>
 <p>《深入理解计算机系统》（第3版）<br />
 《计算机组成原理》（第3版），唐朔飞<br />
@@ -2158,13 +2144,13 @@ U2T_n(u)=
         
         
           
-          <a href="../../20151102/1-Markdown-Syntax/" class="md-footer__link md-footer__link--next" aria-label="下一页: Markdown Syntax">
+          <a href="../../20091007/binary-bitset-bytes/" class="md-footer__link md-footer__link--next" aria-label="下一页: Binary —— Bitset &amp; Bytes">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 下一页
               </span>
               <div class="md-ellipsis">
-                Markdown Syntax
+                Binary —— Bitset & Bytes
               </div>
             </div>
             <div class="md-footer__button md-icon">

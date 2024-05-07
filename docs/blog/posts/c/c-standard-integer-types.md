@@ -51,7 +51,7 @@ C89 引入 `signed` 关键字后，可显式声明 `signed char`，明确表达�
 
 ```c title="unsigned-decrement-gteq.c"
 unsigned i;
-for (i = 99; i >= 0; --i) /* 看出问题吗？ */
+for (i = 99; i >= 0; --i)
     printf("%u\n", i);
 ```
 

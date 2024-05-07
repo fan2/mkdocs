@@ -653,6 +653,33 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#byte_orderendianess" class="md-nav__link">
+    <span class="md-ellipsis">
+      Byte Order(Endianess)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the_c_memory_model" class="md-nav__link">
+    <span class="md-ellipsis">
+      The C Memory Model
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#binary__bitset__bytes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Binary —— Bitset &amp; Bytes
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#计算机中有符号数的表示" class="md-nav__link">
     <span class="md-ellipsis">
       计算机中有符号数的表示
@@ -710,33 +737,6 @@
   <a href="#c_standard_-_data_types" class="md-nav__link">
     <span class="md-ellipsis">
       C++ Standard - Data Types
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#c_data_types" class="md-nav__link">
-    <span class="md-ellipsis">
-      C Data Types
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#data_type" class="md-nav__link">
-    <span class="md-ellipsis">
-      Data Type
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#c_programming_language_standard" class="md-nav__link">
-    <span class="md-ellipsis">
-      C++ Programming Language Standard
     </span>
   </a>
   
@@ -1365,6 +1365,33 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#byte_orderendianess" class="md-nav__link">
+    <span class="md-ellipsis">
+      Byte Order(Endianess)
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the_c_memory_model" class="md-nav__link">
+    <span class="md-ellipsis">
+      The C Memory Model
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#binary__bitset__bytes" class="md-nav__link">
+    <span class="md-ellipsis">
+      Binary —— Bitset &amp; Bytes
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#计算机中有符号数的表示" class="md-nav__link">
     <span class="md-ellipsis">
       计算机中有符号数的表示
@@ -1427,33 +1454,6 @@
   
 </li>
       
-        <li class="md-nav__item">
-  <a href="#c_data_types" class="md-nav__link">
-    <span class="md-ellipsis">
-      C Data Types
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#data_type" class="md-nav__link">
-    <span class="md-ellipsis">
-      Data Type
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#c_programming_language_standard" class="md-nav__link">
-    <span class="md-ellipsis">
-      C++ Programming Language Standard
-    </span>
-  </a>
-  
-</li>
-      
     </ul>
   
 </nav>
@@ -1468,6 +1468,161 @@
       <header class="md-typeset">
         <h1 id="2009">2009<a class="headerlink" href="#2009" title="Permanent link">#</a></h1>
       </header>
+      
+        <article class="md-post md-post--excerpt">
+  <header class="md-post__header">
+    
+      <nav class="md-post__authors md-typeset">
+        
+          <span class="md-author">
+            <img src="https://duetorun.com/assets/carve_yourself.jpg" alt="Cliff Fan">
+          </span>
+        
+      </nav>
+    
+    <div class="md-post__meta md-meta">
+      <ul class="md-meta__list">
+        <li class="md-meta__item">
+          <time datetime="2009-10-09 10:00:00">2009年10月9日</time></li>
+        
+          <li class="md-meta__item">
+            分类于
+            
+              <a href="../../category/cs/" class="md-meta__link">CS</a></li>
+        
+        
+          
+          <li class="md-meta__item">
+            
+              需要 7 分钟阅读时间
+            
+          </li>
+        
+      </ul>
+      
+    </div>
+  </header>
+  <div class="md-post__content md-typeset">
+    <h2 id="byte_orderendianess"><a class="toclink" href="../../20091009/byte-order-endianess/">Byte Order(Endianess)</a></h2>
+<p>在 <a href="../../20091007/binary-bitset-bytes/">Binary —— Bitset &amp; Bytes</a> 中，我们通过打印 bitset 和 byte array，直观感受了二进制的位模式（bit pattern &amp; binary representation）。然后，遗留下了三个问题：</p>
+<ol>
+<li>hex(2010) 输出十六进制是 0x7da，hexdump(2010) 输出内存中的字节数组是 {0xda, 0x7}，字节顺序为什么不同？</li>
+<li>每2个byte组合而成的短整型 short array [0] 为什么是 <code>0x3130</code>，而非 <code>0x3031</code>？</li>
+<li>程序 test-conversion-narrow-down.c 输出结果是怎样的？</li>
+</ol>
+<p>这三个问题的答案都涉及到字节序（Byte Order）问题。</p>
+
+    
+      <nav class="md-post__action">
+        <a href="../../20091009/byte-order-endianess/">
+          继续阅读
+        </a>
+      </nav>
+    
+  </div>
+</article>
+      
+        <article class="md-post md-post--excerpt">
+  <header class="md-post__header">
+    
+      <nav class="md-post__authors md-typeset">
+        
+          <span class="md-author">
+            <img src="https://duetorun.com/assets/carve_yourself.jpg" alt="Cliff Fan">
+          </span>
+        
+      </nav>
+    
+    <div class="md-post__meta md-meta">
+      <ul class="md-meta__list">
+        <li class="md-meta__item">
+          <time datetime="2009-10-08 10:00:00">2009年10月8日</time></li>
+        
+          <li class="md-meta__item">
+            分类于
+            
+              <a href="../../category/cs/" class="md-meta__link">CS</a></li>
+        
+        
+          
+          <li class="md-meta__item">
+            
+              需要 6 分钟阅读时间
+            
+          </li>
+        
+      </ul>
+      
+    </div>
+  </header>
+  <div class="md-post__content md-typeset">
+    <h2 id="the_c_memory_model"><a class="toclink" href="../../20091008/c-memory-model/">The C Memory Model</a></h2>
+<p>Pointers present us with a certain abstraction of the environment and state in which our program is executed, the <em>C memory model</em>. We may apply the unary operator &amp; to (almost) all objects to retrieve their address and use it to inspect and change the state of our execution.</p>
+
+    
+      <nav class="md-post__action">
+        <a href="../../20091008/c-memory-model/">
+          继续阅读
+        </a>
+      </nav>
+    
+  </div>
+</article>
+      
+        <article class="md-post md-post--excerpt">
+  <header class="md-post__header">
+    
+      <nav class="md-post__authors md-typeset">
+        
+          <span class="md-author">
+            <img src="https://duetorun.com/assets/carve_yourself.jpg" alt="Cliff Fan">
+          </span>
+        
+      </nav>
+    
+    <div class="md-post__meta md-meta">
+      <ul class="md-meta__list">
+        <li class="md-meta__item">
+          <time datetime="2009-10-07 10:00:00">2009年10月7日</time></li>
+        
+          <li class="md-meta__item">
+            分类于
+            
+              <a href="../../category/cs/" class="md-meta__link">CS</a></li>
+        
+        
+          
+          <li class="md-meta__item">
+            
+              需要 7 分钟阅读时间
+            
+          </li>
+        
+      </ul>
+      
+    </div>
+  </header>
+  <div class="md-post__content md-typeset">
+    <h2 id="binary__bitset__bytes"><a class="toclink" href="../../20091007/binary-bitset-bytes/">Binary —— Bitset &amp; Bytes</a></h2>
+<p>所谓数制是指计数的方法。对于有10根手指的人来来说，使用十进制表示法是很自然的事情，现代计算机则采用的是二进制系统，存储和处理的信息以二值信号表示。</p>
+<p>一串二进制数码按照固定长度（8）组合出有意义的基本存储单位——字节，多个字节（1,2,4,8）可以组合出基本算术单元 char,short,int/float,long/double，或复合类型和用户自定义类型。</p>
+<p>在计算机内存或磁盘上，指令和数据没有任何区别，都是二进制信息。CPU 在工作的时候把有的信息解析为指令，有的信息解读为数据，为同样的信息赋予了不同的意义。</p>
+<p>这涉及到 <a href="../../20091004/c-abstract-state-machine/">Abstract State Machine</a>：</p>
+<ul>
+<li>a <code>value</code> : what state are we in</li>
+<li>the <code>type</code> : what this state represents</li>
+<li>the <code>representation</code> : how state is distinguished</li>
+</ul>
+
+    
+      <nav class="md-post__action">
+        <a href="../../20091007/binary-bitset-bytes/">
+          继续阅读
+        </a>
+      </nav>
+    
+  </div>
+</article>
       
         <article class="md-post md-post--excerpt">
   <header class="md-post__header">
@@ -1807,148 +1962,6 @@
     
       <nav class="md-post__action">
         <a href="../../20091003/cpp-std-data-types/">
-          继续阅读
-        </a>
-      </nav>
-    
-  </div>
-</article>
-      
-        <article class="md-post md-post--excerpt">
-  <header class="md-post__header">
-    
-      <nav class="md-post__authors md-typeset">
-        
-          <span class="md-author">
-            <img src="https://duetorun.com/assets/carve_yourself.jpg" alt="Cliff Fan">
-          </span>
-        
-      </nav>
-    
-    <div class="md-post__meta md-meta">
-      <ul class="md-meta__list">
-        <li class="md-meta__item">
-          <time datetime="2009-10-03 12:00:00">2009年10月3日</time></li>
-        
-          <li class="md-meta__item">
-            分类于
-            
-              <a href="../../category/c/" class="md-meta__link">c</a></li>
-        
-        
-          
-          <li class="md-meta__item">
-            
-              需要 9 分钟阅读时间
-            
-          </li>
-        
-      </ul>
-      
-    </div>
-  </header>
-  <div class="md-post__content md-typeset">
-    <h2 id="c_data_types"><a class="toclink" href="../../20091003/c-data-types/">C Data Types</a></h2>
-<p>A C program, whatever its size, consists of functions and variables. A function contains statements that specify the computing operations to be done, and variables store values used during the computation.</p>
-<p>在 C 程序里，函数（function）就是指令，变量（variable）就是数据。数据类型定义了变量的存储和访问属性，约束了其大小边界（size/boundary）、取值范围（value range）、解释呈现（interpretation/representation）和可操作集（operation set）。</p>
-
-    
-      <nav class="md-post__action">
-        <a href="../../20091003/c-data-types/">
-          继续阅读
-        </a>
-      </nav>
-    
-  </div>
-</article>
-      
-        <article class="md-post md-post--excerpt">
-  <header class="md-post__header">
-    
-      <nav class="md-post__authors md-typeset">
-        
-          <span class="md-author">
-            <img src="https://duetorun.com/assets/carve_yourself.jpg" alt="Cliff Fan">
-          </span>
-        
-      </nav>
-    
-    <div class="md-post__meta md-meta">
-      <ul class="md-meta__list">
-        <li class="md-meta__item">
-          <time datetime="2009-10-02 14:00:00">2009年10月2日</time></li>
-        
-          <li class="md-meta__item">
-            分类于
-            
-              <a href="../../category/cs/" class="md-meta__link">CS</a></li>
-        
-        
-          
-          <li class="md-meta__item">
-            
-              需要 4 分钟阅读时间
-            
-          </li>
-        
-      </ul>
-      
-    </div>
-  </header>
-  <div class="md-post__content md-typeset">
-    <h2 id="data_type"><a class="toclink" href="../../20091002/data-type/">Data Type</a></h2>
-<p>The type defines the <strong>operations</strong>(access or manipulate) that can be done on the data, the <strong>meaning</strong> of the data, and the <strong>way</strong> values of that type can be stored.</p>
-
-    
-      <nav class="md-post__action">
-        <a href="../../20091002/data-type/">
-          继续阅读
-        </a>
-      </nav>
-    
-  </div>
-</article>
-      
-        <article class="md-post md-post--excerpt">
-  <header class="md-post__header">
-    
-      <nav class="md-post__authors md-typeset">
-        
-          <span class="md-author">
-            <img src="https://duetorun.com/assets/carve_yourself.jpg" alt="Cliff Fan">
-          </span>
-        
-      </nav>
-    
-    <div class="md-post__meta md-meta">
-      <ul class="md-meta__list">
-        <li class="md-meta__item">
-          <time datetime="2009-10-01 11:00:00">2009年10月1日</time></li>
-        
-          <li class="md-meta__item">
-            分类于
-            
-              <a href="../../category/cpp/" class="md-meta__link">cpp</a></li>
-        
-        
-          
-          <li class="md-meta__item">
-            
-              需要 3 分钟阅读时间
-            
-          </li>
-        
-      </ul>
-      
-    </div>
-  </header>
-  <div class="md-post__content md-typeset">
-    <h2 id="c_programming_language_standard"><a class="toclink" href="../../20091001/cpp-standard/">C++ Programming Language Standard</a></h2>
-<p>C++ Programming Language Standard and standard library.</p>
-
-    
-      <nav class="md-post__action">
-        <a href="../../20091001/cpp-standard/">
           继续阅读
         </a>
       </nav>

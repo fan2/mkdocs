@@ -95,6 +95,10 @@ Constructing a complete object type such that the number of bytes in its object 
     - [Data Type Ranges | Microsoft Learn](https://learn.microsoft.com/en-us/cpp/cpp/data-type-ranges?view=msvc-170)
     - GNU [A.5 Data Type Measurements](http://www.gnu.org/software/libc/manual/html_node/Data-Type-Measurements.html#Data-Type-Measurements) : [Width of an Integer Type](https://www.gnu.org/software/libc/manual/html_node/Width-of-Type.html) & [Range of an Integer Type](https://www.gnu.org/software/libc/manual/html_node/Range-of-Type.html)
 
+The following table summarizes all available integer types and their [properties](https://en.cppreference.com/w/c/language/arithmetic_types):
+
+![stdint-properties](./images/stdint-properties.png)
+
 ## Predefined Macros
 
 GNU C Preprocessor - [Common Predefined Macros](https://gcc.gnu.org/onlinedocs/cpp/Common-Predefined-Macros.html)
@@ -255,12 +259,23 @@ opengroup - [64-Bit Programming Models: Why LP64?.PDF](https://wiki.math.ntnu.no
 
 > POSIX [<limits.h\>](https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/limits.h.html) defines `WORD_BIT` and `LONG_BIT` as the number of bits in objects of types `int` and `long` respectively.
 
-Xcode 中 MacOSX.sdk 下 usr/include 的 i386 和 arm 下的 limits.h 中定义了 `WORD_BIT` 和 `LONG_BIT`：
+cd 进入 `xcrun --show-sdk-path`，执行 grep 命令在 usr/include 头文件中查看 WORD_BIT 和 LONG_BIT 的宏定义：
+
+```Shell
+cd `xcrun --show-sdk-path`
+# grep -RFl "#define WORD_BIT" usr/include 2>/dev/null
+# grep -RFl "#define LONG_BIT" usr/include 2>/dev/null
+
+# --dereference-recursive, --extended-regexp, --files-with-matches
+$ grep -REl "#define (WORD_BIT|LONG_BIT)" usr/include 2>/dev/null
+usr/include/i386/limits.h
+usr/include/arm/limits.h
+```
+
+i386 和 arm 下的头文件 limits.h 中定义了 `WORD_BIT` 和 `LONG_BIT`：
 
 ```c title="limits.h"
 $ cd `xcrun --show-sdk-path`
-$ vim usr/include/i386/limits.h
-$ vim usr/include/arm/limits.h
 
 #if !defined(_ANSI_SOURCE)
 #ifdef __LP64__
@@ -274,14 +289,9 @@ $ vim usr/include/arm/limits.h
 
 WORD_BIT 的值为 32，对应 int 类型的位宽（`__SIZEOF_INT__` * CHAR_BIT），LONG_BIT 的值则跟随 Data Model。
 
-rpi4b-ubuntu 下没找到 `WORD_BIT`/`LONG_BIT` 的定义：
+在 rpi4b-ubuntu 下，grep 搜索 /usr/include 目录，没找到 `WORD_BIT`/`LONG_BIT` 的定义。
 
 - [Why is there no WORD_BIT in limits.h on Linux?](https://unix.stackexchange.com/questions/715751/why-is-there-no-word-bit-in-limits-h-on-linux)
-
-```Shell
-grep -R -H "#define WORD_BIT" /usr/include 2>/dev/null
-grep -R -H "#define LONG_BIT" /usr/include 2>/dev/null
-```
 
 在 macOS、Linux 上可以执行 `getconf WORD_BIT` / `getconf LONG_BIT` 查询获取系统配置的变量。
 
@@ -394,6 +404,9 @@ Xcode 的 MacOSX.sdk 和 iPhoneOS.sdk 的 usr/include/stdint.h 根据 Data Model
 
 ```c title="stdint.h"
 $ cd `xcrun --show-sdk-path`
+$ grep -Rl "#*define __WORDSIZE" usr/include 2>/dev/null
+usr/include/stdint.h
+
 $ vim usr/include/stdint.h
 #if __LP64__
 #define __WORDSIZE 64
@@ -405,7 +418,7 @@ $ vim usr/include/stdint.h
 在 rpi4b-ubuntu 下的 /usr/include 中查找宏 `__WORDSIZE` 定义所在的头文件：
 
 ```Shell
-$ grep -R -l "#*define __WORDSIZE" /usr/include 2>/dev/null
+$ grep -Rl "#*define __WORDSIZE" /usr/include 2>/dev/null
 /usr/include/aarch64-linux-gnu/bits/wordsize.h
 ```
 

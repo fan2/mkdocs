@@ -124,10 +124,10 @@ When done that way, signed integer arithmetic will again behave more or less nic
 
 ```c
 for (unsigned i = 1; i; ++i) do_something();
-for ( signed i = 1; i; ++i) do_something();
+for (signed i = 1; i; ++i) do_something();
 ```
 
-We know what happens for the ﬁrst loop: the counter is incremented up to UINT_MAX and then wraps around to 0. All of this may take some time, but after UINT_MAX-1 iterations, the loop stops because i will have reached 0.
+We know what happens for the ﬁrst loop: the counter is incremented up to `UINT_MAX` and then wraps around to 0. All of this may take some time, but after UINT_MAX-1 iterations, the loop stops because i will have reached `0`.
 
 For the second loop, everything looks similar. But because here the behavior of overﬂow is *undeﬁned*, the compiler is allowed to *pretend* that it will never happen. Since it also knows that the value at the start is positive, it may assume that i, as long as the program has deﬁned behavior, is never negative or 0. The as-if Rule (takeaway 5.8) allows it to optimize the second loop to
 
@@ -211,8 +211,6 @@ None of these types is guaranteed to exist, but for a convenient set of powers o
     TAKEAWAY 5.63 If types with the required properties exist for values of N = 8, 16, 32, and 64, types uint{==N==}_t and int{==N==}_t, respectively, must be provided.
 
 Nowadays, platforms usually provide `uint8_t`, `uint16_t`, `uint32_t`, and `uint64_t` unsigned types and `int8_t`, `int16_t`, `int32_t`, and `int64_t` signed types.
-
-
 
 ---
 

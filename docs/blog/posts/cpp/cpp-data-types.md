@@ -163,10 +163,10 @@ speciﬁes that inch is of type int; that is, inch is an integer variable.
 
 A declaration is a statement that introduces a name into the program. It speciﬁes a type for the named entity:
 
-- A type deﬁnes a set of possible values and a set of operations (for an object).
-- An object is some memory that holds a value of some type.
-- A value is a set of bits interpreted according to a type.
-- A variable is a named object.
+- A `type` deﬁnes a set of possible values and a set of operations (for an object).
+- An `object` is some memory that holds a value of some type.
+- A `value` is a set of bits interpreted according to a type.
+- A `variable` is a named object.
 
 Each fundamental type corresponds directly to hardware facilities and has a ﬁxed size that determines the range of values that can be stored in it.
 

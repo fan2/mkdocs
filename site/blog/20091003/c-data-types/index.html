@@ -1591,6 +1591,8 @@
 </ul>
 </li>
 </ul>
+<p>The following table summarizes all available integer types and their <a href="https://en.cppreference.com/w/c/language/arithmetic_types">properties</a>:</p>
+<p><img alt="stdint-properties" src="../../c/images/stdint-properties.png" /></p>
 <h2 id="predefined_macros">Predefined Macros<a class="headerlink" href="#predefined_macros" title="Permanent link">#</a></h2>
 <p>GNU C Preprocessor - <a href="https://gcc.gnu.org/onlinedocs/cpp/Common-Predefined-Macros.html">Common Predefined Macros</a><br />
 <a href="https://clang.llvm.org/docs/ClangCommandLineReference.html#preprocessor-options">Clang Preprocessor options</a> - <a href="https://clang.llvm.org/docs/ClangCommandLineReference.html#id8">Dumping preprocessor state</a></p>
@@ -1794,28 +1796,33 @@ In the <strong>LLP64</strong> data model, only pointers expand to 64 bits; all o
 <blockquote>
 <p>POSIX <a href="https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/limits.h.html">&lt;limits.h&gt;</a> defines <code>WORD_BIT</code> and <code>LONG_BIT</code> as the number of bits in objects of types <code>int</code> and <code>long</code> respectively.</p>
 </blockquote>
-<p>Xcode 中 MacOSX.sdk 下 usr/include 的 i386 和 arm 下的 limits.h 中定义了 <code>WORD_BIT</code> 和 <code>LONG_BIT</code>：</p>
-<div class="language-c highlight"><span class="filename">limits.h</span><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">$</span><span class="w"> </span><span class="n">cd</span><span class="w"> </span><span class="err">`</span><span class="n">xcrun</span><span class="w"> </span><span class="o">--</span><span class="n">show</span><span class="o">-</span><span class="n">sdk</span><span class="o">-</span><span class="n">path</span><span class="err">`</span>
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="n">$</span><span class="w"> </span><span class="n">vim</span><span class="w"> </span><span class="n">usr</span><span class="o">/</span><span class="n">include</span><span class="o">/</span><span class="n">i386</span><span class="o">/</span><span class="n">limits</span><span class="p">.</span><span class="n">h</span>
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="n">$</span><span class="w"> </span><span class="n">vim</span><span class="w"> </span><span class="n">usr</span><span class="o">/</span><span class="n">include</span><span class="o">/</span><span class="n">arm</span><span class="o">/</span><span class="n">limits</span><span class="p">.</span><span class="n">h</span>
+<p>cd 进入 <code>xcrun --show-sdk-path</code>，执行 grep 命令在 usr/include 头文件中查看 WORD_BIT 和 LONG_BIT 的宏定义：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nb">cd</span><span class="w"> </span><span class="sb">`</span>xcrun<span class="w"> </span>--show-sdk-path<span class="sb">`</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="c1"># grep -RFl &quot;#define WORD_BIT&quot; usr/include 2&gt;/dev/null</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="c1"># grep -RFl &quot;#define LONG_BIT&quot; usr/include 2&gt;/dev/null</span>
 </span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>
-</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="cp">#if !defined(_ANSI_SOURCE)</span>
-</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="cp">#ifdef __LP64__</span>
-</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="cp">#define LONG_BIT    64</span>
-</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="cp">#else </span><span class="cm">/* !__LP64__ */</span>
-</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="cp">#define LONG_BIT    32</span>
-</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="cp">#endif </span><span class="cm">/* __LP64__ */</span>
-</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="cp">#define SSIZE_MAX   LONG_MAX    </span><span class="cm">/* max value for a ssize_t */</span>
-</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="cp">#define WORD_BIT    32</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="c1"># --dereference-recursive, --extended-regexp, --files-with-matches</span>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>$<span class="w"> </span>grep<span class="w"> </span>-REl<span class="w"> </span><span class="s2">&quot;#define (WORD_BIT|LONG_BIT)&quot;</span><span class="w"> </span>usr/include<span class="w"> </span><span class="m">2</span>&gt;/dev/null
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>usr/include/i386/limits.h
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>usr/include/arm/limits.h
+</span></code></pre></div>
+<p>i386 和 arm 下的头文件 limits.h 中定义了 <code>WORD_BIT</code> 和 <code>LONG_BIT</code>：</p>
+<div class="language-c highlight"><span class="filename">limits.h</span><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">$</span><span class="w"> </span><span class="n">cd</span><span class="w"> </span><span class="err">`</span><span class="n">xcrun</span><span class="w"> </span><span class="o">--</span><span class="n">show</span><span class="o">-</span><span class="n">sdk</span><span class="o">-</span><span class="n">path</span><span class="err">`</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="cp">#if !defined(_ANSI_SOURCE)</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="cp">#ifdef __LP64__</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="cp">#define LONG_BIT    64</span>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="cp">#else </span><span class="cm">/* !__LP64__ */</span>
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="cp">#define LONG_BIT    32</span>
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="cp">#endif </span><span class="cm">/* __LP64__ */</span>
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="cp">#define SSIZE_MAX   LONG_MAX    </span><span class="cm">/* max value for a ssize_t */</span>
+</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="cp">#define WORD_BIT    32</span>
 </span></code></pre></div>
 <p>WORD_BIT 的值为 32，对应 int 类型的位宽（<code>__SIZEOF_INT__</code> * CHAR_BIT），LONG_BIT 的值则跟随 Data Model。</p>
-<p>rpi4b-ubuntu 下没找到 <code>WORD_BIT</code>/<code>LONG_BIT</code> 的定义：</p>
+<p>在 rpi4b-ubuntu 下，grep 搜索 /usr/include 目录，没找到 <code>WORD_BIT</code>/<code>LONG_BIT</code> 的定义。</p>
 <ul>
 <li><a href="https://unix.stackexchange.com/questions/715751/why-is-there-no-word-bit-in-limits-h-on-linux">Why is there no WORD_BIT in limits.h on Linux?</a></li>
 </ul>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>grep<span class="w"> </span>-R<span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;#define WORD_BIT&quot;</span><span class="w"> </span>/usr/include<span class="w"> </span><span class="m">2</span>&gt;/dev/null
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>grep<span class="w"> </span>-R<span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;#define LONG_BIT&quot;</span><span class="w"> </span>/usr/include<span class="w"> </span><span class="m">2</span>&gt;/dev/null
-</span></code></pre></div>
 <p>在 macOS、Linux 上可以执行 <code>getconf WORD_BIT</code> / <code>getconf LONG_BIT</code> 查询获取系统配置的变量。</p>
 <ul>
 <li><code>getconf</code> : to tell what architecture your CPU is presenting to the OS.</li>
@@ -1915,15 +1922,18 @@ Using gcc (among others), on a 64-bit host you can compile for 32-bit machine, o
 </blockquote>
 <p>Xcode 的 MacOSX.sdk 和 iPhoneOS.sdk 的 usr/include/stdint.h 根据 Data Model 是否为 <code>__LP64__==1</code> 区分定义了 <code>__WORDSIZE</code>：</p>
 <div class="language-c highlight"><span class="filename">stdint.h</span><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="n">$</span><span class="w"> </span><span class="n">cd</span><span class="w"> </span><span class="err">`</span><span class="n">xcrun</span><span class="w"> </span><span class="o">--</span><span class="n">show</span><span class="o">-</span><span class="n">sdk</span><span class="o">-</span><span class="n">path</span><span class="err">`</span>
-</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="n">$</span><span class="w"> </span><span class="n">vim</span><span class="w"> </span><span class="n">usr</span><span class="o">/</span><span class="n">include</span><span class="o">/</span><span class="n">stdint</span><span class="p">.</span><span class="n">h</span>
-</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="cp">#if __LP64__</span>
-</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="cp">#define __WORDSIZE 64</span>
-</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="cp">#else</span>
-</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="cp">#define __WORDSIZE 32</span>
-</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="cp">#endif</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="n">$</span><span class="w"> </span><span class="n">grep</span><span class="w"> </span><span class="o">-</span><span class="n">Rl</span><span class="w"> </span><span class="s">&quot;#*define __WORDSIZE&quot;</span><span class="w"> </span><span class="n">usr</span><span class="o">/</span><span class="n">include</span><span class="w"> </span><span class="mi">2</span><span class="o">&gt;/</span><span class="n">dev</span><span class="o">/</span><span class="n">null</span>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="n">usr</span><span class="o">/</span><span class="n">include</span><span class="o">/</span><span class="n">stdint</span><span class="p">.</span><span class="n">h</span>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="n">$</span><span class="w"> </span><span class="n">vim</span><span class="w"> </span><span class="n">usr</span><span class="o">/</span><span class="n">include</span><span class="o">/</span><span class="n">stdint</span><span class="p">.</span><span class="n">h</span>
+</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="cp">#if __LP64__</span>
+</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="cp">#define __WORDSIZE 64</span>
+</span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a><span class="cp">#else</span>
+</span><span id="__span-7-9"><a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a><span class="cp">#define __WORDSIZE 32</span>
+</span><span id="__span-7-10"><a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a><span class="cp">#endif</span>
 </span></code></pre></div>
 <p>在 rpi4b-ubuntu 下的 /usr/include 中查找宏 <code>__WORDSIZE</code> 定义所在的头文件：</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>$<span class="w"> </span>grep<span class="w"> </span>-R<span class="w"> </span>-l<span class="w"> </span><span class="s2">&quot;#*define __WORDSIZE&quot;</span><span class="w"> </span>/usr/include<span class="w"> </span><span class="m">2</span>&gt;/dev/null
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>$<span class="w"> </span>grep<span class="w"> </span>-Rl<span class="w"> </span><span class="s2">&quot;#*define __WORDSIZE&quot;</span><span class="w"> </span>/usr/include<span class="w"> </span><span class="m">2</span>&gt;/dev/null
 </span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>/usr/include/aarch64-linux-gnu/bits/wordsize.h
 </span></code></pre></div>
 <p>wordsize.h 中根据 Data Model（<code>__LP64__</code> 定义与否）来区分定义 <code>__WORDSIZE</code>。</p>
