@@ -3,7 +3,7 @@ title: C Basic Types - Binary Representions
 authors:
   - xman
 date:
-    created: 2009-10-04T14:00:00
+    created: 2021-10-04T14:00:00
     updated: 2024-04-26T16:00:00
 categories:
     - c

@@ -3,7 +3,7 @@ title: C语言标准与实现之整数类型
 authors:
   - xman
 date:
-    created: 2009-10-05T12:00:00
+    created: 2021-10-01T12:00:00
     updated: 2024-04-26T16:00:00
 categories:
     - c

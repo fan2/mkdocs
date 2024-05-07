@@ -3,8 +3,8 @@ title: The C Memory Model
 authors:
   - xman
 date:
-    created: 2009-10-08T10:00:00
-    updated: 2023-02-18T22:00:00
+    created: 2021-10-06T10:00:00
+    updated: 2024-04-29T10:00:00
 categories:
     - CS
 tags:

@@ -3,8 +3,8 @@ title: 计算机中有符号数的表示
 authors:
   - xman
 date:
-    created: 2009-10-06T12:00:00
-    updated: 2023-02-17T22:00:00
+    created: 2023-02-17T22:00:00
+    updated: 2024-03-13T11:40:30
 categories:
     - CS
 tags:

@@ -3,8 +3,7 @@ title: C++ Standard - Data Types
 authors:
   - xman
 date:
-    created: 2009-10-03T14:00:00
-    updated: 2024-04-20T10:00:00
+    created: 2023-06-01T10:00:00
 categories:
     - cpp
 tags:

@@ -3,8 +3,8 @@ title: Byte Order(Endianess)
 authors:
   - xman
 date:
-    created: 2009-10-09T10:00:00
-    updated: 2023-02-18T22:00:00
+    created: 2021-10-07T10:00:00
+    updated: 2024-04-30T14:00:00
 categories:
     - CS
 tags:
@@ -25,13 +25,7 @@ comments: true
 
 ## storage order/endianess
 
-!!! abstract "Endianness"
-
-    [Endianness](https://en.wikipedia.org/wiki/Endianness "Endianness"): In computing, endianness is the order in which bytes within a word of digital data are transmitted over a data communication medium or addressed (by rising addresses) in computer memory, counting only byte significance compared to earliness.
-
-    Endianness is primarily expressed as big-endian (BE) or little-endian (LE), terms introduced by Danny Cohen into computer science for data ordering in an Internet Experiment Note published in 1980.
-
-先来回顾一下 [C Basic Types - Binary Representions](../c/c-binary-representation.md) 中提到的概念 `LSB` 和 `MSB`: 
+先来回顾一下 [C Basic Types - Binary Representions](../c/c-binary-representation.md) 中提到的 `LSB`/`MSB` 概念: 
 
 !!! note "LSB vs. MSB"
 
@@ -41,21 +35,47 @@ comments: true
 
     Of the bits $b_i$ that are 1, the one with minimal index *i* is called the ***least-signiﬁcant bit set***, and the one with the highest index is the ***most-signiﬁcant bit set***.
 
-再来看看 [The C Memory Model](./c-memory-model.md) 借由 union 的定义和一值两析，给出的 `endianess` 定义：
+再来看看维基百科中关于 [Endianness](https://en.wikipedia.org/wiki/Endianness) 的介绍（byte significance compared to earliness）：
+
+!!! abstract "Endianness"
+
+    In computing, ***endianness*** is the order in which bytes within a word of digital data are transmitted over a data communication medium or addressed (by rising addresses) in computer memory, counting only byte significance compared to earliness.
+
+    Endianness is primarily expressed as **big-endian** (BE) or **little-endian** (LE), terms introduced by Danny Cohen into computer science for data ordering in an Internet Experiment Note published in 1980.
+
+[The C Memory Model](./c-memory-model.md) 借 union 一值两析，由 storage order 引出了 `endianess` 概念：
 
 !!! note "endianess: big-endian & little-endian"
 
     That is, a platform provider might decide to provide a *storage order* that has the highest-order digits ﬁrst, and then print lower-order digits one by one. The storage order, the ***endianness***, as given for my machine, is called ***little-endian***. A system that has high-order representation digits ﬁrst is called ***big-endian***. Both orders are commonly used by modern processor types. Some processors are even able to switch between the two orders on the ﬂy.
 
-经由上述铺陈，字节序（Byte Storage Order, Endianess）的概念基本明晰，简单来说就是 —— LSB/MSB who come first？
+[Numerics library - Bit manipulation](https://en.cppreference.com/w/cpp/numeric#Bit_manipulation) c++20 引入了 [std::endian](https://en.cppreference.com/w/cpp/types/endian) —— indicates the endianness of scalar types.
+
+!!! note "c++20 std::endian"
+
+    参考 20230510 [ISO/IEC-N4950](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/n4950.pdf) 中 22.15.8 Endian：
+
+    Two common methods of byte ordering in multibyte scalar types are big-endian and little-endian in the execution environment. ***Big-endian*** is a format for storage of binary data in which the most significant byte is placed first, with the rest in descending order. ***Little-endian*** is a format for storage of binary data in which the least significant byte is placed first, with the rest in ascending order. This subclause describes the endianness of the scalar types of the execution environment.
+
+    ```c
+    enum class endian {
+      little = see below,
+      big = see below,
+      native = see below
+    };
+    ```
+
+    If all scalar types have size 1 byte, then all of `endian::little`, `endian::big`, and `endian::native` have the same value. Otherwise, `endian::little` is not equal to `endian::big`. If all scalar types are big-endian, `endian::native` is equal to `endian::big`. If all scalar types are little-endian, `endian::native` is equal to `endian::little`. Otherwise, `endian::native` is not equal to either `endian::big` or `endian::little`.
+
+经由上述铺陈，字节序（Byte Order, Endianess）的概念基本明晰，概括来讲就是事关 storage order —— LSB/MSB who store first？
 
 对于小尾端（little endian）系统，在内存起始地址处存放整数的低序号字节（LSB first）；反之，对于大尾端（big endian）系统，在内存起始地址处存放整数的高序号字节（MSB first）。
 
-在 big endian 系统下，更符合人的直观视觉。例如 0x3031，在内存中的存储顺序同人眼睛从左到右（高位到低位）的扫描顺序一致，MSB comes first，memory byte array 为 {0x30, 0x31}；在 little endian 系统下，LSB comes first，先存储低位字节，0x3031 在 memory 中的 byte array 为 {0x31, 0x30}。
+在 big endian 系统下，更符合人的直观视觉。例如 0x3031，在内存中的存储顺序同人眼睛从左到右（高位到低位）的扫描顺序一致，MSB store first，memory byte array 为 {0x30, 0x31}；在 little endian 系统下，LSB store first，先存储低位字节，0x3031 在 memory 中的 byte array 为 {0x31, 0x30}。
 
-在移动嵌入式领域，统治市场的 MIPS 和 ARM 处理器可通过配置寄存器采用不同的字节序，默认采用 Little-Endian。但 ARM 始终采用 Big-Endian 存储浮点数。
+在移动嵌入式领域，统治市场的 MIPS 和 ARM 处理器可通过配置寄存器采用不同的字节序，默认采用 Little-Endian。但 ARM 始终采用 Big-Endian 存储浮点数。早期使用 PowerPC 处理器的 Mac 采用大字节序，如今的 Mac 同 Windows PC 一样都采用 Intel x86 芯片，因此也都是小字节序存储的。
 
-早期使用 PowerPC 处理器的 Mac 采用大字节序，如今的 Mac 同 Windows PC 一样都采用 Intel x86 芯片，因此也都是小字节序存储的。
+《[深入理解计算机系统](https://item.jd.com/12006637.html)》（[Computer Systems - A Programmer’s Perspective](https://www.amazon.com/Computer-Systems-OHallaron-Randal-Bryant/dp/1292101768/)）中 2.1: Information Storage | 2.1.3: Addressing and Byte Ordering 也有关于 endianess 的详细论述。
 
 ## predefined macros
 
@@ -139,7 +159,7 @@ $ grep -REl "#.*define.*(BYTE_ORDER|BIG_ENDIAN|LITTLE_ENDIAN|PDP_ENDIAN)" /usr/i
 3. 在 usr/include/c++/v1/__config 中，`__BYTE_ORDER__` 和 `__LITTLE_ENDIAN__`/`__BIG_ENDIAN__` 宏定义与否及其值来定义宏 `_LIBCPP_LITTLE_ENDIAN`/`_LIBCPP_BIG_ENDIAN`。
 4. 在 usr/include/c++/v1/__bit/endian.h 中，对于 _LIBCPP_STD_VER >= 20（since c++20），判断 `_LIBCPP_LITTLE_ENDIAN`/`_LIBCPP_BIG_ENDIAN` 定义 `enum class endian`。
 
-在早期（before C99, c++11）没有定义 64bit long long，需要用两个 int32 复合成结构体来模拟一个 int64 整形数据。两个 32bit WORD 在 struct 中的顺序需要考虑字节序。
+在早期（before C99, c++11）没有定义 64bit long long，需要用两个 int32 复合成结构体来模拟一个 int64 整形数据。两个 32bit 的 WORD 在 struct 中的顺序需要考虑字节序（判断宏 TARGET_RT_BIG_ENDIAN）。
 
 ```c title="usr/include/MacTypes.h"
 /* avoid redeclaration if libkern/OSTypes.h */
@@ -173,7 +193,7 @@ typedef struct UnsignedWide             UnsignedWide;
 
 ### rpi4b-ubuntu
 
-在 rpi4b-ubuntu/arm64 中，little_endian.h 和 big_endian.h 各自定义了大小端相关的宏。
+在 rpi4b-ubuntu/arm64 中，little_endian.h 和 big_endian.h 各自定义了大小端相关的宏及对应 `BITFIELD`。
 
 ??? info "grep -REH /usr/include under ubuntu"
 
@@ -263,7 +283,7 @@ bits/endian.h 包含了 <bits/endianness.h\>，定义了 `__LITTLE_ENDIAN`、`__
 
 关于字节的大小端问题，[网络编程](https://blog.csdn.net/phunxm/article/details/5085869) 中将有所涉及，在嵌入式开发中经常遇到。
 
-TCP/IP协议统一规定采用**大端**方式封装解析传输数据，也称为**网络字节顺序**（network byte order，TCP/IP-endian）。因此，在进行网络数据的收发时，都需要执行字节序转换。
+TCP/IP协议统一规定采用**大端**方式封装解析传输数据，也称为**网络字节顺序**（network byte order，TCP/IP-endian）。
 
 以下为 MSDN 中关于 [Packet byte/bit order](https://msdn.microsoft.com/en-us/library/cc230307.aspx) 的阐述：
 
@@ -271,12 +291,73 @@ TCP/IP协议统一规定采用**大端**方式封装解析传输数据，也称�
 
 ![ms-dtyp](https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-dtyp/ms-dtyp_files/image001.png)
 
+在网络通信协议程序中，在进行网络数据的收发时，需要发收双方执行字节序转换（convert values between host and network byte order）。
+
+??? info "man BYTEORDER"
+
+    ```Shell
+    $ man BYTEORDER # man htonl
+
+    BYTEORDER(3)                       Linux Programmer's Manual                      BYTEORDER(3)
+
+    NAME
+          htonl, htons, ntohl, ntohs - convert values between host and network byte order
+
+    SYNOPSIS
+          #include <arpa/inet.h>
+
+          uint32_t htonl(uint32_t hostlong);
+
+          uint16_t htons(uint16_t hostshort);
+
+          uint32_t ntohl(uint32_t netlong);
+
+          uint16_t ntohs(uint16_t netshort);
+
+    DESCRIPTION
+          The  htonl()  function  converts  the unsigned integer hostlong from host byte order to
+          network byte order.
+
+          The htons() function converts the unsigned short integer hostshort from host byte order
+          to network byte order.
+
+          The  ntohl()  function converts the unsigned integer netlong from network byte order to
+          host byte order.
+
+          The ntohs() function converts the unsigned short integer netshort from network byte or‐
+          der to host byte order.
+
+          On  the  i386  the host byte order is Least Significant Byte first, whereas the network
+          byte order, as used on the Internet, is Most Significant Byte first.
+    ```
+
 在 macOS/ubuntu 下执行 `grep -RH "htonl\|ntohl"` 可以查找到：
 
 1. macOS: usr/include/sys/_endian.h 中根据 `__DARWIN_BYTE_ORDER` 的值定义了字节序转换宏 `htonl`/`ntohl`，在 usr/include/arpa/inet.h 和 usr/include/netinet/in.h 中包含了 <sys/_endian.h\>。
 2. ubuntu: /usr/include/netinet/in.h 中根据 `__BYTE_ORDER` 的值定义了字节序转换宏 `htonl`/`ntohl`。
+3. 在 macOS/ubuntu 下，arpa/inet.h 中都包含了 <netinet/in.h\>。
 
-在网络通信程序中，发送方将本地数据调用 `htons`/`htonl`/`htonll`，序列化打包到 buffer，再调用 socket API 的 **send**() 接口将数据发送到网络。接收方等待 I/O 通知，实时调用 socket API 的 **recv**() 接口将数据从网卡接收到用户层，用户层需按照 TLV 解包，对等调用 `ntohs`/`ntohl`/`ntohll` 结构化解析出数值。
+在C/S通信程序中，发送方将本地数据调用 `htons`/`htonl`/`htonll`，序列化打包到 buffer，再调用 socket API 的 **send**() 接口将数据发送到网络。接收方等待 I/O 通知，实时调用 socket API 的 **recv**() 接口将数据从网卡接收到用户层，用户层需按照 TLV 解包，对等调用 `ntohs`/`ntohl`/`ntohll` 解析复原出原始数值。
+
+假设 A 和 B 都是 Little-Endian，A 要给 B 发送一个短整数 s=0x7da，其在内存中的字节数组是 {0xda, 0x7}。以下程序片段简单示意了发收双方的写/读字节转换：
+
+=== "sender htons"
+
+    ```c
+    short s = 0x7da; // EL: {0xda, 0x7}
+    short ns = htons(s); // EB: {0x7, 0xda}
+    memcpy(buf, &ns, sizeof ns);
+    send(sock, buf, sizeof ns, 0);
+    ```
+
+=== "recver ntohs"
+
+    ```c
+    short ns;
+    recv(sock, buf, sizeof ns, 0); // EB: {0x7, 0xda}
+    memcpy(&ns, buf, sizeof ns);
+    short s = ntohs(ns); // EL: {0xda, 0x7}
+    ```
 
 ## test endianess
 
@@ -338,7 +419,7 @@ int main(int argc, char **argv)
 }
 ```
 
-mbpa2991/arm64 和 rpi4b-ubuntu/aarch64 下编译运行，均输出如下：
+mbpa2991-macOS/arm64 和 rpi4b-ubuntu/aarch64 下编译运行，均输出如下：
 
 ```Shell
 cc test-endianess.c -o test-endianess -g && ./test-endianess

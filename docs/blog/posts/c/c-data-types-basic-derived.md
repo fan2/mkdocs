@@ -3,7 +3,7 @@ title: C Data Types - Basic & Derived
 authors:
   - xman
 date:
-    created: 2009-10-04T12:00:00
+    created: 2021-10-03T12:00:00
     updated: 2024-04-24T16:00:00
 categories:
     - c

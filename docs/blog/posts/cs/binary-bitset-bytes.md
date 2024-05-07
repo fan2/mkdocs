@@ -3,8 +3,8 @@ title: Binary —— Bitset & Bytes
 authors:
   - xman
 date:
-    created: 2009-10-07T10:00:00
-    updated: 2023-02-18T22:00:00
+    created: 2021-10-05T10:00:00
+    updated: 2024-04-28T12:00:00
 categories:
     - CS
 tags:
@@ -214,10 +214,8 @@ bits set count = 5
 
 标准C++中的 <bitset\> 提供了二进制位串操作接口，参考 [TC++PL](https://www.stroustrup.com/4th.html) 34.2.2 bitset 中的相关说明。
 
-[Numerics library - Bit manipulation](https://en.cppreference.com/w/cpp/numeric#Bit_manipulation)
-
-- [std::bitset](https://en.cppreference.com/w/cpp/utility/bitset)
-- [<bitset\>](https://cplusplus.com/reference/bitset/)
+- [std::bitset](https://en.cppreference.com/w/cpp/utility/bitset): The class template bitset represents a fixed-size sequence of N bits.
+- [Numerics library - Bit manipulation](https://en.cppreference.com/w/cpp/numeric#Bit_manipulation): [<bit\>](https://en.cppreference.com/w/cpp/header/bit)(C++20) provides several function templates to access, manipulate, and process individual bits and bit sequences.
 
 在 C++ 中，可基于双字节（short）、四字节（int）构造 bitset，调用 `std::cout << ` 打印位串，调用成员函数 `count()` 输出值为 1 的位数。
 
@@ -424,4 +422,4 @@ int accommodate short 属于“大肠包小肠”、“大箱装小包”，不�
 
 !!! question "元芳，你怎么看？"
 
-    分析一下，程序 test-conversion-narrow-down.c 的输出结果。
+    分析一下程序 test-conversion-narrow-down.c 的输出结果。
