@@ -77,6 +77,8 @@ comments: true
 
 《[深入理解计算机系统](https://item.jd.com/12006637.html)》（[Computer Systems - A Programmer’s Perspective](https://www.amazon.com/Computer-Systems-OHallaron-Randal-Bryant/dp/1292101768/)）中 2.1: Information Storage | 2.1.3: Addressing and Byte Ordering 也有关于 endianess 的详细论述。
 
+[assembly - QWORD Storing / implementing using 32-bit REGs.? - Stack Overflow](https://stackoverflow.com/questions/7865511/qword-storing-implementing-using-32-bit-regs)
+
 ## predefined macros
 
 在 [Dump Compiler Options](../toolchain/dump-compiler-options.md) 中有介绍如何 dump compiler predefined macros。

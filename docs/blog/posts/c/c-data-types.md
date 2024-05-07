@@ -134,7 +134,7 @@ GNU [Layout of Source Language Data Types](https://gcc.gnu.org/onlinedocs/gccint
 
 - `_ILP32` / `__ILP32__` ; `_LP64` / `__LP64__`
 - `__SIZEOF_INT__`
-- `__SIZEOF_LONG__`
+- `__SIZEOF_LONG__` @[intel](https://www.intel.com/content/www/us/en/developer/articles/technical/size-of-long-integer-type-on-different-architecture-and-os.html)
 - `__SIZEOF_POINTER__` / `__POINTER_WIDTH__`
 - `__SIZEOF_LONG_LONG__`
 
@@ -302,6 +302,14 @@ WORD_BIT 的值为 32，对应 int 类型的位宽（`__SIZEOF_INT__` * CHAR_BIT
 
 机器字长表示处理器一次处理数据的长度，主要由运算器、寄存器决定，如32位处理器，每个寄存器能存储32bit数据，加法器支持两个32bit数进行相加。
 
+!!! abstract "What is word and word size?"
+
+    [Word (computer architecture)](https://en.wikipedia.org/wiki/Word_(computer_architecture))
+
+    In computing, a word is the *natural* unit of data used by a particular processor design. A word is a fixed-sized datum handled as a ***unit*** by the instruction set or the hardware of the processor. The number of bits or digits in a word (the word size, word width, or word length) is an important characteristic of any specific processor design or computer architecture.
+
+    The size of a word is reflected in many aspects of a computer's structure and operation; the majority of the registers in a processor are usually word-sized and the largest datum that can be transferred to and from the working memory in a *single* operation is a word in many (not all) architectures. The largest possible address size, used to designate a location in memory, is typically a hardware word (here, "hardware word" means the full-sized natural word of the processor, as opposed to any other definition used).
+
 在 macOS 上执行 `sysctl hw`，在 rpi4b-ubuntu 上执行 `lscpu` 查看硬件（CPU）信息：
 
 === "mbpa1398-x86_64"
@@ -435,10 +443,15 @@ wordsize.h 中根据 Data Model（`__LP64__` 定义与否）来区分定义 `__W
 #endif
 ```
 
+[ARM Compiler v5.06 for uVision armcc User Guide](https://developer.arm.com/documentation/dui0375/g/C-and-C---Implementation-Details/Basic-data-types-in-ARM-C-and-C--) ｜ Basic data types in ARM C and C++
+ - Size and alignment of basic data types 的 ILP32 数据模型下 All pointers、int、long 都是 4 (word-aligned)，这里的 4 即为 __WORDSIZE。
+
 参考阅读：
 
 - 《[汇编语言(4e)](https://item.jd.com/12841436.html)》王爽, 2019: 第一章 基础知识 - 地址总线、数据总线、控制总线
 - 《[大话处理器](https://book.douban.com/subject/6809087/)》万木杨, 2011: 3.5　汇编语言格式——没有规矩不成方圆 | 3.5.1 机器字长
+- [Machine word & x86's WORD](../cs/machine-word.md)
+
 
 ### wchar_t
 
