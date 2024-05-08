@@ -217,7 +217,7 @@ GCC - [Determining the Alignment of Functions, Types or Variables](https://gcc.g
 
 **GCC** - [Common Variable Attributes](https://gcc.gnu.org/onlinedocs/gcc/Common-Variable-Attributes.html):
 
-As in the preceding examples, you can explicitly specify the alignment (in bytes) that you wish the compiler to use for a given variable or structure field. Alternatively, you can leave out the alignment factor and just ask the compiler to align a variable or field to the default alignment for the target architecture you are compiling for. The default alignment is *sufficient* for all scalar types, but may not be enough for all vector types on a target that supports vector operations. The default alignment is **fixed** for a particular target ABI.
+As in the preceding examples, you can explicitly specify the alignment (in bytes) that you wish the compiler to use for a given variable or structure field. Alternatively, you can leave out the alignment factor and just ask the compiler to align a variable or field to the default alignment for the target architecture you are compiling for. The default alignment is **fixed** for a particular target ABI.
 
 - pipermail/gcc-help - [default alignment](https://gcc.gnu.org/pipermail/gcc-help/2015-June/124424.html)
 
@@ -233,6 +233,10 @@ As in the preceding examples, you can explicitly specify the alignment (in bytes
     Note that the effectiveness of aligned attributes for static variables may be limited by inherent limitations in the system linker and/or object file format. On some systems, the linker is only able to arrange for variables to be aligned up to a certain maximum alignment. (For some linkers, the maximum supported alignment may be very very small.) If your linker is only able to align variables up to a maximum of 8-byte alignment, then specifying aligned(16) in an `__attribute__` still only provides you with 8-byte alignment. See your linker documentation for further information.
 
     Stack variables are not affected by linker restrictions; GCC can properly align them on any target.
+
+The default alignment is *sufficient* for all scalar types, but may not be enough for all vector types on a target that supports vector operations.
+
+> [x86 Assembly/SSE](https://en.wikibooks.org/wiki/X86_Assembly/SSE#SSE2:_Added_with_Pentium_4) - `movapd`: move two 64-bit(double precision) floats, vector is 16 byte aligned. Refer to [Demystifying SSE Move Instructions](https://www.gamedev.net/blog/615/entry-2250281-demystifying-sse-move-instructions/).
 
 [GCC](https://gcc.gnu.org/onlinedocs/gcc/Common-Variable-Attributes.html) also provides a target specific macro `__BIGGEST_ALIGNMENT__`, which is the *largest* alignment ever used for *any* data type on the target machine you are compiling for.
 

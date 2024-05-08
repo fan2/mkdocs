@@ -1708,7 +1708,7 @@
 <p>The C/C++ headers in the Windows SDK assume the platform's <em>default</em> alignment is used. Don't change the setting from the default when you include the Windows SDK headers, either by using <code>/Zp</code> on the command line or by using <code>#pragma pack</code>. Otherwise, your application may cause memory corruption at runtime.</p>
 </div>
 <p><strong>GCC</strong> - <a href="https://gcc.gnu.org/onlinedocs/gcc/Common-Variable-Attributes.html">Common Variable Attributes</a>:</p>
-<p>As in the preceding examples, you can explicitly specify the alignment (in bytes) that you wish the compiler to use for a given variable or structure field. Alternatively, you can leave out the alignment factor and just ask the compiler to align a variable or field to the default alignment for the target architecture you are compiling for. The default alignment is <em>sufficient</em> for all scalar types, but may not be enough for all vector types on a target that supports vector operations. The default alignment is <strong>fixed</strong> for a particular target ABI.</p>
+<p>As in the preceding examples, you can explicitly specify the alignment (in bytes) that you wish the compiler to use for a given variable or structure field. Alternatively, you can leave out the alignment factor and just ask the compiler to align a variable or field to the default alignment for the target architecture you are compiling for. The default alignment is <strong>fixed</strong> for a particular target ABI.</p>
 <ul>
 <li>pipermail/gcc-help - <a href="https://gcc.gnu.org/pipermail/gcc-help/2015-June/124424.html">default alignment</a></li>
 </ul>
@@ -1723,6 +1723,10 @@
 <p>Note that the effectiveness of aligned attributes for static variables may be limited by inherent limitations in the system linker and/or object file format. On some systems, the linker is only able to arrange for variables to be aligned up to a certain maximum alignment. (For some linkers, the maximum supported alignment may be very very small.) If your linker is only able to align variables up to a maximum of 8-byte alignment, then specifying aligned(16) in an <code>__attribute__</code> still only provides you with 8-byte alignment. See your linker documentation for further information.</p>
 <p>Stack variables are not affected by linker restrictions; GCC can properly align them on any target.</p>
 </div>
+<p>The default alignment is <em>sufficient</em> for all scalar types, but may not be enough for all vector types on a target that supports vector operations.</p>
+<blockquote>
+<p><a href="https://en.wikibooks.org/wiki/X86_Assembly/SSE#SSE2:_Added_with_Pentium_4">x86 Assembly/SSE</a> - <code>movapd</code>: move two 64-bit(double precision) floats, vector is 16 byte aligned. Refer to <a href="https://www.gamedev.net/blog/615/entry-2250281-demystifying-sse-move-instructions/">Demystifying SSE Move Instructions</a>.</p>
+</blockquote>
 <p><a href="https://gcc.gnu.org/onlinedocs/gcc/Common-Variable-Attributes.html">GCC</a> also provides a target specific macro <code>__BIGGEST_ALIGNMENT__</code>, which is the <em>largest</em> alignment ever used for <em>any</em> data type on the target machine you are compiling for.</p>
 <p>可以借助 cpp / gcc -E -dM 预编译，过滤打印出 <code>__BIGGEST_ALIGNMENT__</code> 宏定义：</p>
 <div class="language-Shell highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>$<span class="w"> </span>gcc<span class="w"> </span>-dM<span class="w"> </span>-E<span class="w"> </span>-arch<span class="w"> </span>armv7<span class="w"> </span>-x<span class="w"> </span>c<span class="w"> </span>/dev/null<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s1">&#39;__BIGGEST_ALIGNMENT__&#39;</span>
