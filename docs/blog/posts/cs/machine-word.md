@@ -157,7 +157,7 @@ The whole concept of "`word size`" is over-rated in general, not just on x86. Ev
 
 [x86 64 - Are machine code instructions fetched in little endian 4-byte words on an Intel x86-64 architecture? - Stack Overflow](https://stackoverflow.com/questions/68229585/are-machine-code-instructions-fetched-in-little-endian-4-byte-words-on-an-intel/68229991#68229991)
 
-No, x86 machine code is a [byte-stream](https://stackoverflow.com/questions/60905135/how-to-interpret-objdump-disassembly-output-columns); there's nothing word-oriented about it, except for 32-bit displacements and immediates which are little-endian. e.g. in add qword [rdi + 0x1234], 0xaabbccdd. It's physically fetched in 16-byte or 32-byte chunks on modern CPUs, and split on instruction boundaries in parallel to feed to decoders in parallel.
+No, x86 machine code is a [byte-stream](https://stackoverflow.com/questions/60905135/how-to-interpret-objdump-disassembly-output-columns); there's nothing word-oriented about it, except for 32-bit displacements and immediates which are little-endian. e.g. in `add qword [rdi + 0x1234], 0xaabbccdd`. It's physically fetched in 16-byte or 32-byte chunks on modern CPUs, and split on instruction boundaries in parallel to feed to decoders in parallel.
 
 ```Shell
 48    81   87     34 12 00 00    dd cc bb aa       
