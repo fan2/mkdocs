@@ -125,9 +125,9 @@ struct st_dci
 };
 ```
 
-1. 先为 `d` 分配地址，其起始地址和结构体起始地址相同，偏移量0为sizeof(double)=8的倍数，占用8字节。
-2. 再为 `c` 分配地址，地址偏移量为8，是sizeof(char)=1的倍数，占用1个字节。
-3. 继续为 `i` 分配地址，地址偏移量为9，不是sizeof(int)=4的倍数。为满足“地址边界对齐限制”，将自动填充3个字节，在偏移量为12的地址处存放 i，占用4个字节。
+1. 先为 `d` 分配存储空间，其起始地址和结构体起始地址相同，偏移量0为sizeof(double)=8的倍数，占用8字节。
+2. 再为 `c` 分配存储空间，地址偏移量为8，是sizeof(char)=1的倍数，占用1个字节。
+3. 继续为 `i` 分配存储空间，地址偏移量为9，不是sizeof(int)=4的倍数。为满足“地址边界对齐限制”，将自动填充3个字节，在偏移量为12的地址处存放 i，占用4个字节。
 
 至此，各成员变量都已分配了相对地址，sizeof(struct st_dci) = 8+1+(3)+4=16。其中，括号里的 *3* 为 padding bits 位数。
 
@@ -152,9 +152,9 @@ struct st_cdi
 
 按照结构体成员变量的“地址边界对齐限制”原则，分析一下 `struct st_cdi` 的地址分配。
 
-2. 先为 `c` 分配地址，其起始地址和结构体起始地址相同，是sizeof(char)=1的倍数，占用1个字节。
-1. 再为 `d` 分配地址，地址偏移量为1，不是sizeof(double)=8的倍数，为满足“地址边界对齐限制”，先填充7个字节，再从地址偏移量为8的地址处存放d，占用8字节。
-3. 继续为 `i` 分配地址，地址偏移量为16，是sizeof(int)=4的倍数。
+1. 先为 `c` 分配存储空间，其起始地址和结构体起始地址相同，是sizeof(char)=1的倍数，占用1个字节。
+2. 再为 `d` 分配存储空间，地址偏移量为1，不是sizeof(double)=8的倍数，为满足“地址边界对齐限制”，先填充7个字节，再从地址偏移量为8的地址处存放d，占用8字节。
+3. 继续为 `i` 分配存储空间，地址偏移量为16，是sizeof(int)=4的倍数。
 
 经以上推演相对存储分配布局后，sizeof(struct st_cdi) = 1+(7)+8+4=20。其中，括号里的 *7* 为 padding bits 位数。
 
@@ -193,7 +193,7 @@ GCC - [Determining the Alignment of Functions, Types or Variables](https://gcc.g
 
 此外，编译器提供的编译配置选项，使得我们有机会修改默认的对齐方式，自行设定变量的对齐方式。
 
-### BIGGEST_ALIGNMENT
+### default alignment
 
 **MSVC** - [/Zp (Struct Member Alignment)](https://learn.microsoft.com/en-us/cpp/build/reference/zp-struct-member-alignment)：Controls how the members of a structure are packed into memory and specifies the same packing for all structures in a module.
 
@@ -207,7 +207,7 @@ GCC - [Determining the Alignment of Functions, Types or Variables](https://gcc.g
 
 > Don't use this option unless you have specific alignment requirements.
 
-在 MSVC Project Settings->C/C++->Struct member alignment 中默认值为 8Bytes，可在程序中使用 `#pragma pack` 预处理来指定。
+在 MSVC Project Settings->C/C++->Struct member alignment 中默认值为 8，可在程序中使用 `#pragma pack` 预处理来指定。
 
 32、64 位下的基本数据类型占用最大空间是 8 字节（sizeof(long long)、sizeof(double)），这个也是自然对齐的最大参数。
 
@@ -215,24 +215,49 @@ GCC - [Determining the Alignment of Functions, Types or Variables](https://gcc.g
 
     The C/C++ headers in the Windows SDK assume the platform's *default* alignment is used. Don't change the setting from the default when you include the Windows SDK headers, either by using `/Zp` on the command line or by using `#pragma pack`. Otherwise, your application may cause memory corruption at runtime.
 
-**GCC** - [Common Variable Attributes](https://gcc.gnu.org/onlinedocs/gcc/Common-Variable-Attributes.html)：GCC also provides a target specific macro `__BIGGEST_ALIGNMENT__`, which is the *largest* alignment ever used for *any* data type on the target machine you are compiling for.
+**GCC** - [Common Variable Attributes](https://gcc.gnu.org/onlinedocs/gcc/Common-Variable-Attributes.html):
 
-可以借助 clang/gcc -E 预编译，过滤打印出 `__BIGGEST_ALIGNMENT__` 的定义：
+As in the preceding examples, you can explicitly specify the alignment (in bytes) that you wish the compiler to use for a given variable or structure field. Alternatively, you can leave out the alignment factor and just ask the compiler to align a variable or field to the default alignment for the target architecture you are compiling for. The default alignment is *sufficient* for all scalar types, but may not be enough for all vector types on a target that supports vector operations. The default alignment is **fixed** for a particular target ABI.
+
+- pipermail/gcc-help - [default alignment](https://gcc.gnu.org/pipermail/gcc-help/2015-June/124424.html)
+
+[Arm Compiler for Embedded Reference Guide](https://developer.arm.com/documentation/101754/0622/armclang-Reference/Compiler-specific-Function--Variable--and-Type-Attributes/--attribute----aligned---type-attribute):
+
+- For `AArch32`, the default alignment is 8 bytes.
+- For `AArch64`, the default alignment is 16 bytes.
+
+### GCC BIGGEST_ALIGNMENT
+
+!!! warning "linker limitations for maximal alignment size"
+
+    Note that the effectiveness of aligned attributes for static variables may be limited by inherent limitations in the system linker and/or object file format. On some systems, the linker is only able to arrange for variables to be aligned up to a certain maximum alignment. (For some linkers, the maximum supported alignment may be very very small.) If your linker is only able to align variables up to a maximum of 8-byte alignment, then specifying aligned(16) in an `__attribute__` still only provides you with 8-byte alignment. See your linker documentation for further information.
+
+    Stack variables are not affected by linker restrictions; GCC can properly align them on any target.
+
+[GCC](https://gcc.gnu.org/onlinedocs/gcc/Common-Variable-Attributes.html) also provides a target specific macro `__BIGGEST_ALIGNMENT__`, which is the *largest* alignment ever used for *any* data type on the target machine you are compiling for.
+
+可以借助 cpp / gcc -E -dM 预编译，过滤打印出 `__BIGGEST_ALIGNMENT__` 宏定义：
 
 ```Shell
-$ clang -dM -E -arch x86_64 -x c /dev/null | grep '__BIGGEST_ALIGNMENT__'
-$ clang -dM -E -arch armv7 -x c /dev/null | grep '__BIGGEST_ALIGNMENT__'
-$ clang -dM -E -arch arm64 -x c /dev/null | grep '__BIGGEST_ALIGNMENT__'
+$ gcc -dM -E -arch armv7 -x c /dev/null | grep '__BIGGEST_ALIGNMENT__'
+$ gcc -dM -E -arch arm -x c /dev/null | grep '__BIGGEST_ALIGNMENT__'
+$ gcc -dM -E -arch arm64 -x c /dev/null | grep '__BIGGEST_ALIGNMENT__'
+$ gcc -dM -E -arch x86_64 -x c /dev/null | grep '__BIGGEST_ALIGNMENT__'
 $ gcc -dM -E -x c /dev/null | grep '__BIGGEST_ALIGNMENT__'
+$ echo | cpp -dM | grep '__BIGGEST_ALIGNMENT__'
 ```
 
-`__BIGGEST_ALIGNMENT__` 在 armv7l、arm64 下定义为 8；在 x86_64 和 aarch64（ARM64EC）下定义为 16。
+测试结果：
+
+- macOS clang/llvm-gcc ： armv7、arm 下定义为 4；arm64 下定义为 8；x86_64 下定义为 16。
+- 在 rpi3b-raspbian/armv7l(armhf? aarch32?) 下定义为 8；在 rpi3b-ubuntu/aarch64 下定义为 16。
+- 在 rpi4b-ubuntu/aarch64 下定义为 16。
 
 !!! abstract "std::max_align_t"
 
     [max_align_t](https://en.cppreference.com/w/c/types/max_align_t)(since C11) is a type whose alignment requirement is at least as strict (as large) as that of every scalar type.
 
-    Pointers returned by allocation functions such as malloc are suitably aligned for any object, which means they are aligned at least as strictly as `max_align_t`.
+    Pointers returned by allocation functions such as malloc are suitably aligned for *any* object, which means they are aligned at *least* as strictly as `max_align_t`.
 
     文末测试程序 struct-packed-aligned.c 测得的 `alignof(max_align_t)` 数值同对应平台上的 `__BIGGEST_ALIGNMENT__`。
 
@@ -248,16 +273,17 @@ GCC - [Structure-Layout Pragmas](https://gcc.gnu.org/onlinedocs/gcc/Structure-La
 ```c
 #pragma pack(show)
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
     return 0;
 }
 ```
 
-macOS（Intel x86_64、Apple Silicon arm64）下 clang 编译输出警告：
+macOS（Intel x86_64、Apple Silicon arm64）下 clang/llvm-gcc 编译输出警告：
 
 ```Shell
-$ gcc showpack.c -o showpack && ./showpack
-showpack.c:1:9: warning: value of #pragma pack(show) == 8
+$ cc -S pack-show.c
+pack-show.c:1:9: warning: value of #pragma pack(show) == 8
 #pragma pack(show)
         ^
 1 warning generated.
@@ -321,7 +347,7 @@ GCC 的 [Options for Code Generation Conventions](https://gcc.gnu.org/onlinedocs
 
     - [Data structure alignment](https://en.wikipedia.org/wiki/Data_structure_alignment): Alternatively, one can *pack* the structure, omitting the padding, which may lead to slower access, but uses three quarters as much memory.
 
-2. `#pragma pack(16)` 定义 `struct MyStruct4`，DEFINE_STRUCT_ALIGNED 指定 `__attribute__((aligned(16)))` 定义 `struct MyStruct4_aligned`，后者必须满足整体大小为 n=16 的倍数，sizeof 测算结果为 32。
+2. DEFINE_STRUCT_ALIGNED 指定 `__attribute__((aligned(16)))` 定义 `struct MyStruct4_aligned`，后者必须满足整体大小为 n=16 的倍数，sizeof 测算结果为 32。
 
 3. 相关头文件，参考 [Type support - cppreference.com](https://en.cppreference.com/w/c/types)。
 
@@ -461,7 +487,7 @@ alignof(MyStruct4): pack(16)=8, aligned(16)=16
 
 ## refs
 
-[C Structure Padding Initialization | Interrupt](https://interrupt.memfault.com/blog/c-struct-padding-initialization)
+[C Structure Padding Initialization](https://interrupt.memfault.com/blog/c-struct-padding-initialization)
 [How Struct Memory Alignment Works in C](https://levelup.gitconnected.com/how-struct-memory-alignment-works-in-c-3ee897697236)  
 
 [Computer Systems - A Programmer’s Perspective](https://www.amazon.com/Computer-Systems-OHallaron-Randal-Bryant/dp/1292101768/) - 3.9.3: Data Alignment

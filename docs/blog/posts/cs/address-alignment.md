@@ -14,21 +14,31 @@ tags:
 comments: true
 ---
 
-***Data structure alignment*** is the way data is arranged and accessed in computer memory. It consists of three separate but related issues: `data alignment`, `data structure padding`, and `packing`.
+One of the low-level features of C/C++ is the ability to specify the precise alignment of objects in memory to take maximum advantage of a specific hardware architecture. By default, the compiler **aligns** class and struct members on their size value.
+
+<!-- more -->
+
+[Alignment and memory addresses](https://learn.microsoft.com/en-us/cpp/cpp/alignment-cpp-declarations#alignment-and-memory-addresses)
+
+Alignment is a property of a memory address, expressed as the numeric address modulo a power of 2. For example, the address `0x0001103F` modulo 4 is 3. That address is said to be aligned to $4n+3$, where 4 indicates the chosen power of 2. The alignment of an address depends on the chosen power of 2. The same address modulo 8 is 7. An address is said to be aligned to X if its alignment is $Xn+0$.
+
+CPUs execute instructions that operate on data stored in memory. The data are identified by their addresses in memory. A single datum also has a size. We call a datum ***naturally aligned*** if its address is aligned to its size. It's called ***misaligned*** otherwise. For example, an 8-byte floating-point datum is naturally aligned if the address used to identify it has an 8-byte alignment.
+
+---
+
+[Data structure alignment](https://en.wikipedia.org/wiki/Data_structure_alignment) is the way data is arranged and accessed in computer memory. It consists of three separate but related issues: `data alignment`, `data structure padding`, and `packing`.
 
 The CPU in modern computer hardware performs reads and writes to memory most efficiently when the data is *naturally aligned*, which generally means that the data's memory address is a *multiple* of the data size. For instance, in a 32-bit architecture, the data may be aligned if the data is stored in four consecutive bytes and the first byte lies on a 4-byte boundary.
 
 *Data alignment* is the aligning of elements according to their natural alignment. To ensure natural alignment, it may be necessary to insert some *padding* between structure elements or after the last element of a structure. For example, on a 32-bit machine, a data structure containing a 16-bit value followed by a 32-bit value could have 16 bits of padding between the 16-bit value and the 32-bit value to align the 32-bit value on a 32-bit boundary. Alternatively, one can *pack* the structure, omitting the padding, which may lead to slower access, but uses three quarters as much memory.
 
-<!-- more -->
-
 ## reasons
 
 [Data structure alignment - Problems](https://en.wikipedia.org/wiki/Data_structure_alignment#Problems):
 
-The CPU accesses memory by a single memory word at a time. As long as the memory word size is at least as large as the largest primitive data type supported by the computer, aligned accesses will always access a single memory word. This may not be true for misaligned data accesses.
+The CPU accesses memory by a single memory word at a time. As long as the memory word size is at least as large as the largest primitive data type supported by the computer, **aligned** accesses will always access a *single* memory word. This may not be true for **misaligned** data accesses.
 
-If the highest and lowest bytes in a datum are not within the same memory word the computer must split the datum access into multiple memory accesses. This requires a lot of complex circuitry to generate the memory accesses and coordinate them. To handle the case where the memory words are in different memory pages the processor must either verify that both pages are present before executing the instruction or be able to handle a TLB miss or a page fault on any memory access during the instruction execution.
+If the highest and lowest bytes in a datum are not within the same memory word the computer must split the datum access into multiple memory accesses. This requires a lot of complex circuitry to generate the memory accesses and coordinate them. To handle the case where the memory words are in different memory pages the processor must either verify that both pages are present before executing the instruction or be able to handle a *TLB miss* or a *page fault* on any memory access during the instruction execution.
 
 《[C语言标准与实现(姚新颜)-2004](https://att.newsmth.net/nForum/att/CProgramming/3213/245)》 #1基础知识 | 11 内存地址对齐：
 
@@ -55,6 +65,57 @@ If the highest and lowest bytes in a datum are not within the same memory word t
 Many computer systems place restrictions on the allowable addresses for the primitive data types, requiring that the address for some objects must be a multiple of some value $K$ (typically 2, 4, or 8). Such ***alignment restrictions*** simplify the design of the hardware forming the interface between the processor and the memory system.
 
 For example, suppose a processor always fetches 8 bytes from memory with an address that must be a multiple of 8. If we can guarantee that any `double` will be aligned to have its address be a multiple of 8, then the value can be read or written with a *single* memory operation. Otherwise, we may need to perform *two* memory accesses, since the object might be split across two 8-byte memory blocks.
+
+## natural alignment
+
+[Computer Systems - A Programmer’s Perspective](https://www.amazon.com/Computer-Systems-OHallaron-Randal-Bryant/dp/1292101768/) - 3.9.3: Data Alignment:
+
+The x86-64 hardware will work correctly regardless of the alignment of data. However, Intel recommends that data be aligned to improve memory system performance. Their alignment rule is based on the principle that any primitive object of $K$ bytes must have an *address* that is a multiple of $K$. We can see that this rule leads to the following alignments:
+
+K | Types
+--|------
+1 | char
+2 | short
+4 | int, float
+8 | long, double, char *
+
+Alignment is **enforced** by making sure that every data type is organized and allocated in such a way that every object within the type **satisﬁes** its alignment restrictions.
+
+[ARM Compiler v5.06 for uVision armcc User Guide](https://developer.arm.com/documentation/dui0375/g/C-and-C---Implementation-Details/Basic-data-types-in-ARM-C-and-C--) ｜ Basic data types in ARM C and C++
+ - Size and alignment of basic data types
+
+- The following table gives the size and natural alignment of the basic data types under ILP32 data model.
+
+[ILP32 and LP64 data models.PDF](https://scc.ustc.edu.cn/zlsc/czxt/200910/W020100308601263456982.pdf) - HP-UX 64-bit data model list ILP32 and LP64 data alignment:
+
+![ILP32-LP64-data-alignment](./images/alignment/ILP32-LP64-data-alignment.png)
+
+## x86 misalignment
+
+The x86-64 hardware will work correctly regardless of the alignment of data.
+
+[Are machine code instructions fetched in little endian 4-byte words on an Intel x86-64 architecture?](
+https://stackoverflow.com/a/68229991/3721132)
+
+x86 machine code is a [byte-stream](https://stackoverflow.com/questions/60905135/how-to-interpret-objdump-disassembly-output-columns); there's nothing word-oriented about it, except for 32-bit displacements and immediates which are little-endian. e.g. in `add qword [rdi + 0x1234], 0xaabbccdd`. It's physically fetched in 16-byte or 32-byte chunks on modern CPUs, and split on instruction boundaries in parallel to feed to decoders in parallel.
+
+x86-64 is not a word-oriented architecture; there is no single natural word-size, and things **don't** have to be aligned. That concept is not very useful when thinking about x86-64. The integer register width happens to be 8 bytes, but that's not even the default operand-size in machine code, and you can use any operand-size from byte to qword with most instructions, and for SIMD from 8 or 16 byte up to 32 or 64 byte. And most importantly, alignment of wider integers isn't required in machine code, or even for data.
+
+[assembly - What's the size of a QWORD on a 64-bit machine? - Stack Overflow](https://stackoverflow.com/a/55430777/3721132)
+
+The whole concept of "machine word" [doesn't really apply to x86](https://stackoverflow.com/questions/68229585/are-machine-code-instructions-fetched-in-little-endian-4-byte-words-on-an-intel/68229991#68229991), with its machine-code format being a byte stream, and equal support for multiple operand-sizes, and unaligned loads/stores that mostly **don't** care about naturally aligned stuff, only cache line boundaries for normal cacheable memory.
+
+[Modern C, 1st Edition, 2019](https://www.amazon.com/Modern-C-Jens-Gustedt-ebook/dp/B0978347Z6/) - 12 The C memory model | 12.7 Alignment:
+
+Some architectures are more tolerant of **misalignment** than others, and we might have to force the system to error out on such a condition. We use the following function at the beginning to force crashing:
+
+!!! note "enable alignment check for i386 processors"
+
+    Intel’s i386 processor family is quite tolerant in accepting misalignment of data. This can lead to irritating bugs when ported to other architectures that are not as tolerant.
+
+    This function enables a check for this problem also for this family or processors, such that you can be sure to detect this problem early.
+
+    I found that code on [Ygdrasil’s blog](http://orchistro.tistory.com/206): `void enable_alignment_check(void);`.
 
 ## C alignment
 
@@ -90,7 +151,7 @@ Another keyword can be used to force allocation at a speciﬁed alignment: `alig
 
     - The result of the `alignof` operator reflects the alignment requirement of the type in the complete-object case.
 
-6. The alignment requirement of a complete type can be queried using an `alignof` expression (7.6.2.6). Furthermore, the narrow character types (6.8.2) shall have the weakest alignment requirement.
+6. The alignment requirement of a complete type can be queried using an `alignof` expression (7.6.2.6). Furthermore, the narrow character types (6.8.2) shall have the *weakest* alignment requirement.
 
     - This enables the ordinary character types to be used as the underlying type for an aligned memory area (9.12.2).
 
@@ -104,9 +165,7 @@ Another keyword can be used to force allocation at a speciﬁed alignment: `alig
 
 ### language support
 
-Excerpt from 《[现代C++语言核心特性解析-2021](https://item.jd.com/12942311.html)》.
-
-第30章 alignas 和 alignof（C++11 C++17）
+《[现代C++语言核心特性解析-2021](https://item.jd.com/12942311.html)》 - 第30章 alignas 和 alignof
 
 C++11中新增了 `alignof` 和 `alignas` 两个关键字，其中 `alignof` 运算符可以用于获取类型的对齐字节长度，`alignas` 说明符可以用来改变类型的默认对齐字节长度。这两个关键字的出现解决了长期以来C++标准中无法对数据对齐进行处理的问题。
 
@@ -121,54 +180,3 @@ C++11 [<stddef.h\>](https://en.cppreference.com/w/c/types) 定义了 `std::max_a
 C++ 标准还规定，诸如 `new` 和 `malloc` 之类的分配函数返回的指针需要适合于任何对象，也就是说内存地址至少与 `std::max_align_t` 严格对齐。
 
 由于 C++ 标准并没有定义 `std::max_ align_t` 对齐字节长度具体是什么样的，因此不同的平台会有不同的值，通常情况下是8字节和16字节。
-
-## x86 misalignment
-
-The x86-64 hardware will work correctly regardless of the alignment of data.
-
-[Are machine code instructions fetched in little endian 4-byte words on an Intel x86-64 architecture?](
-https://stackoverflow.com/a/68229991/3721132)
-
-x86 machine code is a [byte-stream](https://stackoverflow.com/questions/60905135/how-to-interpret-objdump-disassembly-output-columns); there's nothing word-oriented about it, except for 32-bit displacements and immediates which are little-endian. e.g. in `add qword [rdi + 0x1234], 0xaabbccdd`. It's physically fetched in 16-byte or 32-byte chunks on modern CPUs, and split on instruction boundaries in parallel to feed to decoders in parallel.
-
-x86-64 is not a word-oriented architecture; there is no single natural word-size, and things **don't** have to be aligned. That concept is not very useful when thinking about x86-64. The integer register width happens to be 8 bytes, but that's not even the default operand-size in machine code, and you can use any operand-size from byte to qword with most instructions, and for SIMD from 8 or 16 byte up to 32 or 64 byte. And most importantly, alignment of wider integers isn't required in machine code, or even for data.
-
-[assembly - What's the size of a QWORD on a 64-bit machine? - Stack Overflow](https://stackoverflow.com/a/55430777/3721132)
-
-The whole concept of "machine word" [doesn't really apply to x86](https://stackoverflow.com/questions/68229585/are-machine-code-instructions-fetched-in-little-endian-4-byte-words-on-an-intel/68229991#68229991), with its machine-code format being a byte stream, and equal support for multiple operand-sizes, and unaligned loads/stores that mostly **don't** care about naturally aligned stuff, only cache line boundaries for normal cacheable memory.
-
-[Modern C, 1st Edition, 2019](https://www.amazon.com/Modern-C-Jens-Gustedt-ebook/dp/B0978347Z6/) - 12 The C memory model | 12.7 Alignment:
-
-Some architectures are more tolerant of **misalignment** than others, and we might have to force the system to error out on such a condition. We use the following function at the beginning to force crashing:
-
-!!! note "enable alignment check for i386 processors"
-
-    Intel’s i386 processor family is quite tolerant in accepting misalignment of data. This can lead to irritating bugs when ported to other architectures that are not as tolerant.
-
-    This function enables a check for this problem also for this family or processors, such that you can be sure to detect this problem early.
-
-    I found that code on [Ygdrasil’s blog](http://orchistro.tistory.com/206): `void enable_alignment_check(void);`.
-
-## natural alignment
-
-[Computer Systems - A Programmer’s Perspective](https://www.amazon.com/Computer-Systems-OHallaron-Randal-Bryant/dp/1292101768/) - 3.9.3: Data Alignment:
-
-The x86-64 hardware will work correctly regardless of the alignment of data. However, Intel recommends that data be aligned to improve memory system performance. Their alignment rule is based on the principle that any primitive object of $K$ bytes must have an *address* that is a multiple of $K$. We can see that this rule leads to the following alignments:
-
-K | Types
---|------
-1 | char
-2 | short
-4 | int, float
-8 | long, double, char *
-
-Alignment is **enforced** by making sure that every data type is organized and allocated in such a way that every object within the type **satisﬁes** its alignment restrictions.
-
-[ARM Compiler v5.06 for uVision armcc User Guide](https://developer.arm.com/documentation/dui0375/g/C-and-C---Implementation-Details/Basic-data-types-in-ARM-C-and-C--) ｜ Basic data types in ARM C and C++
- - Size and alignment of basic data types
-
-- The following table gives the size and natural alignment of the basic data types under ILP32 data model.
-
-[ILP32 and LP64 data models.PDF](https://scc.ustc.edu.cn/zlsc/czxt/200910/W020100308601263456982.pdf) - HP-UX 64-bit data model list ILP32 and LP64 data alignment:
-
-![ILP32-LP64-data-alignment](./images/alignment/ILP32-LP64-data-alignment.png)
