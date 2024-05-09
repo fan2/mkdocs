@@ -686,6 +686,15 @@ test.txt
 test2.txt
 ```
 
+备份本地 zsh 配置文件到局域网 SMB 共享盘：
+
+```Shell
+hostname=$(hostname)
+host=${hostname%%.*}
+today=$(date +%Y%m%d)
+$ rclone copyto -v ~/.zshrc smbhd@rpi4b:WDHD/backups/config/$host-$today.zshrc
+```
+
 **注意**：如果使用 copy 命令，会将 test2.txt 视作目录：
 
 ```Shell
@@ -1395,11 +1404,11 @@ cron 执行出错时默认会通过 MTA 服务给系统管理员发邮件，执�
 
 验证 cron 正常调度 rclone 后，接下来在 crontab 中配置 rclone 定时同步备份任务。
 
-编写一个 shell 脚本 /usr/local/etc/scripts/rclone-sync.sh，定时将本地重要文件同步到局域网 SMB 共享盘（smbhd@rpi4b:）上。
+编写一个 shell 脚本 /usr/local/etc/scripts/rclone-sync-linkin-words.sh，定时将本地 LINKIN-WORDS-7000 目录下的 PDF 文件同步到局域网 SMB 共享盘（smbhd@rpi4b:）上。
 
-需先执行 `sudo chmod +x rclone-sync.sh` 赋予其他用户对该脚本的可执行权限。
+需先执行 `sudo chmod +x rclone-sync-linkin-words.sh` 赋予其他用户对该脚本的可执行权限。
 
-备份脚本 `rclone-sync.sh` 使用 date 或 stat 命令检查文件最后修改时间。
+备份脚本 `rclone-sync-linkin-words.sh` 使用 date 或 stat 命令检查文件最后修改时间。
 
 === "date -r"
 
@@ -1455,7 +1464,7 @@ cron 执行出错时默认会通过 MTA 服务给系统管理员发邮件，执�
     如果执行 sync 或 copy 同步目录，可使用 rclone 提供的 `--max-age 2h` 选项。
     这里执行 copyto 命令备份特定文件，不适用 `--max-age` 选项，故自行等效实现。
 
-??? info "rclone-sync.sh"
+??? info "rclone-sync-linkin-words.sh"
 
     ```Shell
     #!/bin/bash
@@ -1516,30 +1525,90 @@ cron 执行出错时默认会通过 MTA 服务给系统管理员发邮件，执�
     fi
     ```
 
-调试阶段可以 `--dry-run` 相关 rclone 同步命令，先在终端以当前身份执行 rclone-sync.sh，确保运行和输出符合预期。
+调试阶段可以 `--dry-run` 相关 rclone 同步命令，先在终端以当前身份执行 rclone-sync-linkin-words.sh，确保运行和输出符合预期。
 
 然后，再在 `crontab -e` 中配置调度任务，先每分钟执行一次，验证调度执行情况。
 
 ```Shell title="crontab -e test"
-*/1 * * * * /usr/local/etc/scripts/rclone-sync.sh
+*/1 * * * * /usr/local/etc/scripts/rclone-sync-linkin-words.sh
 ```
 
 cron 调度任务调试验证 OK 后，再修改调度频率：
 
 ```Shell title="crontab -e"
 # 1. 本地同步到 SMB, 每隔两小时（7,9,11,13,15,17,19,21,23）
-0 7-23/2 * * * /usr/local/etc/scripts/rclone-sync.sh
+0 7-23/2 * * * /usr/local/etc/scripts/rclone-sync-linkin-words.sh
 ```
 
 以上脚本执行 rclone copyto，copy from local to remote（upload），读本地写远端，不涉及本地写磁盘权限问题。
 
+再添加一个 rclone sync 同步脚本，将本地当前用户的 zsh、vim、vscode 的配置每天备份到局域网 SMB 共享盘上（smbhd@rpi4b:WDHD/backups/config）。
+
+??? info "rclone-sync-config.sh"
+
+    ```Shell
+    #!/bin/bash
+
+    # predefined variables
+    logfile="/Users/faner/.config/rclone/rclone-$(date +%Y%m).log"
+    dstpath="smbhd@rpi4b:WDHD/backups/config"
+
+    hostname=$(hostname)
+    host=${hostname%%.*}
+
+    backup_config() {
+      # config filepath
+      config=$1
+      # folder=${config%/*}
+      filename=${config##*/}
+      name=${filename%.*}
+      ext=${filename##*.}
+
+      filedate=$(date -r "$config" +%Y%m%d)
+
+      if [ -z "$name" ]; then
+        dstfile="$dstpath/$host-$filedate.$ext"
+      else
+        dstfile="$dstpath/$host-$filedate-$name.$ext"
+      fi
+
+      # overwriting existing file, skipping identical files
+      echo -e "$(date +%Y/%m/%d\ %H:%M:%S) DEBUG : execute backup $filename." >>"$logfile"
+      if /usr/local/bin/rclone copyto -v "$config" "$dstfile" --log-file="$logfile"; then
+        echo -e "$(date +%Y/%m/%d\ %H:%M:%S) DEBUG : backup success.\n" >>"$logfile"
+      else
+        echo -e "$(date +%Y/%m/%d\ %H:%M:%S) DEBUG : backup failed, keep old backups/config.\n" >>"$logfile"
+      fi
+    }
+
+    main() {
+      zshrc="/Users/faner/.zshrc"
+      backup_config $zshrc
+      vimrc="/Users/faner/.vimrc"
+      backup_config $vimrc
+      vscode_settings="/Users/faner/Library/Application Support/Code/User/settings.json"
+      backup_config "$vscode_settings"
+    }
+
+    ################################################################################
+    # main entry
+    ################################################################################
+    # echo "param count = $#"
+    # echo "params = $@"
+
+    main "$@" # $*
+    ```
+
 再添加一条 rclone sync 调度任务，将远端 webdav 云盘定时同步到本地：
 
 ```Shell title="crontab -e"
-# 1. 本地同步到 SMB, 每隔两小时（7,9,11,13,15,17,19,21,23）
-0 7-23/2 * * * /usr/local/etc/scripts/rclone-sync.sh
+# 1. 本地同步到 SMB, @daily @midnight
+0 0 * * * /usr/local/etc/scripts/rclone-sync-config.sh
 
-# 2. webdav 同步到本地, 每隔两小时（8,10,12,14,16,18,20,22,0)
+# 2. 本地同步到 SMB, 每隔两小时（7,9,11,13,15,17,19,21,23）
+0 7-23/2 * * * /usr/local/etc/scripts/rclone-sync-linking-words.sh
+
+# 3. webdav 同步到本地, 每隔两小时（8,10,12,14,16,18,20,22,0)
 0 0,8-23/2 * * * /usr/local/bin/rclone sync -v webdav@rpi4b: /Users/faner/Documents/webdav-backup --log-file=/Users/faner/.config/rclone/rclone-`date +\%Y\%m`.log
 ```
 

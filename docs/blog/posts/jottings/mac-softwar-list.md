@@ -59,6 +59,11 @@ softorino [WALTR PRO](https://softorino.com/waltr/)
 
 - Cyberduck is a libre server and cloud storage browser for Mac and Windows with support for FTP, SFTP, WebDAV, Amazon S3, OpenStack Swift, Backblaze B2, Microsoft Azure & OneDrive, Google Drive and Dropbox.
 
+[Rclone](https://rclone.org/) - [works like a charm!](https://duetorun.com/blog/20240318/rclone-access-webdav/)
+
+- a command-line program to manage files on cloud storage.
+- a feature-rich alternative to cloud vendors' web storage interfaces.
+
 ## Messager
 
 [微信，是一个生活方式](https://weixin.qq.com/) - [WeChat](https://www.wechat.com/)
@@ -119,6 +124,10 @@ Notes.app: [Start a Quick Note on Mac](https://support.apple.com/en-hk/guide/not
 
 - Use the keyboard shortcut
 - Use hot corners
+
+[Octarine - Take back control of your writing](https://octarine.app/)
+
+- Empower your productivity with a minimalistic design: WYSIWYG editing, markdown output, and full file ownership.
 
 Stickies.app: [Stickies User Guide for Mac](https://support.apple.com/en-hk/guide/stickies/welcome/mac)
 
@@ -188,6 +197,8 @@ PDF Expert，搭配内置 Preview 查看扫描件。
 - 致力提升全平台应用和游戏的性能和品质
 
 ## Chrome Extensions
+
+[帮小忙，腾讯QQ浏览器在线工具箱平台](https://tool.browser.qq.com/)
 
 [Tampermonkey](https://chromewebstore.google.com/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo)
 [Vimium](https://chromewebstore.google.com/detail/vimium/dbepggeogbaibhgnhhndojpepiihcmeb)

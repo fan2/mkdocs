@@ -229,6 +229,7 @@ endfunction
 
 > [How can I delete multiple lines in vi?](https://stackoverflow.com/questions/15912868/how-can-i-delete-multiple-lines-in-vi)  
 > [How to Delete Line in VIM on Linux](https://linoxide.com/linux-how-to/how-to-delete-line-vim-linux/)  
+> [How to delete lines in Vim](https://www.educative.io/answers/how-to-delete-lines-in-vim)
 
 ## 行缩进
 
