@@ -341,7 +341,7 @@ do shell script "command &> file_path &"
 do shell script "command > file_path 2>&1 &"
 ```
 
-### >&综合示例
+### >&
 
 来看一组综合对比示例，以便加深理解：
 
@@ -399,6 +399,10 @@ brew install openssl 过程中，Caveats 提示可执行脚本将其可执行路
 If you need to have this software first in your PATH run:
   echo 'export PATH="/usr/local/opt/openssl/bin:$PATH"' >> ~/.zshrc
 ```
+
+---
+
+macOS Bash 3 下可以用 `>> file 2>&1` 等效实现 Bash 4 下 [&>> file](https://unix.stackexchange.com/questions/170572/what-is-in-a-shell-script) 的效果。
 
 ## <, <<
 

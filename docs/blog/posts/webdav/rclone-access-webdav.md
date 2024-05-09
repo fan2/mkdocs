@@ -1167,8 +1167,8 @@ Choose 1-5 [2]: 3
 执行 `crontab -e` 在末尾新增一条测试任务，每分钟执行 echo 写入文件 crontab.log。
 
 ```Shell title="crontab -e test"
-*/1 * * * * echo "echo from crontab." >> /home/pifan/Downloads/output/crontab.log
-# */1 * * * * echo "$(date) : echo from crontab." >> /home/pifan/Downloads/output/crontab.log
+*/1 * * * * echo "echo from crontab." >> $HOME/Downloads/output/crontab.log
+# */1 * * * * echo "$(date) : echo from crontab." >> $HOME/Downloads/output/crontab.log
 ```
 
 `tail -f crontab.log`，整点分钟观察 crontab.log 是否有追加内容，以验证 cron 任务正常调度。
@@ -1176,7 +1176,7 @@ Choose 1-5 [2]: 3
 确认 cron 任务调度正常后，在 cron table 末尾新增一条 rclone 命令测试任务：
 
 ```Shell title="crontab -e test rclone"
-*/1 * * * * rclone version >> /home/pifan/Downloads/output/crontab.log
+*/1 * * * * rclone version >> $HOME/Downloads/output/crontab.log
 ```
 
 整点分钟，观察 crontab.log，确认 rclone version 被 cron 正常调度执行。
@@ -1216,6 +1216,48 @@ Choose 1-5 [2]: 3
     执行 `crontab -l` 可以查看当前用户的任务列表，或通过 `-u` 选项查看指定用户的任务列表 `crontab -l -u pifan`。
     执行 `crontab -r` 可以移除当前用户配置的任务列表，或 `crontab -ri` 带 interactive prompt 确认。
 
+#### cron run sh
+
+以上 crontab 直接配置命令行运行 rclone 执行网盘同步，下面给出一个 crontab 配置运行 Shell 脚本的范例。
+
+1. 创建用户脚本文件 `touch ~/Scripts/cp-config-to-smb.sh`，每天零点执行 `cp` 命令将 zsh、vim 配置文件同步到外挂硬盘备份文件夹。
+
+    ??? info "cp-config-to-smb.sh"
+
+        ```Shell linenums="1"
+        #!/bin/bash
+
+        # predefined variables
+        hostname=$(hostname)
+        host=${hostname%%.*}
+        today=$(date +%Y%m%d)
+
+        # echo "dirname = $(dirname $0)"
+        dir=$(dirname $0)
+        # echo "basename = $(basename $0)"
+        name=$(basename $0)
+        name=${name%.*}
+        logfile=$dir/$name".log"
+
+        backup_dir="/media/WDHD/backups/config"
+
+        echo -e "$(date +%Y/%m/%d\ %H:%M:%S): <cp sync config>" >> $logfile
+        cp -v -u $HOME/.zshrc $backup_dir/$host-$today.zshrc &>> $logfile
+        cp -v -u $HOME/.vimrc $backup_dir/$host-$today.vimrc &>> $logfile
+        cp -v -u /etc/vim/vimrc.local $backup_dir/$host-$today-vimrc.local &>> $logfile
+        echo -e "$(date +%Y/%m/%d\ %H:%M:%S): </cp sync config>" >> $logfile
+        ```
+
+2. 保存脚本文件后，执行 `chmod +x ~/Scripts/cp-config-to-smb.sh` 添加可执行权限。
+3. 执行 `crontab -e` 添加 cron 定时调度任务。
+
+```Shell title="crontab -e daily"
+# 1. 本地配置同步到 mount_smbfs, @daily @midnight
+0 0 * * * $HOME/Scripts/cp-config-to-smb.sh
+
+# 2. 每天凌晨2点同步备份
+0 2 * * * rclone sync -v webdav-rpi4b: /media/WDHD/webdav@rpi4b --log-file=/home/pifan/.config/rclone/rclone-`date +\%Y\%m`.log
+```
 
 ### macOS
 
@@ -1466,7 +1508,7 @@ cron 执行出错时默认会通过 MTA 服务给系统管理员发邮件，执�
 
 ??? info "rclone-sync-linkin-words.sh"
 
-    ```Shell
+    ```Shell linenums="1"
     #!/bin/bash
 
     # predefined variables
@@ -1546,7 +1588,7 @@ cron 调度任务调试验证 OK 后，再修改调度频率：
 
 ??? info "rclone-sync-config.sh"
 
-    ```Shell
+    ```Shell linenums="1"
     #!/bin/bash
 
     # predefined variables
@@ -1573,11 +1615,12 @@ cron 调度任务调试验证 OK 后，再修改调度频率：
       fi
 
       # overwriting existing file, skipping identical files
-      echo -e "$(date +%Y/%m/%d\ %H:%M:%S) DEBUG : execute backup $filename." >>"$logfile"
-      if /usr/local/bin/rclone copyto -v "$config" "$dstfile" --log-file="$logfile"; then
-        echo -e "$(date +%Y/%m/%d\ %H:%M:%S) DEBUG : backup success.\n" >>"$logfile"
+      # -u: Skip files that are newer on the destination
+      echo -e "$(date +%Y/%m/%d\ %H:%M:%S) DEBUG : execute backup $filename." >> "$logfile"
+      if /usr/local/bin/rclone copyto -v -u "$config" "$dstfile" --log-file="$logfile"; then
+        echo -e "$(date +%Y/%m/%d\ %H:%M:%S) DEBUG : backup success.\n" >> "$logfile"
       else
-        echo -e "$(date +%Y/%m/%d\ %H:%M:%S) DEBUG : backup failed, keep old backups/config.\n" >>"$logfile"
+        echo -e "$(date +%Y/%m/%d\ %H:%M:%S) DEBUG : backup failed, keep old backups/config.\n" >> "$logfile"
       fi
     }
 
@@ -1602,10 +1645,10 @@ cron 调度任务调试验证 OK 后，再修改调度频率：
 再添加一条 rclone sync 调度任务，将远端 webdav 云盘定时同步到本地：
 
 ```Shell title="crontab -e"
-# 1. 本地同步到 SMB, @daily @midnight
+# 1. 本地配置同步到 SMB, @daily @midnight
 0 0 * * * /usr/local/etc/scripts/rclone-sync-config.sh
 
-# 2. 本地同步到 SMB, 每隔两小时（7,9,11,13,15,17,19,21,23）
+# 2. 本地文件同步到 SMB, 每隔两小时（7,9,11,13,15,17,19,21,23）
 0 7-23/2 * * * /usr/local/etc/scripts/rclone-sync-linking-words.sh
 
 # 3. webdav 同步到本地, 每隔两小时（8,10,12,14,16,18,20,22,0)
