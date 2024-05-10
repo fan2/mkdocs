@@ -691,8 +691,8 @@ test2.txt
 ```Shell
 hostname=$(hostname)
 host=${hostname%%.*}
-today=$(date +%Y%m%d)
-$ rclone copyto -v ~/.zshrc smbhd@rpi4b:WDHD/backups/config/$host-$today.zshrc
+filedate=$(date -r "$config" +%Y%m%d)
+$ rclone copyto -v ~/.zshrc smbhd@rpi4b:WDHD/backups/config/$host-$filedate.zshrc
 ```
 
 **注意**：如果使用 copy 命令，会将 test2.txt 视作目录：
@@ -1275,6 +1275,7 @@ Choose 1-5 [2]: 3
         logfile=$dir/$name".log"
 
         # 2. extract hostname, ignore domain
+        # echo $HOST
         hostname=$(hostname)
         host=${hostname%%.*}
 
@@ -1674,6 +1675,7 @@ cron 调度任务调试验证 OK 后，再修改调度频率：
     dstpath="smbhd@rpi4b:WDHD/backups/config"
 
     # extract hostname, ignore domain
+    # echo $HOST
     hostname=$(hostname)
     host=${hostname%%.*}
 

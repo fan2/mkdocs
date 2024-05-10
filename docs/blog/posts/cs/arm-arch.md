@@ -20,7 +20,7 @@ ARM11 之后，ARM 处理器内核不再以 ARM 作为前缀。但 `ARM` 这个�
 
 <!-- more -->
 
-## arch
+## profiles
 
 [About the Arm architecture](https://developer.arm.com/documentation/102404/0201/About-the-Arm-architecture?lang=en)
 
@@ -53,6 +53,37 @@ This example smartphone contains the following processor types:
 The `Armv8` architecture has several different profiles. These profiles are variants of the architecture that target different markets and use cases. The Armv8-M architecture is one of these architecture profiles.
 
 Arm defines three architecture profiles: Application (***A***), Real-time (***R***), and Microcontroller (***M***).
+
+## aarch64
+
+[AArch64](https://en.wikipedia.org/wiki/AArch64): `AArch64` or `ARM64` is the 64-bit extension of the ARM architecture family. It was first introduced with the ***Armv8-A*** architecture, and had many extension updates.
+
+```Shell
+# mbpa2991-macOS
+$ arch
+arm64
+
+# rpi4b-ubuntu
+$ arch
+aarch64
+```
+
+1. ARM-A (application architecture)
+
+Announced in October 2011, **ARMv8-A** represents a fundamental change to the ARM architecture. It adds an optional 64-bit architecture, named "`AArch64`", and the associated new "`A64`" instruction set. AArch64 provides user-space compatibility with the existing 32-bit architecture ("`AArch32`" / ARMv7-A), and instruction set ("`A32`"). The 16-32bit Thumb instruction set is referred to as "`T32`" and has no 64-bit counterpart. ARMv8-A allows 32-bit applications to be executed in a 64-bit OS, and a 32-bit OS to be under the control of a 64-bit hypervisor.
+
+ARMv8-A includes the VFPv3/v4 and advanced SIMD (Neon) as standard features in both AArch32 and AArch64. It also adds cryptography instructions supporting AES, SHA-1/SHA-256 and finite field arithmetic.
+
+**Naming conventions**:
+
+model | Arch | Spec | ISA | Suffixes
+------|------|------|-----|---------
+64 + 32 bit | AArch64 | ARMv8-A | A64 + A32 | v8-A
+32 + 16 (Thumb) bit | AArch32 | ARMv8-R / ARMv7-A | A32 + T32 | -A32 / -R / v7-A.
+
+2. ARM-R (real-time architecture)
+
+Optional AArch64 support was added to the Armv8-R profile, with the first Arm core implementing it being the *Cortex-R82*. It adds the `A64` instruction set, with some changes to the memory barrier instructions.
 
 ## Apple
 

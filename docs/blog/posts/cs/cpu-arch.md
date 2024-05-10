@@ -56,11 +56,12 @@ This article is about the collection of datasheet/textbooks/references on the th
 
 ## ARM
 
+*A*corn *R*ISC *M*achine(1978) -> *A*dvanced *R*ISC *M*achine(1990).
+Arm defines three architecture profiles: Application (**A**), Real-time (**R**), and Microcontroller (**M**).
+
 [ARM architecture family](https://en.wikipedia.org/wiki/ARM_architecture_family)- [Cores](https://en.wikipedia.org/wiki/ARM_architecture#Cores)
 
 - [List of ARM processors](https://en.wikipedia.org/wiki/List_of_ARM_processors)
-
-[AArch64](https://en.wikipedia.org/wiki/AArch64)
 
 ### docs
 
@@ -76,6 +77,7 @@ This article is about the collection of datasheet/textbooks/references on the th
 
 - [Arm A-profile Architecture Registers](https://developer.arm.com/documentation/ddi0601/2024-03/?lang=en)
 - [Arm A-profile A64 Instruction Set Architecture](https://developer.arm.com/documentation/ddi0602/2024-03/?lang=en) - [Base Instructions](https://developer.arm.com/documentation/ddi0602/2024-03/Base-Instructions)
+
 - [ARMv7-M Architecture Reference Manual.pdf](https://developer.arm.com/documentation/ddi0403/ee/?lang=en)
 - [M-Profile/Armv8-M](https://developer.arm.com/documentation/107656/0101/Introduction-to-Armv8-architecture-and-architecture-profiles)
 
