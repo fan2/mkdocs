@@ -68,22 +68,56 @@ $ arch
 aarch64
 ```
 
-1. ARM-A (application architecture)
+Announced in October 2011, **ARMv8-A** represents a fundamental change to the ARM architecture. It adds an optional 64-bit architecture, named "`AArch64`", and the associated new "`A64`" instruction set.
 
-Announced in October 2011, **ARMv8-A** represents a fundamental change to the ARM architecture. It adds an optional 64-bit architecture, named "`AArch64`", and the associated new "`A64`" instruction set. AArch64 provides user-space compatibility with the existing 32-bit architecture ("`AArch32`" / ARMv7-A), and instruction set ("`A32`"). The 16-32bit Thumb instruction set is referred to as "`T32`" and has no 64-bit counterpart. ARMv8-A allows 32-bit applications to be executed in a 64-bit OS, and a 32-bit OS to be under the control of a 64-bit hypervisor.
+AArch64 provides user-space compatibility with the existing 32-bit architecture ("`AArch32`" / ARMv7-A), and instruction set ("`A32`"). The 16-32bit Thumb instruction set is referred to as "`T32`" and has no 64-bit counterpart.
+
+ARMv8-A allows 32-bit applications to be executed in a 64-bit OS, and a 32-bit OS to be under the control of a 64-bit hypervisor.
 
 ARMv8-A includes the VFPv3/v4 and advanced SIMD (Neon) as standard features in both AArch32 and AArch64. It also adds cryptography instructions supporting AES, SHA-1/SHA-256 and finite field arithmetic.
 
-**Naming conventions**:
+### Naming conventions
 
 model | Arch | Spec | ISA | Suffixes
 ------|------|------|-----|---------
 64 + 32 bit | AArch64 | ARMv8-A | A64 + A32 | v8-A
 32 + 16 (Thumb) bit | AArch32 | ARMv8-R / ARMv7-A | A32 + T32 | -A32 / -R / v7-A.
 
-2. ARM-R (real-time architecture)
+### AArch64 features
 
-Optional AArch64 support was added to the Armv8-R profile, with the first Arm core implementing it being the *Cortex-R82*. It adds the `A64` instruction set, with some changes to the memory barrier instructions.
+***New instruction set, A64***:
+
+- Has `31` general-purpose 64-bit registers.
+- Has dedicated zero or stack pointer (`SP`) register (depending on instruction).
+- The program counter (`PC`) is no longer directly accessible as a register.
+- Instructions are still `32` bits long and mostly the same as A32 (with LDM/STM instructions and most conditional execution dropped).
+
+    - Has paired loads/stores (in place of LDM/STM).
+    - No predication for most instructions (except branches).
+
+- Most instructions can take 32-bit or 64-bit arguments.
+- Addresses assumed to be 64-bit.
+
+***Advanced SIMD (Neon) enhanced***:
+
+- Has 32 × 128-bit registers (up from 16), also accessible via VFPv4.
+- Supports double-precision floating-point format.
+- Fully IEEE 754 compliant.
+- AES encrypt/decrypt and SHA-1/SHA-2 hashing instructions also use these registers.
+
+***A new exception system***: Fewer banked registers and modes.
+
+***Memory translation*** from 48-bit virtual addresses based on the existing Large Physical Address Extension (LPAE), which was designed to be easily extended to 64-bit.
+
+***Extension***: Data gathering hint (ARMv8.0-DGH).
+
+### R & M
+
+AArch64 was introduced in `ARMv8-A` and is included in subsequent versions of ARMv8-A. It was also introduced in `ARMv8-R` as an option, after its introduction in ARMv8-A; it is *not* included in `ARMv8-M`.
+
+!!! info "ARM-R (real-time architecture)"
+
+    Optional AArch64 support was added to the Armv8-R profile, with the first Arm core implementing it being the *Cortex-R82*. It adds the `A64` instruction set, with some changes to the memory barrier instructions.
 
 ## Apple
 
