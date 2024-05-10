@@ -47,12 +47,19 @@ This article is about the collection of datasheet/textbooks/references on the th
 
 ### textbooks
 
+1. 《[C语言标准与实现](https://att.newsmth.net/nForum/att/CProgramming/3213/245)》，姚新颜，2004 - #1 基础知识
+2. 《[深入理解计算机系统](https://item.jd.com/12006637.html)》，Randal E. Bryant & David R. O'Hallaron, 2015, 3e - 第3章 程序的机器级表示
+3. 《[老码识途-从机器码到框架的系统观逆向修炼之路](https://book.douban.com/subject/19930393/)》，韩宏，2012 - 第1章 欲向码途问大道，锵锵bit是吾刀
+
+x86 汇编语言：
+
 1. 《[汇编语言](https://item.jd.com/12841436.html)》，王爽，2019，4e
 2. [Professional Assembly Language(IA32)](https://www.amazon.com/Professional-Assembly-Language-Richard-Blum/dp/0764579010), Richard Blum, 2005
 3. [Assembly Language For X86 Processors](https://www.amazon.com/Assembly-Language-X86-Processors-Irvine/dp/9352869184), KIP R. IRVINE, 2014, 7e
 4. [Introduction to 64 Bit Assembly Programming for Linux and OS X](https://www.amazon.com/Introduction-Bit-Assembly-Programming-Linux/dp/1484921909), Ray Seyfarth, 2014, 3e
-5. [Windows 64-bit Assembly Language Programming Quick Start: Intel X86-64, SSE, AVX](https://www.amazon.com/Windows-64-bit-Assembly-Language-Programming/dp/0970112467), Robert Dunne, 2018
-6. [Modern X86 Assembly Language Programming: Covers X86 64-bit, AVX, AVX2, and AVX-512](https://www.amazon.com/Modern-X86-Assembly-Language-Programming/dp/1484296028/), Daniel Kusswurm, 2023, 3e
+5. [Low-Level Programming: C, Assembly, and Program Execution on Intel® 64 Architecture](https://www.amazon.com/Low-Level-Programming-Assembly-Execution-Architecture/dp/1484224027), Igor Zhirkov, 2017
+6. [Windows 64-bit Assembly Language Programming Quick Start: Intel X86-64, SSE, AVX](https://www.amazon.com/Windows-64-bit-Assembly-Language-Programming/dp/0970112467), Robert Dunne, 2018
+7. [Modern X86 Assembly Language Programming: Covers X86 64-bit, AVX, AVX2, and AVX-512](https://www.amazon.com/Modern-X86-Assembly-Language-Programming/dp/1484296028/), Daniel Kusswurm, 2023, 3e
 
 ### references
 

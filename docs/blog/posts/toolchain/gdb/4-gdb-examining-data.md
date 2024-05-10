@@ -132,3 +132,18 @@ dnums 为自动显示的编号，多个编号之间用空格分隔。
 `info registers <regname ...>`：查看指定的寄存器的情况。
 
 寄存器中放置了程序运行时的数据，比如程序当前运行的指令地址（ip），程序的当前堆栈地址（sp）等等。你同样可以使用print命令来访问寄存器的情况，只需要在寄存器名字前加一个 \$ 符号即可，如 `p $pc`。
+
+## symbol
+
+[16 Examining the Symbol Table](https://sourceware.org/gdb/current/onlinedocs/gdb.html/Symbols.html#Symbols)
+
+ptype[/flags] [arg]
+
+> ptype accepts the same arguments as `whatis`, but prints a detailed description of the type, instead of just the name of the type. See [Expressions](https://sourceware.org/gdb/current/onlinedocs/gdb.html/Expressions.html#Expressions).
+
+- `o`: Print the offsets and sizes of fields in a struct, similar to what the pahole tool does. This option implies the /tm flags.
+
+Issuing a `ptype /o [struct|union]` command to print offsets inside an struct/union:
+
+- (gdb) ptype /o struct tuv
+- (gdb) ptype /o union qwe

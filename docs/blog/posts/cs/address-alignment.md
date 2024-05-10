@@ -81,10 +81,53 @@ K | Types
 
 Alignment is **enforced** by making sure that every data type is organized and allocated in such a way that every object within the type **satisﬁes** its alignment restrictions.
 
-[ARM Compiler v5.06 for uVision armcc User Guide](https://developer.arm.com/documentation/dui0375/g/C-and-C---Implementation-Details/Basic-data-types-in-ARM-C-and-C--) ｜ Basic data types in ARM C and C++
- - Size and alignment of basic data types
+[x64 ABI conventions](https://learn.microsoft.com/en-us/cpp/build/x64-software-conventions#x64-type-and-storage-layout) - [x64 type and storage layout](https://learn.microsoft.com/en-us/cpp/build/x64-software-conventions#x64-type-and-storage-layout) - Scalar types
+
+- Byte - 8 bits / 1 bytes
+- Word - 16 bits / 2 bytes
+- Doubleword - 32 bits / 4 bytes
+- Quadword - 64 bits / 8 bytes
+- Octaword - 128 bits / 16 bytes
+
+Scalar type | C data type | Storage size (in bytes) | Recommended alignment
+------------|-------------|-------------------------|----------------------
+INT8 | `char` | 1 | Byte
+UINT8 | `unsigned char` | 1 | Byte
+INT16 | `short` | 2 | Word
+UINT16 | `unsigned short` | 2 | Word
+INT32 | `int`, `long` | 4 | Doubleword
+UINT32 | `unsigned int`, `unsigned long` | 4 | Doubleword
+INT64 | `__int64` | 8 | Quadword
+UINT64 | `unsigned __int64` | 8 | Quadword
+FP32 (single precision) | `float` | 4 | Doubleword
+FP64 (double precision) | `double` | 8 | Quadword
+POINTER | `*` | 8 | Quadword
+\_\_m64 | `struct __m64` | 8 | Quadword
+\_\_m128 | `struct __m128` | 16 | Octaword
+
+[ARM Compiler v5.06 for uVision armcc User Guide](https://developer.arm.com/documentation/dui0375/g/C-and-C---Implementation-Details/Basic-data-types-in-ARM-C-and-C--) ｜ Basic data types in ARM C and C++ - Size and alignment of basic data types
 
 - The following table gives the size and natural alignment of the basic data types under ILP32 data model.
+
+[Overview of ARM64 ABI conventions](https://learn.microsoft.com/en-us/cpp/build/arm64-windows-abi-conventions) - [Alignment](https://learn.microsoft.com/en-us/cpp/build/arm64-windows-abi-conventions#alignment)
+
+Default layout alignment for `locals`:
+
+Size in bytes | Alignment in bytes
+--------------|-------------------
+1 | 1
+2 | 2
+3, 4 | 4
+> 4 | 8
+
+Default layout alignment for `globals` and `statics`:
+
+Size in bytes | Alignment in bytes
+--------------|-------------------
+1 | 1
+2 - 7 | 4
+8 - 63 | 8
+>= 64 | 16
 
 [ILP32 and LP64 data models.PDF](https://scc.ustc.edu.cn/zlsc/czxt/200910/W020100308601263456982.pdf) - HP-UX 64-bit data model list ILP32 and LP64 data alignment:
 

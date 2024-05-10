@@ -13,15 +13,15 @@ tags:
 comments: true
 ---
 
-[ABI](https://en.wikipedia.org/wiki/Application_binary_interface) - [Calling convention](https://en.wikipedia.org/wiki/Calling_convention) - [Call stack](https://en.wikipedia.org/wiki/Call_stack)
+[ABI](https://en.wikipedia.org/wiki/Application_binary_interface) - [Calling convention](https://en.wikipedia.org/wiki/Calling_convention)
 
-In computer science, a calling convention is an implementation-level (low-level) scheme for how subroutines or functions receive parameters from their caller and how they return a result.
+In computer science, a ***calling convention*** is an implementation-level (low-level) scheme for how subroutines or functions **receive** parameters from their caller and how they **return** a result.
 
 <!-- more -->
 
-When some code calls a function, design choices have been taken for where and how parameters are passed to that function, and where and how results are returned from that function, with these transfers typically done via certain registers or within a stack frame on the call stack.
+When some code calls a function, design choices have been taken for where and how parameters are *passed* to that function, and where and how results are *returned* from that function, with these transfers typically done via certain *registers* or within a [stack frame](https://en.wikipedia.org/wiki/Stack_frame) on the [call stack](https://en.wikipedia.org/wiki/Call_stack).
 
-There are design choices for how the tasks of preparing for a function call and restoring the environment after the function has completed are divided between the caller and the callee. Some calling convention specifies the way every function should get called. The correct calling convention should be used for every function call, to allow the correct and reliable execution of the whole program using these functions.
+There are design choices for how the tasks of preparing for a function call and restoring the environment after the function has completed are divided between the `caller` and the `callee`. Some calling convention specifies the way every function should get called. The correct calling convention should be used for every function call, to allow the correct and reliable execution of the whole program using these functions.
 
 ## x86
 
@@ -71,21 +71,27 @@ Microsoft Learn:
 
 ### docs
 
-[About the ARM-Thumb Procedure Call Standard](https://developer.arm.com/documentation/dui0056/d/using-the-procedure-call-standard/about-the-arm-thumb-procedure-call-standard)
+[ABI](https://developer.arm.com/Architectures/Application%20Binary%20Interface) - [Application Binary Interface](https://developer.arm.com/Architectures/ABI)
 
-[Releases · ARM-software/abi-aa](https://github.com/ARM-software/abi-aa/releases)
+1. [Software Standards](https://developer.arm.com/Architectures/Software%20Standards)
 
-- ABI for the Arm 32-bit Architecture
-- ABI for the Arm 64-bit Architecture
+2. Specifications @[github](https://github.com/ARM-software/abi-aa/releases)
 
-[Application binary interfaces](https://developer.apple.com/documentation/xcode/application-binary-interfaces):
+    - ABI for the Arm 32-bit Architecture
+    - ABI for the Arm 64-bit Architecture
+
+3. [About the ARM-Thumb Procedure Call Standard](https://developer.arm.com/documentation/dui0056/d/using-the-procedure-call-standard/about-the-arm-thumb-procedure-call-standard)
+
+    - Register roles and names
+    - The stack
+    - Parameter passing
+
+[Application binary interfaces | Apple Developer Documentation](https://developer.apple.com/documentation/xcode/application-binary-interfaces):
 
 - [Writing ARMv7 code for iOS](https://developer.apple.com/documentation/xcode/writing-armv7-code-for-ios)
 - [Writing ARM64 code for Apple platforms](https://developer.apple.com/documentation/xcode/writing-arm64-code-for-apple-platforms)
 
-Microsoft Learn:
-
-[Configure C++ projects for ARM processors](https://learn.microsoft.com/en-us/cpp/build/configuring-programs-for-arm-processors-visual-cpp)
+[Configure C++ projects for ARM processors | Microsoft Learn](https://learn.microsoft.com/en-us/cpp/build/configuring-programs-for-arm-processors-visual-cpp):
 
 - [Overview of ARM ABI Conventions](https://learn.microsoft.com/en-us/cpp/build/overview-of-arm-abi-conventions)
 - [Overview of ARM64 ABI conventions](https://learn.microsoft.com/en-us/cpp/build/arm64-windows-abi-conventions)
@@ -95,6 +101,8 @@ Microsoft Learn:
 
 [Stacks on ARM processors.doc](http://www.cems.uwe.ac.uk/~cduffy/es/ARMstacks.doc)
 [Armv8-M Exception Model User Guide - Stack frames](https://developer.arm.com/documentation/107706/0100/Exceptions-and-interrupts-overview/Stack-frames)
+
+[System V ABI for the Arm® 64-bit Architecture (AArch64)](https://github.com/ARM-software/abi-aa/blob/844a79fd4c77252a11342709e3b27b2c9f590cf1/sysvabi64/sysvabi64.rst)
 
 [Subroutines and Parameter passing.ppt](http://users.ece.utexas.edu/~valvano/Volume1/Lec5.ppt)
 [iOS Assembly Tutorial: Understanding ARM](https://www.kodeco.com/2705-ios-assembly-tutorial-understanding-arm)

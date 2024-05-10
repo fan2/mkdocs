@@ -79,6 +79,8 @@ comments: true
 
 [assembly - QWORD Storing / implementing using 32-bit REGs.? - Stack Overflow](https://stackoverflow.com/questions/7865511/qword-storing-implementing-using-32-bit-regs)
 
+[Overview of ARM64 ABI conventions](https://learn.microsoft.com/en-us/cpp/build/arm64-windows-abi-conventions) - [Endianness](https://learn.microsoft.com/en-us/cpp/build/arm64-windows-abi-conventions#endianness)
+
 ## predefined macros
 
 在 [Dump Compiler Options](../toolchain/dump-compiler-options.md) 中有介绍如何 dump compiler predefined macros。

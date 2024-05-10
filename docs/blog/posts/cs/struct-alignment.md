@@ -195,7 +195,11 @@ GCC - [Determining the Alignment of Functions, Types or Variables](https://gcc.g
 
 ### default alignment
 
+参考上一篇 《[Memory Address Alignment](./address-alignment.md)》 中的 natural alignment 部分。
+
 **MSVC** - [/Zp (Struct Member Alignment)](https://learn.microsoft.com/en-us/cpp/build/reference/zp-struct-member-alignment)：Controls how the members of a structure are packed into memory and specifies the same packing for all structures in a module.
+
+- [x64 ABI conventions](https://learn.microsoft.com/en-us/cpp/build/x64-software-conventions#x64-type-and-storage-layout) - [x64 type and storage layout](https://learn.microsoft.com/en-us/cpp/build/x64-software-conventions#x64-type-and-storage-layout) - Scalar types alignment
 
 /Zp argument | Effect
 ------- | -------
@@ -226,19 +230,23 @@ As in the preceding examples, you can explicitly specify the alignment (in bytes
 - For `AArch32`, the default alignment is 8 bytes.
 - For `AArch64`, the default alignment is 16 bytes.
 
-### GCC BIGGEST_ALIGNMENT
+### BIGGEST_ALIGNMENT
+
+The default alignment is *sufficient* for all scalar types, but may not be enough for all vector types on a target that supports vector operations.
+
+!!! note "x86 strictest 16-bytes alignment"
+
+    [x86 Assembly/SSE](https://en.wikibooks.org/wiki/X86_Assembly/SSE#SSE2:_Added_with_Pentium_4) - `movapd`: move two 64-bit(double precision) floats, vector is 16 byte aligned. Refer to [Demystifying SSE Move Instructions](https://www.gamedev.net/blog/615/entry-2250281-demystifying-sse-move-instructions/).
+
+    [x64 calling convention](https://learn.microsoft.com/en-us/cpp/build/x64-calling-convention) - [Alignment](https://learn.microsoft.com/en-us/cpp/build/x64-calling-convention#alignment): Most structures are aligned to their natural alignment. The primary exceptions are the stack pointer and `malloc` or `alloca` memory, which are 16-byte aligned to aid performance. Alignment above 16 bytes must be done manually. Since 16 bytes is a common alignment size for **XMM** operations, this value should work for most code. For more information about structure layout and alignment, see [x64 type and storage layout](https://learn.microsoft.com/en-us/cpp/build/x64-software-conventions#x64-type-and-storage-layout). For information about the stack layout, see [x64 stack usage](https://learn.microsoft.com/en-us/cpp/build/stack-usage).
+
+[GCC](https://gcc.gnu.org/onlinedocs/gcc/Common-Variable-Attributes.html) also provides a target specific macro `__BIGGEST_ALIGNMENT__`, which is the *largest* alignment ever used for *any* data type on the target machine you are compiling for.
 
 !!! warning "linker limitations for maximal alignment size"
 
     Note that the effectiveness of aligned attributes for static variables may be limited by inherent limitations in the system linker and/or object file format. On some systems, the linker is only able to arrange for variables to be aligned up to a certain maximum alignment. (For some linkers, the maximum supported alignment may be very very small.) If your linker is only able to align variables up to a maximum of 8-byte alignment, then specifying aligned(16) in an `__attribute__` still only provides you with 8-byte alignment. See your linker documentation for further information.
 
     Stack variables are not affected by linker restrictions; GCC can properly align them on any target.
-
-The default alignment is *sufficient* for all scalar types, but may not be enough for all vector types on a target that supports vector operations.
-
-> [x86 Assembly/SSE](https://en.wikibooks.org/wiki/X86_Assembly/SSE#SSE2:_Added_with_Pentium_4) - `movapd`: move two 64-bit(double precision) floats, vector is 16 byte aligned. Refer to [Demystifying SSE Move Instructions](https://www.gamedev.net/blog/615/entry-2250281-demystifying-sse-move-instructions/).
-
-[GCC](https://gcc.gnu.org/onlinedocs/gcc/Common-Variable-Attributes.html) also provides a target specific macro `__BIGGEST_ALIGNMENT__`, which is the *largest* alignment ever used for *any* data type on the target machine you are compiling for.
 
 可以借助 cpp / gcc -E -dM 预编译，过滤打印出 `__BIGGEST_ALIGNMENT__` 宏定义：
 
@@ -264,6 +272,35 @@ $ echo | cpp -dM | grep '__BIGGEST_ALIGNMENT__'
     Pointers returned by allocation functions such as malloc are suitably aligned for *any* object, which means they are aligned at *least* as strictly as `max_align_t`.
 
     文末测试程序 struct-packed-aligned.c 测得的 `alignof(max_align_t)` 数值同对应平台上的 `__BIGGEST_ALIGNMENT__`。
+
+### gcc \_\_attribute\_\_
+
+GCC specific [Common Variable Attributes](https://gcc.gnu.org/onlinedocs/gcc/Common-Variable-Attributes.html) 提供了属性修饰声明 `__attribute__`，支持定义变量的存储布局为 `packed`，或通过 `aligned [(n)]` 改变默认对齐字节数。
+
+1. The `packed` attribute specifies that a structure member should have the ***smallest*** possible alignment—one bit for a bit-field and one byte otherwise, unless a larger value is specified with the `aligned` attribute. The attribute *does not* apply to non-member objects.
+
+    - `struct __attribute__((__packed__))` 相当于 `-fpack-struct`，满足 weakest alignment requirement，按 1 字节对齐（*without* holes）。
+
+2. The `aligned` attribute specifies a ***minimum*** alignment for the variable or structure field, measured in bytes. When specified, alignment must be an integer constant power of 2. Specifying *no* alignment argument implies the ***maximum*** alignment for the target, which is often, but by no means always, 8 or 16 bytes.
+
+    - 当 `__attribute__((aligned))` 不指定参数时，相当于采用默认的 default maximum alignment 对齐策略。
+
+[align (C++)](https://learn.microsoft.com/en-us/cpp/cpp/align-cpp?view=msvc-170) - Microsoft Specific
+
+> Use `__declspec(align(n))` to precisely control the alignment of user-defined data (for example, static allocations or automatic data in a function).
+
+related topics:
+
+- [c - The advantage of using \_\_attribute\_\_((aligned( )))](https://softwareengineering.stackexchange.com/questions/256179/the-advantage-of-using-attribute-aligned)
+- [visual c++ - Cross-platform ALIGN(x) macro?](https://stackoverflow.com/questions/7895869/cross-platform-alignx-macro)
+
+### gcc -fpack-struct
+
+GCC specific [Options for Code Generation Conventions](https://gcc.gnu.org/onlinedocs/gcc/Code-Gen-Options.html) 支持编译选项 `-fpack-struct[=n]` 指定结构体中成员变量的对齐字节数。
+
+> Without a value specified, pack all structure members together *without* holes. When a value is specified (which must be a small power of two), pack structure members according to this value, representing the ***maximum*** alignment (that is, objects with default alignment requirements larger than this are output potentially unaligned at the next fitting location.
+
+当不指定参数时，`-fpack-struct` 相当于 `struct __attribute__((__packed__))`，满足 weakest alignment requirement，按 1 字节对齐。
 
 ### #pragma pack
 
@@ -298,6 +335,11 @@ rpi4b-ubuntu/arm64 下 GCC 不支持预编译指令选项 `show`。
 ---
 
 MSVC 和 GCC 等编译器中都支持通过预编译处理指令 `#pragma pack(n)` 来改变编译器的默认对齐方式。
+
+[pack pragma | Microsoft Learn](https://learn.microsoft.com/en-us/cpp/preprocessor/pack)
+
+> To *pack* a class is to place its members directly after each other in memory. It can mean that some or all members can be aligned on a boundary ***smaller*** than the default alignment of the target architecture. `pack` gives control at the data-declaration level.
+> 在 GCC 中，对于 `#pragma pack(n)` 中的结构体而言，相当于 `-fpack-struct[=n]`，指定 ***maximum*** alignment 对齐策略，可能小于默认的对齐参数。
 
 ```c
 #pragma pack(n)
@@ -341,19 +383,19 @@ struct st_cdi
 
 ## test alignment
 
-GCC 的 [Options for Code Generation Conventions](https://gcc.gnu.org/onlinedocs/gcc/Code-Gen-Options.html) 支持编译选项 `-fpack-struct[=n]` 指定对齐字节数。
+以下测试代码 struct-packed-aligned.c，综合测试通过指定 `__attribute__` 和 `#pragma pack` 改变结构体默认的对齐方式。
 
-另外，也可以在代码中使用 [Common Variable Attributes](https://gcc.gnu.org/onlinedocs/gcc/Common-Variable-Attributes.html) 提供的属性修饰声明 `__attribute__` 来定义变量的存储布局为 packed 或 aligned。
+1. 可执行 `cpp struct-packed-aligned.c`（或 `gcc -E`）查看宏 `DEFINE_STRUCT_PAIR` / `DEFINE_STRUCT_ALIGNED` 的展开结果。
 
-以下是综合测试代码 struct-packed-aligned.c，可执行 `cpp struct-packed-aligned.c`（或 `gcc -E`）查看宏展开。
-
-1. DEFINE_STRUCT_PAIR 给结构体定义加上属性限定 `__attribute__((__packed__))` 定义 `StructName##_packed`（MyStruct1_packed，MyStruct2_packed），不考虑成员变量的“地址边界对齐限制”，各成员变量依序自然紧凑排列，其大小是各个成员 sizeof 之和。
+2. DEFINE_STRUCT_PAIR 给结构体定义加上属性限定 `__attribute__((__packed__))` 定义 `StructName##_packed`（MyStruct1_packed，MyStruct2_packed），不考虑成员变量的“地址边界对齐限制”，各成员变量依序自然紧凑排列，其大小是各个成员 sizeof 之和。
 
     - [Data structure alignment](https://en.wikipedia.org/wiki/Data_structure_alignment): Alternatively, one can *pack* the structure, omitting the padding, which may lead to slower access, but uses three quarters as much memory.
 
-2. DEFINE_STRUCT_ALIGNED 指定 `__attribute__((aligned(16)))` 定义 `struct MyStruct4_aligned`，后者必须满足整体大小为 n=16 的倍数，sizeof 测算结果为 32。
+3. DEFINE_STRUCT_ALIGNED 指定 `__attribute__((aligned(16)))` 定义 `struct MyStruct4_aligned`，后者必须满足整体大小为 n=16 的倍数，sizeof 测算结果为 32。
 
-3. 相关头文件，参考 [Type support - cppreference.com](https://en.cppreference.com/w/c/types)。
+    - 参考 [x64 structure alignment examples](https://learn.microsoft.com/en-us/cpp/build/x64-software-conventions#x64-structure-alignment-examples)。
+
+4. 相关头文件，参考 [Type support - cppreference.com](https://en.cppreference.com/w/c/types)。
 
 ??? info "struct-packed-aligned.c"
 
@@ -467,10 +509,11 @@ GCC 的 [Options for Code Generation Conventions](https://gcc.gnu.org/onlinedocs
     }
     ```
 
-mbpa2991-macOS/arm64 和 rpi4b-ubuntu/aarch64 LP64 数据模式下输出结果如下：
+mbpa1398-macOS/x86_64、mbpa2991-macOS/arm64 和 rpi4b-ubuntu/aarch64 LP64 数据模式下输出结果如下：
 
 ```Shell
-$ cc struct-packed-aligned.c -o struct-packed-aligned && ./struct-packed-aligned
+# cc struct-packed-aligned.c -o struct-packed-aligned && ./struct-packed-aligned
+$ cc struct-packed-aligned.c -o struct-packed-aligned -g -fno-eliminate-unused-debug-types && ./struct-packed-aligned
 sizeof pointer=8
 alignof(char)=1
 alignof(short)=2
@@ -478,7 +521,7 @@ alignof(int)=4
 alignof(long)=8
 alignof(long long)=8
 alignof(double)=8
-alignof(max_align_t)=8 (comment: 16 for aarch64)
+alignof(max_align_t)=8 (comment: 16 for x86_64 and aarch64)
 ----------------------------------------
 sizeof(MyStruct1)=13,16, alignof(MyStruct1)=8
 sizeof(MyStruct2)=13,24, alignof(MyStruct2)=8
@@ -488,6 +531,82 @@ alignof(MyStruct3): pack(4)=4, aligned(4)=8
 sizeof(MyStruct4): pack(16)=24, aligned(16)=32
 alignof(MyStruct4): pack(16)=8, aligned(16)=16
 ```
+
+**运行调试**：
+
+1. 编译添加 `-g` 选项生成调试信息，添加 `-fno-eliminate-unused-debug-types`；
+2. `gdb struct-packed-aligned` 进入 GDB Console，执行 `start` 启动运行。
+
+**结果分析**：
+
+1. 从 alignof(MyStruct1) 和 alignof(MyStruct2) 来看，三个平台下 default natural alignment=8。
+
+2. 对于 MyStruct3：`#pragma pack(4)`，指定 maximum alignment=4 < default，alignof=min{n, default}=n=4，d 不遵从自然对齐，sizeof=16。
+
+    !!! info "gdb ptype /o MyStruct3"
+
+        ```Shell
+        (gdb) ptype /o struct MyStruct3
+        /* offset      |    size */  type = struct MyStruct3 {
+        /*      0      |       1 */    char c;
+        /* XXX  3-byte hole      */
+        /*      4      |       8 */    double d;
+        /*     12      |       4 */    int i;
+
+                                    /* total size (bytes):   16 */
+                                    }
+        ```
+
+3. 对于 MyStruct3_aligned (4)：指定 minimum alignment=4 < default，alignof=max{n, default}=default=8，结构体按自然对齐，sizeof=24。
+
+    !!! info "gdb ptype /o MyStruct3_aligned"
+
+        ```Shell
+        (gdb) ptype /o struct MyStruct3_aligned
+        /* offset      |    size */  type = struct MyStruct3_aligned {
+        /*      0      |       1 */    char c;
+        /* XXX  7-byte hole      */
+        /*      8      |       8 */    double d;
+        /*     16      |       4 */    int i;
+        /* XXX  4-byte padding   */
+
+                                    /* total size (bytes):   24 */
+                                    }
+        ```
+
+4. 对于 MyStruct4：`#pragma pack(16)`，指定 maximum alignment=16 > default，alignof=min{n, default}=default=8，结构体按自然对齐，sizeof=24。
+
+    !!! info "gdb ptype /o MyStruct4"
+
+        ```Shell
+        (gdb) ptype /o struct MyStruct4
+        /* offset      |    size */  type = struct MyStruct4 {
+        /*      0      |       1 */    char c;
+        /* XXX  7-byte hole      */
+        /*      8      |       8 */    double d;
+        /*     16      |       4 */    int i;
+        /* XXX  4-byte padding   */
+
+                                    /* total size (bytes):   24 */
+                                    }
+        ```
+
+5. 对于 MyStruct4_aligned (16)：指定 minimum alignment=16 > default，alignof=max{n, default}=n=16，结构体按自然对齐，并且总大小必须为 16 的倍数，故 sizeof=32。
+
+    !!! info "gdb ptype /o MyStruct4_aligned"
+
+        ```Shell
+        (gdb) ptype /o struct MyStruct4_aligned
+        /* offset      |    size */  type = struct MyStruct4_aligned {
+        /*      0      |       1 */    char c;
+        /* XXX  7-byte hole      */
+        /*      8      |       8 */    double d;
+        /*     16      |       4 */    int i;
+        /* XXX 12-byte padding   */
+
+                                    /* total size (bytes):   32 */
+                                    }
+        ```
 
 ## refs
 
