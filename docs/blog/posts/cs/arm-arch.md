@@ -1,5 +1,5 @@
 ---
-title: ARM Architecture Profiles
+title: ARM Architecture
 authors:
   - xman
 date:

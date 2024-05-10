@@ -93,6 +93,7 @@ refs: [C++ compiler support](http://en.cppreference.com/w/cpp/compiler_support)�
 
 - [A Tour of C++(3e)-2022](https://www.stroustrup.com/tour3.html) by Bjarne Stroustrup, 19.2 C++ Feature Evolution
 - [现代C++语言核心特性解析-2021](https://item.jd.com/12942311.html) + [cpp23](https://github.com/0cch/moderncpp_public/tree/main)，谢丙堃 著
+- [Modern C++ Programming Cookbook: up to C++20](https://www.amazon.com/Modern-Programming-Cookbook-language-standard/dp/1800208987/) - 2e, 2020, Bancila Marius
 - [Modern C++ for Absolute Beginners: A Friendly Introduction to the C++ Programming Language and C++11 to C++23 Standards](https://www.amazon.com/Modern-Absolute-Beginners-Introduction-Programming/dp/1484292731) by Slobodan Dmitrović
 
 ## Standard Library

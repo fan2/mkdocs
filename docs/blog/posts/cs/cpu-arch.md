@@ -14,7 +14,9 @@ tags:
 comments: true
 ---
 
-Architecture = ISA([Instruction set architecture](https://en.wikipedia.org/wiki/Instruction_set_architecture)) + [Microarchitecture](https://en.wikipedia.org/wiki/Microarchitecture).
+Architecture = [Microarchitecture](https://en.wikipedia.org/wiki/Microarchitecture) + ISA([Instruction set architecture](https://en.wikipedia.org/wiki/Instruction_set_architecture)).
+
+![cpu-architecture-layer](https://www.arm.com/-/media/global/Why%20Arm/architecture/cpu/architecture-layer-diagram-600.png)
 
 有5种指令集最为常见，它们构成了处理器领域的5朵金花。
 
@@ -23,6 +25,8 @@ Architecture = ISA([Instruction set architecture](https://en.wikipedia.org/wiki/
 3. MIPS——优雅的孔雀
 4. Power——昔日的贵族
 5. C6000——偏安一隅的独立王国
+
+This article is about the collection of datasheet/textbooks/references on the three major mainstream CPUs.
 
 <!-- more -->
 
@@ -41,14 +45,14 @@ Architecture = ISA([Instruction set architecture](https://en.wikipedia.org/wiki/
 
 [IA-64 Application Developer’s Architecture Guide](https://redirect.cs.umbc.edu/portal/help/architecture/ex_sum.pdf)
 
-### references
+### textbooks
 
-1. Professional-Assembly-Language(IA32)-2005
-2. Windows环境下32位汇编语言程序设计(2e)-2006
-3. 王爽-汇编语言(4e)-2019
-4. Assembly Language for x86 processors(7e)-2015
-5. Introduction-to-64-Bit-Intel-Assembly-Language-Programming-for-Linux-2011
-6. Modern-X86_64-Assembly-Language-Programming(2e)-2018
+1. 《[汇编语言](https://item.jd.com/12841436.html)》，王爽，2019，4e
+2. [Professional Assembly Language(IA32)](https://www.amazon.com/Professional-Assembly-Language-Richard-Blum/dp/0764579010), Richard Blum, 2005
+3. [Assembly Language For X86 Processors](https://www.amazon.com/Assembly-Language-X86-Processors-Irvine/dp/9352869184), KIP R. IRVINE, 2014, 7e
+4. [Introduction to 64 Bit Assembly Programming for Linux and OS X](https://www.amazon.com/Introduction-Bit-Assembly-Programming-Linux/dp/1484921909), Ray Seyfarth, 2014, 3e
+5. [Windows 64-bit Assembly Language Programming Quick Start: Intel X86-64, SSE, AVX](https://www.amazon.com/Windows-64-bit-Assembly-Language-Programming/dp/0970112467), Robert Dunne, 2018
+6. [Modern X86 Assembly Language Programming: Covers X86 64-bit, AVX, AVX2, and AVX-512](https://www.amazon.com/Modern-X86-Assembly-Language-Programming/dp/1484296028/), Daniel Kusswurm, 2023, 3e
 
 ## ARM
 
@@ -71,31 +75,40 @@ Architecture = ISA([Instruction set architecture](https://en.wikipedia.org/wiki/
 [Learn the architecture](https://developer.arm.com/documentation/102404/0201/?lang=en)
 
 - [Arm A-profile Architecture Registers](https://developer.arm.com/documentation/ddi0601/2024-03/?lang=en)
-- [Arm A-profile A64 Instruction Set Architecture](https://developer.arm.com/documentation/ddi0602/2024-03/?lang=en)
+- [Arm A-profile A64 Instruction Set Architecture](https://developer.arm.com/documentation/ddi0602/2024-03/?lang=en) - [Base Instructions](https://developer.arm.com/documentation/ddi0602/2024-03/Base-Instructions)
 - [ARMv7-M Architecture Reference Manual.pdf](https://developer.arm.com/documentation/ddi0403/ee/?lang=en)
 - [M-Profile/Armv8-M](https://developer.arm.com/documentation/107656/0101/Introduction-to-Armv8-architecture-and-architecture-profiles)
 
+[Getting Started with Arm Assembly Language](https://developer.arm.com/documentation/107829/0200)
+
+### textbooks
+
+1. [Modern Assembly Language Programming with the ARM Processor](https://www.amazon.com/Modern-Assembly-Language-Programming-Processor-ebook/dp/B01FENFCMS/), Larry D Pyeatt, 2016
+2. [ARM 64-Bit Assembly Language](https://www.amazon.com/64-Bit-Assembly-Language-Larry-Pyeatt/dp/0128192216/), Larry D Pyeatt & William Ughetta, 2019
+3. [Raspberry Pi Assembly Language Programming: ARM Processor Coding](https://www.amazon.com/Raspberry-Assembly-Language-Programming-Processor/dp/1484252861/), Stephen Smith, 2019
+4. [Programming with 64-Bit ARM Assembly Language: Single Board Computer Development for Raspberry Pi and Mobile Devices](https://www.amazon.com/Programming-64-Bit-ARM-Assembly-Language/dp/1484258800/), Stephen Smith, 2020
+5. [Modern Arm Assembly Language Programming: Covers Armv8-A 32-bit, 64-bit, and SIMD](https://www.amazon.com/Modern-Assembly-Language-Programming-Armv8/dp/1484262662/), Daniel Kusswurm, 2020
+6. [Computer Organization and Design ARM Edition: The Hardware Software Interface](https://www.amazon.com/Computer-Organization-Design-ARM-Architecture/dp/0128017333), David A. Patterson, John L. Hennessy, 2016 @[ustc](http://home.ustc.edu.cn/~louwenqi/reference_books_tools/Computer%20Organization%20and%20Design%20ARM%20edition.pdf)
+
 ### references
 
-[04_ARM_Architecture_Overview.ppt](https://web.eecs.umich.edu/~prabal/teaching/eecs373-f10/readings/ARM_Architecture_Overview.pdf)
+[RISC-V vs ARM: A Comprehensive Comparison of Processor Architectures](https://www.wevolver.com/article/risc-v-vs-arm)
+[A Comparative Study on the Performance of 64-bit ARM Processors](https://www.researchgate.net/publication/372114908_A_Comparative_Study_on_the_Performance_of_64-bit_ARM_Processors)
 
 The Old New Thing:
 
 - [The ARM processor (Thumb-2), part 1: Introduction](https://devblogs.microsoft.com/oldnewthing/20210531-00/?p=105265)
 - [The AArch64 processor (aka arm64), part 1: Introduction](https://devblogs.microsoft.com/oldnewthing/20220726-00/?p=106898)
 
-[RISC-V vs ARM: A Comprehensive Comparison of Processor Architectures](https://www.wevolver.com/article/risc-v-vs-arm)
+[EECS 373: Design of Microprocessor-Based Systems](https://people.eecs.berkeley.edu/~prabal/teaching/eecs373-f10/index.html) - [ARM_Architecture_Overview.ppt](https://web.eecs.umich.edu/~prabal/teaching/eecs373-f10/readings/ARM_Architecture_Overview.pdf)
 
-[A Comparative Study on the Performance of 64-bit ARM Processors](https://www.researchgate.net/publication/372114908_A_Comparative_Study_on_the_Performance_of_64-bit_ARM_Processors)
+[ARM Assembly By Example](https://armasm.com/)
+[ARM Assembly | Azeria Labs](https://azeria-labs.com/writing-arm-assembly-part-1/)
 
----
+[GNU-ARM-Assy-Quick-Ref.doc](https://www.ic.unicamp.br/~celio/mc404-2014/docs/gnu-arm-directives.pdf)
+[ARM® Instruction Set Quick Reference Card](https://pages.cs.wisc.edu/~markhill/restricted/arm_isa_quick_reference.pdf)
 
-- ARM-64-Bit-Assembly-Language-2020
-- Modern-Arm-Assembly-Language-Programming-2020
-- Modern-Assembly-Language-Programming-with-ARM-2016
-- Programming-with-64-Bit-ARM-Assembly-Language-2020
-
-[Computer Organization and Design ARM Edition: The Hardware Software Interface](https://www.amazon.com/Computer-Organization-Design-ARM-Architecture/dp/0128017333) - 1e-2016 @[ustc](http://home.ustc.edu.cn/~louwenqi/reference_books_tools/Computer%20Organization%20and%20Design%20ARM%20edition.pdf)
+[GNU-Syntax Arm Assembly Language Reference Guide — TI Arm Clang Compiler Tools User's Guide](https://software-dl.ti.com/codegen/docs/tiarmclang/compiler_tools_user_guide/gnu_syntax_arm_asm_language/index.html)
 
 ## MIPS
 
@@ -122,13 +135,24 @@ ustc.edu:
 - [MIPS64® Architecture For Programmers Volume II: The MIPS64® Instruction Set](https://scc.ustc.edu.cn/zlsc/lxwycj/200910/W020100308600769158777.pdf) - 2005
 - [MIPS64® Architecture For Programmers Volume III: The MIPS64® Privileged Resource Architecture](https://scc.ustc.edu.cn/zlsc/lxwycj/200910/W020100308600770617815.pdf) - 2005
 
+### textbooks
+
+1. [See MIPS Run](https://www.amazon.com/Morgan-Kaufmann-Computer-Architecture-Design/dp/0120884216), Dominic Sweetman, 2006, 2e
+2. [Computer Organization and Design RISC-V Edition: The Hardware Software Interface](https://www.amazon.com/Computer-Organization-Design-RISC-V-Architecture/dp/0128122757), David A. Patterson & John L. Hennessy, 2017 @[ustc](http://home.ustc.edu.cn/~louwenqi/reference_books_tools/Computer%20Organization%20and%20Design%20RISC-V%20edition.pdf)
+
 ### references
 
 [assembly - where can I find a description of *all* MIPS instructions](https://stackoverflow.com/questions/135896/where-can-i-find-a-description-of-all-mips-instructions)
 
-[MIPS architecture overview](https://tams.informatik.uni-hamburg.de/applets/hades/webdemos/mips.html)
-
 stanford - [MIPS](https://cs.stanford.edu/people/eroberts/courses/soco/projects/risc/mips/index.html)
+[MIPS architecture overview](https://tams.informatik.uni-hamburg.de/applets/hades/webdemos/mips.html)
+[Introduction to the MIPS Processor](https://www.scss.tcd.ie/Jeremy.Jones/vivio%205.1/dlx/printable.htm)
+[Introduction to the MIPS Architecture and Assembly](https://cs.gordon.edu/courses/cs311/lectures-2021/Introduction%20to%20MIPS.pdf), 2021
+
+[MIPS Assembly Language Programming](https://www.cs.csub.edu/~eddie/cmps2240/doc/britton-mips-text.pdf), 2002
+[Programmed Introduction to MIPS Assembly Language](https://chortle.ccsu.edu/AssemblyTutorial/index.html), 2015
+[COE 301 Lab - Computer Organization](https://faculty.kfupm.edu.sa/COE/aimane/coe301/lab/) - [Introduction_MIPS_Assembly](https://faculty.kfupm.edu.sa/COE/aimane/coe301/lab/COE301_Lab_2_Introduction_MIPS_Assembly.pdf)
+[MIPS Assembly Language (CS 241 Dialect)](https://student.cs.uwaterloo.ca/~cs241/mips/mipsasm.html), 2022
 
 Harvard CS 161:
 
@@ -138,11 +162,6 @@ Harvard CS 161:
 The Old New Thing:
 
 - [The MIPS R4000, part 1: Introduction](https://devblogs.microsoft.com/oldnewthing/20180402-00/?p=98415)
-
----
-
-[See MIPS Run, 2e-2006](https://www.amazon.com/Morgan-Kaufmann-Computer-Architecture-Design/dp/0120884216)
-[Computer Organization and Design RISC-V Edition: The Hardware Software Interface](https://www.amazon.com/Computer-Organization-Design-RISC-V-Architecture/dp/0128122757) - 1e-2017 @[ustc](http://home.ustc.edu.cn/~louwenqi/reference_books_tools/Computer%20Organization%20and%20Design%20RISC-V%20edition.pdf)
 
 ## refs
 
