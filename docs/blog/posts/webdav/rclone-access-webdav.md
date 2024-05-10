@@ -1225,13 +1225,48 @@ Choose 1-5 [2]: 3
     ??? info "cp-config-to-smb.sh"
 
         ```Shell linenums="1"
-        #!/bin/bash
+        #!/usr/bin/env bash
 
-        # predefined variables
-        hostname=$(hostname)
-        host=${hostname%%.*}
-        today=$(date +%Y%m%d)
+        backup_config() {
+          # config filepath
+          config=$1
+          # folder=${config%/*}
+          filename=${config##*/}
+          name=${filename%.*}
+          ext=${filename##*.}
 
+          filedate=$(date -r "$config" +%Y%m%d)
+
+          dstfile=""
+          if [ -z "$name" ]; then
+            dstfile="$dstpath/$host-$filedate.$ext"
+          else
+            dstfile="$dstpath/$host-$filedate-$name.$ext"
+          fi
+
+          # -u: copy only when the SOURCE file is newer than the destination file
+          #            or when the destination file is missing
+          echo -e "$(date +%Y/%m/%d\ %H:%M:%S): cp sync config $filename" >> "$logfile"
+          if cp -v -u "$config" "$dstfile" &>> "$logfile"; then
+            echo -e "$(date +%Y/%m/%d\ %H:%M:%S): cp sync success.\n" >> "$logfile"
+          else
+            echo -e "$(date +%Y/%m/%d\ %H:%M:%S): cp sync failed.\n" >> "$logfile"
+          fi
+        }
+
+        main() {
+          backup_config "$HOME/.zshrc"
+          backup_config "$HOME/.vimrc"
+          backup_config "/etc/vim/vimrc.local"
+        }
+
+        ################################################################################
+        # main entry
+        ################################################################################
+        # echo "param count = $#"
+        # echo "params = $@"
+
+        # 1. make path for logfile
         # echo "dirname = $(dirname $0)"
         dir=$(dirname $0)
         # echo "basename = $(basename $0)"
@@ -1239,13 +1274,15 @@ Choose 1-5 [2]: 3
         name=${name%.*}
         logfile=$dir/$name".log"
 
-        backup_dir="/media/WDHD/backups/config"
+        # 2. extract hostname, ignore domain
+        hostname=$(hostname)
+        host=${hostname%%.*}
 
-        echo -e "$(date +%Y/%m/%d\ %H:%M:%S): <cp sync config>" >> $logfile
-        cp -v -u $HOME/.zshrc $backup_dir/$host-$today.zshrc &>> $logfile
-        cp -v -u $HOME/.vimrc $backup_dir/$host-$today.vimrc &>> $logfile
-        cp -v -u /etc/vim/vimrc.local $backup_dir/$host-$today-vimrc.local &>> $logfile
-        echo -e "$(date +%Y/%m/%d\ %H:%M:%S): </cp sync config>" >> $logfile
+        # 3. backup destination: mount_smbfs
+        dstpath="/media/WDHD/backups/config"
+
+        # 4. main routine entry
+        main "$@" # $*
         ```
 
 2. 保存脚本文件后，执行 `chmod +x ~/Scripts/cp-config-to-smb.sh` 添加可执行权限。
@@ -1509,7 +1546,7 @@ cron 执行出错时默认会通过 MTA 服务给系统管理员发邮件，执�
 ??? info "rclone-sync-linkin-words.sh"
 
     ```Shell linenums="1"
-    #!/bin/bash
+    #!/usr/bin/env bash
 
     # predefined variables
     logfile="/Users/faner/.config/rclone/rclone-$(date +%Y%m).log"
@@ -1589,14 +1626,7 @@ cron 调度任务调试验证 OK 后，再修改调度频率：
 ??? info "rclone-sync-config.sh"
 
     ```Shell linenums="1"
-    #!/bin/bash
-
-    # predefined variables
-    logfile="/Users/faner/.config/rclone/rclone-$(date +%Y%m).log"
-    dstpath="smbhd@rpi4b:WDHD/backups/config"
-
-    hostname=$(hostname)
-    host=${hostname%%.*}
+    #!/usr/bin/env bash
 
     backup_config() {
       # config filepath
@@ -1638,6 +1668,14 @@ cron 调度任务调试验证 OK 后，再修改调度频率：
     ################################################################################
     # echo "param count = $#"
     # echo "params = $@"
+
+    # predefined variables
+    logfile="/Users/cliff/.config/rclone/rclone-$(date +%Y%m).log"
+    dstpath="smbhd@rpi4b:WDHD/backups/config"
+
+    # extract hostname, ignore domain
+    hostname=$(hostname)
+    host=${hostname%%.*}
 
     main "$@" # $*
     ```
