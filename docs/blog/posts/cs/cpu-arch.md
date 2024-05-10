@@ -7,7 +7,7 @@ date:
 categories:
     - CS
 tags:
-    - intel
+    - x86
     - arm
     - mips
     - datasheet
@@ -53,6 +53,10 @@ This article is about the collection of datasheet/textbooks/references on the th
 4. [Introduction to 64 Bit Assembly Programming for Linux and OS X](https://www.amazon.com/Introduction-Bit-Assembly-Programming-Linux/dp/1484921909), Ray Seyfarth, 2014, 3e
 5. [Windows 64-bit Assembly Language Programming Quick Start: Intel X86-64, SSE, AVX](https://www.amazon.com/Windows-64-bit-Assembly-Language-Programming/dp/0970112467), Robert Dunne, 2018
 6. [Modern X86 Assembly Language Programming: Covers X86 64-bit, AVX, AVX2, and AVX-512](https://www.amazon.com/Modern-X86-Assembly-Language-Programming/dp/1484296028/), Daniel Kusswurm, 2023, 3e
+
+### references
+
+[Guide to x86 Assembly](https://flint.cs.yale.edu/cs421/papers/x86-asm/asm.html)
 
 ## ARM
 
@@ -161,9 +165,9 @@ Harvard CS 161:
 - [Overview of the MIPS Architecture: Part I](https://www.eecs.harvard.edu/~cs161/notes/mips-part-I.pdf)
 - [Overview of the MIPS Architecture: Part II](https://www.eecs.harvard.edu/~cs161/notes/mips-part-II.pdf)
 
-The Old New Thing:
+nju-swang: [Lecture 24: Instruction Pipeline(指令流水线)](https://cs.nju.edu.cn/swang/CompArchOrg_13F/slides/lecture24.pdf)
 
-- [The MIPS R4000, part 1: Introduction](https://devblogs.microsoft.com/oldnewthing/20180402-00/?p=98415)
+The Old New Thing: [The MIPS R4000, part 1: Introduction](https://devblogs.microsoft.com/oldnewthing/20180402-00/?p=98415)
 
 ## refs
 
@@ -173,3 +177,5 @@ The Old New Thing:
 
 《ARM 与 x86》 - 作者：王齐
 [《大话处理器》](http://blog.csdn.net/muxiqingyang/article/details/6627096) - 万木杨 著
+
+[CPU体系架构-ARM/MIPS/X86](https://nieyong.github.io/wiki_cpu/index.html)
