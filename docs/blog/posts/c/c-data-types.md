@@ -99,6 +99,32 @@ The following table summarizes all available integer types and their [properties
 
 ![stdint-properties](./images/stdint-properties.png)
 
+## printf format specifier
+
+[C data types](https://en.wikipedia.org/wiki/C_data_types#stddef.h) - Main types - Format specifier
+
+[printf(3) - Linux manual page](https://man7.org/linux/man-pages/man3/printf.3.html) @[opengroup](https://pubs.opengroup.org/onlinepubs/9699919799/functions/fprintf.html#)
+
+- Flag characters
+- Field width
+- Precision
+- Length modifier
+- Conversion specifiers
+
+printf: [cppreference.com](https://en.cppreference.com/w/c/io/fprintf), [cplusplus.com](https://cplusplus.com/reference/cstdio/printf/)
+
+![printf-format-specifier](./images/printf-format-specifier.png)
+
+[Fixed width integer types (since C99)](https://en.cppreference.com/w/c/types/integer)
+
+- Format macro constants - Defined in header <inttypes.h\>
+- Format constants for the fprintf family of functions
+- Each of the `PRI` macros listed here is defined if and only if the implementation defines the corresponding typedef name.
+- 预处理 dump 相关格式宏：`echo "#include <inttypes.h>" | cpp -dM | grep 'FMT\|PRI'`。
+
+[fmtlib/fmt: A modern formatting library](https://github.com/fmtlib/fmt)
+[Comparison of C++ Format and C library's printf](https://vitaut.net/posts/2015/comparison-of-cppformat-and-printf/)
+
 ## Predefined Macros
 
 GNU C Preprocessor - [Common Predefined Macros](https://gcc.gnu.org/onlinedocs/cpp/Common-Predefined-Macros.html)
@@ -315,6 +341,8 @@ WORD_BIT 的值为 32，对应 int 类型的位宽（`__SIZEOF_INT__` * CHAR_BIT
 === "mbpa1398-x86_64"
 
     ```Shell
+    $ arch
+    i386
     # --kernel-name, --kernel-release, --processor, --machine
     $ uname -srpm
     Darwin 20.6.0 x86_64 i386
@@ -336,6 +364,8 @@ WORD_BIT 的值为 32，对应 int 类型的位宽（`__SIZEOF_INT__` * CHAR_BIT
 === "mbpa2991-arm64"
 
     ```Shell
+    $ arch
+    arm64
     # --operating-system, --kernel-name, --kernel-release, --machine, --processor
     $ uname -osrmp
     Darwin 23.5.0 arm64 arm
@@ -357,6 +387,8 @@ WORD_BIT 的值为 32，对应 int 类型的位宽（`__SIZEOF_INT__` * CHAR_BIT
 === "rpi4b-ubuntu - aarch64"
 
     ```Shell
+    $ arch
+    aarch64
     # --operating-system, --kernel-release, --machine, --processor, --kernel-name
     $ uname -srmpo
     Linux 5.15.0-1053-raspi aarch64 aarch64 GNU/Linux
@@ -465,14 +497,13 @@ wordsize.h 中根据 Data Model（`__LP64__` 定义与否）来区分定义 `__W
 - <wctype.h\>(since C95): Functions to determine the type contained in wide character data
 - `wchar_t` : integer type that can hold any valid wide character(typedef)
 
-
 ### size_t
 
 - `__SIZE_TYPE__`
 - `__SIZE_WIDTH__`
 - `__SIZEOF_SIZE_T__`
 
-[Type support](https://en.cppreference.com/w/c/types)
+[Type support](https://en.cppreference.com/w/c/types) - <stddef.h\>
 
 - `size_t`: unsigned integer type returned by the sizeof operator(typedef)
 
@@ -487,7 +518,7 @@ rpi4b-ubuntu 的 /usr/include/stdint.h 中定义了：
 - `__INTPTR_TYPE__`, `__INTPTR_WIDTH__`
 - `__UINTPTR_TYPE__`, `__UINTPTR_WIDTH__`
 
-[Fixed width integer types (since C99)](https://en.cppreference.com/w/c/types/integer)
+[Fixed width integer types (since C99)](https://en.cppreference.com/w/c/types/integer) - <stdint.h\>
 
 - `intptr_t`: integer type capable of holding a pointer
 - `uintptr_t`: unsigned integer type capable of holding a pointer
@@ -509,7 +540,7 @@ rpi4b-ubuntu 的 /usr/include/stdint.h 中定义了：
 - `__PTRDIFF_TYPE__`
 - `__PTRDIFF_WIDTH__`
 
-[Type support](https://en.cppreference.com/w/c/types)
+[Type support](https://en.cppreference.com/w/c/types) - <stddef.h\>
 
 - `ptrdiff_t`: signed integer type returned when subtracting two pointers(typedef)
 

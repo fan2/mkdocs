@@ -184,12 +184,12 @@ struct st_cdi st[4];
 
 ## compiler support
 
-GCC - [Determining the Alignment of Functions, Types or Variables](https://gcc.gnu.org/onlinedocs/gcc/Alignment.html): The keyword `__alignof__` determines the alignment requirement of a function, object, or a type, or the minimum alignment usually required by a type. Its syntax is just like sizeof and C11 `_Alignof`.
+GCC - [Determining the Alignment of Functions, Types or Variables](https://gcc.gnu.org/onlinedocs/gcc/Alignment.html): The keyword `__alignof__` determines the alignment requirement of a function, object, or a type, or the minimum alignment usually required by a type. Its syntax is just like sizeof and [C11 _Alignof](https://en.cppreference.com/w/c/keyword/_Alignof)([until C23](https://en.cppreference.com/w/c/language/_Alignof)).
 
-可以调用类 sizeof 的运算符 `__alignof__` 读取基本类型或结构体类型的对齐参数，例如：
+[Microsoft-specific](https://learn.microsoft.com/en-us/cpp/cpp/alignof-operator?view=msvc-170): `alignof` and `__alignof` are synonyms in the Microsoft compiler. Before it became part of the standard in C++11, the Microsoft-specific `__alignof` operator provided this functionality.
 
-- \_\_alignof\_\_(int))=4
-- \_\_alignof\_\_(struct st_dci))=8
+> For maximum portability, you should use the [alignof](https://en.cppreference.com/w/c/types) operator instead of the 
+GCC-specific `__alignof__` operator or Microsoft-specific `__alignof` operator.
 
 此外，编译器提供的编译配置选项，使得我们有机会修改默认的对齐方式，自行设定变量的对齐方式。
 
@@ -273,7 +273,7 @@ $ echo | cpp -dM | grep '__BIGGEST_ALIGNMENT__'
 
     文末测试程序 struct-packed-aligned.c 测得的 `alignof(max_align_t)` 数值同对应平台上的 `__BIGGEST_ALIGNMENT__`。
 
-### gcc \_\_attribute\_\_
+### gcc/msvc specific
 
 GCC specific [Common Variable Attributes](https://gcc.gnu.org/onlinedocs/gcc/Common-Variable-Attributes.html) 提供了属性修饰声明 `__attribute__`，支持定义变量的存储布局为 `packed`，或通过 `aligned [(n)]` 改变默认对齐字节数。
 
@@ -289,6 +289,36 @@ GCC specific [Common Variable Attributes](https://gcc.gnu.org/onlinedocs/gcc/Co
 
 > Use `__declspec(align(n))` to precisely control the alignment of user-defined data (for example, static allocations or automatic data in a function).
 
+```cpp
+#define CACHE_LINE  32
+#define CACHE_ALIGN __declspec(align(CACHE_LINE))
+
+struct CACHE_ALIGN S1 { // cache align all instances of S1
+   int a, b, c, d;
+};
+struct S1 s1;   // s1 is 32-byte cache aligned
+
+// sizeof(struct S2) = 16
+__declspec(align(8)) struct S2 {
+   int a, b, c, d;
+};
+
+// sizeof(struct S3) = 64.
+struct S3 {
+   struct S1 s1;   // S3 inherits cache alignment requirement
+                  // from S1 declaration
+   int a;         // a is now cache aligned because of s1
+                  // 28 bytes of trailing padding
+};
+
+// sizeof(struct S4) = 64.
+struct S4 {
+   int a;
+   // 28 bytes padding
+   struct S1 s1;      // S4 inherits cache alignment requirement of S1
+};
+```
+
 related topics:
 
 - [c - The advantage of using \_\_attribute\_\_((aligned( )))](https://softwareengineering.stackexchange.com/questions/256179/the-advantage-of-using-attribute-aligned)
@@ -301,6 +331,8 @@ GCC specific [Options for Code Generation Conventions](https://gcc.gnu.org/onlin
 > Without a value specified, pack all structure members together *without* holes. When a value is specified (which must be a small power of two), pack structure members according to this value, representing the ***maximum*** alignment (that is, objects with default alignment requirements larger than this are output potentially unaligned at the next fitting location.
 
 当不指定参数时，`-fpack-struct` 相当于 `struct __attribute__((__packed__))`，满足 weakest alignment requirement，按 1 字节对齐。
+
+[Data structure alignment](https://en.wikipedia.org/wiki/Data_structure_alignment): Alternatively, one can ***pack*** the structure, omitting the padding, which may lead to slower access, but uses three quarters as much memory.
 
 ### #pragma pack
 
@@ -389,13 +421,9 @@ struct st_cdi
 
 2. DEFINE_STRUCT_PAIR 给结构体定义加上属性限定 `__attribute__((__packed__))` 定义 `StructName##_packed`（MyStruct1_packed，MyStruct2_packed），不考虑成员变量的“地址边界对齐限制”，各成员变量依序自然紧凑排列，其大小是各个成员 sizeof 之和。
 
-    - [Data structure alignment](https://en.wikipedia.org/wiki/Data_structure_alignment): Alternatively, one can *pack* the structure, omitting the padding, which may lead to slower access, but uses three quarters as much memory.
-
 3. DEFINE_STRUCT_ALIGNED 指定 `__attribute__((aligned(16)))` 定义 `struct MyStruct4_aligned`，后者必须满足整体大小为 n=16 的倍数，sizeof 测算结果为 32。
 
     - 参考 [x64 structure alignment examples](https://learn.microsoft.com/en-us/cpp/build/x64-software-conventions#x64-structure-alignment-examples)。
-
-4. 相关头文件，参考 [Type support - cppreference.com](https://en.cppreference.com/w/c/types)。
 
 ??? info "struct-packed-aligned.c"
 
@@ -404,6 +432,13 @@ struct st_cdi
     #include <stdalign.h>   // alignof, alignas
     #include <stdint.h>
     #include <stdio.h>
+
+    struct Readout
+    {
+        char hour;  // [0:23]
+        int value;
+        char seq;   // sequence mark ['a':'z']
+    };
 
     // __attribute__ ((__packed__))
     // struct's members are packed closely together,
@@ -466,27 +501,30 @@ struct st_cdi
     {
         printf("sizeof pointer=%zu\n", sizeof(void *));
 
-        printf("alignof(char)=%tu\n", __alignof__(char));
-        printf("alignof(short)=%tu\n", __alignof__(short));
-        printf("alignof(int)=%tu\n", __alignof__(int));
-        printf("alignof(long)=%tu\n", __alignof__(long));
-        printf("alignof(long long)=%tu\n", __alignof__(long long));
-        printf("alignof(double)=%tu\n", __alignof__(double));
+        printf("alignof(char)=%zu\n", alignof(char));
+        printf("alignof(short)=%zu\n", alignof(short));
+        printf("alignof(int)=%zu\n", alignof(int));
+        printf("alignof(long)=%zu\n", alignof(long));
+        printf("alignof(long long)=%zu\n", alignof(long long));
+        printf("alignof(double)=%zu\n", alignof(double));
 
         size_t ma = alignof(max_align_t);
         printf("alignof(max_align_t)=%zu\n", ma);
 
         puts("----------------------------------------");
 
-        printf("sizeof(MyStruct1)=%zu,%zu, alignof(MyStruct1)=%tu\n",
+        printf("sizeof(Readout)=%zu, alignof(Readout)=%zu\n",
+                sizeof(struct Readout), alignof(struct Readout));
+
+        printf("sizeof(MyStruct1)=%zu,%zu, alignof(MyStruct1)=%zu\n",
             GET_PACKED_SIZE(MyStruct1), GET_SIZE(MyStruct1),
-            __alignof__(struct MyStruct1));
-        printf("sizeof(MyStruct2)=%zu,%zu, alignof(MyStruct2)=%tu\n",
+            alignof(struct MyStruct1));
+        printf("sizeof(MyStruct2)=%zu,%zu, alignof(MyStruct2)=%zu\n",
             GET_PACKED_SIZE(MyStruct2), GET_SIZE(MyStruct2),
-            __alignof__(struct MyStruct2));
+            alignof(struct MyStruct2));
 
         struct MyStruct2 ms2;
-        printf("MyStruct2 offsets: c=%tu, d=%tu, i=%tu\n",
+        printf("MyStruct2 offsets: c=%zu, d=%zu, i=%zu\n",
             offsetof(struct MyStruct2, c),
             offsetof(struct MyStruct2, d),
             (uintptr_t)&ms2.i - (uintptr_t)&ms2);
@@ -495,15 +533,15 @@ struct st_cdi
             sizeof(struct MyStruct3),
             GET_ALIGNED_SIZE(MyStruct3));
         printf("alignof(MyStruct3): pack(4)=%zu, aligned(4)=%zu\n",
-            __alignof__(struct MyStruct3),
-            __alignof__(struct MyStruct3_aligned));
+            alignof(struct MyStruct3),
+            alignof(struct MyStruct3_aligned));
 
         printf("sizeof(MyStruct4): pack(16)=%zu, aligned(16)=%zu\n",
             sizeof(struct MyStruct4),
             GET_ALIGNED_SIZE(MyStruct4));
         printf("alignof(MyStruct4): pack(16)=%zu, aligned(16)=%zu\n",
-            __alignof__(struct MyStruct4),
-            __alignof__(struct MyStruct4_aligned));
+            alignof(struct MyStruct4),
+            alignof(struct MyStruct4_aligned));
 
         return 0;
     }
@@ -523,6 +561,7 @@ alignof(long long)=8
 alignof(double)=8
 alignof(max_align_t)=8 (comment: 16 for x86_64 and aarch64)
 ----------------------------------------
+sizeof(Readout)=12, alignof(Readout)=4
 sizeof(MyStruct1)=13,16, alignof(MyStruct1)=8
 sizeof(MyStruct2)=13,24, alignof(MyStruct2)=8
 MyStruct2 offsets: c=0, d=8, i=16
@@ -532,6 +571,8 @@ sizeof(MyStruct4): pack(16)=24, aligned(16)=32
 alignof(MyStruct4): pack(16)=8, aligned(16)=16
 ```
 
+### interpretation
+
 **运行调试**：
 
 1. 编译添加 `-g` 选项生成调试信息，添加 `-fno-eliminate-unused-debug-types`；
@@ -539,7 +580,41 @@ alignof(MyStruct4): pack(16)=8, aligned(16)=16
 
 **结果分析**：
 
-1. 从 alignof(MyStruct1) 和 alignof(MyStruct2) 来看，三个平台下 default natural alignment=8。
+1. struct Readout、MyStruct1、MyStruct2，采用 default natural alignment 对齐策略，遵循“地址边界对齐限制”。
+
+    !!! info "gdb ptype /o MyStruct3"
+
+        ```Shell
+        (gdb) ptype /o struct Readout
+        /* offset      |    size */  type = struct Readout {
+        /*      0      |       1 */    char hour;
+        /* XXX  3-byte hole      */
+        /*      4      |       4 */    int value;
+        /*      8      |       1 */    char seq;
+        /* XXX  3-byte padding   */
+
+                                    /* total size (bytes):   12 */
+                                    }
+        (gdb) ptype /o struct MyStruct1
+        /* offset      |    size */  type = struct MyStruct1 {
+        /*      0      |       8 */    double d;
+        /*      8      |       1 */    char c;
+        /* XXX  3-byte hole      */
+        /*     12      |       4 */    int i;
+
+                                    /* total size (bytes):   16 */
+                                    }
+        (gdb) ptype /o struct MyStruct2
+        /* offset      |    size */  type = struct MyStruct2 {
+        /*      0      |       1 */    char c;
+        /* XXX  7-byte hole      */
+        /*      8      |       8 */    double d;
+        /*     16      |       4 */    int i;
+        /* XXX  4-byte padding   */
+
+                                    /* total size (bytes):   24 */
+                                    }
+        ```
 
 2. 对于 MyStruct3：`#pragma pack(4)`，指定 maximum alignment=4 < default，alignof=min{n, default}=n=4，d 不遵从自然对齐，sizeof=16。
 
