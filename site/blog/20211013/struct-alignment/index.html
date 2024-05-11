@@ -18,7 +18,7 @@
         <link rel="prev" href="../../20211012/address-alignment/">
       
       
-        <link rel="next" href="../../20221212/2-Markdown-Formula/">
+        <link rel="next" href="../struct-alignment-specify/">
       
       
       <link rel="icon" href="../../../assets/hold_yourself.jpg">
@@ -26,7 +26,7 @@
     
     
       
-        <title>Struct Alignment - ElseWhere</title>
+        <title>Struct Alignment Rule - ElseWhere</title>
       
     
     
@@ -123,7 +123,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Struct Alignment
+              Struct Alignment Rule
             
           </span>
         </div>
@@ -1384,51 +1384,9 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#gccmsvc_specific" class="md-nav__link">
+  <a href="#alignof" class="md-nav__link">
     <span class="md-ellipsis">
-      gcc/msvc specific
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#gcc_-fpack-struct" class="md-nav__link">
-    <span class="md-ellipsis">
-      gcc -fpack-struct
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#pragma_pack" class="md-nav__link">
-    <span class="md-ellipsis">
-      #pragma pack
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#test_alignment" class="md-nav__link">
-    <span class="md-ellipsis">
-      test alignment
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="test alignment">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#interpretation" class="md-nav__link">
-    <span class="md-ellipsis">
-      interpretation
+      alignof
     </span>
   </a>
   
@@ -1533,7 +1491,7 @@
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7h1.5Z"/></svg>
                           <span class="md-ellipsis">
                             
-                              需要 15 分钟阅读时间
+                              需要 8 分钟阅读时间
                             
                           </span>
                         </div>
@@ -1581,7 +1539,7 @@
 
 
 
-  <h1>Struct Alignment</h1>
+  <h1>Struct Alignment Rule</h1>
 
 <p>An object doesn't just need enough storage to hold its representation. In addition, on some machine architectures, the bytes used to hold it must have proper alignment for the hardware to access it efﬁciently.</p>
 <p>Where alignment most often becomes visible is in object layouts: sometimes structs contain "<code>holes</code>" to improve alignment.</p>
@@ -1692,15 +1650,9 @@
 <p>具体来说，在为最后一个成员变量 i 分配地址后，已占 20 个字节，还必须在尾部填充4个字节。这样，结构体整体大小 sizeof(struct st_cdi) = 1+(7)+8+4+(4)=24，为 8 的倍数。</p>
 <p>只要确保结构数组起始地址 Sa（&amp;st[0]）是 8 的倍数，就能够保证其后的每个元素（st[1]，st[2]，...）中的成员变量都满足自身的地址对齐限制。</p>
 <h2 id="compiler_support">compiler support<a class="headerlink" href="#compiler_support" title="Permanent link">#</a></h2>
-<p>GCC - <a href="https://gcc.gnu.org/onlinedocs/gcc/Alignment.html">Determining the Alignment of Functions, Types or Variables</a>: The keyword <code>__alignof__</code> determines the alignment requirement of a function, object, or a type, or the minimum alignment usually required by a type. Its syntax is just like sizeof and <a href="https://en.cppreference.com/w/c/keyword/_Alignof">C11 _Alignof</a>(<a href="https://en.cppreference.com/w/c/language/_Alignof">until C23</a>).</p>
-<p><a href="https://learn.microsoft.com/en-us/cpp/cpp/alignof-operator?view=msvc-170">Microsoft-specific</a>: <code>alignof</code> and <code>__alignof</code> are synonyms in the Microsoft compiler. Before it became part of the standard in C++11, the Microsoft-specific <code>__alignof</code> operator provided this functionality.</p>
-<blockquote>
-<p>For maximum portability, you should use the <a href="https://en.cppreference.com/w/c/types">alignof</a> operator instead of the <br />
-GCC-specific <code>__alignof__</code> operator or Microsoft-specific <code>__alignof</code> operator.</p>
-</blockquote>
-<p>此外，编译器提供的编译配置选项，使得我们有机会修改默认的对齐方式，自行设定变量的对齐方式。</p>
+<p>关于存储地址对齐的原因及自然对齐规则，参考上一篇 《<a href="../../20211012/address-alignment/">Memory Address Alignment</a>》 中的 reasons 和 natural alignment 部分。</p>
+<p>相关测试验证，参考下一篇《<a href="../struct-alignment-specify/">Struct Alignment Specify</a>》中的测试程序 struct-packed-aligned.c 及其结果分析。</p>
 <h3 id="default_alignment">default alignment<a class="headerlink" href="#default_alignment" title="Permanent link">#</a></h3>
-<p>参考上一篇 《<a href="../../20211012/address-alignment/">Memory Address Alignment</a>》 中的 natural alignment 部分。</p>
 <p><strong>MSVC</strong> - <a href="https://learn.microsoft.com/en-us/cpp/build/reference/zp-struct-member-alignment">/Zp (Struct Member Alignment)</a>：Controls how the members of a structure are packed into memory and specifies the same packing for all structures in a module.</p>
 <ul>
 <li><a href="https://learn.microsoft.com/en-us/cpp/build/x64-software-conventions#x64-type-and-storage-layout">x64 ABI conventions</a> - <a href="https://learn.microsoft.com/en-us/cpp/build/x64-software-conventions#x64-type-and-storage-layout">x64 type and storage layout</a> - Scalar types alignment</li>
@@ -1785,516 +1737,20 @@ GCC-specific <code>__alignof__</code> operator or Microsoft-specific <code>__ali
 <p class="admonition-title">std::max_align_t</p>
 <p><a href="https://en.cppreference.com/w/c/types/max_align_t">max_align_t</a>(since C11) is a type whose alignment requirement is at least as strict (as large) as that of every scalar type.</p>
 <p>Pointers returned by allocation functions such as malloc are suitably aligned for <em>any</em> object, which means they are aligned at <em>least</em> as strictly as <code>max_align_t</code>.</p>
-<p>文末测试程序 struct-packed-aligned.c 测得的 <code>alignof(max_align_t)</code> 数值同对应平台上的 <code>__BIGGEST_ALIGNMENT__</code>。</p>
 </div>
-<h3 id="gccmsvc_specific">gcc/msvc specific<a class="headerlink" href="#gccmsvc_specific" title="Permanent link">#</a></h3>
-<p>GCC specific <a href="https://gcc.gnu.org/onlinedocs/gcc/Common-Variable-Attributes.html">Common Variable Attributes</a> 提供了属性修饰声明 <code>__attribute__</code>，支持定义变量的存储布局为 <code>packed</code>，或通过 <code>aligned [(n)]</code> 改变默认对齐字节数。</p>
-<ol>
-<li>
-<p>The <code>packed</code> attribute specifies that a structure member should have the <strong><em>smallest</em></strong> possible alignment—one bit for a bit-field and one byte otherwise, unless a larger value is specified with the <code>aligned</code> attribute. The attribute <em>does not</em> apply to non-member objects.</p>
-<ul>
-<li><code>struct __attribute__((__packed__))</code> 相当于 <code>-fpack-struct</code>，开启 Packed alignment mode，按 1 字节对齐（<em>without</em> holes），satisfies weakest alignment requirement。</li>
-</ul>
-</li>
-<li>
-<p>The <code>aligned</code> attribute specifies a <strong><em>minimum</em></strong> alignment for the variable or structure field, measured in bytes. When specified, alignment must be an integer constant power of 2. Specifying <em>no</em> alignment argument implies the <strong><em>maximum</em></strong> alignment for the target, which is often, but by no means always, 8 or 16 bytes.</p>
-<ul>
-<li>当 <code>__attribute__((aligned))</code> 不指定参数时，相当于 Natural alignment mode，采用默认的 default maximum alignment 对齐策略。</li>
-</ul>
-</li>
-</ol>
-<p><a href="https://learn.microsoft.com/en-us/cpp/cpp/align-cpp?view=msvc-170">align (C++)</a> - Microsoft Specific</p>
+<h3 id="alignof">alignof<a class="headerlink" href="#alignof" title="Permanent link">#</a></h3>
+<p>GCC - <a href="https://gcc.gnu.org/onlinedocs/gcc/Alignment.html">Determining the Alignment of Functions, Types or Variables</a>: The keyword <code>__alignof__</code> determines the alignment requirement of a function, object, or a type, or the minimum alignment usually required by a type. Its syntax is just like sizeof and <a href="https://en.cppreference.com/w/c/keyword/_Alignof">C11 _Alignof</a>(<a href="https://en.cppreference.com/w/c/language/_Alignof">until C23</a>).</p>
+<p><a href="https://learn.microsoft.com/en-us/cpp/cpp/alignof-operator?view=msvc-170">Microsoft-specific</a>: <code>alignof</code> and <code>__alignof</code> are synonyms in the Microsoft compiler. Before it became part of the standard in C++11, the Microsoft-specific <code>__alignof</code> operator provided this functionality.</p>
 <blockquote>
-<p>Use <code>__declspec(align(n))</code> to precisely control the alignment of user-defined data (for example, static allocations or automatic data in a function).</p>
+<p>For maximum portability, you should use the <code>alignof</code> operator instead of the <br />
+GCC-specific <code>__alignof__</code> operator or Microsoft-specific <code>__alignof</code> operator.</p>
 </blockquote>
-<div class="language-cpp highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="cp">#define CACHE_LINE  32</span>
-</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="cp">#define CACHE_ALIGN __declspec(align(CACHE_LINE))</span>
-</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>
-</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="k">struct</span><span class="w"> </span><span class="nc">CACHE_ALIGN</span><span class="w"> </span><span class="n">S1</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="c1">// cache align all instances of S1</span>
-</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="w">   </span><span class="kt">int</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="p">,</span><span class="w"> </span><span class="n">d</span><span class="p">;</span>
-</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="p">};</span>
-</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="k">struct</span><span class="w"> </span><span class="nc">S1</span><span class="w"> </span><span class="n">s1</span><span class="p">;</span><span class="w">   </span><span class="c1">// s1 is 32-byte cache aligned</span>
-</span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>
-</span><span id="__span-7-9"><a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a><span class="c1">// sizeof(struct S2) = 16</span>
-</span><span id="__span-7-10"><a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a><span class="kr">__declspec</span><span class="p">(</span><span class="n">align</span><span class="p">(</span><span class="mi">8</span><span class="p">))</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">S2</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-7-11"><a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a><span class="w">   </span><span class="kt">int</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="p">,</span><span class="w"> </span><span class="n">d</span><span class="p">;</span>
-</span><span id="__span-7-12"><a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a><span class="p">};</span>
-</span><span id="__span-7-13"><a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a>
-</span><span id="__span-7-14"><a id="__codelineno-7-14" name="__codelineno-7-14" href="#__codelineno-7-14"></a><span class="c1">// sizeof(struct S3) = 64.</span>
-</span><span id="__span-7-15"><a id="__codelineno-7-15" name="__codelineno-7-15" href="#__codelineno-7-15"></a><span class="k">struct</span><span class="w"> </span><span class="nc">S3</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-7-16"><a id="__codelineno-7-16" name="__codelineno-7-16" href="#__codelineno-7-16"></a><span class="w">   </span><span class="k">struct</span><span class="w"> </span><span class="nc">S1</span><span class="w"> </span><span class="n">s1</span><span class="p">;</span><span class="w">   </span><span class="c1">// S3 inherits cache alignment requirement</span>
-</span><span id="__span-7-17"><a id="__codelineno-7-17" name="__codelineno-7-17" href="#__codelineno-7-17"></a><span class="w">                  </span><span class="c1">// from S1 declaration</span>
-</span><span id="__span-7-18"><a id="__codelineno-7-18" name="__codelineno-7-18" href="#__codelineno-7-18"></a><span class="w">   </span><span class="kt">int</span><span class="w"> </span><span class="n">a</span><span class="p">;</span><span class="w">         </span><span class="c1">// a is now cache aligned because of s1</span>
-</span><span id="__span-7-19"><a id="__codelineno-7-19" name="__codelineno-7-19" href="#__codelineno-7-19"></a><span class="w">                  </span><span class="c1">// 28 bytes of trailing padding</span>
-</span><span id="__span-7-20"><a id="__codelineno-7-20" name="__codelineno-7-20" href="#__codelineno-7-20"></a><span class="p">};</span>
-</span><span id="__span-7-21"><a id="__codelineno-7-21" name="__codelineno-7-21" href="#__codelineno-7-21"></a>
-</span><span id="__span-7-22"><a id="__codelineno-7-22" name="__codelineno-7-22" href="#__codelineno-7-22"></a><span class="c1">// sizeof(struct S4) = 64.</span>
-</span><span id="__span-7-23"><a id="__codelineno-7-23" name="__codelineno-7-23" href="#__codelineno-7-23"></a><span class="k">struct</span><span class="w"> </span><span class="nc">S4</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-7-24"><a id="__codelineno-7-24" name="__codelineno-7-24" href="#__codelineno-7-24"></a><span class="w">   </span><span class="kt">int</span><span class="w"> </span><span class="n">a</span><span class="p">;</span>
-</span><span id="__span-7-25"><a id="__codelineno-7-25" name="__codelineno-7-25" href="#__codelineno-7-25"></a><span class="w">   </span><span class="c1">// 28 bytes padding</span>
-</span><span id="__span-7-26"><a id="__codelineno-7-26" name="__codelineno-7-26" href="#__codelineno-7-26"></a><span class="w">   </span><span class="k">struct</span><span class="w"> </span><span class="nc">S1</span><span class="w"> </span><span class="n">s1</span><span class="p">;</span><span class="w">      </span><span class="c1">// S4 inherits cache alignment requirement of S1</span>
-</span><span id="__span-7-27"><a id="__codelineno-7-27" name="__codelineno-7-27" href="#__codelineno-7-27"></a><span class="p">};</span>
-</span></code></pre></div>
-<p>related topics:</p>
-<ul>
-<li><a href="https://softwareengineering.stackexchange.com/questions/256179/the-advantage-of-using-attribute-aligned">c - The advantage of using __attribute__((aligned( )))</a></li>
-<li><a href="https://stackoverflow.com/questions/7895869/cross-platform-alignx-macro">visual c++ - Cross-platform ALIGN(x) macro?</a></li>
-</ul>
-<h3 id="gcc_-fpack-struct">gcc -fpack-struct<a class="headerlink" href="#gcc_-fpack-struct" title="Permanent link">#</a></h3>
-<p>GCC specific <a href="https://gcc.gnu.org/onlinedocs/gcc/Code-Gen-Options.html">Options for Code Generation Conventions</a> 支持编译选项 <code>-fpack-struct[=n]</code> 指定结构体中成员变量的对齐字节数。</p>
-<blockquote>
-<p>Without a value specified, pack all structure members together <em>without</em> holes. When a value is specified (which must be a small power of two), pack structure members according to this value, representing the <strong><em>maximum</em></strong> alignment (that is, objects with default alignment requirements larger than this are output potentially unaligned at the next fitting location.</p>
-</blockquote>
-<p>当不指定参数时，<code>-fpack-struct</code> 相当于 <code>struct __attribute__((__packed__))</code>，满足 weakest alignment requirement，按 1 字节对齐。</p>
-<p><a href="https://en.wikipedia.org/wiki/Data_structure_alignment">Data structure alignment</a>: Alternatively, one can <strong><em>pack</em></strong> the structure, omitting the padding, which may lead to slower access, but uses three quarters as much memory.</p>
-<h3 id="pragma_pack">#pragma pack<a class="headerlink" href="#pragma_pack" title="Permanent link">#</a></h3>
-<p>GCC - <a href="https://gcc.gnu.org/onlinedocs/gcc/Structure-Layout-Pragmas.html">Structure-Layout Pragmas</a><br />
-<a href="https://learn.microsoft.com/en-us/cpp/preprocessor/pack">pack pragma | Microsoft Learn</a></p>
-<ul>
-<li><code>#pragma pack(show)</code>: Displays the current byte value for packing alignment. The value is displayed by a warning message.</li>
-</ul>
-<p><code>#pragma pack(show)</code> 测试代码：</p>
-<div class="language-c highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="cp">#pragma pack(show)</span>
-</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>
-</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
-</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="p">{</span>
-</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
-</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="p">}</span>
-</span></code></pre></div>
-<p>macOS（Intel x86_64、Apple Silicon arm64）下 clang/llvm-gcc 编译输出警告：</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>$<span class="w"> </span>cc<span class="w"> </span>-S<span class="w"> </span>pack-show.c
-</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>pack-show.c:1:9:<span class="w"> </span>warning:<span class="w"> </span>value<span class="w"> </span>of<span class="w"> </span><span class="c1">#pragma pack(show) == 8</span>
-</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="c1">#pragma pack(show)</span>
-</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="w">        </span>^
-</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="m">1</span><span class="w"> </span>warning<span class="w"> </span>generated.
-</span></code></pre></div>
-<p>rpi4b-ubuntu/arm64 下 GCC 不支持预编译指令选项 <code>show</code>。</p>
-<hr />
-<p>MSVC 和 GCC 等编译器中都支持通过预编译处理指令 <code>#pragma pack(n)</code> 来改变编译器的默认对齐方式。</p>
-<p><a href="https://learn.microsoft.com/en-us/cpp/preprocessor/pack">pack pragma | Microsoft Learn</a></p>
-<blockquote>
-<p>To <em>pack</em> a class is to place its members directly after each other in memory. It can mean that some or all members can be aligned on a boundary <strong><em>smaller</em></strong> than the default alignment of the target architecture. <code>pack</code> gives control at the data-declaration level.<br />
-在 GCC 中，对于 <code>#pragma pack(n)</code> 中的结构体而言，相当于 <code>-fpack-struct[=n]</code>，指定 <strong><em>maximum</em></strong> alignment 对齐策略，可能小于默认的对齐参数。</p>
-</blockquote>
-<div class="language-c highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="cp">#pragma pack(n)</span>
-</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>
-</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="c1">// to be packed</span>
-</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>
-</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="cp">#pragma pack()</span>
-</span></code></pre></div>
-<p>在 <code>#pragma pack(n)</code> 和 <code>#pragma pack()</code> 之间的代码将按 <code>n</code> 字节对齐。</p>
-<p>成员对齐有一个重要的条件，即每个成员按自己的方式对齐，也就是说虽然指定了按 n 字节对齐，但并不是所有的成员都是以 n 字节对齐。其对齐的规则是：每个成员按其类型的对齐参数（通常是这个类型的大小）和指定对齐参数（这里是n字节）中较小的一个对齐，即 <code>min(n, sizeof(item))</code>，并且结构的长度必须为所用过的所有对齐参数的整数倍，不够就填充字节。</p>
+<p>可以通过 <a href="https://en.cppreference.com/w/c/types">&lt;stddef.h&gt;</a> 中提供的的相关宏读取结构体成员变量的偏移量和对齐参数：</p>
 <ol>
-<li>如果 n &gt;= sizeof(item)，成员变量按默认的对齐方式，即按照其 size 对齐，结构对齐后的总大小必须是成员中最大的对齐参数的整数倍，这样在处理数组时可以保证每一项都边界对齐。</li>
-<li>如果 n &lt; sizeof(item)，成员变量的偏移量取 n 的倍数，不用满足默认的对齐方式，结构的总大小必须为 n 的倍数。</li>
+<li>通过宏 <code>offset</code> 可读取结构体中的成员变量的相对地址偏移量；</li>
+<li>通过宏 <code>alignof</code> 可读取变量或结构体的对齐参数。</li>
 </ol>
-<p>默认 n=8，满足第一种情况的自然对齐；当 n&gt;8，不再有实际影响。</p>
-<p>下面举例说明通过 <code>#pragma pack(n)</code> 指定 n&lt;8 时，对结构存储布局的影响。</p>
-<div class="language-cpp highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="cp">#pragma pack(push)</span>
-</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="cp">#pragma pack(4)</span>
-</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>
-</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="k">struct</span><span class="w"> </span><span class="nc">st_cdi</span>
-</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="p">{</span>
-</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a><span class="w">    </span><span class="kt">char</span><span class="w"> </span><span class="n">c</span><span class="p">;</span>
-</span><span id="__span-11-7"><a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a><span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">d</span><span class="p">;</span>
-</span><span id="__span-11-8"><a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="p">;</span>
-</span><span id="__span-11-9"><a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a><span class="p">};</span>
-</span><span id="__span-11-10"><a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a>
-</span><span id="__span-11-11"><a id="__codelineno-11-11" name="__codelineno-11-11" href="#__codelineno-11-11"></a><span class="cp">#pragma pack(pop)</span>
-</span></code></pre></div>
-<ol>
-<li>首先，为c分配空间，其偏移量为0，满足n=4字节对齐方式，c占1个字节。</li>
-<li>其次，为d分配空间，这时其偏移量为1，需填补3个字节，对齐n=4（不必按sizeof(double)=8 对齐），d占8个字节。</li>
-<li>最后，为i分配空间，这时其偏移量为12，满足为n=4的倍数，i占4个字节。</li>
-<li>三个成员共分配了16个字节，满足为n=4的倍数，故 sizeof(st_cdi) = 16。</li>
-</ol>
-<p>如果把 <code>#pragma pack(4)</code> 改为 <code>#pragma pack(16)</code>，那么结构的大小就是 n&gt;8 自然对齐下的24，相当于不受影响。</p>
-<h2 id="test_alignment">test alignment<a class="headerlink" href="#test_alignment" title="Permanent link">#</a></h2>
-<p>以下测试代码 struct-packed-aligned.c，综合测试通过指定 <code>__attribute__</code> 和 <code>#pragma pack</code> 改变结构体默认的对齐方式。</p>
-<ol>
-<li>
-<p>可执行 <code>cpp struct-packed-aligned.c</code>（或 <code>gcc -E</code>）查看宏 <code>DEFINE_STRUCT_PAIR</code> / <code>DEFINE_STRUCT_ALIGNED</code> 的展开结果。</p>
-</li>
-<li>
-<p>DEFINE_STRUCT_PAIR 给结构体定义加上属性限定 <code>__attribute__((__packed__))</code> 定义 <code>StructName##_packed</code>（MyStruct1_packed，MyStruct2_packed），不考虑成员变量的“地址边界对齐限制”，各成员变量依序自然紧凑排列，其大小是各个成员 sizeof 之和。</p>
-</li>
-<li>
-<p>DEFINE_STRUCT_ALIGNED 指定 <code>__attribute__((aligned(16)))</code> 定义 <code>struct MyStruct4_aligned</code>，后者必须满足整体大小为 n=16 的倍数，sizeof 测算结果为 32。</p>
-<ul>
-<li>参考 <a href="https://learn.microsoft.com/en-us/cpp/build/x64-software-conventions#x64-structure-alignment-examples">x64 structure alignment examples</a>。</li>
-</ul>
-</li>
-</ol>
-<details class="info">
-<summary>struct-packed-aligned.c</summary>
-<div class="language-c highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-12-1">  1</a></span>
-<span class="normal"><a href="#__codelineno-12-2">  2</a></span>
-<span class="normal"><a href="#__codelineno-12-3">  3</a></span>
-<span class="normal"><a href="#__codelineno-12-4">  4</a></span>
-<span class="normal"><a href="#__codelineno-12-5">  5</a></span>
-<span class="normal"><a href="#__codelineno-12-6">  6</a></span>
-<span class="normal"><a href="#__codelineno-12-7">  7</a></span>
-<span class="normal"><a href="#__codelineno-12-8">  8</a></span>
-<span class="normal"><a href="#__codelineno-12-9">  9</a></span>
-<span class="normal"><a href="#__codelineno-12-10"> 10</a></span>
-<span class="normal"><a href="#__codelineno-12-11"> 11</a></span>
-<span class="normal"><a href="#__codelineno-12-12"> 12</a></span>
-<span class="normal"><a href="#__codelineno-12-13"> 13</a></span>
-<span class="normal"><a href="#__codelineno-12-14"> 14</a></span>
-<span class="normal"><a href="#__codelineno-12-15"> 15</a></span>
-<span class="normal"><a href="#__codelineno-12-16"> 16</a></span>
-<span class="normal"><a href="#__codelineno-12-17"> 17</a></span>
-<span class="normal"><a href="#__codelineno-12-18"> 18</a></span>
-<span class="normal"><a href="#__codelineno-12-19"> 19</a></span>
-<span class="normal"><a href="#__codelineno-12-20"> 20</a></span>
-<span class="normal"><a href="#__codelineno-12-21"> 21</a></span>
-<span class="normal"><a href="#__codelineno-12-22"> 22</a></span>
-<span class="normal"><a href="#__codelineno-12-23"> 23</a></span>
-<span class="normal"><a href="#__codelineno-12-24"> 24</a></span>
-<span class="normal"><a href="#__codelineno-12-25"> 25</a></span>
-<span class="normal"><a href="#__codelineno-12-26"> 26</a></span>
-<span class="normal"><a href="#__codelineno-12-27"> 27</a></span>
-<span class="normal"><a href="#__codelineno-12-28"> 28</a></span>
-<span class="normal"><a href="#__codelineno-12-29"> 29</a></span>
-<span class="normal"><a href="#__codelineno-12-30"> 30</a></span>
-<span class="normal"><a href="#__codelineno-12-31"> 31</a></span>
-<span class="normal"><a href="#__codelineno-12-32"> 32</a></span>
-<span class="normal"><a href="#__codelineno-12-33"> 33</a></span>
-<span class="normal"><a href="#__codelineno-12-34"> 34</a></span>
-<span class="normal"><a href="#__codelineno-12-35"> 35</a></span>
-<span class="normal"><a href="#__codelineno-12-36"> 36</a></span>
-<span class="normal"><a href="#__codelineno-12-37"> 37</a></span>
-<span class="normal"><a href="#__codelineno-12-38"> 38</a></span>
-<span class="normal"><a href="#__codelineno-12-39"> 39</a></span>
-<span class="normal"><a href="#__codelineno-12-40"> 40</a></span>
-<span class="normal"><a href="#__codelineno-12-41"> 41</a></span>
-<span class="normal"><a href="#__codelineno-12-42"> 42</a></span>
-<span class="normal"><a href="#__codelineno-12-43"> 43</a></span>
-<span class="normal"><a href="#__codelineno-12-44"> 44</a></span>
-<span class="normal"><a href="#__codelineno-12-45"> 45</a></span>
-<span class="normal"><a href="#__codelineno-12-46"> 46</a></span>
-<span class="normal"><a href="#__codelineno-12-47"> 47</a></span>
-<span class="normal"><a href="#__codelineno-12-48"> 48</a></span>
-<span class="normal"><a href="#__codelineno-12-49"> 49</a></span>
-<span class="normal"><a href="#__codelineno-12-50"> 50</a></span>
-<span class="normal"><a href="#__codelineno-12-51"> 51</a></span>
-<span class="normal"><a href="#__codelineno-12-52"> 52</a></span>
-<span class="normal"><a href="#__codelineno-12-53"> 53</a></span>
-<span class="normal"><a href="#__codelineno-12-54"> 54</a></span>
-<span class="normal"><a href="#__codelineno-12-55"> 55</a></span>
-<span class="normal"><a href="#__codelineno-12-56"> 56</a></span>
-<span class="normal"><a href="#__codelineno-12-57"> 57</a></span>
-<span class="normal"><a href="#__codelineno-12-58"> 58</a></span>
-<span class="normal"><a href="#__codelineno-12-59"> 59</a></span>
-<span class="normal"><a href="#__codelineno-12-60"> 60</a></span>
-<span class="normal"><a href="#__codelineno-12-61"> 61</a></span>
-<span class="normal"><a href="#__codelineno-12-62"> 62</a></span>
-<span class="normal"><a href="#__codelineno-12-63"> 63</a></span>
-<span class="normal"><a href="#__codelineno-12-64"> 64</a></span>
-<span class="normal"><a href="#__codelineno-12-65"> 65</a></span>
-<span class="normal"><a href="#__codelineno-12-66"> 66</a></span>
-<span class="normal"><a href="#__codelineno-12-67"> 67</a></span>
-<span class="normal"><a href="#__codelineno-12-68"> 68</a></span>
-<span class="normal"><a href="#__codelineno-12-69"> 69</a></span>
-<span class="normal"><a href="#__codelineno-12-70"> 70</a></span>
-<span class="normal"><a href="#__codelineno-12-71"> 71</a></span>
-<span class="normal"><a href="#__codelineno-12-72"> 72</a></span>
-<span class="normal"><a href="#__codelineno-12-73"> 73</a></span>
-<span class="normal"><a href="#__codelineno-12-74"> 74</a></span>
-<span class="normal"><a href="#__codelineno-12-75"> 75</a></span>
-<span class="normal"><a href="#__codelineno-12-76"> 76</a></span>
-<span class="normal"><a href="#__codelineno-12-77"> 77</a></span>
-<span class="normal"><a href="#__codelineno-12-78"> 78</a></span>
-<span class="normal"><a href="#__codelineno-12-79"> 79</a></span>
-<span class="normal"><a href="#__codelineno-12-80"> 80</a></span>
-<span class="normal"><a href="#__codelineno-12-81"> 81</a></span>
-<span class="normal"><a href="#__codelineno-12-82"> 82</a></span>
-<span class="normal"><a href="#__codelineno-12-83"> 83</a></span>
-<span class="normal"><a href="#__codelineno-12-84"> 84</a></span>
-<span class="normal"><a href="#__codelineno-12-85"> 85</a></span>
-<span class="normal"><a href="#__codelineno-12-86"> 86</a></span>
-<span class="normal"><a href="#__codelineno-12-87"> 87</a></span>
-<span class="normal"><a href="#__codelineno-12-88"> 88</a></span>
-<span class="normal"><a href="#__codelineno-12-89"> 89</a></span>
-<span class="normal"><a href="#__codelineno-12-90"> 90</a></span>
-<span class="normal"><a href="#__codelineno-12-91"> 91</a></span>
-<span class="normal"><a href="#__codelineno-12-92"> 92</a></span>
-<span class="normal"><a href="#__codelineno-12-93"> 93</a></span>
-<span class="normal"><a href="#__codelineno-12-94"> 94</a></span>
-<span class="normal"><a href="#__codelineno-12-95"> 95</a></span>
-<span class="normal"><a href="#__codelineno-12-96"> 96</a></span>
-<span class="normal"><a href="#__codelineno-12-97"> 97</a></span>
-<span class="normal"><a href="#__codelineno-12-98"> 98</a></span>
-<span class="normal"><a href="#__codelineno-12-99"> 99</a></span>
-<span class="normal"><a href="#__codelineno-12-100">100</a></span>
-<span class="normal"><a href="#__codelineno-12-101">101</a></span>
-<span class="normal"><a href="#__codelineno-12-102">102</a></span>
-<span class="normal"><a href="#__codelineno-12-103">103</a></span>
-<span class="normal"><a href="#__codelineno-12-104">104</a></span>
-<span class="normal"><a href="#__codelineno-12-105">105</a></span>
-<span class="normal"><a href="#__codelineno-12-106">106</a></span>
-<span class="normal"><a href="#__codelineno-12-107">107</a></span>
-<span class="normal"><a href="#__codelineno-12-108">108</a></span>
-<span class="normal"><a href="#__codelineno-12-109">109</a></span>
-<span class="normal"><a href="#__codelineno-12-110">110</a></span>
-<span class="normal"><a href="#__codelineno-12-111">111</a></span>
-<span class="normal"><a href="#__codelineno-12-112">112</a></span>
-<span class="normal"><a href="#__codelineno-12-113">113</a></span>
-<span class="normal"><a href="#__codelineno-12-114">114</a></span>
-<span class="normal"><a href="#__codelineno-12-115">115</a></span>
-<span class="normal"><a href="#__codelineno-12-116">116</a></span>
-<span class="normal"><a href="#__codelineno-12-117">117</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stddef.h&gt;</span><span class="c1">     // size_t, max_align_t, offsetof</span>
-</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdalign.h&gt;</span><span class="c1">   // alignof, alignas</span>
-</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdint.h&gt;</span>
-</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
-</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5"></a>
-</span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6"></a><span class="k">struct</span><span class="w"> </span><span class="nc">Readout</span>
-</span><span id="__span-12-7"><a id="__codelineno-12-7" name="__codelineno-12-7"></a><span class="p">{</span>
-</span><span id="__span-12-8"><a id="__codelineno-12-8" name="__codelineno-12-8"></a><span class="w">    </span><span class="kt">char</span><span class="w"> </span><span class="n">hour</span><span class="p">;</span><span class="w">  </span><span class="c1">// [0:23]</span>
-</span><span id="__span-12-9"><a id="__codelineno-12-9" name="__codelineno-12-9"></a><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">value</span><span class="p">;</span>
-</span><span id="__span-12-10"><a id="__codelineno-12-10" name="__codelineno-12-10"></a><span class="w">    </span><span class="kt">char</span><span class="w"> </span><span class="n">seq</span><span class="p">;</span><span class="w">   </span><span class="c1">// sequence mark [&#39;a&#39;:&#39;z&#39;]</span>
-</span><span id="__span-12-11"><a id="__codelineno-12-11" name="__codelineno-12-11"></a><span class="p">};</span>
-</span><span id="__span-12-12"><a id="__codelineno-12-12" name="__codelineno-12-12"></a>
-</span><span id="__span-12-13"><a id="__codelineno-12-13" name="__codelineno-12-13"></a><span class="c1">// __attribute__ ((__packed__))</span>
-</span><span id="__span-12-14"><a id="__codelineno-12-14" name="__codelineno-12-14"></a><span class="c1">// struct&#39;s members are packed closely together,</span>
-</span><span id="__span-12-15"><a id="__codelineno-12-15" name="__codelineno-12-15"></a><span class="c1">// but the internal layout of its s member is not packed</span>
-</span><span id="__span-12-16"><a id="__codelineno-12-16" name="__codelineno-12-16"></a><span class="cp">#define DEFINE_STRUCT_PAIR(StructName, StructBody) \</span>
-</span><span id="__span-12-17"><a id="__codelineno-12-17" name="__codelineno-12-17"></a><span class="cp">    struct StructName StructBody \</span>
-</span><span id="__span-12-18"><a id="__codelineno-12-18" name="__codelineno-12-18"></a><span class="cp">    struct __attribute__((__packed__)) StructName##_packed StructBody</span>
-</span><span id="__span-12-19"><a id="__codelineno-12-19" name="__codelineno-12-19"></a><span class="cp">#define GET_PACKED_SIZE(StructName) sizeof(struct StructName##_packed)</span>
-</span><span id="__span-12-20"><a id="__codelineno-12-20" name="__codelineno-12-20"></a><span class="cp">#define GET_SIZE(StructName) sizeof(struct StructName)</span>
-</span><span id="__span-12-21"><a id="__codelineno-12-21" name="__codelineno-12-21"></a>
-</span><span id="__span-12-22"><a id="__codelineno-12-22" name="__codelineno-12-22"></a><span class="c1">// aligned (alignment): specifies a minimum alignment</span>
-</span><span id="__span-12-23"><a id="__codelineno-12-23" name="__codelineno-12-23"></a><span class="cp">#define DEFINE_STRUCT_ALIGNED(n, StructName, StructBody) \</span>
-</span><span id="__span-12-24"><a id="__codelineno-12-24" name="__codelineno-12-24"></a><span class="cp">    struct __attribute__((aligned(n))) StructName##_aligned StructBody</span>
-</span><span id="__span-12-25"><a id="__codelineno-12-25" name="__codelineno-12-25"></a><span class="cp">#define GET_ALIGNED_SIZE(StructName) sizeof(struct StructName##_aligned)</span>
-</span><span id="__span-12-26"><a id="__codelineno-12-26" name="__codelineno-12-26"></a>
-</span><span id="__span-12-27"><a id="__codelineno-12-27" name="__codelineno-12-27"></a><span class="n">DEFINE_STRUCT_PAIR</span><span class="p">(</span><span class="n">MyStruct1</span><span class="p">,</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-12-28"><a id="__codelineno-12-28" name="__codelineno-12-28"></a><span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">d</span><span class="p">;</span>
-</span><span id="__span-12-29"><a id="__codelineno-12-29" name="__codelineno-12-29"></a><span class="w">    </span><span class="kt">char</span><span class="w"> </span><span class="n">c</span><span class="p">;</span>
-</span><span id="__span-12-30"><a id="__codelineno-12-30" name="__codelineno-12-30"></a><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="p">;</span>
-</span><span id="__span-12-31"><a id="__codelineno-12-31" name="__codelineno-12-31"></a><span class="p">};)</span>
-</span><span id="__span-12-32"><a id="__codelineno-12-32" name="__codelineno-12-32"></a>
-</span><span id="__span-12-33"><a id="__codelineno-12-33" name="__codelineno-12-33"></a><span class="n">DEFINE_STRUCT_PAIR</span><span class="p">(</span><span class="n">MyStruct2</span><span class="p">,</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-12-34"><a id="__codelineno-12-34" name="__codelineno-12-34"></a><span class="w">    </span><span class="kt">char</span><span class="w"> </span><span class="n">c</span><span class="p">;</span>
-</span><span id="__span-12-35"><a id="__codelineno-12-35" name="__codelineno-12-35"></a><span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">d</span><span class="p">;</span>
-</span><span id="__span-12-36"><a id="__codelineno-12-36" name="__codelineno-12-36"></a><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="p">;</span>
-</span><span id="__span-12-37"><a id="__codelineno-12-37" name="__codelineno-12-37"></a><span class="p">};)</span>
-</span><span id="__span-12-38"><a id="__codelineno-12-38" name="__codelineno-12-38"></a>
-</span><span id="__span-12-39"><a id="__codelineno-12-39" name="__codelineno-12-39"></a><span class="cp">#pragma pack(push, 4)</span>
-</span><span id="__span-12-40"><a id="__codelineno-12-40" name="__codelineno-12-40"></a><span class="k">struct</span><span class="w"> </span><span class="nc">MyStruct3</span>
-</span><span id="__span-12-41"><a id="__codelineno-12-41" name="__codelineno-12-41"></a><span class="p">{</span>
-</span><span id="__span-12-42"><a id="__codelineno-12-42" name="__codelineno-12-42"></a><span class="w">    </span><span class="kt">char</span><span class="w"> </span><span class="n">c</span><span class="p">;</span>
-</span><span id="__span-12-43"><a id="__codelineno-12-43" name="__codelineno-12-43"></a><span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">d</span><span class="p">;</span>
-</span><span id="__span-12-44"><a id="__codelineno-12-44" name="__codelineno-12-44"></a><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="p">;</span>
-</span><span id="__span-12-45"><a id="__codelineno-12-45" name="__codelineno-12-45"></a><span class="p">};</span>
-</span><span id="__span-12-46"><a id="__codelineno-12-46" name="__codelineno-12-46"></a><span class="cp">#pragma pack(pop)</span>
-</span><span id="__span-12-47"><a id="__codelineno-12-47" name="__codelineno-12-47"></a>
-</span><span id="__span-12-48"><a id="__codelineno-12-48" name="__codelineno-12-48"></a><span class="n">DEFINE_STRUCT_ALIGNED</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="n">MyStruct3</span><span class="p">,</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-12-49"><a id="__codelineno-12-49" name="__codelineno-12-49"></a><span class="w">    </span><span class="kt">char</span><span class="w"> </span><span class="n">c</span><span class="p">;</span>
-</span><span id="__span-12-50"><a id="__codelineno-12-50" name="__codelineno-12-50"></a><span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">d</span><span class="p">;</span>
-</span><span id="__span-12-51"><a id="__codelineno-12-51" name="__codelineno-12-51"></a><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="p">;</span>
-</span><span id="__span-12-52"><a id="__codelineno-12-52" name="__codelineno-12-52"></a><span class="p">};)</span>
-</span><span id="__span-12-53"><a id="__codelineno-12-53" name="__codelineno-12-53"></a>
-</span><span id="__span-12-54"><a id="__codelineno-12-54" name="__codelineno-12-54"></a><span class="cp">#pragma pack(push, 16)</span>
-</span><span id="__span-12-55"><a id="__codelineno-12-55" name="__codelineno-12-55"></a><span class="k">struct</span><span class="w"> </span><span class="nc">MyStruct4</span>
-</span><span id="__span-12-56"><a id="__codelineno-12-56" name="__codelineno-12-56"></a><span class="p">{</span>
-</span><span id="__span-12-57"><a id="__codelineno-12-57" name="__codelineno-12-57"></a><span class="w">    </span><span class="kt">char</span><span class="w"> </span><span class="n">c</span><span class="p">;</span>
-</span><span id="__span-12-58"><a id="__codelineno-12-58" name="__codelineno-12-58"></a><span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">d</span><span class="p">;</span>
-</span><span id="__span-12-59"><a id="__codelineno-12-59" name="__codelineno-12-59"></a><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="p">;</span>
-</span><span id="__span-12-60"><a id="__codelineno-12-60" name="__codelineno-12-60"></a><span class="p">};</span>
-</span><span id="__span-12-61"><a id="__codelineno-12-61" name="__codelineno-12-61"></a><span class="cp">#pragma pack(pop)</span>
-</span><span id="__span-12-62"><a id="__codelineno-12-62" name="__codelineno-12-62"></a>
-</span><span id="__span-12-63"><a id="__codelineno-12-63" name="__codelineno-12-63"></a><span class="c1">// on a 16-byte boundary.</span>
-</span><span id="__span-12-64"><a id="__codelineno-12-64" name="__codelineno-12-64"></a><span class="n">DEFINE_STRUCT_ALIGNED</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span><span class="w"> </span><span class="n">MyStruct4</span><span class="p">,</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-12-65"><a id="__codelineno-12-65" name="__codelineno-12-65"></a><span class="w">    </span><span class="kt">char</span><span class="w"> </span><span class="n">c</span><span class="p">;</span>
-</span><span id="__span-12-66"><a id="__codelineno-12-66" name="__codelineno-12-66"></a><span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">d</span><span class="p">;</span>
-</span><span id="__span-12-67"><a id="__codelineno-12-67" name="__codelineno-12-67"></a><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="p">;</span>
-</span><span id="__span-12-68"><a id="__codelineno-12-68" name="__codelineno-12-68"></a><span class="p">};)</span>
-</span><span id="__span-12-69"><a id="__codelineno-12-69" name="__codelineno-12-69"></a>
-</span><span id="__span-12-70"><a id="__codelineno-12-70" name="__codelineno-12-70"></a><span class="kt">int</span><span class="w"> </span><span class="n">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
-</span><span id="__span-12-71"><a id="__codelineno-12-71" name="__codelineno-12-71"></a><span class="p">{</span>
-</span><span id="__span-12-72"><a id="__codelineno-12-72" name="__codelineno-12-72"></a><span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;sizeof pointer=%zu</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="p">));</span>
-</span><span id="__span-12-73"><a id="__codelineno-12-73" name="__codelineno-12-73"></a>
-</span><span id="__span-12-74"><a id="__codelineno-12-74" name="__codelineno-12-74"></a><span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;alignof(char)=%zu</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">alignof</span><span class="p">(</span><span class="kt">char</span><span class="p">));</span>
-</span><span id="__span-12-75"><a id="__codelineno-12-75" name="__codelineno-12-75"></a><span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;alignof(short)=%zu</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">alignof</span><span class="p">(</span><span class="kt">short</span><span class="p">));</span>
-</span><span id="__span-12-76"><a id="__codelineno-12-76" name="__codelineno-12-76"></a><span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;alignof(int)=%zu</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">alignof</span><span class="p">(</span><span class="kt">int</span><span class="p">));</span>
-</span><span id="__span-12-77"><a id="__codelineno-12-77" name="__codelineno-12-77"></a><span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;alignof(long)=%zu</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">alignof</span><span class="p">(</span><span class="kt">long</span><span class="p">));</span>
-</span><span id="__span-12-78"><a id="__codelineno-12-78" name="__codelineno-12-78"></a><span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;alignof(long long)=%zu</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">alignof</span><span class="p">(</span><span class="kt">long</span><span class="w"> </span><span class="kt">long</span><span class="p">));</span>
-</span><span id="__span-12-79"><a id="__codelineno-12-79" name="__codelineno-12-79"></a><span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;alignof(double)=%zu</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">alignof</span><span class="p">(</span><span class="kt">double</span><span class="p">));</span>
-</span><span id="__span-12-80"><a id="__codelineno-12-80" name="__codelineno-12-80"></a>
-</span><span id="__span-12-81"><a id="__codelineno-12-81" name="__codelineno-12-81"></a><span class="w">    </span><span class="kt">size_t</span><span class="w"> </span><span class="n">ma</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">alignof</span><span class="p">(</span><span class="n">max_align_t</span><span class="p">);</span>
-</span><span id="__span-12-82"><a id="__codelineno-12-82" name="__codelineno-12-82"></a><span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;alignof(max_align_t)=%zu</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">ma</span><span class="p">);</span>
-</span><span id="__span-12-83"><a id="__codelineno-12-83" name="__codelineno-12-83"></a>
-</span><span id="__span-12-84"><a id="__codelineno-12-84" name="__codelineno-12-84"></a><span class="w">    </span><span class="n">puts</span><span class="p">(</span><span class="s">&quot;----------------------------------------&quot;</span><span class="p">);</span>
-</span><span id="__span-12-85"><a id="__codelineno-12-85" name="__codelineno-12-85"></a>
-</span><span id="__span-12-86"><a id="__codelineno-12-86" name="__codelineno-12-86"></a><span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;sizeof(Readout)=%zu, alignof(Readout)=%zu</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span>
-</span><span id="__span-12-87"><a id="__codelineno-12-87" name="__codelineno-12-87"></a><span class="w">            </span><span class="k">sizeof</span><span class="p">(</span><span class="k">struct</span><span class="w"> </span><span class="nc">Readout</span><span class="p">),</span><span class="w"> </span><span class="k">alignof</span><span class="p">(</span><span class="k">struct</span><span class="w"> </span><span class="nc">Readout</span><span class="p">));</span>
-</span><span id="__span-12-88"><a id="__codelineno-12-88" name="__codelineno-12-88"></a>
-</span><span id="__span-12-89"><a id="__codelineno-12-89" name="__codelineno-12-89"></a><span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;sizeof(MyStruct1)=%zu,%zu, alignof(MyStruct1)=%zu</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span>
-</span><span id="__span-12-90"><a id="__codelineno-12-90" name="__codelineno-12-90"></a><span class="w">        </span><span class="n">GET_PACKED_SIZE</span><span class="p">(</span><span class="n">MyStruct1</span><span class="p">),</span><span class="w"> </span><span class="n">GET_SIZE</span><span class="p">(</span><span class="n">MyStruct1</span><span class="p">),</span>
-</span><span id="__span-12-91"><a id="__codelineno-12-91" name="__codelineno-12-91"></a><span class="w">        </span><span class="k">alignof</span><span class="p">(</span><span class="k">struct</span><span class="w"> </span><span class="nc">MyStruct1</span><span class="p">));</span>
-</span><span id="__span-12-92"><a id="__codelineno-12-92" name="__codelineno-12-92"></a><span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;sizeof(MyStruct2)=%zu,%zu, alignof(MyStruct2)=%zu</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span>
-</span><span id="__span-12-93"><a id="__codelineno-12-93" name="__codelineno-12-93"></a><span class="w">        </span><span class="n">GET_PACKED_SIZE</span><span class="p">(</span><span class="n">MyStruct2</span><span class="p">),</span><span class="w"> </span><span class="n">GET_SIZE</span><span class="p">(</span><span class="n">MyStruct2</span><span class="p">),</span>
-</span><span id="__span-12-94"><a id="__codelineno-12-94" name="__codelineno-12-94"></a><span class="w">        </span><span class="k">alignof</span><span class="p">(</span><span class="k">struct</span><span class="w"> </span><span class="nc">MyStruct2</span><span class="p">));</span>
-</span><span id="__span-12-95"><a id="__codelineno-12-95" name="__codelineno-12-95"></a>
-</span><span id="__span-12-96"><a id="__codelineno-12-96" name="__codelineno-12-96"></a><span class="w">    </span><span class="k">struct</span><span class="w"> </span><span class="nc">MyStruct2</span><span class="w"> </span><span class="n">ms2</span><span class="p">;</span>
-</span><span id="__span-12-97"><a id="__codelineno-12-97" name="__codelineno-12-97"></a><span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;MyStruct2 offsets: c=%zu, d=%zu, i=%zu</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span>
-</span><span id="__span-12-98"><a id="__codelineno-12-98" name="__codelineno-12-98"></a><span class="w">        </span><span class="n">offsetof</span><span class="p">(</span><span class="k">struct</span><span class="w"> </span><span class="nc">MyStruct2</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="p">),</span>
-</span><span id="__span-12-99"><a id="__codelineno-12-99" name="__codelineno-12-99"></a><span class="w">        </span><span class="n">offsetof</span><span class="p">(</span><span class="k">struct</span><span class="w"> </span><span class="nc">MyStruct2</span><span class="p">,</span><span class="w"> </span><span class="n">d</span><span class="p">),</span>
-</span><span id="__span-12-100"><a id="__codelineno-12-100" name="__codelineno-12-100"></a><span class="w">        </span><span class="p">(</span><span class="kt">uintptr_t</span><span class="p">)</span><span class="o">&amp;</span><span class="n">ms2</span><span class="p">.</span><span class="n">i</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="p">(</span><span class="kt">uintptr_t</span><span class="p">)</span><span class="o">&amp;</span><span class="n">ms2</span><span class="p">);</span>
-</span><span id="__span-12-101"><a id="__codelineno-12-101" name="__codelineno-12-101"></a>
-</span><span id="__span-12-102"><a id="__codelineno-12-102" name="__codelineno-12-102"></a><span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;sizeof(MyStruct3): pack(4)=%zu, aligned(4)=%zu</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span>
-</span><span id="__span-12-103"><a id="__codelineno-12-103" name="__codelineno-12-103"></a><span class="w">        </span><span class="k">sizeof</span><span class="p">(</span><span class="k">struct</span><span class="w"> </span><span class="nc">MyStruct3</span><span class="p">),</span>
-</span><span id="__span-12-104"><a id="__codelineno-12-104" name="__codelineno-12-104"></a><span class="w">        </span><span class="n">GET_ALIGNED_SIZE</span><span class="p">(</span><span class="n">MyStruct3</span><span class="p">));</span>
-</span><span id="__span-12-105"><a id="__codelineno-12-105" name="__codelineno-12-105"></a><span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;alignof(MyStruct3): pack(4)=%zu, aligned(4)=%zu</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span>
-</span><span id="__span-12-106"><a id="__codelineno-12-106" name="__codelineno-12-106"></a><span class="w">        </span><span class="k">alignof</span><span class="p">(</span><span class="k">struct</span><span class="w"> </span><span class="nc">MyStruct3</span><span class="p">),</span>
-</span><span id="__span-12-107"><a id="__codelineno-12-107" name="__codelineno-12-107"></a><span class="w">        </span><span class="k">alignof</span><span class="p">(</span><span class="k">struct</span><span class="w"> </span><span class="nc">MyStruct3_aligned</span><span class="p">));</span>
-</span><span id="__span-12-108"><a id="__codelineno-12-108" name="__codelineno-12-108"></a>
-</span><span id="__span-12-109"><a id="__codelineno-12-109" name="__codelineno-12-109"></a><span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;sizeof(MyStruct4): pack(16)=%zu, aligned(16)=%zu</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span>
-</span><span id="__span-12-110"><a id="__codelineno-12-110" name="__codelineno-12-110"></a><span class="w">        </span><span class="k">sizeof</span><span class="p">(</span><span class="k">struct</span><span class="w"> </span><span class="nc">MyStruct4</span><span class="p">),</span>
-</span><span id="__span-12-111"><a id="__codelineno-12-111" name="__codelineno-12-111"></a><span class="w">        </span><span class="n">GET_ALIGNED_SIZE</span><span class="p">(</span><span class="n">MyStruct4</span><span class="p">));</span>
-</span><span id="__span-12-112"><a id="__codelineno-12-112" name="__codelineno-12-112"></a><span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;alignof(MyStruct4): pack(16)=%zu, aligned(16)=%zu</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span>
-</span><span id="__span-12-113"><a id="__codelineno-12-113" name="__codelineno-12-113"></a><span class="w">        </span><span class="k">alignof</span><span class="p">(</span><span class="k">struct</span><span class="w"> </span><span class="nc">MyStruct4</span><span class="p">),</span>
-</span><span id="__span-12-114"><a id="__codelineno-12-114" name="__codelineno-12-114"></a><span class="w">        </span><span class="k">alignof</span><span class="p">(</span><span class="k">struct</span><span class="w"> </span><span class="nc">MyStruct4_aligned</span><span class="p">));</span>
-</span><span id="__span-12-115"><a id="__codelineno-12-115" name="__codelineno-12-115"></a>
-</span><span id="__span-12-116"><a id="__codelineno-12-116" name="__codelineno-12-116"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
-</span><span id="__span-12-117"><a id="__codelineno-12-117" name="__codelineno-12-117"></a><span class="p">}</span>
-</span></code></pre></div></td></tr></table></div>
-</details>
-<p>mbpa1398-macOS/x86_64、mbpa2991-macOS/arm64 和 rpi4b-ubuntu/aarch64 LP64 数据模式下输出结果如下：</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="c1"># cc struct-packed-aligned.c -o struct-packed-aligned &amp;&amp; ./struct-packed-aligned</span>
-</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>$<span class="w"> </span>cc<span class="w"> </span>struct-packed-aligned.c<span class="w"> </span>-o<span class="w"> </span>struct-packed-aligned<span class="w"> </span>-g<span class="w"> </span>-fno-eliminate-unused-debug-types<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>./struct-packed-aligned
-</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>sizeof<span class="w"> </span><span class="nv">pointer</span><span class="o">=</span><span class="m">8</span>
-</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>alignof<span class="o">(</span>char<span class="o">)=</span><span class="m">1</span>
-</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>alignof<span class="o">(</span>short<span class="o">)=</span><span class="m">2</span>
-</span><span id="__span-13-6"><a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a>alignof<span class="o">(</span>int<span class="o">)=</span><span class="m">4</span>
-</span><span id="__span-13-7"><a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a>alignof<span class="o">(</span>long<span class="o">)=</span><span class="m">8</span>
-</span><span id="__span-13-8"><a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a>alignof<span class="o">(</span>long<span class="w"> </span>long<span class="o">)=</span><span class="m">8</span>
-</span><span id="__span-13-9"><a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a>alignof<span class="o">(</span>double<span class="o">)=</span><span class="m">8</span>
-</span><span id="__span-13-10"><a id="__codelineno-13-10" name="__codelineno-13-10" href="#__codelineno-13-10"></a>alignof<span class="o">(</span>max_align_t<span class="o">)=</span><span class="m">8</span><span class="w"> </span><span class="o">(</span>comment:<span class="w"> </span><span class="m">16</span><span class="w"> </span><span class="k">for</span><span class="w"> </span>x86_64<span class="w"> </span>and<span class="w"> </span>aarch64<span class="o">)</span>
-</span><span id="__span-13-11"><a id="__codelineno-13-11" name="__codelineno-13-11" href="#__codelineno-13-11"></a>----------------------------------------
-</span><span id="__span-13-12"><a id="__codelineno-13-12" name="__codelineno-13-12" href="#__codelineno-13-12"></a>sizeof<span class="o">(</span>Readout<span class="o">)=</span><span class="m">12</span>,<span class="w"> </span>alignof<span class="o">(</span>Readout<span class="o">)=</span><span class="m">4</span>
-</span><span id="__span-13-13"><a id="__codelineno-13-13" name="__codelineno-13-13" href="#__codelineno-13-13"></a>sizeof<span class="o">(</span>MyStruct1<span class="o">)=</span><span class="m">13</span>,16,<span class="w"> </span>alignof<span class="o">(</span>MyStruct1<span class="o">)=</span><span class="m">8</span>
-</span><span id="__span-13-14"><a id="__codelineno-13-14" name="__codelineno-13-14" href="#__codelineno-13-14"></a>sizeof<span class="o">(</span>MyStruct2<span class="o">)=</span><span class="m">13</span>,24,<span class="w"> </span>alignof<span class="o">(</span>MyStruct2<span class="o">)=</span><span class="m">8</span>
-</span><span id="__span-13-15"><a id="__codelineno-13-15" name="__codelineno-13-15" href="#__codelineno-13-15"></a>MyStruct2<span class="w"> </span>offsets:<span class="w"> </span><span class="nv">c</span><span class="o">=</span><span class="m">0</span>,<span class="w"> </span><span class="nv">d</span><span class="o">=</span><span class="m">8</span>,<span class="w"> </span><span class="nv">i</span><span class="o">=</span><span class="m">16</span>
-</span><span id="__span-13-16"><a id="__codelineno-13-16" name="__codelineno-13-16" href="#__codelineno-13-16"></a>sizeof<span class="o">(</span>MyStruct3<span class="o">)</span>:<span class="w"> </span>pack<span class="o">(</span><span class="m">4</span><span class="o">)=</span><span class="m">16</span>,<span class="w"> </span>aligned<span class="o">(</span><span class="m">4</span><span class="o">)=</span><span class="m">24</span>
-</span><span id="__span-13-17"><a id="__codelineno-13-17" name="__codelineno-13-17" href="#__codelineno-13-17"></a>alignof<span class="o">(</span>MyStruct3<span class="o">)</span>:<span class="w"> </span>pack<span class="o">(</span><span class="m">4</span><span class="o">)=</span><span class="m">4</span>,<span class="w"> </span>aligned<span class="o">(</span><span class="m">4</span><span class="o">)=</span><span class="m">8</span>
-</span><span id="__span-13-18"><a id="__codelineno-13-18" name="__codelineno-13-18" href="#__codelineno-13-18"></a>sizeof<span class="o">(</span>MyStruct4<span class="o">)</span>:<span class="w"> </span>pack<span class="o">(</span><span class="m">16</span><span class="o">)=</span><span class="m">24</span>,<span class="w"> </span>aligned<span class="o">(</span><span class="m">16</span><span class="o">)=</span><span class="m">32</span>
-</span><span id="__span-13-19"><a id="__codelineno-13-19" name="__codelineno-13-19" href="#__codelineno-13-19"></a>alignof<span class="o">(</span>MyStruct4<span class="o">)</span>:<span class="w"> </span>pack<span class="o">(</span><span class="m">16</span><span class="o">)=</span><span class="m">8</span>,<span class="w"> </span>aligned<span class="o">(</span><span class="m">16</span><span class="o">)=</span><span class="m">16</span>
-</span></code></pre></div>
-<h3 id="interpretation">interpretation<a class="headerlink" href="#interpretation" title="Permanent link">#</a></h3>
-<p><strong>运行调试</strong>：</p>
-<ol>
-<li>编译添加 <code>-g</code> 选项生成调试信息，添加 <code>-fno-eliminate-unused-debug-types</code>；</li>
-<li><code>gdb struct-packed-aligned</code> 进入 GDB Console，执行 <code>start</code> 启动运行。</li>
-</ol>
-<p><strong>结果分析</strong>：</p>
-<ol>
-<li>
-<p>struct Readout、MyStruct1、MyStruct2，采用 default natural alignment 对齐策略，遵循“地址边界对齐限制”。</p>
-<div class="admonition info">
-<p class="admonition-title">gdb ptype /o MyStruct3</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>ptype<span class="w"> </span>/o<span class="w"> </span>struct<span class="w"> </span>Readout
-</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>/*<span class="w"> </span>offset<span class="w">      </span><span class="p">|</span><span class="w">    </span>size<span class="w"> </span>*/<span class="w">  </span><span class="nb">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>struct<span class="w"> </span>Readout<span class="w"> </span><span class="o">{</span>
-</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>/*<span class="w">      </span><span class="m">0</span><span class="w">      </span><span class="p">|</span><span class="w">       </span><span class="m">1</span><span class="w"> </span>*/<span class="w">    </span>char<span class="w"> </span>hour<span class="p">;</span>
-</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a>/*<span class="w"> </span>XXX<span class="w">  </span><span class="m">3</span>-byte<span class="w"> </span>hole<span class="w">      </span>*/
-</span><span id="__span-14-5"><a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a>/*<span class="w">      </span><span class="m">4</span><span class="w">      </span><span class="p">|</span><span class="w">       </span><span class="m">4</span><span class="w"> </span>*/<span class="w">    </span>int<span class="w"> </span>value<span class="p">;</span>
-</span><span id="__span-14-6"><a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a>/*<span class="w">      </span><span class="m">8</span><span class="w">      </span><span class="p">|</span><span class="w">       </span><span class="m">1</span><span class="w"> </span>*/<span class="w">    </span>char<span class="w"> </span>seq<span class="p">;</span>
-</span><span id="__span-14-7"><a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a>/*<span class="w"> </span>XXX<span class="w">  </span><span class="m">3</span>-byte<span class="w"> </span>padding<span class="w">   </span>*/
-</span><span id="__span-14-8"><a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a>
-</span><span id="__span-14-9"><a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a><span class="w">                            </span>/*<span class="w"> </span>total<span class="w"> </span>size<span class="w"> </span><span class="o">(</span>bytes<span class="o">)</span>:<span class="w">   </span><span class="m">12</span><span class="w"> </span>*/
-</span><span id="__span-14-10"><a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a><span class="w">                            </span><span class="o">}</span>
-</span><span id="__span-14-11"><a id="__codelineno-14-11" name="__codelineno-14-11" href="#__codelineno-14-11"></a><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>ptype<span class="w"> </span>/o<span class="w"> </span>struct<span class="w"> </span>MyStruct1
-</span><span id="__span-14-12"><a id="__codelineno-14-12" name="__codelineno-14-12" href="#__codelineno-14-12"></a>/*<span class="w"> </span>offset<span class="w">      </span><span class="p">|</span><span class="w">    </span>size<span class="w"> </span>*/<span class="w">  </span><span class="nb">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>struct<span class="w"> </span>MyStruct1<span class="w"> </span><span class="o">{</span>
-</span><span id="__span-14-13"><a id="__codelineno-14-13" name="__codelineno-14-13" href="#__codelineno-14-13"></a>/*<span class="w">      </span><span class="m">0</span><span class="w">      </span><span class="p">|</span><span class="w">       </span><span class="m">8</span><span class="w"> </span>*/<span class="w">    </span>double<span class="w"> </span>d<span class="p">;</span>
-</span><span id="__span-14-14"><a id="__codelineno-14-14" name="__codelineno-14-14" href="#__codelineno-14-14"></a>/*<span class="w">      </span><span class="m">8</span><span class="w">      </span><span class="p">|</span><span class="w">       </span><span class="m">1</span><span class="w"> </span>*/<span class="w">    </span>char<span class="w"> </span>c<span class="p">;</span>
-</span><span id="__span-14-15"><a id="__codelineno-14-15" name="__codelineno-14-15" href="#__codelineno-14-15"></a>/*<span class="w"> </span>XXX<span class="w">  </span><span class="m">3</span>-byte<span class="w"> </span>hole<span class="w">      </span>*/
-</span><span id="__span-14-16"><a id="__codelineno-14-16" name="__codelineno-14-16" href="#__codelineno-14-16"></a>/*<span class="w">     </span><span class="m">12</span><span class="w">      </span><span class="p">|</span><span class="w">       </span><span class="m">4</span><span class="w"> </span>*/<span class="w">    </span>int<span class="w"> </span>i<span class="p">;</span>
-</span><span id="__span-14-17"><a id="__codelineno-14-17" name="__codelineno-14-17" href="#__codelineno-14-17"></a>
-</span><span id="__span-14-18"><a id="__codelineno-14-18" name="__codelineno-14-18" href="#__codelineno-14-18"></a><span class="w">                            </span>/*<span class="w"> </span>total<span class="w"> </span>size<span class="w"> </span><span class="o">(</span>bytes<span class="o">)</span>:<span class="w">   </span><span class="m">16</span><span class="w"> </span>*/
-</span><span id="__span-14-19"><a id="__codelineno-14-19" name="__codelineno-14-19" href="#__codelineno-14-19"></a><span class="w">                            </span><span class="o">}</span>
-</span><span id="__span-14-20"><a id="__codelineno-14-20" name="__codelineno-14-20" href="#__codelineno-14-20"></a><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>ptype<span class="w"> </span>/o<span class="w"> </span>struct<span class="w"> </span>MyStruct2
-</span><span id="__span-14-21"><a id="__codelineno-14-21" name="__codelineno-14-21" href="#__codelineno-14-21"></a>/*<span class="w"> </span>offset<span class="w">      </span><span class="p">|</span><span class="w">    </span>size<span class="w"> </span>*/<span class="w">  </span><span class="nb">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>struct<span class="w"> </span>MyStruct2<span class="w"> </span><span class="o">{</span>
-</span><span id="__span-14-22"><a id="__codelineno-14-22" name="__codelineno-14-22" href="#__codelineno-14-22"></a>/*<span class="w">      </span><span class="m">0</span><span class="w">      </span><span class="p">|</span><span class="w">       </span><span class="m">1</span><span class="w"> </span>*/<span class="w">    </span>char<span class="w"> </span>c<span class="p">;</span>
-</span><span id="__span-14-23"><a id="__codelineno-14-23" name="__codelineno-14-23" href="#__codelineno-14-23"></a>/*<span class="w"> </span>XXX<span class="w">  </span><span class="m">7</span>-byte<span class="w"> </span>hole<span class="w">      </span>*/
-</span><span id="__span-14-24"><a id="__codelineno-14-24" name="__codelineno-14-24" href="#__codelineno-14-24"></a>/*<span class="w">      </span><span class="m">8</span><span class="w">      </span><span class="p">|</span><span class="w">       </span><span class="m">8</span><span class="w"> </span>*/<span class="w">    </span>double<span class="w"> </span>d<span class="p">;</span>
-</span><span id="__span-14-25"><a id="__codelineno-14-25" name="__codelineno-14-25" href="#__codelineno-14-25"></a>/*<span class="w">     </span><span class="m">16</span><span class="w">      </span><span class="p">|</span><span class="w">       </span><span class="m">4</span><span class="w"> </span>*/<span class="w">    </span>int<span class="w"> </span>i<span class="p">;</span>
-</span><span id="__span-14-26"><a id="__codelineno-14-26" name="__codelineno-14-26" href="#__codelineno-14-26"></a>/*<span class="w"> </span>XXX<span class="w">  </span><span class="m">4</span>-byte<span class="w"> </span>padding<span class="w">   </span>*/
-</span><span id="__span-14-27"><a id="__codelineno-14-27" name="__codelineno-14-27" href="#__codelineno-14-27"></a>
-</span><span id="__span-14-28"><a id="__codelineno-14-28" name="__codelineno-14-28" href="#__codelineno-14-28"></a><span class="w">                            </span>/*<span class="w"> </span>total<span class="w"> </span>size<span class="w"> </span><span class="o">(</span>bytes<span class="o">)</span>:<span class="w">   </span><span class="m">24</span><span class="w"> </span>*/
-</span><span id="__span-14-29"><a id="__codelineno-14-29" name="__codelineno-14-29" href="#__codelineno-14-29"></a><span class="w">                            </span><span class="o">}</span>
-</span></code></pre></div>
-</div>
-</li>
-<li>
-<p>对于 MyStruct3：<code>#pragma pack(4)</code>，指定 maximum alignment=4 &lt; default，alignof=min{n, default}=n=4，d 不遵从自然对齐，sizeof=16。</p>
-<div class="admonition info">
-<p class="admonition-title">gdb ptype /o MyStruct3</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>ptype<span class="w"> </span>/o<span class="w"> </span>struct<span class="w"> </span>MyStruct3
-</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>/*<span class="w"> </span>offset<span class="w">      </span><span class="p">|</span><span class="w">    </span>size<span class="w"> </span>*/<span class="w">  </span><span class="nb">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>struct<span class="w"> </span>MyStruct3<span class="w"> </span><span class="o">{</span>
-</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>/*<span class="w">      </span><span class="m">0</span><span class="w">      </span><span class="p">|</span><span class="w">       </span><span class="m">1</span><span class="w"> </span>*/<span class="w">    </span>char<span class="w"> </span>c<span class="p">;</span>
-</span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a>/*<span class="w"> </span>XXX<span class="w">  </span><span class="m">3</span>-byte<span class="w"> </span>hole<span class="w">      </span>*/
-</span><span id="__span-15-5"><a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a>/*<span class="w">      </span><span class="m">4</span><span class="w">      </span><span class="p">|</span><span class="w">       </span><span class="m">8</span><span class="w"> </span>*/<span class="w">    </span>double<span class="w"> </span>d<span class="p">;</span>
-</span><span id="__span-15-6"><a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a>/*<span class="w">     </span><span class="m">12</span><span class="w">      </span><span class="p">|</span><span class="w">       </span><span class="m">4</span><span class="w"> </span>*/<span class="w">    </span>int<span class="w"> </span>i<span class="p">;</span>
-</span><span id="__span-15-7"><a id="__codelineno-15-7" name="__codelineno-15-7" href="#__codelineno-15-7"></a>
-</span><span id="__span-15-8"><a id="__codelineno-15-8" name="__codelineno-15-8" href="#__codelineno-15-8"></a><span class="w">                            </span>/*<span class="w"> </span>total<span class="w"> </span>size<span class="w"> </span><span class="o">(</span>bytes<span class="o">)</span>:<span class="w">   </span><span class="m">16</span><span class="w"> </span>*/
-</span><span id="__span-15-9"><a id="__codelineno-15-9" name="__codelineno-15-9" href="#__codelineno-15-9"></a><span class="w">                            </span><span class="o">}</span>
-</span></code></pre></div>
-</div>
-</li>
-<li>
-<p>对于 MyStruct3_aligned (4)：指定 minimum alignment=4 &lt; default，alignof=max{n, default}=default=8，结构体按自然对齐，sizeof=24。</p>
-<div class="admonition info">
-<p class="admonition-title">gdb ptype /o MyStruct3_aligned</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>ptype<span class="w"> </span>/o<span class="w"> </span>struct<span class="w"> </span>MyStruct3_aligned
-</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>/*<span class="w"> </span>offset<span class="w">      </span><span class="p">|</span><span class="w">    </span>size<span class="w"> </span>*/<span class="w">  </span><span class="nb">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>struct<span class="w"> </span>MyStruct3_aligned<span class="w"> </span><span class="o">{</span>
-</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>/*<span class="w">      </span><span class="m">0</span><span class="w">      </span><span class="p">|</span><span class="w">       </span><span class="m">1</span><span class="w"> </span>*/<span class="w">    </span>char<span class="w"> </span>c<span class="p">;</span>
-</span><span id="__span-16-4"><a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a>/*<span class="w"> </span>XXX<span class="w">  </span><span class="m">7</span>-byte<span class="w"> </span>hole<span class="w">      </span>*/
-</span><span id="__span-16-5"><a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a>/*<span class="w">      </span><span class="m">8</span><span class="w">      </span><span class="p">|</span><span class="w">       </span><span class="m">8</span><span class="w"> </span>*/<span class="w">    </span>double<span class="w"> </span>d<span class="p">;</span>
-</span><span id="__span-16-6"><a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a>/*<span class="w">     </span><span class="m">16</span><span class="w">      </span><span class="p">|</span><span class="w">       </span><span class="m">4</span><span class="w"> </span>*/<span class="w">    </span>int<span class="w"> </span>i<span class="p">;</span>
-</span><span id="__span-16-7"><a id="__codelineno-16-7" name="__codelineno-16-7" href="#__codelineno-16-7"></a>/*<span class="w"> </span>XXX<span class="w">  </span><span class="m">4</span>-byte<span class="w"> </span>padding<span class="w">   </span>*/
-</span><span id="__span-16-8"><a id="__codelineno-16-8" name="__codelineno-16-8" href="#__codelineno-16-8"></a>
-</span><span id="__span-16-9"><a id="__codelineno-16-9" name="__codelineno-16-9" href="#__codelineno-16-9"></a><span class="w">                            </span>/*<span class="w"> </span>total<span class="w"> </span>size<span class="w"> </span><span class="o">(</span>bytes<span class="o">)</span>:<span class="w">   </span><span class="m">24</span><span class="w"> </span>*/
-</span><span id="__span-16-10"><a id="__codelineno-16-10" name="__codelineno-16-10" href="#__codelineno-16-10"></a><span class="w">                            </span><span class="o">}</span>
-</span></code></pre></div>
-</div>
-</li>
-<li>
-<p>对于 MyStruct4：<code>#pragma pack(16)</code>，指定 maximum alignment=16 &gt; default，alignof=min{n, default}=default=8，结构体按自然对齐，sizeof=24。</p>
-<div class="admonition info">
-<p class="admonition-title">gdb ptype /o MyStruct4</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>ptype<span class="w"> </span>/o<span class="w"> </span>struct<span class="w"> </span>MyStruct4
-</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>/*<span class="w"> </span>offset<span class="w">      </span><span class="p">|</span><span class="w">    </span>size<span class="w"> </span>*/<span class="w">  </span><span class="nb">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>struct<span class="w"> </span>MyStruct4<span class="w"> </span><span class="o">{</span>
-</span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>/*<span class="w">      </span><span class="m">0</span><span class="w">      </span><span class="p">|</span><span class="w">       </span><span class="m">1</span><span class="w"> </span>*/<span class="w">    </span>char<span class="w"> </span>c<span class="p">;</span>
-</span><span id="__span-17-4"><a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a>/*<span class="w"> </span>XXX<span class="w">  </span><span class="m">7</span>-byte<span class="w"> </span>hole<span class="w">      </span>*/
-</span><span id="__span-17-5"><a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a>/*<span class="w">      </span><span class="m">8</span><span class="w">      </span><span class="p">|</span><span class="w">       </span><span class="m">8</span><span class="w"> </span>*/<span class="w">    </span>double<span class="w"> </span>d<span class="p">;</span>
-</span><span id="__span-17-6"><a id="__codelineno-17-6" name="__codelineno-17-6" href="#__codelineno-17-6"></a>/*<span class="w">     </span><span class="m">16</span><span class="w">      </span><span class="p">|</span><span class="w">       </span><span class="m">4</span><span class="w"> </span>*/<span class="w">    </span>int<span class="w"> </span>i<span class="p">;</span>
-</span><span id="__span-17-7"><a id="__codelineno-17-7" name="__codelineno-17-7" href="#__codelineno-17-7"></a>/*<span class="w"> </span>XXX<span class="w">  </span><span class="m">4</span>-byte<span class="w"> </span>padding<span class="w">   </span>*/
-</span><span id="__span-17-8"><a id="__codelineno-17-8" name="__codelineno-17-8" href="#__codelineno-17-8"></a>
-</span><span id="__span-17-9"><a id="__codelineno-17-9" name="__codelineno-17-9" href="#__codelineno-17-9"></a><span class="w">                            </span>/*<span class="w"> </span>total<span class="w"> </span>size<span class="w"> </span><span class="o">(</span>bytes<span class="o">)</span>:<span class="w">   </span><span class="m">24</span><span class="w"> </span>*/
-</span><span id="__span-17-10"><a id="__codelineno-17-10" name="__codelineno-17-10" href="#__codelineno-17-10"></a><span class="w">                            </span><span class="o">}</span>
-</span></code></pre></div>
-</div>
-</li>
-<li>
-<p>对于 MyStruct4_aligned (16)：指定 minimum alignment=16 &gt; default，alignof=max{n, default}=n=16，结构体按自然对齐，并且总大小必须为 16 的倍数，故 sizeof=32。</p>
-<div class="admonition info">
-<p class="admonition-title">gdb ptype /o MyStruct4_aligned</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>ptype<span class="w"> </span>/o<span class="w"> </span>struct<span class="w"> </span>MyStruct4_aligned
-</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>/*<span class="w"> </span>offset<span class="w">      </span><span class="p">|</span><span class="w">    </span>size<span class="w"> </span>*/<span class="w">  </span><span class="nb">type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>struct<span class="w"> </span>MyStruct4_aligned<span class="w"> </span><span class="o">{</span>
-</span><span id="__span-18-3"><a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a>/*<span class="w">      </span><span class="m">0</span><span class="w">      </span><span class="p">|</span><span class="w">       </span><span class="m">1</span><span class="w"> </span>*/<span class="w">    </span>char<span class="w"> </span>c<span class="p">;</span>
-</span><span id="__span-18-4"><a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a>/*<span class="w"> </span>XXX<span class="w">  </span><span class="m">7</span>-byte<span class="w"> </span>hole<span class="w">      </span>*/
-</span><span id="__span-18-5"><a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a>/*<span class="w">      </span><span class="m">8</span><span class="w">      </span><span class="p">|</span><span class="w">       </span><span class="m">8</span><span class="w"> </span>*/<span class="w">    </span>double<span class="w"> </span>d<span class="p">;</span>
-</span><span id="__span-18-6"><a id="__codelineno-18-6" name="__codelineno-18-6" href="#__codelineno-18-6"></a>/*<span class="w">     </span><span class="m">16</span><span class="w">      </span><span class="p">|</span><span class="w">       </span><span class="m">4</span><span class="w"> </span>*/<span class="w">    </span>int<span class="w"> </span>i<span class="p">;</span>
-</span><span id="__span-18-7"><a id="__codelineno-18-7" name="__codelineno-18-7" href="#__codelineno-18-7"></a>/*<span class="w"> </span>XXX<span class="w"> </span><span class="m">12</span>-byte<span class="w"> </span>padding<span class="w">   </span>*/
-</span><span id="__span-18-8"><a id="__codelineno-18-8" name="__codelineno-18-8" href="#__codelineno-18-8"></a>
-</span><span id="__span-18-9"><a id="__codelineno-18-9" name="__codelineno-18-9" href="#__codelineno-18-9"></a><span class="w">                            </span>/*<span class="w"> </span>total<span class="w"> </span>size<span class="w"> </span><span class="o">(</span>bytes<span class="o">)</span>:<span class="w">   </span><span class="m">32</span><span class="w"> </span>*/
-</span><span id="__span-18-10"><a id="__codelineno-18-10" name="__codelineno-18-10" href="#__codelineno-18-10"></a><span class="w">                            </span><span class="o">}</span>
-</span></code></pre></div>
-</div>
-</li>
-</ol>
+<p>在下一篇《<a href="../struct-alignment-specify/">Struct Alignment Specify</a>》中，我们可以看到测试程序 struct-packed-aligned.c 测得的 <code>alignof(max_align_t)</code> 结果与对应平台上的 <code>__BIGGEST_ALIGNMENT__</code> 相等。</p>
 <h2 id="refs">refs<a class="headerlink" href="#refs" title="Permanent link">#</a></h2>
 <p><a href="https://interrupt.memfault.com/blog/c-struct-padding-initialization">C Structure Padding Initialization</a><br />
 <a href="https://levelup.gitconnected.com/how-struct-memory-alignment-works-in-c-3ee897697236">How Struct Memory Alignment Works in C</a>  </p>
@@ -2416,13 +1872,13 @@ GCC-specific <code>__alignof__</code> operator or Microsoft-specific <code>__ali
         
         
           
-          <a href="../../20221212/2-Markdown-Formula/" class="md-footer__link md-footer__link--next" aria-label="下一页: Markdown Formula">
+          <a href="../struct-alignment-specify/" class="md-footer__link md-footer__link--next" aria-label="下一页: Struct Alignment Specify">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 下一页
               </span>
               <div class="md-ellipsis">
-                Markdown Formula
+                Struct Alignment Specify
               </div>
             </div>
             <div class="md-footer__button md-icon">
