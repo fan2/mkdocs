@@ -279,11 +279,11 @@ GCC specific [Common Variable Attributes](https://gcc.gnu.org/onlinedocs/gcc/Co
 
 1. The `packed` attribute specifies that a structure member should have the ***smallest*** possible alignment—one bit for a bit-field and one byte otherwise, unless a larger value is specified with the `aligned` attribute. The attribute *does not* apply to non-member objects.
 
-    - `struct __attribute__((__packed__))` 相当于 `-fpack-struct`，满足 weakest alignment requirement，按 1 字节对齐（*without* holes）。
+    - `struct __attribute__((__packed__))` 相当于 `-fpack-struct`，开启 Packed alignment mode，按 1 字节对齐（*without* holes），satisfies weakest alignment requirement。
 
 2. The `aligned` attribute specifies a ***minimum*** alignment for the variable or structure field, measured in bytes. When specified, alignment must be an integer constant power of 2. Specifying *no* alignment argument implies the ***maximum*** alignment for the target, which is often, but by no means always, 8 or 16 bytes.
 
-    - 当 `__attribute__((aligned))` 不指定参数时，相当于采用默认的 default maximum alignment 对齐策略。
+    - 当 `__attribute__((aligned))` 不指定参数时，相当于 Natural alignment mode，采用默认的 default maximum alignment 对齐策略。
 
 [align (C++)](https://learn.microsoft.com/en-us/cpp/cpp/align-cpp?view=msvc-170) - Microsoft Specific
 

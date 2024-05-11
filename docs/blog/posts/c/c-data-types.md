@@ -343,6 +343,7 @@ WORD_BIT 的值为 32，对应 int 类型的位宽（`__SIZEOF_INT__` * CHAR_BIT
     ```Shell
     $ arch
     i386
+
     # --kernel-name, --kernel-release, --processor, --machine
     $ uname -srpm
     Darwin 20.6.0 x86_64 i386
@@ -366,6 +367,7 @@ WORD_BIT 的值为 32，对应 int 类型的位宽（`__SIZEOF_INT__` * CHAR_BIT
     ```Shell
     $ arch
     arm64
+
     # --operating-system, --kernel-name, --kernel-release, --machine, --processor
     $ uname -osrmp
     Darwin 23.5.0 arm64 arm
@@ -389,6 +391,7 @@ WORD_BIT 的值为 32，对应 int 类型的位宽（`__SIZEOF_INT__` * CHAR_BIT
     ```Shell
     $ arch
     aarch64
+
     # --operating-system, --kernel-release, --machine, --processor, --kernel-name
     $ uname -srmpo
     Linux 5.15.0-1053-raspi aarch64 aarch64 GNU/Linux

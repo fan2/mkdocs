@@ -105,6 +105,26 @@ POINTER | `*` | 8 | Quadword
 \_\_m64 | `struct __m64` | 8 | Quadword
 \_\_m128 | `struct __m128` | 16 | Octaword
 
+参考 Apple Developer Document 相关内容:
+
+- [32-bit](https://developer.apple.com/library/archive/documentation/DeveloperTools/Conceptual/LowLevelABI/100-32-bit_PowerPC_Function_Calling_Conventions/32bitPowerPC.html) / [64-bit](https://developer.apple.com/library/archive/documentation/DeveloperTools/Conceptual/LowLevelABI/110-64-bit_PowerPC_Function_Calling_Conventions/64bitPowerPC.html) PowerPC Function Calling Conventions - Data Types and Data Alignment
+
+!!! note "Apple PowerPC alignment modes"
+
+    1. **Natural alignment**. The alignment of a data type when allocated in memory or assigned a memory address.
+    The natural alignment of a data type is its *size*.
+    2. **Embedding alignment**. The alignment of a data type within a composite data structure.
+
+    > For example, the alignment of an `unsigned short` variable on the stack may differ from that of an `unsigned short` data item embedded in a data structure.
+
+- [IA-32 Function Calling Conventions](https://developer.apple.com/library/archive/documentation/DeveloperTools/Conceptual/LowLevelABI/130-IA-32_Function_Calling_Conventions/IA32.html) - Data Types and Data Alignment
+- [Writing 64-bit Intel code for Apple Platforms](https://developer.apple.com/documentation/xcode/writing-64-bit-intel-code-for-apple-platforms) - Handle data types and data alignment properly
+
+!!! note "Apple IA-32 alignment rules"
+
+    1. Scalar data types use their ***natural*** alignment.
+    2. Composite data types (arrays, structures, and unions) take on the alignment of the member with the ***highest*** alignment. An array assumes the ***same*** alignment as its elements. The size of a composite data type is a *multiple* of its alignment (padding may be required).
+
 [ARM Compiler v5.06 for uVision armcc User Guide](https://developer.arm.com/documentation/dui0375/g/C-and-C---Implementation-Details/Basic-data-types-in-ARM-C-and-C--) ｜ Basic data types in ARM C and C++ - Size and alignment of basic data types
 
 - The following table gives the size and natural alignment of the basic data types under ILP32 data model.
@@ -128,6 +148,23 @@ Size in bytes | Alignment in bytes
 2 - 7 | 4
 8 - 63 | 8
 >= 64 | 16
+
+[Writing ARM64 code for Apple platforms](https://developer.apple.com/documentation/xcode/writing-arm64-code-for-apple-platforms) - Handle data types and data alignment properly:
+
+| Data type | Size (in bytes) | Natural alignment (in bytes) |
+|-----------|-----------------|------------------------------|
+| `BOOL`, `bool` | 1 | 1 |
+| `char` | 1 | 1 |
+| `short` | 2 | 2 |
+| `int` | 4 | 4 |
+| `long` | 8 | 8 |
+| `long long` | 8 | 8 |
+| pointer | 8 | 8 |
+| `size_t` | 8 | 8 |
+| `NSInteger` | 8 | 8 |
+| `CFIndex` | 8 | 8 |
+| `fpos_t` | 8 | 8 |
+| `off_t` | 8 | 8 |
 
 [ILP32 and LP64 data models.PDF](https://scc.ustc.edu.cn/zlsc/czxt/200910/W020100308601263456982.pdf) - HP-UX 64-bit data model list ILP32 and LP64 data alignment:
 

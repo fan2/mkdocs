@@ -176,6 +176,8 @@ nju-swang: [Lecture 24: Instruction Pipeline(指令流水线)](https://cs.nju.ed
 
 The Old New Thing: [The MIPS R4000, part 1: Introduction](https://devblogs.microsoft.com/oldnewthing/20180402-00/?p=98415)
 
+[SYSTEM V APPLICATION BINARY INTERFACE MIPS RISC Processor Supplement - 3rd Edition](https://refspecs.linuxfoundation.org/elf/mipsabi.pdf)
+
 ## refs
 
 [Computer Architecture Lecture 3: ISA Tradeoffs](https://course.ece.cmu.edu/~ece447/s15/lib/exe/fetch.php?media=onur-447-spring15-lecture3-isa-tradeoffs-afterlecture.pdf)

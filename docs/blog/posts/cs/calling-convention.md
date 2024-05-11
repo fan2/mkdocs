@@ -36,8 +36,8 @@ There are design choices for how the tasks of preparing for a function call and 
 
 [OS X ABI Function Call Guide](https://developer.apple.com/library/archive/documentation/DeveloperTools/Conceptual/LowLevelABI/000-Introduction/introduction.html):
 
-- [IA-32 Function Calling Conventions](https://developer.apple.com/library/archive/documentation/DeveloperTools/Conceptual/LowLevelABI/130-IA-32_Function_Calling_Conventions/IA32.html#//apple_ref/doc/uid/TP40002492-SW4)
-- [x86-64 Function Calling Conventions](https://developer.apple.com/library/archive/documentation/DeveloperTools/Conceptual/LowLevelABI/140-x86-64_Function_Calling_Conventions/x86_64.html#//apple_ref/doc/uid/TP40005035-SW1)
+- [IA-32 Function Calling Conventions](https://developer.apple.com/library/archive/documentation/DeveloperTools/Conceptual/LowLevelABI/130-IA-32_Function_Calling_Conventions/IA32.html)
+- [x86-64 Function Calling Conventions](https://developer.apple.com/library/archive/documentation/DeveloperTools/Conceptual/LowLevelABI/140-x86-64_Function_Calling_Conventions/x86_64.html)
 
 Microsoft Learn:
 
@@ -55,6 +55,8 @@ Microsoft Learn:
 [Guide to x86 Assembly](https://www.cs.virginia.edu/~evans/cs216/guides/x86.html) - [Calling Convention](https://flint.cs.yale.edu/cs421/papers/x86-asm/asm.html#calling)
 
 [What are the calling conventions for UNIX & Linux system calls on x86-64?](https://stackoverflow.com/questions/2535989/what-are-the-calling-conventions-for-unix-linux-system-calls-on-x86-64)
+
+[SYSTEM V APPLICATION BINARY INTERFACE Intel386 Architecture Processor Supplement - 4th Edition](https://www.sco.com/developers/devspecs/abi386-4.pdf)
 [System V Application Binary Interface AMD64 Architecture Processor Supplement(With LP64 and ILP32 Programming Models)](https://cs61.seas.harvard.edu/site/pdf/x86-64-abi-20210928.pdf)
 
 [Function calling conventions](https://stackoverflow.com/questions/24974291/function-calling-conventions)
