@@ -23,8 +23,6 @@ comments: true
 
 <!-- more -->
 
-## storage order/endianess
-
 先来回顾一下 [C Basic Types - Binary Representions](../c/c-binary-representation.md) 中提到的 `LSB`/`MSB` 概念: 
 
 !!! note "LSB vs. MSB"
@@ -49,29 +47,26 @@ comments: true
 
     That is, a platform provider might decide to provide a *storage order* that has the highest-order digits ﬁrst, and then print lower-order digits one by one. The storage order, the ***endianness***, as given for my machine, is called ***little-endian***. A system that has high-order representation digits ﬁrst is called ***big-endian***. Both orders are commonly used by modern processor types. Some processors are even able to switch between the two orders on the ﬂy.
 
-[Numerics library - Bit manipulation](https://en.cppreference.com/w/cpp/numeric#Bit_manipulation) c++20 引入了 [std::endian](https://en.cppreference.com/w/cpp/types/endian) —— indicates the endianness of scalar types.
+[aapcs64](https://github.com/ARM-software/abi-aa/blob/2a70c42d62e9c3eb5887fa50b71257f20daca6f9/aapcs64/aapcs64.rst) - 5.8 Byte order ("Endianness"):
 
-!!! note "c++20 std::endian"
+From a software perspective, memory is an array of bytes, each of which is addressable. This ABI supports two views of memory implemented by the underlying hardware.
 
-    参考 20230510 [ISO/IEC-N4950](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/n4950.pdf) 中 22.15.8 Endian：
+- In a `little-endian` view of memory the least significant byte of a data object is at the *lowest* byte address the data object occupies in memory.
+- In a `big-endian` view of memory the least significant byte of a data object is at the *highest* byte address the data object occupies in memory.
 
-    Two common methods of byte ordering in multibyte scalar types are big-endian and little-endian in the execution environment. ***Big-endian*** is a format for storage of binary data in which the most significant byte is placed first, with the rest in descending order. ***Little-endian*** is a format for storage of binary data in which the least significant byte is placed first, with the rest in ascending order. This subclause describes the endianness of the scalar types of the execution environment.
+The least significant bit in an object is always designated as bit 0.
 
-    ```c
-    enum class endian {
-      little = see below,
-      big = see below,
-      native = see below
-    };
-    ```
+The mapping of a word-sized data object to memory is shown in the following figures. All objects are pure-endian, so the mappings may be scaled accordingly for larger or smaller objects.
 
-    If all scalar types have size 1 byte, then all of `endian::little`, `endian::big`, and `endian::native` have the same value. Otherwise, `endian::little` is not equal to `endian::big`. If all scalar types are big-endian, `endian::native` is equal to `endian::big`. If all scalar types are little-endian, `endian::native` is equal to `endian::little`. Otherwise, `endian::native` is not equal to either `endian::big` or `endian::little`.
+![big-endian](./images/big-endian.png)
 
-经由上述铺陈，字节序（Byte Order, Endianess）的概念基本明晰，概括来讲就是事关 storage order —— LSB/MSB who store first？
+![little-endian](./images/little-endian.png)
+
+经由上述铺陈，字节序（Byte Order, Endianess）的概念已然明晰，概括来讲就是事关 storage order —— LSB/MSB who store first？
 
 对于小尾端（little endian）系统，在内存起始地址处存放整数的低序号字节（LSB first）；反之，对于大尾端（big endian）系统，在内存起始地址处存放整数的高序号字节（MSB first）。
 
-在 big endian 系统下，更符合人的直观视觉。例如 0x3031，在内存中的存储顺序同人眼睛从左到右（高位到低位）的扫描顺序一致，MSB store first，memory byte array 为 {0x30, 0x31}；在 little endian 系统下，LSB store first，先存储低位字节，0x3031 在 memory 中的 byte array 为 {0x31, 0x30}。
+在 big endian 系统下，更符合人的直观视觉。例如 int 值 0x33323130，在内存中的存储顺序同人眼睛从左到右（高位到低位）的扫描顺序一致，MSB store first，memory byte array 为 {0x33, 0x32, 0x31, 0x30}；在 little endian 系统下，LSB store first，先存储低位字节，int 值 0x33323130 在 memory 中的 byte array 为 {0x30, 0x31, 0x32, 0x33}。
 
 在移动嵌入式领域，统治市场的 MIPS 和 ARM 处理器可通过配置寄存器采用不同的字节序，默认采用 Little-Endian。但 ARM 始终采用 Big-Endian 存储浮点数。早期使用 [PowerPC](https://developer.apple.com/library/archive/documentation/DeveloperTools/Conceptual/LowLevelABI/100-32-bit_PowerPC_Function_Calling_Conventions/32bitPowerPC.html) 处理器的 Mac 采用大字节序，后来的 Mac 同 Windows PC 一样都采用 [Intel x86](https://developer.apple.com/library/archive/documentation/DeveloperTools/Conceptual/LowLevelABI/130-IA-32_Function_Calling_Conventions/IA32.html) 芯片，因此也都是小字节序存储的。
 
@@ -110,8 +105,6 @@ clang/gcc 执行 `echo | cpp -dM` 预处理，打印出来的预定义宏中字�
     ```
 
 从 `__BYTE_ORDER__` 宏定义来看，两种平台均为小尾端字节序（`__ORDER_LITTLE_ENDIAN__`），macOS 还定义了宏 `__LITTLE_ENDIAN__` 的值为 1。
-
-## header definition
 
 在 macOS/ubuntu 下，可以执行 grep 命令，在 usr/include 中查找哪些头文件中定义了这些宏。
 
@@ -367,12 +360,30 @@ TCP/IP协议统一规定采用**大端**方式封装解析传输数据，也称�
 
 ## test endianess
 
-我们在前面，利用编译器预处理输出了字节序相关的 predefined macros，然后通过 grep 查找 usr/include 下相关宏定义所在的头文件。
+我们在前面利用编译器预处理输出了字节序相关的 predefined macros，然后通过 grep 查找 usr/include 下相关宏定义所在的头文件。
 
 1. macOS 上的 i386/endian.h 和 arm/endian.h 不同架构下清晰定义了 `BYTE_ORDER` 为小尾端，没找到 `__LITTLE_ENDIAN__` 定义处。
 2. ubuntu 最底层 bits/endianness.h 中根据是否定义了 `__AARCH64EB__` 宏，来进一步定义了 `__BYTE_ORDER`。
 
     - 从 dump 出的 predefined macros 找到了 `#define __AARCH64EL__ 1`，没有定义 `__AARCH64EB__`，即小尾端。
+
+[Numerics library - Bit manipulation](https://en.cppreference.com/w/cpp/numeric#Bit_manipulation) c++20 引入了 [std::endian](https://en.cppreference.com/w/cpp/types/endian) —— indicates the endianness of scalar types.
+
+!!! note "c++20 std::endian"
+
+    参考 20230510 [ISO/IEC-N4950](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/n4950.pdf) 中 22.15.8 Endian：
+
+    Two common methods of byte ordering in multibyte scalar types are big-endian and little-endian in the execution environment. ***Big-endian*** is a format for storage of binary data in which the most significant byte is placed first, with the rest in descending order. ***Little-endian*** is a format for storage of binary data in which the least significant byte is placed first, with the rest in ascending order. This subclause describes the endianness of the scalar types of the execution environment.
+
+    ```c
+    enum class endian {
+      little = see below,
+      big = see below,
+      native = see below
+    };
+    ```
+
+    If all scalar types have size 1 byte, then all of `endian::little`, `endian::big`, and `endian::native` have the same value. Otherwise, `endian::little` is not equal to `endian::big`. If all scalar types are big-endian, `endian::native` is equal to `endian::big`. If all scalar types are little-endian, `endian::native` is equal to `endian::little`. Otherwise, `endian::native` is not equal to either `endian::big` or `endian::little`.
 
 最后，我们基于 union 同一块内存的不同解析来测试系统的字节序。
 

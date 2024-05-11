@@ -54,6 +54,12 @@ GCC Internals | Effective-Target Keywords | [Data type sizes](https://gcc.gnu.or
 - `lp64`: Target has 32-bit int, 64-bit long and pointers.
 - `llp64`: Target has 32-bit int and long, 64-bit long long and pointers.
 
+[aapcs64](https://github.com/ARM-software/abi-aa/blob/2a70c42d62e9c3eb5887fa50b71257f20daca6f9/aapcs64/aapcs64.rst) - 2.2 Terms and abbreviations:
+
+- `ILP32`: SysV-like data model where int, long int and pointer are 32-bit.
+- `LP64`: SysV-like data model where int is 32-bit, but long int and pointer are 64-bit.
+- `LLP64`: Windows-like data model where int and long int are 32-bit, but long long int and pointer are 64-bit.
+
 ## Concept
 
 [64-bit data models](https://en.wikipedia.org/wiki/64-bit_computing#64-bit_data_models)
@@ -89,37 +95,6 @@ The choices made by each *implementation* about the sizes of the fundamental typ
 
 > refer to the table corresponding to the width in bits by data model.
 
-## Evolution
-
-[The Evolution of Computing: From 8-bit to 64-bit](https://www.deusinmachina.net/p/the-evolution-of-computing-from-8)
-[The Evolution of CPUs: Exploring the Dominance of 32-bit and 64-bit Architectures](https://www.linkedin.com/pulse/evolution-cpus-exploring-dominance-32-bit-64-bit-devendar-pasula/)
-[The 64-bit Evolution – Computerworld](https://www.computerworld.com/article/1692048/the-64-bit-evolution.html)
-
-[The Long Road to 64 Bits](https://queue.acm.org/detail.cfm?id=1165766) - [PDF](https://dl.acm.org/doi/pdf/10.1145/1435417.1435431) - TABLE 1 Common C Data Types
-
-[Data Models and Word Size](http://nickdesaulniers.github.io/blog/2016/05/30/data-models-and-word-size/)
-
-[64-bit and Data Size Neutrality](https://unix.org/whitepapers/64bit.html)
-
----
-
-opengroup - [64-Bit Programming Models: Why LP64?.PDF](https://wiki.math.ntnu.no/_media/tma4280/2017v/1997_opengroup_64bitprogrammingmodels.pdf) - 1997
-
-[Major 64-Bit Changes - Apple Developer](https://developer.apple.com/library/archive/documentation/Darwin/Conceptual/64bitPorting/transition/transition.html) - 20121213
-
-[Why did the Win64 team choose the LLP64 model?](https://devblogs.microsoft.com/oldnewthing/20050131-00/?p=36563)
-[What is the bit size of long on 64-bit Windows?](https://stackoverflow.com/questions/384502/what-is-the-bit-size-of-long-on-64-bit-windows)
-
-> All modern 64-bit Unix systems use **LP64**. MacOS X and Linux are both modern 64-bit systems.  
-> Microsoft uses a different scheme for transitioning to 64-bit: **LLP64** ('long long, pointers are 64-bit').   
-> This has the merit of meaning that 32-bit software can be recompiled without change.  
-
-[The Tools](https://learn.microsoft.com/en-us/windows/win32/winprog64/the-tools) - 64-bit Compiler Switches and Warnings
-
-[Wireshark Development/Win64](https://wiki.wireshark.org/Development/Win64)  
-
-> 32-bit UNX platforms, and 32-bit Windows, use the **ILP32** data model.  
-> 64-bit UNX platform use the **LP64** data model; however, 64-bit Windows uses the **LLP64** data model.  
 
 ## Convention
 
@@ -184,3 +159,35 @@ POINTER   | 32   | 32    | 64   | 64    | 64
 - `LONG_BIT` = `__WORDSIZE`
 
 关于机器字长相关的宏 LONG_BIT 和 __WORDSIZE，参考 《[Machine Word](./machine-word.md)》。
+
+## Evolution
+
+[The Evolution of Computing: From 8-bit to 64-bit](https://www.deusinmachina.net/p/the-evolution-of-computing-from-8)
+[The Evolution of CPUs: Exploring the Dominance of 32-bit and 64-bit Architectures](https://www.linkedin.com/pulse/evolution-cpus-exploring-dominance-32-bit-64-bit-devendar-pasula/)
+[The 64-bit Evolution – Computerworld](https://www.computerworld.com/article/1692048/the-64-bit-evolution.html)
+
+[The Long Road to 64 Bits](https://queue.acm.org/detail.cfm?id=1165766) - [PDF](https://dl.acm.org/doi/pdf/10.1145/1435417.1435431) - TABLE 1 Common C Data Types
+
+[Data Models and Word Size](http://nickdesaulniers.github.io/blog/2016/05/30/data-models-and-word-size/)
+
+[64-bit and Data Size Neutrality](https://unix.org/whitepapers/64bit.html)
+
+---
+
+opengroup - [64-Bit Programming Models: Why LP64?.PDF](https://wiki.math.ntnu.no/_media/tma4280/2017v/1997_opengroup_64bitprogrammingmodels.pdf) - 1997
+
+[Major 64-Bit Changes - Apple Developer](https://developer.apple.com/library/archive/documentation/Darwin/Conceptual/64bitPorting/transition/transition.html) - 20121213
+
+[Why did the Win64 team choose the LLP64 model?](https://devblogs.microsoft.com/oldnewthing/20050131-00/?p=36563)
+[What is the bit size of long on 64-bit Windows?](https://stackoverflow.com/questions/384502/what-is-the-bit-size-of-long-on-64-bit-windows)
+
+> All modern 64-bit Unix systems use **LP64**. MacOS X and Linux are both modern 64-bit systems.  
+> Microsoft uses a different scheme for transitioning to 64-bit: **LLP64** ('long long, pointers are 64-bit').   
+> This has the merit of meaning that 32-bit software can be recompiled without change.  
+
+[The Tools](https://learn.microsoft.com/en-us/windows/win32/winprog64/the-tools) - 64-bit Compiler Switches and Warnings
+
+[Wireshark Development/Win64](https://wiki.wireshark.org/Development/Win64)  
+
+> 32-bit UNX platforms, and 32-bit Windows, use the **ILP32** data model.  
+> 64-bit UNX platform use the **LP64** data model; however, 64-bit Windows uses the **LLP64** data model.  

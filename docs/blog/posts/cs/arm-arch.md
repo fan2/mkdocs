@@ -70,9 +70,16 @@ aarch64
 
 Announced in October 2011, **ARMv8-A** represents a fundamental change to the ARM architecture. It adds an optional 64-bit architecture, named "`AArch64`", and the associated new "`A64`" instruction set.
 
-AArch64 provides user-space compatibility with the existing 32-bit architecture ("`AArch32`" / ARMv7-A), and instruction set ("`A32`"). The 16-32bit Thumb instruction set is referred to as "`T32`" and has no 64-bit counterpart.
+AArch64 provides user-space *compatibility* with the existing 32-bit architecture ("`AArch32`" / ARMv7-A), and instruction set ("`A32`"). The 16-32bit Thumb instruction set is referred to as "`T32`" and has no 64-bit counterpart.
 
 ARMv8-A allows 32-bit applications to be executed in a 64-bit OS, and a 32-bit OS to be under the control of a 64-bit hypervisor.
+
+!!! abstract "aapcs64 - Terms"
+
+    [aapcs64](https://github.com/ARM-software/abi-aa/blob/2a70c42d62e9c3eb5887fa50b71257f20daca6f9/aapcs64/aapcs64.rst) - 2.2 Terms and abbreviations:
+
+    `AArch32`: The 32-bit general-purpose register width *state* of the Armv8 architecture, broadly *compatible* with the Armv7-A architecture.
+    `AArch64`: The 64-bit general-purpose register width state of the Armv8 architecture.
 
 ARMv8-A includes the VFPv3/v4 and advanced SIMD (Neon) as standard features in both AArch32 and AArch64. It also adds cryptography instructions supporting AES, SHA-1/SHA-256 and finite field arithmetic.
 

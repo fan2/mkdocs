@@ -90,7 +90,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#storage_orderendianess" class="md-skip">
+        <a href="#predefined_macros" class="md-skip">
           跳转至
         </a>
       
@@ -1281,31 +1281,13 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#storage_orderendianess" class="md-nav__link">
-    <span class="md-ellipsis">
-      storage order/endianess
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#predefined_macros" class="md-nav__link">
     <span class="md-ellipsis">
       predefined macros
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#header_definition" class="md-nav__link">
-    <span class="md-ellipsis">
-      header definition
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="header definition">
+    <nav class="md-nav" aria-label="predefined macros">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -1443,7 +1425,7 @@
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7h1.5Z"/></svg>
                           <span class="md-ellipsis">
                             
-                              需要 9 分钟阅读时间
+                              需要 10 分钟阅读时间
                             
                           </span>
                         </div>
@@ -1502,7 +1484,6 @@
 <p>这三个问题的答案都涉及到字节序（Byte Order）问题。</p>
 <!-- more -->
 
-<h2 id="storage_orderendianess">storage order/endianess<a class="headerlink" href="#storage_orderendianess" title="Permanent link">#</a></h2>
 <p>先来回顾一下 <a href="../../20211004/c-binary-representation/">C Basic Types - Binary Representions</a> 中提到的 <code>LSB</code>/<code>MSB</code> 概念: </p>
 <div class="admonition note">
 <p class="admonition-title">LSB vs. MSB</p>
@@ -1521,22 +1502,19 @@
 <p class="admonition-title">endianess: big-endian &amp; little-endian</p>
 <p>That is, a platform provider might decide to provide a <em>storage order</em> that has the highest-order digits ﬁrst, and then print lower-order digits one by one. The storage order, the <strong><em>endianness</em></strong>, as given for my machine, is called <strong><em>little-endian</em></strong>. A system that has high-order representation digits ﬁrst is called <strong><em>big-endian</em></strong>. Both orders are commonly used by modern processor types. Some processors are even able to switch between the two orders on the ﬂy.</p>
 </div>
-<p><a href="https://en.cppreference.com/w/cpp/numeric#Bit_manipulation">Numerics library - Bit manipulation</a> c++20 引入了 <a href="https://en.cppreference.com/w/cpp/types/endian">std::endian</a> —— indicates the endianness of scalar types.</p>
-<div class="admonition note">
-<p class="admonition-title">c++20 std::endian</p>
-<p>参考 20230510 <a href="https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/n4950.pdf">ISO/IEC-N4950</a> 中 22.15.8 Endian：</p>
-<p>Two common methods of byte ordering in multibyte scalar types are big-endian and little-endian in the execution environment. <strong><em>Big-endian</em></strong> is a format for storage of binary data in which the most significant byte is placed first, with the rest in descending order. <strong><em>Little-endian</em></strong> is a format for storage of binary data in which the least significant byte is placed first, with the rest in ascending order. This subclause describes the endianness of the scalar types of the execution environment.</p>
-<div class="language-c highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="k">enum</span><span class="w"> </span><span class="n">class</span><span class="w"> </span><span class="n">endian</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">  </span><span class="n">little</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">see</span><span class="w"> </span><span class="n">below</span><span class="p">,</span>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">  </span><span class="n">big</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">see</span><span class="w"> </span><span class="n">below</span><span class="p">,</span>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">  </span><span class="n">native</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">see</span><span class="w"> </span><span class="n">below</span>
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="p">};</span>
-</span></code></pre></div>
-<p>If all scalar types have size 1 byte, then all of <code>endian::little</code>, <code>endian::big</code>, and <code>endian::native</code> have the same value. Otherwise, <code>endian::little</code> is not equal to <code>endian::big</code>. If all scalar types are big-endian, <code>endian::native</code> is equal to <code>endian::big</code>. If all scalar types are little-endian, <code>endian::native</code> is equal to <code>endian::little</code>. Otherwise, <code>endian::native</code> is not equal to either <code>endian::big</code> or <code>endian::little</code>.</p>
-</div>
-<p>经由上述铺陈，字节序（Byte Order, Endianess）的概念基本明晰，概括来讲就是事关 storage order —— LSB/MSB who store first？</p>
+<p><a href="https://github.com/ARM-software/abi-aa/blob/2a70c42d62e9c3eb5887fa50b71257f20daca6f9/aapcs64/aapcs64.rst">aapcs64</a> - 5.8 Byte order ("Endianness"):</p>
+<p>From a software perspective, memory is an array of bytes, each of which is addressable. This ABI supports two views of memory implemented by the underlying hardware.</p>
+<ul>
+<li>In a <code>little-endian</code> view of memory the least significant byte of a data object is at the <em>lowest</em> byte address the data object occupies in memory.</li>
+<li>In a <code>big-endian</code> view of memory the least significant byte of a data object is at the <em>highest</em> byte address the data object occupies in memory.</li>
+</ul>
+<p>The least significant bit in an object is always designated as bit 0.</p>
+<p>The mapping of a word-sized data object to memory is shown in the following figures. All objects are pure-endian, so the mappings may be scaled accordingly for larger or smaller objects.</p>
+<p><img alt="big-endian" src="../../cs/images/big-endian.png" /></p>
+<p><img alt="little-endian" src="../../cs/images/little-endian.png" /></p>
+<p>经由上述铺陈，字节序（Byte Order, Endianess）的概念已然明晰，概括来讲就是事关 storage order —— LSB/MSB who store first？</p>
 <p>对于小尾端（little endian）系统，在内存起始地址处存放整数的低序号字节（LSB first）；反之，对于大尾端（big endian）系统，在内存起始地址处存放整数的高序号字节（MSB first）。</p>
-<p>在 big endian 系统下，更符合人的直观视觉。例如 0x3031，在内存中的存储顺序同人眼睛从左到右（高位到低位）的扫描顺序一致，MSB store first，memory byte array 为 {0x30, 0x31}；在 little endian 系统下，LSB store first，先存储低位字节，0x3031 在 memory 中的 byte array 为 {0x31, 0x30}。</p>
+<p>在 big endian 系统下，更符合人的直观视觉。例如 int 值 0x33323130，在内存中的存储顺序同人眼睛从左到右（高位到低位）的扫描顺序一致，MSB store first，memory byte array 为 {0x33, 0x32, 0x31, 0x30}；在 little endian 系统下，LSB store first，先存储低位字节，int 值 0x33323130 在 memory 中的 byte array 为 {0x30, 0x31, 0x32, 0x33}。</p>
 <p>在移动嵌入式领域，统治市场的 MIPS 和 ARM 处理器可通过配置寄存器采用不同的字节序，默认采用 Little-Endian。但 ARM 始终采用 Big-Endian 存储浮点数。早期使用 <a href="https://developer.apple.com/library/archive/documentation/DeveloperTools/Conceptual/LowLevelABI/100-32-bit_PowerPC_Function_Calling_Conventions/32bitPowerPC.html">PowerPC</a> 处理器的 Mac 采用大字节序，后来的 Mac 同 Windows PC 一样都采用 <a href="https://developer.apple.com/library/archive/documentation/DeveloperTools/Conceptual/LowLevelABI/130-IA-32_Function_Calling_Conventions/IA32.html">Intel x86</a> 芯片，因此也都是小字节序存储的。</p>
 <blockquote>
 <p><a href="https://developer.apple.com/library/archive/documentation/DeveloperTools/Conceptual/LowLevelABI/110-64-bit_PowerPC_Function_Calling_Conventions/64bitPowerPC.html">64-bit PowerPC Function Calling Conventions</a>: This environment uses the big-endian byte ordering scheme to store numeric and pointer data types. That is, the most significant bytes go first, followed by the least significant bytes.</p>
@@ -1550,63 +1528,62 @@
 <div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">mbpa2991/arm64</label><label for="__tabbed_1_2">rpi4b-ubuntu/aarch64</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1">#define __BYTE_ORDER__ __ORDER_LITTLE_ENDIAN__</span>
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="c1">#define __LITTLE_ENDIAN__ 1</span>
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="c1">#define __ORDER_BIG_ENDIAN__ 4321</span>
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="c1">#define __ORDER_LITTLE_ENDIAN__ 1234</span>
-</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="c1">#define __ORDER_PDP_ENDIAN__ 3412</span>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1">#define __BYTE_ORDER__ __ORDER_LITTLE_ENDIAN__</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="c1">#define __LITTLE_ENDIAN__ 1</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="c1">#define __ORDER_BIG_ENDIAN__ 4321</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c1">#define __ORDER_LITTLE_ENDIAN__ 1234</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="c1">#define __ORDER_PDP_ENDIAN__ 3412</span>
 </span></code></pre></div>
 </div>
 <div class="tabbed-block">
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1">#define __FLOAT_WORD_ORDER__ __ORDER_LITTLE_ENDIAN__</span>
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="c1">#define __ORDER_PDP_ENDIAN__ 3412</span>
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="c1">#define __ORDER_BIG_ENDIAN__ 4321</span>
-</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="c1">#define __BYTE_ORDER__ __ORDER_LITTLE_ENDIAN__</span>
-</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="c1">#define __ORDER_LITTLE_ENDIAN__ 1234</span>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1">#define __FLOAT_WORD_ORDER__ __ORDER_LITTLE_ENDIAN__</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="c1">#define __ORDER_PDP_ENDIAN__ 3412</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="c1">#define __ORDER_BIG_ENDIAN__ 4321</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="c1">#define __BYTE_ORDER__ __ORDER_LITTLE_ENDIAN__</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="c1">#define __ORDER_LITTLE_ENDIAN__ 1234</span>
 </span></code></pre></div>
 </div>
 </div>
 </div>
 <p>从 <code>__BYTE_ORDER__</code> 宏定义来看，两种平台均为小尾端字节序（<code>__ORDER_LITTLE_ENDIAN__</code>），macOS 还定义了宏 <code>__LITTLE_ENDIAN__</code> 的值为 1。</p>
-<h2 id="header_definition">header definition<a class="headerlink" href="#header_definition" title="Permanent link">#</a></h2>
 <p>在 macOS/ubuntu 下，可以执行 grep 命令，在 usr/include 中查找哪些头文件中定义了这些宏。</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1"># mbpa2991/arm64</span>
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span><span class="sb">`</span>xcrun<span class="w"> </span>--show-sdk-path<span class="sb">`</span>
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>$<span class="w"> </span>grep<span class="w"> </span>-REl<span class="w"> </span><span class="s2">&quot;#.*define.*(BYTE_ORDER|BIG_ENDIAN|LITTLE_ENDIAN|PDP_ENDIAN)&quot;</span><span class="w"> </span>usr/include<span class="w"> </span><span class="m">2</span>&gt;/dev/null
-</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>
-</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="c1"># rpi4b-ubuntu/aarch64</span>
-</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>$<span class="w"> </span>grep<span class="w"> </span>-REl<span class="w"> </span><span class="s2">&quot;#.*define.*(BYTE_ORDER|BIG_ENDIAN|LITTLE_ENDIAN|PDP_ENDIAN)&quot;</span><span class="w"> </span>/usr/include<span class="w"> </span><span class="m">2</span>&gt;/dev/null
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># mbpa2991/arm64</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span><span class="sb">`</span>xcrun<span class="w"> </span>--show-sdk-path<span class="sb">`</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>$<span class="w"> </span>grep<span class="w"> </span>-REl<span class="w"> </span><span class="s2">&quot;#.*define.*(BYTE_ORDER|BIG_ENDIAN|LITTLE_ENDIAN|PDP_ENDIAN)&quot;</span><span class="w"> </span>usr/include<span class="w"> </span><span class="m">2</span>&gt;/dev/null
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="c1"># rpi4b-ubuntu/aarch64</span>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>$<span class="w"> </span>grep<span class="w"> </span>-REl<span class="w"> </span><span class="s2">&quot;#.*define.*(BYTE_ORDER|BIG_ENDIAN|LITTLE_ENDIAN|PDP_ENDIAN)&quot;</span><span class="w"> </span>/usr/include<span class="w"> </span><span class="m">2</span>&gt;/dev/null
 </span></code></pre></div>
 <p>将 grep 命令的选项 <code>l</code> 改为 <code>H</code> 可列出具体匹配的行和内容。</p>
 <h3 id="mbpa2991-macos">mbpa2991-macOS<a class="headerlink" href="#mbpa2991-macos" title="Permanent link">#</a></h3>
 <p>在 mbpa2991-macOS/arm64 中，i386 和 arm 均定义了 BYTE_ORDER 为 <code>__DARWIN_BYTE_ORDER</code>=<code>__DARWIN_LITTLE_ENDIAN</code>。</p>
 <details class="info">
 <summary>grep -REH usr/include under macOS</summary>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span><span class="sb">`</span>xcrun<span class="w"> </span>--show-sdk-path<span class="sb">`</span>
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>$<span class="w"> </span>grep<span class="w"> </span>-REH<span class="w"> </span><span class="s2">&quot;#.*define.*(BYTE_ORDER|BIG_ENDIAN|LITTLE_ENDIAN|PDP_ENDIAN)&quot;</span><span class="w"> </span>usr/include<span class="w"> </span><span class="m">2</span>&gt;/dev/null
-</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>
-</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>usr/include/i386/endian.h:#define<span class="w"> </span>__DARWIN_LITTLE_ENDIAN<span class="w">  </span><span class="m">1234</span><span class="w">    </span>/*<span class="w"> </span>LSB<span class="w"> </span>first:<span class="w"> </span>i386,<span class="w"> </span>vax<span class="w"> </span>*/
-</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>usr/include/i386/endian.h:#define<span class="w"> </span>__DARWIN_BIG_ENDIAN<span class="w">     </span><span class="m">4321</span><span class="w">    </span>/*<span class="w"> </span>MSB<span class="w"> </span>first:<span class="w"> </span><span class="m">68000</span>,<span class="w"> </span>ibm,<span class="w"> </span>net<span class="w"> </span>*/
-</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>usr/include/i386/endian.h:#define<span class="w"> </span>__DARWIN_PDP_ENDIAN<span class="w">     </span><span class="m">3412</span><span class="w">    </span>/*<span class="w"> </span>LSB<span class="w"> </span>first<span class="w"> </span><span class="k">in</span><span class="w"> </span>word,<span class="w"> </span>MSW<span class="w"> </span>first<span class="w"> </span><span class="k">in</span><span class="w"> </span>long<span class="w"> </span>*/
-</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>usr/include/i386/endian.h:#define<span class="w"> </span>__DARWIN_BYTE_ORDER<span class="w">     </span>__DARWIN_LITTLE_ENDIAN
-</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>usr/include/i386/endian.h:#define<span class="w"> </span>LITTLE_ENDIAN<span class="w">   </span>__DARWIN_LITTLE_ENDIAN
-</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>usr/include/i386/endian.h:#define<span class="w"> </span>BIG_ENDIAN<span class="w">      </span>__DARWIN_BIG_ENDIAN
-</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>usr/include/i386/endian.h:#define<span class="w"> </span>PDP_ENDIAN<span class="w">      </span>__DARWIN_PDP_ENDIAN
-</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a>usr/include/i386/endian.h:#define<span class="w"> </span>BYTE_ORDER<span class="w">      </span>__DARWIN_BYTE_ORDER
-</span><span id="__span-4-12"><a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a>
-</span><span id="__span-4-13"><a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a>usr/include/arm/endian.h:#define<span class="w"> </span>__DARWIN_LITTLE_ENDIAN<span class="w">  </span><span class="m">1234</span><span class="w">    </span>/*<span class="w"> </span>LSB<span class="w"> </span>first:<span class="w"> </span>i386,<span class="w"> </span>vax<span class="w"> </span>*/
-</span><span id="__span-4-14"><a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a>usr/include/arm/endian.h:#define<span class="w"> </span>__DARWIN_BIG_ENDIAN<span class="w">     </span><span class="m">4321</span><span class="w">    </span>/*<span class="w"> </span>MSB<span class="w"> </span>first:<span class="w"> </span><span class="m">68000</span>,<span class="w"> </span>ibm,<span class="w"> </span>net<span class="w"> </span>*/
-</span><span id="__span-4-15"><a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a>usr/include/arm/endian.h:#define<span class="w"> </span>__DARWIN_PDP_ENDIAN<span class="w">     </span><span class="m">3412</span><span class="w">    </span>/*<span class="w"> </span>LSB<span class="w"> </span>first<span class="w"> </span><span class="k">in</span><span class="w"> </span>word,<span class="w"> </span>MSW<span class="w"> </span>first<span class="w"> </span><span class="k">in</span><span class="w"> </span>long<span class="w"> </span>*/
-</span><span id="__span-4-16"><a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a>usr/include/arm/endian.h:#define<span class="w"> </span>__DARWIN_BYTE_ORDER<span class="w">     </span>__DARWIN_LITTLE_ENDIAN
-</span><span id="__span-4-17"><a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a>usr/include/arm/endian.h:#define<span class="w"> </span>LITTLE_ENDIAN<span class="w">   </span>__DARWIN_LITTLE_ENDIAN
-</span><span id="__span-4-18"><a id="__codelineno-4-18" name="__codelineno-4-18" href="#__codelineno-4-18"></a>usr/include/arm/endian.h:#define<span class="w"> </span>BIG_ENDIAN<span class="w">      </span>__DARWIN_BIG_ENDIAN
-</span><span id="__span-4-19"><a id="__codelineno-4-19" name="__codelineno-4-19" href="#__codelineno-4-19"></a>usr/include/arm/endian.h:#define<span class="w"> </span>PDP_ENDIAN<span class="w">      </span>__DARWIN_PDP_ENDIAN
-</span><span id="__span-4-20"><a id="__codelineno-4-20" name="__codelineno-4-20" href="#__codelineno-4-20"></a>usr/include/arm/endian.h:#define<span class="w"> </span>BYTE_ORDER<span class="w">      </span>__DARWIN_BYTE_ORDER
-</span><span id="__span-4-21"><a id="__codelineno-4-21" name="__codelineno-4-21" href="#__codelineno-4-21"></a>
-</span><span id="__span-4-22"><a id="__codelineno-4-22" name="__codelineno-4-22" href="#__codelineno-4-22"></a>usr/include/libkern/OSByteOrder.h:#if<span class="w"> </span>defined<span class="o">(</span>__LITTLE_ENDIAN__<span class="o">)</span>
-</span><span id="__span-4-23"><a id="__codelineno-4-23" name="__codelineno-4-23" href="#__codelineno-4-23"></a>usr/include/libkern/OSByteOrder.h:#elif<span class="w"> </span>defined<span class="o">(</span>__BIG_ENDIAN__<span class="o">)</span>
-</span><span id="__span-4-24"><a id="__codelineno-4-24" name="__codelineno-4-24" href="#__codelineno-4-24"></a>usr/include/libkern/OSByteOrder.h:#if<span class="w">             </span>defined<span class="o">(</span>__BIG_ENDIAN__<span class="o">)</span>
-</span><span id="__span-4-25"><a id="__codelineno-4-25" name="__codelineno-4-25" href="#__codelineno-4-25"></a>usr/include/libkern/OSByteOrder.h:#elif<span class="w">           </span>defined<span class="o">(</span>__LITTLE_ENDIAN__<span class="o">)</span>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>$<span class="w"> </span><span class="nb">cd</span><span class="w"> </span><span class="sb">`</span>xcrun<span class="w"> </span>--show-sdk-path<span class="sb">`</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>$<span class="w"> </span>grep<span class="w"> </span>-REH<span class="w"> </span><span class="s2">&quot;#.*define.*(BYTE_ORDER|BIG_ENDIAN|LITTLE_ENDIAN|PDP_ENDIAN)&quot;</span><span class="w"> </span>usr/include<span class="w"> </span><span class="m">2</span>&gt;/dev/null
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>usr/include/i386/endian.h:#define<span class="w"> </span>__DARWIN_LITTLE_ENDIAN<span class="w">  </span><span class="m">1234</span><span class="w">    </span>/*<span class="w"> </span>LSB<span class="w"> </span>first:<span class="w"> </span>i386,<span class="w"> </span>vax<span class="w"> </span>*/
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>usr/include/i386/endian.h:#define<span class="w"> </span>__DARWIN_BIG_ENDIAN<span class="w">     </span><span class="m">4321</span><span class="w">    </span>/*<span class="w"> </span>MSB<span class="w"> </span>first:<span class="w"> </span><span class="m">68000</span>,<span class="w"> </span>ibm,<span class="w"> </span>net<span class="w"> </span>*/
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>usr/include/i386/endian.h:#define<span class="w"> </span>__DARWIN_PDP_ENDIAN<span class="w">     </span><span class="m">3412</span><span class="w">    </span>/*<span class="w"> </span>LSB<span class="w"> </span>first<span class="w"> </span><span class="k">in</span><span class="w"> </span>word,<span class="w"> </span>MSW<span class="w"> </span>first<span class="w"> </span><span class="k">in</span><span class="w"> </span>long<span class="w"> </span>*/
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>usr/include/i386/endian.h:#define<span class="w"> </span>__DARWIN_BYTE_ORDER<span class="w">     </span>__DARWIN_LITTLE_ENDIAN
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>usr/include/i386/endian.h:#define<span class="w"> </span>LITTLE_ENDIAN<span class="w">   </span>__DARWIN_LITTLE_ENDIAN
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>usr/include/i386/endian.h:#define<span class="w"> </span>BIG_ENDIAN<span class="w">      </span>__DARWIN_BIG_ENDIAN
+</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>usr/include/i386/endian.h:#define<span class="w"> </span>PDP_ENDIAN<span class="w">      </span>__DARWIN_PDP_ENDIAN
+</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>usr/include/i386/endian.h:#define<span class="w"> </span>BYTE_ORDER<span class="w">      </span>__DARWIN_BYTE_ORDER
+</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>
+</span><span id="__span-3-13"><a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>usr/include/arm/endian.h:#define<span class="w"> </span>__DARWIN_LITTLE_ENDIAN<span class="w">  </span><span class="m">1234</span><span class="w">    </span>/*<span class="w"> </span>LSB<span class="w"> </span>first:<span class="w"> </span>i386,<span class="w"> </span>vax<span class="w"> </span>*/
+</span><span id="__span-3-14"><a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>usr/include/arm/endian.h:#define<span class="w"> </span>__DARWIN_BIG_ENDIAN<span class="w">     </span><span class="m">4321</span><span class="w">    </span>/*<span class="w"> </span>MSB<span class="w"> </span>first:<span class="w"> </span><span class="m">68000</span>,<span class="w"> </span>ibm,<span class="w"> </span>net<span class="w"> </span>*/
+</span><span id="__span-3-15"><a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a>usr/include/arm/endian.h:#define<span class="w"> </span>__DARWIN_PDP_ENDIAN<span class="w">     </span><span class="m">3412</span><span class="w">    </span>/*<span class="w"> </span>LSB<span class="w"> </span>first<span class="w"> </span><span class="k">in</span><span class="w"> </span>word,<span class="w"> </span>MSW<span class="w"> </span>first<span class="w"> </span><span class="k">in</span><span class="w"> </span>long<span class="w"> </span>*/
+</span><span id="__span-3-16"><a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>usr/include/arm/endian.h:#define<span class="w"> </span>__DARWIN_BYTE_ORDER<span class="w">     </span>__DARWIN_LITTLE_ENDIAN
+</span><span id="__span-3-17"><a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a>usr/include/arm/endian.h:#define<span class="w"> </span>LITTLE_ENDIAN<span class="w">   </span>__DARWIN_LITTLE_ENDIAN
+</span><span id="__span-3-18"><a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a>usr/include/arm/endian.h:#define<span class="w"> </span>BIG_ENDIAN<span class="w">      </span>__DARWIN_BIG_ENDIAN
+</span><span id="__span-3-19"><a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a>usr/include/arm/endian.h:#define<span class="w"> </span>PDP_ENDIAN<span class="w">      </span>__DARWIN_PDP_ENDIAN
+</span><span id="__span-3-20"><a id="__codelineno-3-20" name="__codelineno-3-20" href="#__codelineno-3-20"></a>usr/include/arm/endian.h:#define<span class="w"> </span>BYTE_ORDER<span class="w">      </span>__DARWIN_BYTE_ORDER
+</span><span id="__span-3-21"><a id="__codelineno-3-21" name="__codelineno-3-21" href="#__codelineno-3-21"></a>
+</span><span id="__span-3-22"><a id="__codelineno-3-22" name="__codelineno-3-22" href="#__codelineno-3-22"></a>usr/include/libkern/OSByteOrder.h:#if<span class="w"> </span>defined<span class="o">(</span>__LITTLE_ENDIAN__<span class="o">)</span>
+</span><span id="__span-3-23"><a id="__codelineno-3-23" name="__codelineno-3-23" href="#__codelineno-3-23"></a>usr/include/libkern/OSByteOrder.h:#elif<span class="w"> </span>defined<span class="o">(</span>__BIG_ENDIAN__<span class="o">)</span>
+</span><span id="__span-3-24"><a id="__codelineno-3-24" name="__codelineno-3-24" href="#__codelineno-3-24"></a>usr/include/libkern/OSByteOrder.h:#if<span class="w">             </span>defined<span class="o">(</span>__BIG_ENDIAN__<span class="o">)</span>
+</span><span id="__span-3-25"><a id="__codelineno-3-25" name="__codelineno-3-25" href="#__codelineno-3-25"></a>usr/include/libkern/OSByteOrder.h:#elif<span class="w">           </span>defined<span class="o">(</span>__LITTLE_ENDIAN__<span class="o">)</span>
 </span></code></pre></div>
 </details>
 <ol>
@@ -1616,107 +1593,107 @@
 <li>在 usr/include/c++/v1/__bit/endian.h 中，对于 _LIBCPP_STD_VER &gt;= 20（since c++20），判断 <code>_LIBCPP_LITTLE_ENDIAN</code>/<code>_LIBCPP_BIG_ENDIAN</code> 定义 <code>enum class endian</code>。</li>
 </ol>
 <p>在早期（before C99, c++11）没有定义 64bit long long，需要用两个 int32 复合成结构体来模拟一个 int64 整形数据。两个 32bit 的 WORD 在 struct 中的顺序需要考虑字节序（判断宏 TARGET_RT_BIG_ENDIAN）。</p>
-<div class="language-c highlight"><span class="filename">usr/include/MacTypes.h</span><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="cm">/* avoid redeclaration if libkern/OSTypes.h */</span>
-</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="cp">#ifndef _OS_OSTYPES_H</span>
-</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="cp">#if TARGET_RT_BIG_ENDIAN</span>
-</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="k">struct</span><span class="w"> </span><span class="nc">wide</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="w">  </span><span class="n">SInt32</span><span class="w">              </span><span class="n">hi</span><span class="p">;</span>
-</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="w">  </span><span class="n">UInt32</span><span class="w">              </span><span class="n">lo</span><span class="p">;</span>
-</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="p">};</span>
-</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">wide</span><span class="w">                     </span><span class="n">wide</span><span class="p">;</span>
-</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="k">struct</span><span class="w"> </span><span class="nc">UnsignedWide</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="w">  </span><span class="n">UInt32</span><span class="w">              </span><span class="n">hi</span><span class="p">;</span>
-</span><span id="__span-5-11"><a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a><span class="w">  </span><span class="n">UInt32</span><span class="w">              </span><span class="n">lo</span><span class="p">;</span>
-</span><span id="__span-5-12"><a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a><span class="p">};</span>
-</span><span id="__span-5-13"><a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a><span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">UnsignedWide</span><span class="w">             </span><span class="n">UnsignedWide</span><span class="p">;</span>
-</span><span id="__span-5-14"><a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a><span class="cp">#else</span>
-</span><span id="__span-5-15"><a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a><span class="k">struct</span><span class="w"> </span><span class="nc">wide</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-5-16"><a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a><span class="w">  </span><span class="n">UInt32</span><span class="w">              </span><span class="n">lo</span><span class="p">;</span>
-</span><span id="__span-5-17"><a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a><span class="w">  </span><span class="n">SInt32</span><span class="w">              </span><span class="n">hi</span><span class="p">;</span>
-</span><span id="__span-5-18"><a id="__codelineno-5-18" name="__codelineno-5-18" href="#__codelineno-5-18"></a><span class="p">};</span>
-</span><span id="__span-5-19"><a id="__codelineno-5-19" name="__codelineno-5-19" href="#__codelineno-5-19"></a><span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">wide</span><span class="w">                     </span><span class="n">wide</span><span class="p">;</span>
-</span><span id="__span-5-20"><a id="__codelineno-5-20" name="__codelineno-5-20" href="#__codelineno-5-20"></a><span class="k">struct</span><span class="w"> </span><span class="nc">UnsignedWide</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-5-21"><a id="__codelineno-5-21" name="__codelineno-5-21" href="#__codelineno-5-21"></a><span class="w">  </span><span class="n">UInt32</span><span class="w">              </span><span class="n">lo</span><span class="p">;</span>
-</span><span id="__span-5-22"><a id="__codelineno-5-22" name="__codelineno-5-22" href="#__codelineno-5-22"></a><span class="w">  </span><span class="n">UInt32</span><span class="w">              </span><span class="n">hi</span><span class="p">;</span>
-</span><span id="__span-5-23"><a id="__codelineno-5-23" name="__codelineno-5-23" href="#__codelineno-5-23"></a><span class="p">};</span>
-</span><span id="__span-5-24"><a id="__codelineno-5-24" name="__codelineno-5-24" href="#__codelineno-5-24"></a><span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">UnsignedWide</span><span class="w">             </span><span class="n">UnsignedWide</span><span class="p">;</span>
-</span><span id="__span-5-25"><a id="__codelineno-5-25" name="__codelineno-5-25" href="#__codelineno-5-25"></a><span class="cp">#endif  </span><span class="cm">/* TARGET_RT_BIG_ENDIAN */</span>
-</span><span id="__span-5-26"><a id="__codelineno-5-26" name="__codelineno-5-26" href="#__codelineno-5-26"></a>
-</span><span id="__span-5-27"><a id="__codelineno-5-27" name="__codelineno-5-27" href="#__codelineno-5-27"></a><span class="cp">#endif</span>
+<div class="language-c highlight"><span class="filename">usr/include/MacTypes.h</span><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="cm">/* avoid redeclaration if libkern/OSTypes.h */</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="cp">#ifndef _OS_OSTYPES_H</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="cp">#if TARGET_RT_BIG_ENDIAN</span>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="k">struct</span><span class="w"> </span><span class="nc">wide</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="w">  </span><span class="n">SInt32</span><span class="w">              </span><span class="n">hi</span><span class="p">;</span>
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="w">  </span><span class="n">UInt32</span><span class="w">              </span><span class="n">lo</span><span class="p">;</span>
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="p">};</span>
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">wide</span><span class="w">                     </span><span class="n">wide</span><span class="p">;</span>
+</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="k">struct</span><span class="w"> </span><span class="nc">UnsignedWide</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="w">  </span><span class="n">UInt32</span><span class="w">              </span><span class="n">hi</span><span class="p">;</span>
+</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="w">  </span><span class="n">UInt32</span><span class="w">              </span><span class="n">lo</span><span class="p">;</span>
+</span><span id="__span-4-12"><a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a><span class="p">};</span>
+</span><span id="__span-4-13"><a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a><span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">UnsignedWide</span><span class="w">             </span><span class="n">UnsignedWide</span><span class="p">;</span>
+</span><span id="__span-4-14"><a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a><span class="cp">#else</span>
+</span><span id="__span-4-15"><a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a><span class="k">struct</span><span class="w"> </span><span class="nc">wide</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-4-16"><a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a><span class="w">  </span><span class="n">UInt32</span><span class="w">              </span><span class="n">lo</span><span class="p">;</span>
+</span><span id="__span-4-17"><a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a><span class="w">  </span><span class="n">SInt32</span><span class="w">              </span><span class="n">hi</span><span class="p">;</span>
+</span><span id="__span-4-18"><a id="__codelineno-4-18" name="__codelineno-4-18" href="#__codelineno-4-18"></a><span class="p">};</span>
+</span><span id="__span-4-19"><a id="__codelineno-4-19" name="__codelineno-4-19" href="#__codelineno-4-19"></a><span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">wide</span><span class="w">                     </span><span class="n">wide</span><span class="p">;</span>
+</span><span id="__span-4-20"><a id="__codelineno-4-20" name="__codelineno-4-20" href="#__codelineno-4-20"></a><span class="k">struct</span><span class="w"> </span><span class="nc">UnsignedWide</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-4-21"><a id="__codelineno-4-21" name="__codelineno-4-21" href="#__codelineno-4-21"></a><span class="w">  </span><span class="n">UInt32</span><span class="w">              </span><span class="n">lo</span><span class="p">;</span>
+</span><span id="__span-4-22"><a id="__codelineno-4-22" name="__codelineno-4-22" href="#__codelineno-4-22"></a><span class="w">  </span><span class="n">UInt32</span><span class="w">              </span><span class="n">hi</span><span class="p">;</span>
+</span><span id="__span-4-23"><a id="__codelineno-4-23" name="__codelineno-4-23" href="#__codelineno-4-23"></a><span class="p">};</span>
+</span><span id="__span-4-24"><a id="__codelineno-4-24" name="__codelineno-4-24" href="#__codelineno-4-24"></a><span class="k">typedef</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="nc">UnsignedWide</span><span class="w">             </span><span class="n">UnsignedWide</span><span class="p">;</span>
+</span><span id="__span-4-25"><a id="__codelineno-4-25" name="__codelineno-4-25" href="#__codelineno-4-25"></a><span class="cp">#endif  </span><span class="cm">/* TARGET_RT_BIG_ENDIAN */</span>
+</span><span id="__span-4-26"><a id="__codelineno-4-26" name="__codelineno-4-26" href="#__codelineno-4-26"></a>
+</span><span id="__span-4-27"><a id="__codelineno-4-27" name="__codelineno-4-27" href="#__codelineno-4-27"></a><span class="cp">#endif</span>
 </span></code></pre></div>
 <h3 id="rpi4b-ubuntu">rpi4b-ubuntu<a class="headerlink" href="#rpi4b-ubuntu" title="Permanent link">#</a></h3>
 <p>在 rpi4b-ubuntu/arm64 中，little_endian.h 和 big_endian.h 各自定义了大小端相关的宏及对应 <code>BITFIELD</code>。</p>
 <details class="info">
 <summary>grep -REH /usr/include under ubuntu</summary>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>$<span class="w"> </span>grep<span class="w"> </span>-REH<span class="w"> </span><span class="s2">&quot;#.*define.*(BYTE_ORDER|BIG_ENDIAN|LITTLE_ENDIAN|PDP_ENDIAN)&quot;</span><span class="w"> </span>/usr/include<span class="w"> </span><span class="m">2</span>&gt;/dev/null
-</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>
-</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>/usr/include/linux/byteorder/little_endian.h:#define<span class="w"> </span>__LITTLE_ENDIAN<span class="w"> </span><span class="m">1234</span>
-</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>/usr/include/linux/byteorder/little_endian.h:#define<span class="w"> </span>__LITTLE_ENDIAN_BITFIELD
-</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>
-</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>/usr/include/linux/byteorder/big_endian.h:#define<span class="w"> </span>__BIG_ENDIAN<span class="w"> </span><span class="m">4321</span>
-</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>/usr/include/linux/byteorder/big_endian.h:#define<span class="w"> </span>__BIG_ENDIAN_BITFIELD
-</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>
-</span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>/usr/include/aarch64-linux-gnu/bits/endianness.h:#<span class="w"> </span>define<span class="w"> </span>__BYTE_ORDER<span class="w"> </span>__BIG_ENDIAN
-</span><span id="__span-6-10"><a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a>/usr/include/aarch64-linux-gnu/bits/endianness.h:#<span class="w"> </span>define<span class="w"> </span>__BYTE_ORDER<span class="w"> </span>__LITTLE_ENDIAN
-</span><span id="__span-6-11"><a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a>
-</span><span id="__span-6-12"><a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a>/usr/include/aarch64-linux-gnu/bits/endian.h:#define<span class="w">    </span>__LITTLE_ENDIAN<span class="w"> </span><span class="m">1234</span>
-</span><span id="__span-6-13"><a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a>/usr/include/aarch64-linux-gnu/bits/endian.h:#define<span class="w">    </span>__BIG_ENDIAN<span class="w">    </span><span class="m">4321</span>
-</span><span id="__span-6-14"><a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a>/usr/include/aarch64-linux-gnu/bits/endian.h:#define<span class="w">    </span>__PDP_ENDIAN<span class="w">    </span><span class="m">3412</span>
-</span><span id="__span-6-15"><a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a>/usr/include/aarch64-linux-gnu/bits/endian.h:#<span class="w"> </span>define<span class="w"> </span>__FLOAT_WORD_ORDER<span class="w"> </span>__BYTE_ORDER
-</span><span id="__span-6-16"><a id="__codelineno-6-16" name="__codelineno-6-16" href="#__codelineno-6-16"></a>
-</span><span id="__span-6-17"><a id="__codelineno-6-17" name="__codelineno-6-17" href="#__codelineno-6-17"></a>/usr/include/endian.h:#<span class="w"> </span>define<span class="w"> </span>LITTLE_ENDIAN<span class="w">    </span>__LITTLE_ENDIAN
-</span><span id="__span-6-18"><a id="__codelineno-6-18" name="__codelineno-6-18" href="#__codelineno-6-18"></a>/usr/include/endian.h:#<span class="w"> </span>define<span class="w"> </span>BIG_ENDIAN<span class="w">   </span>__BIG_ENDIAN
-</span><span id="__span-6-19"><a id="__codelineno-6-19" name="__codelineno-6-19" href="#__codelineno-6-19"></a>/usr/include/endian.h:#<span class="w"> </span>define<span class="w"> </span>PDP_ENDIAN<span class="w">   </span>__PDP_ENDIAN
-</span><span id="__span-6-20"><a id="__codelineno-6-20" name="__codelineno-6-20" href="#__codelineno-6-20"></a>/usr/include/endian.h:#<span class="w"> </span>define<span class="w"> </span>BYTE_ORDER<span class="w">   </span>__BYTE_ORDER
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>$<span class="w"> </span>grep<span class="w"> </span>-REH<span class="w"> </span><span class="s2">&quot;#.*define.*(BYTE_ORDER|BIG_ENDIAN|LITTLE_ENDIAN|PDP_ENDIAN)&quot;</span><span class="w"> </span>/usr/include<span class="w"> </span><span class="m">2</span>&gt;/dev/null
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>/usr/include/linux/byteorder/little_endian.h:#define<span class="w"> </span>__LITTLE_ENDIAN<span class="w"> </span><span class="m">1234</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>/usr/include/linux/byteorder/little_endian.h:#define<span class="w"> </span>__LITTLE_ENDIAN_BITFIELD
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>/usr/include/linux/byteorder/big_endian.h:#define<span class="w"> </span>__BIG_ENDIAN<span class="w"> </span><span class="m">4321</span>
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>/usr/include/linux/byteorder/big_endian.h:#define<span class="w"> </span>__BIG_ENDIAN_BITFIELD
+</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>
+</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>/usr/include/aarch64-linux-gnu/bits/endianness.h:#<span class="w"> </span>define<span class="w"> </span>__BYTE_ORDER<span class="w"> </span>__BIG_ENDIAN
+</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a>/usr/include/aarch64-linux-gnu/bits/endianness.h:#<span class="w"> </span>define<span class="w"> </span>__BYTE_ORDER<span class="w"> </span>__LITTLE_ENDIAN
+</span><span id="__span-5-11"><a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>
+</span><span id="__span-5-12"><a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a>/usr/include/aarch64-linux-gnu/bits/endian.h:#define<span class="w">    </span>__LITTLE_ENDIAN<span class="w"> </span><span class="m">1234</span>
+</span><span id="__span-5-13"><a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a>/usr/include/aarch64-linux-gnu/bits/endian.h:#define<span class="w">    </span>__BIG_ENDIAN<span class="w">    </span><span class="m">4321</span>
+</span><span id="__span-5-14"><a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a>/usr/include/aarch64-linux-gnu/bits/endian.h:#define<span class="w">    </span>__PDP_ENDIAN<span class="w">    </span><span class="m">3412</span>
+</span><span id="__span-5-15"><a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a>/usr/include/aarch64-linux-gnu/bits/endian.h:#<span class="w"> </span>define<span class="w"> </span>__FLOAT_WORD_ORDER<span class="w"> </span>__BYTE_ORDER
+</span><span id="__span-5-16"><a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a>
+</span><span id="__span-5-17"><a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a>/usr/include/endian.h:#<span class="w"> </span>define<span class="w"> </span>LITTLE_ENDIAN<span class="w">    </span>__LITTLE_ENDIAN
+</span><span id="__span-5-18"><a id="__codelineno-5-18" name="__codelineno-5-18" href="#__codelineno-5-18"></a>/usr/include/endian.h:#<span class="w"> </span>define<span class="w"> </span>BIG_ENDIAN<span class="w">   </span>__BIG_ENDIAN
+</span><span id="__span-5-19"><a id="__codelineno-5-19" name="__codelineno-5-19" href="#__codelineno-5-19"></a>/usr/include/endian.h:#<span class="w"> </span>define<span class="w"> </span>PDP_ENDIAN<span class="w">   </span>__PDP_ENDIAN
+</span><span id="__span-5-20"><a id="__codelineno-5-20" name="__codelineno-5-20" href="#__codelineno-5-20"></a>/usr/include/endian.h:#<span class="w"> </span>define<span class="w"> </span>BYTE_ORDER<span class="w">   </span>__BYTE_ORDER
 </span></code></pre></div>
 </details>
 <p>最底层 bits/endianness.h 中根据是否定义了 <code>__AARCH64EB__</code> 宏，来进一步定义 <code>__BYTE_ORDER</code>：</p>
-<div class="language-c highlight"><span class="filename">/usr/include/aarch64-linux-gnu/bits/endianness.h</span><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="cp">#ifndef _BITS_ENDIAN_H</span>
-</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="cp"># error &quot;Never use &lt;bits/endianness.h&gt; directly; include &lt;endian.h&gt; instead.&quot;</span>
-</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="cp">#endif</span>
-</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>
-</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="cm">/* AArch64 has selectable endianness.  */</span>
-</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="cp">#ifdef __AARCH64EB__</span>
-</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="cp"># define __BYTE_ORDER __BIG_ENDIAN</span>
-</span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a><span class="cp">#else</span>
-</span><span id="__span-7-9"><a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a><span class="cp"># define __BYTE_ORDER __LITTLE_ENDIAN</span>
-</span><span id="__span-7-10"><a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a><span class="cp">#endif</span>
+<div class="language-c highlight"><span class="filename">/usr/include/aarch64-linux-gnu/bits/endianness.h</span><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="cp">#ifndef _BITS_ENDIAN_H</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="cp"># error &quot;Never use &lt;bits/endianness.h&gt; directly; include &lt;endian.h&gt; instead.&quot;</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="cp">#endif</span>
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="cm">/* AArch64 has selectable endianness.  */</span>
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="cp">#ifdef __AARCH64EB__</span>
+</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="cp"># define __BYTE_ORDER __BIG_ENDIAN</span>
+</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="cp">#else</span>
+</span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="cp"># define __BYTE_ORDER __LITTLE_ENDIAN</span>
+</span><span id="__span-6-10"><a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a><span class="cp">#endif</span>
 </span></code></pre></div>
 <p>bits/endian.h 包含了 &lt;bits/endianness.h&gt;，定义了 <code>__LITTLE_ENDIAN</code>、<code>__BIG_ENDIAN</code>、<code>__PDP_ENDIAN</code> 和 <code>__FLOAT_WORD_ORDER</code>：</p>
-<div class="language-c highlight"><span class="filename">/usr/include/aarch64-linux-gnu/bits/endian.h</span><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="cp">#ifndef _BITS_ENDIAN_H</span>
-</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="cp">#define _BITS_ENDIAN_H 1</span>
-</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>
-</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="cm">/* Definitions for byte order, according to significance of bytes,</span>
-</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="cm">   from low addresses to high addresses.  The value is what you get by</span>
-</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="cm">   putting &#39;4&#39; in the most significant byte, &#39;3&#39; in the second most</span>
-</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="cm">   significant byte, &#39;2&#39; in the second least significant byte, and &#39;1&#39;</span>
-</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a><span class="cm">   in the least significant byte, and then writing down one digit for</span>
-</span><span id="__span-8-9"><a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a><span class="cm">   each byte, starting with the byte at the lowest address at the left,</span>
-</span><span id="__span-8-10"><a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a><span class="cm">   and proceeding to the byte with the highest address at the right.  */</span>
-</span><span id="__span-8-11"><a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a>
-</span><span id="__span-8-12"><a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a><span class="cp">#define __LITTLE_ENDIAN 1234</span>
-</span><span id="__span-8-13"><a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a><span class="cp">#define __BIG_ENDIAN    4321</span>
-</span><span id="__span-8-14"><a id="__codelineno-8-14" name="__codelineno-8-14" href="#__codelineno-8-14"></a><span class="cp">#define __PDP_ENDIAN    3412</span>
-</span><span id="__span-8-15"><a id="__codelineno-8-15" name="__codelineno-8-15" href="#__codelineno-8-15"></a>
-</span><span id="__span-8-16"><a id="__codelineno-8-16" name="__codelineno-8-16" href="#__codelineno-8-16"></a><span class="cm">/* This file defines `__BYTE_ORDER&#39; for the particular machine.  */</span>
-</span><span id="__span-8-17"><a id="__codelineno-8-17" name="__codelineno-8-17" href="#__codelineno-8-17"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;bits/endianness.h&gt;</span>
-</span><span id="__span-8-18"><a id="__codelineno-8-18" name="__codelineno-8-18" href="#__codelineno-8-18"></a>
-</span><span id="__span-8-19"><a id="__codelineno-8-19" name="__codelineno-8-19" href="#__codelineno-8-19"></a><span class="cm">/* Some machines may need to use a different endianness for floating point</span>
-</span><span id="__span-8-20"><a id="__codelineno-8-20" name="__codelineno-8-20" href="#__codelineno-8-20"></a><span class="cm">   values.  */</span>
-</span><span id="__span-8-21"><a id="__codelineno-8-21" name="__codelineno-8-21" href="#__codelineno-8-21"></a><span class="cp">#ifndef __FLOAT_WORD_ORDER</span>
-</span><span id="__span-8-22"><a id="__codelineno-8-22" name="__codelineno-8-22" href="#__codelineno-8-22"></a><span class="cp"># define __FLOAT_WORD_ORDER __BYTE_ORDER</span>
-</span><span id="__span-8-23"><a id="__codelineno-8-23" name="__codelineno-8-23" href="#__codelineno-8-23"></a><span class="cp">#endif</span>
+<div class="language-c highlight"><span class="filename">/usr/include/aarch64-linux-gnu/bits/endian.h</span><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="cp">#ifndef _BITS_ENDIAN_H</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="cp">#define _BITS_ENDIAN_H 1</span>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="cm">/* Definitions for byte order, according to significance of bytes,</span>
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="cm">   from low addresses to high addresses.  The value is what you get by</span>
+</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="cm">   putting &#39;4&#39; in the most significant byte, &#39;3&#39; in the second most</span>
+</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="cm">   significant byte, &#39;2&#39; in the second least significant byte, and &#39;1&#39;</span>
+</span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a><span class="cm">   in the least significant byte, and then writing down one digit for</span>
+</span><span id="__span-7-9"><a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a><span class="cm">   each byte, starting with the byte at the lowest address at the left,</span>
+</span><span id="__span-7-10"><a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a><span class="cm">   and proceeding to the byte with the highest address at the right.  */</span>
+</span><span id="__span-7-11"><a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a>
+</span><span id="__span-7-12"><a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a><span class="cp">#define __LITTLE_ENDIAN 1234</span>
+</span><span id="__span-7-13"><a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a><span class="cp">#define __BIG_ENDIAN    4321</span>
+</span><span id="__span-7-14"><a id="__codelineno-7-14" name="__codelineno-7-14" href="#__codelineno-7-14"></a><span class="cp">#define __PDP_ENDIAN    3412</span>
+</span><span id="__span-7-15"><a id="__codelineno-7-15" name="__codelineno-7-15" href="#__codelineno-7-15"></a>
+</span><span id="__span-7-16"><a id="__codelineno-7-16" name="__codelineno-7-16" href="#__codelineno-7-16"></a><span class="cm">/* This file defines `__BYTE_ORDER&#39; for the particular machine.  */</span>
+</span><span id="__span-7-17"><a id="__codelineno-7-17" name="__codelineno-7-17" href="#__codelineno-7-17"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;bits/endianness.h&gt;</span>
+</span><span id="__span-7-18"><a id="__codelineno-7-18" name="__codelineno-7-18" href="#__codelineno-7-18"></a>
+</span><span id="__span-7-19"><a id="__codelineno-7-19" name="__codelineno-7-19" href="#__codelineno-7-19"></a><span class="cm">/* Some machines may need to use a different endianness for floating point</span>
+</span><span id="__span-7-20"><a id="__codelineno-7-20" name="__codelineno-7-20" href="#__codelineno-7-20"></a><span class="cm">   values.  */</span>
+</span><span id="__span-7-21"><a id="__codelineno-7-21" name="__codelineno-7-21" href="#__codelineno-7-21"></a><span class="cp">#ifndef __FLOAT_WORD_ORDER</span>
+</span><span id="__span-7-22"><a id="__codelineno-7-22" name="__codelineno-7-22" href="#__codelineno-7-22"></a><span class="cp"># define __FLOAT_WORD_ORDER __BYTE_ORDER</span>
+</span><span id="__span-7-23"><a id="__codelineno-7-23" name="__codelineno-7-23" href="#__codelineno-7-23"></a><span class="cp">#endif</span>
 </span></code></pre></div>
 <p>/usr/include/endian.h 包含了 &lt;bits/endian.h&gt;，向上层用户提供头文件：</p>
-<div class="language-c highlight"><span class="filename">/usr/include/endian.h</span><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="cm">/* Get the definitions of __*_ENDIAN, __BYTE_ORDER, and __FLOAT_WORD_ORDER.  */</span>
-</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;bits/endian.h&gt;</span>
-</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>
-</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="cp">#ifdef __USE_MISC</span>
-</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="cp"># define LITTLE_ENDIAN  __LITTLE_ENDIAN</span>
-</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="cp"># define BIG_ENDIAN __BIG_ENDIAN</span>
-</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="cp"># define PDP_ENDIAN __PDP_ENDIAN</span>
-</span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a><span class="cp"># define BYTE_ORDER __BYTE_ORDER</span>
-</span><span id="__span-9-9"><a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a><span class="cp">#endif</span>
+<div class="language-c highlight"><span class="filename">/usr/include/endian.h</span><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="cm">/* Get the definitions of __*_ENDIAN, __BYTE_ORDER, and __FLOAT_WORD_ORDER.  */</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;bits/endian.h&gt;</span>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="cp">#ifdef __USE_MISC</span>
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="cp"># define LITTLE_ENDIAN  __LITTLE_ENDIAN</span>
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="cp"># define BIG_ENDIAN __BIG_ENDIAN</span>
+</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="cp"># define PDP_ENDIAN __PDP_ENDIAN</span>
+</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a><span class="cp"># define BYTE_ORDER __BYTE_ORDER</span>
+</span><span id="__span-8-9"><a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a><span class="cp">#endif</span>
 </span></code></pre></div>
 <p>/usr/include/linux 下的网络协议实现相关头文件 if_packet.h,tcp.h,ip.h,icmp.h,igmp.h,cdrom.h 中判断是否定义了 <code>__LITTLE_ENDIAN_BITFIELD</code> / <code>__BIG_ENDIAN_BITFIELD</code>。其他头文件中主要判断 <code>__BYTE_ORDER</code> 的值。</p>
 <h2 id="network_byte_order">network byte order<a class="headerlink" href="#network_byte_order" title="Permanent link">#</a></h2>
@@ -1730,39 +1707,39 @@
 <p>在网络通信协议程序中，在进行网络数据的收发时，需要发收双方执行字节序转换（convert values between host and network byte order）。</p>
 <details class="info">
 <summary>man BYTEORDER</summary>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>$<span class="w"> </span>man<span class="w"> </span>BYTEORDER<span class="w"> </span><span class="c1"># man htonl</span>
-</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>
-</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>BYTEORDER<span class="o">(</span><span class="m">3</span><span class="o">)</span><span class="w">                       </span>Linux<span class="w"> </span>Programmer<span class="err">&#39;</span>s<span class="w"> </span>Manual<span class="w">                      </span>BYTEORDER<span class="o">(</span><span class="m">3</span><span class="o">)</span>
-</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>
-</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>NAME
-</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a><span class="w">      </span>htonl,<span class="w"> </span>htons,<span class="w"> </span>ntohl,<span class="w"> </span>ntohs<span class="w"> </span>-<span class="w"> </span>convert<span class="w"> </span>values<span class="w"> </span>between<span class="w"> </span>host<span class="w"> </span>and<span class="w"> </span>network<span class="w"> </span>byte<span class="w"> </span>order
-</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a>
-</span><span id="__span-10-8"><a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a>SYNOPSIS
-</span><span id="__span-10-9"><a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a><span class="w">      </span><span class="c1">#include &lt;arpa/inet.h&gt;</span>
-</span><span id="__span-10-10"><a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a>
-</span><span id="__span-10-11"><a id="__codelineno-10-11" name="__codelineno-10-11" href="#__codelineno-10-11"></a><span class="w">      </span>uint32_t<span class="w"> </span>htonl<span class="o">(</span>uint32_t<span class="w"> </span>hostlong<span class="o">)</span><span class="p">;</span>
-</span><span id="__span-10-12"><a id="__codelineno-10-12" name="__codelineno-10-12" href="#__codelineno-10-12"></a>
-</span><span id="__span-10-13"><a id="__codelineno-10-13" name="__codelineno-10-13" href="#__codelineno-10-13"></a><span class="w">      </span>uint16_t<span class="w"> </span>htons<span class="o">(</span>uint16_t<span class="w"> </span>hostshort<span class="o">)</span><span class="p">;</span>
-</span><span id="__span-10-14"><a id="__codelineno-10-14" name="__codelineno-10-14" href="#__codelineno-10-14"></a>
-</span><span id="__span-10-15"><a id="__codelineno-10-15" name="__codelineno-10-15" href="#__codelineno-10-15"></a><span class="w">      </span>uint32_t<span class="w"> </span>ntohl<span class="o">(</span>uint32_t<span class="w"> </span>netlong<span class="o">)</span><span class="p">;</span>
-</span><span id="__span-10-16"><a id="__codelineno-10-16" name="__codelineno-10-16" href="#__codelineno-10-16"></a>
-</span><span id="__span-10-17"><a id="__codelineno-10-17" name="__codelineno-10-17" href="#__codelineno-10-17"></a><span class="w">      </span>uint16_t<span class="w"> </span>ntohs<span class="o">(</span>uint16_t<span class="w"> </span>netshort<span class="o">)</span><span class="p">;</span>
-</span><span id="__span-10-18"><a id="__codelineno-10-18" name="__codelineno-10-18" href="#__codelineno-10-18"></a>
-</span><span id="__span-10-19"><a id="__codelineno-10-19" name="__codelineno-10-19" href="#__codelineno-10-19"></a>DESCRIPTION
-</span><span id="__span-10-20"><a id="__codelineno-10-20" name="__codelineno-10-20" href="#__codelineno-10-20"></a><span class="w">      </span>The<span class="w">  </span>htonl<span class="o">()</span><span class="w">  </span><span class="k">function</span><span class="w">  </span>converts<span class="w">  </span>the<span class="w"> </span>unsigned<span class="w"> </span>integer<span class="w"> </span>hostlong<span class="w"> </span>from<span class="w"> </span>host<span class="w"> </span>byte<span class="w"> </span>order<span class="w"> </span>to
-</span><span id="__span-10-21"><a id="__codelineno-10-21" name="__codelineno-10-21" href="#__codelineno-10-21"></a><span class="w">      </span>network<span class="w"> </span>byte<span class="w"> </span>order.
-</span><span id="__span-10-22"><a id="__codelineno-10-22" name="__codelineno-10-22" href="#__codelineno-10-22"></a>
-</span><span id="__span-10-23"><a id="__codelineno-10-23" name="__codelineno-10-23" href="#__codelineno-10-23"></a><span class="w">      </span>The<span class="w"> </span>htons<span class="o">()</span><span class="w"> </span><span class="k">function</span><span class="w"> </span>converts<span class="w"> </span>the<span class="w"> </span>unsigned<span class="w"> </span>short<span class="w"> </span>integer<span class="w"> </span>hostshort<span class="w"> </span>from<span class="w"> </span>host<span class="w"> </span>byte<span class="w"> </span>order
-</span><span id="__span-10-24"><a id="__codelineno-10-24" name="__codelineno-10-24" href="#__codelineno-10-24"></a><span class="w">      </span>to<span class="w"> </span>network<span class="w"> </span>byte<span class="w"> </span>order.
-</span><span id="__span-10-25"><a id="__codelineno-10-25" name="__codelineno-10-25" href="#__codelineno-10-25"></a>
-</span><span id="__span-10-26"><a id="__codelineno-10-26" name="__codelineno-10-26" href="#__codelineno-10-26"></a><span class="w">      </span>The<span class="w">  </span>ntohl<span class="o">()</span><span class="w">  </span><span class="k">function</span><span class="w"> </span>converts<span class="w"> </span>the<span class="w"> </span>unsigned<span class="w"> </span>integer<span class="w"> </span>netlong<span class="w"> </span>from<span class="w"> </span>network<span class="w"> </span>byte<span class="w"> </span>order<span class="w"> </span>to
-</span><span id="__span-10-27"><a id="__codelineno-10-27" name="__codelineno-10-27" href="#__codelineno-10-27"></a><span class="w">      </span>host<span class="w"> </span>byte<span class="w"> </span>order.
-</span><span id="__span-10-28"><a id="__codelineno-10-28" name="__codelineno-10-28" href="#__codelineno-10-28"></a>
-</span><span id="__span-10-29"><a id="__codelineno-10-29" name="__codelineno-10-29" href="#__codelineno-10-29"></a><span class="w">      </span>The<span class="w"> </span>ntohs<span class="o">()</span><span class="w"> </span><span class="k">function</span><span class="w"> </span>converts<span class="w"> </span>the<span class="w"> </span>unsigned<span class="w"> </span>short<span class="w"> </span>integer<span class="w"> </span>netshort<span class="w"> </span>from<span class="w"> </span>network<span class="w"> </span>byte<span class="w"> </span>or‐
-</span><span id="__span-10-30"><a id="__codelineno-10-30" name="__codelineno-10-30" href="#__codelineno-10-30"></a><span class="w">      </span>der<span class="w"> </span>to<span class="w"> </span>host<span class="w"> </span>byte<span class="w"> </span>order.
-</span><span id="__span-10-31"><a id="__codelineno-10-31" name="__codelineno-10-31" href="#__codelineno-10-31"></a>
-</span><span id="__span-10-32"><a id="__codelineno-10-32" name="__codelineno-10-32" href="#__codelineno-10-32"></a><span class="w">      </span>On<span class="w">  </span>the<span class="w">  </span>i386<span class="w">  </span>the<span class="w"> </span>host<span class="w"> </span>byte<span class="w"> </span>order<span class="w"> </span>is<span class="w"> </span>Least<span class="w"> </span>Significant<span class="w"> </span>Byte<span class="w"> </span>first,<span class="w"> </span>whereas<span class="w"> </span>the<span class="w"> </span>network
-</span><span id="__span-10-33"><a id="__codelineno-10-33" name="__codelineno-10-33" href="#__codelineno-10-33"></a><span class="w">      </span>byte<span class="w"> </span>order,<span class="w"> </span>as<span class="w"> </span>used<span class="w"> </span>on<span class="w"> </span>the<span class="w"> </span>Internet,<span class="w"> </span>is<span class="w"> </span>Most<span class="w"> </span>Significant<span class="w"> </span>Byte<span class="w"> </span>first.
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>$<span class="w"> </span>man<span class="w"> </span>BYTEORDER<span class="w"> </span><span class="c1"># man htonl</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>BYTEORDER<span class="o">(</span><span class="m">3</span><span class="o">)</span><span class="w">                       </span>Linux<span class="w"> </span>Programmer<span class="err">&#39;</span>s<span class="w"> </span>Manual<span class="w">                      </span>BYTEORDER<span class="o">(</span><span class="m">3</span><span class="o">)</span>
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>NAME
+</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="w">      </span>htonl,<span class="w"> </span>htons,<span class="w"> </span>ntohl,<span class="w"> </span>ntohs<span class="w"> </span>-<span class="w"> </span>convert<span class="w"> </span>values<span class="w"> </span>between<span class="w"> </span>host<span class="w"> </span>and<span class="w"> </span>network<span class="w"> </span>byte<span class="w"> </span>order
+</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a>
+</span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a>SYNOPSIS
+</span><span id="__span-9-9"><a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a><span class="w">      </span><span class="c1">#include &lt;arpa/inet.h&gt;</span>
+</span><span id="__span-9-10"><a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a>
+</span><span id="__span-9-11"><a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a><span class="w">      </span>uint32_t<span class="w"> </span>htonl<span class="o">(</span>uint32_t<span class="w"> </span>hostlong<span class="o">)</span><span class="p">;</span>
+</span><span id="__span-9-12"><a id="__codelineno-9-12" name="__codelineno-9-12" href="#__codelineno-9-12"></a>
+</span><span id="__span-9-13"><a id="__codelineno-9-13" name="__codelineno-9-13" href="#__codelineno-9-13"></a><span class="w">      </span>uint16_t<span class="w"> </span>htons<span class="o">(</span>uint16_t<span class="w"> </span>hostshort<span class="o">)</span><span class="p">;</span>
+</span><span id="__span-9-14"><a id="__codelineno-9-14" name="__codelineno-9-14" href="#__codelineno-9-14"></a>
+</span><span id="__span-9-15"><a id="__codelineno-9-15" name="__codelineno-9-15" href="#__codelineno-9-15"></a><span class="w">      </span>uint32_t<span class="w"> </span>ntohl<span class="o">(</span>uint32_t<span class="w"> </span>netlong<span class="o">)</span><span class="p">;</span>
+</span><span id="__span-9-16"><a id="__codelineno-9-16" name="__codelineno-9-16" href="#__codelineno-9-16"></a>
+</span><span id="__span-9-17"><a id="__codelineno-9-17" name="__codelineno-9-17" href="#__codelineno-9-17"></a><span class="w">      </span>uint16_t<span class="w"> </span>ntohs<span class="o">(</span>uint16_t<span class="w"> </span>netshort<span class="o">)</span><span class="p">;</span>
+</span><span id="__span-9-18"><a id="__codelineno-9-18" name="__codelineno-9-18" href="#__codelineno-9-18"></a>
+</span><span id="__span-9-19"><a id="__codelineno-9-19" name="__codelineno-9-19" href="#__codelineno-9-19"></a>DESCRIPTION
+</span><span id="__span-9-20"><a id="__codelineno-9-20" name="__codelineno-9-20" href="#__codelineno-9-20"></a><span class="w">      </span>The<span class="w">  </span>htonl<span class="o">()</span><span class="w">  </span><span class="k">function</span><span class="w">  </span>converts<span class="w">  </span>the<span class="w"> </span>unsigned<span class="w"> </span>integer<span class="w"> </span>hostlong<span class="w"> </span>from<span class="w"> </span>host<span class="w"> </span>byte<span class="w"> </span>order<span class="w"> </span>to
+</span><span id="__span-9-21"><a id="__codelineno-9-21" name="__codelineno-9-21" href="#__codelineno-9-21"></a><span class="w">      </span>network<span class="w"> </span>byte<span class="w"> </span>order.
+</span><span id="__span-9-22"><a id="__codelineno-9-22" name="__codelineno-9-22" href="#__codelineno-9-22"></a>
+</span><span id="__span-9-23"><a id="__codelineno-9-23" name="__codelineno-9-23" href="#__codelineno-9-23"></a><span class="w">      </span>The<span class="w"> </span>htons<span class="o">()</span><span class="w"> </span><span class="k">function</span><span class="w"> </span>converts<span class="w"> </span>the<span class="w"> </span>unsigned<span class="w"> </span>short<span class="w"> </span>integer<span class="w"> </span>hostshort<span class="w"> </span>from<span class="w"> </span>host<span class="w"> </span>byte<span class="w"> </span>order
+</span><span id="__span-9-24"><a id="__codelineno-9-24" name="__codelineno-9-24" href="#__codelineno-9-24"></a><span class="w">      </span>to<span class="w"> </span>network<span class="w"> </span>byte<span class="w"> </span>order.
+</span><span id="__span-9-25"><a id="__codelineno-9-25" name="__codelineno-9-25" href="#__codelineno-9-25"></a>
+</span><span id="__span-9-26"><a id="__codelineno-9-26" name="__codelineno-9-26" href="#__codelineno-9-26"></a><span class="w">      </span>The<span class="w">  </span>ntohl<span class="o">()</span><span class="w">  </span><span class="k">function</span><span class="w"> </span>converts<span class="w"> </span>the<span class="w"> </span>unsigned<span class="w"> </span>integer<span class="w"> </span>netlong<span class="w"> </span>from<span class="w"> </span>network<span class="w"> </span>byte<span class="w"> </span>order<span class="w"> </span>to
+</span><span id="__span-9-27"><a id="__codelineno-9-27" name="__codelineno-9-27" href="#__codelineno-9-27"></a><span class="w">      </span>host<span class="w"> </span>byte<span class="w"> </span>order.
+</span><span id="__span-9-28"><a id="__codelineno-9-28" name="__codelineno-9-28" href="#__codelineno-9-28"></a>
+</span><span id="__span-9-29"><a id="__codelineno-9-29" name="__codelineno-9-29" href="#__codelineno-9-29"></a><span class="w">      </span>The<span class="w"> </span>ntohs<span class="o">()</span><span class="w"> </span><span class="k">function</span><span class="w"> </span>converts<span class="w"> </span>the<span class="w"> </span>unsigned<span class="w"> </span>short<span class="w"> </span>integer<span class="w"> </span>netshort<span class="w"> </span>from<span class="w"> </span>network<span class="w"> </span>byte<span class="w"> </span>or‐
+</span><span id="__span-9-30"><a id="__codelineno-9-30" name="__codelineno-9-30" href="#__codelineno-9-30"></a><span class="w">      </span>der<span class="w"> </span>to<span class="w"> </span>host<span class="w"> </span>byte<span class="w"> </span>order.
+</span><span id="__span-9-31"><a id="__codelineno-9-31" name="__codelineno-9-31" href="#__codelineno-9-31"></a>
+</span><span id="__span-9-32"><a id="__codelineno-9-32" name="__codelineno-9-32" href="#__codelineno-9-32"></a><span class="w">      </span>On<span class="w">  </span>the<span class="w">  </span>i386<span class="w">  </span>the<span class="w"> </span>host<span class="w"> </span>byte<span class="w"> </span>order<span class="w"> </span>is<span class="w"> </span>Least<span class="w"> </span>Significant<span class="w"> </span>Byte<span class="w"> </span>first,<span class="w"> </span>whereas<span class="w"> </span>the<span class="w"> </span>network
+</span><span id="__span-9-33"><a id="__codelineno-9-33" name="__codelineno-9-33" href="#__codelineno-9-33"></a><span class="w">      </span>byte<span class="w"> </span>order,<span class="w"> </span>as<span class="w"> </span>used<span class="w"> </span>on<span class="w"> </span>the<span class="w"> </span>Internet,<span class="w"> </span>is<span class="w"> </span>Most<span class="w"> </span>Significant<span class="w"> </span>Byte<span class="w"> </span>first.
 </span></code></pre></div>
 </details>
 <p>在 macOS/ubuntu 下执行 <code>grep -RH "htonl\|ntohl"</code> 可以查找到：</p>
@@ -1776,23 +1753,23 @@
 <div class="tabbed-set tabbed-alternate" data-tabs="2:2"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">sender htons</label><label for="__tabbed_2_2">recver ntohs</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
-<div class="language-c highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="kt">short</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x7da</span><span class="p">;</span><span class="w"> </span><span class="c1">// EL: {0xda, 0x7}</span>
-</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="kt">short</span><span class="w"> </span><span class="n">ns</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">htons</span><span class="p">(</span><span class="n">s</span><span class="p">);</span><span class="w"> </span><span class="c1">// EB: {0x7, 0xda}</span>
-</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="n">memcpy</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">ns</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="w"> </span><span class="n">ns</span><span class="p">);</span>
-</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="n">send</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span><span class="w"> </span><span class="n">buf</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="w"> </span><span class="n">ns</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="kt">short</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x7da</span><span class="p">;</span><span class="w"> </span><span class="c1">// EL: {0xda, 0x7}</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="kt">short</span><span class="w"> </span><span class="n">ns</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">htons</span><span class="p">(</span><span class="n">s</span><span class="p">);</span><span class="w"> </span><span class="c1">// EB: {0x7, 0xda}</span>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="n">memcpy</span><span class="p">(</span><span class="n">buf</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">ns</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="w"> </span><span class="n">ns</span><span class="p">);</span>
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="n">send</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span><span class="w"> </span><span class="n">buf</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="w"> </span><span class="n">ns</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span>
 </span></code></pre></div>
 </div>
 <div class="tabbed-block">
-<div class="language-c highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="kt">short</span><span class="w"> </span><span class="n">ns</span><span class="p">;</span>
-</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="n">recv</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span><span class="w"> </span><span class="n">buf</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="w"> </span><span class="n">ns</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span><span class="w"> </span><span class="c1">// EB: {0x7, 0xda}</span>
-</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="n">memcpy</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ns</span><span class="p">,</span><span class="w"> </span><span class="n">buf</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="w"> </span><span class="n">ns</span><span class="p">);</span>
-</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="kt">short</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ntohs</span><span class="p">(</span><span class="n">ns</span><span class="p">);</span><span class="w"> </span><span class="c1">// EL: {0xda, 0x7}</span>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="kt">short</span><span class="w"> </span><span class="n">ns</span><span class="p">;</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="n">recv</span><span class="p">(</span><span class="n">sock</span><span class="p">,</span><span class="w"> </span><span class="n">buf</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="w"> </span><span class="n">ns</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span><span class="w"> </span><span class="c1">// EB: {0x7, 0xda}</span>
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="n">memcpy</span><span class="p">(</span><span class="o">&amp;</span><span class="n">ns</span><span class="p">,</span><span class="w"> </span><span class="n">buf</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="w"> </span><span class="n">ns</span><span class="p">);</span>
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="kt">short</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ntohs</span><span class="p">(</span><span class="n">ns</span><span class="p">);</span><span class="w"> </span><span class="c1">// EL: {0xda, 0x7}</span>
 </span></code></pre></div>
 </div>
 </div>
 </div>
 <h2 id="test_endianess">test endianess<a class="headerlink" href="#test_endianess" title="Permanent link">#</a></h2>
-<p>我们在前面，利用编译器预处理输出了字节序相关的 predefined macros，然后通过 grep 查找 usr/include 下相关宏定义所在的头文件。</p>
+<p>我们在前面利用编译器预处理输出了字节序相关的 predefined macros，然后通过 grep 查找 usr/include 下相关宏定义所在的头文件。</p>
 <ol>
 <li>macOS 上的 i386/endian.h 和 arm/endian.h 不同架构下清晰定义了 <code>BYTE_ORDER</code> 为小尾端，没找到 <code>__LITTLE_ENDIAN__</code> 定义处。</li>
 <li>
@@ -1802,6 +1779,19 @@
 </ul>
 </li>
 </ol>
+<p><a href="https://en.cppreference.com/w/cpp/numeric#Bit_manipulation">Numerics library - Bit manipulation</a> c++20 引入了 <a href="https://en.cppreference.com/w/cpp/types/endian">std::endian</a> —— indicates the endianness of scalar types.</p>
+<div class="admonition note">
+<p class="admonition-title">c++20 std::endian</p>
+<p>参考 20230510 <a href="https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/n4950.pdf">ISO/IEC-N4950</a> 中 22.15.8 Endian：</p>
+<p>Two common methods of byte ordering in multibyte scalar types are big-endian and little-endian in the execution environment. <strong><em>Big-endian</em></strong> is a format for storage of binary data in which the most significant byte is placed first, with the rest in descending order. <strong><em>Little-endian</em></strong> is a format for storage of binary data in which the least significant byte is placed first, with the rest in ascending order. This subclause describes the endianness of the scalar types of the execution environment.</p>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="k">enum</span><span class="w"> </span><span class="n">class</span><span class="w"> </span><span class="n">endian</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="w">  </span><span class="n">little</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">see</span><span class="w"> </span><span class="n">below</span><span class="p">,</span>
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="w">  </span><span class="n">big</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">see</span><span class="w"> </span><span class="n">below</span><span class="p">,</span>
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="w">  </span><span class="n">native</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">see</span><span class="w"> </span><span class="n">below</span>
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="p">};</span>
+</span></code></pre></div>
+<p>If all scalar types have size 1 byte, then all of <code>endian::little</code>, <code>endian::big</code>, and <code>endian::native</code> have the same value. Otherwise, <code>endian::little</code> is not equal to <code>endian::big</code>. If all scalar types are big-endian, <code>endian::native</code> is equal to <code>endian::big</code>. If all scalar types are little-endian, <code>endian::native</code> is equal to <code>endian::little</code>. Otherwise, <code>endian::native</code> is not equal to either <code>endian::big</code> or <code>endian::little</code>.</p>
+</div>
 <p>最后，我们基于 union 同一块内存的不同解析来测试系统的字节序。</p>
 <ul>
 <li><strong>isBigEndian</strong>: 无符号短整型 us 占用 2 个字节，字节指针 (unsigned char *)&amp;us 指向第1个字节。如果是大端顺序存放，第1个字节存放高位 0x34。</li>
