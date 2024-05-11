@@ -45,6 +45,8 @@ The following concepts/topics will be involved:
 - [Option Summary](https://gcc.gnu.org/onlinedocs/gcc/Option-Summary.html)
 - [Overall Options](https://gcc.gnu.org/onlinedocs/gcc/Overall-Options.html)
 
+[GCC Internals)](https://gcc.gnu.org/onlinedocs/gccint/index.html)
+
 ### Architecture
 
 [GNU C Compiler Internals/Architecture](https://en.wikibooks.org/wiki/GNU_C_Compiler_Internals/GNU_C_Compiler_Architecture)

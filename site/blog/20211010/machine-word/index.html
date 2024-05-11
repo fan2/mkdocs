@@ -15,10 +15,10 @@
         <link rel="canonical" href="https://duetorun.com/blog/20211010/machine-word/">
       
       
-        <link rel="prev" href="../../20211007/byte-order-endianess/">
+        <link rel="prev" href="../../20211008/data-model/">
       
       
-        <link rel="next" href="../../20211012/address-alignment/">
+        <link rel="next" href="../x86-word/">
       
       
       <link rel="icon" href="../../../assets/hold_yourself.jpg">
@@ -26,7 +26,7 @@
     
     
       
-        <title>Machine word & x86's WORD - ElseWhere</title>
+        <title>Machine Word - ElseWhere</title>
       
     
     
@@ -90,7 +90,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#machine_word__word_size" class="md-skip">
+        <a href="#machine_word" class="md-skip">
           跳转至
         </a>
       
@@ -123,7 +123,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Machine word & x86's WORD
+              Machine Word
             
           </span>
         </div>
@@ -1281,55 +1281,46 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#machine_word__word_size" class="md-nav__link">
+  <a href="#machine_word" class="md-nav__link">
     <span class="md-ellipsis">
-      machine word &amp; word size
+      machine word
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#x86s_conservative_word" class="md-nav__link">
+  <a href="#predefined_macros" class="md-nav__link">
     <span class="md-ellipsis">
-      x86's conservative WORD
+      predefined macros
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="x86's conservative WORD">
+    <nav class="md-nav" aria-label="predefined macros">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#the_name_of_16_and_32_bits" class="md-nav__link">
+  <a href="#__sizeof_pointer__" class="md-nav__link">
     <span class="md-ellipsis">
-      The name of 16 and 32 bits
+      __SIZEOF_POINTER__
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#how_many_bits_is_a_word" class="md-nav__link">
+  <a href="#word_bitlong_bit" class="md-nav__link">
     <span class="md-ellipsis">
-      How many bits is a WORD
+      WORD_BIT/LONG_BIT
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#whats_the_size_of_a_qword" class="md-nav__link">
+  <a href="#__wordsize" class="md-nav__link">
     <span class="md-ellipsis">
-      What's the size of a QWORD
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#x86_64_byte-stream_machine_code" class="md-nav__link">
-    <span class="md-ellipsis">
-      x86_64 byte-stream machine code
+      __WORDSIZE
     </span>
   </a>
   
@@ -1425,7 +1416,7 @@
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7h1.5Z"/></svg>
                           <span class="md-ellipsis">
                             
-                              需要 8 分钟阅读时间
+                              需要 6 分钟阅读时间
                             
                           </span>
                         </div>
@@ -1460,21 +1451,26 @@
     
     
     
-      <span class="md-tag">alignment</span>
+      <span class="md-tag">LONG_BIT</span>
+    
+  
+    
+    
+    
+      <span class="md-tag">WORDSIZE</span>
     
   
 </nav>
 
 
 
-  <h1>Machine word & x86's WORD</h1>
+  <h1>Machine Word</h1>
 
 <p>In computing, a <strong><em>word</em></strong> is the natural unit of data used by a particular processor design. The term <code>word</code> refers to the standard number of bits that are manipulated as a <strong>unit</strong> by any particular CPU.</p>
 <p>The <code>word size</code> is the computer's <em>preferred</em> size for moving units of information around; technically it's the <strong>width</strong> of your processor's registers. It reflects the amount of data that can be transmitted between memory and the processor in one <strong>chunk</strong>. Likewise, it may reflect the size of data that can be manipulated by the CPU's ALU in one <strong>cycle</strong>.</p>
-<p>Whereas, in the universe of x86, <code>word</code> continues to designate a 16-bit quantity. Microsoft's Windows API maintains the programming language definition of <strong><em>WORD</em></strong> as 16 bits, despite the fact that the API may be used on a 32- or 64-bit x86 processor.</p>
 <!-- more -->
 
-<h2 id="machine_word__word_size">machine word &amp; word size<a class="headerlink" href="#machine_word__word_size" title="Permanent link">#</a></h2>
+<h2 id="machine_word">machine word<a class="headerlink" href="#machine_word" title="Permanent link">#</a></h2>
 <p><a href="https://en.wikipedia.org/wiki/Word_(computer_architecture)">Word (computer architecture)</a></p>
 <p>In computing, a <code>word</code> is the natural unit of data used by a particular processor design. A word is a fixed-sized datum handled as a <strong>unit</strong> by the instruction set or the hardware of the processor. The number of bits or digits in a word (the word size, word width, or word length) is an important characteristic of any specific processor design or computer architecture.</p>
 <p>The size of a word is reflected in many aspects of a computer's structure and operation; the majority of the registers in a processor are usually word-sized and the largest datum that can be transferred to and from the working memory in a <strong>single</strong> operation is a word in many (not all) architectures. The largest possible address size, used to designate a location in memory, is typically a hardware word (here, "hardware word" means the full-sized natural word of the processor, as opposed to any other definition used).</p>
@@ -1483,94 +1479,205 @@
 <p>The computer views your memory as a sequence of words numbered from zero up to some large value dependent on your memory size. That value is limited by your word size, which is why programs on older machines like 286s had to go through painful contortions to address large amounts of memory.</p>
 <p><a href="https://www.cs.scranton.edu/~ep/EP/data_bits.html">Bits, Bytes, and Words</a></p>
 <p>The term <code>word</code> refers to the standard number of bits that are manipulated as a <strong>unit</strong> by any particular CPU. For decades most CPUs had a word size of 32 bits (or 4 contiguous bytes), but word sizes of 64 bits are becoming more and more commonplace. The signifcance of the word size of a particular computer system is that it reflects the amount of data that can be transmitted between memory and the processor in one <strong>chunk</strong>. Likewise, it may reflect the size of data that can be manipulated by the CPU's ALU in one <strong>cycle</strong>. Computers can process data of larger sizes, but the word size reflects the size of the data values the computer has been designed to readily process directly. All other things being equal, (and they never are), larger word size implies faster and more capable processing.</p>
-<h2 id="x86s_conservative_word">x86's conservative WORD<a class="headerlink" href="#x86s_conservative_word" title="Permanent link">#</a></h2>
-<p><a href="https://en.wikipedia.org/wiki/Word_(computer_architecture)#Size_families">Word Size families</a></p>
-<p>Another example is the x86 family, of which processors of three different word lengths (16-bit, later 32- and 64-bit) have been released, while <code>word</code> continues to designate a 16-bit quantity. As software is routinely ported from one word-length to the next, some APIs and documentation define or refer to an older (and thus shorter) word-length than the full word length on the CPU that software may be compiled for. Also, similar to how bytes are used for small numbers in many programs, a shorter word (16 or 32 bits) may be used in contexts where the range of a wider word is not needed (especially where this can save considerable stack space or cache memory space). For example, Microsoft's Windows API maintains the programming language definition of <strong><em>WORD</em></strong> as 16 bits, despite the fact that the API may be used on a 32- or 64-bit x86 processor, where the standard word size would be 32 or 64 bits, respectively. Data structures containing such different sized words refer to them as:</p>
-<ul>
-<li><code>WORD</code> (16 bits/2 bytes)</li>
-<li><code>DWORD</code> (32 bits/4 bytes)</li>
-<li><code>QWORD</code> (64 bits/8 bytes)</li>
-</ul>
-<p>A similar phenomenon has developed in Intel's x86 assembly language – because of the support for various sizes (and backward compatibility) in the instruction set, some instruction mnemonics carry "<code>d</code>" or "<code>q</code>" identifiers denoting "double-", "quad-" or "double-quad-", which are in terms of the architecture's <em>original</em> 16-bit word size.</p>
-<p>An example with a different word size is the IBM System/360 family. In the System/360 architecture, System/370 architecture and System/390 architecture, there are 8-bit bytes, 16-bit halfwords, 32-bit words and 64-bit doublewords. The z/Architecture, which is the 64-bit member of that architecture family, continues to refer to 16-bit halfwords, 32-bit words, and 64-bit doublewords, and additionally features 128-bit quadwords.</p>
-<h3 id="the_name_of_16_and_32_bits">The name of 16 and 32 bits<a class="headerlink" href="#the_name_of_16_and_32_bits" title="Permanent link">#</a></h3>
-<p><a href="https://stackoverflow.com/questions/14181090/the-name-of-16-and-32-bits">The name of 16 and 32 bits</a>  </p>
-<p><a href="https://stackoverflow.com/a/14181184/3721132">Jonathon Reinhart</a>:</p>
-<p>A byte is the smallest unit of data that a computer can work with. The C language defines char to be one "byte" and has CHAR_BIT bits. On most systems this is 8 bits.</p>
-<p>A word on the other hand, is usually the size of values typically handled by the CPU. Most of the time, this is the size of the general-purpose registers. The problem with this definition, is it doesn't age well.</p>
-<p>For example, the MS Windows <code>WORD</code> datatype was defined back in the early days, when 16-bit CPUs were the norm. When 32-bit CPUs came around, the definition stayed, and a 32-bit integer became a <code>DWORD</code>. And now we have 64-bit <code>QWORD</code>s.</p>
-<p>Far from "universal", but here are several different takes on the matter:</p>
-<p>Far from "universal", but here are several different takes on the matter:</p>
-<p><strong>Windows</strong>:</p>
-<ul>
-<li>BYTE - 8 bits, unsigned</li>
-<li>WORD - 16 bits, unsigned</li>
-<li>DWORD - 32 bits, unsigned</li>
-<li>QWORD - 64 bits, unsigned</li>
-</ul>
-<p><strong>GDB</strong>:</p>
-<ul>
-<li>Byte</li>
-<li>Halfword (two bytes).</li>
-<li>Word (four bytes).</li>
-<li>Giant words (eight bytes).</li>
-</ul>
-<p>&lt;<strong>stdint.h</strong>&gt;:</p>
-<ul>
-<li>uint8_t - 8 bits, unsigned</li>
-<li>uint16_t - 16 bits, unsigned</li>
-<li>uint32_t - 32 bits, unsigned</li>
-<li>uint64_t - 64 bits, unsigned</li>
-<li>uintptr_t - pointer-sized integer, unsigned</li>
-</ul>
-<p>(Signed types exist as well.)</p>
-<p>If you're trying to write portable code that relies upon the size of a particular data type (e.g. you're implementing a network protocol), always use &lt;stdint.h&gt;.</p>
-<p><a href="https://stackoverflow.com/a/14181166/3721132">gustaf r</a>: <code>word</code> is not a datatype, it rather denotes the <em>natural</em> register size of the underlying hardware.</p>
-<h3 id="how_many_bits_is_a_word">How many bits is a WORD<a class="headerlink" href="#how_many_bits_is_a_word" title="Permanent link">#</a></h3>
-<p><a href="https://stackoverflow.com/questions/621657/how-many-bits-is-a-word-and-is-that-constant-over-different-architectures">How many bits is a WORD and is that constant over different architectures?</a>  </p>
-<p><a href="https://stackoverflow.com/a/621665/3721132">Guffa</a>:</p>
-<p>The machine word size depends on the architecture, but also how the operating system is running the application.</p>
-<p>In Windows x64 for example an application can be run either as a 64 bit application (having a 64 bit mahine word), or as a 32 bit application (having a 32 bit machine word). So the size of a machine word can <em>differ</em> even on the same machine.</p>
-<p>The term <code>WORD</code> has different meaning depending on how it's used. It can either mean a machine word, or a type with a specific size. In x86 assembly language <code>WORD</code>, DOUBLEWORD (<code>DWORD</code>) and QUADWORD (<code>QWORD</code>) are used for 2, 4 and 8 byte sizes, <em>regardless</em> of the machine word size.</p>
-<hr />
-<p><a href="https://stackoverflow.com/a/621661/3721132">jalf</a>:</p>
-<p>A word is typically the "native" data size of the CPU. That is, on a 16-bit CPU, a word is 16 bits, on a 32-bit CPU, it's 32 and so on.</p>
-<p>And the exception, of course, is x86, where a word is 16 bit wide (because x86 was <em>originally</em> a 16-bit CPU), a <code>DWORD</code> is 32-bit (because it became a 32-bit CPU), and a <code>QWORD</code> is 64-bit (because it now has 64-bit extensions bolted on).</p>
-<p><a href="https://stackoverflow.com/a/621673/3721132">Pete Kirkham</a>:</p>
-<p><code>WORD</code> is a Windows specific 16-bit integer type, and is hardware independent.</p>
-<p>If you mean a machine word, then there's no need to shout.</p>
-<h3 id="whats_the_size_of_a_qword">What's the size of a QWORD<a class="headerlink" href="#whats_the_size_of_a_qword" title="Permanent link">#</a></h3>
-<p><a href="https://stackoverflow.com/questions/55430725/whats-the-size-of-a-qword-on-a-64-bit-machine">assembly - What's the size of a QWORD on a 64-bit machine? - Stack Overflow</a></p>
-<p><a href="https://stackoverflow.com/a/55430777/3721132">Peter Cordes</a>:</p>
-<p>In x86 terminology/documentation, a "<code>word</code>" is 16 bits because x86 evolved out of 16-bit 8086. Changing the meaning of the term as extensions were added would have just been confusing, because Intel still had to document 16-bit mode and everything, and instruction mnemonics like <code>cwd</code> (sign-extend word to dword) bake the terminology into the ISA.</p>
-<ul>
-<li>x86 word = 2 bytes</li>
-<li>x86 dword = 4 bytes (double word)</li>
-<li>x86 qword = 8 bytes (quad word)</li>
-<li>x86 double-quad or xmmword = 16 bytes</li>
-</ul>
-<hr />
-<p>Most other 64-bit ISAs evolved out of 32-bit ISAs (AArch64, MIPS64, PowerPC64, etc.), or were 64-bit from the start (Alpha), so "word" means 32 bits in that context.</p>
-<ul>
-<li>32-bit word = 4 bytes</li>
-<li>dword = 8 bytes (double word), e.g. MIPS <code>daddu</code> is 64-bit integer add</li>
-<li>qword = 16 bytes (quad word), if supported at all.</li>
-</ul>
-<hr />
-<p>"Machine word" and putting labels on architectures.</p>
-<p>The whole concept of "machine word" <a href="https://stackoverflow.com/questions/68229585/are-machine-code-instructions-fetched-in-little-endian-4-byte-words-on-an-intel/68229991#68229991">doesn't really apply to x86</a>, with its machine-code format being a byte stream, and equal support for multiple operand-sizes, and unaligned loads/stores that mostly don't care about naturally aligned stuff, only cache line boundaries for normal cacheable memory.</p>
-<p>Even "word oriented" RISCs can have a different natural size for registers and cache accesses than their instruction width, or what their documentation uses as a "word".</p>
-<p>The whole concept of "<code>word size</code>" is over-rated in general, not just on x86. Even 64-bit RISC ISAs can load/store aligned 32-bit or 64-bit memory with equal efficiency, so pick whichever is most useful for what you're doing. Don't base your choice on figuring out which one is the machine's "word size", unless there's only one maximally efficient size (e.g. 32-bit on some 32-bit RISCs), then you can usefully call that the word size.</p>
-<h3 id="x86_64_byte-stream_machine_code">x86_64 byte-stream machine code<a class="headerlink" href="#x86_64_byte-stream_machine_code" title="Permanent link">#</a></h3>
-<p><a href="https://stackoverflow.com/questions/68229585/are-machine-code-instructions-fetched-in-little-endian-4-byte-words-on-an-intel/68229991#68229991">x86 64 - Are machine code instructions fetched in little endian 4-byte words on an Intel x86-64 architecture? - Stack Overflow</a></p>
-<p>No, x86 machine code is a <a href="https://stackoverflow.com/questions/60905135/how-to-interpret-objdump-disassembly-output-columns">byte-stream</a>; there's nothing word-oriented about it, except for 32-bit displacements and immediates which are little-endian. e.g. in <code>add qword [rdi + 0x1234], 0xaabbccdd</code>. It's physically fetched in 16-byte or 32-byte chunks on modern CPUs, and split on instruction boundaries in parallel to feed to decoders in parallel.</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="m">48</span><span class="w">    </span><span class="m">81</span><span class="w">   </span><span class="m">87</span><span class="w">     </span><span class="m">34</span><span class="w"> </span><span class="m">12</span><span class="w"> </span><span class="m">00</span><span class="w"> </span><span class="m">00</span><span class="w">    </span>dd<span class="w"> </span>cc<span class="w"> </span>bb<span class="w"> </span>aa<span class="w">       </span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>REX.W<span class="w"> </span>add<span class="w"> </span>ModRM<span class="w">    </span>le32<span class="w"> </span>0x1234<span class="w">    </span>le32<span class="w"> </span>0xaabbccdd<span class="w"> </span>le32<span class="w"> </span><span class="o">(</span>sign-extended<span class="w"> </span>to<span class="w"> </span><span class="m">64</span>-bit<span class="o">)</span>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">   </span>add<span class="w">    </span>QWORD<span class="w"> </span>PTR<span class="w"> </span><span class="o">[</span>rdi+0x1234<span class="o">]</span>,0xffffffffaabbccdd
+<h2 id="predefined_macros">predefined macros<a class="headerlink" href="#predefined_macros" title="Permanent link">#</a></h2>
+<p>GCC Internals - <a href="https://gcc.gnu.org/onlinedocs/gccint/Type-Layout.html">Layout of Source Language Data Types</a><br />
+GNU C Preprocessor - <a href="https://gcc.gnu.org/onlinedocs/cpp/Common-Predefined-Macros.html">Common Predefined Macros</a></p>
+<p><a href="https://clang.llvm.org/docs/ClangCommandLineReference.html#preprocessor-options">Clang Preprocessor options</a> - <a href="https://clang.llvm.org/docs/ClangCommandLineReference.html#id8">Dumping preprocessor state</a></p>
+<p>对于 GCC/Clang 预处理器定义的一些宏，可执行 <code>cpp -dM</code> /<code>gcc -E -dM</code> 预处理命令 dump Macros：</p>
+<div class="language-Shell highlight"><span class="filename">dump prededined macros</span><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>$<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>cpp<span class="w"> </span>-dM
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>$<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>gcc<span class="w"> </span>-x<span class="w"> </span>c<span class="w"> </span>-E<span class="w"> </span>-dM<span class="w"> </span>-
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>$<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>g++<span class="w"> </span>-x<span class="w"> </span>c++<span class="w"> </span>-E<span class="w"> </span>-dM<span class="w"> </span>-
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="c1"># IA32/IA64</span>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>$<span class="w"> </span>clang<span class="w"> </span>-x<span class="w"> </span>c<span class="w"> </span>-E<span class="w"> </span>-dM<span class="w"> </span>-arch<span class="w"> </span>i386<span class="w"> </span>/dev/null
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>$<span class="w"> </span>clang<span class="w"> </span>-x<span class="w"> </span>c<span class="w"> </span>-E<span class="w"> </span>-dM<span class="w"> </span>-arch<span class="w"> </span>x86_64<span class="w"> </span>/dev/null
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="c1"># ARM32/ARM64</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>$<span class="w"> </span>clang<span class="w"> </span>-x<span class="w"> </span>c<span class="w"> </span>-E<span class="w"> </span>-dM<span class="w"> </span>-arch<span class="w"> </span>armv7s<span class="w"> </span>/dev/null
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>$<span class="w"> </span>clang<span class="w"> </span>-x<span class="w"> </span>c<span class="w"> </span>-E<span class="w"> </span>-dM<span class="w"> </span>-arch<span class="w"> </span>arm64<span class="w"> </span>/dev/null
 </span></code></pre></div>
-<p><strong>x86-64 is not a word-oriented architecture; there is no single natural word-size, and things don't have to be aligned.</strong> That concept is not very useful when thinking about x86-64. The integer register width happens to be 8 bytes, but that's not even the default operand-size in machine code, and you can use any operand-size from byte to qword with most instructions, and for SIMD from 8 or 16 byte up to 32 or 64 byte. And most importantly, alignment of wider integers isn't required in machine code, or even for data.</p>
-<p><strong>An x86 16-bit "word" has absolutely zero connection to the concept of a "machine word" in CPU architecture.</strong></p>
+<h3 id="__sizeof_pointer__">__SIZEOF_POINTER__<a class="headerlink" href="#__sizeof_pointer__" title="Permanent link">#</a></h3>
+<p>在 IA32/ARM32 位平台上，通常会定义宏 <code>_ILP32</code> 或 <code>__ILP32__</code> 值为 1；<br />
+在 IA64/ARM64 位平台上，通常会定义宏 <code>_LP64</code> 或 <code>__LP64__</code> 值为 1。</p>
+<p>ILP32 和 LP64 是两组不同的数据模型（<a href="../../20211008/data-model/">Data Model</a>），决定了平台是 32 位还是 64 位，进而影响 long、long long 和 pointer 的宽度：</p>
+<ul>
+<li><code>__SIZEOF_LONG__</code> @<a href="https://www.intel.com/content/www/us/en/developer/articles/technical/size-of-long-integer-type-on-different-architecture-and-os.html">intel</a></li>
+<li><code>__SIZEOF_LONG_LONG__</code></li>
+<li><code>__SIZEOF_POINTER__</code> / <code>__POINTER_WIDTH__</code></li>
+</ul>
+<p>LP32 和 LP64，其中的 <code>L</code> 表示 long，<code>P</code> 表示 pointer，<code>__SIZEOF_POINTER__</code> 一般等于机器字长。</p>
+<h3 id="word_bitlong_bit">WORD_BIT/LONG_BIT<a class="headerlink" href="#word_bitlong_bit" title="Permanent link">#</a></h3>
+<p><a href="https://unix.stackexchange.com/questions/771686/word-bit-vs-long-bit">linux kernel - WORD_BIT vs LONG_BIT</a></p>
+<blockquote>
+<p>POSIX <a href="https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/limits.h.html">&lt;limits.h&gt;</a> defines <code>WORD_BIT</code> and <code>LONG_BIT</code> as the number of bits in objects of types <code>int</code> and <code>long</code> respectively.</p>
+</blockquote>
+<p>cd 进入 <code>xcrun --show-sdk-path</code>，执行 grep 命令在 usr/include 头文件中查看 <code>WORD_BIT</code> 和 <code>LONG_BIT</code> 的宏定义：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nb">cd</span><span class="w"> </span><span class="sb">`</span>xcrun<span class="w"> </span>--show-sdk-path<span class="sb">`</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="c1"># grep -RFl &quot;#define WORD_BIT&quot; usr/include 2&gt;/dev/null</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="c1"># grep -RFl &quot;#define LONG_BIT&quot; usr/include 2&gt;/dev/null</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="c1"># --dereference-recursive, --extended-regexp, --files-with-matches</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>$<span class="w"> </span>grep<span class="w"> </span>-REl<span class="w"> </span><span class="s2">&quot;#define (WORD_BIT|LONG_BIT)&quot;</span><span class="w"> </span>usr/include<span class="w"> </span><span class="m">2</span>&gt;/dev/null
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>usr/include/i386/limits.h
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>usr/include/arm/limits.h
+</span></code></pre></div>
+<p>i386 和 arm 下的头文件 limits.h 中定义了 <code>WORD_BIT</code> 和 <code>LONG_BIT</code>：</p>
+<div class="language-c highlight"><span class="filename">limits.h</span><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">$</span><span class="w"> </span><span class="n">cd</span><span class="w"> </span><span class="err">`</span><span class="n">xcrun</span><span class="w"> </span><span class="o">--</span><span class="n">show</span><span class="o">-</span><span class="n">sdk</span><span class="o">-</span><span class="n">path</span><span class="err">`</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="cp">#if !defined(_ANSI_SOURCE)</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="cp">#ifdef __LP64__</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="cp">#define LONG_BIT    64</span>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="cp">#else </span><span class="cm">/* !__LP64__ */</span>
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="cp">#define LONG_BIT    32</span>
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="cp">#endif </span><span class="cm">/* __LP64__ */</span>
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="cp">#define SSIZE_MAX   LONG_MAX    </span><span class="cm">/* max value for a ssize_t */</span>
+</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="cp">#define WORD_BIT    32</span>
+</span></code></pre></div>
+<p>WORD_BIT 的值为 32，对应 int 类型的位宽（<code>__SIZEOF_INT__</code> * CHAR_BIT），LONG_BIT 的值则跟随 Data Model。</p>
+<p>在 rpi4b-ubuntu 下，grep 搜索 /usr/include 目录，没找到 <code>WORD_BIT</code>/<code>LONG_BIT</code> 的定义。</p>
+<ul>
+<li><a href="https://unix.stackexchange.com/questions/715751/why-is-there-no-word-bit-in-limits-h-on-linux">Why is there no WORD_BIT in limits.h on Linux?</a></li>
+</ul>
+<p>在 macOS、Linux 上可以执行 <code>getconf WORD_BIT</code> / <code>getconf LONG_BIT</code> 查询获取系统配置的变量。</p>
+<ul>
+<li><code>getconf</code> : to tell what architecture your CPU is presenting to the OS.</li>
+<li><code>getconf LONG_BIT</code> : check if the OS (kernel) is 32 bit or 64 bit.</li>
+</ul>
+<h3 id="__wordsize">__WORDSIZE<a class="headerlink" href="#__wordsize" title="Permanent link">#</a></h3>
+<p>机器字长表示处理器一次处理数据的长度，主要由运算器、寄存器决定，如32位处理器，每个寄存器能存储32bit数据，加法器支持两个32bit数进行相加。</p>
+<p>在 macOS 上执行 <code>sysctl hw</code>，在 rpi4b-ubuntu 上执行 <code>lscpu</code> 查看硬件（CPU）信息：</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:3"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">mbpa1398-x86_64</label><label for="__tabbed_1_2">mbpa2991-arm64</label><label for="__tabbed_1_3">rpi4b-ubuntu - aarch64</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>$<span class="w"> </span>arch
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>i386
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="c1"># --kernel-name, --kernel-release, --processor, --machine</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>$<span class="w"> </span>uname<span class="w"> </span>-srpm
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>Darwin<span class="w"> </span><span class="m">20</span>.6.0<span class="w"> </span>x86_64<span class="w"> </span>i386
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>$<span class="w"> </span>getconf<span class="w"> </span>LONG_BIT
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="m">64</span>
+</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>
+</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="c1"># sysctl -a | grep cpu</span>
+</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>$<span class="w"> </span>sysctl<span class="w"> </span>hw
+</span><span id="__span-3-13"><a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>
+</span><span id="__span-3-14"><a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>hw.optional.x86_64:<span class="w"> </span><span class="m">1</span>
+</span><span id="__span-3-15"><a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a>
+</span><span id="__span-3-16"><a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>hw.cpu64bit_capable:<span class="w"> </span><span class="m">1</span>
+</span><span id="__span-3-17"><a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a>
+</span><span id="__span-3-18"><a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a>hw.cpusubtype:<span class="w"> </span><span class="m">8</span>
+</span><span id="__span-3-19"><a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a>hw.cputype:<span class="w"> </span><span class="m">7</span>
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>$<span class="w"> </span>arch
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>arm64
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="c1"># --operating-system, --kernel-name, --kernel-release, --machine, --processor</span>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>$<span class="w"> </span>uname<span class="w"> </span>-osrmp
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>Darwin<span class="w"> </span><span class="m">23</span>.5.0<span class="w"> </span>arm64<span class="w"> </span>arm
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>$<span class="w"> </span>getconf<span class="w"> </span>LONG_BIT
+</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="m">64</span>
+</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>
+</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="c1"># sysctl -a | grep cpu</span>
+</span><span id="__span-4-12"><a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a>$<span class="w"> </span>sysctl<span class="w"> </span>hw
+</span><span id="__span-4-13"><a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a>
+</span><span id="__span-4-14"><a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a>hw.optional.arm64:<span class="w"> </span><span class="m">1</span>
+</span><span id="__span-4-15"><a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a>
+</span><span id="__span-4-16"><a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a>hw.cpu64bit_capable:<span class="w"> </span><span class="m">1</span>
+</span><span id="__span-4-17"><a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a>
+</span><span id="__span-4-18"><a id="__codelineno-4-18" name="__codelineno-4-18" href="#__codelineno-4-18"></a>hw.cputype:<span class="w"> </span><span class="m">16777228</span>
+</span><span id="__span-4-19"><a id="__codelineno-4-19" name="__codelineno-4-19" href="#__codelineno-4-19"></a>hw.cpusubtype:<span class="w"> </span><span class="m">2</span>
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>$<span class="w"> </span>arch
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>aarch64
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="c1"># --operating-system, --kernel-release, --machine, --processor, --kernel-name</span>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>$<span class="w"> </span>uname<span class="w"> </span>-srmpo
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>Linux<span class="w"> </span><span class="m">5</span>.15.0-1053-raspi<span class="w"> </span>aarch64<span class="w"> </span>aarch64<span class="w"> </span>GNU/Linux
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>
+</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>$<span class="w"> </span>getconf<span class="w"> </span>LONG_BIT
+</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="m">64</span>
+</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a>
+</span><span id="__span-5-11"><a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a><span class="c1"># The width argument tells whether the Linux is 32- or 64-bit.</span>
+</span><span id="__span-5-12"><a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a>$<span class="w"> </span>lshw<span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-n<span class="w"> </span><span class="m">10</span>
+</span><span id="__span-5-13"><a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a>WARNING:<span class="w"> </span>you<span class="w"> </span>should<span class="w"> </span>run<span class="w"> </span>this<span class="w"> </span>program<span class="w"> </span>as<span class="w"> </span>super-user.
+</span><span id="__span-5-14"><a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a>rpi4b-ubuntu
+</span><span id="__span-5-15"><a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a><span class="w">    </span>description:<span class="w"> </span>Computer
+</span><span id="__span-5-16"><a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a><span class="w">    </span>product:<span class="w"> </span>Raspberry<span class="w"> </span>Pi<span class="w"> </span><span class="m">4</span><span class="w"> </span>Model<span class="w"> </span>B<span class="w"> </span>Rev<span class="w"> </span><span class="m">1</span>.4
+</span><span id="__span-5-17"><a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a><span class="w">    </span>serial:<span class="w"> </span>10000000a744c93f
+</span><span id="__span-5-18"><a id="__codelineno-5-18" name="__codelineno-5-18" href="#__codelineno-5-18"></a><span class="w">    </span>width:<span class="w"> </span><span class="m">64</span><span class="w"> </span>bits
+</span><span id="__span-5-19"><a id="__codelineno-5-19" name="__codelineno-5-19" href="#__codelineno-5-19"></a><span class="w">    </span>capabilities:<span class="w"> </span>smp<span class="w"> </span>cp15_barrier<span class="w"> </span>setend<span class="w"> </span>swp<span class="w"> </span>tagged_addr_disabled
+</span><span id="__span-5-20"><a id="__codelineno-5-20" name="__codelineno-5-20" href="#__codelineno-5-20"></a><span class="w">  </span>*-core
+</span><span id="__span-5-21"><a id="__codelineno-5-21" name="__codelineno-5-21" href="#__codelineno-5-21"></a><span class="w">       </span>description:<span class="w"> </span>Motherboard
+</span><span id="__span-5-22"><a id="__codelineno-5-22" name="__codelineno-5-22" href="#__codelineno-5-22"></a><span class="w">       </span>physical<span class="w"> </span>id:<span class="w"> </span><span class="m">0</span>
+</span><span id="__span-5-23"><a id="__codelineno-5-23" name="__codelineno-5-23" href="#__codelineno-5-23"></a><span class="w">     </span>*-cpu:0
+</span><span id="__span-5-24"><a id="__codelineno-5-24" name="__codelineno-5-24" href="#__codelineno-5-24"></a>
+</span><span id="__span-5-25"><a id="__codelineno-5-25" name="__codelineno-5-25" href="#__codelineno-5-25"></a>$<span class="w"> </span>lscpu<span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-n<span class="w"> </span><span class="m">8</span>
+</span><span id="__span-5-26"><a id="__codelineno-5-26" name="__codelineno-5-26" href="#__codelineno-5-26"></a>Architecture:<span class="w">                       </span>aarch64
+</span><span id="__span-5-27"><a id="__codelineno-5-27" name="__codelineno-5-27" href="#__codelineno-5-27"></a>CPU<span class="w"> </span>op-mode<span class="o">(</span>s<span class="o">)</span>:<span class="w">                     </span><span class="m">32</span>-bit,<span class="w"> </span><span class="m">64</span>-bit
+</span><span id="__span-5-28"><a id="__codelineno-5-28" name="__codelineno-5-28" href="#__codelineno-5-28"></a>Byte<span class="w"> </span>Order:<span class="w">                         </span>Little<span class="w"> </span>Endian
+</span><span id="__span-5-29"><a id="__codelineno-5-29" name="__codelineno-5-29" href="#__codelineno-5-29"></a>CPU<span class="o">(</span>s<span class="o">)</span>:<span class="w">                             </span><span class="m">4</span>
+</span><span id="__span-5-30"><a id="__codelineno-5-30" name="__codelineno-5-30" href="#__codelineno-5-30"></a>On-line<span class="w"> </span>CPU<span class="o">(</span>s<span class="o">)</span><span class="w"> </span>list:<span class="w">                </span><span class="m">0</span>-3
+</span><span id="__span-5-31"><a id="__codelineno-5-31" name="__codelineno-5-31" href="#__codelineno-5-31"></a>Vendor<span class="w"> </span>ID:<span class="w">                          </span>ARM
+</span><span id="__span-5-32"><a id="__codelineno-5-32" name="__codelineno-5-32" href="#__codelineno-5-32"></a>Model<span class="w"> </span>name:<span class="w">                         </span>Cortex-A72
+</span><span id="__span-5-33"><a id="__codelineno-5-33" name="__codelineno-5-33" href="#__codelineno-5-33"></a>Model:<span class="w">                              </span><span class="m">3</span>
+</span></code></pre></div>
+</div>
+</div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">lscpu CPU op-mode(s)</p>
+<p><a href="https://unix.stackexchange.com/questions/77718/32-bit-64-bit-cpu-op-mode-on-linux">32-bit, 64-bit CPU op-mode on Linux</a></p>
+<p>If your kernel is a 32 bit linux kernel, you won't be able to run 64 bit programs, even if your processor supports it. Install a 64 bit kernel (and whole OS of course) to run 64 bit.</p>
+<p><a href="https://www.geeksforgeeks.org/how-to-determine-whether-a-given-linux-is-32-bit-or-64-bit/">How to determine whether a given Linux is 32 bit or 64 bit?</a></p>
+<p>The <code>CPU op-mode(s)</code> option in the command output tells whether the given Linux is 32 or 64 bits.</p>
+<p>If it shows 32-bit or 64-bit then Linux is 64 bits as it supports <em>both</em> 32- and 64-bit memory. If it shows only 32-bit then, then Linux is 32-bit.</p>
+<p>The above Linux system is clearly 64 bits.</p>
+</div>
+<p><a href="https://unix.stackexchange.com/questions/74648/default-wordsize-in-unix-linux">default wordsize in UNIX/Linux</a></p>
+<blockquote>
+<p>In general wordsize is decided upon target architecture when compiling. Your compiler will normally compile using wordsize for current system.<br />
+Using gcc (among others), on a 64-bit host you can compile for 32-bit machine, or force 32-bit words.</p>
+</blockquote>
+<p>Xcode 的 MacOSX.sdk 和 iPhoneOS.sdk 的 usr/include/stdint.h 根据 Data Model 是否为 <code>__LP64__==1</code> 区分定义了 <code>__WORDSIZE</code>：</p>
+<div class="language-c highlight"><span class="filename">stdint.h</span><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="n">$</span><span class="w"> </span><span class="n">cd</span><span class="w"> </span><span class="err">`</span><span class="n">xcrun</span><span class="w"> </span><span class="o">--</span><span class="n">show</span><span class="o">-</span><span class="n">sdk</span><span class="o">-</span><span class="n">path</span><span class="err">`</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="n">$</span><span class="w"> </span><span class="n">grep</span><span class="w"> </span><span class="o">-</span><span class="n">Rl</span><span class="w"> </span><span class="s">&quot;#*define __WORDSIZE&quot;</span><span class="w"> </span><span class="n">usr</span><span class="o">/</span><span class="n">include</span><span class="w"> </span><span class="mi">2</span><span class="o">&gt;/</span><span class="n">dev</span><span class="o">/</span><span class="n">null</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="n">usr</span><span class="o">/</span><span class="n">include</span><span class="o">/</span><span class="n">stdint</span><span class="p">.</span><span class="n">h</span>
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="n">$</span><span class="w"> </span><span class="n">vim</span><span class="w"> </span><span class="n">usr</span><span class="o">/</span><span class="n">include</span><span class="o">/</span><span class="n">stdint</span><span class="p">.</span><span class="n">h</span>
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="cp">#if __LP64__</span>
+</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="cp">#define __WORDSIZE 64</span>
+</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="cp">#else</span>
+</span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="cp">#define __WORDSIZE 32</span>
+</span><span id="__span-6-10"><a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a><span class="cp">#endif</span>
+</span></code></pre></div>
+<p>在 rpi4b-ubuntu 下的 /usr/include 中查找宏 <code>__WORDSIZE</code> 定义所在的头文件：</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>$<span class="w"> </span>grep<span class="w"> </span>-Rl<span class="w"> </span><span class="s2">&quot;#*define __WORDSIZE&quot;</span><span class="w"> </span>/usr/include<span class="w"> </span><span class="m">2</span>&gt;/dev/null
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>/usr/include/aarch64-linux-gnu/bits/wordsize.h
+</span></code></pre></div>
+<p>wordsize.h 中根据 Data Model（<code>__LP64__</code> 定义与否）来区分定义 <code>__WORDSIZE</code>。</p>
+<div class="language-c highlight"><span class="filename">wordsize.h</span><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="c1">// Determine the wordsize from the preprocessor defines.</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="cp">#ifdef __LP64__</span>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="cp"># define __WORDSIZE         64</span>
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="cp">#else</span>
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="cp"># define __WORDSIZE         32</span>
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="cp"># define __WORDSIZE32_SIZE_ULONG    1</span>
+</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="cp"># define __WORDSIZE32_PTRDIFF_LONG  1</span>
+</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a><span class="cp">#endif</span>
+</span></code></pre></div>
+<p><a href="https://developer.arm.com/documentation/dui0375/g/C-and-C---Implementation-Details/Basic-data-types-in-ARM-C-and-C--">ARM Compiler v5.06 for uVision armcc User Guide</a> ｜ Basic data types in ARM C and C++<br />
+ - Size and alignment of basic data types 的 ILP32 数据模型下 All pointers、int、long 都是 4 (word-aligned)，这里的 4 即为 __WORDSIZE/CHAR_BIT。</p>
+<p>参考阅读：</p>
+<ul>
+<li>《<a href="https://item.jd.com/12841436.html">汇编语言(4e)</a>》王爽, 2019: 第一章 基础知识 - 地址总线、数据总线、控制总线</li>
+<li>《<a href="https://book.douban.com/subject/6809087/">大话处理器</a>》万木杨, 2011: 3.5　汇编语言格式——没有规矩不成方圆 | 3.5.1 机器字长</li>
+<li><a href="./">Machine word &amp; x86's WORD</a></li>
+</ul>
 
 
 
@@ -1670,7 +1777,7 @@
       <nav class="md-footer__inner md-grid" aria-label="页脚" >
         
           
-          <a href="../../20211007/byte-order-endianess/" class="md-footer__link md-footer__link--prev" aria-label="上一页: Byte Order(Endianess)">
+          <a href="../../20211008/data-model/" class="md-footer__link md-footer__link--prev" aria-label="上一页: Data Models">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
@@ -1680,20 +1787,20 @@
                 上一页
               </span>
               <div class="md-ellipsis">
-                Byte Order(Endianess)
+                Data Models
               </div>
             </div>
           </a>
         
         
           
-          <a href="../../20211012/address-alignment/" class="md-footer__link md-footer__link--next" aria-label="下一页: Memory Address Alignment">
+          <a href="../x86-word/" class="md-footer__link md-footer__link--next" aria-label="下一页: x86&#39;s ill-timed WORD">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 下一页
               </span>
               <div class="md-ellipsis">
-                Memory Address Alignment
+                x86's ill-timed WORD
               </div>
             </div>
             <div class="md-footer__button md-icon">

@@ -56,8 +56,9 @@ Microsoft Learn:
 
 [What are the calling conventions for UNIX & Linux system calls on x86-64?](https://stackoverflow.com/questions/2535989/what-are-the-calling-conventions-for-unix-linux-system-calls-on-x86-64)
 
-[SYSTEM V APPLICATION BINARY INTERFACE Intel386 Architecture Processor Supplement - 4th Edition](https://www.sco.com/developers/devspecs/abi386-4.pdf)
+[System V Application Binary Interface Intel386 Architecture Processor Supplement - 4th Edition](https://www.sco.com/developers/devspecs/abi386-4.pdf)
 [System V Application Binary Interface AMD64 Architecture Processor Supplement(With LP64 and ILP32 Programming Models)](https://cs61.seas.harvard.edu/site/pdf/x86-64-abi-20210928.pdf)
+[System V psABI for AMD64](https://gitlab.com/x86-psABIs/x86-64-ABI) - official repository
 
 [Function calling conventions](https://stackoverflow.com/questions/24974291/function-calling-conventions)
 [Guide: Function Calling Conventions](http://www.delorie.com/djgpp/doc/ug/asm/calling.html)

@@ -1,5 +1,5 @@
 ---
-title: Machine word & x86's WORD
+title: Machine Word
 authors:
   - xman
 date:
@@ -8,7 +8,8 @@ date:
 categories:
     - CS
 tags:
-    - alignment
+    - LONG_BIT
+    - WORDSIZE
 comments: true
 ---
 
@@ -16,11 +17,9 @@ In computing, a ***word*** is the natural unit of data used by a particular proc
 
 The `word size` is the computer's *preferred* size for moving units of information around; technically it's the **width** of your processor's registers. It reflects the amount of data that can be transmitted between memory and the processor in one **chunk**. Likewise, it may reflect the size of data that can be manipulated by the CPU's ALU in one **cycle**.
 
-Whereas, in the universe of x86, `word` continues to designate a 16-bit quantity. Microsoft's Windows API maintains the programming language definition of ***WORD*** as 16 bits, despite the fact that the API may be used on a 32- or 64-bit x86 processor.
-
 <!-- more -->
 
-## machine word & word size
+## machine word
 
 [Word (computer architecture)](https://en.wikipedia.org/wiki/Word_(computer_architecture))
 
@@ -38,134 +37,238 @@ The computer views your memory as a sequence of words numbered from zero up to s
 
 The term `word` refers to the standard number of bits that are manipulated as a **unit** by any particular CPU. For decades most CPUs had a word size of 32 bits (or 4 contiguous bytes), but word sizes of 64 bits are becoming more and more commonplace. The signifcance of the word size of a particular computer system is that it reflects the amount of data that can be transmitted between memory and the processor in one **chunk**. Likewise, it may reflect the size of data that can be manipulated by the CPU's ALU in one **cycle**. Computers can process data of larger sizes, but the word size reflects the size of the data values the computer has been designed to readily process directly. All other things being equal, (and they never are), larger word size implies faster and more capable processing.
 
-## x86's conservative WORD
+## predefined macros
 
-[Word Size families](https://en.wikipedia.org/wiki/Word_(computer_architecture)#Size_families)
+GCC Internals - [Layout of Source Language Data Types](https://gcc.gnu.org/onlinedocs/gccint/Type-Layout.html)
+GNU C Preprocessor - [Common Predefined Macros](https://gcc.gnu.org/onlinedocs/cpp/Common-Predefined-Macros.html)
 
-Another example is the x86 family, of which processors of three different word lengths (16-bit, later 32- and 64-bit) have been released, while `word` continues to designate a 16-bit quantity. As software is routinely ported from one word-length to the next, some APIs and documentation define or refer to an older (and thus shorter) word-length than the full word length on the CPU that software may be compiled for. Also, similar to how bytes are used for small numbers in many programs, a shorter word (16 or 32 bits) may be used in contexts where the range of a wider word is not needed (especially where this can save considerable stack space or cache memory space). For example, Microsoft's Windows API maintains the programming language definition of ***WORD*** as 16 bits, despite the fact that the API may be used on a 32- or 64-bit x86 processor, where the standard word size would be 32 or 64 bits, respectively. Data structures containing such different sized words refer to them as:
+[Clang Preprocessor options](https://clang.llvm.org/docs/ClangCommandLineReference.html#preprocessor-options) - [Dumping preprocessor state](https://clang.llvm.org/docs/ClangCommandLineReference.html#id8)
 
-- `WORD` (16 bits/2 bytes)
-- `DWORD` (32 bits/4 bytes)
-- `QWORD` (64 bits/8 bytes)
+对于 GCC/Clang 预处理器定义的一些宏，可执行 `cpp -dM` /`gcc -E -dM` 预处理命令 dump Macros：
 
-A similar phenomenon has developed in Intel's x86 assembly language – because of the support for various sizes (and backward compatibility) in the instruction set, some instruction mnemonics carry "`d`" or "`q`" identifiers denoting "double-", "quad-" or "double-quad-", which are in terms of the architecture's *original* 16-bit word size.
+```Shell title="dump prededined macros"
+$ echo | cpp -dM
+$ echo | gcc -x c -E -dM -
+$ echo | g++ -x c++ -E -dM -
 
-An example with a different word size is the IBM System/360 family. In the System/360 architecture, System/370 architecture and System/390 architecture, there are 8-bit bytes, 16-bit halfwords, 32-bit words and 64-bit doublewords. The z/Architecture, which is the 64-bit member of that architecture family, continues to refer to 16-bit halfwords, 32-bit words, and 64-bit doublewords, and additionally features 128-bit quadwords.
+# IA32/IA64
+$ clang -x c -E -dM -arch i386 /dev/null
+$ clang -x c -E -dM -arch x86_64 /dev/null
 
-### The name of 16 and 32 bits
-
-[The name of 16 and 32 bits](https://stackoverflow.com/questions/14181090/the-name-of-16-and-32-bits)  
-
-[Jonathon Reinhart](https://stackoverflow.com/a/14181184/3721132):
-
-A byte is the smallest unit of data that a computer can work with. The C language defines char to be one "byte" and has CHAR_BIT bits. On most systems this is 8 bits.
-
-A word on the other hand, is usually the size of values typically handled by the CPU. Most of the time, this is the size of the general-purpose registers. The problem with this definition, is it doesn't age well.
-
-For example, the MS Windows `WORD` datatype was defined back in the early days, when 16-bit CPUs were the norm. When 32-bit CPUs came around, the definition stayed, and a 32-bit integer became a `DWORD`. And now we have 64-bit `QWORD`s.
-
-Far from "universal", but here are several different takes on the matter:
-
-Far from "universal", but here are several different takes on the matter:
-
-**Windows**:
-
-- BYTE - 8 bits, unsigned
-- WORD - 16 bits, unsigned
-- DWORD - 32 bits, unsigned
-- QWORD - 64 bits, unsigned
-
-**GDB**:
-
-- Byte
-- Halfword (two bytes).
-- Word (four bytes).
-- Giant words (eight bytes).
-
-<**stdint.h**\>:
-
-- uint8_t - 8 bits, unsigned
-- uint16_t - 16 bits, unsigned
-- uint32_t - 32 bits, unsigned
-- uint64_t - 64 bits, unsigned
-- uintptr_t - pointer-sized integer, unsigned
-
-(Signed types exist as well.)
-
-If you're trying to write portable code that relies upon the size of a particular data type (e.g. you're implementing a network protocol), always use <stdint.h\>.
-
-[gustaf r](https://stackoverflow.com/a/14181166/3721132): `word` is not a datatype, it rather denotes the *natural* register size of the underlying hardware.
-
-### How many bits is a WORD
-
-[How many bits is a WORD and is that constant over different architectures?](https://stackoverflow.com/questions/621657/how-many-bits-is-a-word-and-is-that-constant-over-different-architectures)  
-
-[Guffa](https://stackoverflow.com/a/621665/3721132):
-
-The machine word size depends on the architecture, but also how the operating system is running the application.
-
-In Windows x64 for example an application can be run either as a 64 bit application (having a 64 bit mahine word), or as a 32 bit application (having a 32 bit machine word). So the size of a machine word can *differ* even on the same machine.
-
-The term `WORD` has different meaning depending on how it's used. It can either mean a machine word, or a type with a specific size. In x86 assembly language `WORD`, DOUBLEWORD (`DWORD`) and QUADWORD (`QWORD`) are used for 2, 4 and 8 byte sizes, *regardless* of the machine word size.
-
----
-
-[jalf](https://stackoverflow.com/a/621661/3721132):
-
-A word is typically the "native" data size of the CPU. That is, on a 16-bit CPU, a word is 16 bits, on a 32-bit CPU, it's 32 and so on.
-
-And the exception, of course, is x86, where a word is 16 bit wide (because x86 was *originally* a 16-bit CPU), a `DWORD` is 32-bit (because it became a 32-bit CPU), and a `QWORD` is 64-bit (because it now has 64-bit extensions bolted on).
-
-[Pete Kirkham](https://stackoverflow.com/a/621673/3721132):
-
-`WORD` is a Windows specific 16-bit integer type, and is hardware independent.
-
-If you mean a machine word, then there's no need to shout.
-
-### What's the size of a QWORD
-
-[assembly - What's the size of a QWORD on a 64-bit machine? - Stack Overflow](https://stackoverflow.com/questions/55430725/whats-the-size-of-a-qword-on-a-64-bit-machine)
-
-[Peter Cordes](https://stackoverflow.com/a/55430777/3721132):
-
-In x86 terminology/documentation, a "`word`" is 16 bits because x86 evolved out of 16-bit 8086. Changing the meaning of the term as extensions were added would have just been confusing, because Intel still had to document 16-bit mode and everything, and instruction mnemonics like `cwd` (sign-extend word to dword) bake the terminology into the ISA.
-
-- x86 word = 2 bytes
-- x86 dword = 4 bytes (double word)
-- x86 qword = 8 bytes (quad word)
-- x86 double-quad or xmmword = 16 bytes
-
----
-
-Most other 64-bit ISAs evolved out of 32-bit ISAs (AArch64, MIPS64, PowerPC64, etc.), or were 64-bit from the start (Alpha), so "word" means 32 bits in that context.
-
-- 32-bit word = 4 bytes
-- dword = 8 bytes (double word), e.g. MIPS `daddu` is 64-bit integer add
-- qword = 16 bytes (quad word), if supported at all.
-
----
-
-"Machine word" and putting labels on architectures.
-
-The whole concept of "machine word" [doesn't really apply to x86](https://stackoverflow.com/questions/68229585/are-machine-code-instructions-fetched-in-little-endian-4-byte-words-on-an-intel/68229991#68229991), with its machine-code format being a byte stream, and equal support for multiple operand-sizes, and unaligned loads/stores that mostly don't care about naturally aligned stuff, only cache line boundaries for normal cacheable memory.
-
-Even "word oriented" RISCs can have a different natural size for registers and cache accesses than their instruction width, or what their documentation uses as a "word".
-
-The whole concept of "`word size`" is over-rated in general, not just on x86. Even 64-bit RISC ISAs can load/store aligned 32-bit or 64-bit memory with equal efficiency, so pick whichever is most useful for what you're doing. Don't base your choice on figuring out which one is the machine's "word size", unless there's only one maximally efficient size (e.g. 32-bit on some 32-bit RISCs), then you can usefully call that the word size.
-
-### x86_64 byte-stream machine code
-
-[x86 64 - Are machine code instructions fetched in little endian 4-byte words on an Intel x86-64 architecture? - Stack Overflow](https://stackoverflow.com/questions/68229585/are-machine-code-instructions-fetched-in-little-endian-4-byte-words-on-an-intel/68229991#68229991)
-
-No, x86 machine code is a [byte-stream](https://stackoverflow.com/questions/60905135/how-to-interpret-objdump-disassembly-output-columns); there's nothing word-oriented about it, except for 32-bit displacements and immediates which are little-endian. e.g. in `add qword [rdi + 0x1234], 0xaabbccdd`. It's physically fetched in 16-byte or 32-byte chunks on modern CPUs, and split on instruction boundaries in parallel to feed to decoders in parallel.
-
-```Shell
-48    81   87     34 12 00 00    dd cc bb aa       
-REX.W add ModRM    le32 0x1234    le32 0xaabbccdd le32 (sign-extended to 64-bit)
-
-   add    QWORD PTR [rdi+0x1234],0xffffffffaabbccdd
+# ARM32/ARM64
+$ clang -x c -E -dM -arch armv7s /dev/null
+$ clang -x c -E -dM -arch arm64 /dev/null
 ```
 
-**x86-64 is not a word-oriented architecture; there is no single natural word-size, and things don't have to be aligned.** That concept is not very useful when thinking about x86-64. The integer register width happens to be 8 bytes, but that's not even the default operand-size in machine code, and you can use any operand-size from byte to qword with most instructions, and for SIMD from 8 or 16 byte up to 32 or 64 byte. And most importantly, alignment of wider integers isn't required in machine code, or even for data.
+### \_\_SIZEOF_POINTER\_\_
 
-**An x86 16-bit "word" has absolutely zero connection to the concept of a "machine word" in CPU architecture.**
+在 IA32/ARM32 位平台上，通常会定义宏 `_ILP32` 或 `__ILP32__` 值为 1；
+在 IA64/ARM64 位平台上，通常会定义宏 `_LP64` 或 `__LP64__` 值为 1。
+
+ILP32 和 LP64 是两组不同的数据模型（[Data Model](../cs/data-model.md)），决定了平台是 32 位还是 64 位，进而影响 long、long long 和 pointer 的宽度：
+
+- `__SIZEOF_LONG__` @[intel](https://www.intel.com/content/www/us/en/developer/articles/technical/size-of-long-integer-type-on-different-architecture-and-os.html)
+- `__SIZEOF_LONG_LONG__`
+- `__SIZEOF_POINTER__` / `__POINTER_WIDTH__`
+
+LP32 和 LP64，其中的 `L` 表示 long，`P` 表示 pointer，`__SIZEOF_POINTER__` 一般等于机器字长。
+
+### WORD_BIT/LONG_BIT
+
+[linux kernel - WORD_BIT vs LONG_BIT](https://unix.stackexchange.com/questions/771686/word-bit-vs-long-bit)
+
+> POSIX [<limits.h\>](https://pubs.opengroup.org/onlinepubs/9699919799/basedefs/limits.h.html) defines `WORD_BIT` and `LONG_BIT` as the number of bits in objects of types `int` and `long` respectively.
+
+cd 进入 `xcrun --show-sdk-path`，执行 grep 命令在 usr/include 头文件中查看 `WORD_BIT` 和 `LONG_BIT` 的宏定义：
+
+```Shell
+cd `xcrun --show-sdk-path`
+# grep -RFl "#define WORD_BIT" usr/include 2>/dev/null
+# grep -RFl "#define LONG_BIT" usr/include 2>/dev/null
+
+# --dereference-recursive, --extended-regexp, --files-with-matches
+$ grep -REl "#define (WORD_BIT|LONG_BIT)" usr/include 2>/dev/null
+usr/include/i386/limits.h
+usr/include/arm/limits.h
+```
+
+i386 和 arm 下的头文件 limits.h 中定义了 `WORD_BIT` 和 `LONG_BIT`：
+
+```c title="limits.h"
+$ cd `xcrun --show-sdk-path`
+
+#if !defined(_ANSI_SOURCE)
+#ifdef __LP64__
+#define LONG_BIT	64
+#else /* !__LP64__ */
+#define LONG_BIT	32
+#endif /* __LP64__ */
+#define	SSIZE_MAX	LONG_MAX	/* max value for a ssize_t */
+#define WORD_BIT	32
+```
+
+WORD_BIT 的值为 32，对应 int 类型的位宽（`__SIZEOF_INT__` * CHAR_BIT），LONG_BIT 的值则跟随 Data Model。
+
+在 rpi4b-ubuntu 下，grep 搜索 /usr/include 目录，没找到 `WORD_BIT`/`LONG_BIT` 的定义。
+
+- [Why is there no WORD_BIT in limits.h on Linux?](https://unix.stackexchange.com/questions/715751/why-is-there-no-word-bit-in-limits-h-on-linux)
+
+在 macOS、Linux 上可以执行 `getconf WORD_BIT` / `getconf LONG_BIT` 查询获取系统配置的变量。
+
+- `getconf` : to tell what architecture your CPU is presenting to the OS.
+- `getconf LONG_BIT` : check if the OS (kernel) is 32 bit or 64 bit.
+
+### __WORDSIZE
+
+机器字长表示处理器一次处理数据的长度，主要由运算器、寄存器决定，如32位处理器，每个寄存器能存储32bit数据，加法器支持两个32bit数进行相加。
+
+在 macOS 上执行 `sysctl hw`，在 rpi4b-ubuntu 上执行 `lscpu` 查看硬件（CPU）信息：
+
+=== "mbpa1398-x86_64"
+
+    ```Shell
+    $ arch
+    i386
+
+    # --kernel-name, --kernel-release, --processor, --machine
+    $ uname -srpm
+    Darwin 20.6.0 x86_64 i386
+
+    $ getconf LONG_BIT
+    64
+
+    # sysctl -a | grep cpu
+    $ sysctl hw
+
+    hw.optional.x86_64: 1
+
+    hw.cpu64bit_capable: 1
+
+    hw.cpusubtype: 8
+    hw.cputype: 7
+    ```
+
+=== "mbpa2991-arm64"
+
+    ```Shell
+    $ arch
+    arm64
+
+    # --operating-system, --kernel-name, --kernel-release, --machine, --processor
+    $ uname -osrmp
+    Darwin 23.5.0 arm64 arm
+
+    $ getconf LONG_BIT
+    64
+
+    # sysctl -a | grep cpu
+    $ sysctl hw
+
+    hw.optional.arm64: 1
+
+    hw.cpu64bit_capable: 1
+
+    hw.cputype: 16777228
+    hw.cpusubtype: 2
+    ```
+
+=== "rpi4b-ubuntu - aarch64"
+
+    ```Shell
+    $ arch
+    aarch64
+
+    # --operating-system, --kernel-release, --machine, --processor, --kernel-name
+    $ uname -srmpo
+    Linux 5.15.0-1053-raspi aarch64 aarch64 GNU/Linux
+
+    $ getconf LONG_BIT
+    64
+
+    # The width argument tells whether the Linux is 32- or 64-bit.
+    $ lshw | head -n 10
+    WARNING: you should run this program as super-user.
+    rpi4b-ubuntu
+        description: Computer
+        product: Raspberry Pi 4 Model B Rev 1.4
+        serial: 10000000a744c93f
+        width: 64 bits
+        capabilities: smp cp15_barrier setend swp tagged_addr_disabled
+      *-core
+           description: Motherboard
+           physical id: 0
+         *-cpu:0
+
+    $ lscpu | head -n 8
+    Architecture:                       aarch64
+    CPU op-mode(s):                     32-bit, 64-bit
+    Byte Order:                         Little Endian
+    CPU(s):                             4
+    On-line CPU(s) list:                0-3
+    Vendor ID:                          ARM
+    Model name:                         Cortex-A72
+    Model:                              3
+    ```
+
+!!! note "lscpu CPU op-mode(s)"
+
+    [32-bit, 64-bit CPU op-mode on Linux](https://unix.stackexchange.com/questions/77718/32-bit-64-bit-cpu-op-mode-on-linux)
+
+    If your kernel is a 32 bit linux kernel, you won't be able to run 64 bit programs, even if your processor supports it. Install a 64 bit kernel (and whole OS of course) to run 64 bit.
+
+    [How to determine whether a given Linux is 32 bit or 64 bit?](https://www.geeksforgeeks.org/how-to-determine-whether-a-given-linux-is-32-bit-or-64-bit/)
+
+    The `CPU op-mode(s)` option in the command output tells whether the given Linux is 32 or 64 bits.
+
+    If it shows 32-bit or 64-bit then Linux is 64 bits as it supports *both* 32- and 64-bit memory. If it shows only 32-bit then, then Linux is 32-bit.
+
+    The above Linux system is clearly 64 bits.
+
+[default wordsize in UNIX/Linux](https://unix.stackexchange.com/questions/74648/default-wordsize-in-unix-linux)
+
+> In general wordsize is decided upon target architecture when compiling. Your compiler will normally compile using wordsize for current system.
+> Using gcc (among others), on a 64-bit host you can compile for 32-bit machine, or force 32-bit words.
+
+Xcode 的 MacOSX.sdk 和 iPhoneOS.sdk 的 usr/include/stdint.h 根据 Data Model 是否为 `__LP64__==1` 区分定义了 `__WORDSIZE`：
+
+```c title="stdint.h"
+$ cd `xcrun --show-sdk-path`
+$ grep -Rl "#*define __WORDSIZE" usr/include 2>/dev/null
+usr/include/stdint.h
+
+$ vim usr/include/stdint.h
+#if __LP64__
+#define __WORDSIZE 64
+#else
+#define __WORDSIZE 32
+#endif
+```
+
+在 rpi4b-ubuntu 下的 /usr/include 中查找宏 `__WORDSIZE` 定义所在的头文件：
+
+```Shell
+$ grep -Rl "#*define __WORDSIZE" /usr/include 2>/dev/null
+/usr/include/aarch64-linux-gnu/bits/wordsize.h
+```
+
+wordsize.h 中根据 Data Model（`__LP64__` 定义与否）来区分定义 `__WORDSIZE`。
+
+```c title="wordsize.h"
+// Determine the wordsize from the preprocessor defines.
+#ifdef __LP64__
+# define __WORDSIZE         64
+#else
+# define __WORDSIZE         32
+# define __WORDSIZE32_SIZE_ULONG    1
+# define __WORDSIZE32_PTRDIFF_LONG  1
+#endif
+```
+
+[ARM Compiler v5.06 for uVision armcc User Guide](https://developer.arm.com/documentation/dui0375/g/C-and-C---Implementation-Details/Basic-data-types-in-ARM-C-and-C--) ｜ Basic data types in ARM C and C++
+ - Size and alignment of basic data types 的 ILP32 数据模型下 All pointers、int、long 都是 4 (word-aligned)，这里的 4 即为 __WORDSIZE/CHAR_BIT。
+
+参考阅读：
+
+- 《[汇编语言(4e)](https://item.jd.com/12841436.html)》王爽, 2019: 第一章 基础知识 - 地址总线、数据总线、控制总线
+- 《[大话处理器](https://book.douban.com/subject/6809087/)》万木杨, 2011: 3.5　汇编语言格式——没有规矩不成方圆 | 3.5.1 机器字长
+- [Machine word & x86's WORD](../cs/machine-word.md)
