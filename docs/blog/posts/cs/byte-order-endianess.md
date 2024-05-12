@@ -23,6 +23,8 @@ comments: true
 
 <!-- more -->
 
+## storage order
+
 先来回顾一下 [C Basic Types - Binary Representions](../c/c-binary-representation.md) 中提到的 `LSB`/`MSB` 概念: 
 
 !!! note "LSB vs. MSB"
@@ -33,15 +35,7 @@ comments: true
 
     Of the bits $b_i$ that are 1, the one with minimal index *i* is called the ***least-signiﬁcant bit set***, and the one with the highest index is the ***most-signiﬁcant bit set***.
 
-再来看看维基百科中关于 [Endianness](https://en.wikipedia.org/wiki/Endianness) 的介绍（byte significance compared to earliness）：
-
-!!! abstract "Endianness"
-
-    In computing, ***endianness*** is the order in which bytes within a word of digital data are transmitted over a data communication medium or addressed (by rising addresses) in computer memory, counting only byte significance compared to earliness.
-
-    Endianness is primarily expressed as **big-endian** (BE) or **little-endian** (LE), terms introduced by Danny Cohen into computer science for data ordering in an Internet Experiment Note published in 1980.
-
-[The C Memory Model](./c-memory-model.md) 借 union 一值两析，由 storage order 引出了 `endianess` 概念：
+在 [The C Memory Model](./c-memory-model.md) 中借 union 一值两析，由 storage order 进一步引出了 `endianess` 的概念：
 
 !!! note "endianess: big-endian & little-endian"
 
@@ -78,7 +72,133 @@ The mapping of a word-sized data object to memory is shown in the following figu
 
 [Overview of ARM64 ABI conventions](https://learn.microsoft.com/en-us/cpp/build/arm64-windows-abi-conventions) - [Endianness](https://learn.microsoft.com/en-us/cpp/build/arm64-windows-abi-conventions#endianness)
 
-## predefined macros
+## network byte order
+
+从维基百科中关于 [Endianness](https://en.wikipedia.org/wiki/Endianness) 的介绍，其最早源起于 [网络编程](https://blog.csdn.net/phunxm/article/details/5085869)，核心就是“byte significance compared to earliness”的收发次序问题。
+
+!!! abstract "Endianness"
+
+    In computing, ***endianness*** is the order in which bytes within a word of digital data are transmitted over a data communication medium or addressed (by rising addresses) in computer memory, counting only byte significance compared to earliness.
+
+    Endianness is primarily expressed as **big-endian** (BE) or **little-endian** (LE), terms introduced by Danny Cohen into computer science for data ordering in an Internet Experiment Note published in 1980.
+
+TCP/IP 协议统一规定采用**大端**方式封装解析传输数据，也称为**网络字节顺序**（network byte order，TCP/IP-endian）。
+
+!!! note "RFC 1700 - Assigned Numbers - Data Notations"
+
+    <https://datatracker.ietf.org/doc/rfc1700/>
+
+    The convention in the documentation of Internet Protocols is to express numbers in decimal and to picture data in "big-endian" order [COHEN].  That is, fields are described left to right, with the most significant octet on the left and the least significant octet on the right.
+
+    The order of transmission of the header and data described in this document is resolved to the octet level.  Whenever a diagram shows a group of octets, the order of transmission of those octets is the normal order in which they are read in English.  For example, in the following diagram the octets are transmitted in the order they are numbered.
+
+    ```
+        0                   1                   2                   3
+        0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |       1       |       2       |       3       |       4       |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |       5       |       6       |       7       |       8       |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |       9       |      10       |      11       |      12       |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+                        Transmission Order of Bytes
+    ```
+
+    Whenever an octet represents a numeric quantity the left most bit in the diagram is the high order or most significant bit.  That is, the bit labeled 0 is the most significant bit.  For example, the following diagram represents the value 170 (decimal).
+
+
+                            0 1 2 3 4 5 6 7
+                            +-+-+-+-+-+-+-+-+
+                            |1 0 1 0 1 0 1 0|
+                            +-+-+-+-+-+-+-+-+
+
+                            Significance of Bits
+
+    Similarly, whenever a multi-octet field represents a numeric quantity the left most bit of the whole field is the most significant bit.  When a multi-octet quantity is transmitted the most significant octet is transmitted first.
+
+以下为 MSDN 中关于 [Packet byte/bit order](https://msdn.microsoft.com/en-us/library/cc230307.aspx) 的阐述：
+
+> For packets, the bit numbering convention followed is the same as that used in RFCs, namely: the high (most significant) bit of the first byte to hit the wire is in packet bit 0, and the low bit of the last byte to hit the wire is in packet bit 31 (so that the bits are shown from left-to-right in the order they naturally appear over the network).
+
+![ms-dtyp](https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-dtyp/ms-dtyp_files/image001.png)
+
+Networking and Internet | Windows Sockets 2 | [Byte Ordering](https://learn.microsoft.com/en-us/windows/win32/winsock/byte-ordering-2):
+
+> Care must always be taken to account for any differences between the byte ordering used for storing integers by the host architecture and the byte ordering used on the wire by individual transport protocols. Any reference to an address or port number passed to or from a Windows Sockets routine must be in the network order (big-endian) for the protocol being utilized.
+
+在网络通信协议程序中，在进行网络数据的收发时，需要发收双方执行字节序转换（convert values between host and network byte order）。
+
+在 Linux 上执行 `man BYTEORDER` 可以查看相关编程接口，也可参考 The GNU C Library 文档：Sockets | The Internet Namespace | [Byte Order Conversion](https://www.gnu.org/software/libc/manual/html_node/Byte-Order.html)。
+
+??? info "man BYTEORDER"
+
+    ```Shell
+    $ man BYTEORDER # man htonl
+
+    BYTEORDER(3)                       Linux Programmer's Manual                      BYTEORDER(3)
+
+    NAME
+          htonl, htons, ntohl, ntohs - convert values between host and network byte order
+
+    SYNOPSIS
+          #include <arpa/inet.h>
+
+          uint32_t htonl(uint32_t hostlong);
+
+          uint16_t htons(uint16_t hostshort);
+
+          uint32_t ntohl(uint32_t netlong);
+
+          uint16_t ntohs(uint16_t netshort);
+
+    DESCRIPTION
+          The  htonl()  function  converts  the unsigned integer hostlong from host byte order to
+          network byte order.
+
+          The htons() function converts the unsigned short integer hostshort from host byte order
+          to network byte order.
+
+          The  ntohl()  function converts the unsigned integer netlong from network byte order to
+          host byte order.
+
+          The ntohs() function converts the unsigned short integer netshort from network byte or‐
+          der to host byte order.
+
+          On  the  i386  the host byte order is Least Significant Byte first, whereas the network
+          byte order, as used on the Internet, is Most Significant Byte first.
+    ```
+
+在 macOS/ubuntu 下执行 `grep -RH "htonl\|ntohl"` 可以查找到：
+
+1. macOS: usr/include/sys/_endian.h 中根据 `__DARWIN_BYTE_ORDER` 的值定义了字节序转换宏 `htonl`/`ntohl`，在 usr/include/arpa/inet.h 和 usr/include/netinet/in.h 中包含了 <sys/_endian.h\>。
+2. ubuntu: /usr/include/netinet/in.h 中根据 `__BYTE_ORDER` 的值定义了字节序转换宏 `htonl`/`ntohl`。
+3. 在 macOS/ubuntu 下，arpa/inet.h 中都包含了 <netinet/in.h\>。
+
+在C/S通信程序中，发送方将本地数据调用 `htons`/`htonl`/`htonll`，序列化打包到 buffer，再调用 socket API 的 **send**() 接口将数据发送到网络。接收方等待 I/O 通知，实时调用 socket API 的 **recv**() 接口将数据从网卡接收到用户层，用户层需按照 TLV 解包，对等调用 `ntohs`/`ntohl`/`ntohll` 解析复原出原始数值。
+
+假设 A 和 B 都是 Little-Endian，A 要给 B 发送一个短整数 s=0x7da，其在内存中的字节数组是 {0xda, 0x7}。以下程序片段简单示意了发收双方的写/读字节转换：
+
+=== "sender htons"
+
+    ```c
+    short s = 0x7da; // EL: {0xda, 0x7}
+    short ns = htons(s); // EB: {0x7, 0xda}
+    memcpy(buf, &ns, sizeof ns);
+    send(sock, buf, sizeof ns, 0);
+    ```
+
+=== "recver ntohs"
+
+    ```c
+    short ns;
+    recv(sock, buf, sizeof ns, 0); // EB: {0x7, 0xda}
+    memcpy(&ns, buf, sizeof ns);
+    short s = ntohs(ns); // EL: {0xda, 0x7}
+    ```
+
+## \_\_BYTE_ORDER\_\_
 
 在 [Dump Compiler Options](../toolchain/dump-compiler-options.md) 中有介绍如何 dump compiler predefined macros。
 
@@ -278,86 +398,6 @@ bits/endian.h 包含了 <bits/endianness.h\>，定义了 `__LITTLE_ENDIAN`、`__
 
 /usr/include/linux 下的网络协议实现相关头文件 if_packet.h,tcp.h,ip.h,icmp.h,igmp.h,cdrom.h 中判断是否定义了 `__LITTLE_ENDIAN_BITFIELD` / `__BIG_ENDIAN_BITFIELD`。其他头文件中主要判断 `__BYTE_ORDER` 的值。
 
-## network byte order
-
-关于字节的大小端问题，[网络编程](https://blog.csdn.net/phunxm/article/details/5085869) 中将有所涉及，在嵌入式开发中经常遇到。
-
-TCP/IP协议统一规定采用**大端**方式封装解析传输数据，也称为**网络字节顺序**（network byte order，TCP/IP-endian）。
-
-以下为 MSDN 中关于 [Packet byte/bit order](https://msdn.microsoft.com/en-us/library/cc230307.aspx) 的阐述：
-
-> For packets, the bit numbering convention followed is the same as that used in RFCs, namely: the high (most significant) bit of the first byte to hit the wire is in packet bit 0, and the low bit of the last byte to hit the wire is in packet bit 31 (so that the bits are shown from left-to-right in the order they naturally appear over the network).
-
-![ms-dtyp](https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-dtyp/ms-dtyp_files/image001.png)
-
-在网络通信协议程序中，在进行网络数据的收发时，需要发收双方执行字节序转换（convert values between host and network byte order）。
-
-??? info "man BYTEORDER"
-
-    ```Shell
-    $ man BYTEORDER # man htonl
-
-    BYTEORDER(3)                       Linux Programmer's Manual                      BYTEORDER(3)
-
-    NAME
-          htonl, htons, ntohl, ntohs - convert values between host and network byte order
-
-    SYNOPSIS
-          #include <arpa/inet.h>
-
-          uint32_t htonl(uint32_t hostlong);
-
-          uint16_t htons(uint16_t hostshort);
-
-          uint32_t ntohl(uint32_t netlong);
-
-          uint16_t ntohs(uint16_t netshort);
-
-    DESCRIPTION
-          The  htonl()  function  converts  the unsigned integer hostlong from host byte order to
-          network byte order.
-
-          The htons() function converts the unsigned short integer hostshort from host byte order
-          to network byte order.
-
-          The  ntohl()  function converts the unsigned integer netlong from network byte order to
-          host byte order.
-
-          The ntohs() function converts the unsigned short integer netshort from network byte or‐
-          der to host byte order.
-
-          On  the  i386  the host byte order is Least Significant Byte first, whereas the network
-          byte order, as used on the Internet, is Most Significant Byte first.
-    ```
-
-在 macOS/ubuntu 下执行 `grep -RH "htonl\|ntohl"` 可以查找到：
-
-1. macOS: usr/include/sys/_endian.h 中根据 `__DARWIN_BYTE_ORDER` 的值定义了字节序转换宏 `htonl`/`ntohl`，在 usr/include/arpa/inet.h 和 usr/include/netinet/in.h 中包含了 <sys/_endian.h\>。
-2. ubuntu: /usr/include/netinet/in.h 中根据 `__BYTE_ORDER` 的值定义了字节序转换宏 `htonl`/`ntohl`。
-3. 在 macOS/ubuntu 下，arpa/inet.h 中都包含了 <netinet/in.h\>。
-
-在C/S通信程序中，发送方将本地数据调用 `htons`/`htonl`/`htonll`，序列化打包到 buffer，再调用 socket API 的 **send**() 接口将数据发送到网络。接收方等待 I/O 通知，实时调用 socket API 的 **recv**() 接口将数据从网卡接收到用户层，用户层需按照 TLV 解包，对等调用 `ntohs`/`ntohl`/`ntohll` 解析复原出原始数值。
-
-假设 A 和 B 都是 Little-Endian，A 要给 B 发送一个短整数 s=0x7da，其在内存中的字节数组是 {0xda, 0x7}。以下程序片段简单示意了发收双方的写/读字节转换：
-
-=== "sender htons"
-
-    ```c
-    short s = 0x7da; // EL: {0xda, 0x7}
-    short ns = htons(s); // EB: {0x7, 0xda}
-    memcpy(buf, &ns, sizeof ns);
-    send(sock, buf, sizeof ns, 0);
-    ```
-
-=== "recver ntohs"
-
-    ```c
-    short ns;
-    recv(sock, buf, sizeof ns, 0); // EB: {0x7, 0xda}
-    memcpy(&ns, buf, sizeof ns);
-    short s = ntohs(ns); // EL: {0xda, 0x7}
-    ```
-
 ## test endianess
 
 我们在前面利用编译器预处理输出了字节序相关的 predefined macros，然后通过 grep 查找 usr/include 下相关宏定义所在的头文件。
@@ -453,3 +493,8 @@ endianess = LITTLE_ENDIAN
 
 [大端与小端详解](http://www.crifan.com/big_endian_big_endian_and_small_end_little_endian_detailed/)
 [详解大端模式和小端模式](http://blog.csdn.net/ce123_zhouwei/article/details/6971544)
+
+
+IBM z/OS - [Network byte order](https://www.ibm.com/docs/en/zos/3.1.0?topic=domain-network-byte-order)
+IBM z/VM - [Network byte order and host byte order](https://www.ibm.com/docs/en/zvm/7.3?topic=domains-network-byte-order-host-byte-order)
+[What Is The Endianness of Captured Packet Headers? - Ask Wireshark](https://ask.wireshark.org/question/15501/what-is-the-endianness-of-captured-packet-headers/)
