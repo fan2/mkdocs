@@ -129,6 +129,11 @@ POINTER | `*` | 8 | Quadword
 
 - The following table gives the size and natural alignment of the basic data types under ILP32 data model.
 
+[aapcs64](https://github.com/ARM-software/abi-aa/blob/2a70c42d62e9c3eb5887fa50b71257f20daca6f9/aapcs64/aapcs64.rst) - 5.1 Fundamental Data Types, 5.9   Composite Types:
+
+1. The member alignment of an element of a composite type is the alignment of that member after the application of any language alignment *modifiers* to that member.
+2. The natural alignment of a composite type is the ***maximum*** of each of the member alignments of the 'top-level' members of the composite type i.e. before any alignment adjustment of the entire composite is applied.
+
 [Overview of ARM64 ABI conventions](https://learn.microsoft.com/en-us/cpp/build/arm64-windows-abi-conventions) - [Alignment](https://learn.microsoft.com/en-us/cpp/build/arm64-windows-abi-conventions#alignment)
 
 Default layout alignment for `locals`:
@@ -166,7 +171,7 @@ Size in bytes | Alignment in bytes
 | `fpos_t` | 8 | 8 |
 | `off_t` | 8 | 8 |
 
-[ILP32 and LP64 data models.PDF](https://scc.ustc.edu.cn/zlsc/czxt/200910/W020100308601263456982.pdf) - HP-UX 64-bit data model list ILP32 and LP64 data alignment:
+[ILP32 and LP64 data models.PDF](https://scc.ustc.edu.cn/zlsc/czxt/200910/W020100308601263456982.pdf) - [HP-UX](https://en.wikipedia.org/wiki/HP-UX) 64-bit data model list ILP32 and LP64 data alignment:
 
 ![ILP32-LP64-data-alignment](./images/alignment/ILP32-LP64-data-alignment.png)
 
