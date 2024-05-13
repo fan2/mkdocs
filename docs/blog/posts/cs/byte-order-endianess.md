@@ -484,10 +484,13 @@ int main(int argc, char **argv)
 }
 ```
 
-mbpa2991-macOS/arm64 和 rpi4b-ubuntu/aarch64 下编译运行，均输出如下：
+win10/x86_64，mbpa2991-macOS/arm64 和 rpi4b-ubuntu/aarch64 下编译运行，均输出如下：
 
 ```Shell
-cc test-endianess.c -o test-endianess -g && ./test-endianess
+# win10 MSVC 2022/x86_64
+>cl test-endianess.c && test-endianess.exe
+# mbpa2991-macOS/arm64, rpi4b-ubuntu/aarch64
+$ cc test-endianess.c -o test-endianess -g && ./test-endianess
 endianess = LITTLE_ENDIAN
 ```
 

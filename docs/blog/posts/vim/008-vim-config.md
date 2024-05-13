@@ -158,6 +158,13 @@ set softtabstop=-1
 set ai "autoindent
 ```
 
+[How can I autoformat/indent C code in vim? - Stack Overflow](https://stackoverflow.com/questions/2355834/how-can-i-autoformat-indent-c-code-in-vim)
+
+1. `gg=G`
+2. `:!indent %`
+3. [clang-format](https://clang.llvm.org/docs/ClangFormat.html)
+4. [Artistic Style](https://astyle.sourceforge.net/)
+
 ## 读取设置
 
 [vim查看配置项的值以及查看环境变量的值](http://blog.chinaunix.net/uid-22188554-id-461603.html)

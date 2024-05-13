@@ -271,10 +271,12 @@ Character types are integer types used for a *character* representation.
 
 测试结果：
 
-=== "macOS(arm64, x86_64)"
+=== "x86_64, arm64"
 
     ```Shell
-    # mbpa2991/arm64, mbpa1398/x86_64
+    # win10/x86_64
+    >cl char-range.cpp && char-range.exe
+    # mbpa1398/x86_64, mbpa2991/arm64
     # cc char-range.c -o char-range && ./char-range
     $ c++ char-range.cpp -o char-range && ./char-range
     CHAR_MIN = -128, CHAR_MAX = 127

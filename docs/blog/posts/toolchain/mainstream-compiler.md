@@ -844,40 +844,43 @@ Xcode Project Settings | Language - C++:
 
 ### Binutils
 
-[C/C++ projects and build systems in Visual Studio](https://learn.microsoft.com/en-us/cpp/build/projects-and-build-systems-cpp?view=msvc-170&redirectedfrom=MSDN)
+[C/C++ projects and build systems in Visual Studio](https://learn.microsoft.com/en-us/cpp/build/projects-and-build-systems-cpp)
 
-Compiler and build tools reference - [C/C++ Building Reference - Visual Studio](https://learn.microsoft.com/en-us/cpp/build/reference/c-cpp-building-reference?view=msvc-170)
+Compiler and build tools reference - [C/C++ Building Reference - Visual Studio](https://learn.microsoft.com/en-us/cpp/build/reference/c-cpp-building-reference)
 
-[Use the Microsoft C++ toolset from the command line](https://learn.microsoft.com/en-us/cpp/build/building-on-the-command-line?view=msvc-170&redirectedfrom=MSDN)
+Win10 下安装的 Visual Studio 的 VC Binutils 目录：
 
-Win10 下安装的 VS2015，VC Binutils 在 `C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin` 目录下：
+1. VS2015: `C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\bin`；
+2. VS2022 Community: `C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.39.33519\bin\Hostx86\x64`。
 
-- [CL](https://learn.microsoft.com/en-us/cpp/build/reference/compiling-a-c-cpp-program?view=msvc-170): Use the compiler (`cl.exe`) to compile and link source code files into apps, libraries, and DLLs.
-- [Link](https://learn.microsoft.com/en-us/cpp/build/reference/linking?view=msvc-170): Use the linker (`link.exe`) to link compiled object files and libraries into apps and DLLs.
+[Use the Microsoft C++ toolset from the command line](https://learn.microsoft.com/en-us/cpp/build/building-on-the-command-line) - [Compiler Options](https://learn.microsoft.com/lt-lt/cpp/build/reference/compiler-options)
 
-- [LIB.EXE](https://learn.microsoft.com/en-us/cpp/build/reference/lib-reference?view=msvc-170) is used to create and manage a library of Common Object File Format (COFF) object files. It can also be used to create export files and import libraries to reference exported definitions.
-- [EDITBIN.EXE](https://learn.microsoft.com/en-us/cpp/build/reference/editbin-reference?view=msvc-170) is used to modify COFF binary files.
-- [DUMPBIN.EXE](https://learn.microsoft.com/en-us/cpp/build/reference/dumpbin-reference?view=msvc-170) displays information (such as a symbol table) about COFF binary files.
-- [Decorated names](https://learn.microsoft.com/en-us/cpp/build/reference/decorated-names?view=msvc-170) - Viewing undecorated names: You can use `undname.exe` to convert a decorated name to its undecorated form. ref to [Demangling in MSVC - c++](https://stackoverflow.com/questions/13777681/demangling-in-msvc).
+- [CL](https://learn.microsoft.com/en-us/cpp/build/reference/compiling-a-c-cpp-program): Use the compiler (`cl.exe`) to compile and link source code files into apps, libraries, and DLLs.
+- [Link](https://learn.microsoft.com/en-us/cpp/build/reference/linking): Use the linker (`link.exe`) to link compiled object files and libraries into apps and DLLs.
 
-[NMAKE](https://learn.microsoft.com/en-us/cpp/build/reference/nmake-reference?view=msvc-170): Use NMAKE (`nmake.exe`) reads and executes makefiles, to build C++ projects by using a traditional makefile.
+- [LIB.EXE](https://learn.microsoft.com/en-us/cpp/build/reference/lib-reference) is used to create and manage a library of Common Object File Format (COFF) object files. It can also be used to create export files and import libraries to reference exported definitions.
+- [EDITBIN.EXE](https://learn.microsoft.com/en-us/cpp/build/reference/editbin-reference) is used to modify COFF binary files.
+- [DUMPBIN.EXE](https://learn.microsoft.com/en-us/cpp/build/reference/dumpbin-reference) displays information (such as a symbol table) about COFF binary files.
+- [Decorated names](https://learn.microsoft.com/en-us/cpp/build/reference/decorated-names) - Viewing undecorated names: You can use `undname.exe` to convert a decorated name to its undecorated form. ref to [Demangling in MSVC - c++](https://stackoverflow.com/questions/13777681/demangling-in-msvc).
 
-[CMake](https://learn.microsoft.com/en-us/cpp/build/cmake-projects-in-visual-studio?view=msvc-170): CMake (`cmake.exe`) is a cross-platform, open-source tool for defining build processes that run on multiple platforms.
+[NMAKE](https://learn.microsoft.com/en-us/cpp/build/reference/nmake-reference): Use NMAKE (`nmake.exe`) reads and executes makefiles, to build C++ projects by using a traditional makefile.
 
-[CMake projects in Visual Studio](https://learn.microsoft.com/en-us/cpp/build/cmake-projects-in-visual-studio?view=msvc-170)
+[CMake](https://learn.microsoft.com/en-us/cpp/build/cmake-projects-in-visual-studio): CMake (`cmake.exe`) is a cross-platform, open-source tool for defining build processes that run on multiple platforms.
 
-- [Walkthrough: Build and Debug C++ with Microsoft Windows Subsystem for Linux 2 (WSL 2) and Visual Studio 2022](https://learn.microsoft.com/en-us/cpp/build/walkthrough-build-debug-wsl2?view=msvc-170)
-- [Clang/LLVM support in Visual Studio CMake projects](https://learn.microsoft.com/en-us/cpp/build/clang-support-cmake?view=msvc-170)
+[CMake projects in Visual Studio](https://learn.microsoft.com/en-us/cpp/build/cmake-projects-in-visual-studio)
+
+- [Walkthrough: Build and Debug C++ with Microsoft Windows Subsystem for Linux 2 (WSL 2) and Visual Studio 2022](https://learn.microsoft.com/en-us/cpp/build/walkthrough-build-debug-wsl2)
+- [Clang/LLVM support in Visual Studio CMake projects](https://learn.microsoft.com/en-us/cpp/build/clang-support-cmake)
 
 ### Language Standards
 
-[/std (Specify Language Standard Version)](https://learn.microsoft.com/en-us/cpp/build/reference/std-specify-language-standard-version?view=msvc-170)
+[/std (Specify Language Standard Version)](https://learn.microsoft.com/en-us/cpp/build/reference/std-specify-language-standard-version)
 
-[Microsoft C++ compiler versions](https://learn.microsoft.com/en-us/cpp/overview/compiler-versions?view=msvc-170)
+[Microsoft C++ compiler versions](https://learn.microsoft.com/en-us/cpp/overview/compiler-versions)
 
-[C and C++ in Visual Studio](https://learn.microsoft.com/en-us/cpp/overview/visual-cpp-in-visual-studio?view=msvc-170)
-[Microsoft C/C++ language conformance](https://learn.microsoft.com/en-us/cpp/overview/visual-cpp-language-conformance?view=msvc-170)
-[C++ conformance improvements in Visual Studio 2022](https://learn.microsoft.com/en-us/cpp/overview/cpp-conformance-improvements?view=msvc-170)
+[C and C++ in Visual Studio](https://learn.microsoft.com/en-us/cpp/overview/visual-cpp-in-visual-studio)
+[Microsoft C/C++ language conformance](https://learn.microsoft.com/en-us/cpp/overview/visual-cpp-language-conformance)
+[C++ conformance improvements in Visual Studio 2022](https://learn.microsoft.com/en-us/cpp/overview/cpp-conformance-improvements)
 
 [Microsoft C/C++ Documentation](https://learn.microsoft.com/en-us/cpp/?view=msvc-160): C++, C, and Assembler
 [C runtime library reference](https://learn.microsoft.com/en-us/cpp/c-runtime-library/c-run-time-library-reference?view=msvc-160)

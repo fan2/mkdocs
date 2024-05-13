@@ -70,11 +70,6 @@ struct S4 {
 };
 ```
 
-related topics:
-
-- [c - The advantage of using \_\_attribute\_\_((aligned( )))](https://softwareengineering.stackexchange.com/questions/256179/the-advantage-of-using-attribute-aligned)
-- [visual c++ - Cross-platform ALIGN(x) macro?](https://stackoverflow.com/questions/7895869/cross-platform-alignx-macro)
-
 ## gcc -fpack-struct
 
 GCC specific [Options for Code Generation Conventions](https://gcc.gnu.org/onlinedocs/gcc/Code-Gen-Options.html) 支持编译选项 `-fpack-struct[=n]` 指定结构体中成员变量的对齐字节数。
@@ -111,6 +106,26 @@ pack-show.c:1:9: warning: value of #pragma pack(show) == 8
 #pragma pack(show)
         ^
 1 warning generated.
+```
+
+Win10/x86_64 下 msvc 2022 32/64 编译输出警告：
+
+```Shell
+# vcvars32.bat
+>cl /c pack-show.c
+用于 x86 的 Microsoft (R) C/C++ 优化编译器 19.39.33523 版
+版权所有(C) Microsoft Corporation。保留所有权利。
+
+pack-show.c
+pack-show.c(1): warning C4810: pragma pack(show) 的值 == 8
+
+# vcvars64.bat
+>cl /c pack-show.c
+用于 x64 的 Microsoft (R) C/C++ 优化编译器 19.39.33523 版
+版权所有(C) Microsoft Corporation。保留所有权利。
+
+pack-show.c
+pack-show.c(1): warning C4810: pragma pack(show) 的值 == 16
 ```
 
 rpi4b-ubuntu/arm64 下 GCC 不支持预编译指令选项 `show`。
@@ -168,13 +183,19 @@ struct st_cdi
 
 以下测试代码 struct-packed-aligned.c，综合测试通过指定 `__attribute__` 和 `#pragma pack` 改变结构体默认对齐方式的作用效果。
 
+关于跨平台设置 packed 和 aligned 属性，参考：
+
+- [c - The advantage of using \_\_attribute\_\_((aligned( )))](https://softwareengineering.stackexchange.com/questions/256179/the-advantage-of-using-attribute-aligned)
+- [Visual C++ equivalent of GCC's \_\_attribute\_\_ ((\_\_packed\_\_)) - Stack Overflow](https://stackoverflow.com/questions/1537964/visual-c-equivalent-of-gccs-attribute-packed)
+- [visual c++ - Cross-platform ALIGN(x) macro?](https://stackoverflow.com/questions/7895869/cross-platform-alignx-macro)
+
 ### Program
 
-1. 可执行 `cpp struct-packed-aligned.c`（或 `gcc -E`）查看宏 `DEFINE_STRUCT_PAIR` / `DEFINE_STRUCT_ALIGNED` 的展开结果。
+1. 可执行 `cpp struct-packed-aligned.c`（或 `gcc -E`）查看宏 `PACK` 包裹 / `ALIGN` 修饰定义的结构体。
 
-2. DEFINE_STRUCT_PAIR 给结构体定义加上属性限定 `__attribute__((__packed__))` 定义 `StructName##_packed`（MyStruct1_packed，MyStruct2_packed），不考虑成员变量的“地址边界对齐限制”，各成员变量依序自然紧凑排列，其大小是各个成员 sizeof 之和。
+2. `PACK` 宏包裹定义的结构体不考虑成员变量的“地址边界对齐限制”，各成员变量依序自然紧凑排列，其大小是各个成员 sizeof 之和。
 
-3. DEFINE_STRUCT_ALIGNED 指定 `__attribute__((aligned(16)))` 定义 `struct MyStruct4_aligned`，后者必须满足整体大小为 n=16 的倍数，sizeof 测算结果为 32。
+3. `ALIGN` 宏修饰的结构体，指定对齐参数 n，必须满足整体大小为 n 的倍数。
 
 ??? info "struct-packed-aligned.c"
 
@@ -194,59 +215,54 @@ struct st_cdi
     // __attribute__ ((__packed__))
     // struct's members are packed closely together,
     // but the internal layout of its s member is not packed
-    #define DEFINE_STRUCT_PAIR(StructName, StructBody) \
-        struct StructName StructBody \
-        struct __attribute__((__packed__)) StructName##_packed StructBody
-    #define GET_PACKED_SIZE(StructName) sizeof(struct StructName##_packed)
-    #define GET_SIZE(StructName) sizeof(struct StructName)
+    #if defined(__GNUC__) || defined(__clang__)
+    #  define PACK( __Declaration__ ) __Declaration__ __attribute__((__packed__))
+    #elif defined(_MSC_VER)
+    #  define PACK( __Declaration__ ) __pragma( pack(push, 1) ) __Declaration__ __pragma( pack(pop))
+    #else
+    #  error "Unknown compiler; can't define PACK"
+    #endif
 
     // aligned (alignment): specifies a minimum alignment
-    #define DEFINE_STRUCT_ALIGNED(n, StructName, StructBody) \
-        struct __attribute__((aligned(n))) StructName##_aligned StructBody
-    #define GET_ALIGNED_SIZE(StructName) sizeof(struct StructName##_aligned)
+    #if defined(__GNUC__) || defined(__clang__)
+    #  define ALIGN(n) __attribute__ ((aligned(n)))
+    #elif defined(_MSC_VER)
+    #  define ALIGN(n) __declspec(align(n))
+    #else
+    #  error "Unknown compiler; can't define ALIGN"
+    #endif
 
-    DEFINE_STRUCT_PAIR(MyStruct1, {
-        double d;
-        char c;
-        int i;
-    };)
+    // use alignof instead for maximum portability
+    // #if defined(__GNUC__) || defined(__clang__)
+    // #  define ALIGNOF(X) __alignof__(X)
+    // #elif defined(_MSC_VER)
+    // #  define ALIGNOF(X) __alignof(X)
+    // #else
+    // #  error "Unknown compiler; can't define ALIGNOF"
+    // #endif
 
-    DEFINE_STRUCT_PAIR(MyStruct2, {
-        char c;
-        double d;
-        int i;
-    };)
+    #define GET_SIZE(StructName) sizeof(struct StructName)
+    #define GET_PACKED_SIZE(StructName, n) sizeof(struct StructName##_pack_##n)
+    #define GET_ALIGNED_SIZE(StructName, n) sizeof(struct StructName##_align_##n)
+
+    #define DCI { double d; char c; int i; }
+    #define CDI { char c; double d; int i; }
+
+    struct st_dci DCI;
+    PACK(struct st_dci_pack_1 DCI);
+
+    struct st_cdi CDI;
+    PACK(struct st_cdi_pack_1 CDI);
 
     #pragma pack(push, 4)
-    struct MyStruct3
-    {
-        char c;
-        double d;
-        int i;
-    };
+    struct st_cdi_pack_4 CDI;
     #pragma pack(pop)
-
-    DEFINE_STRUCT_ALIGNED(4, MyStruct3, {
-        char c;
-        double d;
-        int i;
-    };)
+    struct ALIGN(4) st_cdi_align_4 CDI;
 
     #pragma pack(push, 16)
-    struct MyStruct4
-    {
-        char c;
-        double d;
-        int i;
-    };
+    struct st_cdi_pack_16 CDI;
     #pragma pack(pop)
-
-    // on a 16-byte boundary.
-    DEFINE_STRUCT_ALIGNED(16, MyStruct4, {
-        char c;
-        double d;
-        int i;
-    };)
+    struct ALIGN(16) st_cdi_align_16 CDI;
 
     int main(int argc, char *argv[])
     {
@@ -267,32 +283,32 @@ struct st_cdi
         printf("sizeof(Readout)=%zu, alignof(Readout)=%zu\n",
                 sizeof(struct Readout), alignof(struct Readout));
 
-        printf("sizeof(MyStruct1)=%zu,%zu, alignof(MyStruct1)=%zu\n",
-            GET_PACKED_SIZE(MyStruct1), GET_SIZE(MyStruct1),
-            alignof(struct MyStruct1));
-        printf("sizeof(MyStruct2)=%zu,%zu, alignof(MyStruct2)=%zu\n",
-            GET_PACKED_SIZE(MyStruct2), GET_SIZE(MyStruct2),
-            alignof(struct MyStruct2));
+        printf("sizeof(st_dci)=%zu,%zu, alignof(st_dci)=%zu\n",
+            GET_PACKED_SIZE(st_dci, 1), GET_SIZE(st_dci),
+            alignof(struct st_dci));
+        printf("sizeof(st_cdi)=%zu,%zu, alignof(st_cdi)=%zu\n",
+            GET_PACKED_SIZE(st_cdi, 1), GET_SIZE(st_cdi),
+            alignof(struct st_cdi));
 
-        struct MyStruct2 ms2;
-        printf("MyStruct2 offsets: c=%zu, d=%zu, i=%zu\n",
-            offsetof(struct MyStruct2, c),
-            offsetof(struct MyStruct2, d),
-            (uintptr_t)&ms2.i - (uintptr_t)&ms2);
+        struct st_cdi st;
+        printf("st_cdi offsets: c=%zu, d=%zu, i=%zu\n",
+            offsetof(struct st_cdi, c),
+            offsetof(struct st_cdi, d),
+            (uintptr_t)&st.i - (uintptr_t)&st);
 
-        printf("sizeof(MyStruct3): pack(4)=%zu, aligned(4)=%zu\n",
-            sizeof(struct MyStruct3),
-            GET_ALIGNED_SIZE(MyStruct3));
-        printf("alignof(MyStruct3): pack(4)=%zu, aligned(4)=%zu\n",
-            alignof(struct MyStruct3),
-            alignof(struct MyStruct3_aligned));
+        printf("sizeof(st_cdi): pack(4)=%zu, align(4)=%zu\n",
+            GET_PACKED_SIZE(st_cdi, 4),
+            GET_ALIGNED_SIZE(st_cdi, 4));
+        printf("alignof(st_cdi): pack(4)=%zu, align(4)=%zu\n",
+            alignof(struct st_cdi_pack_4),
+            alignof(struct st_cdi_align_4));
 
-        printf("sizeof(MyStruct4): pack(16)=%zu, aligned(16)=%zu\n",
-            sizeof(struct MyStruct4),
-            GET_ALIGNED_SIZE(MyStruct4));
-        printf("alignof(MyStruct4): pack(16)=%zu, aligned(16)=%zu\n",
-            alignof(struct MyStruct4),
-            alignof(struct MyStruct4_aligned));
+        printf("sizeof(st_cdi): pack(16)=%zu, align(16)=%zu\n",
+            GET_PACKED_SIZE(st_cdi, 16),
+            GET_ALIGNED_SIZE(st_cdi, 16));
+        printf("alignof(st_cdi): pack(16)=%zu, align(16)=%zu\n",
+            alignof(struct st_cdi_pack_16),
+            alignof(struct st_cdi_align_16));
 
         return 0;
     }
@@ -313,14 +329,21 @@ alignof(double)=8
 alignof(max_align_t)=8 (comment: 16 for x86_64 and aarch64)
 ----------------------------------------
 sizeof(Readout)=12, alignof(Readout)=4
-sizeof(MyStruct1)=13,16, alignof(MyStruct1)=8
-sizeof(MyStruct2)=13,24, alignof(MyStruct2)=8
-MyStruct2 offsets: c=0, d=8, i=16
-sizeof(MyStruct3): pack(4)=16, aligned(4)=24
-alignof(MyStruct3): pack(4)=4, aligned(4)=8
-sizeof(MyStruct4): pack(16)=24, aligned(16)=32
-alignof(MyStruct4): pack(16)=8, aligned(16)=16
+sizeof(st_dci)=13,16, alignof(st_dci)=8
+sizeof(st_cdi)=13,24, alignof(st_cdi)=8
+st_cdi offsets: c=0, d=8, i=16
+sizeof(st_cdi): pack(4)=16, align(4)=24
+alignof(st_cdi): pack(4)=4, align(4)=8
+sizeof(st_cdi): pack(16)=24, align(16)=32
+alignof(st_cdi): pack(16)=8, align(16)=16
 ```
+
+MSVC 2022 设置 vcvars64.bat，编译 `cl /std:c11 struct-packed-aligned.c && struct-packed-aligned.exe`，测试结果区别：
+
+1. LLP64 数据模型下，alignof(long)=4
+2. E0020: 未定义标识符 "max\_align\_t"
+3. C4359: “st\_cdi\_align\_4”: 对齐说明符小于实际对齐方式(8)，将被忽略。
+4. 其他测试结果相同。
 
 ### Interpretation
 
@@ -331,9 +354,9 @@ alignof(MyStruct4): pack(16)=8, aligned(16)=16
 
 **结果分析**：
 
-1. struct Readout、MyStruct1、MyStruct2，采用 default natural alignment 对齐策略，遵循“地址边界对齐限制”。
+1. struct Readout、st_dci、st_cdi，采用 default natural alignment 对齐策略，遵循“地址边界对齐限制”。
 
-    !!! info "gdb ptype /o MyStruct3"
+    !!! info "gdb ptype /o "
 
         ```Shell
         (gdb) ptype /o struct Readout
@@ -346,8 +369,8 @@ alignof(MyStruct4): pack(16)=8, aligned(16)=16
 
                                     /* total size (bytes):   12 */
                                     }
-        (gdb) ptype /o struct MyStruct1
-        /* offset      |    size */  type = struct MyStruct1 {
+        (gdb) ptype /o struct st_dci
+        /* offset      |    size */  type = struct st_dci {
         /*      0      |       8 */    double d;
         /*      8      |       1 */    char c;
         /* XXX  3-byte hole      */
@@ -355,8 +378,8 @@ alignof(MyStruct4): pack(16)=8, aligned(16)=16
 
                                     /* total size (bytes):   16 */
                                     }
-        (gdb) ptype /o struct MyStruct2
-        /* offset      |    size */  type = struct MyStruct2 {
+        (gdb) ptype /o struct st_cdi
+        /* offset      |    size */  type = struct st_cdi {
         /*      0      |       1 */    char c;
         /* XXX  7-byte hole      */
         /*      8      |       8 */    double d;
@@ -367,13 +390,13 @@ alignof(MyStruct4): pack(16)=8, aligned(16)=16
                                     }
         ```
 
-2. 对于 MyStruct3：`#pragma pack(4)`，指定 maximum alignment=4 < default，alignof=min{n, default}=n=4，d 不遵从自然对齐，sizeof=16。
+2. 对于 st_cdi_pack_4：指定 maximum alignment=4 < default，alignof=min{n, default}=n=4，d 不遵从自然对齐，sizeof=16。
 
-    !!! info "gdb ptype /o MyStruct3"
+    !!! info "gdb ptype /o st_cdi_pack_4"
 
         ```Shell
-        (gdb) ptype /o struct MyStruct3
-        /* offset      |    size */  type = struct MyStruct3 {
+        (gdb) ptype /o struct st_cdi_pack_4
+        /* offset      |    size */  type = struct st_cdi_pack_4 {
         /*      0      |       1 */    char c;
         /* XXX  3-byte hole      */
         /*      4      |       8 */    double d;
@@ -383,13 +406,13 @@ alignof(MyStruct4): pack(16)=8, aligned(16)=16
                                     }
         ```
 
-3. 对于 MyStruct3_aligned (4)：指定 minimum alignment=4 < default，alignof=max{n, default}=default=8，结构体按自然对齐，sizeof=24。
+3. 对于 st_cdi_align_4：指定 minimum alignment=4 < default，alignof=max{n, default}=default=8，结构体按自然对齐，sizeof=24。
 
-    !!! info "gdb ptype /o MyStruct3_aligned"
+    !!! info "gdb ptype /o st_cdi_align_4"
 
         ```Shell
-        (gdb) ptype /o struct MyStruct3_aligned
-        /* offset      |    size */  type = struct MyStruct3_aligned {
+        (gdb) ptype /o struct st_cdi_align_4
+        /* offset      |    size */  type = struct st_cdi_align_4 {
         /*      0      |       1 */    char c;
         /* XXX  7-byte hole      */
         /*      8      |       8 */    double d;
@@ -400,13 +423,13 @@ alignof(MyStruct4): pack(16)=8, aligned(16)=16
                                     }
         ```
 
-4. 对于 MyStruct4：`#pragma pack(16)`，指定 maximum alignment=16 > default，alignof=min{n, default}=default=8，结构体按自然对齐，sizeof=24。
+4. 对于 st_cdi_pack_16：指定 maximum alignment=16 > default，alignof=min{n, default}=default=8，结构体按自然对齐，sizeof=24。
 
-    !!! info "gdb ptype /o MyStruct4"
+    !!! info "gdb ptype /o st_cdi_pack_16"
 
         ```Shell
-        (gdb) ptype /o struct MyStruct4
-        /* offset      |    size */  type = struct MyStruct4 {
+        (gdb) ptype /o struct st_cdi_pack_16
+        /* offset      |    size */  type = struct st_cdi_pack_16 {
         /*      0      |       1 */    char c;
         /* XXX  7-byte hole      */
         /*      8      |       8 */    double d;
@@ -417,13 +440,13 @@ alignof(MyStruct4): pack(16)=8, aligned(16)=16
                                     }
         ```
 
-5. 对于 MyStruct4_aligned (16)：指定 minimum alignment=16 > default，alignof=max{n, default}=n=16，结构体按自然对齐，并且总大小必须为 16 的倍数，故 sizeof=32。
+5. 对于 st_cdi_align_16：指定 minimum alignment=16 > default，alignof=max{n, default}=n=16，结构体按自然对齐，并且总大小必须为 16 的倍数，故 sizeof=32。
 
-    !!! info "gdb ptype /o MyStruct4_aligned"
+    !!! info "gdb ptype /o st_cdi_align_16"
 
         ```Shell
-        (gdb) ptype /o struct MyStruct4_aligned
-        /* offset      |    size */  type = struct MyStruct4_aligned {
+        (gdb) ptype /o struct st_cdi_align_16
+        /* offset      |    size */  type = struct st_cdi_align_16 {
         /*      0      |       1 */    char c;
         /* XXX  7-byte hole      */
         /*      8      |       8 */    double d;
