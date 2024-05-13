@@ -31,12 +31,12 @@ $ echo | gcc -x c -E -dM -
 $ echo | g++ -x c++ -E -dM -
 
 # IA32/IA64
-$ clang -x c -E -dM -arch i386 /dev/null
-$ clang -x c -E -dM -arch x86_64 /dev/null
+$ llvm-gcc -x c -E -dM -arch i386 /dev/null
+$ llvm-gcc -x c -E -dM -arch x86_64 /dev/null
 
 # ARM32/ARM64
-$ clang -x c -E -dM -arch armv7s /dev/null
-$ clang -x c -E -dM -arch arm64 /dev/null
+$ llvm-gcc -x c -E -dM -arch armv7s /dev/null
+$ llvm-gcc -x c -E -dM -arch arm64 /dev/null
 ```
 
 在 IA32/ARM32 位平台上，通常会定义宏 `_ILP32` 或 `__ILP32__` 值为 1；
@@ -45,7 +45,6 @@ $ clang -x c -E -dM -arch arm64 /dev/null
 `ILP32` 和 `LP64` 是两组不同的数据模型（Data Model），决定了平台是 32 位还是 64 位，进而影响 long、long long 和 pointer 的宽度：
 
 - `__SIZEOF_LONG__` @[intel](https://www.intel.com/content/www/us/en/developer/articles/technical/size-of-long-integer-type-on-different-architecture-and-os.html)
-- `__SIZEOF_LONG_LONG__`
 - `__SIZEOF_POINTER__` / `__POINTER_WIDTH__`
 
 GCC Internals | Effective-Target Keywords | [Data type sizes](https://gcc.gnu.org/onlinedocs/gccint/Effective-Target-Keywords.html#Data-type-sizes)
@@ -153,12 +152,30 @@ POINTER   | 32   | 32    | 64   | 64    | 64
 
     - `ILP64` model is very rare, only appeared in some early 64-bit Unix systems (e.g. UNICOS on Cray).
 
+[aapcs64](https://github.com/ARM-software/abi-aa/blob/2a70c42d62e9c3eb5887fa50b71257f20daca6f9/aapcs64/aapcs64.rst) - 7 The standard variants:
+
+10.1.2 Types varying by data model:
+
+C/C++ Type | ILP32 (Beta) | LP64 | LLP64
+-----------|--------------|------|------
+[signed] long | signed word | signed double-word | signed word
+unsigned long | unsigned word | unsigned double-word | unsigned word
+wchar_t | unsigned word | unsigned word | unsigned halfword
+T * | 32-bit data pointer | 64-bit data pointer | 64-bit data pointer
+
+10.1.4 Additional types:
+
+Typedef | ILP32 (Beta) | LP64 | LLP64
+--------|--------------|------|------
+size_t | unsigned long | unsigned long | unsigned long long
+ptrdiff_t | signed long | signed long | signed long long
+
 在 LP 数据模型下：
 
 - `__SIZEOF_POINTER__` = `__SIZEOF_LONG__`
-- `LONG_BIT` = `__WORDSIZE`
+- `__POINTER_WIDTH__` = `LONG_BIT` = `__WORDSIZE`
 
-关于机器字长相关的宏 LONG_BIT 和 __WORDSIZE，参考 《[Machine Word](./machine-word.md)》。
+关于机器字长相关的宏 `LONG_BIT` 和 `__WORDSIZE`，参考 《[Machine Word](./machine-word.md)》。
 
 ## Evolution
 

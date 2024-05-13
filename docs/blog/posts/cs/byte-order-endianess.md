@@ -35,7 +35,7 @@ comments: true
 
     Of the bits $b_i$ that are 1, the one with minimal index *i* is called the ***least-signiﬁcant bit set***, and the one with the highest index is the ***most-signiﬁcant bit set***.
 
-在 [The C Memory Model](./c-memory-model.md) 中借 union 一值两析，由 storage order 进一步引出了 `endianess` 的概念：
+在 [The C Memory Model](../c/c-memory-model.md) 中借 union 一值两析，由 storage order 进一步引出了 `endianess` 的概念：
 
 !!! note "endianess: big-endian & little-endian"
 
@@ -128,7 +128,9 @@ TCP/IP 协议统一规定采用**大端**方式封装解析传输数据，也称
 
 > For packets, the bit numbering convention followed is the same as that used in RFCs, namely: the high (most significant) bit of the first byte to hit the wire is in packet bit 0, and the low bit of the last byte to hit the wire is in packet bit 31 (so that the bits are shown from left-to-right in the order they naturally appear over the network).
 
-![ms-dtyp](https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-dtyp/ms-dtyp_files/image001.png)
+<figure markdown="span">
+    ![ms-dtyp](https://learn.microsoft.com/en-us/openspecs/windows_protocols/ms-dtyp/ms-dtyp_files/image001.png)
+</figure>
 
 Networking and Internet | Windows Sockets 2 | [Byte Ordering](https://learn.microsoft.com/en-us/windows/win32/winsock/byte-ordering-2):
 

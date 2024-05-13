@@ -1442,19 +1442,18 @@
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>$<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>g++<span class="w"> </span>-x<span class="w"> </span>c++<span class="w"> </span>-E<span class="w"> </span>-dM<span class="w"> </span>-
 </span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>
 </span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="c1"># IA32/IA64</span>
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>$<span class="w"> </span>clang<span class="w"> </span>-x<span class="w"> </span>c<span class="w"> </span>-E<span class="w"> </span>-dM<span class="w"> </span>-arch<span class="w"> </span>i386<span class="w"> </span>/dev/null
-</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>$<span class="w"> </span>clang<span class="w"> </span>-x<span class="w"> </span>c<span class="w"> </span>-E<span class="w"> </span>-dM<span class="w"> </span>-arch<span class="w"> </span>x86_64<span class="w"> </span>/dev/null
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>$<span class="w"> </span>llvm-gcc<span class="w"> </span>-x<span class="w"> </span>c<span class="w"> </span>-E<span class="w"> </span>-dM<span class="w"> </span>-arch<span class="w"> </span>i386<span class="w"> </span>/dev/null
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>$<span class="w"> </span>llvm-gcc<span class="w"> </span>-x<span class="w"> </span>c<span class="w"> </span>-E<span class="w"> </span>-dM<span class="w"> </span>-arch<span class="w"> </span>x86_64<span class="w"> </span>/dev/null
 </span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>
 </span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="c1"># ARM32/ARM64</span>
-</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>$<span class="w"> </span>clang<span class="w"> </span>-x<span class="w"> </span>c<span class="w"> </span>-E<span class="w"> </span>-dM<span class="w"> </span>-arch<span class="w"> </span>armv7s<span class="w"> </span>/dev/null
-</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>$<span class="w"> </span>clang<span class="w"> </span>-x<span class="w"> </span>c<span class="w"> </span>-E<span class="w"> </span>-dM<span class="w"> </span>-arch<span class="w"> </span>arm64<span class="w"> </span>/dev/null
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>$<span class="w"> </span>llvm-gcc<span class="w"> </span>-x<span class="w"> </span>c<span class="w"> </span>-E<span class="w"> </span>-dM<span class="w"> </span>-arch<span class="w"> </span>armv7s<span class="w"> </span>/dev/null
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>$<span class="w"> </span>llvm-gcc<span class="w"> </span>-x<span class="w"> </span>c<span class="w"> </span>-E<span class="w"> </span>-dM<span class="w"> </span>-arch<span class="w"> </span>arm64<span class="w"> </span>/dev/null
 </span></code></pre></div>
 <p>在 IA32/ARM32 位平台上，通常会定义宏 <code>_ILP32</code> 或 <code>__ILP32__</code> 值为 1；<br />
 在 IA64/ARM64 位平台上，通常会定义宏 <code>_LP64</code> 或 <code>__LP64__</code> 值为 1。</p>
 <p><code>ILP32</code> 和 <code>LP64</code> 是两组不同的数据模型（Data Model），决定了平台是 32 位还是 64 位，进而影响 long、long long 和 pointer 的宽度：</p>
 <ul>
 <li><code>__SIZEOF_LONG__</code> @<a href="https://www.intel.com/content/www/us/en/developer/articles/technical/size-of-long-integer-type-on-different-architecture-and-os.html">intel</a></li>
-<li><code>__SIZEOF_LONG_LONG__</code></li>
 <li><code>__SIZEOF_POINTER__</code> / <code>__POINTER_WIDTH__</code></li>
 </ul>
 <p>GCC Internals | Effective-Target Keywords | <a href="https://gcc.gnu.org/onlinedocs/gccint/Effective-Target-Keywords.html#Data-type-sizes">Data type sizes</a></p>
@@ -1614,12 +1613,75 @@ In the <strong>LLP64</strong> data model, only pointers expand to 64 bits; all o
 </ul>
 </li>
 </ul>
+<p><a href="https://github.com/ARM-software/abi-aa/blob/2a70c42d62e9c3eb5887fa50b71257f20daca6f9/aapcs64/aapcs64.rst">aapcs64</a> - 7 The standard variants:</p>
+<p>10.1.2 Types varying by data model:</p>
+<table>
+<thead>
+<tr>
+<th>C/C++ Type</th>
+<th>ILP32 (Beta)</th>
+<th>LP64</th>
+<th>LLP64</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>[signed] long</td>
+<td>signed word</td>
+<td>signed double-word</td>
+<td>signed word</td>
+</tr>
+<tr>
+<td>unsigned long</td>
+<td>unsigned word</td>
+<td>unsigned double-word</td>
+<td>unsigned word</td>
+</tr>
+<tr>
+<td>wchar_t</td>
+<td>unsigned word</td>
+<td>unsigned word</td>
+<td>unsigned halfword</td>
+</tr>
+<tr>
+<td>T *</td>
+<td>32-bit data pointer</td>
+<td>64-bit data pointer</td>
+<td>64-bit data pointer</td>
+</tr>
+</tbody>
+</table>
+<p>10.1.4 Additional types:</p>
+<table>
+<thead>
+<tr>
+<th>Typedef</th>
+<th>ILP32 (Beta)</th>
+<th>LP64</th>
+<th>LLP64</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>size_t</td>
+<td>unsigned long</td>
+<td>unsigned long</td>
+<td>unsigned long long</td>
+</tr>
+<tr>
+<td>ptrdiff_t</td>
+<td>signed long</td>
+<td>signed long</td>
+<td>signed long long</td>
+</tr>
+</tbody>
+</table>
 <p>在 LP 数据模型下：</p>
 <ul>
 <li><code>__SIZEOF_POINTER__</code> = <code>__SIZEOF_LONG__</code></li>
-<li><code>LONG_BIT</code> = <code>__WORDSIZE</code></li>
+<li><code>__POINTER_WIDTH__</code> = <code>LONG_BIT</code> = <code>__WORDSIZE</code></li>
 </ul>
-<p>关于机器字长相关的宏 LONG_BIT 和 __WORDSIZE，参考 《<a href="../../20211010/machine-word/">Machine Word</a>》。</p>
+<p>关于机器字长相关的宏 <code>LONG_BIT</code> 和 <code>__WORDSIZE</code>，参考 《<a href="../../20211010/machine-word/">Machine Word</a>》。</p>
 <h2 id="evolution">Evolution<a class="headerlink" href="#evolution" title="Permanent link">#</a></h2>
 <p><a href="https://www.deusinmachina.net/p/the-evolution-of-computing-from-8">The Evolution of Computing: From 8-bit to 64-bit</a><br />
 <a href="https://www.linkedin.com/pulse/evolution-cpus-exploring-dominance-32-bit-64-bit-devendar-pasula/">The Evolution of CPUs: Exploring the Dominance of 32-bit and 64-bit Architectures</a><br />

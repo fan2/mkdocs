@@ -6,7 +6,7 @@ date:
     created: 2021-10-06T10:00:00
     updated: 2024-04-29T10:00:00
 categories:
-    - CS
+    - c
 tags:
     - memory_model
     - union
@@ -27,7 +27,7 @@ The only thing C must care about is the *type* of the object a pointer addresses
 Figure 12.1 The different levels of the value-memory model for an `int32_t`. Example of a platform that maps this type to a 32-bit signed int that has two’s complement sign representation and little-endian object representation.
 
 <figure markdown="span">
-    ![int32_t-value-memory-model](./images/int32_t-value-memory-model.png)
+    ![int32_t-representation](./images/int32_t-representation.png)
     <figcaption>int32_t object representation</figcaption>
 </figure>
 
