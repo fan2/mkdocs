@@ -16,7 +16,9 @@ comments: true
 
 Architecture = [Microarchitecture](https://en.wikipedia.org/wiki/Microarchitecture) + ISA([Instruction set architecture](https://en.wikipedia.org/wiki/Instruction_set_architecture)).
 
-![cpu-architecture-layer](https://www.arm.com/-/media/global/Why%20Arm/architecture/cpu/architecture-layer-diagram-600.png)
+<figure markdown="span">
+    ![cpu-architecture-layer](https://www.arm.com/-/media/global/Why%20Arm/architecture/cpu/architecture-layer-diagram-600.png){: style="width:75%;height:75%"}
+</figure>
 
 有5种指令集最为常见，它们构成了处理器领域的5朵金花。
 

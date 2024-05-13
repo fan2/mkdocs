@@ -38,11 +38,14 @@ C has a series of basic types and means of constructing derived types from them.
 
 Mainly for historical reasons, the system of basic types is a bit complicated, and the syntax to specify such types is not completely straightforward. There is a ﬁrst level of speciﬁcation that is done entirely with keywords of the language, such as **signed**, **int**, and **double**. This *ﬁrst* level is mainly organized according to C internals. On top of that is a *second* level of speciﬁcation that comes through header ﬁles, and we have already seen examples: `size_t` and `bool`. This second level is organized by type semantics, specifying what properties a particular type brings to the programmer.
 
-We will start with the ﬁrst-level speciﬁcation of such types. As we discussed earlier (takeaway 5.2), all basic values in C are numbers, but there are different kinds of numbers. As a principal distinction, we have two different classes of numbers, each with two subclasses: unsigned integers, signed integers, real ﬂoating-point numbers, and complex ﬂoating-point numbers. Each of these four classes contains several types.They differ according to Table 5.1 Base types according to the four main type classes. Types with a gray background don’t allow for arithmetic; they are promoted before doing arithmetic. Type char is special since it can be unsigned or signed, depending on the platform. All types in this table are considered to be distinct types, even if they have the same class and precision.
+We will start with the ﬁrst-level speciﬁcation of such types. As we discussed earlier (takeaway 5.2), all basic values in C are numbers, but there are different kinds of numbers. As a principal distinction, we have two different classes of numbers, each with two subclasses: unsigned integers, signed integers, real ﬂoating-point numbers, and complex ﬂoating-point numbers. Each of these four classes contains several types.They differ according to their precision, which determines the valid range of values that are allowed for a particular type. Table 5.1 contains an overview of the 18 base types.
 
-![table-5.1-base-types](./images/table-5.1-base-types.png)
+> Types with a gray background don’t allow for arithmetic; they are promoted before doing arithmetic. Type char is special since it can be unsigned or signed, depending on the platform. All types in this table are considered to be distinct types, even if they have the same class and precision.
 
-their precision, which determines the valid range of values that are allowed for a particular type. Table 5.1 contains an overview of the 18 base types.
+<figure markdown="span">
+    ![table-5.1-base-types](./images/table-5.1-base-types.png)
+    <figcaption>Table 5.1 Base types according to the four main type classes</figcaption>
+</figure>
 
 As you can see from the table, there are six types that we can’t use directly for arithmetic, the so-called ***narrow types***. They are **promoted** to one of the wider types before they are considered in an arithmetic expression. Nowadays, on any realistic platform, this promotion will be a *signed int* of the same value as the narrow type, regardless of whether the narrow type was signed.
 
@@ -62,17 +65,23 @@ Contrary to what many people believe, the C standard doesn’t prescribe the pre
 
 One of the things the standard *does* prescribe is that the possible ranges of values for the signed types must include each other according to their *rank*:
 
-![signed-types-ranges](./images/signed-types-ranges.png)
+<figure markdown="span">
+    ![signed-types-ranges](./images/signed-types-ranges.png){: style="width:80%;height:80%"}
+</figure>
 
 But this inclusion does not need to be strict. For example, on many platforms, the set of values of `int` and `long` are the same, although the types are considered to be different. An analogous inclusion holds for the six unsigned types:
 
-![unsigned-types-ranges](./images/unsigned-types-ranges.png)
+<figure markdown="span">
+    ![unsigned-types-ranges](./images/unsigned-types-ranges.png){: style="width:80%;height:80%"}
+</figure>
 
 But remember that for any arithmetic or comparison, the narrow unsigned types are promoted to `signed int` and not to `unsigned int`, as this diagram might suggest.
 
 The comparison of the ranges of signed and unsigned types is more difﬁcult. Obviously, an unsigned type can never include the negative values of a signed type. For the non-negative values, we have the following inclusion of the values of types with corresponding rank:
 
-![positive-signed&unsigned](./images/positive-signed&unsigned.png)
+<figure markdown="span">
+    ![positive-signed&unsigned](./images/positive-signed&unsigned.png){: style="width:80%;height:80%"}
+</figure>
 
 That is, for a given rank, the non-negative values of the signed type ﬁt into the unsigned type. On any modern platform you encounter, this inclusion is strict: the unsigned type has values that do not ﬁt into the signed type. For example, a common pair of maximal values is 2^31^ −1 = 2 147 483 647 for `signed int` and 2^32^ − 1 = 4 294 967 295 for `unsigned int`.
 
@@ -106,7 +115,9 @@ The C standard deﬁnes a lot of other types, among them other arithmetic types 
 
 The C standard deﬁnes a lot of other types, among them other arithmetic types that model special use cases. Table 5.2 lists some of them. The second pair represents the types with maximal width that the platform supports. This is also the type in which the preprocessor does any of its arithmetic or comparison.
 
-![Table-5.2-some-semantic-arithmetic-types](./images/Table-5.2-some-semantic-arithmetic-types.png)
+<figure markdown="span">
+    ![Table-5.2-some-semantic-arithmetic-types](./images/Table-5.2-some-semantic-arithmetic-types.png)
+</figure>
 
 The two types `time_t` and `clock_t` are used to handle times. They are semantic types, because the precision of the time computation can be different from platform to platform. The way to have a time in seconds that can be used in arithmetic is the function *difftime*: it computes the difference of two timestamps. `clock_t` values present the platform’s model of processor clock cycles, so the unit of time is usually much less than a second; *CLOCKS_PER_SEC* can be used to convert such values to seconds.
 

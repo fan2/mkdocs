@@ -399,17 +399,25 @@ In 2006, [Chris Lattner](https://nondot.org/sabre/) started working on a new pro
 
 Three Major Components of a Three-Phase Compiler:
 
-![Classical-Three-Phase-Compiler](https://aosabook.org/static/llvm/SimpleCompiler.png)
+<figure markdown="span">
+    ![Classical-Three-Phase-Compiler](https://aosabook.org/static/llvm/SimpleCompiler.png)
+</figure>
 
-![Compiler_design-Three-stage-compiler-structure](./images/Compiler_design-Three-stage-compiler-structure.png)
+<figure markdown="span">
+    ![Compiler_design-Three-stage-compiler-structure](./images/Compiler_design-Three-stage-compiler-structure.png)
+</figure>
 
 Implications of this Design - Retargetablity:
 
-![Retargetablity](https://aosabook.org/static/llvm/RetargetableCompiler.png)
+<figure markdown="span">
+    ![Retargetablity](https://aosabook.org/static/llvm/RetargetableCompiler.png)
+</figure>
 
 LLVM's Implementation of Three-Phase Design:
 
-![LLVM's Implementation of the Three-Phase Design](https://aosabook.org/static/llvm/LLVMCompiler1.png)
+<figure markdown="span">
+    ![LLVM's Implementation of the Three-Phase Design](https://aosabook.org/static/llvm/LLVMCompiler1.png)
+</figure>
 
 !!! abstract "LLVM Linker"
 

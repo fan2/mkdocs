@@ -1044,29 +1044,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../../category/samba/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    samba
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-    
-  
-  
-    <li class="md-nav__item">
       <a href="../../category/shell/" class="md-nav__link">
         
   
@@ -1467,9 +1444,14 @@
 <h3 id="52_basic_types">5.2 Basic types<a class="headerlink" href="#52_basic_types" title="Permanent link">#</a></h3>
 <p>C has a series of basic types and means of constructing derived types from them.</p>
 <p>Mainly for historical reasons, the system of basic types is a bit complicated, and the syntax to specify such types is not completely straightforward. There is a ﬁrst level of speciﬁcation that is done entirely with keywords of the language, such as <strong>signed</strong>, <strong>int</strong>, and <strong>double</strong>. This <em>ﬁrst</em> level is mainly organized according to C internals. On top of that is a <em>second</em> level of speciﬁcation that comes through header ﬁles, and we have already seen examples: <code>size_t</code> and <code>bool</code>. This second level is organized by type semantics, specifying what properties a particular type brings to the programmer.</p>
-<p>We will start with the ﬁrst-level speciﬁcation of such types. As we discussed earlier (takeaway 5.2), all basic values in C are numbers, but there are different kinds of numbers. As a principal distinction, we have two different classes of numbers, each with two subclasses: unsigned integers, signed integers, real ﬂoating-point numbers, and complex ﬂoating-point numbers. Each of these four classes contains several types.They differ according to Table 5.1 Base types according to the four main type classes. Types with a gray background don’t allow for arithmetic; they are promoted before doing arithmetic. Type char is special since it can be unsigned or signed, depending on the platform. All types in this table are considered to be distinct types, even if they have the same class and precision.</p>
-<p><img alt="table-5.1-base-types" src="../../c/images/table-5.1-base-types.png" /></p>
-<p>their precision, which determines the valid range of values that are allowed for a particular type. Table 5.1 contains an overview of the 18 base types.</p>
+<p>We will start with the ﬁrst-level speciﬁcation of such types. As we discussed earlier (takeaway 5.2), all basic values in C are numbers, but there are different kinds of numbers. As a principal distinction, we have two different classes of numbers, each with two subclasses: unsigned integers, signed integers, real ﬂoating-point numbers, and complex ﬂoating-point numbers. Each of these four classes contains several types.They differ according to their precision, which determines the valid range of values that are allowed for a particular type. Table 5.1 contains an overview of the 18 base types.</p>
+<blockquote>
+<p>Types with a gray background don’t allow for arithmetic; they are promoted before doing arithmetic. Type char is special since it can be unsigned or signed, depending on the platform. All types in this table are considered to be distinct types, even if they have the same class and precision.</p>
+</blockquote>
+<figure><br />
+<img alt="table-5.1-base-types" src="../../c/images/table-5.1-base-types.png" /><br />
+    <figcaption>Table 5.1 Base types according to the four main type classes</figcaption><br />
+</figure>
 <p>As you can see from the table, there are six types that we can’t use directly for arithmetic, the so-called <strong><em>narrow types</em></strong>. They are <strong>promoted</strong> to one of the wider types before they are considered in an arithmetic expression. Nowadays, on any realistic platform, this promotion will be a <em>signed int</em> of the same value as the narrow type, regardless of whether the narrow type was signed.</p>
 <div class="admonition note">
 <p class="admonition-title">TAKEAWAY 5.10</p>
@@ -1483,12 +1465,18 @@
 </div>
 <p>Contrary to what many people believe, the C standard doesn’t prescribe the precision of these 12 types: it only constrains them. They depend on a lot of factors that are <strong><em>implementation deﬁned</em></strong>.</p>
 <p>One of the things the standard <em>does</em> prescribe is that the possible ranges of values for the signed types must include each other according to their <em>rank</em>:</p>
-<p><img alt="signed-types-ranges" src="../../c/images/signed-types-ranges.png" /></p>
+<figure><br />
+<img alt="signed-types-ranges" src="../../c/images/signed-types-ranges.png" style="width:80%;height:80%" /><br />
+</figure>
 <p>But this inclusion does not need to be strict. For example, on many platforms, the set of values of <code>int</code> and <code>long</code> are the same, although the types are considered to be different. An analogous inclusion holds for the six unsigned types:</p>
-<p><img alt="unsigned-types-ranges" src="../../c/images/unsigned-types-ranges.png" /></p>
+<figure><br />
+<img alt="unsigned-types-ranges" src="../../c/images/unsigned-types-ranges.png" style="width:80%;height:80%" /><br />
+</figure>
 <p>But remember that for any arithmetic or comparison, the narrow unsigned types are promoted to <code>signed int</code> and not to <code>unsigned int</code>, as this diagram might suggest.</p>
 <p>The comparison of the ranges of signed and unsigned types is more difﬁcult. Obviously, an unsigned type can never include the negative values of a signed type. For the non-negative values, we have the following inclusion of the values of types with corresponding rank:</p>
-<p><img alt="positive-signed&amp;unsigned" src="../../c/images/positive-signed%26unsigned.png" /></p>
+<figure><br />
+<img alt="positive-signed&amp;unsigned" src="../../c/images/positive-signed%26unsigned.png" style="width:80%;height:80%" /><br />
+</figure>
 <p>That is, for a given rank, the non-negative values of the signed type ﬁt into the unsigned type. On any modern platform you encounter, this inclusion is strict: the unsigned type has values that do not ﬁt into the signed type. For example, a common pair of maximal values is 2<sup>31</sup> −1 = 2 147 483 647 for <code>signed int</code> and 2<sup>32</sup> − 1 = 4 294 967 295 for <code>unsigned int</code>.</p>
 <p>Because the interrelationship between integer types depends on the platform, choosing the “best” type for a given purpose in a portable way can be a tedious task. Luckily, we can get some help from the compiler implementation, which provides us with <strong>typedef</strong> s such as <code>size_t</code> that represent certain features.</p>
 <div class="admonition note">
@@ -1518,7 +1506,9 @@
 </div>
 <p>The C standard deﬁnes a lot of other types, among them other arithmetic types that model special use cases. Table 5.2 lists some of them. The second pair represents the types with maximal width that the platform supports. This is also the type in which the preprocessor does any of its arithmetic or comparison.</p>
 <p>The C standard deﬁnes a lot of other types, among them other arithmetic types that model special use cases. Table 5.2 lists some of them. The second pair represents the types with maximal width that the platform supports. This is also the type in which the preprocessor does any of its arithmetic or comparison.</p>
-<p><img alt="Table-5.2-some-semantic-arithmetic-types" src="../../c/images/Table-5.2-some-semantic-arithmetic-types.png" /></p>
+<figure><br />
+<img alt="Table-5.2-some-semantic-arithmetic-types" src="../../c/images/Table-5.2-some-semantic-arithmetic-types.png" /><br />
+</figure>
 <p>The two types <code>time_t</code> and <code>clock_t</code> are used to handle times. They are semantic types, because the precision of the time computation can be different from platform to platform. The way to have a time in seconds that can be used in arithmetic is the function <em>difftime</em>: it computes the difference of two timestamps. <code>clock_t</code> values present the platform’s model of processor clock cycles, so the unit of time is usually much less than a second; <em>CLOCKS_PER_SEC</em> can be used to convert such values to seconds.</p>
 <h2 id="6_derived_data_types">6 Derived data types<a class="headerlink" href="#6_derived_data_types" title="Permanent link">#</a></h2>
 <p>All other data types in C are derived from the basic types that we know now. There are four strategies for deriving data types. Two of them are called aggregate data types, because they combine multiple instances of one or several other data types:</p>

@@ -1044,29 +1044,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../../category/samba/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    samba
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-    
-  
-  
-    <li class="md-nav__item">
       <a href="../../category/shell/" class="md-nav__link">
         
   
@@ -1581,10 +1558,16 @@
 </span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="p">};</span>
 </span></code></pre></div>
 <p>You could imagine the members of a <code>Readout</code> object laid out in memory like this:</p>
-<p><img alt="struct-Readout-1" src="../../cs/images/alignment/struct-Readout-1.png" /></p>
+<figure><br />
+<img alt="struct-Readout-1" src="../../cs/images/alignment/struct-Readout-1.png" /><br />
+    <figcaption>struct Readout packed layout</figcaption><br />
+</figure>
 <p>Members are allocated in memory in declaration order, so the address of <code>hour</code> must be less than the address of <code>value</code>. See also §8.2.6.</p>
 <p>However, the size of an object of a <strong>struct</strong> is not necessarily the sum of the sizes of its members. This is because many machines require objects of certain types to be allocated on architecture dependent <em>boundaries</em> or handle such objects much more <em>efﬁciently</em> if they are. For example, integers are often allocated on word boundaries. On such machines, objects are said to have to be properly <strong><em>aligned</em></strong> (§6.2.9). This leads to "<code>holes</code>" in the structures. A more realistic layout of a <code>Readout</code> on a machine with 4-byte int would be:</p>
-<p><img alt="struct-Readout-2" src="../../cs/images/alignment/struct-Readout-2.png" /></p>
+<figure><br />
+<img alt="struct-Readout-2" src="../../cs/images/alignment/struct-Readout-2.png" /><br />
+    <figcaption>struct Readout aligned layout</figcaption><br />
+</figure>
 <p>In this case, as on many machines, <code>sizeof(Readout)</code> is 12, and not 6 as one would naively expect from simply adding the sizes of the individual members.</p>
 <p>You can minimize wasted space by simply ordering members by size (<em>largest member ﬁrst</em>). For example:</p>
 <div class="language-c highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="k">struct</span><span class="w"> </span><span class="nc">Readout</span><span class="w"> </span><span class="p">{</span>
@@ -1593,7 +1576,10 @@
 </span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">    </span><span class="kt">char</span><span class="w"> </span><span class="n">seq</span><span class="p">;</span><span class="w">   </span><span class="c1">// sequence mark [&#39;a&#39;:&#39;z&#39;]</span>
 </span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="p">};</span>
 </span></code></pre></div>
-<p><img alt="struct-Readout-3" src="../../cs/images/alignment/struct-Readout-3.png" /></p>
+<figure><br />
+<img alt="struct-Readout-3" src="../../cs/images/alignment/struct-Readout-3.png" /><br />
+    <figcaption>struct Readout optimized layout</figcaption><br />
+</figure>
 <p>Note that this still leaves a 2-byte "<code>hole</code>" (unused space) in a <code>Readout</code> and <code>sizeof(Readout)==8</code>. The reason is that we need to maintain alignment when we put two objects next to each other, say, in an array of <code>Readout</code>s. The size of an array of 10 <code>Readout</code> objects is <code>10∗sizeof(Readout)</code>.</p>
 <p>It is usually best to order members for readability and sort them by size only if there is a demonstrated need to optimize.</p>
 <p>Use of multiple access speciﬁers (i.e., <code>public</code>, <code>private</code>, or <code>protected</code>) can affect layout (§20.5).</p>

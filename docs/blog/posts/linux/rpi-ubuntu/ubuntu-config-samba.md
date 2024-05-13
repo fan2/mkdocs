@@ -7,9 +7,7 @@ date:
     updated: 2024-04-11T10:00:00
 categories:
     - ubuntu
-    - samba
 tags:
-    - ubuntu
     - samba
 comments: true
 ---
@@ -487,19 +485,29 @@ LABEL=WDTM /media/WDTM auto uid=1000,gid=1000,nosuid,nodev,nofail,x-gvfs-show,fo
 
 系统设置中打开时间机器（Settings - General - Time Machine），点击 `Add Backup Disk...` 按钮：
 
-![Add_Backup_Disk](../images/1-tm-Add_Backup_Disk.png)
+<figure markdown="span">
+    ![Add_Backup_Disk](../images/1-tm-Add_Backup_Disk.png){: style="width:95%;height:95%"}
+</figure>
 
 点击弹出的 `WDTM on RPI4B-UBUNTU.local`：
 
-![select-WDTM](../images/2-tm-select-WDTM.png)
+
+<figure markdown="span">
+    ![select-WDTM](../images/2-tm-select-WDTM.png){: style="width:95%;height:95%"}
+</figure>
 
 设置 Encrypt Backup 加密密码，Disk Usage Limit 默认最大：
 
-![config-WDTM](../images/3-tm-config-WDTM.png)
+
+<figure markdown="span">
+    ![config-WDTM](../images/3-tm-config-WDTM.png){: style="width:95%;height:95%"}
+</figure>
 
 确认点击 Done 后，Time Machine 面板出现新添加的备份网盘 WDTM - RPI4B-UBUNTU.local：
 
-![TimeMachine-Panel](../images/4-tm-TimeMachine-Panel.png)
+<figure markdown="span">
+    ![TimeMachine-Panel](../images/4-tm-TimeMachine-Panel.png){: style="width:95%;height:95%"}
+</figure>
 
 这样，随时随地进行局域网无线备份，再也不用专门为了备份而插拔硬盘。
 

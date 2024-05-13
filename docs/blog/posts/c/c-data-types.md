@@ -55,7 +55,9 @@ C 语言中的基本数据类型: char、short、int、long，float、double。
 
 C 语言包含的数据类型[如图所示](https://item.jd.com/12720594.html)：
 
-![C-data-types](./images/C-data-types.png)
+<figure markdown="span">
+    ![C-data-types](./images/C-data-types.png){: style="width:80%;height:80%"}
+</figure>
 
 [The GNU C Reference Manual](https://www.gnu.org/software/gnu-c-manual/gnu-c-manual.html) - [2 Data Types](https://www.gnu.org/software/gnu-c-manual/gnu-c-manual.html#Data-Types)
 
@@ -97,7 +99,9 @@ Constructing a complete object type such that the number of bytes in its object 
 
 The following table summarizes all available integer types and their [properties](https://en.cppreference.com/w/c/language/arithmetic_types):
 
-![stdint-properties](./images/stdint-properties.png)
+<figure markdown="span">
+    ![stdint-properties](./images/stdint-properties.png)
+</figure>
 
 ## printf format specifier
 
@@ -113,7 +117,9 @@ The following table summarizes all available integer types and their [properties
 
 printf: [cppreference.com](https://en.cppreference.com/w/c/io/fprintf), [cplusplus.com](https://cplusplus.com/reference/cstdio/printf/)
 
-![printf-format-specifier](./images/printf-format-specifier.png)
+<figure markdown="span">
+    ![printf-format-specifier](./images/printf-format-specifier.png)
+</figure>
 
 [Fixed width integer types (since C99)](https://en.cppreference.com/w/c/types/integer)
 

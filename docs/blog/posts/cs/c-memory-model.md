@@ -26,7 +26,10 @@ The only thing C must care about is the *type* of the object a pointer addresses
 
 Figure 12.1 The different levels of the value-memory model for an `int32_t`. Example of a platform that maps this type to a 32-bit signed int that has two’s complement sign representation and little-endian object representation.
 
-![int32_t-value-memory-model](./images/int32_t-value-memory-model.png)
+<figure markdown="span">
+    ![int32_t-value-memory-model](./images/int32_t-value-memory-model.png)
+    <figcaption>int32_t object representation</figcaption>
+</figure>
 
 > TAKEAWAY 12.1 Pointer types with distinct base types are distinct.
 

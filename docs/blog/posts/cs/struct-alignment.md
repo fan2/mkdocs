@@ -76,13 +76,19 @@ struct Readout {
 
 You could imagine the members of a `Readout` object laid out in memory like this:
 
-![struct-Readout-1](./images/alignment/struct-Readout-1.png)
+<figure markdown="span">
+    ![struct-Readout-1](./images/alignment/struct-Readout-1.png)
+    <figcaption>struct Readout packed layout</figcaption>
+</figure>
 
 Members are allocated in memory in declaration order, so the address of `hour` must be less than the address of `value`. See also §8.2.6.
 
 However, the size of an object of a **struct** is not necessarily the sum of the sizes of its members. This is because many machines require objects of certain types to be allocated on architecture dependent *boundaries* or handle such objects much more *efﬁciently* if they are. For example, integers are often allocated on word boundaries. On such machines, objects are said to have to be properly ***aligned*** (§6.2.9). This leads to "`holes`" in the structures. A more realistic layout of a `Readout` on a machine with 4-byte int would be:
 
-![struct-Readout-2](./images/alignment/struct-Readout-2.png)
+<figure markdown="span">
+    ![struct-Readout-2](./images/alignment/struct-Readout-2.png)
+    <figcaption>struct Readout aligned layout</figcaption>
+</figure>
 
 In this case, as on many machines, `sizeof(Readout)` is 12, and not 6 as one would naively expect from simply adding the sizes of the individual members.
 
@@ -96,7 +102,10 @@ struct Readout {
 };
 ```
 
-![struct-Readout-3](./images/alignment/struct-Readout-3.png)
+<figure markdown="span">
+    ![struct-Readout-3](./images/alignment/struct-Readout-3.png)
+    <figcaption>struct Readout optimized layout</figcaption>
+</figure>
 
 Note that this still leaves a 2-byte "`hole`" (unused space) in a `Readout` and `sizeof(Readout)==8`. The reason is that we need to maintain alignment when we put two objects next to each other, say, in an array of `Readout`s. The size of an array of 10 `Readout` objects is `10∗sizeof(Readout)`.
 

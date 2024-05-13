@@ -37,7 +37,9 @@ There are fundamental types and compound types.
 - **Fundamental types** are the arithmetic types, void, and std::nullptr_t.  
 - **Compound types** are arrays, functions, pointers, references, classes, unions, enumerations, and pointers to non-static members.  
 
-![cpp_types](https://upload.cppreference.com/mwiki/images/9/96/cpp_types.svg)
+<figure markdown="span">
+    ![cpp_types](https://upload.cppreference.com/mwiki/images/9/96/cpp_types.svg)
+</figure>
 
 C++ language Basic Concepts - [Fundamental types](https://en.cppreference.com/w/cpp/language/types)
 
@@ -88,7 +90,9 @@ Modifies the basic integer type. Can be mixed in any order. Only one of each gro
 
 The following table summarizes all available standard integer types and their properties in various common data models:
 
-![stdint-properties](./images/stdint-properties.png)
+<figure markdown="span">
+    ![stdint-properties](./images/stdint-properties.png)
+</figure>
 
 ### Type straits and Constraints
 
@@ -106,7 +110,9 @@ A basic trait for types is the categories in which they can be classified. This 
 
 - `*` = excluding unions
 
-![basic-trait-categories-overlap](./images/basic-trait-categories-overlap.png)
+<figure markdown="span">
+    ![basic-trait-categories-overlap](./images/basic-trait-categories-overlap.png){: style="width:80%;height:80%"}
+</figure>
 
 [Constraints and concepts](https://en.cppreference.com/w/cpp/language/constraints) & [Concepts library](https://en.cppreference.com/w/cpp/concepts) (since C++20)
 
@@ -122,7 +128,10 @@ MSDN - [C++ Type System](https://learn.microsoft.com/en-us/cpp/cpp/cpp-type-syst
 
 The following illustration shows the relative sizes of the built-in types in the Microsoft C++ implementation:
 
-![built-intypesizes](https://learn.microsoft.com/en-us/cpp/cpp/media/built-intypesizes.png)
+<figure markdown="span">
+    ![built-intypesizes](https://learn.microsoft.com/en-us/cpp/cpp/media/built-intypesizes.png)
+    <figcaption>MSVC built-in type sizes</figcaption>
+</figure>
 
 MSDN - [Built-in types (C++)](https://learn.microsoft.com/en-us/cpp/cpp/fundamental-types-cpp)
 
@@ -146,11 +155,15 @@ MSDN - [Built-in types (C++)](https://learn.microsoft.com/en-us/cpp/cpp/fundamen
 
 [C++ Data Types](https://www.geeksforgeeks.org/cpp-data-types/):
 
-![DatatypesInC](https://media.geeksforgeeks.org/wp-content/cdn-uploads/20191113115600/DatatypesInC.png)
+<figure markdown="span">
+    ![DatatypesInC](https://media.geeksforgeeks.org/wp-content/cdn-uploads/20191113115600/DatatypesInC.png)
+</figure>
 
 [TypeHiearchy.pdf](https://howardhinnant.github.io/TypeHiearchy.pdf):
 
-![Cpp-Type-Classification](./images/Cpp-Type-Classification.jpg)
+<figure markdown="span">
+    ![Cpp-Type-Classification](./images/Cpp-Type-Classification.jpg)
+</figure>
 
 ### 2.2 The Basics
 

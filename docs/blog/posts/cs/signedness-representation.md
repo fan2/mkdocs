@@ -83,11 +83,15 @@ $n$ 位所能表示的最小值用位向量$[00\cdots0]$（全零）表示，也
 
 例如，正数89的二进制表示为 $+1011001$，正号 `+` 直接用0代替，其机器原码表示为：
 
-![Sign-Magnitude+89](./images/signedness/Sign-Magnitude+89.png)
+<figure markdown="span">
+    ![Sign-Magnitude+89](./images/signedness/Sign-Magnitude+89.png){: style="width:75%;height:75%"}
+</figure>
 
 负数-89的二进制表示为$-1011001$（数值位宽为7），负号 `-` 直接用1代替，其机器原码表示为：
 
-![Sign-Magnitude-89](./images/signedness/Sign-Magnitude-89.png)
+<figure markdown="span">
+    ![Sign-Magnitude-89](./images/signedness/Sign-Magnitude-89.png){: style="width:75%;height:75%"}
+</figure>
 
 若符号真值为X，最终机器原码的位向量 $\vec{x} = [x_{n-1}, x_{n-2} ,\dotsc, x_0]$ 宽度为 $n$，除最高符号位 $x_{n-1}$ 外的数值位宽为 $n-1$，则可将原码表示规则用表达式形式定义如下：
 
@@ -115,7 +119,9 @@ $$
 
 -89的二进制表示为 $-1011001$，其原码表示为 $1 1011001$，则其反码表示为 $1 0100110$。
 
-![Ones-Complement-89](./images/signedness/Ones-Complement-89.png)
+<figure markdown="span">
+    ![Ones-Complement-89](./images/signedness/Ones-Complement-89.png){: style="width:75%;height:75%"}
+</figure>
 
 若符号真值为X，最终机器反码的位向量 $\vec{x} = [x_{n-1}, x_{n-2} ,\dotsc, x_0]$ 宽度为 $n$，除最高符号位 $x_{n-1}$ 外的数值位宽为 $n-1$，则可将反码表示规则用表达式形式定义如下：
 
@@ -176,7 +182,9 @@ $$
 
 想象一下，龟兔在7点钟刻度背向而行，假设兔子的速度是乌龟的5倍，兔子顺时针跑10格，乌龟逆时针跑2格，它们将在5点刻度处迎面相遇。
 
-![adjust-clock](./images/signedness/adjust-clock.png)
+<figure markdown="span">
+    ![adjust-clock](./images/signedness/adjust-clock.png){: style="width:50%;height:50%"}
+</figure>
 
 由于钟面的容量有限，其表盘刻度实际上是十二进制，12h以后又从0开始计数。倒拨2个格，即7-2=5（做减法）；顺拨10个格，即7+10=12+5（做加法）。而钟面上12=0，故12+5回归到刻度5。这就表明，在舍掉进位的情况下，“从7减去2”和“往7加上10”所得的结果是一样的。在十二进制下，12+5丢失进位12，此处12是溢出量，又称为**模**（mod）。而-2和10的绝对值之和恰好等于模数12，我们把10称为-2对于模数12的**补数**。在圆周运动中，每转动一周的 $2\pi$ 弧度可视为溢出量（模），$\frac{5\pi}{3}$ 为 $-\frac{\pi}{3}$ 对于模数 $2\pi$ 的补数。
 
@@ -199,7 +207,9 @@ $$
 
 -89的二进制表示为 $-1011001$，其原码表示为 $1 1011001$，其反码表示为 $1 0100110$，则其补码表示为 $1 0100111$。
 
-![Twos-Complement-89](./images/signedness/Twos-Complement-89.png)
+<figure markdown="span">
+    ![Twos-Complement-89](./images/signedness/Twos-Complement-89.png){: style="width:75%;height:75%"}
+</figure>
 
 若符号真值为X，最终机器补码的位向量 $\vec{x} = [x_{n-1}, x_{n-2} ,\dotsc, x_0]$ 宽度为 $n$，除最高符号位 $x_{n-1}$ 外的数值位宽为 $n-1$，则可将反码表示规则用表达式形式定义如下：
 
@@ -217,7 +227,9 @@ $$
 
 设想一个有256个刻度的大笨钟，当采用补码重新编码刻度后，表盘的256个刻度被**重新编码**，划分成右边顺时针半盘[0,127]和左边逆时针半盘[-128,-1]。
 
-![adjust-clock-complement](./images/signedness/adjust-clock-complement.png)
+<figure markdown="span">
+    ![adjust-clock-complement](./images/signedness/adjust-clock-complement.png)
+</figure>
 
 ---
 
@@ -337,7 +349,9 @@ $$
 
 还是借用256大笨钟来阐述，初始在刻度65点处，顺时针拨动64格后将到129点。但是，当采用补码表示时，129点越过右半盘（取值范围为[0,127]）的分界线127点两格，对应左半盘（取值范围为[-128,-1]）的-127点位：+127左溢一格是-128，再左溢一格是-127。
 
-![adjust-clock-complement-overflow](./images/signedness/adjust-clock-complement-overflow.png)
+<figure markdown="span">
+    ![adjust-clock-complement-overflow](./images/signedness/adjust-clock-complement-overflow.png){: style="width:50%;height:50%"}
+</figure>
 
 用以下C语言代码测试验证，计算结果Z的位向量为0x81（即无符号数129），补码对应的真值=$-127 \equiv 129 \mod 256$。
 
@@ -575,7 +589,9 @@ $$
 
 在数轴上把有符号数和无符号数画出来的话，就能很清晰的看出相对的关系：
 
-![signedness-map](./images/signedness/signedness-map.png)
+<figure markdown="span">
+    ![signedness-map](./images/signedness/signedness-map.png){: style="width:75%;height:75%"}
+</figure>
 
 ## signed arithmetic overflow
 

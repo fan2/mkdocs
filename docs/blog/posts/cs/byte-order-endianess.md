@@ -52,9 +52,15 @@ The least significant bit in an object is always designated as bit 0.
 
 The mapping of a word-sized data object to memory is shown in the following figures. All objects are pure-endian, so the mappings may be scaled accordingly for larger or smaller objects.
 
-![big-endian](./images/big-endian.png)
+<figure markdown="span">
+    ![aapcs64-bigendian](./images/aapcs64-bigendian.svg)
+    <figcaption>Memory layout of big-endian data object</figcaption>
+</figure>
 
-![little-endian](./images/little-endian.png)
+<figure markdown="span">
+    ![aapcs64-littleendian](./images/aapcs64-littleendian.svg)
+    <figcaption>Memory layout of little-endian data object</figcaption>
+</figure>
 
 经由上述铺陈，字节序（Byte Order, Endianess）的概念已然明晰，概括来讲就是事关 storage order —— LSB/MSB who store first？
 

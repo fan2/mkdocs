@@ -305,7 +305,10 @@ bits set count = 5
 
 下图为 Microsoft *LLP64* Data Model 中 [C++ Type System](https://msdn.microsoft.com/en-us/library/hh279663.aspx) 的 Fundamental (built-in) types 按字节宽度的层砌图（Layout of Source Language Data Types）：
 
-![built-intypesizes](https://learn.microsoft.com/en-us/cpp/cpp/media/built-intypesizes.png)
+<figure markdown="span">
+    ![built-intypesizes](https://learn.microsoft.com/en-us/cpp/cpp/media/built-intypesizes.png)
+    <figcaption>MSVC built-in type sizes</figcaption>
+</figure>
 
 在 MS LLP64 数据模型中，维持 ILP32 模式下的 `__SIZEOF_LONG__`=`__SIZEOF_INT__`=4， 满足：
 
