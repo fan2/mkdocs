@@ -90,7 +90,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#disassemble" class="md-skip">
+        <a href="#gcc_-fverbose-asm" class="md-skip">
           跳转至
         </a>
       
@@ -1258,6 +1258,15 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#gcc_-fverbose-asm" class="md-nav__link">
+    <span class="md-ellipsis">
+      gcc -fverbose-asm
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#disassemble" class="md-nav__link">
     <span class="md-ellipsis">
       disassemble
@@ -1444,7 +1453,22 @@
 </ol>
 <!-- more -->
 
-<p><a href="https://stackoverflow.com/questions/67669438/how-to-debug-assembly">linux - How to debug assembly? - Stack Overflow</a></p>
+<h2 id="gcc_-fverbose-asm">gcc -fverbose-asm<a class="headerlink" href="#gcc_-fverbose-asm" title="Permanent link">#</a></h2>
+<p>GCC <a href="https://gcc.gnu.org/onlinedocs/gcc-13.2.0/gcc/Code-Gen-Options.html">Code Gen Options</a> 提供了 <code>-fverbose-asm</code> 选项，在生成的汇编代码中添加额外的注释信息和汇编指令对应的源代码信息，以使其更具可读性。</p>
+<div class="admonition note">
+<p>Put <strong><em>extra</em></strong> commentary information in the generated assembly code to make it more readable. This option is generally only of use to those who actually need to read the generated assembly code (perhaps while debugging the compiler itself).</p>
+<p><code>-fno-verbose-asm</code>, the default, causes the extra information to be omitted and is useful when comparing two assembler files.</p>
+<p>The added comments include:</p>
+<ul>
+<li>information on the compiler version and command-line options,</li>
+<li>the <em>source code lines</em> associated with the assembly instructions, in the form FILENAME:LINENUMBER:CONTENT OF LINE,</li>
+<li>hints on which high-level expressions correspond to the various assembly instruction operands.</li>
+</ul>
+</div>
+<p>其中给出了一个编译范例：<code>gcc -S test.c -fverbose-asm -Os -o -</code>，可以很方便的分析源代码对应的汇编代码。</p>
+<p>在 GDB console 中，也可以使用 <code>disassemble</code> 命令，反汇编显示当前上下文的汇编代码，也可以反汇编指定函数。</p>
+<p>使用 next/step 可以逐行、逐函数调试 C 源代码，使用 nexti/stepi 命令则可以切换调试源代码对应的汇编指令。</p>
+<p>借助 <code>display</code> 命令可以显示当前 pc 中的指令，这样可以很方便地在源码和汇编级别切换调试。</p>
 <h2 id="disassemble">disassemble<a class="headerlink" href="#disassemble" title="Permanent link">#</a></h2>
 <p><a href="https://sourceware.org/gdb/current/onlinedocs/gdb.html/Machine-Code.html#Machine-Code">9.6 Source and Machine Code</a></p>
 <p>help disassemble:</p>
@@ -1488,13 +1512,14 @@
 <p>The <code>/m</code> option is <strong>deprecated</strong> as its output is not useful when there is either inlined code or re-ordered code. The <code>/s</code> option is the <strong>preferred</strong> choice. Here is an example for AMD x86-64 showing the difference between <code>/m</code> output and <code>/s</code> output. This example has one <em>inline</em> function defined in a header file, and the code is compiled with ‘-O2’ optimization. Note how the <code>/m</code> output is missing the disassembly of several instructions that are present in the <code>/s</code> output.</p>
 </div>
 <h3 id="disas__start">disas _start<a class="headerlink" href="#disas__start" title="Permanent link">#</a></h3>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>b<span class="w"> </span>_start
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>Breakpoint<span class="w"> </span><span class="m">1</span><span class="w"> </span>at<span class="w"> </span>0x640
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>start
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>Temporary<span class="w"> </span>breakpoint<span class="w"> </span><span class="m">2</span><span class="w"> </span>at<span class="w"> </span>0x7b0:<span class="w"> </span>file<span class="w"> </span>test-gdb.c,<span class="w"> </span>line<span class="w"> </span><span class="m">16</span>.
-</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>Starting<span class="w"> </span>program:<span class="w"> </span>/home/pifan/Projects/cpp/test-gdb
-</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>
-</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>Breakpoint<span class="w"> </span><span class="m">1</span>,<span class="w"> </span>0x0000fffff7fd9c48<span class="w"> </span><span class="k">in</span><span class="w"> </span>_start<span class="w"> </span><span class="o">()</span><span class="w"> </span>from<span class="w"> </span>/lib/ld-linux-aarch64.so.1
+<p>gdb 输入 <code>starti</code> 将在 ld.so 的 <code>_start</code> 函数处停住，这是整个程序第一条指令的地址。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># tb _start + run</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>starti
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>Starting<span class="w"> </span>program:<span class="w"> </span>/home/pifan/Projects/cpp/test-gdb
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>Program<span class="w"> </span>stopped.
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>0x0000fffff7fd9c48<span class="w"> </span><span class="k">in</span><span class="w"> </span>_start<span class="w"> </span><span class="o">()</span><span class="w"> </span>from<span class="w"> </span>/lib/ld-linux-aarch64.so.1
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>
 </span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>disas<span class="w"> </span>/m<span class="w"> </span>_start
 </span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>Dump<span class="w"> </span>of<span class="w"> </span>assembler<span class="w"> </span>code<span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="k">function</span><span class="w"> </span>_start:
 </span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">   </span>0x0000aaaaaaaa0640<span class="w"> </span>&lt;+0&gt;:<span class="w"> </span>nop
@@ -1512,6 +1537,7 @@
 </span><span id="__span-1-22"><a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a><span class="w">   </span>0x0000aaaaaaaa0670<span class="w"> </span>&lt;+48&gt;:<span class="w">    </span>bl<span class="w">  </span>0xaaaaaaaa0620<span class="w"> </span>&lt;abort@plt&gt;
 </span><span id="__span-1-23"><a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a>End<span class="w"> </span>of<span class="w"> </span>assembler<span class="w"> </span>dump.
 </span></code></pre></div>
+<p>接下来，可使用 nexti/stepi 进行汇编指令级调试。</p>
 <h3 id="disas_func">disas func<a class="headerlink" href="#disas_func" title="Permanent link">#</a></h3>
 <div class="language-Shell highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>disas<span class="w"> </span>/m<span class="w"> </span>func
 </span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>Dump<span class="w"> </span>of<span class="w"> </span>assembler<span class="w"> </span>code<span class="w"> </span><span class="k">for</span><span class="w"> </span><span class="k">function</span><span class="w"> </span>func:

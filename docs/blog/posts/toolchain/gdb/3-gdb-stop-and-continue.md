@@ -147,6 +147,8 @@ Line number 27 out of range; test-gdb.c has 26 lines.
 *   `rbreak regex`: Set breakpoints on all functions matching the regular expression regex.
 *   `rbreak file:regex`: If rbreak is called with a filename qualification, it limits the search for functions matching the given regular expression to the specified file.
 
+使用 `rbreak .` 通配所有函数，即在所有函数处设置断点，方便 [逐函数调试](https://stackoverflow.com/questions/14694520/how-to-let-gdb-continue-until-the-program-enters-another-function/31249717#31249717)。为了防止频繁的匹配确认，可以提前执行 `set confirm off` 关闭确认。
+
 在 main 函数、第 22 行、func 函数以及第 8 行下断点，其中第 8 行为条件断点。
 
 ```Shell

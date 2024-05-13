@@ -20,7 +20,29 @@ This article involves the following topics:
 
 <!-- more -->
 
-[linux - How to debug assembly? - Stack Overflow](https://stackoverflow.com/questions/67669438/how-to-debug-assembly)
+## gcc -fverbose-asm
+
+GCC [Code Gen Options](https://gcc.gnu.org/onlinedocs/gcc-13.2.0/gcc/Code-Gen-Options.html) 提供了 `-fverbose-asm` 选项，在生成的汇编代码中添加额外的注释信息和汇编指令对应的源代码信息，以使其更具可读性。
+
+!!! note ""
+
+    Put ***extra*** commentary information in the generated assembly code to make it more readable. This option is generally only of use to those who actually need to read the generated assembly code (perhaps while debugging the compiler itself).
+
+    `-fno-verbose-asm`, the default, causes the extra information to be omitted and is useful when comparing two assembler files.
+
+    The added comments include:
+
+    - information on the compiler version and command-line options,
+    - the *source code lines* associated with the assembly instructions, in the form FILENAME:LINENUMBER:CONTENT OF LINE,
+    - hints on which high-level expressions correspond to the various assembly instruction operands.
+
+其中给出了一个编译范例：`gcc -S test.c -fverbose-asm -Os -o -`，可以很方便的分析源代码对应的汇编代码。
+
+在 GDB console 中，也可以使用 `disassemble` 命令，反汇编显示当前上下文的汇编代码，也可以反汇编指定函数。
+
+使用 next/step 可以逐行、逐函数调试 C 源代码，使用 nexti/stepi 命令则可以切换调试源代码对应的汇编指令。
+
+借助 `display` 命令可以显示当前 pc 中的指令，这样可以很方便地在源码和汇编级别切换调试。
 
 ## disassemble
 
@@ -75,14 +97,16 @@ Show mixed source+assembly with `/m`(mixed source) or `/s`(source).
 
 ### disas \_start
 
+gdb 输入 `starti` 将在 ld.so 的 `_start` 函数处停住，这是整个程序第一条指令的地址。
+
 ```Shell
-(gdb) b _start
-Breakpoint 1 at 0x640
-(gdb) start
-Temporary breakpoint 2 at 0x7b0: file test-gdb.c, line 16.
+# tb _start + run
+(gdb) starti
 Starting program: /home/pifan/Projects/cpp/test-gdb
 
-Breakpoint 1, 0x0000fffff7fd9c48 in _start () from /lib/ld-linux-aarch64.so.1
+Program stopped.
+0x0000fffff7fd9c48 in _start () from /lib/ld-linux-aarch64.so.1
+
 (gdb) disas /m _start
 Dump of assembler code for function _start:
    0x0000aaaaaaaa0640 <+0>:	nop
@@ -100,6 +124,8 @@ Dump of assembler code for function _start:
    0x0000aaaaaaaa0670 <+48>:	bl	0xaaaaaaaa0620 <abort@plt>
 End of assembler dump.
 ```
+
+接下来，可使用 nexti/stepi 进行汇编指令级调试。
 
 ### disas func
 

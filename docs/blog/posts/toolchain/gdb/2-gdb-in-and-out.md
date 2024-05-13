@@ -393,7 +393,7 @@ use "set args" without arguments.
 To start the inferior without using a shell, use "set startup-with-shell off".
 ```
 
-执行 `gdb helloc` 启动 gdb 进入调试 REPL 后，输入 start 将启动运行，在入口函数 main 处的临时断点（tbreak）停下，相当于 tb main + run。
+执行 `gdb helloc` 启动 gdb 进入调试 REPL 后，输入 `start` 将启动运行，在入口函数 main 处的临时断点（tbreak）停下，相当于 tb main + run。
 
 ```Shell
 (gdb) start
@@ -405,6 +405,25 @@ Using host libthread_db library "/lib/aarch64-linux-gnu/libthread_db.so.1".
 Temporary breakpoint 1, main (argc=1, argv=0xfffffffff248) at helloc.c:4
 4	    printf("Hello world from c!\n");
 ```
+
+若输入 `starti` 将在 ld.so 的 `_start` 函数处停住，相当于 tb _start + run。
+
+```Shell
+(gdb) starti
+Starting program: /home/pifan/Projects/cpp/helloc
+
+Program stopped.
+0x0000fffff7fd9c40 in _start () from /lib/ld-linux-aarch64.so.1
+```
+
+全局符号 `_start` 代表整个程序第一条指令的地址，每个用户进程都是从 `_start` 开始执行指令。
+
+!!! info "Behind the scenes of main()"
+
+    [_start, _init and frame_dummy functions](https://www.linuxquestions.org/questions/programming-9/_start-_init-and-frame_dummy-functions-810257/)
+    [Mini FAQ about the misc libc/gcc crt files.](https://dev.gentoo.org/~vapier/crt.txt)
+    [A General Overview of What Happens Before main()](https://embeddedartistry.com/blog/2019/04/08/a-general-overview-of-what-happens-before-main/)
+    [C语言标准与实现(姚新颜)-2004](https://att.newsmth.net/nForum/att/CProgramming/3213/245) - 07 C 源文件的编译和链接
 
 Execute `info program` to check the execution status.
 

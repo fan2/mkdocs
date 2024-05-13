@@ -40,7 +40,7 @@ The following concepts/topics will be involved:
 
 [GCC, the GNU Compiler Collection](https://gcc.gnu.org/) @[git](git://gcc.gnu.org/git/gcc.git) - [wiki](https://en.wikipedia.org/wiki/GNU_Compiler_Collection)
 
-[GCC online documentation](https://gcc.gnu.org/onlinedocs/)
+[GCC online documentation](https://gcc.gnu.org/onlinedocs/) - [gcc](https://gcc.gnu.org/onlinedocs/gcc/)
 
 - [Option Summary](https://gcc.gnu.org/onlinedocs/gcc/Option-Summary.html)
 - [Overall Options](https://gcc.gnu.org/onlinedocs/gcc/Overall-Options.html)
@@ -147,7 +147,9 @@ lrwxrwxrwx 1 root root 12 Feb 21 10:59 /etc/alternatives/c++ -> /usr/bin/g++
 
 ### GNU binutils
 
-[GNU Hurd / GNU Binutils](https://www.gnu.org/savannah-checkouts/gnu/hurd/binutils.html) - [GNU Binutils](https://www.gnu.org/software/binutils/)
+[GNU Binary Utilities](https://en.wikipedia.org/wiki/GNU_Binary_Utilities) - [elfutils](https://sourceware.org/elfutils/)
+
+[GNU Hurd](https://www.gnu.org/savannah-checkouts/gnu/hurd/binutils.html) / [GNU Binutils](https://www.gnu.org/software/binutils/) - @[sourceware](https://sourceware.org/binutils/) - [Documentation](https://sourceware.org/binutils/docs/)
 
 Computer Systems - A Programmer’s Perspective | Chapter 7: Linking - 7.14 Tools for Manipulating Object Files:
 
@@ -155,8 +157,8 @@ Computer Systems - A Programmer’s Perspective | Chapter 7: Linking - 7.14 Tool
 
 The GNU Binutils are a collection of binary tools. The main ones are:
 
-- `ld` - the GNU linker.
-- `as` - the GNU assembler.
+- [ld](https://sourceware.org/binutils/docs/ld/index.html) - the [GNU linker](https://en.wikipedia.org/wiki/Linker_(computing)#GNU_linker).
+- [as](https://sourceware.org/binutils/docs/as/index.html) - the [GNU Assembler](https://en.wikipedia.org/wiki/GNU_Assembler).
 - `gold` - a new, faster, ELF only linker.
 
 But they also include:
