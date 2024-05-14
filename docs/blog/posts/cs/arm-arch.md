@@ -24,9 +24,13 @@ ARM11 之后，ARM 处理器内核不再以 ARM 作为前缀。但 `ARM` 这个�
 
 [About the Arm architecture](https://developer.arm.com/documentation/102404/0201/About-the-Arm-architecture?lang=en)
 
+- [A-Profile Architecture](https://developer.arm.com/Architectures/A-Profile%20Architecture)
+- [R-Profile Architecture](https://developer.arm.com/Architectures/R-Profile%20Architecture)
+- [M-Profile Architecture](https://developer.arm.com/Architectures/M-Profile%20Architecture)
+
 The Arm architecture is one of the most popular processor architectures in the world. Billions of Arm-based devices are shipped every year.
 
-The following table describes the three architecture profiles: A, R, and M:
+The following table describes the three architecture profiles: `A`, `R`, and `M`:
 
 **A**-Profile (Applications) | **R**-Profile (Real-Time) | **M**-Profile (Microcontroller)
 -------------------------|-----------------------|----------------------------
@@ -128,20 +132,6 @@ AArch64 was introduced in `ARMv8-A` and is included in subsequent versions of AR
 
     Optional AArch64 support was added to the Armv8-R profile, with the first Arm core implementing it being the *Cortex-R82*. It adds the `A64` instruction set, with some changes to the memory barrier instructions.
 
-## assembly
-
-**docs**:
-
-[Getting Started with Arm Assembly Language](https://developer.arm.com/documentation/107829/0200)
-[Arm Compiler armasm User Guide](https://developer.arm.com/documentation/dui0801/l)
-[Arm Compiler for Embedded User Guide - Assembling Assembly Code](https://developer.arm.com/documentation/100748/0622/Assembling-Assembly-Code?lang=en)
-
-**refs**:
-
-[GNU-Syntax Arm Assembly Language Reference Guide — TI Arm Clang Compiler Tools User's Guide](https://software-dl.ti.com/codegen/docs/tiarmclang/compiler_tools_user_guide/gnu_syntax_arm_asm_language/index.html)
-[ARM Assembly | Azeria Labs](https://azeria-labs.com/writing-arm-assembly-part-1/)
-[ARM Assembly By Example](https://armasm.com/)
-
 ## products
 
 ### Apple
@@ -160,6 +150,7 @@ AArch64 was introduced in `ARMv8-A` and is included in subsequent versions of AR
 
 ### Raspberry Pi
 
+[Processors - Raspberry Pi Documentation](https://www.raspberrypi.com/documentation/computers/processors.html)
 [Raspberry Pi Specifications](https://en.wikipedia.org/wiki/Raspberry_Pi#Specifications)
 
 model | Release date | Soc | ISA | CPU
@@ -169,6 +160,43 @@ RPi 4 Model B | Jun 2019​/May 2020 | BCM2711 | ARMv8-A (64/32-bit) | 4× Corte
 RPi 5 | Oct 2023 | BCM2712 | ARMv8.2-A (64/32-bit) | 4× Cortex-A76 2.4 GHz
 
 [RPi3 in ARMv8 Mode » Raspberry Pi Geek](https://www.raspberry-pi-geek.com/Archive/2017/23/Operating-the-Raspberry-Pi-3-in-64-bit-mode)
+
+[ARM Reveals Cortex-A72 Architecture Details](https://www.anandtech.com/show/9184/arm-reveals-cortex-a72-architecture-details)
+[Cortex-A72 Software Optimization Guide](https://developer.arm.com/documentation/uan0016/a/)
+
+[Arm's Cortex-A76 CPU Unveiled: Taking Aim at the Top for 7nm - Print View](https://www.anandtech.com/print/12785/arm-cortex-a76-cpu-unveiled-7nm-powerhouse)
+[Arm Cortex-A76 Software Optimization Guide](https://developer.arm.com/documentation/pjdoc466751330-7215/latest/)
+
+## programming
+
+**User Guide**:
+
+[A64 Instruction Set Architecture Guide](https://developer.arm.com/documentation/102374/latest/)
+[ARM Cortex-A Series Programmer's Guide for ARMv8-A](https://developer.arm.com/documentation/den0024/latest)
+[Arm Compiler armasm User Guide](https://developer.arm.com/documentation/dui0801/l)
+
+[Arm Compiler for Embedded User Guide](https://developer.arm.com/documentation/100748/0622?lang=en)
+
+- [Arm Instruction Set Reference Guide](https://developer.arm.com/documentation/100076/0100?lang=en)
+
+**Quick Reference**:
+
+[GNU-ARM-Assy-Quick-Ref.doc](https://www.ic.unicamp.br/~celio/mc404-2014/docs/gnu-arm-directives.pdf)
+[ARM® Instruction Set Quick Reference Card](https://pages.cs.wisc.edu/~markhill/restricted/arm_isa_quick_reference.pdf)
+[ARMv8 A64 Quick Reference](https://courses.cs.washington.edu/courses/cse469/19wi/arm64.pdf)
+[asmsheets/aarch64.tex](https://github.com/flynd/asmsheets/blob/master/aarch64.tex)
+
+**Arm Assembly**:
+
+[Getting Started with Arm Assembly Language](https://developer.arm.com/documentation/107829/0200) based on Raspberry Pi Zero 2 W.
+
+[ARM Assembly | Azeria Labs](https://azeria-labs.com/writing-arm-assembly-part-1/)
+[ARM Assembly By Example](https://armasm.com/)
+
+**GNU Assembler**:
+
+[Using as](https://sourceware.org/binutils/docs/as/index.html) - [Index](https://sourceware.org/binutils/docs/as/AS-Index.html) - [ARM-Dependent](https://sourceware.org/binutils/docs/as/ARM_002dDependent.html#ARM_002dDependent)
+tiarmclang - [GNU-Syntax Arm Assembly Language Reference Guide](https://software-dl.ti.com/codegen/docs/tiarmclang/compiler_tools_user_guide/gnu_syntax_arm_asm_language/index.html)
 
 ## references
 

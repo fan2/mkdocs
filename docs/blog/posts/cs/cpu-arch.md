@@ -88,7 +88,15 @@ Arm defines three architecture profiles: Application (**A**), Real-time (**R**),
 
 [Documentation – Arm Developer](https://developer.arm.com/documentation/)
 
-[Arm CPU Architecture – Arm®](https://www.arm.com/architecture/cpu)
+[Arm CPU Architecture – Arm®](https://www.arm.com/en/architecture/cpu)
+
+Instruction Set Architecture:
+
+- [T32 Instruction Set Architecture](https://developer.arm.com/Architectures/T32%20Instruction%20Set%20Architecture)
+- [A32 Instruction Set Architecture](https://developer.arm.com/Architectures/A32%20Instruction%20Set%20Architecture)
+- [A64 Instruction Set Architecture](https://developer.arm.com/Architectures/A64%20Instruction%20Set%20Architecture)
+
+Arm Architecture Profiles:
 
 - [A-Profile Architecture](https://developer.arm.com/Architectures/A-Profile%20Architecture)
 - [R-Profile Architecture](https://developer.arm.com/Architectures/R-Profile%20Architecture)
@@ -97,20 +105,25 @@ Arm defines three architecture profiles: Application (**A**), Real-time (**R**),
 Learn the architecture:
 
 - [Introducing the Arm architecture](https://developer.arm.com/documentation/102404/0201/?lang=en)
+- [A64 Instruction Set Architecture Guide](https://developer.arm.com/documentation/102374/latest/)
 - [Memory Systems, Ordering, and Barriers](https://developer.arm.com/documentation/102336/0100?lang=en)
-- [AArch64 memory management Guide](https://developer.arm.com/documentation/101811/0103/?lang=en)
+- [AArch64 memory management Guide](https://developer.arm.com/documentation/101811/0103/?lang=en) + [examples](https://developer.arm.com/documentation/102416/0100/?lang=en)
+- [Introducing Neon](https://developer.arm.com/documentation/102474/0100?lang=en) + [Optimizing C code with Neon intrinsics](https://developer.arm.com/documentation/102467/0201/?lang=en)
 
-Registers & Instructions:
+A-Profile Architecture:
 
+- [Arm Armv8-A Architecture Registers.pdf](https://developer.arm.com/documentation/ddi0595/2021-12/?lang=en)
 - [Arm A-profile Architecture Registers](https://developer.arm.com/documentation/ddi0601/2024-03/?lang=en)
-- [Arm A-profile A32/T32 Instruction Set Architecture](https://developer.arm.com/documentation/ddi0597/2024-03/?lang=en) - [Base Instructions](https://developer.arm.com/documentation/ddi0597/2024-03/Base-Instructions?lang=en)
-- [Arm A-profile A64 Instruction Set Architecture](https://developer.arm.com/documentation/ddi0602/2024-03/?lang=en) - [Base Instructions](https://developer.arm.com/documentation/ddi0602/2024-03/Base-Instructions)
-
-Reference Manual:
-
+- [Arm A-profile A32/T32 Instruction Set Architecture](https://developer.arm.com/documentation/ddi0597/2024-03/?lang=en)
+- [Arm A-profile A64 Instruction Set Architecture](https://developer.arm.com/documentation/ddi0602/latest/?lang=en)
 - [Arm Architecture Reference Manual for A-profile architecture.pdf](https://developer.arm.com/documentation/ddi0487/ka/?lang=en)
-- [Armv8-M Architecture Reference Manual.pdf](https://developer.arm.com/documentation/ddi0553/bx/?lang=en) - [Introduction & User Guide](https://developer.arm.com/documentation/107656/0101)
+- [ARM Cortex-A Series Programmer's Guide for ARMv8-A](https://developer.arm.com/documentation/den0024/latest)
+
+M-Profile Architecture:
+
 - [ARMv7-M Architecture Reference Manual.pdf](https://developer.arm.com/documentation/ddi0403/ee/?lang=en)
+- [Armv8-M Architecture Reference Manual.pdf](https://developer.arm.com/documentation/ddi0553/bx/?lang=en)
+- [Introduction to the Armv8-M Architecture and its Programmers Model User Guide](https://developer.arm.com/documentation/107656/0101/?lang=en)
 
 ### textbooks
 
@@ -132,10 +145,6 @@ The Old New Thing:
 - The AArch64 processor (aka arm64): [ part 1](https://devblogs.microsoft.com/oldnewthing/20220726-00/?p=106898) \~ [part 25](https://devblogs.microsoft.com/oldnewthing/20220830-00/?p=107069)
 
 [EECS 373: Design of Microprocessor-Based Systems](https://people.eecs.berkeley.edu/~prabal/teaching/eecs373-f10/index.html) - [ARM_Architecture_Overview.ppt](https://web.eecs.umich.edu/~prabal/teaching/eecs373-f10/readings/ARM_Architecture_Overview.pdf)
-
-[GNU-ARM-Assy-Quick-Ref.doc](https://www.ic.unicamp.br/~celio/mc404-2014/docs/gnu-arm-directives.pdf)
-[ARM® Instruction Set Quick Reference Card](https://pages.cs.wisc.edu/~markhill/restricted/arm_isa_quick_reference.pdf)
-[ARMv8 A64 Quick Reference](https://courses.cs.washington.edu/courses/cse469/19wi/arm64.pdf)
 
 ## MIPS
 
