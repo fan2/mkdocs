@@ -49,16 +49,26 @@ Microsoft Learn:
 - [x64 ABI conventions](https://learn.microsoft.com/en-us/cpp/build/x64-software-conventions)
 - [x64 calling convention](https://learn.microsoft.com/en-us/cpp/build/x64-calling-convention)
 
+System V ABI:
+
+- [System V Application Binary Interface Intel386 Architecture Processor Supplement - 4th Edition](https://www.sco.com/developers/devspecs/abi386-4.pdf)
+- [System V Application Binary Interface AMD64 Architecture Processor Supplement(With LP64 and ILP32 Programming Models)](https://cs61.seas.harvard.edu/site/pdf/x86-64-abi-20210928.pdf)
+- [System V psABI for AMD64](https://gitlab.com/x86-psABIs/x86-64-ABI) - official repository
+
 ### refs
+
+The history of calling conventions:
+
+- [part 1](https://devblogs.microsoft.com/oldnewthing/20040102-00/?p=41213)
+- [part 2](https://devblogs.microsoft.com/oldnewthing/20040107-00/?p=41183)
+- [part 3](https://devblogs.microsoft.com/oldnewthing/20040108-00/?p=41163)
+- [part 4: ia64](https://devblogs.microsoft.com/oldnewthing/20040113-00/?p=41073)
+- [part 5: amd64](https://devblogs.microsoft.com/oldnewthing/20040114-00/?p=41053)
 
 [CS 61](https://cs61.seas.harvard.edu/site/2023/) - [Assembly 2: Calling convention – 2018](https://cs61.seas.harvard.edu/site/2018/Asm2/)
 [Guide to x86 Assembly](https://www.cs.virginia.edu/~evans/cs216/guides/x86.html) - [Calling Convention](https://flint.cs.yale.edu/cs421/papers/x86-asm/asm.html#calling)
 
 [What are the calling conventions for UNIX & Linux system calls on x86-64?](https://stackoverflow.com/questions/2535989/what-are-the-calling-conventions-for-unix-linux-system-calls-on-x86-64)
-
-[System V Application Binary Interface Intel386 Architecture Processor Supplement - 4th Edition](https://www.sco.com/developers/devspecs/abi386-4.pdf)
-[System V Application Binary Interface AMD64 Architecture Processor Supplement(With LP64 and ILP32 Programming Models)](https://cs61.seas.harvard.edu/site/pdf/x86-64-abi-20210928.pdf)
-[System V psABI for AMD64](https://gitlab.com/x86-psABIs/x86-64-ABI) - official repository
 
 [Function calling conventions](https://stackoverflow.com/questions/24974291/function-calling-conventions)
 [Guide: Function Calling Conventions](http://www.delorie.com/djgpp/doc/ug/asm/calling.html)

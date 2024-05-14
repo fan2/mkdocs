@@ -65,7 +65,15 @@ x86 汇编语言：
 
 ### references
 
+[x86 and ia64 and x64](https://devblogs.microsoft.com/setup/x86-and-ia64-and-x64-oh-my/)
+
 [Guide to x86 Assembly](https://flint.cs.yale.edu/cs421/papers/x86-asm/asm.html)
+
+The x86 architecture is the weirdo: [1](https://devblogs.microsoft.com/oldnewthing/20040914-00/?p=37873): [2](https://devblogs.microsoft.com/oldnewthing/20220418-00/?p=106489), [3](https://devblogs.microsoft.com/oldnewthing/20130320-00/?p=4893)
+
+The Intel 80386: [part 1](https://devblogs.microsoft.com/oldnewthing/20190120-00/?p=100745) \~ [part 17](https://devblogs.microsoft.com/oldnewthing/20190212-00/?p=101048)
+
+[The x86-64 processor (aka amd64, x64): Whirlwind tour](https://devblogs.microsoft.com/oldnewthing/20220831-00/?p=107077)
 
 ## ARM
 
@@ -86,15 +94,23 @@ Arm defines three architecture profiles: Application (**A**), Real-time (**R**),
 - [R-Profile Architecture](https://developer.arm.com/Architectures/R-Profile%20Architecture)
 - [M-Profile Architecture](https://developer.arm.com/Architectures/M-Profile%20Architecture)
 
-[Learn the architecture](https://developer.arm.com/documentation/102404/0201/?lang=en)
+Learn the architecture:
+
+- [Introducing the Arm architecture](https://developer.arm.com/documentation/102404/0201/?lang=en)
+- [Memory Systems, Ordering, and Barriers](https://developer.arm.com/documentation/102336/0100?lang=en)
+- [AArch64 memory management Guide](https://developer.arm.com/documentation/101811/0103/?lang=en)
+
+Registers & Instructions:
 
 - [Arm A-profile Architecture Registers](https://developer.arm.com/documentation/ddi0601/2024-03/?lang=en)
+- [Arm A-profile A32/T32 Instruction Set Architecture](https://developer.arm.com/documentation/ddi0597/2024-03/?lang=en) - [Base Instructions](https://developer.arm.com/documentation/ddi0597/2024-03/Base-Instructions?lang=en)
 - [Arm A-profile A64 Instruction Set Architecture](https://developer.arm.com/documentation/ddi0602/2024-03/?lang=en) - [Base Instructions](https://developer.arm.com/documentation/ddi0602/2024-03/Base-Instructions)
 
-- [ARMv7-M Architecture Reference Manual.pdf](https://developer.arm.com/documentation/ddi0403/ee/?lang=en)
-- [M-Profile/Armv8-M](https://developer.arm.com/documentation/107656/0101/Introduction-to-Armv8-architecture-and-architecture-profiles)
+Reference Manual:
 
-[Getting Started with Arm Assembly Language](https://developer.arm.com/documentation/107829/0200)
+- [Arm Architecture Reference Manual for A-profile architecture.pdf](https://developer.arm.com/documentation/ddi0487/ka/?lang=en)
+- [Armv8-M Architecture Reference Manual.pdf](https://developer.arm.com/documentation/ddi0553/bx/?lang=en) - [Introduction & User Guide](https://developer.arm.com/documentation/107656/0101)
+- [ARMv7-M Architecture Reference Manual.pdf](https://developer.arm.com/documentation/ddi0403/ee/?lang=en)
 
 ### textbooks
 
@@ -112,18 +128,14 @@ Arm defines three architecture profiles: Application (**A**), Real-time (**R**),
 
 The Old New Thing:
 
-- [The ARM processor (Thumb-2), part 1: Introduction](https://devblogs.microsoft.com/oldnewthing/20210531-00/?p=105265)
-- [The AArch64 processor (aka arm64), part 1: Introduction](https://devblogs.microsoft.com/oldnewthing/20220726-00/?p=106898)
+- The ARM processor (Thumb-2): [part 1](https://devblogs.microsoft.com/oldnewthing/20210531-00/?p=105265) \~ [part 20](https://devblogs.microsoft.com/oldnewthing/20210625-00/?p=105369)
+- The AArch64 processor (aka arm64): [ part 1](https://devblogs.microsoft.com/oldnewthing/20220726-00/?p=106898) \~ [part 25](https://devblogs.microsoft.com/oldnewthing/20220830-00/?p=107069)
 
 [EECS 373: Design of Microprocessor-Based Systems](https://people.eecs.berkeley.edu/~prabal/teaching/eecs373-f10/index.html) - [ARM_Architecture_Overview.ppt](https://web.eecs.umich.edu/~prabal/teaching/eecs373-f10/readings/ARM_Architecture_Overview.pdf)
 
-[ARM Assembly By Example](https://armasm.com/)
-[ARM Assembly | Azeria Labs](https://azeria-labs.com/writing-arm-assembly-part-1/)
-
 [GNU-ARM-Assy-Quick-Ref.doc](https://www.ic.unicamp.br/~celio/mc404-2014/docs/gnu-arm-directives.pdf)
 [ARM® Instruction Set Quick Reference Card](https://pages.cs.wisc.edu/~markhill/restricted/arm_isa_quick_reference.pdf)
-
-[GNU-Syntax Arm Assembly Language Reference Guide — TI Arm Clang Compiler Tools User's Guide](https://software-dl.ti.com/codegen/docs/tiarmclang/compiler_tools_user_guide/gnu_syntax_arm_asm_language/index.html)
+[ARMv8 A64 Quick Reference](https://courses.cs.washington.edu/courses/cse469/19wi/arm64.pdf)
 
 ## MIPS
 
@@ -149,6 +161,8 @@ ustc.edu:
 - [MIPS64® Architecture For Programmers Volume I: Introduction to the MIPS64® Architecture](https://scc.ustc.edu.cn/_upload/article/files/c6/06/45556c084631b2855f0022175eaf/W020100308600768363997.pdf) - 2005
 - [MIPS64® Architecture For Programmers Volume II: The MIPS64® Instruction Set](https://scc.ustc.edu.cn/zlsc/lxwycj/200910/W020100308600769158777.pdf) - 2005
 - [MIPS64® Architecture For Programmers Volume III: The MIPS64® Privileged Resource Architecture](https://scc.ustc.edu.cn/zlsc/lxwycj/200910/W020100308600770617815.pdf) - 2005
+
+[SYSTEM V APPLICATION BINARY INTERFACE MIPS RISC Processor Supplement - 3rd Edition](https://refspecs.linuxfoundation.org/elf/mipsabi.pdf)
 
 ### textbooks
 
@@ -176,9 +190,7 @@ Harvard CS 161:
 
 nju-swang: [Lecture 24: Instruction Pipeline(指令流水线)](https://cs.nju.edu.cn/swang/CompArchOrg_13F/slides/lecture24.pdf)
 
-The Old New Thing: [The MIPS R4000, part 1: Introduction](https://devblogs.microsoft.com/oldnewthing/20180402-00/?p=98415)
-
-[SYSTEM V APPLICATION BINARY INTERFACE MIPS RISC Processor Supplement - 3rd Edition](https://refspecs.linuxfoundation.org/elf/mipsabi.pdf)
+The Old New Thing: The MIPS R4000 - [part 1](https://devblogs.microsoft.com/oldnewthing/20180402-00/?p=98415) \~ [part 15](https://devblogs.microsoft.com/oldnewthing/20180420-00/?p=98565)
 
 ## refs
 

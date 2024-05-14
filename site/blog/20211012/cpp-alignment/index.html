@@ -12,13 +12,13 @@
         <meta name="author" content="Cliff Fan">
       
       
-        <link rel="canonical" href="https://duetorun.com/blog/20230313/arm-arch/">
+        <link rel="canonical" href="https://duetorun.com/blog/20211012/cpp-alignment/">
       
       
-        <link rel="prev" href="../../20230312/cpu-arch/">
+        <link rel="prev" href="../address-alignment/">
       
       
-        <link rel="next" href="../../20230314/calling-convention/">
+        <link rel="next" href="../../20211013/struct-alignment/">
       
       
       <link rel="icon" href="../../../assets/hold_yourself.jpg">
@@ -26,7 +26,7 @@
     
     
       
-        <title>ARM Architecture - ElseWhere</title>
+        <title>C/C++ Memory Alignment - ElseWhere</title>
       
     
     
@@ -90,7 +90,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#profiles" class="md-skip">
+        <a href="#c_alignment" class="md-skip">
           跳转至
         </a>
       
@@ -123,7 +123,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              ARM Architecture
+              C/C++ Memory Alignment
             
           </span>
         </div>
@@ -1258,46 +1258,37 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#profiles" class="md-nav__link">
+  <a href="#c_alignment" class="md-nav__link">
     <span class="md-ellipsis">
-      profiles
+      C alignment
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#aarch64" class="md-nav__link">
+  <a href="#c_alignment_1" class="md-nav__link">
     <span class="md-ellipsis">
-      aarch64
+      C++ alignment
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="aarch64">
+    <nav class="md-nav" aria-label="C++ alignment">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#naming_conventions" class="md-nav__link">
+  <a href="#isoiec-n4950" class="md-nav__link">
     <span class="md-ellipsis">
-      Naming conventions
+      ISO/IEC-N4950
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#aarch64_features" class="md-nav__link">
+  <a href="#language_support" class="md-nav__link">
     <span class="md-ellipsis">
-      AArch64 features
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#r__m" class="md-nav__link">
-    <span class="md-ellipsis">
-      R &amp; M
+      language support
     </span>
   </a>
   
@@ -1305,57 +1296,6 @@
         
       </ul>
     </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#assembly" class="md-nav__link">
-    <span class="md-ellipsis">
-      assembly
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#products" class="md-nav__link">
-    <span class="md-ellipsis">
-      products
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="products">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#apple" class="md-nav__link">
-    <span class="md-ellipsis">
-      Apple
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#raspberry_pi" class="md-nav__link">
-    <span class="md-ellipsis">
-      Raspberry Pi
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#references" class="md-nav__link">
-    <span class="md-ellipsis">
-      references
-    </span>
-  </a>
   
 </li>
       
@@ -1415,9 +1355,16 @@
                     <li class="md-nav__item">
                       <div class="md-nav__link">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 19H5V8h14m-3-7v2H8V1H6v2H5c-1.11 0-2 .89-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-1V1m-1 11h-5v5h5v-5Z"/></svg>
-                        <time datetime="2023-03-13 12:00:00" class="md-ellipsis">2023年3月13日</time>
+                        <time datetime="2021-10-12 14:00:00" class="md-ellipsis">2021年10月12日</time>
                       </div>
                     </li>
+                    
+                      <li class="md-nav__item">
+                        <div class="md-nav__link">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15 13h1.5v2.82l2.44 1.41-.75 1.3L15 16.69V13m4-5H5v11h4.67c-.43-.91-.67-1.93-.67-3a7 7 0 0 1 7-7c1.07 0 2.09.24 3 .67V8M5 21a2 2 0 0 1-2-2V5c0-1.11.89-2 2-2h1V1h2v2h8V1h2v2h1a2 2 0 0 1 2 2v6.1c1.24 1.26 2 2.99 2 4.9a7 7 0 0 1-7 7c-1.91 0-3.64-.76-4.9-2H5m11-9.85A4.85 4.85 0 0 0 11.15 16c0 2.68 2.17 4.85 4.85 4.85A4.85 4.85 0 0 0 20.85 16c0-2.68-2.17-4.85-4.85-4.85Z"/></svg>
+                          <time datetime="2024-05-02 12:00:00" class="md-ellipsis">2024年5月2日</time>
+                        </div>
+                      </li>
                     
                     
                       <li class="md-nav__item">
@@ -1426,7 +1373,9 @@
                           <span class="md-ellipsis">
                             分类于
                             
-                              <a href="../../category/cs/">CS</a></span>
+                              <a href="../../category/cs/">CS</a>, 
+                              <a href="../../category/c/">c</a>, 
+                              <a href="../../category/cpp/">cpp</a></span>
                         </div>
                       </li>
                     
@@ -1437,7 +1386,7 @@
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7h1.5Z"/></svg>
                           <span class="md-ellipsis">
                             
-                              需要 5 分钟阅读时间
+                              需要 3 分钟阅读时间
                             
                           </span>
                         </div>
@@ -1472,211 +1421,71 @@
     
     
     
-      <span class="md-tag">arm</span>
+      <span class="md-tag">alignment</span>
     
   
     
     
     
-      <span class="md-tag">profile</span>
+      <span class="md-tag">boundary</span>
     
   
 </nav>
 
 
 
-  <h1>ARM Architecture</h1>
+  <h1>C/C++ Memory Alignment</h1>
 
-<p><code>ARM</code> 最初的简称是 <em>Acorn RISC Machine</em>。ARM 使用的内核与指令集并不一一对应。</p>
-<p>1990年11月，Acorn、Apple 和 VLSI 共同出资创建了 ARM。Acorn RISC Machine 也正式更名为 <em>Advanced RISC Machine</em>。</p>
-<p>ARM11 之后，ARM 处理器内核不再以 ARM 作为前缀。但 <code>ARM</code> 这个单词并没有在 Cortex 系列中消失，Cortex的三大系列 <em>M-R-A</em>，合起来就是 ARM。</p>
+<p>One of the low-level features of C/C++ is the ability to specify the precise alignment of objects in memory to take maximum advantage of a specific hardware architecture. By default, the compiler <strong>aligns</strong> class and struct members on their size value.</p>
 <!-- more -->
 
-<h2 id="profiles">profiles<a class="headerlink" href="#profiles" title="Permanent link">#</a></h2>
-<p><a href="https://developer.arm.com/documentation/102404/0201/About-the-Arm-architecture?lang=en">About the Arm architecture</a></p>
-<p>The Arm architecture is one of the most popular processor architectures in the world. Billions of Arm-based devices are shipped every year.</p>
-<p>The following table describes the three architecture profiles: A, R, and M:</p>
-<table>
-<thead>
-<tr>
-<th><strong>A</strong>-Profile (Applications)</th>
-<th><strong>R</strong>-Profile (Real-Time)</th>
-<th><strong>M</strong>-Profile (Microcontroller)</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>High performance</td>
-<td>Targeted at systems with real-time requirements</td>
-<td>Small, highly power- efficient devices</td>
-</tr>
-<tr>
-<td>Designed to run a complex operating system, such as Linux or Windows</td>
-<td>Commonly found in networking equipment, and embedded control systems</td>
-<td>Found at the heart of many IoT devices</td>
-</tr>
-</tbody>
-</table>
-<p>These three profiles allow the Arm architecture to be tailored to the needs of different use cases, while still sharing several base features.</p>
-<div class="admonition note">
-<p class="admonition-title">Arm brands</p>
-<p>Arm <code>Cortex</code> and Arm <code>Neoverse</code> are the brand names that are used for the Arm processor IP offerings. Our partners offer other processor brands using the Arm architecture.</p>
-</div>
-<figure><br />
-<img alt="Arm-Arch" src="../../cs/images/Arm_Architecture.png" /><br />
-</figure>
-<p>This example smartphone contains the following processor types:</p>
-<ul>
-<li>An <strong>A</strong>-profile processor as the main CPU running a rich OS like Android.</li>
-<li>A cellular modem, based on an <strong>R</strong>-profile processor, provides connectivity.</li>
-<li>Several <strong>M</strong>-profile processors handle operations like system power management.</li>
-<li>The SIM card uses SecurCore, an M-profile processor with additional security features. SecurCore processors are commonly used in smart cards.</li>
-</ul>
-<p><a href="https://developer.arm.com/documentation/107656/0101/Introduction-to-Armv8-architecture-and-architecture-profiles">Introduction to the Armv8-M Architecture and its Programmers Model User Guide</a>:</p>
-<p>The <code>Armv8</code> architecture has several different profiles. These profiles are variants of the architecture that target different markets and use cases. The Armv8-M architecture is one of these architecture profiles.</p>
-<p>Arm defines three architecture profiles: Application (<strong><em>A</em></strong>), Real-time (<strong><em>R</em></strong>), and Microcontroller (<strong><em>M</em></strong>).</p>
-<h2 id="aarch64">aarch64<a class="headerlink" href="#aarch64" title="Permanent link">#</a></h2>
-<p><a href="https://en.wikipedia.org/wiki/AArch64">AArch64</a>: <code>AArch64</code> or <code>ARM64</code> is the 64-bit extension of the ARM architecture family. It was first introduced with the <strong><em>Armv8-A</em></strong> architecture, and had many extension updates.</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># mbpa2991-macOS</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>$<span class="w"> </span>arch
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>arm64
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="c1"># rpi4b-ubuntu</span>
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>$<span class="w"> </span>arch
-</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>aarch64
-</span></code></pre></div>
-<p>Announced in October 2011, <strong>ARMv8-A</strong> represents a fundamental change to the ARM architecture. It adds an optional 64-bit architecture, named "<code>AArch64</code>", and the associated new "<code>A64</code>" instruction set.</p>
-<p>AArch64 provides user-space <em>compatibility</em> with the existing 32-bit architecture ("<code>AArch32</code>" / ARMv7-A), and instruction set ("<code>A32</code>"). The 16-32bit Thumb instruction set is referred to as "<code>T32</code>" and has no 64-bit counterpart.</p>
-<p>ARMv8-A allows 32-bit applications to be executed in a 64-bit OS, and a 32-bit OS to be under the control of a 64-bit hypervisor.</p>
-<div class="admonition abstract">
-<p class="admonition-title">aapcs64 - Terms</p>
-<p><a href="https://github.com/ARM-software/abi-aa/blob/2a70c42d62e9c3eb5887fa50b71257f20daca6f9/aapcs64/aapcs64.rst">aapcs64</a> - 2.2 Terms and abbreviations:</p>
-<p><code>AArch32</code>: The 32-bit general-purpose register width <em>state</em> of the Armv8 architecture, broadly <em>compatible</em> with the Armv7-A architecture.<br />
-<code>AArch64</code>: The 64-bit general-purpose register width state of the Armv8 architecture.</p>
-</div>
-<p>ARMv8-A includes the VFPv3/v4 and advanced SIMD (Neon) as standard features in both AArch32 and AArch64. It also adds cryptography instructions supporting AES, SHA-1/SHA-256 and finite field arithmetic.</p>
-<h3 id="naming_conventions">Naming conventions<a class="headerlink" href="#naming_conventions" title="Permanent link">#</a></h3>
-<table>
-<thead>
-<tr>
-<th>model</th>
-<th>Arch</th>
-<th>Spec</th>
-<th>ISA</th>
-<th>Suffixes</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>64 + 32 bit</td>
-<td>AArch64</td>
-<td>ARMv8-A</td>
-<td>A64 + A32</td>
-<td>v8-A</td>
-</tr>
-<tr>
-<td>32 + 16 (Thumb) bit</td>
-<td>AArch32</td>
-<td>ARMv8-R / ARMv7-A</td>
-<td>A32 + T32</td>
-<td>-A32 / -R / v7-A.</td>
-</tr>
-</tbody>
-</table>
-<h3 id="aarch64_features">AArch64 features<a class="headerlink" href="#aarch64_features" title="Permanent link">#</a></h3>
-<p><strong><em>New instruction set, A64</em></strong>:</p>
-<ul>
-<li>Has <code>31</code> general-purpose 64-bit registers.</li>
-<li>Has dedicated zero or stack pointer (<code>SP</code>) register (depending on instruction).</li>
-<li>The program counter (<code>PC</code>) is no longer directly accessible as a register.</li>
+<h2 id="c_alignment">C alignment<a class="headerlink" href="#c_alignment" title="Permanent link">#</a></h2>
+<p>Excerpt from <a href="https://www.amazon.com/Modern-C-Jens-Gustedt-ebook/dp/B0978347Z6/">Modern C, 1st Edition, 2019</a>.</p>
+<p><strong>12 The C memory model | 12.7 Alignment</strong></p>
+<p>The inverse direction of pointer conversions (from “pointer to character type” to “pointer to object”) is not harmless at all, and not only because of possible aliasing. This has to do with another property of C’s memory model: <strong><em>alignment</em></strong>. Objects of most non-character types can’t start at any <em>arbitrary</em> byte position; they usually start at a <strong><em>word boundary</em></strong>. The alignment of a type then describes the possible byte positions at which an object of that type can start.</p>
+<p>If we force some data to a false alignment, really bad things can happen.</p>
+<p>The program crashes with an error indicated as a <strong><em>bus error</em></strong>, which is a shortcut for something like “data bus alignment error.”</p>
+<p>As you can see in the output, above, it seems that <code>complex double</code> still works well for alignments of half of its size, but then with an alignment of one fourth, the program crashes.</p>
+<hr />
+<p>In the previous code example, we also see a new operator, <code>alignof</code> (or <code>_Alignof</code>, if you don’t include <a href="https://en.cppreference.com/w/c/types">&lt;stdalign.h&gt;</a>), that provides us with the alignment of a speciﬁc type. You will rarely ﬁnd the occasion to use it in real live code.</p>
+<p>Another keyword can be used to force allocation at a speciﬁed alignment: <code>alignas</code> (respectively, <code>_Alignas</code>). Its argument can be either a type or expression. It can be useful where you know that your platform can perform certain operations more efﬁciently if the data is aligned in a certain way.</p>
+<h2 id="c_alignment_1">C++ alignment<a class="headerlink" href="#c_alignment_1" title="Permanent link">#</a></h2>
+<h3 id="isoiec-n4950">ISO/IEC-N4950<a class="headerlink" href="#isoiec-n4950" title="Permanent link">#</a></h3>
+<p>20230510 - <a href="https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2023/n4950.pdf">ISO/IEC-N4950</a></p>
+<p>6 Basics | 6.7 Memory and objects | <strong>6.7.6 Alignment</strong></p>
+<ol>
 <li>
-<p>Instructions are still <code>32</code> bits long and mostly the same as A32 (with LDM/STM instructions and most conditional execution dropped).</p>
+<p>Object types have <em>alignment requirements</em> (6.8.2, 6.8.4) which place restrictions on the addresses at which an object of that type may be allocated. An <strong><em>alignment</em></strong> is an implementation-defined integer value representing the number of bytes between successive addresses at which a given object can be allocated. An object type imposes an alignment requirement on every object of that type; stricter alignment can be requested using the alignment specifier (9.12.2).</p>
+</li>
+<li>
+<p>A <em>fundamental alignment</em> is represented by an alignment less than or equal to the greatest alignment supported by the implementation in all contexts, which is equal to <code>alignof(std::max_align_t)</code> (17.2). The alignment required for a type may be different when it is used as the type of a complete object and when it is used as the type of a subobject.</p>
 <ul>
-<li>Has paired loads/stores (in place of LDM/STM).</li>
-<li>No predication for most instructions (except branches).</li>
+<li>The result of the <code>alignof</code> operator reflects the alignment requirement of the type in the complete-object case.</li>
 </ul>
 </li>
 <li>
-<p>Most instructions can take 32-bit or 64-bit arguments.</p>
+<p>The alignment requirement of a complete type can be queried using an <code>alignof</code> expression (7.6.2.6). Furthermore, the narrow character types (6.8.2) shall have the <em>weakest</em> alignment requirement.</p>
+<ul>
+<li>This enables the ordinary character types to be used as the underlying type for an aligned memory area (9.12.2).</li>
+</ul>
 </li>
-<li>Addresses assumed to be 64-bit.</li>
-</ul>
-<p><strong><em>Advanced SIMD (Neon) enhanced</em></strong>:</p>
+</ol>
+<hr />
+<p><strong>related sections</strong>:</p>
 <ul>
-<li>Has 32 × 128-bit registers (up from 16), also accessible via VFPv4.</li>
-<li>Supports double-precision floating-point format.</li>
-<li>Fully IEEE 754 compliant.</li>
-<li>AES encrypt/decrypt and SHA-1/SHA-2 hashing instructions also use these registers.</li>
+<li>7 Expressions | 7.6 Compound expressions | 7.6.2 Unary expressions | 7.6.2.6 Alignof</li>
+<li>9 Declarations | 9.12 Attributes | 9.12.2 Alignment specifier</li>
+<li>17 Language support library | 17.2 Common definitions | 17.2.4 Sizes, alignments, and offsets</li>
 </ul>
-<p><strong><em>A new exception system</em></strong>: Fewer banked registers and modes.</p>
-<p><strong><em>Memory translation</em></strong> from 48-bit virtual addresses based on the existing Large Physical Address Extension (LPAE), which was designed to be easily extended to 64-bit.</p>
-<p><strong><em>Extension</em></strong>: Data gathering hint (ARMv8.0-DGH).</p>
-<h3 id="r__m">R &amp; M<a class="headerlink" href="#r__m" title="Permanent link">#</a></h3>
-<p>AArch64 was introduced in <code>ARMv8-A</code> and is included in subsequent versions of ARMv8-A. It was also introduced in <code>ARMv8-R</code> as an option, after its introduction in ARMv8-A; it is <em>not</em> included in <code>ARMv8-M</code>.</p>
-<div class="admonition info">
-<p class="admonition-title">ARM-R (real-time architecture)</p>
-<p>Optional AArch64 support was added to the Armv8-R profile, with the first Arm core implementing it being the <em>Cortex-R82</em>. It adds the <code>A64</code> instruction set, with some changes to the memory barrier instructions.</p>
-</div>
-<h2 id="assembly">assembly<a class="headerlink" href="#assembly" title="Permanent link">#</a></h2>
-<p><strong>docs</strong>:</p>
-<p><a href="https://developer.arm.com/documentation/107829/0200">Getting Started with Arm Assembly Language</a><br />
-<a href="https://developer.arm.com/documentation/dui0801/l">Arm Compiler armasm User Guide</a><br />
-<a href="https://developer.arm.com/documentation/100748/0622/Assembling-Assembly-Code?lang=en">Arm Compiler for Embedded User Guide - Assembling Assembly Code</a></p>
-<p><strong>refs</strong>:</p>
-<p><a href="https://software-dl.ti.com/codegen/docs/tiarmclang/compiler_tools_user_guide/gnu_syntax_arm_asm_language/index.html">GNU-Syntax Arm Assembly Language Reference Guide — TI Arm Clang Compiler Tools User's Guide</a><br />
-<a href="https://azeria-labs.com/writing-arm-assembly-part-1/">ARM Assembly | Azeria Labs</a><br />
-<a href="https://armasm.com/">ARM Assembly By Example</a></p>
-<h2 id="products">products<a class="headerlink" href="#products" title="Permanent link">#</a></h2>
-<h3 id="apple">Apple<a class="headerlink" href="#apple" title="Permanent link">#</a></h3>
-<p><a href="https://en.wikipedia.org/wiki/Apple_silicon">Apple silicon</a></p>
-<p><a href="https://en.wikipedia.org/wiki/List_of_iPhone_models">List of iPhone models</a></p>
-<p><a href="https://gist.github.com/adamawolf/3048717">List of Apple's mobile device codes types</a></p>
-<p><a href="https://9to5mac.com/2022/07/27/iphone-chip-list/">iPhone chip list: Here's what A-series chip is in each model - 9to5Mac</a></p>
-<p><a href="https://apple.fandom.com/wiki/List_of_Apple_processors">List of Apple processors | Apple Wiki | Fandom</a></p>
-<ul>
-<li>Apple A7 — (2013) introduced in the iPhone 5S, the company's first 64-bit mobile processor. Also used in the 2nd and 3rd generation iPad minis and 1st generation iPad Air.</li>
-</ul>
-<h3 id="raspberry_pi">Raspberry Pi<a class="headerlink" href="#raspberry_pi" title="Permanent link">#</a></h3>
-<p><a href="https://en.wikipedia.org/wiki/Raspberry_Pi#Specifications">Raspberry Pi Specifications</a></p>
-<table>
-<thead>
-<tr>
-<th>model</th>
-<th>Release date</th>
-<th>Soc</th>
-<th>ISA</th>
-<th>CPU</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>RPi 3 Model B</td>
-<td>Feb 2016</td>
-<td>BCM2837</td>
-<td>ARMv8-A (64/32-bit)</td>
-<td>4× Cortex-A53 1.2 GHz</td>
-</tr>
-<tr>
-<td>RPi 4 Model B</td>
-<td>Jun 2019​/May 2020</td>
-<td>BCM2711</td>
-<td>ARMv8-A (64/32-bit)</td>
-<td>4× Cortex-A72 1.5 GHz or 1.8 GHz</td>
-</tr>
-<tr>
-<td>RPi 5</td>
-<td>Oct 2023</td>
-<td>BCM2712</td>
-<td>ARMv8.2-A (64/32-bit)</td>
-<td>4× Cortex-A76 2.4 GHz</td>
-</tr>
-</tbody>
-</table>
-<p><a href="https://www.raspberry-pi-geek.com/Archive/2017/23/Operating-the-Raspberry-Pi-3-in-64-bit-mode">RPi3 in ARMv8 Mode » Raspberry Pi Geek</a></p>
-<h2 id="references">references<a class="headerlink" href="#references" title="Permanent link">#</a></h2>
-<p><a href="https://www.reddit.com/r/AskElectronics/comments/1dchu7/arm_vs_harvard_vs_von_neumann/">ARM vs. Harvard vs. von Neumann</a><br />
-<a href="https://developer.arm.com/documentation/ka002816/latest/">GENERAL: Harvard vs von Neumann Architectures</a><br />
-<a href="https://community.arm.com/support-forums/f/architectures-and-processors-forum/8615/how-to-explain-the-harvard-architecture-of-arm-processor-at-instruction-level">How to explain the harvard architecture of ARM processor at instruction level?</a></p>
+<h3 id="language_support">language support<a class="headerlink" href="#language_support" title="Permanent link">#</a></h3>
+<p>《<a href="https://item.jd.com/12942311.html">现代C++语言核心特性解析-2021</a>》 - 第30章 alignas 和 alignof</p>
+<p>C++11中新增了 <code>alignof</code> 和 <code>alignas</code> 两个关键字，其中 <code>alignof</code> 运算符可以用于获取类型的对齐字节长度，<code>alignas</code> 说明符可以用来改变类型的默认对齐字节长度。这两个关键字的出现解决了长期以来C++标准中无法对数据对齐进行处理的问题。</p>
+<p><code>alignof</code> 运算符和前面提到的编译器扩展关键字 <code>__alignof</code>、<code>__alignof__</code> 用法相同，都是获得类型的对齐字节长度。</p>
+<p>C++标准规定 <code>alignof</code> 必须是针对类型的。不过 GCC 扩展了这条规则，<code>alignof</code> 除了能接受一个类型外还能接受一个变量。使用MSVC的读者如果想获得变量的对齐，不妨使用编译器的扩展关键字 <code>__alignof</code>。</p>
+<p>另外，还可以通过 <code>alignof</code> 获得类型 <code>std::max_align_t</code> 的对齐字节长度，这是一个非常重要的值。</p>
+<p>C++11 <a href="https://en.cppreference.com/w/c/types">&lt;stddef.h&gt;</a> 定义了 <code>std::max_align_t</code>，它是一个平凡的标准布局类型，其对齐字节长度要求至少与每个标量类型一样严格。也就是说，所有的标量类型都适应 <code>std::max_align_t</code> 的对齐字节长度。</p>
+<p>C++ 标准还规定，诸如 <code>new</code> 和 <code>malloc</code> 之类的分配函数返回的指针需要适合于任何对象，也就是说内存地址至少与 <code>std::max_align_t</code> 严格对齐。</p>
+<p>由于 C++ 标准并没有定义 <code>std::max_ align_t</code> 对齐字节长度具体是什么样的，因此不同的平台会有不同的值，通常情况下是8字节和16字节。</p>
 
 
 
@@ -1776,7 +1585,7 @@
       <nav class="md-footer__inner md-grid" aria-label="页脚" >
         
           
-          <a href="../../20230312/cpu-arch/" class="md-footer__link md-footer__link--prev" aria-label="上一页: CPU Architectures">
+          <a href="../address-alignment/" class="md-footer__link md-footer__link--prev" aria-label="上一页: Memory Address Alignment">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
@@ -1786,20 +1595,20 @@
                 上一页
               </span>
               <div class="md-ellipsis">
-                CPU Architectures
+                Memory Address Alignment
               </div>
             </div>
           </a>
         
         
           
-          <a href="../../20230314/calling-convention/" class="md-footer__link md-footer__link--next" aria-label="下一页: Calling conventions">
+          <a href="../../20211013/struct-alignment/" class="md-footer__link md-footer__link--next" aria-label="下一页: Struct Alignment Rule">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 下一页
               </span>
               <div class="md-ellipsis">
-                Calling conventions
+                Struct Alignment Rule
               </div>
             </div>
             <div class="md-footer__button md-icon">

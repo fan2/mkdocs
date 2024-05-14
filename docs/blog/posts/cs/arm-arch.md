@@ -128,7 +128,23 @@ AArch64 was introduced in `ARMv8-A` and is included in subsequent versions of AR
 
     Optional AArch64 support was added to the Armv8-R profile, with the first Arm core implementing it being the *Cortex-R82*. It adds the `A64` instruction set, with some changes to the memory barrier instructions.
 
-## Apple
+## assembly
+
+**docs**:
+
+[Getting Started with Arm Assembly Language](https://developer.arm.com/documentation/107829/0200)
+[Arm Compiler armasm User Guide](https://developer.arm.com/documentation/dui0801/l)
+[Arm Compiler for Embedded User Guide - Assembling Assembly Code](https://developer.arm.com/documentation/100748/0622/Assembling-Assembly-Code?lang=en)
+
+**refs**:
+
+[GNU-Syntax Arm Assembly Language Reference Guide — TI Arm Clang Compiler Tools User's Guide](https://software-dl.ti.com/codegen/docs/tiarmclang/compiler_tools_user_guide/gnu_syntax_arm_asm_language/index.html)
+[ARM Assembly | Azeria Labs](https://azeria-labs.com/writing-arm-assembly-part-1/)
+[ARM Assembly By Example](https://armasm.com/)
+
+## products
+
+### Apple
 
 [Apple silicon](https://en.wikipedia.org/wiki/Apple_silicon)
 
@@ -142,7 +158,7 @@ AArch64 was introduced in `ARMv8-A` and is included in subsequent versions of AR
 
 - Apple A7 — (2013) introduced in the iPhone 5S, the company's first 64-bit mobile processor. Also used in the 2nd and 3rd generation iPad minis and 1st generation iPad Air.
 
-## Raspberry Pi
+### Raspberry Pi
 
 [Raspberry Pi Specifications](https://en.wikipedia.org/wiki/Raspberry_Pi#Specifications)
 

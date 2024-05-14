@@ -7,6 +7,8 @@ date:
     updated: 2024-05-02T12:00:00
 categories:
     - CS
+    - c
+    - cpp
 tags:
     - struct
     - alignment
