@@ -51,6 +51,25 @@ $3 = 101 'e'
 $4 = 1100101
 ```
 
+调试 [Getting Started with Arm Assembly Language](https://developer.arm.com/documentation/107829/0200) - 9. Example: equation calculation 中，汇编函数 kinetic_energy 调用返回 main 中的 printf：
+
+```c
+printf("Calling assembly function kinetic_energy with x0=%d and x1=%d results in %d\n", m, v, kinetic_energy(m, v));
+```
+
+printf 总共有 4 个参数，第 1 个参数为 `const char *format` 是一个字符指针，指向格式字符串，存放在 x0 寄存器，后面 3 个参数依次存放在 x1~x3 寄存器：
+
+```Shell
+(gdb) p/a $x0
+$12 = 0xaaaaaaaa07d8
+(gdb) p $x1
+$8 = 4
+(gdb) p $x2
+$9 = 5
+(gdb) p $x3
+$10 = 50
+```
+
 ## array
 
 有时候，你需要查看一段连续的内存空间的值。比如数组的一段，或是动态分配的数据的大小。
@@ -103,6 +122,15 @@ n、f、u 是可选的参数。
 - `<addr>`: 表示一个内存地址。
 
 n/f/u三个参数可以一起使用。例如，命令 `x/3uh 0x54320` 表示从内存地址0x54320读取内容，h表示以双字节为一个单位，3表示三个单位，u表示按十六进制显示。
+
+printf 函数第 1 个参数为 `const char *format`，存放在 x0 寄存器，可以进一步使用 `examine` 命令检查指针指向的内存中的格式字符串。
+
+```Shell
+(gdb) p/a $x0
+$12 = 0xaaaaaaaa07d8
+(gdb) x /s $x0
+0xaaaaaaaa07d8:	"Calling assembly function kinetic_energy with x0=%d and x1=%d results in %d\n"
+```
 
 ## display
 

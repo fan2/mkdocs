@@ -18,7 +18,7 @@ vim 发行版中自带的 `netrw` 插件允许我们对文件系统进行管理�
 
 <!-- more -->
 
-```
+```bash
 Netrw makes reading files, writing files, browsing over a network, and
 local browsing easy!  First, make sure that you have plugins enabled, so
 you'll need to have at least the following in your <.vimrc>:
@@ -32,7 +32,7 @@ you'll need to have at least the following in your <.vimrc>:
 
 在 `~/.vimrc` 中添加以下配置，确保 vim 已被配置为可加载插件：
 
-```
+```bash
 "去掉有关vi一致性模式，避免以前版本的一些bug和局限
 set nocp "nocompatible
 "允许vim加载文件类型插件($VIMRUNTIME/ftplugin.vim)
@@ -49,7 +49,7 @@ vim 内置的 netrw 的 *`:Explore`* 及 *`:*explore`* 系列命令支持文件�
 
 输入 `:h netrw` 或 `:h netrw-explore` 查看相关帮助。
 
-```Shell
+```bash
 netrw-explore  netrw-hexplore netrw-nexplore netrw-pexplore
 netrw-rexplore netrw-sexplore netrw-texplore netrw-vexplore netrw-lexplore
 DIRECTORY EXPLORATION COMMANDS  {{{2
@@ -71,14 +71,14 @@ DIRECTORY EXPLORATION COMMANDS  {{{2
 
 1. 复用同一窗口
 
-```
+```bash
                                                         :edit_f
 :e[dit] [++opt] [+cmd] {file}
 ```
 
 2. 分屏窗口
 
-```
+```bash
 :[N]new [++opt] [+cmd] {file}
 [N]vne[w] [++opt] [+cmd] [file]                        :vne :vnew
 
@@ -88,7 +88,7 @@ DIRECTORY EXPLORATION COMMANDS  {{{2
 
 3. 标签页
 
-```
+```bash
 :[count]tabe[dit] [++opt] [+cmd] {file}
 :[count]tabnew [++opt] [+cmd] {file}
 ```
@@ -100,7 +100,7 @@ DIRECTORY EXPLORATION COMMANDS  {{{2
 `:Explore`（简写为 `:Ex`/`:E`），在当前窗格打开当前文档所在的目录，可执行 `:Rexplore`（简写为 `:Rex`/`Re`）随时返回编辑文档；
 或浏览选择打开新的文件（复用当前窗口），然后通过 `:bn`/`:bN` 切换buffer。
 
-```
+```bash
                                                 netrw-:Explore
 :Explore  will open the local-directory browser on the current file's
           directory (or on directory [dir] if specified).  The window will be
@@ -115,20 +115,12 @@ DIRECTORY EXPLORATION COMMANDS  {{{2
            as it doesn't necessarily open an Explorer window.
 ```
 
-按下 `-` 可返回上一级目录（也可移动到 `..` 再按下 `<CR>`）。
-
-> `netrw--` : Going Up
-
-在导航窗格中，按下 `qf` 可查看光标所在本地文件的属性信息：
-
-> `netrw-qf` : Displaying Information About File
-
-#### Lex(plore)
+---
 
 `:Lexplore`（简写为 `:Lex`/`:Le`） 与 `:Explore`（简写为 `:Ex`） 的唯一区别是，在左侧打开当前文档所在的目录。
-点击目录中的的节点，打开浏览文档时，复用覆盖右侧窗口，但是保留左侧导航窗格。
+点击目录中的的节点，打开浏览文档时，左侧导航窗格常驻，复用覆盖右侧窗口。
 
-```
+```bash
                                                 netrw-:Lexplore
 :[N]Lexplore [dir] toggles a full height Explorer window on the left hand side
           of the current tab.  It will open a netrw window on the current
@@ -151,21 +143,11 @@ DIRECTORY EXPLORATION COMMANDS  {{{2
           preferentially occur in the leftmost window).
 ```
 
-#### op
-
-当光标停留在导航窗格时，还可以按下 `d`/`R`/`D` 快捷实现创建文件夹、重命名/删除文件（夹）等操作。
-
-| cmd       | desc                          |
-| --------- | ----------------------------- |
-| netrw-`d` | Making A New Directory        |
-| netrw-`R` | Renaming Files Or Directories |
-| netrw-`D` | Deleting Files Or Directories |
-
 ### Sex(plore)
 
 可以基于 `:Sexplore`/`:Hexplore`/`:Vexplore`（`:Sex`/`:Hex`/`:Vex`）打开独立的导航窗口，实现split分屏浏览打开新文件。
 
-```
+```bash
                                                 netrw-:Sexplore
 :[N]Sexplore will always split the window before invoking the local-directory
           browser.  As with Explore, the splitting is normally done
@@ -185,26 +167,53 @@ DIRECTORY EXPLORATION COMMANDS  {{{2
 
 可以基于 `:Te` 打开独立的导航标签页，实现tab分页浏览打开新文件。
 
-```
+```bash
                                                 netrw-:Texplore
 :Texplore  [dir] does a :tabnew before generating the browser window
 ```
 
-### browsing-item
+## browsing
 
-在 `Ex` 或 `Ve` 导航窗格中按下 `<CR>` 时，会复用当前窗口打开光标所在的文件 item（目录导航将被覆盖）。
+当光标停留在netrw导航窗格时，以下为文件夹浏览相关的按键组合：
+
+| cmd       | desc                         |
+| --------- | ---------------------------- |
+| `I`  | Toggle the displaying of the banner |
+| `i`  | Cycle between thin, long, wide, and tree listings |
+| `gh` | Quick hide/unhide of dot-files    |
+| `-`  | Going Up                          |
+| `u`  | Change to recently-visited directory |
+| `U`  | Change to subsequently-visited directory |
+| `gn` | Make top of tree the directory below the cursor |
+| `cd` | Making The Browsing Directory The Current Directory |
+
+以下为文件（夹）相关的操作按键组合：
+
+| cmd       | desc                         |
+| --------- | ---------------------------- |
+| `qf` | Displaying Information About File |
+| `d`  | Making A New Directory            |
+| `%`  | Open a new file in netrw's current directory |
+| `R`  | Renaming Files Or Directories     |
+| `D`  | Deleting Files Or Directories     |
+
+## open-edit
+
+在 `Ex` 或 `Ve` 导航窗格中按下 `<CR>` 时，默认复用当前窗口打开光标所在的文件（目录导航将被覆盖）。
+
+或按下 `p` 打开 Preview Window 预览焦点文件，底行模式输入 `:pc[lose][!]` 关闭 Preview Window。
 
 如果想导航窗格常驻，可通过 `:Le` 打开窗格常驻左侧；或在 `Ex`/`Ve` 导航窗格中按 `o`/`v`/`t`，新开分屏或标签页打开文件。
 
-| cmd       | desc                                      |
-| --------- | ----------------------------------------- |
-| netrw-`o` | Browsing With A Horizontally Split Window |
-| netrw-`v` | Browsing With A Vertically Split Window   |
-| netrw-`t` | Browsing With A New Tab                   |
+| cmd | desc                                      |
+| --- | ----------------------------------------- |
+| `o` | Browsing With A Horizontally Split Window |
+| `v` | Browsing With A Vertically Split Window   |
+| `t` | Browsing With A New Tab                   |
 
-可修改打开方式的配置项为 1/2/3，默认以 `o`/`v`/`t` 打开浏览。
+可修改打开方式的配置项为 1/2/3，按下 `<CR>` 时，相应将以 `o`/`v`/`t` 方式打开浏览选中文件。
 
-```
+```bash
   g:netrw_browse_split          when browsing, <cr> will open the file by:
                                 =0: re-using the same window  (default)
                                 =1: horizontally splitting the window first
@@ -213,11 +222,13 @@ DIRECTORY EXPLORATION COMMANDS  {{{2
                                 =4: act like "P" (ie. open previous window)
 ```
 
+关于分屏窗口和多标签的切换焦点、尺寸调整和开关管理，参考上一篇 [vim窗格](./012-vim-win-tab.md)。
+
 ## settings
 
 `:NetrwSettings`: 打开 Netrw Settings Window 配置窗口，可查看当前配置值，也可修改。
 
-```
+```bash
 With the NetrwSettings.vim plugin,
         :NetrwSettings
 will bring up a window with the many variables that netrw uses for its
@@ -232,7 +243,7 @@ NETRW BROWSER VARIABLES 相关议题：`netrw-browser-settings`(netrw-browser-op
 
 以下为 *netrw* 部分定制配置：
 
-```
+```vim
 "==============================================================================
 " // netrw-browser-settings
 "==============================================================================
@@ -249,10 +260,12 @@ let g:netrw_browse_split      = 2
 let g:netrw_liststyle         = 3
 
 "specify initial size of new windows made with o/v
-let g:netrw_winsize           = 25 "percentage
+let g:netrw_winsize           = 75 "percentage
 ```
 
-## [VOoM](http://www.vim.org/scripts/script.php?script_id=2657)
+## VOoM
+
+[VOoM : Vim two-pane outliner](http://www.vim.org/scripts/script.php?script_id=2657)
 
 github mirror：[voom.vim](https://github.com/vim-voom/VOoM)  
 

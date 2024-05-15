@@ -263,9 +263,13 @@ MBP-FAN ~ » vimman CTRL-W
 
 ### vim在线帮助
 
-[**VI**(1P)](http://man7.org/linux/man-pages/man1/vi.1p.html) @ [Linux man pages online](http://man7.org/linux/man-pages/)  
+[**VI**(1P)](http://man7.org/linux/man-pages/man1/vi.1p.html)  
 [Vim documentations](http://www.vim.org/docs.php)  
 [Vim documentation: help](http://vimdoc.sourceforge.net/)  
+
+[Vim: help.txt](https://vimhelp.org/)
+[Vim: usr_toc.txt](https://vimhelp.org/usr_toc.txt.html)
+[Vim: quickref.txt](https://vimhelp.org/quickref.txt.html)
 
 [如何使用 Vim 的 help](http://blog.csdn.net/simple_the_best/article/details/72820669)  
 [如何高效的使用vim的帮助](https://www.jianshu.com/p/e5e730c047f6)  

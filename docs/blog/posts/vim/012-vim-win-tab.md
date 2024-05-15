@@ -60,7 +60,7 @@ comments: true
 
 底行输入执行 `:set path ?`，查看 path 的默认配置如下：
 
-```
+```bash
 path=.,/usr/include,,
 ```
 
@@ -72,7 +72,7 @@ path=.,/usr/include,,
 如果工作的工程中包含多级嵌套目录呢？每次打开文件都需要输入完整路径，确认很麻烦。  
 此时，可以考虑添加查找路径：
 
-```
+```bash
 :set path+=app/**
 ```
 
@@ -84,7 +84,7 @@ path=.,/usr/include,,
 
 vim可以接多个文件名作为参数列表（argument list），同时打开多个文件：
 
-```Shell
+```bash
 ➜  ~  cd /usr/share/vim/vim[0-9][0-9]/doc
 ➜  doc  vim usr_01.txt usr_02.txt usr_03.txt
 ```
@@ -111,7 +111,7 @@ vim可以接多个文件名作为参数列表（argument list），同时打开�
 
 参考： `/usr/share/vim/vim[0-9][0-9]/doc/windows.txt`
 
-```Shell
+```bash
 ➜  ~  vim --help
 usage: vim [arguments] [file ..]       edit specified file(s)
 
@@ -125,7 +125,7 @@ Arguments:
 
 以下调用 `vim -o` 同时打开3个文件，水平分屏：
  
-```Shell
+```bash
 ➜  doc  vim -o usr_01.txt usr_02.txt usr_03.txt
 ```
 
@@ -133,7 +133,7 @@ Arguments:
 
 以下调用 `vim -O` 同时打开3个文件，垂直分屏：
 
-```Shell
+```bash
 ➜  doc  vim -O usr_01.txt usr_02.txt usr_03.txt
 ```
 
@@ -154,7 +154,7 @@ Arguments:
 1. `:new`/`:vnew` 在顶端/左侧新建分屏，默认打开空白文件，也可携带 *file* 参数在新屏打开指定文件。  
 2. `:sp`/`:vs` 在顶端/左侧新建分屏，默认针对当前文件进行分屏，也可携带 *file* 参数在新屏打开指定文件。  
 
-```
+```bash
 CTRL-W n                                                CTRL-W_n
 CTRL-W CTRL_N                                           CTRL-W_CTRL-N
 :[N]new [++opt] [+cmd]                                  :new
@@ -198,7 +198,7 @@ CTRL-W v                                                CTRL-W_v
 `:bo h :bo`        ｜ 在当前窗格下面新建分屏窗格打开帮助
 `:vert h :vert`    ｜ 在当前窗格左侧新建分屏窗格打开帮助
 
-```
+```bash
 Note that the 'splitbelow' and 'splitright' options influence where a new
 window will appear.
 
@@ -252,7 +252,8 @@ window will appear.
 `<C-w>j`        | 切换焦点到下面的窗口
 `<C-w>k`        | 切换焦点到上面的窗口
 `<C-w>l`        | 切换焦点到右面的窗口
-`<C-w>w`        | 顺序焦点循环切换窗口
+`<C-w>w`        | 顺序焦点循环切换窗口(below/right)
+`<C-w>W`        | 逆序焦点循环切换窗口(above/left)
 `<C-w>t`        | 切换焦点到顶部的窗口
 `<C-w>b`        | 切换焦点到底部的窗口
 `<C-w>p`        | 切换焦点到前一个窗口
@@ -298,7 +299,7 @@ CTRL-W_-  |  decrease current window height N lines
 CTRL-W_<  |  decrease current window width N columns
 CTRL-W_>  |  increase current window width N columns
 
-```
+```bash
 1. Window resizing                                      window-resize
 
                                                 CTRL-W_=
@@ -345,7 +346,7 @@ CTRL-W |        Set current window width to N (default: widest possible).
 > **topic**: Editing with windows in multiple tab pages.
 > **keyword**: *tab-page* *tabpage*
 
-```Shell
+```bash
 ➜  ~  vim --help
 usage: vim [arguments] [file ..]       edit specified file(s)
 
@@ -357,7 +358,7 @@ Arguments:
 
 以下调用 `vim -p` 同时打开3个文件，分布在同一窗口的3各标签（tab page）：
 
-```Shell
+```bash
 ➜  ~  cd /usr/share/vim/vim[0-9][0-9]/doc
 ➜  doc  vim -p usr_01.txt usr_02.txt usr_03.txt
 ```
@@ -401,7 +402,7 @@ Arguments:
 
 `:h :tabnew` 查看新建空白 tab 的命令 `tabnew`：
 
-```
+```bash
 :[count]tabe[dit]                               :tabe :tabedit :tabnew
 :[count]tabnew
                 Open a new tab page with an empty window, after the current
@@ -419,7 +420,7 @@ Arguments:
 
 `:tabnew` 命令后面也可指定 *file* 参数，新开tab打开指定文件。
 
-```
+```bash
 :[count]tabe[dit] [++opt] [+cmd] {file}
 :[count]tabnew [++opt] [+cmd] {file}
                 Open a new tab page and edit {file}, like with :edit.
@@ -436,7 +437,7 @@ Arguments:
 
 `:h :tabclose` 查看关闭 tab 的命令 `tabclose`：
 
-```
+```bash
                     :tabclose       " close the current tab page
 
 :{count}tabc[lose][!]
@@ -468,7 +469,7 @@ Arguments:
 
 `:h :tabnext` 查看切换标签的命令 `tabnext`：
 
-```
+```bash
 :tabn[ext]                              :tabn :tabnext gt
 <C-PageDown>                            CTRL-<PageDown> <C-PageDown>
 gt                                      i_CTRL-<PageDown> i_<C-PageDown>
@@ -494,7 +495,7 @@ gt                                      i_CTRL-<PageDown> i_<C-PageDown>
 
 `tabmove` 命令移动 tab 位置。
 
-```
+```bash
 :tabm[ove] [N]                                          :tabm :tabmove
 :[N]tabm[ove]
                 Move the current tab page to after tab page N.  Use zero to

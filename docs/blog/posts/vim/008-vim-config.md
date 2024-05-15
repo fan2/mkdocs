@@ -19,7 +19,7 @@ comments: true
 
 执行 `vim --version` 尾部有关于 vimrc 的位置说明:
 
-```
+```bash
 λ ~/ vim --version
 VIM - Vi IMproved 8.0 (2016 Sep 12, compiled Aug 17 2018 17:24:51)
 Included patches: 1-503, 505-680, 682-1283
@@ -71,7 +71,7 @@ Prepend "no" to switch an option off:
 
 ## 新建 .vimrc 或 .exrc
 
-```Shell
+```bash
 ➜  ~  cd ~
 ➜  ~  touch .vimrc
 ➜  ~  vi .vimrc
@@ -101,7 +101,7 @@ set nu "set number
 
 若不显示行号，直接删除或注释 `set nu` 这一配置行即可恢复默认；或者使能 `nu` 对应的布尔开关 `nonu`：
 
-```
+```vim
 "不显示行号
 set nonu "set no number 或 set no nu
 ```
@@ -158,12 +158,36 @@ set softtabstop=-1
 set ai "autoindent
 ```
 
-[How can I autoformat/indent C code in vim? - Stack Overflow](https://stackoverflow.com/questions/2355834/how-can-i-autoformat-indent-c-code-in-vim)
+[How can I autoformat/indent C code in vim?](https://stackoverflow.com/questions/2355834/how-can-i-autoformat-indent-c-code-in-vim)
 
 1. `gg=G`
-2. `:!indent %`
-3. [clang-format](https://clang.llvm.org/docs/ClangFormat.html)
-4. [Artistic Style](https://astyle.sourceforge.net/)
+2. [indent](http://en.wikipedia.org/wiki/Indent_%28Unix%29)
+3. [astyle](https://astyle.sourceforge.net/): config autocmd, set formatprg
+3. [clang-format](https://clang.llvm.org/docs/ClangFormat.html): config autocmd, bind equalprg
+
+[vim+astyle 格式化代码](https://blog.csdn.net/SimpleForest/article/details/77429143), [Use Artistic Style with vim](https://blog.shichao.io/2014/01/16/artistic_style_vim.html)
+
+> 支持格式：gnu, linux, google, kr, stroustrup, ...
+
+- 格式化选中部分：`:!astyle --style=google`
+- 格式化整个文件：`:%!astyle --style=google`
+
+[Prepare vim environment to work with clang-format](https://stackoverflow.com/questions/40686684/prepare-vim-environment-to-work-with-clang-format)
+
+```vim
+autocmd FileType h,c,cpp setlocal equalprg=clang-format
+```
+
+支持格式：LLVM, GNU, Google, Chromium, ...
+
+- 格式化选中部分：`:!clang-format --style=Google`
+- 格式化整个文件：`:%!clang-format --style=Google`
+
+vim 插件：
+
+- [vim-autoformat](https://github.com/vim-autoformat/vim-autoformat): based on pynvim.
+- [alpaca-tc/beautify.vim](https://github.com/alpaca-tc/beautify.vim/blob/master/autoload/beautify/beautifier/astyle.vim): based on astyle.
+- [rhysd/vim-clang-format](https://github.com/rhysd/vim-clang-format)
 
 ## 读取设置
 
@@ -181,7 +205,7 @@ set ai "autoindent
 
 fileencodings 为文件编码格式：
 
-```shell
+```bash
                                 *'fileencoding'* *'fenc'* *E213*
 
         Sets the character encoding for the file of this buffer.
@@ -212,7 +236,7 @@ Xcode 右侧的 File Inspector 中的 Text Settings | Text Encoding 可下拉选
 
 fileformat 为换行格式（Line Endings）：
 
-```shell
+```bash
                                         *'fileformat'* *'ff'*
 
 This gives the <EOL> of the current buffer, which is used for
@@ -276,7 +300,7 @@ Sublime Text 的 `~/Library/Application Support/Sublime Text 3/Packages/Default/
 
 ubuntu 下 man vim，FILES 部分列出了配置文件和说明文档相关的文件路径：
 
-```Shell
+```bash
 $ man vim
 
 FILES
@@ -289,7 +313,7 @@ FILES
 
 而 /usr/share/vim/vimrc 指向 /etc/vim/vimrc：
 
-```Shell
+```bash
 $ ls -l /usr/share/vim/
 
 lrwxrwxrwx  1 root root   14 Mar 14 09:05 vimrc -> /etc/vim/vimrc
@@ -357,7 +381,7 @@ YAML 格式的具体说明参见 [YAML 语言教程](http://www.ruanyifeng.com/b
 
 控制台显示的内容可以在系统日志 /var/log/syslog 中查看，接下来查看 cloud-init 日志文件 `/var/log/cloud-init.log`，定位显示是加载解析 `/boot/firmware/network-config` 出错。
 
-```Shell title="/var/log/cloud-init.log"
+```bash title="/var/log/cloud-init.log"
 2024-04-11 00:50:03,529 - util.py[DEBUG]: Read 1590 bytes from /boot/firmware//network-config
 2024-04-11 00:50:03,530 - util.py[DEBUG]: Attempting to load yaml from string of length 240 with allowed root types (<class 'dict'>,)
 2024-04-11 00:50:03,536 - util.py[DEBUG]: Attempting to load yaml from string of length 1590 with allowed root types (<class 'dict'>,)
@@ -386,7 +410,7 @@ found character '\t' that cannot start any token
 
 查看系统日志，看到有一些 systemd-udevd 模块的报错：
 
-```Shell title="/var/log/syslog"
+```bash title="/var/log/syslog"
 Apr 11 10:19:06 rpi4b-ubuntu systemd-udevd[462]: sda1: Process '/usr/bin/unshare -m /usr/bin/snap auto-import --mount=/dev/sda1' failed with exit code 1.
 Apr 11 10:19:06 rpi4b-ubuntu systemd-udevd[473]: sda3: Process '/usr/bin/unshare -m /usr/bin/snap auto-import --mount=/dev/sda3' failed with exit code 1.
 Apr 11 10:19:06 rpi4b-ubuntu systemd-udevd[463]: sda2: Process '/usr/bin/unshare -m /usr/bin/snap auto-import --mount=/dev/sda2' failed with exit code 1.
