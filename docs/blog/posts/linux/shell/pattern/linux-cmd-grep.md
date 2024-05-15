@@ -284,6 +284,7 @@ Output control:
     -S      If -R is specified, all symbolic links are followed.  The default is not to follow symbolic
             links.
 ```
+
 ## Examples
 
 ### basic
@@ -333,6 +334,9 @@ find . -type f -exec file {} \; | grep -c 'ISO-8859'
 
 ### find-grep
 
+[linux - How to find binary files in a directory? - Stack Overflow](https://stackoverflow.com/questions/29516984/how-to-find-binary-files-in-a-directory)
+[find - Finding all "Non-Binary" files - Unix & Linux Stack Exchange](https://unix.stackexchange.com/questions/46276/finding-all-non-binary-files)
+
 以下示例在当前目录下查找名称为 src 的子目录，并在所有子目录下，执行 grep 查找包含 XPTask 的文件。
 
 ```Shell
@@ -341,6 +345,24 @@ find . -type f -exec file {} \; | grep -c 'ISO-8859'
 # -m10 只查找前10条
 # --exclude 排除特殊后缀的文件
 find . -type d -name src | xargs grep -rIm10 --exclude="*.o" --exclude="*.o.d" 'XPTask'
+```
+
+`grep -rIL .` 递归查找不匹配的二进制位文件，管传给 xargs 作为 rm 的参数，即删除找到的二进制文件。
+
+```Shell
+$ grep -rIL . | xargs -t rm
+```
+
+结合 find 命令，查找所有非空的二进制文件：
+
+```Shell
+$ find . -type f ! -size 0 -exec grep -IL . {} \;
+```
+
+查找非空、非二进制文件，并打印列出：
+
+```Shell
+$ find . -type f -exec grep -I -q . {} \; -print
 ```
 
 以下示例递归遍历 nodejs/src 目录，但是排除 dist 目录，查找 `InquiryEntrance`。

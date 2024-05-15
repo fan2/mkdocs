@@ -345,9 +345,11 @@ du ~/Library/Developer
 du Pods
 ```
 
-- 添加 `-c` 选项，最后会输出一条总占用大小；  
+- 添加 `-l` 选项，仅显示本地文件系统，不包括 mount points；  
+- 添加 `-T` 选项（`-Y` for macOS），打印出文件系统类型；  
+- 添加 `-h` 选项，使输出的 fileSize 更易阅读；  
 - 添加 `-s` 选项，相当于 `-d 0` 指定一级目录，不递归子目录；  
-- 添加 `-h` 选项，是输出的 fileSize 更易阅读；  
+- 添加 `-c` 选项，最后会输出一条总占用大小；  
 
 ```Shell
 $ du -sh ~/Documents
