@@ -90,7 +90,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#array" class="md-skip">
+        <a href="#print" class="md-skip">
           跳转至
         </a>
       
@@ -1258,11 +1258,35 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#print" class="md-nav__link">
+    <span class="md-ellipsis">
+      print
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="print">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#register" class="md-nav__link">
+    <span class="md-ellipsis">
+      register
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#array" class="md-nav__link">
     <span class="md-ellipsis">
       array
     </span>
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1380,7 +1404,7 @@
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7h1.5Z"/></svg>
                           <span class="md-ellipsis">
                             
-                              需要 2 分钟阅读时间
+                              需要 4 分钟阅读时间
                             
                           </span>
                         </div>
@@ -1440,6 +1464,7 @@
 </ul>
 <!-- more -->
 
+<h2 id="print">print<a class="headerlink" href="#print" title="Permanent link">#</a></h2>
 <p>The usual way to examine data in your program is with the <code>print</code> command (abbreviated <code>p</code>), or its synonym <code>inspect</code>. It evaluates and prints the value of an expression.</p>
 <p>print [[options] --] expr<br />
 print [[options] --] /f expr</p>
@@ -1447,39 +1472,79 @@ print [[options] --] /f expr</p>
 <p><em>expr</em> is an expression. By default the value of expr is printed in a format appropriate to its data type; you can choose a different format by specifying <code>/f</code>, where f is a letter specifying the <em>format</em>; see <a href="https://sourceware.org/gdb/current/onlinedocs/gdb.html/Output-Formats.html#Output-Formats">Output Formats</a>.</p>
 </blockquote>
 <p>GDB的数据显示格式：</p>
-<ul>
-<li><code>x</code>: 按十六进制格式显示变量。</li>
-<li><code>d</code>: 按十进制格式显示变量。</li>
-<li><code>u</code>: 按十六进制格式显示无符号整型。</li>
-<li><code>o</code>: 按八进制格式显示变量。</li>
-<li><code>t</code>: 按二进制格式显示变量。</li>
-<li><code>a</code>: 按十六进制格式显示变量。</li>
-<li><code>c</code>: 按字符格式显示变量。</li>
-<li><code>f</code>: 按浮点数格式显示变量。</li>
-</ul>
+<table>
+<thead>
+<tr>
+<th>format</th>
+<th>description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>x</code></td>
+<td>Print the binary representation of the value in <strong>hexadecimal</strong>.</td>
+</tr>
+<tr>
+<td><code>d</code> / <code>u</code></td>
+<td>Print the binary representation of the value in <strong>decimal</strong> / <strong>unsigned</strong>.</td>
+</tr>
+<tr>
+<td><code>o</code></td>
+<td>Print the binary representation of the value in <strong>octal</strong>.</td>
+</tr>
+<tr>
+<td><code>t</code></td>
+<td>Print the binary representation of the value in <strong>binary</strong>. The letter ‘t’ stands for “two”.</td>
+</tr>
+<tr>
+<td><code>a</code></td>
+<td>Print as an <strong>address</strong>, both absolute in <strong>hexadecimal</strong> and as an offset from the nearest preceding symbol. <br/>You can use this format used to discover where (in what function) an unknown address is located.</td>
+</tr>
+<tr>
+<td><code>c</code></td>
+<td>Cast the value to an integer (unlike other formats, this does not just reinterpret the underlying bits) and print it as a <strong>character</strong> constant.</td>
+</tr>
+<tr>
+<td><code>f</code></td>
+<td>Regard the bits of the value as a <strong>floating</strong> point number and print using typical floating point syntax.</td>
+</tr>
+<tr>
+<td><code>s</code></td>
+<td>Regard as a <strong>string</strong>, if possible. With this format, pointers to single-byte data are displayed as null-terminated strings and arrays of single-byte data are displayed as fixed-length strings.</td>
+</tr>
+<tr>
+<td><code>z</code></td>
+<td>Like ‘x’ formatting, the value is treated as an integer and printed as <strong>hexadecimal</strong>, but <strong>leading</strong> zeros are printed to pad the value to the size of the integer type.</td>
+</tr>
+</tbody>
+</table>
+<p>简单使用示例：</p>
 <div class="language-Shell highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>p<span class="w"> </span>i
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nv">$1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">101</span>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>p/a<span class="w"> </span>i
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>p/x<span class="w"> </span>i
 </span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="nv">$2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>0x65
 </span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>p/c<span class="w"> </span>i
 </span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="nv">$3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">101</span><span class="w"> </span><span class="s1">&#39;e&#39;</span>
 </span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>p/t<span class="w"> </span>i
 </span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="nv">$4</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1100101</span>
 </span></code></pre></div>
+<h3 id="register">register<a class="headerlink" href="#register" title="Permanent link">#</a></h3>
+<p>print 也可以打印寄存器内容，以 <code>$</code> 符号开头引用寄存器，区别普通变量。</p>
 <p>调试 <a href="https://developer.arm.com/documentation/107829/0200">Getting Started with Arm Assembly Language</a> - 9. Example: equation calculation 中，汇编函数 kinetic_energy 调用返回 main 中的 printf：</p>
 <div class="language-c highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Calling assembly function kinetic_energy with x0=%d and x1=%d results in %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">,</span><span class="w"> </span><span class="n">kinetic_energy</span><span class="p">(</span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">v</span><span class="p">));</span>
 </span></code></pre></div>
 <p>printf 总共有 4 个参数，第 1 个参数为 <code>const char *format</code> 是一个字符指针，指向格式字符串，存放在 x0 寄存器，后面 3 个参数依次存放在 x1~x3 寄存器：</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>p/a<span class="w"> </span><span class="nv">$x0</span>
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="nv">$12</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>0xaaaaaaaa07d8
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>p<span class="w"> </span><span class="nv">$x1</span>
-</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="nv">$8</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">4</span>
-</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>p<span class="w"> </span><span class="nv">$x2</span>
-</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="nv">$9</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5</span>
-</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>p<span class="w"> </span><span class="nv">$x3</span>
-</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="nv">$10</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">50</span>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># i r x0</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>p/a<span class="w"> </span><span class="nv">$x0</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="nv">$12</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>0xaaaaaaaa07d8
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>p<span class="w"> </span><span class="nv">$x1</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="nv">$8</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">4</span>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>p<span class="w"> </span><span class="nv">$x2</span>
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="nv">$9</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">5</span>
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>p<span class="w"> </span><span class="nv">$x3</span>
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="nv">$10</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">50</span>
 </span></code></pre></div>
-<h2 id="array">array<a class="headerlink" href="#array" title="Permanent link">#</a></h2>
+<h3 id="array">array<a class="headerlink" href="#array" title="Permanent link">#</a></h3>
 <p>有时候，你需要查看一段连续的内存空间的值。比如数组的一段，或是动态分配的数据的大小。</p>
 <p>此时，可以使用GDB的 <code>@</code> 操作符。<code>@</code> 的左边是第一个内存的地址，<code>@</code>的右边是欲查看的内存的长度（字节数）。</p>
 <p>例如，你的程序中有这样的语句：</p>
@@ -1496,38 +1561,40 @@ print [[options] --] /f expr</p>
 <p>如果是静态数组的话，可以直接用 print 数组名，就可以显示数组中所有数据的内容了。</p>
 <h2 id="memory">memory<a class="headerlink" href="#memory" title="Permanent link">#</a></h2>
 <p>可以使用 <code>examine</code> 命令（简写是 <code>x</code>）来查看内存地址中的值，语法如下：</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>x/&lt;n/f/u&gt;<span class="w"> </span>&lt;addr&gt;
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>x/nfu<span class="w"> </span>&lt;addr&gt;
 </span></code></pre></div>
-<p>n、f、u 是可选的参数。</p>
+<p><code>n</code>, <code>f</code>, and <code>u</code> are all <em>optional</em> parameters that specify how much memory to display and how to format it; <code>addr</code> is an expression giving the address where you want to start displaying memory.<br />
+If you use defaults for <em>nfu</em>, you need not type the slash ‘<code>/</code>’. Several commands set convenient defaults for <em>addr</em>.</p>
 <ul>
 <li>
-<p>n 是一个正整数，表示显示内存的长度，也就是说从当前地址向后显示几个地址的内容。</p>
+<p><code>n</code>: The repeat count is a decimal integer; the default is <code>1</code>. It specifies how much memory (counting by units <code>u</code>) to display. If a negative number is specified, memory is examined <em>backward</em> from addr.</p>
 </li>
 <li>
-<p>f 表示显示的格式，参见上面。如果地址所指的是字符串，那么格式可以是s，如果地址是指令地址，那么格式可以是i。</p>
+<p><code>f</code>: The display format is one of the formats used by print (‘x’, ‘d’, ‘u’, ‘o’, ‘t’, ‘a’, ‘c’, ‘f’, ‘s’), ‘<code>i</code>’ (for machine instructions) and ‘<code>m</code>’ (for displaying memory tags). The default is ‘<code>x</code>’ (hexadecimal) initially.</p>
 </li>
 <li>
-<p>u 表示从当前地址往后请求的字节数，如果不指定的话，GDB默认是4个bytes。</p>
+<p><code>u</code>: The unit size is any of</p>
 <ul>
-<li>
-<p>u 参数可以用以下字符来代替：b表示单字节，h表示双字节，w表示四字节，g表示八字节。</p>
-</li>
-<li>
-<p>当我们指定了字节长度后，GDB会从指内存定的内存地址开始，读写指定字节，并把其当作一个值取出来。</p>
-</li>
+<li><code>b</code> for Bytes.</li>
+<li><code>h</code> for Halfwords (two bytes).</li>
+<li><code>w</code> for Words (four bytes). This is the initial default.</li>
+<li><code>g</code> for Giant words (eight bytes).</li>
 </ul>
 </li>
-<li>
-<p><code>&lt;addr&gt;</code>: 表示一个内存地址。</p>
-</li>
 </ul>
-<p>n/f/u三个参数可以一起使用。例如，命令 <code>x/3uh 0x54320</code> 表示从内存地址0x54320读取内容，h表示以双字节为一个单位，3表示三个单位，u表示按十六进制显示。</p>
-<p>printf 函数第 1 个参数为 <code>const char *format</code>，存放在 x0 寄存器，可以进一步使用 <code>examine</code> 命令检查指针指向的内存中的格式字符串。</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>p/a<span class="w"> </span><span class="nv">$x0</span>
-</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="nv">$12</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>0xaaaaaaaa07d8
-</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>x<span class="w"> </span>/s<span class="w"> </span><span class="nv">$x0</span>
-</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>0xaaaaaaaa07d8:<span class="w"> </span><span class="s2">&quot;Calling assembly function kinetic_energy with x0=%d and x1=%d results in %d\n&quot;</span>
-</span></code></pre></div>
+<blockquote>
+<p>Each time you specify a unit size with x, that size becomes the <em>default</em> unit the next time you use x. </p>
+</blockquote>
+<ul>
+<li><code>addr</code>, starting display address, where you want GDB to begin displaying memory. The expression need not have a pointer value (though it may); it is always interpreted as an integer address of a byte of memory.</li>
+</ul>
+<div class="admonition example">
+<p class="admonition-title">x/nfu &lt;addr&gt;</p>
+<ol>
+<li><code>x/3uh 0x54320</code> is a request to display three halfwords (<code>h</code>) of memory, formatted as unsigned decimal integers (‘<code>u</code>’), starting at address 0x54320.</li>
+<li><code>x/4xw $sp</code> prints the four words (‘<code>w</code>’) of memory <em>above</em> the stack pointer in hexadecimal (‘<code>x</code>’).</li>
+</ol>
+</div>
 <h2 id="display">display<a class="headerlink" href="#display" title="Permanent link">#</a></h2>
 <p>可以设置一些自动显示的变量，当程序停住时，或是在你单步跟踪时，这些变量会自动显示。相关的GDB命令是 <code>display</code>。</p>
 <ul>
@@ -1544,11 +1611,28 @@ print [[options] --] /f expr</p>
 </ul>
 <p>dnums 为自动显示的编号，多个编号之间用空格分隔。</p>
 <h2 id="registers">registers<a class="headerlink" href="#registers" title="Permanent link">#</a></h2>
+<p>寄存器中放置了程序运行时的数据，比如程序当前运行的指令地址（ip），程序的当前堆栈地址（sp）等等。</p>
+<p>除了可以使用 <code>print</code>(p) 和 <code>examine</code>(x) 命令查看指定寄存器的值，也可以使用 <code>info</code>(i) 命令查看寄存器状态信息。</p>
 <p>要查看寄存器的值，可以使用如下命令：</p>
-<p><code>info registers</code>：查看寄存器的情况。（除了浮点寄存器）<br />
+<p><code>info registers</code>(i r)：查看寄存器的情况。（除了浮点寄存器）<br />
 <code>info all-registers</code>：查看所有寄存器的情况。（包括浮点寄存器）<br />
-<code>info registers &lt;regname ...&gt;</code>：查看指定的寄存器的情况。</p>
-<p>寄存器中放置了程序运行时的数据，比如程序当前运行的指令地址（ip），程序的当前堆栈地址（sp）等等。你同样可以使用print命令来访问寄存器的情况，只需要在寄存器名字前加一个 $ 符号即可，如 <code>p $pc</code>。</p>
+<code>info registers &lt;regname ...&gt;</code>(i r x0 x1)：查看指定的寄存器的情况。</p>
+<p>Since A64 instructions are still 32 bits long as A32(except for T32 mode), we can examine instructions around <code>$pc</code> with a difference value of 4 bytes.</p>
+<div class="admonition example">
+<p class="admonition-title">x/ni $pc</p>
+<ol>
+<li><code>x/i $pc</code>: print the instruction to be executed next with.</li>
+<li><code>x/4i $pc</code>: prints four instructions following <code>$pc</code>.</li>
+<li><code>x/2i $pc-8</code>: prints two instructions above <code>$pc</code>.</li>
+<li><code>x/2i $pc+4</code>: prints two instructions below <code>$pc</code>.</li>
+</ol>
+</div>
+<p>在调试 <a href="https://developer.arm.com/documentation/107829/0200">Getting Started with Arm Assembly Language</a> - 9. Example: equation calculation 中，汇编函数 kinetic_energy 调用返回 main 中的 printf 函数，其第 1 个参数为 <code>const char *format</code>，存放在 x0 寄存器，可以进一步使用 <code>examine</code> 命令检查指针指向的内存中的格式字符串。</p>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>p/a<span class="w"> </span><span class="nv">$x0</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="nv">$12</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>0xaaaaaaaa07d8
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="o">(</span>gdb<span class="o">)</span><span class="w"> </span>x<span class="w"> </span>/s<span class="w"> </span><span class="nv">$x0</span>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>0xaaaaaaaa07d8:<span class="w"> </span><span class="s2">&quot;Calling assembly function kinetic_energy with x0=%d and x1=%d results in %d\n&quot;</span>
+</span></code></pre></div>
 <h2 id="symbol">symbol<a class="headerlink" href="#symbol" title="Permanent link">#</a></h2>
 <p><a href="https://sourceware.org/gdb/current/onlinedocs/gdb.html/Symbols.html#Symbols">16 Examining the Symbol Table</a></p>
 <p>ptype[/flags] [arg]</p>

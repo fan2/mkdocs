@@ -200,11 +200,10 @@ End of assembler dump.
 
 在 [Stopping and Continuing](./3-gdb-stop-and-continue.md) 中，我们想单步跟踪调试第 19 行 for 循环体的机器指令，每次 si 后都要执行 `disas /m func` 查看 pc 箭头指向当前运行到了那一条机器指令。有没有办法在 GDB 控制台中同步显示当前源码及其对应的机器指令呢？
 
-格式 i 和 s 同样被 display 支持，一个非常有用的命令是：
+格式 i 和 s 同样被 display 支持，一个非常有用的命令是 `display/i $pc`。
 
-```Shell
-display/i $pc
-```
+> It is often useful to do `display/i $pc` when stepping by machine instructions.
+> This makes GDB automatically display the *next* instruction to be executed, each time your program stops.
 
 \$pc 是 GDB 的环境变量，表示着指令的地址，/i 则表示输出格式为机器指令码，也就是汇编。
 

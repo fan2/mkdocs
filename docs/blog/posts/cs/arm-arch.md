@@ -103,7 +103,7 @@ model | Arch | Spec | ISA | Suffixes
 - Has `31` general-purpose 64-bit registers.
 - Has dedicated zero or stack pointer (`SP`) register (depending on instruction).
 - The program counter (`PC`) is no longer directly accessible as a register.
-- Instructions are still `32` bits long and mostly the same as A32 (with LDM/STM instructions and most conditional execution dropped).
+- Instructions are still ==32== bits long and mostly the same as A32 (with LDM/STM instructions and most conditional execution dropped).
 
     - Has paired loads/stores (in place of LDM/STM).
     - No predication for most instructions (except branches).

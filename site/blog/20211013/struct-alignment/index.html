@@ -1707,6 +1707,14 @@
 <p>Note that the effectiveness of aligned attributes for static variables may be limited by inherent limitations in the system linker and/or object file format. On some systems, the linker is only able to arrange for variables to be aligned up to a certain maximum alignment. (For some linkers, the maximum supported alignment may be very very small.) If your linker is only able to align variables up to a maximum of 8-byte alignment, then specifying aligned(16) in an <code>__attribute__</code> still only provides you with 8-byte alignment. See your linker documentation for further information.</p>
 <p>Stack variables are not affected by linker restrictions; GCC can properly align them on any target.</p>
 </div>
+<div class="admonition info">
+<p class="admonition-title">AAPCS - Stack constraints at a public interface</p>
+<p>The stack must also conform to the following constraint at a public interface:</p>
+<ul>
+<li><a href="https://github.com/ARM-software/abi-aa/blob/2a70c42d62e9c3eb5887fa50b71257f20daca6f9/aapcs32/aapcs32.rst">aapcs32</a>: SP mod 8 = 0. The stack must be double-word aligned.</li>
+<li><a href="https://github.com/ARM-software/abi-aa/blob/2a70c42d62e9c3eb5887fa50b71257f20daca6f9/aapcs64/aapcs64.rst">aapcs64</a>: SP mod 16 = 0. The stack must be quad-word aligned.</li>
+</ul>
+</div>
 <p>可以借助 cpp / gcc -E -dM 预编译，过滤打印出 <code>__BIGGEST_ALIGNMENT__</code> 宏定义：</p>
 <div class="language-Shell highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>$<span class="w"> </span>gcc<span class="w"> </span>-dM<span class="w"> </span>-E<span class="w"> </span>-arch<span class="w"> </span>armv7<span class="w"> </span>-x<span class="w"> </span>c<span class="w"> </span>/dev/null<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s1">&#39;__BIGGEST_ALIGNMENT__&#39;</span>
 </span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>$<span class="w"> </span>gcc<span class="w"> </span>-dM<span class="w"> </span>-E<span class="w"> </span>-arch<span class="w"> </span>arm<span class="w"> </span>-x<span class="w"> </span>c<span class="w"> </span>/dev/null<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s1">&#39;__BIGGEST_ALIGNMENT__&#39;</span>
