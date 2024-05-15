@@ -1310,6 +1310,24 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#terms" class="md-nav__link">
+    <span class="md-ellipsis">
+      terms
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pcs" class="md-nav__link">
+    <span class="md-ellipsis">
+      PCS
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#refs_1" class="md-nav__link">
     <span class="md-ellipsis">
       refs
@@ -1410,7 +1428,7 @@
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7h1.5Z"/></svg>
                           <span class="md-ellipsis">
                             
-                              需要 2 分钟阅读时间
+                              需要 5 分钟阅读时间
                             
                           </span>
                         </div>
@@ -1504,9 +1522,7 @@
 <h3 id="refs">refs<a class="headerlink" href="#refs" title="Permanent link">#</a></h3>
 <p>The history of calling conventions:</p>
 <ul>
-<li><a href="https://devblogs.microsoft.com/oldnewthing/20040102-00/?p=41213">part 1</a></li>
-<li><a href="https://devblogs.microsoft.com/oldnewthing/20040107-00/?p=41183">part 2</a></li>
-<li><a href="https://devblogs.microsoft.com/oldnewthing/20040108-00/?p=41163">part 3</a></li>
+<li><a href="https://devblogs.microsoft.com/oldnewthing/20040102-00/?p=41213">part 1</a>, <a href="https://devblogs.microsoft.com/oldnewthing/20040107-00/?p=41183">part 2</a>, <a href="https://devblogs.microsoft.com/oldnewthing/20040108-00/?p=41163">part 3</a></li>
 <li><a href="https://devblogs.microsoft.com/oldnewthing/20040113-00/?p=41073">part 4: ia64</a></li>
 <li><a href="https://devblogs.microsoft.com/oldnewthing/20040114-00/?p=41053">part 5: amd64</a></li>
 </ul>
@@ -1553,6 +1569,90 @@
 <li><a href="https://learn.microsoft.com/en-us/cpp/build/overview-of-arm-abi-conventions">Overview of ARM ABI Conventions</a></li>
 <li><a href="https://learn.microsoft.com/en-us/cpp/build/arm64-windows-abi-conventions">Overview of ARM64 ABI conventions</a></li>
 <li><a href="https://learn.microsoft.com/en-us/cpp/build/arm64ec-windows-abi-conventions">Overview of ARM64EC ABI conventions</a></li>
+</ul>
+<h3 id="terms">terms<a class="headerlink" href="#terms" title="Permanent link">#</a></h3>
+<p><a href="https://github.com/ARM-software/abi-aa/blob/2a70c42d62e9c3eb5887fa50b71257f20daca6f9/aapcs64/aapcs64.rst">aapcs64</a> - 2.2 Terms and abbreviations:</p>
+<p><code>Program state</code>: The state of the program’s memory, including values in machine registers.</p>
+<p><code>Routine</code>, <code>subroutine</code>: A fragment of program to which control can be transferred that, on completing its task, returns control to its caller at an instruction following the call. Routine is used for clarity where there are nested calls: a routine is the <em><code>caller</code></em> and a subroutine is the <em><code>callee</code></em>.</p>
+<ul>
+<li><code>Procedure</code>: A routine that returns no result value.</li>
+<li><code>Function</code>: A routine that returns a result value.</li>
+</ul>
+<p><code>Argument</code> / <code>parameter</code>: The terms argument and parameter are used interchangeably. They may denote a formal parameter of a routine given the value of the actual parameter when the routine is called, or an actual parameter, according to context.</p>
+<p><code>Activation stack</code> / <code>call-frame stack</code>: The stack of routine activation records (call frames).</p>
+<p><code>Activation record</code> / <code>call frame</code>: The memory used by a routine for saving registers and holding local variables (usually allocated on a stack, once per activation of the routine).</p>
+<h3 id="pcs">PCS<a class="headerlink" href="#pcs" title="Permanent link">#</a></h3>
+<p><a href="https://developer.arm.com/documentation/102374/0102/Procedure-Call-Standard">A64 Instruction Set Architecture Guide</a> - 27. Procedure Call Standard</p>
+<p>The Arm architecture places few restrictions on how general purpose registers are used. To recap, integer registers and ﬂoating-point registers are general purpose registers. However, if you want your code to <strong>interact</strong> with code that is written by someone else, or with code that is produced by a compiler, then you need to <strong>agree</strong> rules for register usage. For the Arm architecture, these rules are called the Procedure Call Standard, or <strong><em>PCS</em></strong>.</p>
+<p>The PCS speciﬁes:</p>
+<ul>
+<li>Which registers are used to <strong>pass</strong> arguments into the function.</li>
+<li>Which registers are used to <strong>return</strong> a value to the function doing the calling, known as the caller.</li>
+<li>Which registers the function being called, which is known as the callee, <em>can</em> corrupt.</li>
+<li>Which registers the callee <em>cannot</em> corrupt.</li>
+</ul>
+<p>Consider a function <code>foo()</code>, being called from <code>main()</code>:</p>
+<figure><br />
+<img alt="aapcs64-example" src="../../cs/images/aapcs64-example.jpeg" /><br />
+</figure>
+<p>The PCS says that the first argument is passed in <code>X0</code>, the second argument in <code>X1</code>, and so on up to <code>X7</code>. Any further arguments are passed on the stack. Our function, <code>foo()</code>, takes two arguments: <code>b</code> and <code>c</code>. Therefore, <code>b</code> will be in <code>W0</code> and <code>c</code> will be in <code>W1</code>.</p>
+<p>Why <code>W</code> and not <code>X</code>? Because the arguments are a 32-bit type, and therefore we only need a <code>W</code> register.</p>
+<div class="admonition note">
+<p class="admonition-title">X0 reserved for this pointer in C++</p>
+<p>In C++, <code>X0</code> is used to pass the implicit <em>this</em> pointer that points to the called function.</p>
+</div>
+<p>Next, the PCS deﬁnes which registers can be corrupted, and which registers cannot be corrupted. If a register can be corrupted, then the called function can <strong>overwrite</strong> without needing to restore, as this table of PCS register rules shows:</p>
+<table>
+<thead>
+<tr>
+<th>X0-X7</th>
+<th>X8-X15</th>
+<th>X16-X23</th>
+<th>X24-X30</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Parameter and Result Registers (X0-X7)</td>
+<td>XR (X8)</td>
+<td>IP0 (X16)</td>
+<td>Callee-saved Registers (X24-X28)</td>
+</tr>
+<tr>
+<td>-</td>
+<td>Corruptible Registers (X9-X15)</td>
+<td>IP1 (X17)</td>
+<td>FP (X29)</td>
+</tr>
+<tr>
+<td>-</td>
+<td>-</td>
+<td>PR (X18)</td>
+<td>LR (X30)</td>
+</tr>
+<tr>
+<td>-</td>
+<td>-</td>
+<td>Callee-saved Registers (X19-X23)</td>
+<td>-</td>
+</tr>
+</tbody>
+</table>
+<p>For example, the function <code>foo()</code> can use registers <code>X0</code> to <code>X15</code> without needing to preserve their values. However, if <code>foo()</code> wants to use <code>X19</code> to <code>X28</code> it must <strong>save</strong> them to stack ﬁrst, and then <strong>restore</strong> from the stack before returning.</p>
+<p>Some registers have special signiﬁcance in the PCS:</p>
+<ul>
+<li>
+<p><code>XR</code> - This is an <em>indirect</em> result register. If <code>foo()</code> returned a <em>struct</em>, then the memory for struct would be <strong>allocated</strong> by the caller, <code>main()</code> in the earlier example. <code>XR</code> is a pointer to the memory allocated by the caller for returning the struct.</p>
+</li>
+<li>
+<p><code>IP0</code> and <code>IP1</code> - These registers are intra-procedure-call corruptible registers. These registers can be corrupted between the time that the function is called and the time that it arrives at the ﬁrst instruction in the function. These registers are used by <em>linkers</em> to <strong>insert</strong> veneers between the caller and callee. Veneers are small pieces of code. The most common example is for branch range extension. The branch instruction in A64 has a limited range. If the target is beyond that range, then the linker needs to generate a veneer to <strong>extend</strong> the range of the branch.</p>
+</li>
+<li>
+<p><code>FP</code> - Frame pointer.</p>
+</li>
+<li>
+<p><code>LR</code> - <code>X30</code> is the link register (<code>LR</code>) for function calls.</p>
+</li>
 </ul>
 <h3 id="refs_1">refs<a class="headerlink" href="#refs_1" title="Permanent link">#</a></h3>
 <p><a href="http://www.cems.uwe.ac.uk/~cduffy/es/ARMstacks.doc">Stacks on ARM processors.doc</a><br />

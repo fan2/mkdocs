@@ -127,12 +127,13 @@ M-Profile Architecture:
 
 ### textbooks
 
-1. [Modern Assembly Language Programming with the ARM Processor](https://www.amazon.com/Modern-Assembly-Language-Programming-Processor-ebook/dp/B01FENFCMS/), Larry D Pyeatt, 2016
-2. [ARM 64-Bit Assembly Language](https://www.amazon.com/64-Bit-Assembly-Language-Larry-Pyeatt/dp/0128192216/), Larry D Pyeatt & William Ughetta, 2019
-3. [Raspberry Pi Assembly Language Programming: ARM Processor Coding](https://www.amazon.com/Raspberry-Assembly-Language-Programming-Processor/dp/1484252861/), Stephen Smith, 2019
-4. [Programming with 64-Bit ARM Assembly Language: Single Board Computer Development for Raspberry Pi and Mobile Devices](https://www.amazon.com/Programming-64-Bit-ARM-Assembly-Language/dp/1484258800/), Stephen Smith, 2020
-5. [Modern Arm Assembly Language Programming: Covers Armv8-A 32-bit, 64-bit, and SIMD](https://www.amazon.com/Modern-Assembly-Language-Programming-Armv8/dp/1484262662/), Daniel Kusswurm, 2020
-6. [Computer Organization and Design ARM Edition: The Hardware Software Interface](https://www.amazon.com/Computer-Organization-Design-ARM-Architecture/dp/0128017333), David A. Patterson, John L. Hennessy, 2016 @[ustc](http://home.ustc.edu.cn/~louwenqi/reference_books_tools/Computer%20Organization%20and%20Design%20ARM%20edition.pdf)
+1. [ARM Assembly Language: Fundamentals and Techniques, 2nd Edition](https://www.oreilly.com/library/view/arm-assembly-language/9781482229851/) - [pdf](https://dbo.raharja.ac.id/606/1/ARM%20Assembly%20Language%20Fundamentals%20and%20Techniques%2C%20Second%20Edition.pdf), William Hohl, Christopher Hinds, 2014
+2. [Modern Assembly Language Programming with the ARM Processor](https://www.amazon.com/Modern-Assembly-Language-Programming-Processor-ebook/dp/B01FENFCMS/), Larry D Pyeatt, 2016
+3. [ARM 64-Bit Assembly Language](https://www.amazon.com/64-Bit-Assembly-Language-Larry-Pyeatt/dp/0128192216/), Larry D Pyeatt & William Ughetta, 2019
+4. [Raspberry Pi Assembly Language Programming: ARM Processor Coding](https://www.amazon.com/Raspberry-Assembly-Language-Programming-Processor/dp/1484252861/), Stephen Smith, 2019
+5. [Programming with 64-Bit ARM Assembly Language: Single Board Computer Development for Raspberry Pi and Mobile Devices](https://www.amazon.com/Programming-64-Bit-ARM-Assembly-Language/dp/1484258800/), Stephen Smith, 2020
+6. [Modern Arm Assembly Language Programming: Covers Armv8-A 32-bit, 64-bit, and SIMD](https://www.amazon.com/Modern-Assembly-Language-Programming-Armv8/dp/1484262662/), Daniel Kusswurm, 2020
+7. [Computer Organization and Design ARM Edition: The Hardware Software Interface](https://www.amazon.com/Computer-Organization-Design-ARM-Architecture/dp/0128017333), David A. Patterson, John L. Hennessy, 2016 @[ustc](http://home.ustc.edu.cn/~louwenqi/reference_books_tools/Computer%20Organization%20and%20Design%20ARM%20edition.pdf)
 
 ### references
 

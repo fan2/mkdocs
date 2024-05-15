@@ -59,9 +59,7 @@ System V ABI:
 
 The history of calling conventions:
 
-- [part 1](https://devblogs.microsoft.com/oldnewthing/20040102-00/?p=41213)
-- [part 2](https://devblogs.microsoft.com/oldnewthing/20040107-00/?p=41183)
-- [part 3](https://devblogs.microsoft.com/oldnewthing/20040108-00/?p=41163)
+- [part 1](https://devblogs.microsoft.com/oldnewthing/20040102-00/?p=41213), [part 2](https://devblogs.microsoft.com/oldnewthing/20040107-00/?p=41183), [part 3](https://devblogs.microsoft.com/oldnewthing/20040108-00/?p=41163)
 - [part 4: ia64](https://devblogs.microsoft.com/oldnewthing/20040113-00/?p=41073)
 - [part 5: amd64](https://devblogs.microsoft.com/oldnewthing/20040114-00/?p=41053)
 
@@ -109,6 +107,71 @@ The history of calling conventions:
 - [Overview of ARM ABI Conventions](https://learn.microsoft.com/en-us/cpp/build/overview-of-arm-abi-conventions)
 - [Overview of ARM64 ABI conventions](https://learn.microsoft.com/en-us/cpp/build/arm64-windows-abi-conventions)
 - [Overview of ARM64EC ABI conventions](https://learn.microsoft.com/en-us/cpp/build/arm64ec-windows-abi-conventions)
+
+### terms
+
+[aapcs64](https://github.com/ARM-software/abi-aa/blob/2a70c42d62e9c3eb5887fa50b71257f20daca6f9/aapcs64/aapcs64.rst) - 2.2 Terms and abbreviations:
+
+`Program state`: The state of the program’s memory, including values in machine registers.
+
+`Routine`, `subroutine`: A fragment of program to which control can be transferred that, on completing its task, returns control to its caller at an instruction following the call. Routine is used for clarity where there are nested calls: a routine is the *`caller`* and a subroutine is the *`callee`*.
+
+- `Procedure`: A routine that returns no result value.
+- `Function`: A routine that returns a result value.
+
+`Argument` / `parameter`: The terms argument and parameter are used interchangeably. They may denote a formal parameter of a routine given the value of the actual parameter when the routine is called, or an actual parameter, according to context.
+
+`Activation stack` / `call-frame stack`: The stack of routine activation records (call frames).
+
+`Activation record` / `call frame`: The memory used by a routine for saving registers and holding local variables (usually allocated on a stack, once per activation of the routine).
+
+### PCS
+
+[A64 Instruction Set Architecture Guide](https://developer.arm.com/documentation/102374/0102/Procedure-Call-Standard) - 27. Procedure Call Standard
+
+The Arm architecture places few restrictions on how general purpose registers are used. To recap, integer registers and ﬂoating-point registers are general purpose registers. However, if you want your code to **interact** with code that is written by someone else, or with code that is produced by a compiler, then you need to **agree** rules for register usage. For the Arm architecture, these rules are called the Procedure Call Standard, or ***PCS***.
+
+The PCS speciﬁes:
+
+- Which registers are used to **pass** arguments into the function.
+- Which registers are used to **return** a value to the function doing the calling, known as the caller.
+- Which registers the function being called, which is known as the callee, *can* corrupt.
+- Which registers the callee *cannot* corrupt.
+
+Consider a function `foo()`, being called from `main()`:
+
+<figure markdown="span">
+    ![aapcs64-example](./images/aapcs64-example.jpeg)
+</figure>
+
+The PCS says that the first argument is passed in `X0`, the second argument in `X1`, and so on up to `X7`. Any further arguments are passed on the stack. Our function, `foo()`, takes two arguments: `b` and `c`. Therefore, `b` will be in `W0` and `c` will be in `W1`.
+
+Why `W` and not `X`? Because the arguments are a 32-bit type, and therefore we only need a `W` register.
+
+!!! note "X0 reserved for this pointer in C++"
+
+    In C++, `X0` is used to pass the implicit *this* pointer that points to the called function.
+
+Next, the PCS deﬁnes which registers can be corrupted, and which registers cannot be corrupted. If a register can be corrupted, then the called function can **overwrite** without needing to restore, as this table of PCS register rules shows:
+
+X0-X7 | X8-X15 | X16-X23 | X24-X30
+------|--------|---------|--------
+Parameter and Result Registers (X0-X7) | XR (X8) | IP0 (X16) | Callee-saved Registers (X24-X28)
+- | Corruptible Registers (X9-X15) | IP1 (X17) | FP (X29)
+- | - | PR (X18) | LR (X30)
+- | - | Callee-saved Registers (X19-X23) | -
+
+For example, the function `foo()` can use registers `X0` to `X15` without needing to preserve their values. However, if `foo()` wants to use `X19` to `X28` it must **save** them to stack ﬁrst, and then **restore** from the stack before returning.
+
+Some registers have special signiﬁcance in the PCS:
+
+- `XR` - This is an *indirect* result register. If `foo()` returned a *struct*, then the memory for struct would be **allocated** by the caller, `main()` in the earlier example. `XR` is a pointer to the memory allocated by the caller for returning the struct.
+
+- `IP0` and `IP1` - These registers are intra-procedure-call corruptible registers. These registers can be corrupted between the time that the function is called and the time that it arrives at the ﬁrst instruction in the function. These registers are used by *linkers* to **insert** veneers between the caller and callee. Veneers are small pieces of code. The most common example is for branch range extension. The branch instruction in A64 has a limited range. If the target is beyond that range, then the linker needs to generate a veneer to **extend** the range of the branch.
+
+- `FP` - Frame pointer.
+
+- `LR` - `X30` is the link register (`LR`) for function calls.
 
 ### refs
 
