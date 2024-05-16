@@ -19,11 +19,13 @@ In 32-bit programs, pointers and data types such as integers generally have the 
 
 ## Preamble
 
-对于 GCC/Clang 预处理器定义的一些宏，可执行 `cpp -dM` /`gcc -E -dM` 预处理命令 dump Macros：
+对于 GCC/Clang 预处理器定义的一些宏，在 [Dump Compiler Options](../toolchain/dump-compiler-options.md) 中有介绍如何 dump compiler predefined macros。
 
 - GCC Internals - [Layout of Source Language Data Types](https://gcc.gnu.org/onlinedocs/gccint/Type-Layout.html)
 - GNU C Preprocessor - [Common Predefined Macros](https://gcc.gnu.org/onlinedocs/cpp/Common-Predefined-Macros.html)
 - [Clang Preprocessor options](https://clang.llvm.org/docs/ClangCommandLineReference.html#preprocessor-options) - [Dumping preprocessor state](https://clang.llvm.org/docs/ClangCommandLineReference.html#id8)
+
+可执行 `cpp -dM` /`gcc -E -dM` 预处理命令 dump Macros：
 
 ```Shell title="dump prededined macros"
 $ echo | cpp -dM
@@ -39,13 +41,110 @@ $ llvm-gcc -x c -E -dM -arch armv7s /dev/null
 $ llvm-gcc -x c -E -dM -arch arm64 /dev/null
 ```
 
-在 IA32/ARM32 位平台上，通常会定义宏 `_ILP32` 或 `__ILP32__` 值为 1；
-在 IA64/ARM64 位平台上，通常会定义宏 `_LP64` 或 `__LP64__` 值为 1。
+例如：[Numeric limits](https://en.cppreference.com/w/c/types/limits) - <limits.h\> 中定义了 `CHAR_BIT`：
 
-`ILP32` 和 `LP64` 是两组不同的数据模型（Data Model），决定了平台是 32 位还是 64 位，进而影响 long、long long 和 pointer 的宽度：
+- `CHAR_BIT`: number of bits in a byte(macro constant)
+
+在 macOS 和 rpi4b-ubuntu 下执行预处理命令，grep 过滤打印出 `__CHAR_BIT__`（其值均为 8）。
+
+```Shell
+# macOS
+llvm-gcc -x c -E -dM -arch i386 /dev/null | grep "__CHAR_BIT__"
+llvm-gcc -x c -E -dM -arch x86_64 /dev/null | grep "__CHAR_BIT__"
+llvm-gcc -x c -E -dM -arch armv7s /dev/null | grep "__CHAR_BIT__"
+llvm-gcc -x c -E -dM -arch arm64 /dev/null | grep "__CHAR_BIT__"
+
+# rpi4b-ubuntu
+echo | cpp -dM | grep "__CHAR_BIT__"
+gcc -x c -E -dM /dev/null | grep "__CHAR_BIT__"
+```
+
+在 IA32/ARM32 位平台上，通常会预定义宏 `_ILP32` 或 `__ILP32__` 值为 1；
+在 IA64/ARM64 位平台上，通常会预定义宏 `_LP64` 或 `__LP64__` 值为 1。
+
+`ILP32` 和 `LP64` 是两组不同的数据模型（Data Model），决定了平台是 32 位还是 64 位，进而影响 long、long long 和 pointer 的宽度。
+
+涉及到机器字长并决定数据模型相关的宏：
 
 - `__SIZEOF_LONG__` @[intel](https://www.intel.com/content/www/us/en/developer/articles/technical/size-of-long-integer-type-on-different-architecture-and-os.html)
 - `__SIZEOF_POINTER__` / `__POINTER_WIDTH__`
+
+4 个 [Standard Variants](../c/c-data-types.md) 相关的宏：
+
+1. `__WCHAR_TYPE__`, `__WCHAR_WIDTH__`, `__SIZEOF_WCHAR_T__`
+2. `__SIZE_TYPE__`, `__SIZE_WIDTH__`, `__SIZEOF_SIZE_T__`
+3. `__INTPTR_TYPE__`, `__INTPTR_WIDTH__`; `__UINTPTR_TYPE__`, `__UINTPTR_WIDTH__`
+4. `__PTRDIFF_TYPE__`, `__PTRDIFF_WIDTH__`
+
+以下为 mbpa2991-macOS/arm64 和 rpi4b-ubuntu/aarch64 下 dump 过滤出来的相关宏。
+
+??? info "macros varying by data model"
+
+    ```Shell
+    $ llvm-gcc -x c -E -dM -arch i386 /dev/null | grep -E "LP32|LP64|__SIZEOF_LONG__|__SIZEOF_POINTER__|__WCHAR_TYPE__|__SIZE_TYPE__|__INTPTR_TYPE__|__UINTPTR_TYPE__|__PTRDIFF_TYPE__"
+    #define _ILP32 1
+    #define __ILP32__ 1
+    #define __INTPTR_TYPE__ long int
+    #define __PTRDIFF_TYPE__ int
+    #define __SIZEOF_LONG__ 4
+    #define __SIZEOF_POINTER__ 4
+    #define __SIZE_TYPE__ long unsigned int
+    #define __UINTPTR_TYPE__ long unsigned int
+    #define __WCHAR_TYPE__ int
+
+    $ llvm-gcc -x c -E -dM -arch x86_64 /dev/null | grep -E "LP32|LP64|__SIZEOF_LONG__|__SIZEOF_POINTER__|__WCHAR_TYPE__|__SIZE_TYPE__|__INTPTR_TYPE__|__UINTPTR_TYPE__|__PTRDIFF_TYPE__"
+    #define _LP64 1
+    #define __INTPTR_TYPE__ long int
+    #define __LP64__ 1
+    #define __PTRDIFF_TYPE__ long int
+    #define __SIZEOF_LONG__ 8
+    #define __SIZEOF_POINTER__ 8
+    #define __SIZE_TYPE__ long unsigned int
+    #define __UINTPTR_TYPE__ long unsigned int
+    #define __WCHAR_TYPE__ int
+
+    $ llvm-gcc -x c -E -dM -arch armv7s /dev/null | grep -E "LP32|LP64|__SIZEOF_LONG__|__SIZEOF_POINTER__|__WCHAR_TYPE__|__SIZE_TYPE__|__INTPTR_TYPE__|__UINTPTR_TYPE__|__PTRDIFF_TYPE__"
+    #define _ILP32 1
+    #define __ILP32__ 1
+    #define __INTPTR_TYPE__ long int
+    #define __PTRDIFF_TYPE__ int
+    #define __SIZEOF_LONG__ 4
+    #define __SIZEOF_POINTER__ 4
+    #define __SIZE_TYPE__ long unsigned int
+    #define __UINTPTR_TYPE__ long unsigned int
+    #define __WCHAR_TYPE__ int
+
+    $ llvm-gcc -x c -E -dM -arch arm64 /dev/null | grep -E "LP32|LP64|__SIZEOF_LONG__|__SIZEOF_POINTER__|__WCHAR_TYPE__|__SIZE_TYPE__|__INTPTR_TYPE__|__UINTPTR_TYPE__|__PTRDIFF_TYPE__"
+    #define _LP64 1
+    #define __INTPTR_TYPE__ long int
+    #define __LP64__ 1
+    #define __PTRDIFF_TYPE__ long int
+    #define __SIZEOF_LONG__ 8
+    #define __SIZEOF_POINTER__ 8
+    #define __SIZE_TYPE__ long unsigned int
+    #define __UINTPTR_TYPE__ long unsigned int
+    #define __WCHAR_TYPE__ int
+
+    # rpi4b-ubuntu/aarch64
+    $ gcc -x c -E -dM /dev/null | grep -E "LP32|LP64|__SIZEOF_LONG__|__SIZEOF_POINTER__|__WCHAR_TYPE__|__SIZE_TYPE__|__INTPTR_TYPE__|__UINTPTR_TYPE__|__PTRDIFF_TYPE__"
+    #define __SIZEOF_LONG__ 8
+    #define __SIZEOF_POINTER__ 8
+    #define __LP64__ 1
+    #define __SIZE_TYPE__ long unsigned int
+    #define __INTPTR_TYPE__ long int
+    #define __WCHAR_TYPE__ unsigned int
+    #define _LP64 1
+    #define __PTRDIFF_TYPE__ long int
+    #define __UINTPTR_TYPE__ long unsigned int
+    ```
+
+## Concept
+
+[64-bit data models](https://en.wikipedia.org/wiki/64-bit_computing#64-bit_data_models)
+
+In many programming environments for C and C-derived languages on 64-bit machines, `int` variables are still 32 bits wide, but `long` integers and `pointers` are 64 bits wide. These are described as having an ***LP64*** data model, which is an abbreviation of "Long, Pointer, 64". Other models are the ***ILP64*** data model in which all three data types are 64 bits wide, and even the ***SILP64*** model where short integers are also 64 bits wide. However, in most cases the modifications required are relatively minor and straightforward, and many well-written programs can simply be recompiled for the new environment with no changes. Another alternative is the ***LLP64*** model, which maintains compatibility with 32-bit code by leaving both `int` and `long` as 32-bit. `LL` refers to the `long long` integer type, which is at least 64 bits on all platforms, including 32-bit environments.
+
+There are also systems with 64-bit processors using an ***ILP32*** data model, with the addition of 64-bit `long long` integers; this is also used on many platforms with 32-bit processors. This model reduces code size and the size of data structures containing pointers, at the cost of a much smaller address space, a good choice for some embedded systems.
 
 GCC Internals | Effective-Target Keywords | [Data type sizes](https://gcc.gnu.org/onlinedocs/gccint/Effective-Target-Keywords.html#Data-type-sizes)
 
@@ -58,14 +157,6 @@ GCC Internals | Effective-Target Keywords | [Data type sizes](https://gcc.gnu.or
 - `ILP32`: SysV-like data model where int, long int and pointer are 32-bit.
 - `LP64`: SysV-like data model where int is 32-bit, but long int and pointer are 64-bit.
 - `LLP64`: Windows-like data model where int and long int are 32-bit, but long long int and pointer are 64-bit.
-
-## Concept
-
-[64-bit data models](https://en.wikipedia.org/wiki/64-bit_computing#64-bit_data_models)
-
-In many programming environments for C and C-derived languages on 64-bit machines, `int` variables are still 32 bits wide, but `long` integers and `pointers` are 64 bits wide. These are described as having an ***LP64*** data model, which is an abbreviation of "Long, Pointer, 64". Other models are the ***ILP64*** data model in which all three data types are 64 bits wide, and even the ***SILP64*** model where short integers are also 64 bits wide. However, in most cases the modifications required are relatively minor and straightforward, and many well-written programs can simply be recompiled for the new environment with no changes. Another alternative is the ***LLP64*** model, which maintains compatibility with 32-bit code by leaving both `int` and `long` as 32-bit. `LL` refers to the `long long` integer type, which is at least 64 bits on all platforms, including 32-bit environments.
-
-There are also systems with 64-bit processors using an ***ILP32*** data model, with the addition of 64-bit `long long` integers; this is also used on many platforms with 32-bit processors. This model reduces code size and the size of data structures containing pointers, at the cost of a much smaller address space, a good choice for some embedded systems.
 
 [Fundamental types](https://en.cppreference.com/w/cpp/language/types) - Data Models:
 

@@ -188,7 +188,7 @@ struct st_cdi
 关于跨平台设置 packed 和 aligned 属性，参考：
 
 - [c - The advantage of using \_\_attribute\_\_((aligned( )))](https://softwareengineering.stackexchange.com/questions/256179/the-advantage-of-using-attribute-aligned)
-- [Visual C++ equivalent of GCC's \_\_attribute\_\_ ((\_\_packed\_\_)) - Stack Overflow](https://stackoverflow.com/questions/1537964/visual-c-equivalent-of-gccs-attribute-packed)
+- [Visual C++ equivalent of GCC's \_\_attribute\_\_ ((\_\_packed\_\_))](https://stackoverflow.com/questions/1537964/visual-c-equivalent-of-gccs-attribute-packed)
 - [visual c++ - Cross-platform ALIGN(x) macro?](https://stackoverflow.com/questions/7895869/cross-platform-alignx-macro)
 
 ### Program

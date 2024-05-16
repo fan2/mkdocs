@@ -135,12 +135,28 @@ printf: [cppreference.com](https://en.cppreference.com/w/c/io/fprintf), [cpluspl
 
 机器字长（[Machine Word](../cs/machine-word.md) - `__WORDSIZE`）和平台采用的数据模型（[Data Models](../cs/data-model.md)）决定了 `long` 和 `pointer` 的位宽（size in bytes、width in bits）。
 
-Types varying by data model 的相关类型：
+GCC/Clang 编译器预定义的宏（Predefined Macros）中，涉及到机器字长并决定数据模型相关的宏：
+
+- `__SIZEOF_LONG__` @[intel](https://www.intel.com/content/www/us/en/developer/articles/technical/size-of-long-integer-type-on-different-architecture-and-os.html)
+- `__SIZEOF_POINTER__`, `__POINTER_WIDTH__`
+
+Types varying by data model 的相关类型及相关的宏：
 
 1. `wchar_t`: 实现相关
+
+    - `__WCHAR_TYPE__`, `__WCHAR_WIDTH__`, `__SIZEOF_WCHAR_T__`
+
 2. `size_t`: 机器字长相关
+
+    - `__SIZE_TYPE__`, `__SIZE_WIDTH__`, `__SIZEOF_SIZE_T__`
+
 3. `intptr_t`/`uintptr_t`: 机器字长相关
+
+    - `__INTPTR_TYPE__`, `__INTPTR_WIDTH__`; `__UINTPTR_TYPE__`, `__UINTPTR_WIDTH__`
+
 4. `ptrdiff_t`: 机器字长相关
+
+    - `__PTRDIFF_TYPE__`, `__PTRDIFF_WIDTH__`
 
 ### wchar_t
 
@@ -233,109 +249,3 @@ rpi4b-ubuntu 的 /usr/include/stdint.h 中定义了：
 ```c
 # define PTRDIFF_WIDTH __WORDSIZE
 ```
-
-## Predefined Macros
-
-GCC/Clang 编译器预定义的宏参考：
-
-- GNU C Preprocessor - [Common Predefined Macros](https://gcc.gnu.org/onlinedocs/cpp/Common-Predefined-Macros.html)
-- [Clang Preprocessor options](https://clang.llvm.org/docs/ClangCommandLineReference.html#preprocessor-options) - [Dumping preprocessor state](https://clang.llvm.org/docs/ClangCommandLineReference.html#id8)
-
-在 [Dump Compiler Options](../toolchain/dump-compiler-options.md) 中有介绍如何 dump compiler predefined macros。
-
-```Shell title="dump prededined macros"
-$ echo | cpp -dM
-$ echo | gcc -x c -E -dM -
-$ echo | g++ -x c++ -E -dM -
-
-# IA32/IA64
-$ llvm-gcc -x c -E -dM -arch i386 /dev/null
-$ llvm-gcc -x c -E -dM -arch x86_64 /dev/null
-
-# ARM32/ARM64
-$ llvm-gcc -x c -E -dM -arch armv7s /dev/null
-$ llvm-gcc -x c -E -dM -arch arm64 /dev/null
-```
-
-例如：[Numeric limits](https://en.cppreference.com/w/c/types/limits) - <limits.h\> 中定义了 `CHAR_BIT`：
-
-- `CHAR_BIT`: number of bits in a byte(macro constant)
-
-在 macOS 和 rpi4b-ubuntu 下执行 `gcc -E -dM` 命令，grep 过滤打印出 `__CHAR_BIT__`（其值均为 8）。
-
-```Shell
-# macOS
-llvm-gcc -x c -E -dM -arch i386 /dev/null | grep "__CHAR_BIT__"
-llvm-gcc -x c -E -dM -arch x86_64 /dev/null | grep "__CHAR_BIT__"
-llvm-gcc -x c -E -dM -arch armv7s /dev/null | grep "__CHAR_BIT__"
-llvm-gcc -x c -E -dM -arch arm64 /dev/null | grep "__CHAR_BIT__"
-
-# rpi4b-ubuntu
-echo | cpp -dM | grep "__CHAR_BIT__"
-gcc -x c -E -dM /dev/null | grep "__CHAR_BIT__"
-```
-
-其中，涉及到机器字长并决定数据模型相关的宏：
-
-- `__SIZEOF_LONG__` @[intel](https://www.intel.com/content/www/us/en/developer/articles/technical/size-of-long-integer-type-on-different-architecture-and-os.html)
-- `__SIZEOF_POINTER__`, `__POINTER_WIDTH__`
-
-4 个 Standard Variants 相关的宏：
-
-1. `__WCHAR_TYPE__`, `__WCHAR_WIDTH__`, `__SIZEOF_WCHAR_T__`
-2. `__SIZE_TYPE__`, `__SIZE_WIDTH__`, `__SIZEOF_SIZE_T__`
-3. `__INTPTR_TYPE__`, `__INTPTR_WIDTH__`; `__UINTPTR_TYPE__`, `__UINTPTR_WIDTH__`
-4. `__PTRDIFF_TYPE__`, `__PTRDIFF_WIDTH__`
-
-以下为 mbpa2991-macOS/arm64 和 rpi4b-ubuntu/aarch64 下 dump 过滤出来的相关宏。
-
-??? info "macros varying by data model"
-
-    ```Shell
-    # mbpa2991-macOS/arm64
-    $ llvm-gcc -x c -E -dM -arch i386 /dev/null | grep -E "__SIZEOF_LONG__|__SIZEOF_POINTER__|__WCHAR_TYPE__|__SIZE_TYPE__|__INTPTR_TYPE__|__UINTPTR_TYPE__|__PTRDIFF_TYPE__"
-    #define __INTPTR_TYPE__ long int
-    #define __PTRDIFF_TYPE__ int
-    #define __SIZEOF_LONG__ 4
-    #define __SIZEOF_POINTER__ 4
-    #define __SIZE_TYPE__ long unsigned int
-    #define __UINTPTR_TYPE__ long unsigned int
-    #define __WCHAR_TYPE__ int
-
-    $ llvm-gcc -x c -E -dM -arch x86_64 /dev/null | grep -E "__SIZEOF_LONG__|__SIZEOF_POINTER__|__WCHAR_TYPE__|__SIZE_TYPE__|__INTPTR_TYPE__|__UINTPTR_TYPE__|__PTRDIFF_TYPE__"
-    #define __INTPTR_TYPE__ long int
-    #define __PTRDIFF_TYPE__ long int
-    #define __SIZEOF_LONG__ 8
-    #define __SIZEOF_POINTER__ 8
-    #define __SIZE_TYPE__ long unsigned int
-    #define __UINTPTR_TYPE__ long unsigned int
-    #define __WCHAR_TYPE__ int
-
-    $ llvm-gcc -x c -E -dM -arch armv7s /dev/null | grep -E "__SIZEOF_LONG__|__SIZEOF_POINTER__|__WCHAR_TYPE__|__SIZE_TYPE__|__INTPTR_TYPE__|__UINTPTR_TYPE__|__PTRDIFF_TYPE__"
-    #define __INTPTR_TYPE__ long int
-    #define __PTRDIFF_TYPE__ int
-    #define __SIZEOF_LONG__ 4
-    #define __SIZEOF_POINTER__ 4
-    #define __SIZE_TYPE__ long unsigned int
-    #define __UINTPTR_TYPE__ long unsigned int
-    #define __WCHAR_TYPE__ int
-
-    $ llvm-gcc -x c -E -dM -arch arm64 /dev/null | grep -E "__SIZEOF_LONG__|__SIZEOF_POINTER__|__WCHAR_TYPE__|__SIZE_TYPE__|__INTPTR_TYPE__|__UINTPTR_TYPE__|__PTRDIFF_TYPE__"
-    #define __INTPTR_TYPE__ long int
-    #define __PTRDIFF_TYPE__ long int
-    #define __SIZEOF_LONG__ 8
-    #define __SIZEOF_POINTER__ 8
-    #define __SIZE_TYPE__ long unsigned int
-    #define __UINTPTR_TYPE__ long unsigned int
-    #define __WCHAR_TYPE__ int
-
-    # rpi4b-ubuntu/aarch64
-    $ gcc -x c -E -dM /dev/null | grep -E "__SIZEOF_LONG__|__SIZEOF_POINTER__|__WCHAR_TYPE__|__SIZE_TYPE__|__INTPTR_TYPE__|__UINTPTR_TYPE__|__PTRDIFF_TYPE__"
-    #define __SIZEOF_LONG__ 8
-    #define __SIZEOF_POINTER__ 8
-    #define __SIZE_TYPE__ long unsigned int
-    #define __INTPTR_TYPE__ long int
-    #define __WCHAR_TYPE__ unsigned int
-    #define __PTRDIFF_TYPE__ long int
-    #define __UINTPTR_TYPE__ long unsigned int
-    ```
