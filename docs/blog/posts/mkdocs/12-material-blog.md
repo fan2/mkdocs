@@ -19,6 +19,9 @@ Material for MkDocs makes it very easy to build a blog, either as a sidecar to y
 
 [Built-in blog plugin](https://squidfunk.github.io/mkdocs-material/plugins/blog/)
 
+- [Philosophy](https://squidfunk.github.io/mkdocs-material/philosophy/)
+- [Alternatives](https://squidfunk.github.io/mkdocs-material/alternatives/)
+
 ## blog plugin
 
 The built-in blog plugin adds support for building a blog from a folder of posts, which are annotated with dates and other structured data. First, add the following lines to mkdocs.yml:

@@ -119,6 +119,7 @@ Arm Architecture Profiles:
 [Learn the Architecture Guides – Arm®](https://www.arm.com/architecture/learn-the-architecture)
 
 - [Introducing the Arm architecture](https://developer.arm.com/documentation/102404/latest)
+- [Instruction Set Assembly Guide for Armv7 and earlier Arm architectures Reference Guide](https://developer.arm.com/documentation/100076/0200/)
 - [A64 Instruction Set Architecture Guide](https://developer.arm.com/documentation/102374/latest)
 - [AArch64 memory management Guide](https://developer.arm.com/documentation/101811/latest) + [examples](https://developer.arm.com/documentation/102416/latest)
 - [Memory Systems, Ordering, and Barriers](https://developer.arm.com/documentation/102336/latest)
@@ -130,7 +131,7 @@ A-Profile Architecture:
 - [Arm A-profile Architecture Registers](https://developer.arm.com/documentation/ddi0601/latest)
 - [Arm A-profile A32/T32 Instruction Set Architecture](https://developer.arm.com/documentation/ddi0597/latest)
 - [Arm A-profile A64 Instruction Set Architecture](https://developer.arm.com/documentation/ddi0602/latest)
-- [Arm Architecture Reference Manual for A-profile architecture.pdf](https://developer.arm.com/documentation/ddi0487/latest)
+- [Arm Architecture Reference Manual for A-profile architecture.pdf](https://developer.arm.com/documentation/ddi0487/latest) - overlength
 - [ARM Cortex-A Series Programmer's Guide for ARMv8-A](https://developer.arm.com/documentation/den0024/latest)
 
 M-Profile Architecture:

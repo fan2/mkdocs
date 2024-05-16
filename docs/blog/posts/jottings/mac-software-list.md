@@ -60,6 +60,11 @@ softorino [WALTR PRO](https://softorino.com/waltr/)
 
 - Cyberduck is a libre server and cloud storage browser for Mac and Windows with support for FTP, SFTP, WebDAV, Amazon S3, OpenStack Swift, Backblaze B2, Microsoft Azure & OneDrive, Google Drive and Dropbox.
 
+[Transmit 5](https://panic.com/transmit/)
+
+- The gold standard of macOS file transfer apps just drove into the future.
+- Upload, download, and manage files on tons of servers with an easy, familiar, and powerful UI.
+
 [Rclone](https://rclone.org/) - [works like a charm!](https://duetorun.com/blog/20240318/rclone-access-webdav/)
 
 - a command-line program to manage files on cloud storage.

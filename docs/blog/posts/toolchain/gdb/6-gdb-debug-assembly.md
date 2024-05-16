@@ -370,6 +370,11 @@ Command name abbreviations are allowed if unambiguous.
 
 > Changes which TUI window is currently active for scrolling.
 
+此外，还可通过 `winheight` 命令调整窗口高度：
+
+- `winheight name +count`: winheight src -5，将源码窗口降低 5 行。
+- `winheight name -count`: winheight asm +10，将汇编窗口增高 10 行。
+
 执行 `tui disable` 退出 TUI 模式，返回 GDB 控制台（console interpreter）。
 
 *   ctrl + l(ell)：刷新窗口
