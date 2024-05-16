@@ -44,7 +44,7 @@ These three profiles allow the Arm architecture to be tailored to the needs of d
     Arm `Cortex` and Arm `Neoverse` are the brand names that are used for the Arm processor IP offerings. Our partners offer other processor brands using the Arm architecture.
 
 <figure markdown="span">
-    ![Arm-Arch](./images/Arm_Architecture.png)
+    ![Arm-Arch](./images/Arm_Architecture.png){: style="width:80%;height:80%"}
 </figure>
 
 This example smartphone contains the following processor types:
@@ -88,6 +88,11 @@ ARMv8-A allows 32-bit applications to be executed in a 64-bit OS, and a 32-bit O
     `AArch64`: The 64-bit general-purpose register width state of the Armv8 architecture.
 
 ARMv8-A includes the VFPv3/v4 and advanced SIMD (Neon) as standard features in both AArch32 and AArch64. It also adds cryptography instructions supporting AES, SHA-1/SHA-256 and finite field arithmetic.
+
+<figure markdown="span">
+    ![AArch64-architecture](./images/AArch64-architecture.png){: style="width:75%;height:75%"}
+    <figcaption>A simpliﬁed conceptual view of the AArch64 architecture</figcaption>
+</figure>
 
 ### Naming conventions
 
@@ -159,6 +164,14 @@ RPi 3 Model B | Feb 2016 | BCM2837 | ARMv8-A (64/32-bit) | 4× Cortex-A53 1.2 GH
 RPi 4 Model B | Jun 2019​/May 2020 | BCM2711 | ARMv8-A (64/32-bit) | 4× Cortex-A72 1.5 GHz or 1.8 GHz
 RPi 5 | Oct 2023 | BCM2712 | ARMv8.2-A (64/32-bit) | 4× Cortex-A76 2.4 GHz
 
+ARMv8-A 64-bit milestones:
+
+- Model A (no Ethernet): Nov 2018
+- Model B (with Ethernet) series: since RPi 2 Model B v1.2/Oct 2016​
+- Compute Module series: since Jan 2017
+- Zero: RPi Zero 2 W/Nov 2015
+- Keyboard: RPi 400/Nov 2020
+
 [RPi3 in ARMv8 Mode » Raspberry Pi Geek](https://www.raspberry-pi-geek.com/Archive/2017/23/Operating-the-Raspberry-Pi-3-in-64-bit-mode)
 
 [ARM Reveals Cortex-A72 Architecture Details](https://www.anandtech.com/show/9184/arm-reveals-cortex-a72-architecture-details)
@@ -167,11 +180,34 @@ RPi 5 | Oct 2023 | BCM2712 | ARMv8.2-A (64/32-bit) | 4× Cortex-A76 2.4 GHz
 [Arm's Cortex-A76 CPU Unveiled: Taking Aim at the Top for 7nm - Print View](https://www.anandtech.com/print/12785/arm-cortex-a76-cpu-unveiled-7nm-powerhouse)
 [Arm Cortex-A76 Software Optimization Guide](https://developer.arm.com/documentation/pjdoc466751330-7215/latest/)
 
+## a64-isa-guide
+
+[A64 Instruction Set Architecture Guide](https://developer.arm.com/documentation/102374/latest/)
+
+1. Overview
+
+- An Instruction Set Architecture (*ISA*) is part of the abstract model of a computer. It deﬁnes how software **controls** the processor.
+
+- The Arm ISA allows you to write software and ﬁrmware that **conforms** to the Arm speciﬁcations. This mean that, if your software or ﬁrmware conforms to the speciﬁcations, any Arm-based processor will execute it in the same way.
+
+2. Why you should care about the ISA?
+
+- As developers, you may not need to write directly in assembler in our day-to-day role. However, assembler is still important in some areas, such as the ﬁrst stage boot software or some low-level kernel activities.
+
+- Even if you are not writing assembly code directly, understanding what the instruction set can do, and how the compiler makes use of those instructions, can help you to write more eﬃcient code. It can also help you to understand the output of the compiler. This can be useful when debugging.
+
+3. Instruction sets in the Arm architecture
+
+- Armv8-A supports three instruction sets: `A32`, `T32` and `A64`.
+
+- The `A64` instruction set is used when executing in the *AArch64 Execution state*. It is a ﬁxed-length ==32==-bit instruction set. The 64 in the name refers to the use of this instruction by the AArch64 Execution state. It does not refer to the size of the instructions in memory.
+
+- The `A32` and `T32` instruction sets are also referred to as `Arm` and `Thumb`, respectively. These instruction sets are used when executing in the *AArch32 Execution state*.
+
 ## programming
 
 **User Guide**:
 
-[A64 Instruction Set Architecture Guide](https://developer.arm.com/documentation/102374/latest/)
 [ARM Cortex-A Series Programmer's Guide for ARMv8-A](https://developer.arm.com/documentation/den0024/latest)
 [Arm Compiler armasm User Guide](https://developer.arm.com/documentation/dui0801/l)
 
@@ -188,7 +224,9 @@ RPi 5 | Oct 2023 | BCM2712 | ARMv8.2-A (64/32-bit) | 4× Cortex-A76 2.4 GHz
 
 **Arm Assembly**:
 
-[Getting Started with Arm Assembly Language](https://developer.arm.com/documentation/107829/0200) based on Raspberry Pi Zero 2 W.
+[Getting Started with Arm Assembly Language](https://developer.arm.com/documentation/107829/0200) based on Ubuntu 22.04 LTS & Raspberry Pi Zero 2 W.
+
+> The code can be compiled using GNU Compiler Collection ([GCC](https://gcc.gnu.org/)), and the program can run on an Arm Fixed Virtual Platform ([FVP](https://developer.arm.com/Tools%20and%20Software/Fixed%20Virtual%20Platforms)).
 
 [ARM Assembly | Azeria Labs](https://azeria-labs.com/writing-arm-assembly-part-1/)
 [ARM Assembly By Example](https://armasm.com/)

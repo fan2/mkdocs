@@ -14,12 +14,6 @@ tags:
 comments: true
 ---
 
-Architecture = [Microarchitecture](https://en.wikipedia.org/wiki/Microarchitecture) + ISA([Instruction set architecture](https://en.wikipedia.org/wiki/Instruction_set_architecture)).
-
-<figure markdown="span">
-    ![cpu-architecture-layer](https://www.arm.com/-/media/global/Why%20Arm/architecture/cpu/architecture-layer-diagram-600.png){: style="width:75%;height:75%"}
-</figure>
-
 有5种指令集最为常见，它们构成了处理器领域的5朵金花。
 
 1. x86——硕大的大象
@@ -31,6 +25,26 @@ Architecture = [Microarchitecture](https://en.wikipedia.org/wiki/Microarchitectu
 This article is about the collection of datasheet/textbooks/references on the three major mainstream CPUs.
 
 <!-- more -->
+
+## Arch
+
+Architecture = ISA([Instruction set architecture](https://en.wikipedia.org/wiki/Instruction_set_architecture)) + [Microarchitecture](https://en.wikipedia.org/wiki/Microarchitecture).
+
+<figure markdown="span">
+    ![cpu-architecture-layer](https://www.arm.com/-/media/global/Why%20Arm/architecture/cpu/architecture-layer-diagram-600.png){: style="width:75%;height:75%"}
+</figure>
+
+[ARM Assembly Language: Fundamentals and Techniques, 2nd Edition](https://www.oreilly.com/library/view/arm-assembly-language/9781482229851/) - 17 ARM, Thumb and Thumb-2 Instructions
+
+Keeping in mind that a processor’s microarchitecture and a processor’s instruction set are two different things. They often get developed at the same time, but it is possible for a given microarchitecture to be modified only slightly to support additional instructions, adding more control logic and a bit more datapath, adding registers, etc.
+
+<figure markdown="span">
+    ![hierarchy_of_computing](./images/hierarchy_of_computing.png){: style="width:75%;height:75%"}
+</figure>
+
+[ARM 64-Bit Assembly Language](https://www.amazon.com/64-Bit-Assembly-Language-Larry-Pyeatt/dp/0128192216/) - CHAPTER 3 Load/store and branch instructions
+
+The part of the computer architecture related to programming is referred to as the *instruction set architecture* (***ISA***). The ISA is a contract between the hardware and the software. It deﬁnes the *set of instructions* and the *set of registers* that the hardware must support. How the hardware actually implements the ISA is called the ***microarchitecture***, and it is not deﬁned by the ISA. Assembly programmers can write code that will work across a spectrum of different processor implementations. As long as the software and the hardware are both built around the same ISA, they will be compatible. The ISA is an effective interface between hardware-the [data paths](https://en.wikipedia.org/wiki/Datapath) and [processing elements](https://www.cise.ufl.edu/~mssz/CompOrg/CDA-proc.html)–and software, because it creates an *abstraction* that allows each side to be imagined to function independently.
 
 ## Intel
 
@@ -102,28 +116,28 @@ Arm Architecture Profiles:
 - [R-Profile Architecture](https://developer.arm.com/Architectures/R-Profile%20Architecture)
 - [M-Profile Architecture](https://developer.arm.com/Architectures/M-Profile%20Architecture)
 
-Learn the architecture:
+[Learn the Architecture Guides – Arm®](https://www.arm.com/architecture/learn-the-architecture)
 
-- [Introducing the Arm architecture](https://developer.arm.com/documentation/102404/0201/?lang=en)
-- [A64 Instruction Set Architecture Guide](https://developer.arm.com/documentation/102374/latest/)
-- [Memory Systems, Ordering, and Barriers](https://developer.arm.com/documentation/102336/0100?lang=en)
-- [AArch64 memory management Guide](https://developer.arm.com/documentation/101811/0103/?lang=en) + [examples](https://developer.arm.com/documentation/102416/0100/?lang=en)
-- [Introducing Neon](https://developer.arm.com/documentation/102474/0100?lang=en) + [Optimizing C code with Neon intrinsics](https://developer.arm.com/documentation/102467/0201/?lang=en)
+- [Introducing the Arm architecture](https://developer.arm.com/documentation/102404/latest)
+- [A64 Instruction Set Architecture Guide](https://developer.arm.com/documentation/102374/latest)
+- [AArch64 memory management Guide](https://developer.arm.com/documentation/101811/latest) + [examples](https://developer.arm.com/documentation/102416/latest)
+- [Memory Systems, Ordering, and Barriers](https://developer.arm.com/documentation/102336/latest)
+- [Introducing Neon](https://developer.arm.com/documentation/102474/latest) + [Optimizing C code with Neon intrinsics](https://developer.arm.com/documentation/102467/latest)
 
 A-Profile Architecture:
 
-- [Arm Armv8-A Architecture Registers.pdf](https://developer.arm.com/documentation/ddi0595/2021-12/?lang=en)
-- [Arm A-profile Architecture Registers](https://developer.arm.com/documentation/ddi0601/2024-03/?lang=en)
-- [Arm A-profile A32/T32 Instruction Set Architecture](https://developer.arm.com/documentation/ddi0597/2024-03/?lang=en)
-- [Arm A-profile A64 Instruction Set Architecture](https://developer.arm.com/documentation/ddi0602/latest/?lang=en)
-- [Arm Architecture Reference Manual for A-profile architecture.pdf](https://developer.arm.com/documentation/ddi0487/ka/?lang=en)
+- [Arm Armv8-A Architecture Registers.pdf](https://developer.arm.com/documentation/ddi0595/latest)
+- [Arm A-profile Architecture Registers](https://developer.arm.com/documentation/ddi0601/latest)
+- [Arm A-profile A32/T32 Instruction Set Architecture](https://developer.arm.com/documentation/ddi0597/latest)
+- [Arm A-profile A64 Instruction Set Architecture](https://developer.arm.com/documentation/ddi0602/latest)
+- [Arm Architecture Reference Manual for A-profile architecture.pdf](https://developer.arm.com/documentation/ddi0487/latest)
 - [ARM Cortex-A Series Programmer's Guide for ARMv8-A](https://developer.arm.com/documentation/den0024/latest)
 
 M-Profile Architecture:
 
-- [ARMv7-M Architecture Reference Manual.pdf](https://developer.arm.com/documentation/ddi0403/ee/?lang=en)
-- [Armv8-M Architecture Reference Manual.pdf](https://developer.arm.com/documentation/ddi0553/bx/?lang=en)
-- [Introduction to the Armv8-M Architecture and its Programmers Model User Guide](https://developer.arm.com/documentation/107656/0101/?lang=en)
+- [ARMv7-M Architecture Reference Manual.pdf](https://developer.arm.com/documentation/ddi0403/latest)
+- [Armv8-M Architecture Reference Manual.pdf](https://developer.arm.com/documentation/ddi0553/latest)
+- [Introduction to the Armv8-M Architecture and its Programmers Model User Guide](https://developer.arm.com/documentation/107656/latest)
 
 ### textbooks
 
