@@ -1290,6 +1290,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#aarch64_security_states" class="md-nav__link">
+    <span class="md-ellipsis">
+      AArch64 Security states
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#a64_system_calls" class="md-nav__link">
     <span class="md-ellipsis">
       A64 system calls
@@ -1427,7 +1436,7 @@
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7h1.5Z"/></svg>
                           <span class="md-ellipsis">
                             
-                              需要 10 分钟阅读时间
+                              需要 12 分钟阅读时间
                             
                           </span>
                         </div>
@@ -1496,13 +1505,44 @@
 </ul>
 <p>The major difference between <code>EL0</code> and the higher levels is that code executing in <code>EL0</code> cannot access system registers. <code>EL1</code> can access most system registers, <code>EL2</code> has additional privileges, and <code>EL3</code> has all privileges. The only way that the processor can change from one exception level to a higher level is when an <em>exception</em> occurs. The only way that the processor can move to a lower exception level is by executing an exception <em>return</em> instruction. When changing the exception level, it is also possible to switch between AArch64 and AArch32 execution state. The processor also supports two security states: <em>Secure</em> and <em>non-secure</em>. <code>EL3</code> is meant to manage the security state, and <code>EL2</code> is meant to provide virtual machine capabilities. In many situations, only <code>EL0</code> and <code>EL1</code> are required, and some processors may not provide <code>EL2</code> and/or <code>EL3</code>. On power-up and on reset, the processor enters the highest available exception level.</p>
 <p>Each exception level has its own stack pointer, link register, and saved process state register (SPSR). Table 12.1 shows the names of these banked registers. When the exception level changes, the corresponding link register and stack pointer become active, and “replace” the user stack pointer and link register.</p>
-<p><a href="https://developer.arm.com/documentation/den0125/0300/Device-Assignment--DA--and-Memory-Encryption-Contexts--MEC-">Learn the architecture - Introducing Arm Confidential Compute Architecture</a>:</p>
+<h2 id="aarch64_security_states">AArch64 Security states<a class="headerlink" href="#aarch64_security_states" title="Permanent link">#</a></h2>
+<p><a href="https://developer.arm.com/documentation/den0126/latest/">Learn the architecture - Realm Management Extension</a> | 2. Security states</p>
+<p>RME builds on the Arm TrustZone technology. TrustZone was introduced in Armv6 and provides the following two Security states:</p>
+<ul>
+<li>Secure state</li>
+<li>Non-secure state</li>
+</ul>
+<p>The following diagram shows the two Security states in AArch64 with the software components that are typically found in each Security state:</p>
 <figure><br />
-<img alt="Exception levels of Realm World, Non-secure, and Secure world" src="https://documentation-service.arm.com/static/65ba6de532ae5f7841c42551" /><br />
+<img alt="Security states before RME" src="https://documentation-service.arm.com/static/6389abc62b0dd145f802fff2" /><br />
+    <figcaption>Figure 2-1: Security states before RME</figcaption><br />
 </figure>
+<p>The architecture isolates software running in Secure state from software running in Non-secure state. This isolation enables a software architecture in which trusted code runs in Secure state and is protected from code in Non-secure state.</p>
+<p>RME extends this model, and provides the following four Security states:</p>
+<ul>
+<li>Secure state</li>
+<li>Non-secure state</li>
+<li>Realm state</li>
+<li>Root state</li>
+</ul>
+<p>The following diagram shows the Security states in an RME-enabled PE, and how these Security states map to Exception levels:</p>
+<figure><br />
+<img alt="Security states with RME" src="https://documentation-service.arm.com/static/6389abc62b0dd145f802fff1" /><br />
+    <figcaption>Figure 2-2: Security states with RME</figcaption><br />
+</figure>
+<p>Maintaining Secure state provides backwards compatibility with existing TrustZone use cases. These use cases can also be upgraded to take advantage of new features added by RME, like <a href="https://developer.arm.com/documentation/den0125/latest">dynamic memory assignment</a>.</p>
+<p>Realm state constructs protected execution environments called realms. Importantly, RME extends the isolation model introduced in TrustZone.</p>
+<p>The architecture provides isolation for the following states:</p>
+<ul>
+<li>Secure state from both Non-secure and realm states</li>
+<li>Realm state from both Non-secure and Secure states</li>
+</ul>
+<p>This isolation model provides a software architecture in which the software in Secure and realm states are mutually distrusting.</p>
+<p>With RME, Exception level 3 moves out of Secure state and into its own Security state called root. RME isolates Exception level 3 from all other Security states. Exception level 3 hosts the platform and initial boot code and therefore must be trusted by the software in Non-secure, Secure, and realm states. Because these Security states do not trust each other, Exception level 3 must be in a Security state of its own.</p>
 <p><a href="https://www.allaboutcircuits.com/industry-articles/mixed-safety-systems-using-multicore-socs-with-hypervisors-and-multicore-frameworks/">Mixed-safety Systems Using Multicore SoCs With Hypervisors and Multicore Frameworks</a></p>
 <figure><br />
 <img alt="Supervisory capabilities of hypervisors" src="https://www.allaboutcircuits.com/uploads/articles/Siemens_Figure_2.png" /><br />
+    <figcaption>Figure 2. Supervisory capabilities of hypervisors.</figcaption><br />
 </figure>
 <h2 id="a64_system_calls">A64 system calls<a class="headerlink" href="#a64_system_calls" title="Permanent link">#</a></h2>
 <p>Each user-mode process operates in isolation from other code on the system, with no direct visibility of the code or data of other processes or of the operating system kernel itself, and user-mode processes have no direct access to device hardware, unless explicitly authorized by the operating system kernel. When user-mode programs do have a specific need to <strong>interact</strong> with other processes, access files, and other system resources, or to interact with hardware, they must do so via OS-provided APIs in the form of so-called system calls, or <strong><em>syscalls</em></strong>.<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup></p>
@@ -1701,14 +1741,12 @@
 </span></code></pre></div></td></tr></table></div>
 </div>
 <div class="tabbed-block">
-<div class="language-c highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;unistd.h&gt;</span>
 </span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">argv</span><span class="p">[])</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">argv</span><span class="p">[])</span>
 </span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="p">{</span>
-</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">    </span><span class="n">puts</span><span class="p">(</span><span class="s">&quot;Hey there&quot;</span><span class="p">);</span>
-</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>
-</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
-</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="p">}</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">    </span><span class="n">write</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;Hey there</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="mi">10</span><span class="p">);</span>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="p">}</span>
 </span></code></pre></div>
 </div>
 </div>

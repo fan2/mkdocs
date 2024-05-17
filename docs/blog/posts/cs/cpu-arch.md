@@ -47,6 +47,13 @@ Keeping in mind that a processor’s microarchitecture and a processor’s instr
 
 The part of the computer architecture related to programming is referred to as the *instruction set architecture* (***ISA***). The ISA is a contract between the hardware and the software. It deﬁnes the *set of instructions* and the *set of registers* that the hardware must support. How the hardware actually implements the ISA is called the ***microarchitecture***, and it is not deﬁned by the ISA. Assembly programmers can write code that will work across a spectrum of different processor implementations. As long as the software and the hardware are both built around the same ISA, they will be compatible. The ISA is an effective interface between hardware-the [data paths](https://en.wikipedia.org/wiki/Datapath) and [processing elements](https://www.cise.ufl.edu/~mssz/CompOrg/CDA-proc.html)–and software, because it creates an *abstraction* that allows each side to be imagined to function independently.
 
+!!! info "logic & datapath"
+
+    [Computer Organization and Design ARM Edition: The Hardware Software Interface](https://www.amazon.com/Computer-Organization-Design-ARM-Architecture/dp/0128017333) | 4 The Processor
+
+    - 4.2 Logic Design Conventions
+    - 4.3 Building a Datapath
+
 ## Intel
 
 **I**ntel **A**rchitecture

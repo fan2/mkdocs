@@ -38,16 +38,56 @@ The major difference between `EL0` and the higher levels is that code executing 
 
 Each exception level has its own stack pointer, link register, and saved process state register (SPSR). Table 12.1 shows the names of these banked registers. When the exception level changes, the corresponding link register and stack pointer become active, and “replace” the user stack pointer and link register.
 
-[Learn the architecture - Introducing Arm Confidential Compute Architecture](https://developer.arm.com/documentation/den0125/0300/Device-Assignment--DA--and-Memory-Encryption-Contexts--MEC-):
+## AArch64 Security states
+
+[Learn the architecture - Realm Management Extension](https://developer.arm.com/documentation/den0126/latest/) | 2. Security states
+
+RME builds on the Arm TrustZone technology. TrustZone was introduced in Armv6 and provides the following two Security states:
+
+- Secure state
+- Non-secure state
+
+The following diagram shows the two Security states in AArch64 with the software components that are typically found in each Security state:
 
 <figure markdown="span">
-    ![Exception levels of Realm World, Non-secure, and Secure world](https://documentation-service.arm.com/static/65ba6de532ae5f7841c42551)
+    ![Security states before RME](https://documentation-service.arm.com/static/6389abc62b0dd145f802fff2)
+    <figcaption>Figure 2-1: Security states before RME</figcaption>
 </figure>
+
+The architecture isolates software running in Secure state from software running in Non-secure state. This isolation enables a software architecture in which trusted code runs in Secure state and is protected from code in Non-secure state.
+
+RME extends this model, and provides the following four Security states:
+
+- Secure state
+- Non-secure state
+- Realm state
+- Root state
+
+The following diagram shows the Security states in an RME-enabled PE, and how these Security states map to Exception levels:
+
+<figure markdown="span">
+    ![Security states with RME](https://documentation-service.arm.com/static/6389abc62b0dd145f802fff1)
+    <figcaption>Figure 2-2: Security states with RME</figcaption>
+</figure>
+
+Maintaining Secure state provides backwards compatibility with existing TrustZone use cases. These use cases can also be upgraded to take advantage of new features added by RME, like [dynamic memory assignment](https://developer.arm.com/documentation/den0125/latest).
+
+Realm state constructs protected execution environments called realms. Importantly, RME extends the isolation model introduced in TrustZone.
+
+The architecture provides isolation for the following states:
+
+- Secure state from both Non-secure and realm states
+- Realm state from both Non-secure and Secure states
+
+This isolation model provides a software architecture in which the software in Secure and realm states are mutually distrusting.
+
+With RME, Exception level 3 moves out of Secure state and into its own Security state called root. RME isolates Exception level 3 from all other Security states. Exception level 3 hosts the platform and initial boot code and therefore must be trusted by the software in Non-secure, Secure, and realm states. Because these Security states do not trust each other, Exception level 3 must be in a Security state of its own.
 
 [Mixed-safety Systems Using Multicore SoCs With Hypervisors and Multicore Frameworks](https://www.allaboutcircuits.com/industry-articles/mixed-safety-systems-using-multicore-socs-with-hypervisors-and-multicore-frameworks/)
 
 <figure markdown="span">
     ![Supervisory capabilities of hypervisors](https://www.allaboutcircuits.com/uploads/articles/Siemens_Figure_2.png)
+    <figcaption>Figure 2. Supervisory capabilities of hypervisors.</figcaption>
 </figure>
 
 ## A64 system calls
@@ -219,13 +259,11 @@ Request Linux service to write a string of bytes/characters to the standard outp
 === "equivalent svc64.c"
 
     ```c
-    #include <stdio.h>
+    #include <unistd.h>
 
-    int main(int argc, char *argv[])
+    int main(int argc, char* argv[])
     {
-        puts("Hey there");
-
-        return 0;
+        write(1, "Hey there\n", 10);
     }
     ```
 
