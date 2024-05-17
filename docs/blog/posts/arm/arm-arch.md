@@ -5,10 +5,10 @@ authors:
 date:
     created: 2023-03-13T12:00:00
 categories:
-    - CS
-tags:
     - arm
+tags:
     - profile
+    - aarch64
 comments: true
 ---
 
@@ -210,7 +210,7 @@ ARMv8-A 64-bit milestones:
 
 [ARM Cortex-A Series Programmer's Guide for ARMv8-A](https://developer.arm.com/documentation/den0024/latest)
 
-[Arm Compiler armasm User Guide](https://developer.arm.com/documentation/dui0801/l)
+[Arm Compiler armasm User Guide](https://developer.arm.com/documentation/dui0801/latest)
 
 - Structure of Assembly Language Modules
 - A64 General/Data Transfer Instructions
