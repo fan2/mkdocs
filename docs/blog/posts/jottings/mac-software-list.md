@@ -213,20 +213,20 @@ PDF Expert，搭配内置 Preview 查看扫描件。
 [Smart TOC](https://chromewebstore.google.com/detail/smart-toc/lifgeihcfpkmmlfjbailfpfhbahhibba)
 
 [Simple Allow Copy](https://chromewebstore.google.com/detail/simple-allow-copy/aefehdhdciieocakfobpaaolhipkcpgc)
-[Copy as Markdown](https://chromewebstore.google.com/detail/copy-as-markdown/fkeaekngjflipcockcnpobkpbbfbhmdn)
-[MarkDownload](https://chromewebstore.google.com/detail/markdownload-markdown-web/pcmpcfapbekmbjjkdalcgopdkipoggdi)
+[MarkDownload](https://chromewebstore.google.com/detail/markdownload-markdown-web/pcmpcfapbekmbjjkdalcgopdkipoggdi): 内置 Copy As Markdown。
 
-[Google Mail Checker](https://chromewebstore.google.com/detail/google-mail-checker/mihcahmgecmbnbcchbopgniflfhgnkff)
 [Talking Clock](https://chromewebstore.google.com/detail/talking-clock/babblknbggnkbadcnoeoendifjkbkflj)
-[ImageAssistant](https://chromewebstore.google.com/detail/imageassistant-batch-imag/dbjbempljhcmhlfpfacalomonjpalpko) 内置 QR Code Generator。
+[Google Mail Checker](https://chromewebstore.google.com/detail/google-mail-checker/mihcahmgecmbnbcchbopgniflfhgnkff)
+[ImageAssistant](https://chromewebstore.google.com/detail/imageassistant-batch-imag/dbjbempljhcmhlfpfacalomonjpalpko): 内置 QR Code Generator。
 [Voice Control for ChatGPT x Mia AI](https://chromewebstore.google.com/detail/voice-control-for-chatgpt/eollffkcakegifhacjnlnegohfdlidhn)：不支持 Arc Browser。
 
 [bypass-paywalls](https://github.com/iamadamdev/bypass-paywalls-chrome/blob/master/README.md)
 [PaywallHub](https://chromewebstore.google.com/detail/paywallhub/iimagbhmhkinjaaammedekiocfphhhca) - [archive.today](https://archive.today/) / [archive.is](https://archive.is/)
 
 [ChatGPT » Summarize & Chat](https://chromewebstore.google.com/detail/chatgpt-%C2%BB-summarize-chat/cbgecfllfhmmnknmamkejadjmnmpfjmp)
-[Video Downloader Professional](https://chromewebstore.google.com/detail/elicpjhcidhpjomhibiffojpinpmmpil)
 [PrintFriendly - Print and PDF Web Pages](https://chromewebstore.google.com/detail/printfriendly-print-and-p/ohlencieiipommannpdfcmfdpjjmeolj)
+[Video Downloader Professional](https://chromewebstore.google.com/detail/elicpjhcidhpjomhibiffojpinpmmpil)
+[Media Harvest : twitter Media Downloader](https://chromewebstore.google.com/detail/media-harvest-twitter-med/hpcgabhdlnapolkkjpejieegfpehfdok)
 
 [划词翻译](https://chromewebstore.google.com/detail/%E5%88%92%E8%AF%8D%E7%BF%BB%E8%AF%91/ikhdkkncnoglghljlkmcimlnlhkeamad)
 

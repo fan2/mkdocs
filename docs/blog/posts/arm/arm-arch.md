@@ -1,7 +1,7 @@
 ---
 title: ARM Architecture
 authors:
-  - xman
+    - xman
 date:
     created: 2023-03-13T12:00:00
 categories:
