@@ -44,6 +44,7 @@ These three profiles allow the Arm architecture to be tailored to the needs of d
     Arm `Cortex` and Arm `Neoverse` are the brand names that are used for the Arm processor IP offerings. Our partners offer other processor brands using the Arm architecture.
 
 <figure markdown="span">
+    <!-- https://documentation-service.arm.com/static/64dcdf2a934840622b3496cf -->
     ![Arm-Arch](./images/Arm_Architecture.png){: style="width:80%;height:80%"}
 </figure>
 

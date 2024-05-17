@@ -256,8 +256,8 @@ The default alignment is *sufficient* for all scalar types, but may not be enoug
 
     The stack must also conform to the following constraint at a public interface:
 
-    - [aapcs32](https://github.com/ARM-software/abi-aa/blob/2a70c42d62e9c3eb5887fa50b71257f20daca6f9/aapcs32/aapcs32.rst): SP mod 8 = 0. The stack must be double-word aligned.
-    - [aapcs64](https://github.com/ARM-software/abi-aa/blob/2a70c42d62e9c3eb5887fa50b71257f20daca6f9/aapcs64/aapcs64.rst): SP mod 16 = 0. The stack must be quad-word aligned.
+    - [aapcs32](https://github.com/ARM-software/abi-aa/blob/2a70c42d62e9c3eb5887fa50b71257f20daca6f9/aapcs32/aapcs32.rst): SP mod 8 = 0. The stack pointer must be double-word aligned.
+    - [aapcs64](https://github.com/ARM-software/abi-aa/blob/2a70c42d62e9c3eb5887fa50b71257f20daca6f9/aapcs64/aapcs64.rst): SP mod 16 = 0. The stack pointer must be quad-word aligned, only allowed to grow or shrink in 16-byte increments.
 
 可以借助 cpp / gcc -E -dM 预编译，过滤打印出 `__BIGGEST_ALIGNMENT__` 宏定义：
 

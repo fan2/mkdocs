@@ -31,6 +31,7 @@ This article is about the collection of datasheet/textbooks/references on the th
 Architecture = ISA([Instruction set architecture](https://en.wikipedia.org/wiki/Instruction_set_architecture)) + [Microarchitecture](https://en.wikipedia.org/wiki/Microarchitecture).
 
 <figure markdown="span">
+    <!-- https://www.arm.com/-/media/global/Why%20Arm/architecture/cpu/architecture-layer-diagram-600.png -->
     ![cpu-architecture-layer](https://www.arm.com/-/media/global/Why%20Arm/architecture/cpu/architecture-layer-diagram-600.png){: style="width:75%;height:75%"}
 </figure>
 
