@@ -38,11 +38,7 @@ Z-Library – Unlock the Power of Knowledge with Zlibrary
 
 - Chrome Extension: [PaperPanda](https://chromewebstore.google.com/detail/ggjlkinaanncojaippgbndimlhcdlohf)
 
-### OA.mg
-
 sci-hub.do - [OA.mg](https://oa.mg/)
-
-The only truly modern academic research engine
 
 - Chrome Extension: [OA.mg](https://chromewebstore.google.com/detail/oamg/ahnnebfmpaambhblikbbbhdfaknfjfcd)
 

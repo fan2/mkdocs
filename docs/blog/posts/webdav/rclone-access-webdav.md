@@ -35,20 +35,25 @@ Rclone is mature, open-source software originally inspired by rsync and written 
 
 ## install
 
-macOS 下使用包管理器 `brew` 搜索安装 rclone；ubuntu 下使用包管理器 `apt` 搜索安装 rclone。
+macOS 下使用包管理器 [brew](https://brew.sh/) 搜索安装 rclone；ubuntu 下使用包管理器 [apt](https://manpages.ubuntu.com/manpages/noble/en/man8/apt.8.html)(apt-get/apt-cache) 搜索安装 rclone。
 
 === "macOS"
 
     - `brew search rclone`: 搜索 rclone 包
-    - `brew info rclone`: 显示 rclone 包信息
+    - `brew desc rclone`: 显示 rclone 简要描述信息
+    - `brew info rclone`: 显示 rclone 包信息，已安装显示 Installed
+    - `brew deps rclone`: 显示 rclone 包的依赖 depends
+    - `brew uses --eval-all/--installed rclone`: 显示 rclone 包的被依赖 rdepends
     - `brew install rclone`: 安装 rclone
 
 === "ubuntu"
 
-    - `apt search rclone`: 搜索 rclone 相关包
-    - `apt list rclone`: 搜索匹配包名 rclone
-    - `apt show rclone`: 显示 rclone 包详细信息
-    - `[sudo] apt install rclone`: 安装 rclone
+    - `apt[-cache] search [-n] rclone`: 搜索 rclone 相关包（`-n` for --names-only）
+    - `apt list rclone`（dpkg-query --list）: 搜索匹配包名 rclone，已安装显示 [installed]
+    - `apt-cache showpkg rclone`: 显示 rclone 包简要信息，包括 depends/rdepends
+    - `apt [r]depends rclone`: 显示 rclone 包的依赖 depends 和被依赖 rdepends
+    - `apt[-cache] show rclone`（dpkg --print-avail）: 显示 rclone 包详细信息
+    - `[sudo] apt[-get] install rclone`: 安装 rclone
 
 安装完成后，执行 `rclone version` 查看版本信息：
 

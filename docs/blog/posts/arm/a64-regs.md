@@ -35,7 +35,10 @@ Registers which can be used freely are referred to as *volatile*, and registers 
 
 Most A64 instructions operate on registers. The architecture provides 31 general purpose registers. Each register can be used as a 64-bit `X` register (X0..X30), or as a 32-bit `W` register (W0..W30). These are two separate ways of looking at the *same* register. For example, this register diagram shows that `W0` is the bottom 32 bits of `X0`, and `W1` is the bottom 32 bits of `X1`:
 
-Figure 6-1: Register diagram
+<figure markdown="span">
+    ![Figure 6-1: Register diagram](https://documentation-service.arm.com/static/656f49c7130be919349bb538)
+    <figcaption>Figure 6-1: Register diagram</figcaption>
+</figure>
 
 For data processing instructions, the choice of X or W determines the size of the operation. Using `X` registers will result in 64-bit calculations, and using `W` registers will result in 32-bit calculations. This example performs a 32-bit integer addition:
 
@@ -53,6 +56,11 @@ When a `W` register is written, as seen in the example above, the top 32 bits of
 
 There is a *separate* set of 32 registers used for ﬂoating point and vector operations. These registers are 128-bit, but like the general-purpose registers, can be accessed in several ways. `Bx` is 8 bits, `Hx` is 16 bits and so on to `Qx` which is 128 bits.
 
+<figure markdown="span">
+    ![Figure 6-2: Register diagram](https://documentation-service.arm.com/static/656f49c7130be919349bb53b)
+    <figcaption>Figure 6-2: Register diagram</figcaption>
+</figure>
+
 ### other registers
 
 Here are some other registers in the A64 that you should know about:
@@ -67,7 +75,7 @@ Here are some other registers in the A64 that you should know about:
 
 <figure markdown="span">
     [ARM Cortex-A Series Programmer's Guide for ARMv8-A](https://developer.arm.com/documentation/den0024/latest) | 4: ARMv8 Registers
-    ![Special-registers-in-AArch64](./images/Special-registers-in-AArch64.png){: style="width:80%;height:80%"}
+    ![Special-registers-in-AArch64](./images/Special-registers-in-AArch64.png){: style="width:75%;height:75%"}
     <figcaption>Table 4-1 Special registers in AArch64</figcaption>
 </figure>
 
@@ -80,6 +88,13 @@ The `ADR` instruction returns the address of a label, calculated based on the cu
 !!! note "PC/SP distinction between A32 & A64"
 
     In the A32 and T32 instruction sets, the `PC` and `SP` are general purpose registers. This is not the case in A64 instruction set.
+
+[Blue Fox: Arm Assembly Internals and Reverse Engineering](https://www.amazon.com/Blue-Fox-Assembly-Internals-Analysis/dp/1119745306) | Chapter 4 The Arm Architecture - The AArch64 Execution State - AArch64 Registers:
+
+The only ordinary instructions that can read the `PC` are the following:
+
+- Branch with link instructions (`BL`, `BLR`) that need to read the `PC` to store a return address in the link register (`LR`)
+- Instructions for PC-relative address generation, such as `ADR` and `ADRP`, direct branches, and literal loads(`LDR` pseudo instruction).
 
 ## armasm guide - Registers in AArch64 state
 
@@ -160,9 +175,3 @@ Registers `x19`-`x28` can also be used for holding local variables. However, bef
     - registers `x0`-`x18` are *volatile*,
     - registers `x19`-`x29` are *non-volatile* (they can be used, but their contents *must* be restored to their original value before the function returns),
     - register `x30` can be used by the function, but its contents must be saved so that they can be loaded into the program counter, which will cause the function to return to its caller.
-
-## references
-
-[Programming with 64-Bit ARM Assembly Language: Single Board Computer Development for Raspberry Pi and Mobile Devices](https://www.amazon.com/Programming-64-Bit-ARM-Assembly-Language/dp/1484258800/) | Chapter 1: Getting Started - ARM Assembly Instructions - CPU Registers
-
-[Blue Fox: Arm Assembly Internals and Reverse Engineering](https://www.amazon.com/Blue-Fox-Assembly-Internals-Analysis/dp/1119745306) | Chapter 4 The Arm Architecture - The AArch64 Execution State - AArch64 Registers

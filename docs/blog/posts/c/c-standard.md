@@ -102,7 +102,9 @@ The Open Group Unix [Headers Index](https://pubs.opengroup.org/onlinepubs/000095
 [diet libc](https://www.fefe.de/dietlibc/) - a libc optimized for small size
 [musl libc](https://musl.libc.org/) - an implementation of the C standard library
 
-newlib-cygwin: [wiki](https://en.wikipedia.org/wiki/Newlib), @[git](git://sourceware.org/git/newlib-cygwin.git), @[github](https://github.com/mirror/newlib-cygwin)
+[Newlib](https://sourceware.org/newlib/) @[wiki](https://en.wikipedia.org/wiki/Newlib)
+
+- newlib-cygwin: @[git](git://sourceware.org/git/newlib-cygwin.git), @[github](https://github.com/mirror/newlib-cygwin)
 
 ## ref books
 
