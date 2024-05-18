@@ -234,27 +234,34 @@ Request Linux service to write a string of bytes/characters to the standard outp
 === "svc64.s"
 
     ```asm linenums="1"
-            .text
-            .align 2
+        .text
+        .align 2
 
-            // syscall NR defined in /usr/include/asm-generic/unistd.h
-            .equ    __NR_write, 64       // 0x40
-            .equ    __NR_exit, 93        // 0x5d
-            .equ    __STDOUT, 1
+        .equ    __STDOUT, 1
 
-            .global  _start              // Provide program starting address to linker
+        // syscall NR defined in /usr/include/asm-generic/unistd.h
+        .equ    __NR_write, 64  // 0x40
+        .equ    __NR_exit, 93   // 0x5d
+
+        .global _start
+
     _start:
-            mov     x0, #__STDOUT        // target fd=stdout (standard output, i.e., monitor)
-            ldr     x1, =msgtxt          // Set x1 pointing to message to be displayed
-            mov     x2, #10              // Number of bytes in message
-            mov     x8, #__NR_write      // Linux service command code to write string.
-            svc     0                    // Issue command to display string on stdout
-            mov     x0, #0               // Exit Status code 0 for "normal completion"
-            mov     x8, #__NR_exit       // Service command code to terminate this program
-            svc     0                    // Issue Linux command to terminate program
-            .data
-    msgtxt: .ascii  "Hey there\n"        // 10 character message (blank and In each count as 1 char.)
-            .end
+        mov x0, #__STDOUT
+        adr x1, msg
+        ldr x2, len
+        mov x8, #__NR_write
+        svc #0
+
+    _exit:
+        mov x0, #0
+        mov x8, #__NR_exit
+        svc #0
+
+    msg:
+    .ascii "Hi A64!\n"
+
+    len:
+    .word 8
     ```
 
 === "equivalent svc64.c"
@@ -264,22 +271,21 @@ Request Linux service to write a string of bytes/characters to the standard outp
 
     int main(int argc, char* argv[])
     {
-        write(1, "Hey there\n", 10);
+        write(1, "Hi A64!\n", 8);
     }
     ```
 
 Compile, link and run in rpi3b-ubuntu/aarch64:
 
 ```Shell
-# compile assembly to object
-$ as svc64.s -o svc64.o
-# link object to executable binary
-$ ld svc64.o -o svc64
+# compile and link
+$ as svc64.s -o svc64.o && ld svc64.o -o svc64
 # execute binary
 $ ./svc64
-Hey there
+Hi A64!
 
-# cc svc64.c -o svc64 && ./svc64
+$ cc svc64.c -o svc64 && ./svc64
+Hi A64!
 ```
 
 ## references

@@ -53,7 +53,9 @@ The following concepts/topics will be involved:
 
 For a C source file they are the preprocessor and compiler `cc1`, the assembler `as`, and the linker `collect2`. The first and the third programs come with a GCC *distribution*, the assembler is a part of the GNU *binutils* package.
 
-![GCC_Architecture](./images/GCC_Architecture.jpeg)
+<figure markdown="span">
+    ![GCC_Architecture](./images/GCC_Architecture.jpeg)
+</figure>
 
 [Developer Options](https://gcc.gnu.org/onlinedocs/gcc/Developer-Options.html): `-dumpspecs` : Print the compiler’s built-in [Spec Files](https://gcc.gnu.org/onlinedocs/gcc/Spec-Files.html):
 
@@ -187,7 +189,89 @@ Linux systems also provide the ldd program for manipulating shared libraries:
 
 - `ldd` - print shared object dependencies. Lists the shared libraries that an executable needs at run time.
 
+---
+
+关于 binutils，可参考阅读 [熟悉binutils工具集.pdf](https://github.com/guyongqiangx/makefile-study/blob/main/%E7%86%9F%E6%82%89binutils%E5%B7%A5%E5%85%B7%E9%9B%86.pdf)。
+
 在 Linux(Ubuntu) 下，这些 GNU Binutils 一般预装在 `/usr/bin/` 目录下。
+
+执行 `find` 命令，查看 /usr/bin 目录下的 arm64 GNU C 编译器工具链（不包括软链）。
+
+??? info "/usr/bin/aarch64-linux-gnu-*"
+
+    ```bash linenums="1"
+    $ find /usr/bin ! -type l -name "aarch64-linux-gnu-*" | xargs ls -l
+    -rwxr-xr-x 1 root root    18920  1月 23 23:08 /usr/bin/aarch64-linux-gnu-addr2line
+    -rwxr-xr-x 1 root root    51440  1月 23 23:08 /usr/bin/aarch64-linux-gnu-ar
+    -rwxr-xr-x 1 root root   415208  1月 23 23:08 /usr/bin/aarch64-linux-gnu-as
+    -rwxr-xr-x 1 root root    14384  1月 23 23:08 /usr/bin/aarch64-linux-gnu-c++filt
+    -rwxr-xr-x 1 root root   876656  5月 13  2023 /usr/bin/aarch64-linux-gnu-cpp-11
+    -rwxr-xr-x 1 root root  1883496  1月 23 23:08 /usr/bin/aarch64-linux-gnu-dwp
+    -rwxr-xr-x 1 root root    31224  1月 23 23:08 /usr/bin/aarch64-linux-gnu-elfedit
+    -rwxr-xr-x 1 root root   872560  5月 13  2023 /usr/bin/aarch64-linux-gnu-g++-11
+    -rwxr-xr-x 1 root root   872560  5月 13  2023 /usr/bin/aarch64-linux-gnu-gcc-11
+    -rwxr-xr-x 1 root root    18824  5月 13  2023 /usr/bin/aarch64-linux-gnu-gcc-ar-11
+    -rwxr-xr-x 1 root root    18824  5月 13  2023 /usr/bin/aarch64-linux-gnu-gcc-nm-11
+    -rwxr-xr-x 1 root root    18824  5月 13  2023 /usr/bin/aarch64-linux-gnu-gcc-ranlib-11
+    -rwxr-xr-x 1 root root   401168  5月 13  2023 /usr/bin/aarch64-linux-gnu-gcov-11
+    -rwxr-xr-x 1 root root   249464  5月 13  2023 /usr/bin/aarch64-linux-gnu-gcov-dump-11
+    -rwxr-xr-x 1 root root   270040  5月 13  2023 /usr/bin/aarch64-linux-gnu-gcov-tool-11
+    -rwxr-xr-x 1 root root   110112  1月 23 23:08 /usr/bin/aarch64-linux-gnu-gprof
+    -rwxr-xr-x 1 root root  1636696  1月 23 23:08 /usr/bin/aarch64-linux-gnu-ld.bfd
+    -rwxr-xr-x 1 root root  5497328  1月 23 23:08 /usr/bin/aarch64-linux-gnu-ld.gold
+    -rwxr-xr-x 1 root root 23037768  5月 13  2023 /usr/bin/aarch64-linux-gnu-lto-dump-11
+    -rwxr-xr-x 1 root root    40312  1月 23 23:08 /usr/bin/aarch64-linux-gnu-nm
+    -rwxr-xr-x 1 root root   162120  1月 23 23:08 /usr/bin/aarch64-linux-gnu-objcopy
+    -rwxr-xr-x 1 root root   357328  1月 23 23:08 /usr/bin/aarch64-linux-gnu-objdump
+    -rwxr-xr-x 1 root root     3126 11月 20 23:14 /usr/bin/aarch64-linux-gnu-python3.10-config
+    -rwxr-xr-x 1 root root    51440  1月 23 23:08 /usr/bin/aarch64-linux-gnu-ranlib
+    -rwxr-xr-x 1 root root   768360  1月 23 23:08 /usr/bin/aarch64-linux-gnu-readelf
+    -rwxr-xr-x 1 root root  3382960  5月  4  2022 /usr/bin/aarch64-linux-gnu-run
+    -rwxr-xr-x 1 root root    22752  1月 23 23:08 /usr/bin/aarch64-linux-gnu-size
+    -rwxr-xr-x 1 root root    27008  1月 23 23:08 /usr/bin/aarch64-linux-gnu-strings
+    -rwxr-xr-x 1 root root   162128  1月 23 23:08 /usr/bin/aarch64-linux-gnu-strip
+    ```
+
+过滤 /usr/bin 目录，可以看到一级软链：`addr2line`、`ar`、`as`、`gold`、`gprof`、`ld`、`nm`、`objcopy`、`objdump`、`ranlib`、`readelf`、`size`、`strings`、`strip`。`cpp`、`gcc`、`g++`、`cc`、`c++` 等为多级软链，具体参考上一节溯源。
+
+??? info "/usr/bin/aarch64-linux-gnu-*@"
+
+    ```bash linenums="1"
+    $ ls -l /usr/bin | grep "\-> aarch64-linux-gnu"
+    lrwxrwxrwx 1 root root          25  1月 23 23:08 aarch64-linux-gnu-gold -> aarch64-linux-gnu-ld.gold
+    lrwxrwxrwx 1 root root          24  1月 23 23:08 aarch64-linux-gnu-ld -> aarch64-linux-gnu-ld.bfd
+    lrwxrwxrwx 1 root root          27  1月 23 23:08 addr2line -> aarch64-linux-gnu-addr2line
+    lrwxrwxrwx 1 root root          20  1月 23 23:08 ar -> aarch64-linux-gnu-ar
+    lrwxrwxrwx 1 root root          20  1月 23 23:08 as -> aarch64-linux-gnu-as
+    lrwxrwxrwx 1 root root          25  1月 23 23:08 c++filt -> aarch64-linux-gnu-c++filt
+    lrwxrwxrwx 1 root root          24  5月 13  2023 cpp-11 -> aarch64-linux-gnu-cpp-11
+    lrwxrwxrwx 1 root root          21  1月 23 23:08 dwp -> aarch64-linux-gnu-dwp
+    lrwxrwxrwx 1 root root          25  1月 23 23:08 elfedit -> aarch64-linux-gnu-elfedit
+    lrwxrwxrwx 1 root root          24  5月 13  2023 g++-11 -> aarch64-linux-gnu-g++-11
+    lrwxrwxrwx 1 root root          24  5月 13  2023 gcc-11 -> aarch64-linux-gnu-gcc-11
+    lrwxrwxrwx 1 root root          27  5月 13  2023 gcc-ar-11 -> aarch64-linux-gnu-gcc-ar-11
+    lrwxrwxrwx 1 root root          27  5月 13  2023 gcc-nm-11 -> aarch64-linux-gnu-gcc-nm-11
+    lrwxrwxrwx 1 root root          31  5月 13  2023 gcc-ranlib-11 -> aarch64-linux-gnu-gcc-ranlib-11
+    lrwxrwxrwx 1 root root          25  5月 13  2023 gcov-11 -> aarch64-linux-gnu-gcov-11
+    lrwxrwxrwx 1 root root          30  5月 13  2023 gcov-dump-11 -> aarch64-linux-gnu-gcov-dump-11
+    lrwxrwxrwx 1 root root          30  5月 13  2023 gcov-tool-11 -> aarch64-linux-gnu-gcov-tool-11
+    lrwxrwxrwx 1 root root          22  1月 23 23:08 gold -> aarch64-linux-gnu-gold
+    lrwxrwxrwx 1 root root          23  1月 23 23:08 gprof -> aarch64-linux-gnu-gprof
+    lrwxrwxrwx 1 root root          20  1月 23 23:08 ld -> aarch64-linux-gnu-ld
+    lrwxrwxrwx 1 root root          24  1月 23 23:08 ld.bfd -> aarch64-linux-gnu-ld.bfd
+    lrwxrwxrwx 1 root root          25  1月 23 23:08 ld.gold -> aarch64-linux-gnu-ld.gold
+    lrwxrwxrwx 1 root root          29  5月 13  2023 lto-dump-11 -> aarch64-linux-gnu-lto-dump-11
+    lrwxrwxrwx 1 root root          20  1月 23 23:08 nm -> aarch64-linux-gnu-nm
+    lrwxrwxrwx 1 root root          25  1月 23 23:08 objcopy -> aarch64-linux-gnu-objcopy
+    lrwxrwxrwx 1 root root          25  1月 23 23:08 objdump -> aarch64-linux-gnu-objdump
+    lrwxrwxrwx 1 root root          24  1月 23 23:08 ranlib -> aarch64-linux-gnu-ranlib
+    lrwxrwxrwx 1 root root          25  1月 23 23:08 readelf -> aarch64-linux-gnu-readelf
+    lrwxrwxrwx 1 root root          22  1月 23 23:08 size -> aarch64-linux-gnu-size
+    lrwxrwxrwx 1 root root          25  1月 23 23:08 strings -> aarch64-linux-gnu-strings
+    lrwxrwxrwx 1 root root          23  1月 23 23:08 strip -> aarch64-linux-gnu-strip
+    ```
+
+如果要在 rpi4b-ubuntu/Cortex-A72(Aarch64) 上交叉编译 Cortex-R/M 或 Aarch32 位 hf 的目标 ELF，请参考 [Arm GNU Toolchain](./arm-toolchain.md) 安装 `gcc-arm-none-eabi`（arm-none-eabi-gcc） 和 `gcc-arm-linux-gnueabihf`（arm-linux-gnueabihf-gcc）。
 
 ### Language Standards
 
