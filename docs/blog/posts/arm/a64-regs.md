@@ -37,7 +37,7 @@ Most A64 instructions operate on registers. The architecture provides 31 general
 
 <figure markdown="span">
     ![Figure 6-1: Register diagram](https://documentation-service.arm.com/static/656f49c7130be919349bb538)
-    <figcaption>Figure 6-1: Register diagram</figcaption>
+    <figcaption>Figure 6-1 Register diagram</figcaption>
 </figure>
 
 For data processing instructions, the choice of X or W determines the size of the operation. Using `X` registers will result in 64-bit calculations, and using `W` registers will result in 32-bit calculations. This example performs a 32-bit integer addition:
@@ -58,7 +58,7 @@ There is a *separate* set of 32 registers used for ﬂoating point and vector op
 
 <figure markdown="span">
     ![Figure 6-2: Register diagram](https://documentation-service.arm.com/static/656f49c7130be919349bb53b)
-    <figcaption>Figure 6-2: Register diagram</figcaption>
+    <figcaption>Figure 6-2 Register diagram</figcaption>
 </figure>
 
 ### other registers

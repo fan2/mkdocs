@@ -324,7 +324,7 @@ $ fg
 
 #### terminal
 
-底行模式输入 `:ter` 在当前编辑窗格的顶部创建一个常驻的集成终端窗口，默认 cd 进入当前编辑文档所在的目录作为工作目录。
+底行模式输入 `:ter` 在当前编辑窗格的顶部创建一个常驻的[集成终端窗口](https://zhuanlan.zhihu.com/p/102287909)，默认 cd 进入当前编辑文档所在的目录作为工作目录。
 
 终端窗口默认是 INSERT 插入模式，可以输入 `<C-\><C-N>` 切换到普通模式。
 
@@ -333,12 +333,17 @@ $ fg
                         Open a new terminal window.
 ```
 
-亦可执行 `:tab :ter` 在右侧新建的 tab 页打开终端窗口。
+If you want to split the window vertically, use: `:vertical terminal`, Or short: `:vert ter`.
+
+1. `ter`: create a terminal horizonally, top of current focus window.
+2. `vert ter`: create a terminal vertically, left to current focus window.
+3. `:bel ter`: create a terminal horizonally, below of current focus window.
+4. `:bel vert ter`: create a terminal vertically, right to current focus window.
+
+亦可执行 `:tab :ter` 在当前聚焦窗格右侧新建 tab 页打开终端窗口。
 
 - `:0tab :ter`: 在最左侧新建 tab 打开终端；  
 - `:$tab :ter`: 在最右侧新建 tab 打开终端；  
-
-> [Vim 内置终端调教记](https://zhuanlan.zhihu.com/p/102287909)
 
 ### 返回 NORMAL 模式
 

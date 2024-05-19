@@ -10,6 +10,7 @@ categories:
 tags:
     - gcc
     - gnueabihf
+    - qemu
 comments: true
 ---
 
@@ -263,60 +264,29 @@ To cross-compile hello-world as a 64-bit Linux application. On Fedora, only buil
 $ aarch64-linux-gnu-gcc hello-world-embedded.c -o hello-world.elf
 ```
 
-## switch states
-
-[Assembly challange - Raspberry Pi Forums](https://forums.raspberrypi.com/viewtopic.php?t=228003)
-
-[Arm Compiler armasm User Guide](https://developer.arm.com/documentation/dui0801/latest) | 3.4 Changing between AArch64 and AArch32 states
-
-The processor must be in the correct execution state for the instructions it is executing.
-
-A processor that is executing A64 instructions is operating in AArch64 state. In this state, the instructions can access both the 64-bit and 32-bit registers.
-
-A processor that is executing A32 or T32 instructions is operating in AArch32 state. In this state, the instructions can only access the 32-bit registers, and not the 64-bit registers.
-
-A processor based on the Arm ® v8 architecture can run applications built for AArch32 and AArch64 states but a change between AArch32 and AArch64 states can only happen at exception boundaries.
-
-Arm Compiler toolchain builds images for either the AArch32 state or AArch64 state. Therefore, an image built with Arm Compiler toolchain can either contain only A32 and T32 instructions or only A64 instructions.
-
-A processor can *only* execute instructions from the instruction set that matches its *current* execution state. A processor in AArch32 state cannot execute A64 instructions, and a processor in AArch64 state cannot execute A32 or T32 instructions. You must ensure that the processor never receives instructions from the wrong instruction set for the current execution state.
-
-[ARM Cortex-A Series Programmer's Guide for ARMv8-A](https://developer.arm.com/documentation/den0024/a/An-Introduction-to-the-ARMv8-Instruction-Sets) | 5.3 Switching between the instruction sets
-
-It is not possible to use code from the two execution states within a single application. There is no interworking between A64 and A32 or T32 instruction sets in ARMv8 as there is between A32 and T32 instruction sets. Code written in A64 for the ARMv8 processors cannot run on ARMv7 Cortex-A series processors. However, code written for ARMv7-A processors can run on ARMv8 processors in the AArch32 execution state. This is summarized in Figure 5-1.
-
-<figure markdown="span">
-    ![Figure 5.1. Switching between instruction sets](https://documentation-service.arm.com/static/5fbd26f271eff94ef49c7029)
-    <figcaption>Figure 5.1. Switching between instruction sets</figcaption>
-</figure>
-
 ## test demos
 
-### asm
+### as - asm
 
-=== "adr-ldr-64.s"
+=== "write64.s"
 
     ```asm linenums="1"
         .text
         .align 2
 
-        .equ    __STDOUT, 1
-
         // syscall NR defined in /usr/include/asm-generic/unistd.h
-        // __ARM_ARCH_ISA_A64
         .equ    __NR_write, 64  // 0x40
         .equ    __NR_exit, 93   // 0x5d
-        // .equ    __NR_write, 4
-        // .equ    __NR_exit, 1
+        .equ    __STDOUT, 1
 
-        .global _start
+        .global _start          // Provide program starting address to linker
 
     _start:
         mov x0, #__STDOUT
-        adr x1, msg
-        ldr x2, len
+        adr x1, msg             // load PC-relative address
+        ldr x2, len             // load content of PC-relative label(address)
         mov x8, #__NR_write
-        svc #0
+        svc #0                  // issue command to request system service
 
     _exit:
         mov x0, #0
@@ -324,54 +294,48 @@ It is not possible to use code from the two execution states within a single app
         svc #0
 
     msg:
-    //  __ARM_ARCH_ISA_A64
-    .ascii "Hi A64!\n"
-    // .ascii "Hi A32!\n"
+        .ascii "Hi A64!\n"
 
     len:
-    .word 8
+        .word 8
     ```
 
     ```bash
     # aarch64-linux-gnu-as && aarch64-linux-gnu-ld
-    $ as adr-ldr-64.s -o adr-ldr-64.o && ld adr-ldr-64.o -o adr-ldr-64
+    $ as write64.s -o write64.o && ld write64.o -o write64
 
-    $ file adr-ldr-64
-    adr-ldr-64: ELF 64-bit LSB executable, ARM aarch64, version 1 (SYSV), statically linked, not stripped
+    $ file write64
+    write64: ELF 64-bit LSB executable, ARM aarch64, version 1 (SYSV), statically linked, not stripped
 
-    $ objdump -f adr-ldr-64
+    $ objdump -f write64
 
-    adr-ldr-64:     file format elf64-littleaarch64
+    write64:     file format elf64-littleaarch64
     architecture: aarch64, flags 0x00000112:
     EXEC_P, HAS_SYMS, D_PAGED
     start address 0x0000000000400078
 
-    $ ./adr-ldr-64
+    $ ./write64
     Hi A64!
     ```
 
-=== "adr-ldr-32.s"
+=== "write32.s"
 
     ```asm linenums="1"
         .text
         .align 2
 
-        .equ    __STDOUT, 1
-        // syscall NR defined in /usr/include/asm-generic/unistd.h
-        //  __ARM_ARCH_ISA_A64
-        // .equ    __NR_write, 64   // 0x40
-        // .equ    __NR_exit, 93    // 0x5d
         .equ    __NR_write, 4
         .equ    __NR_exit, 1
+        .equ    __STDOUT, 1
 
-        .global _start
+        .global _start          // Provide program starting address to linker
 
     _start:
         mov r0, #__STDOUT
-        adr r1, msg
-        ldr r2, len
+        adr r1, msg             // load PC-relative address
+        ldr r2, len             // load content of PC-relative label(address)
         mov r7, #__NR_write
-        svc #0
+        svc #0                  // issue command to request system service
 
     _exit:
         mov r0, #0
@@ -379,40 +343,41 @@ It is not possible to use code from the two execution states within a single app
         svc #0
 
     msg:
-    //  __ARM_ARCH_ISA_A64
-    // .ascii "Hi A64!\n"
-    .ascii "Hi A32!\n"
+        .ascii "Hi A32!\n"
 
     len:
-    .word 8
+        .word 8
     ```
 
     ```bash
-    $ arm-linux-gnueabihf-as adr-ldr-32.s -o adr-ldr-32.o && arm-linux-gnueabihf-ld adr-ldr-32.o -o adr-ldr-32
+    $ arm-linux-gnueabihf-as write32.s -o write32.o && arm-linux-gnueabihf-ld write32.o -o write32
 
-    $ file adr-ldr-32
-    adr-ldr-32: ELF 32-bit LSB executable, ARM, EABI5 version 1 (SYSV), statically linked, not stripped
+    $ file write32
+    write32: ELF 32-bit LSB executable, ARM, EABI5 version 1 (SYSV), statically linked, not stripped
 
-    $ objdump -f adr-ldr-32
+    $ objdump -f write32
 
-    adr-ldr-32:     file format elf32-littlearm
+    write32:     file format elf32-littlearm
     architecture: armv3m, flags 0x00000112:
     EXEC_P, HAS_SYMS, D_PAGED
     start address 0x00010054
 
-    $ readelf -h adr-ldr-32 | grep Flags
+    $ readelf -h write32 | grep Flags
       Flags:                             0x5000200, Version5 EABI, soft-float ABI
 
-    $ ./adr-ldr-32
+    $ ./write32
     Hi A32!
     ```
 
-### c - qemu
+### gcc - c
+
+The equivalent C code of write32.s/write64.s is the following:
 
 ```c title="write.c"
 #include <unistd.h>
 
-int main(int argc, char* argv[]) {
+int main(int argc, char* argv[])
+{
 #if __ARM_ARCH_ISA_A64 // __ARM_64BIT_STATE
     write(1, "Hi A64!\n", 8);
 #else // __ARM_ARCH_ISA_ARM // __ARM_32BIT_STATE
@@ -424,13 +389,13 @@ int main(int argc, char* argv[]) {
 ```
 
 rpi3b-ubuntu/aarch64 naturally run in AArch64 state.
+Compile the program with `gcc`(symbolic link of `aarch64-linux-gnu-gcc`):
 
 ```bash
-$ aarch64-linux-gnu-gcc -x c -E -dM /dev/null | grep -E "__ARM_ARCH_ISA_|__ARM_(32|64)BIT_STATE"
+$ gcc -x c -E -dM /dev/null | grep -E "__ARM_ARCH_ISA_|__ARM_(32|64)BIT_STATE"
 #define __ARM_64BIT_STATE 1
 #define __ARM_ARCH_ISA_A64 1
 
-# aarch64-linux-gnu-gcc
 $ gcc write.c -o write64 && ./write64
 Hi A64!
 ```
@@ -447,16 +412,17 @@ $ sudo apt install qemu-user qemu-user-static
 ```
 
 For the Arm 32-bit, we need to run the compatible GCC version.
-Let’s compile the program for AArch32 and run it on an AArch64 Linux host using QEMU’s user-mode emulation.
-
-We can now cross-compile this program with the AArch32 version of GCC to create a static executable:
 
 ```bash
 $ arm-linux-gnueabihf-gcc -x c -E -dM /dev/null | grep -E "__ARM_ARCH_ISA_|__ARM_(32|64)BIT_STATE"
 #define __ARM_ARCH_ISA_ARM 1
 #define __ARM_32BIT_STATE 1
 #define __ARM_ARCH_ISA_THUMB 2
+```
 
+Cross-compile the program with `arm-linux-gnueabihf-gcc` to create a static executable for AArch32:
+
+```bash
 $ arm-linux-gnueabihf-gcc -static write.c -o swrite32
 
 $ file swrite32
@@ -473,7 +439,7 @@ $ readelf -h swrite32 | grep Flags
   Flags:                             0x5000400, Version5 EABI, hard-float ABI
 ```
 
-We can now run this binary directly using QEMU’s *user-mode emulation*:
+Run it on the AArch64 Linux/Ubuntu host using QEMU’s user-mode emulation.
 
 ```bash
 # or just ./swrite32
@@ -505,35 +471,27 @@ $ qemu-arm -L /usr/arm-linux-gnueabihf/ ./dwrite32
 Hi A32!
 ```
 
+!!! note "Behind the scene/Under the hood"
+
+    Under the hood, QEMU can **emulate** an Arm processor by decoding and running each Arm instruction in software. System calls issued by the program are intercepted and sent to the host system, allowing the program to seamlessly interact with the rest of the system.
+
 ## references
 
-[radcolor/arm-linux-gnueabi](https://github.com/radcolor/arm-linux-gnueabi) / [radcolor/aarch64-linux-gnu](https://github.com/radcolor/aarch64-linux-gnu)
+radcolor - [arm-linux-gnueabi](https://github.com/radcolor/arm-linux-gnueabi) / [aarch64-linux-gnu](https://github.com/radcolor/aarch64-linux-gnu)
 
-??? info "AArch32 in AArch64"
+[What is the difference between arm-linux-gcc and arm-none-linux-gnueabi](https://stackoverflow.com/questions/13797693/what-is-the-difference-between-arm-linux-gcc-and-arm-none-linux-gnueabi)
+[20.04 - How to install "gcc-arm-linux-gnueabihf" specific version? - Ask Ubuntu](https://askubuntu.com/questions/1448687/how-to-install-gcc-arm-linux-gnueabihf-specific-version)
+Debian/Ubuntu 安装交叉工具链：[gcc-arm-linux-gnueabi](https://blog.csdn.net/qq_39397165/article/details/103252179)，[gcc-aarch64-linux-gnu](https://blog.csdn.net/song_lee/article/details/105487177)
 
-    [32 Bit executables in AARCH64 system - ODROID](https://forum.odroid.com/viewtopic.php?t=18806)
-    [linux - Running 32-bit ARM binary on aarch64 not working despite CONFIG_COMPAT - Stack Overflow](https://stackoverflow.com/questions/59379848/running-32-bit-arm-binary-on-aarch64-not-working-despite-config-compat)
-    [How to run 32-bit (armhf) binaries on 64-bit (arm64) Debian OS on Raspberry Pi? - Unix & Linux Stack Exchange](https://unix.stackexchange.com/questions/625576/how-to-run-32-bit-armhf-binaries-on-64-bit-arm64-debian-os-on-raspberry-pi)
+[QEMU documentation](https://www.qemu.org/docs/master/user/main.html)
+[QemuUserEmulation - Debian Wiki](https://wiki.debian.org/QemuUserEmulation)
+Emulating ARM with QEMU on Debian/Ubuntu: [gist1](https://gist.github.com/bruce30262/e0f12eddea638efe7332), [gist2](https://gist.github.com/luk6xff/9f8d2520530a823944355e59343eadc1)
 
-    [What is the difference between arm-linux-gcc and arm-none-linux-gnueabi - Stack Overflow](https://stackoverflow.com/questions/13797693/what-is-the-difference-between-arm-linux-gcc-and-arm-none-linux-gnueabi)
-    [20.04 - How to install "gcc-arm-linux-gnueabihf" specific version? - Ask Ubuntu](https://askubuntu.com/questions/1448687/how-to-install-gcc-arm-linux-gnueabihf-specific-version)
+[qemu-user-static/docs/developers_guide.md](https://github.com/multiarch/qemu-user-static/blob/master/docs/developers_guide.md)
+[基于QEMU和binfmt-misc透明运行不同架构程序](https://blog.lyle.ac.cn/2020/04/14/transparently-running-binaries-from-any-architecture-in-linux-with-qemu-and-binfmt-misc/)
+[linux下使用binfmt_misc设定不同二进制的打开程序](https://blog.csdn.net/whatday/article/details/88299482)
 
-    [交叉编译工具 gcc-aarch64-linux-gnu 的介绍与安装](https://blog.csdn.net/song_lee/article/details/105487177)
-    [linux安装交叉编译器gcc-arm-linux-gnueabi](https://blog.csdn.net/qq_39397165/article/details/103252179)
-
-??? info "QEMU User space emulator"
-
-    [QEMU documentation](https://www.qemu.org/docs/master/user/main.html)
-    [QemuUserEmulation - Debian Wiki](https://wiki.debian.org/QemuUserEmulation)
-
-    [Emulating ARM on Debian/Ubuntu](https://gist.github.com/bruce30262/e0f12eddea638efe7332)
-    [Emulating ARM with QEMU on Debian/Ubuntu](https://gist.github.com/luk6xff/9f8d2520530a823944355e59343eadc1)
-
-    [qemu-user-static/docs/developers_guide.md](https://github.com/multiarch/qemu-user-static/blob/master/docs/developers_guide.md)
-    [基于QEMU和binfmt-misc透明运行不同架构程序](https://blog.lyle.ac.cn/2020/04/14/transparently-running-binaries-from-any-architecture-in-linux-with-qemu-and-binfmt-misc/)
-    [linux下使用binfmt_misc设定不同二进制的打开程序](https://blog.csdn.net/whatday/article/details/88299482)
-
-    [qemu - What's the difference between "arm-linux-user" and "armeb-linux-user"? - Stack Overflow](https://stackoverflow.com/questions/44454063/whats-the-difference-between-arm-linux-user-and-armeb-linux-user)
-    [linux - what is default qemu arm enviroment in qemu-arm-static? - Stack Overflow](https://stackoverflow.com/questions/53809816/what-is-default-qemu-arm-enviroment-in-qemu-arm-static)
-    [What is binfmt_misc and how to enable/disable it ? - Red Hat Customer Portal](https://access.redhat.com/solutions/1985633)
-    [Install binfmt for all cpus via qemu-user-static](https://gist.github.com/DmitryOlshansky/b5b193d83633e08f29def63e32e9691e)
+[qemu - What's the difference between "arm-linux-user" and "armeb-linux-user"?](https://stackoverflow.com/questions/44454063/whats-the-difference-between-arm-linux-user-and-armeb-linux-user)
+[linux - what is default qemu arm enviroment in qemu-arm-static?](https://stackoverflow.com/questions/53809816/what-is-default-qemu-arm-enviroment-in-qemu-arm-static)
+[What is binfmt_misc and how to enable/disable it?](https://access.redhat.com/solutions/1985633)
+[Install binfmt for all cpus via qemu-user-static](https://gist.github.com/DmitryOlshansky/b5b193d83633e08f29def63e32e9691e)

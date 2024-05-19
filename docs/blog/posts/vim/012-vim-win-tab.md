@@ -198,6 +198,15 @@ CTRL-W v                                                CTRL-W_v
 `:bo h :bo`        ｜ 在当前窗格下面新建分屏窗格打开帮助
 `:vert h :vert`    ｜ 在当前窗格左侧新建分屏窗格打开帮助
 
+When splitting a window you can prepend a modifier command to tell where the window is to appear: `:modifier {cmd}`.
+
+The default modifier is `:abo`(aboveleft), we can specify `:bel`(belowright) to split below/right.
+
+1. `[:abo] new/sp`: horizontal split window *top*
+2. `[:abo] vnew/vs`: vertical split window *left*
+3. `:bel new/sp file`: horizontal split window ***below***
+4. `:bel vnew/vs file`: vertical split window ***right***
+
 ```bash
 Note that the 'splitbelow' and 'splitright' options influence where a new
 window will appear.
@@ -298,6 +307,11 @@ CTRL-W_+  |  increase current window height N lines
 CTRL-W_-  |  decrease current window height N lines
 CTRL-W_<  |  decrease current window width N columns
 CTRL-W_>  |  increase current window width N columns
+
+可在快捷键中间插入要增高/缩窄的行/列数，例如：
+
+- `CTRL-W, 5, +` 增高 5 行；
+- `CTRL-W, 5, <` 缩窄 5 行。
 
 ```bash
 1. Window resizing                                      window-resize
