@@ -1290,6 +1290,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#pros_of_little_endian" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pros of Little Endian
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#network_byte_order" class="md-nav__link">
     <span class="md-ellipsis">
       network byte order
@@ -1511,7 +1520,8 @@
 <figure><br />
 <img alt="ARM-CortexA-endianess" src="../../cs/images/ARM-CortexA-endianess.svg" /><br />
 </figure>
-<p>This data endianness is controlled independently for each Execution level. For EL3, EL2 and EL1, the relevant register of SCTLR_ELn.EE sets the endianness. The additional bit at EL1, SCTLR_EL1.E0E controls the data endian setting for EL0. In the AArch64 execution state, data accesses can be LE or BE, while instruction fetches are always LE.</p>
+<p>The designers of the ARM processor didn’t want to take sides in the little- vs. big-endian debate, so they made the ARM processor support both.</p>
+<p>This data endianness is controlled independently for each Execution level. For <code>EL3</code>, <code>EL2</code> and <code>EL1</code>, the relevant register of <code>SCTLR_ELn.EE</code> sets the endianness. The additional bit at <code>EL1</code>, <code>SCTLR_EL1.E0E</code> controls the data endian setting for <code>EL0</code>. In the AArch64 execution state, data accesses can be <code>LE</code> or <code>BE</code>, while instruction fetches are always <code>LE</code>.</p>
 <p><a href="https://github.com/ARM-software/abi-aa/blob/2a70c42d62e9c3eb5887fa50b71257f20daca6f9/aapcs64/aapcs64.rst">aapcs64</a> - 5.8 Byte order ("Endianness"):</p>
 <p>From a software perspective, memory is an array of bytes, each of which is addressable. This ABI supports two views of memory implemented by the underlying hardware.</p>
 <ul>
@@ -1538,6 +1548,15 @@
 <p>《<a href="https://item.jd.com/12006637.html">深入理解计算机系统</a>》（<a href="https://www.amazon.com/Computer-Systems-OHallaron-Randal-Bryant/dp/1292101768/">Computer Systems - A Programmer’s Perspective</a>）中 2.1: Information Storage | 2.1.3: Addressing and Byte Ordering 也有关于 endianess 的详细论述。</p>
 <p><a href="https://stackoverflow.com/questions/7865511/qword-storing-implementing-using-32-bit-regs">assembly - QWORD Storing / implementing using 32-bit REGs.? - Stack Overflow</a></p>
 <p><a href="https://learn.microsoft.com/en-us/cpp/build/arm64-windows-abi-conventions">Overview of ARM64 ABI conventions</a> - <a href="https://learn.microsoft.com/en-us/cpp/build/arm64-windows-abi-conventions#endianness">Endianness</a></p>
+<h2 id="pros_of_little_endian">Pros of Little Endian<a class="headerlink" href="#pros_of_little_endian" title="Permanent link">#</a></h2>
+<p><a href="https://www.amazon.com/Programming-64-Bit-ARM-Assembly-Language/dp/1484258800/">Programming with 64-Bit ARM Assembly Language: Single Board Computer Development for Raspberry Pi and Mobile Devices</a> | Chapter 2: Loading and Adding - Big vs. Little Endian</p>
+<p>The advantage of little-endian format is that it makes it easy to change the size of integers, without requiring any address arithmetic. If you want to convert a 4-byte integer to a 1-byte integer, you take the first byte. Assuming the integer is in the range of 0–255, and the other three bytes are zero. For example, if memory contains the 4 bytes or word for 1, in little endian, the memory contains <code>01 00 00 00</code>.</p>
+<p>If we want the 1-byte representation of this number, we take the first byte; for the 16-bit representation, we take the first two bytes. The key point is that the memory address we use is the <em>same</em> in all cases, saving us an instruction cycle adjusting it.</p>
+<p>When we are in the debugger, we will see more representations, and these will be pointed out again as we run into them.</p>
+<div class="admonition note">
+<p class="admonition-title">byte order transformation</p>
+<p>Note even though Linux uses little endian, many protocols like TCP/IP used on the internet use big endian and so require a transformation when moving data from the computer to the outside world.</p>
+</div>
 <h2 id="network_byte_order">network byte order<a class="headerlink" href="#network_byte_order" title="Permanent link">#</a></h2>
 <p>从维基百科中关于 <a href="https://en.wikipedia.org/wiki/Endianness">Endianness</a> 的介绍，其最早源起于 <a href="https://blog.csdn.net/phunxm/article/details/5085869">网络编程</a>，核心就是“byte significance compared to earliness”的收发次序问题。</p>
 <div class="admonition abstract">

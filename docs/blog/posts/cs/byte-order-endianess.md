@@ -49,7 +49,9 @@ There are two basic ways of viewing bytes in memory, either as *Little-Endian* (
     ![ARM-CortexA-endianess](./images/ARM-CortexA-endianess.svg)
 </figure>
 
-This data endianness is controlled independently for each Execution level. For EL3, EL2 and EL1, the relevant register of SCTLR_ELn.EE sets the endianness. The additional bit at EL1, SCTLR_EL1.E0E controls the data endian setting for EL0. In the AArch64 execution state, data accesses can be LE or BE, while instruction fetches are always LE.
+The designers of the ARM processor didn’t want to take sides in the little- vs. big-endian debate, so they made the ARM processor support both.
+
+This data endianness is controlled independently for each Execution level. For `EL3`, `EL2` and `EL1`, the relevant register of `SCTLR_ELn.EE` sets the endianness. The additional bit at `EL1`, `SCTLR_EL1.E0E` controls the data endian setting for `EL0`. In the AArch64 execution state, data accesses can be `LE` or `BE`, while instruction fetches are always `LE`.
 
 [aapcs64](https://github.com/ARM-software/abi-aa/blob/2a70c42d62e9c3eb5887fa50b71257f20daca6f9/aapcs64/aapcs64.rst) - 5.8 Byte order ("Endianness"):
 
@@ -87,6 +89,20 @@ The mapping of a word-sized data object to memory is shown in the following figu
 [assembly - QWORD Storing / implementing using 32-bit REGs.? - Stack Overflow](https://stackoverflow.com/questions/7865511/qword-storing-implementing-using-32-bit-regs)
 
 [Overview of ARM64 ABI conventions](https://learn.microsoft.com/en-us/cpp/build/arm64-windows-abi-conventions) - [Endianness](https://learn.microsoft.com/en-us/cpp/build/arm64-windows-abi-conventions#endianness)
+
+## Pros of Little Endian
+
+[Programming with 64-Bit ARM Assembly Language: Single Board Computer Development for Raspberry Pi and Mobile Devices](https://www.amazon.com/Programming-64-Bit-ARM-Assembly-Language/dp/1484258800/) | Chapter 2: Loading and Adding - Big vs. Little Endian
+
+The advantage of little-endian format is that it makes it easy to change the size of integers, without requiring any address arithmetic. If you want to convert a 4-byte integer to a 1-byte integer, you take the first byte. Assuming the integer is in the range of 0–255, and the other three bytes are zero. For example, if memory contains the 4 bytes or word for 1, in little endian, the memory contains `01 00 00 00`.
+
+If we want the 1-byte representation of this number, we take the first byte; for the 16-bit representation, we take the first two bytes. The key point is that the memory address we use is the *same* in all cases, saving us an instruction cycle adjusting it.
+
+When we are in the debugger, we will see more representations, and these will be pointed out again as we run into them.
+
+!!! note "byte order transformation"
+
+    Note even though Linux uses little endian, many protocols like TCP/IP used on the internet use big endian and so require a transformation when moving data from the computer to the outside world.
 
 ## network byte order
 
@@ -514,7 +530,6 @@ endianess = LITTLE_ENDIAN
 
 [大端与小端详解](http://www.crifan.com/big_endian_big_endian_and_small_end_little_endian_detailed/)
 [详解大端模式和小端模式](http://blog.csdn.net/ce123_zhouwei/article/details/6971544)
-
 
 IBM z/OS - [Network byte order](https://www.ibm.com/docs/en/zos/3.1.0?topic=domain-network-byte-order)
 IBM z/VM - [Network byte order and host byte order](https://www.ibm.com/docs/en/zvm/7.3?topic=domains-network-byte-order-host-byte-order)

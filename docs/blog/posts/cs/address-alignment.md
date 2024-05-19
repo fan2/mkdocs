@@ -149,6 +149,11 @@ POINTER | `*` | 8 | Quadword
     <figcaption>Byte size and byte alignment of fundamental data types</figcaption>
 </figure>
 
+[Arm Compiler armasm User Guide](https://developer.arm.com/documentation/dui0801/latest) | 9. Using armasm
+
+- 9.15 Address alignment in A32/T32 code
+- 9.16 Address alignment in A64 code
+
 [Overview of ARM64 ABI conventions](https://learn.microsoft.com/en-us/cpp/build/arm64-windows-abi-conventions) - [Alignment](https://learn.microsoft.com/en-us/cpp/build/arm64-windows-abi-conventions#alignment)
 
 Default layout alignment for `locals`:

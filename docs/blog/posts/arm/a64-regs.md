@@ -89,13 +89,6 @@ The `ADR` instruction returns the address of a label, calculated based on the cu
 
     In the A32 and T32 instruction sets, the `PC` and `SP` are general purpose registers. This is not the case in A64 instruction set.
 
-[Blue Fox: Arm Assembly Internals and Reverse Engineering](https://www.amazon.com/Blue-Fox-Assembly-Internals-Analysis/dp/1119745306) | Chapter 4 The Arm Architecture - The AArch64 Execution State - AArch64 Registers:
-
-The only ordinary instructions that can read the `PC` are the following:
-
-- Branch with link instructions (`BL`, `BLR`) that need to read the `PC` to store a return address in the link register (`LR`)
-- Instructions for PC-relative address generation, such as `ADR` and `ADRP`, direct branches, and literal loads(`LDR` pseudo instruction).
-
 ## armasm guide - Registers in AArch64 state
 
 [Arm Compiler armasm User Guide](https://developer.arm.com/documentation/dui0801/latest) | 5. Overview of AArch64 state

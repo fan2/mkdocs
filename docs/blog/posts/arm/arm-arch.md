@@ -214,7 +214,14 @@ ARMv8-A 64-bit milestones:
 [Arm Compiler armasm User Guide](https://developer.arm.com/documentation/dui0801/latest)
 
 - Structure of Assembly Language Modules
+- A32 and T32 Instructions
 - A64 General/Data Transfer Instructions
+
+[ARM Compiler armasm Reference Guide](https://developer.arm.com/documentation/dui0802/latest)
+
+- armasm Command-line Options
+- A32 and T32 Instructions
+- A64 General/Data Instructions
 
 [Arm Compiler for Embedded User Guide](https://developer.arm.com/documentation/100748/0622?lang=en)
 

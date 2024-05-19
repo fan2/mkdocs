@@ -14,7 +14,7 @@ tags:
 comments: true
 ---
 
-How to compile and generate AArch32 code on an AArch64 machine?
+How to compile/generate AArch32 code and run on an AArch64 machine?
 
 [Linaro](https://www.linaro.org/) empowers rapid product deployment within the dynamic Arm ecosystem.
 
@@ -266,7 +266,7 @@ $ aarch64-linux-gnu-gcc hello-world-embedded.c -o hello-world.elf
 
 ## test demos
 
-### as - asm
+### gas - asm
 
 === "write64.s"
 
@@ -400,17 +400,6 @@ $ gcc write.c -o write64 && ./write64
 Hi A64!
 ```
 
-To run ELF32(A32) under Aarch64(A64), we have to resort to QEMU emulator.
-The emulator will interpret the ARM machine code and simulate it using the local processor.
-
-[Blue Fox: Arm Assembly Internals and Reverse Engineering](https://www.amazon.com/Blue-Fox-Assembly-Internals-Analysis/dp/1119745306) | Chapter 9 Arm Environments - Emulation with QEMU
-
-Let’s first install the following packages:
-
-```bash
-$ sudo apt install qemu-user qemu-user-static
-```
-
 For the Arm 32-bit, we need to run the compatible GCC version.
 
 ```bash
@@ -420,7 +409,40 @@ $ arm-linux-gnueabihf-gcc -x c -E -dM /dev/null | grep -E "__ARM_ARCH_ISA_|__ARM
 #define __ARM_ARCH_ISA_THUMB 2
 ```
 
-Cross-compile the program with `arm-linux-gnueabihf-gcc` to create a static executable for AArch32:
+Cross-compile the program with `arm-linux-gnueabihf-gcc` as usual:
+
+```bash
+$ arm-linux-gnueabihf-gcc write.c -o write32
+```
+
+Attempt to run the DYN(dynamically linked) ELF32, it fails to interpret:
+
+```bash
+$ ./write32
+zsh: no such file or directory: ./write32
+```
+
+To run ARM ELF32 under Aarch64(A64), we have to resort to QEMU emulator. The emulator will interpret the ARM machine code and simulate it using the local processor.
+
+> [Blue Fox: Arm Assembly Internals and Reverse Engineering](https://www.amazon.com/Blue-Fox-Assembly-Internals-Analysis/dp/1119745306) | Chapter 9 Arm Environments - Emulation with QEMU
+
+Let’s first install the following packages:
+
+```bash
+$ sudo apt install qemu-user qemu-user-static
+```
+
+Then we can check the installed emulators for ARM and seek help:
+
+```bash
+# for arm & aarch64
+$ ls -l /usr/bin | grep -E "qemu-(arm|aarch)"
+
+# seek for help
+$ qemu-arm --help
+```
+
+Cross-compile with option `-static` to create a static executable:
 
 ```bash
 $ arm-linux-gnueabihf-gcc -static write.c -o swrite32
@@ -442,14 +464,13 @@ $ readelf -h swrite32 | grep Flags
 Run it on the AArch64 Linux/Ubuntu host using QEMU’s user-mode emulation.
 
 ```bash
-# or just ./swrite32
 $ qemu-arm-static ./swrite32
 Hi A32!
 ```
 
-We can also run this binary directly from the command line without specifying `qemu-arm-static`.
+We can also run this binary directly from the command line without specifying `qemu-arm-static`, just type `./swrite32`, it works as if by magic.
 
-For dynamically linked executables, we can supply the path of the ELF interpreter and libraries via the command line option `-L`.
+For dynamically linked executables, we can supply the path of the ELF interpreter and libraries via the option `-L`(QEMU_LD_PREFIX).
 
 ```bash
 $ arm-linux-gnueabihf-gcc write.c -o dwrite32
@@ -463,9 +484,6 @@ dwrite32:     file format elf32-littlearm
 architecture: armv7, flags 0x00000150:
 HAS_SYMS, DYNAMIC, D_PAGED
 start address 0x00000409
-
-$ ./dwrite32
-zsh: no such file or directory: ./dwrite32
 
 $ qemu-arm -L /usr/arm-linux-gnueabihf/ ./dwrite32
 Hi A32!
