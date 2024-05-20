@@ -6,6 +6,9 @@ date:
     created: 2023-06-01T10:00:00
 categories:
     - arm
+tags:
+    - AArch64
+    - AArch32
 comments: true
 ---
 
@@ -79,7 +82,13 @@ The [ARM7TDMI](https://en.wikipedia.org/wiki/ARM7TDMI) is a pipelined architectu
     <figcaption>Figure 2.3 ARM7TDMI pipeline diagram</figcaption>
 </figure>
 
-## PC in AArch64 state
+## PC evolve to AArch64
+
+[ARM 64-Bit Assembly Language](https://www.amazon.com/64-Bit-Assembly-Language-Larry-Pyeatt/dp/0128192216/) | 3 Load/store and branch instructions
+
+3.2 AArch64 user registers - 3.2.7 Program counter
+
+The program counter, `pc`, always contains the address of the ==next== instruction that *will* be executed. The processor increments this register by *four*, automatically, after each instruction is *fetched* from memory. By moving an address into this register, the programmer can cause the processor to *fetch* the next instruction from the new address. This gives the programmer the ability to jump to any address and begin executing code there. Only a small number of instructions can access the pc directly. For example instructions that create a PC-relative address, such as `adr`, and instructions which load a register, such as `ldr`, are able to access the program counter directly.
 
 [ARM Cortex-A Series Programmer's Guide for ARMv8-A](https://developer.arm.com/documentation/den0024/latest) | 4: ARMv8 Registers
 
@@ -89,17 +98,11 @@ One feature of the original ARMv7 instruction set was the use of R15, the Progra
 
 The PC is *never* accessible as a named register. Its use is implicit in certain instructions such as PC-relative load and address generation. The PC cannot be specified as the destination of a data processing instruction or load instruction.
 
-[ARM 64-Bit Assembly Language](https://www.amazon.com/64-Bit-Assembly-Language-Larry-Pyeatt/dp/0128192216/) | 3 Load/store and branch instructions
-
-3.2 AArch64 user registers - 3.2.7 Program counter
-
-The program counter, `pc`, always contains the address of the ==next== instruction that will be executed. The processor increments this register by *four*, automatically, after each instruction is fetched from memory. By moving an address into this register, the programmer can cause the processor to *fetch* the next instruction from the new address. This gives the programmer the ability to jump to any address and begin executing code there. Only a small number of instructions can access the pc directly. For example instructions that create a PC-relative address, such as `adr`, and instructions which load a register, such as `ldr`, are able to access the program counter directly.
-
-### PC accessibility
+## PC accessibility restrictions
 
 [Arm Compiler armasm User Guide](https://developer.arm.com/documentation/dui0801/latest) | 5.7 Program Counter in AArch64 state
 
-In AArch64 state, the Program Counter (`PC`) contains the address of the currently executing instruction. It is incremented by the size of the instruction executed, which is always *four* bytes.
+In AArch64 state, the Program Counter (`PC`) contains the address of the *currently* executing instruction. It is incremented by the size of the instruction executed, which is always *four* bytes.
 
 In AArch64 state, the PC is *not* a general purpose register and you *cannot* access it explicitly. The following types of instructions read it implicitly:
 
