@@ -1,5 +1,5 @@
 ---
-title: AArch64 Execution States
+title: ARM64 Execution States
 authors:
     - xman
 date:

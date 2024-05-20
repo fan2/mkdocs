@@ -1,5 +1,5 @@
 ---
-title: AArch64 System calls
+title: ARM64 System calls
 authors:
     - xman
 date:

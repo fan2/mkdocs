@@ -1,5 +1,5 @@
 ---
-title: Register file of AArch64
+title: Register file of ARM64
 authors:
     - xman
 date:

@@ -1,5 +1,5 @@
 ---
-title: AArch64 Exception Levels and Security States
+title: ARM64 Exception Levels and Security States
 authors:
     - xman
 date:
