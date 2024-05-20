@@ -26,7 +26,7 @@
     
     
       
-        <title>ARM LDR Literal and Pseudo instructions - ElseWhere</title>
+        <title>ARM LDR literal and pseudo-instruction - ElseWhere</title>
       
     
     
@@ -123,7 +123,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              ARM LDR Literal and Pseudo instructions
+              ARM LDR literal and pseudo-instruction
             
           </span>
         </div>
@@ -1477,20 +1477,14 @@
     
     
     
-      <span class="md-tag">AArch64</span>
-    
-  
-    
-    
-    
-      <span class="md-tag">AArch32</span>
+      <span class="md-tag">instruction</span>
     
   
 </nav>
 
 
 
-  <h1>ARM LDR Literal and Pseudo instructions</h1>
+  <h1>ARM LDR literal and pseudo-instruction</h1>
 
 <p>The AArch64 architecture is a classic example of a <em>load-store</em> architecture.</p>
 <p>There are three fundamental addressing modes in AArch64 instructions: register offset, immediate offset, and literal.</p>
@@ -1507,7 +1501,8 @@
 <p>All <em>computational</em> instructions assume that the registers already contain the data. <em>Load</em> instructions are used to move data from memory into the registers, and <em>store</em> instructions are used to move data from the registers to memory.</p>
 <h2 id="ldr_pc-relative">LDR (PC-relative)<a class="headerlink" href="#ldr_pc-relative" title="Permanent link">#</a></h2>
 <h3 id="a32">A32<a class="headerlink" href="#a32" title="Permanent link">#</a></h3>
-<p><a href="https://developer.arm.com/documentation/dui0802/latest">ARM Compiler armasm Reference Guide</a> ｜ 3: A32 and T32 Instructions - 3.47 LDR (PC-relative)<br />
+<p><a href="https://developer.arm.com/documentation/ddi0597/2024-03/Base-Instructions/LDR--literal---Load-Register--literal--?lang=en">Arm A-profile A32/T32 Instruction Set Architecture</a> | LDR (literal)<br />
+<a href="https://developer.arm.com/documentation/dui0802/latest">ARM Compiler armasm Reference Guide</a> ｜ 3: A32 and T32 Instructions - 3.47 LDR (PC-relative)<br />
 <a href="https://developer.arm.com/documentation/dui0801/latest">Arm Compiler armasm User Guide</a> | 14. A32 and T32 Instructions - 14.51 LDR (PC-relative)</p>
 <p>Load register. The address is an oﬀset from the PC.</p>
 <p><strong>Syntax</strong></p>
@@ -1517,6 +1512,31 @@
 <p><code>label</code> is a PC-relative expression.<br />
 <code>label</code> must be within a limited distance of the current instruction.</p>
 </blockquote>
+<p><strong>Instruction</strong></p>
+<p>A1 (!(P == 0 &amp;&amp; W == 1))</p>
+<ul>
+<li><code>LDR{&lt;c&gt;}{&lt;q&gt;} &lt;Rt&gt;, &lt;label&gt;</code> // (Normal form)</li>
+<li><code>LDR{&lt;c&gt;}{&lt;q&gt;} &lt;Rt&gt;, [PC, #{±}&lt;imm&gt;]</code> // (Alternative form)</li>
+</ul>
+<div class="language-c highlight"><span class="filename">LDR Rt, label - imm</span><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="k">if</span><span class="w"> </span><span class="n">P</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="sc">&#39;0&#39;</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">W</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="sc">&#39;1&#39;</span><span class="w"> </span><span class="n">then</span><span class="w"> </span><span class="n">SEE</span><span class="w"> </span><span class="s">&quot;LDRT&quot;</span><span class="p">;</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="n">constant</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">UInt</span><span class="p">(</span><span class="n">Rt</span><span class="p">);</span><span class="w">  </span><span class="n">constant</span><span class="w"> </span><span class="n">imm32</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ZeroExtend</span><span class="p">(</span><span class="n">imm12</span><span class="p">,</span><span class="w"> </span><span class="mi">32</span><span class="p">);</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="n">constant</span><span class="w"> </span><span class="n">add</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">U</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="sc">&#39;1&#39;</span><span class="p">);</span><span class="w">  </span><span class="n">constant</span><span class="w"> </span><span class="n">wback</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">P</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="sc">&#39;0&#39;</span><span class="p">)</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="p">(</span><span class="n">W</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="sc">&#39;1&#39;</span><span class="p">);</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="k">if</span><span class="w"> </span><span class="n">wback</span><span class="w"> </span><span class="n">then</span><span class="w"> </span><span class="n">UNPREDICTABLE</span><span class="p">;</span>
+</span></code></pre></div>
+<p><code>&lt;imm12&gt;</code>: For encoding A1: is the 12-bit(11:0) unsigned immediate byte offset, in the range 0 to 4095, defaulting to 0 if omitted, and encoded in the "imm12" field.</p>
+<div class="language-c highlight"><span class="filename">LDR Rt, label - Operation</span><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="k">if</span><span class="w"> </span><span class="n">ConditionPassed</span><span class="p">()</span><span class="w"> </span><span class="n">then</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">    </span><span class="n">EncodingSpecificOperations</span><span class="p">();</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">    </span><span class="n">constant</span><span class="w"> </span><span class="n">base</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Align</span><span class="p">(</span><span class="n">PC32</span><span class="p">,</span><span class="mi">4</span><span class="p">);</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">    </span><span class="n">constant</span><span class="w"> </span><span class="n">address</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">add</span><span class="w"> </span><span class="n">then</span><span class="w"> </span><span class="p">(</span><span class="n">base</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">imm32</span><span class="p">)</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="p">(</span><span class="n">base</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">imm32</span><span class="p">);</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">    </span><span class="n">constant</span><span class="w"> </span><span class="n">data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MemU</span><span class="p">[</span><span class="n">address</span><span class="p">,</span><span class="mi">4</span><span class="p">];</span>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">15</span><span class="w"> </span><span class="n">then</span>
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="n">address</span><span class="o">&lt;</span><span class="mi">1</span><span class="o">:</span><span class="mi">0</span><span class="o">&gt;</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="err">&#39;</span><span class="mo">00</span><span class="err">&#39;</span><span class="w"> </span><span class="n">then</span>
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">            </span><span class="n">LoadWritePC</span><span class="p">(</span><span class="n">data</span><span class="p">);</span>
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="w">        </span><span class="k">else</span>
+</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="w">            </span><span class="n">UNPREDICTABLE</span><span class="p">;</span>
+</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="w">    </span><span class="k">else</span>
+</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="w">        </span><span class="n">R</span><span class="p">[</span><span class="n">t</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">data</span><span class="p">;</span>
+</span></code></pre></div>
 <p><strong>Oﬀset range and architectures</strong></p>
 <p>The assembler calculates the oﬀset from the <code>PC</code> for you. The assembler generates an error if label is out of range.</p>
 <p>The following table shows the possible oﬀsets between the label and the current instruction:</p>
@@ -1551,60 +1571,53 @@
 </tr>
 </tbody>
 </table>
-<p><strong>Instruction</strong></p>
-<p><a href="https://developer.arm.com/documentation/ddi0597/2024-03/Base-Instructions/LDR--literal---Load-Register--literal--?lang=en">Arm A-profile A32/T32 Instruction Set Architecture</a> | LDR (literal)</p>
-<p>A1 (!(P == 0 &amp;&amp; W == 1))</p>
-<ul>
-<li><code>LDR{&lt;c&gt;}{&lt;q&gt;} &lt;Rt&gt;, &lt;label&gt;</code> // (Normal form)</li>
-<li><code>LDR{&lt;c&gt;}{&lt;q&gt;} &lt;Rt&gt;, [PC, #{+/-}&lt;imm&gt;]</code> // (Alternative form)</li>
-</ul>
-<div class="language-c highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="k">if</span><span class="w"> </span><span class="n">P</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="sc">&#39;0&#39;</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">W</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="sc">&#39;1&#39;</span><span class="w"> </span><span class="n">then</span><span class="w"> </span><span class="n">SEE</span><span class="w"> </span><span class="s">&quot;LDRT&quot;</span><span class="p">;</span>
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="n">constant</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">UInt</span><span class="p">(</span><span class="n">Rt</span><span class="p">);</span><span class="w">  </span><span class="n">constant</span><span class="w"> </span><span class="n">imm32</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">ZeroExtend</span><span class="p">(</span><span class="n">imm12</span><span class="p">,</span><span class="w"> </span><span class="mi">32</span><span class="p">);</span>
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="n">constant</span><span class="w"> </span><span class="n">add</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">U</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="sc">&#39;1&#39;</span><span class="p">);</span><span class="w">  </span><span class="n">constant</span><span class="w"> </span><span class="n">wback</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">P</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="sc">&#39;0&#39;</span><span class="p">)</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="p">(</span><span class="n">W</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="sc">&#39;1&#39;</span><span class="p">);</span>
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="k">if</span><span class="w"> </span><span class="n">wback</span><span class="w"> </span><span class="n">then</span><span class="w"> </span><span class="n">UNPREDICTABLE</span><span class="p">;</span>
-</span></code></pre></div>
-<p><code>&lt;imm12&gt;</code>: For encoding A1: is the 12-bit(11:0) unsigned immediate byte offset, in the range 0 to 4095, defaulting to 0 if omitted, and encoded in the "imm12" field.</p>
 <h3 id="a64">A64<a class="headerlink" href="#a64" title="Permanent link">#</a></h3>
-<p><a href="https://developer.arm.com/documentation/dui0802/latest">ARM Compiler armasm Reference Guide</a> ｜ 6: A64 Data Transfer Instructions - 6.18 LDR (literal)<br />
+<p><a href="https://developer.arm.com/documentation/ddi0602/2024-03/Base-Instructions/LDR--literal---Load-Register--literal--?lang=en">Arm A-profile A64 Instruction Set Architecture</a> | LDR (literal)<br />
+<a href="https://developer.arm.com/documentation/dui0802/latest">ARM Compiler armasm Reference Guide</a> ｜ 6: A64 Data Transfer Instructions - 6.18 LDR (literal)<br />
 <a href="https://developer.arm.com/documentation/dui0801/latest">Arm Compiler armasm User Guide</a> | 18. A64 Data Transfer Instructions - 18.32 LDR (literal)</p>
 <p>Load register (PC-relative literal).</p>
 <p><strong>Syntax</strong></p>
-<div class="language-asm highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nf">LDR</span><span class="w"> </span><span class="no">Wt</span><span class="p">,</span><span class="w"> </span><span class="no">label</span><span class="w"> </span><span class="c1">; 32-bit general registers</span>
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="nf">LDR</span><span class="w"> </span><span class="no">Xt</span><span class="p">,</span><span class="w"> </span><span class="no">label</span><span class="w"> </span><span class="c1">; 64-bit general registers</span>
+<div class="language-asm highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nf">LDR</span><span class="w"> </span><span class="no">Wt</span><span class="p">,</span><span class="w"> </span><span class="no">label</span><span class="w"> </span><span class="c1">; 32-bit general registers</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="nf">LDR</span><span class="w"> </span><span class="no">Xt</span><span class="p">,</span><span class="w"> </span><span class="no">label</span><span class="w"> </span><span class="c1">; 64-bit general registers</span>
 </span></code></pre></div>
 <blockquote>
-<p><code>label</code>: Is the program label from which the data is to be loaded. It is an offset from the address of this instruction, in the range ±1MB.</p>
+<p><code>label</code> is the program label from which the data is to be loaded. It is an <mark>offset</mark> from the address of this instruction, in the range ±1MB.</p>
 </blockquote>
-<p><strong>Usage</strong></p>
-<p>Load Register (literal) calculates an address from the PC value and an immediate oﬀset, loads a <mark>word</mark> from memory, and writes it to a register. For information about memory accesses, see <em>Load/Store addressing modes</em> in the <a href="https://developer.arm.com/documentation/ddi0487/latest">Arm Architecture Reference Manual Armv8, for Armv8-A architecture proﬁle</a>.</p>
-<p>For example:</p>
-<div class="language-asm highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nl">len:</span><span class="w">    </span><span class="na">.word</span><span class="w">   </span><span class="mi">0x20</span>
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="na">.equ</span><span class="w">    </span><span class="no">offset</span><span class="p">,</span><span class="w"> </span><span class="mi">0x20</span>
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
-</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="c1">// ...</span>
-</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>
-</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="nf">ldr</span><span class="w"> </span><span class="no">x2</span><span class="p">,</span><span class="w"> </span><span class="no">len</span><span class="w">             </span><span class="c1">// x2 = 0x20</span>
-</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="nf">ldr</span><span class="w"> </span><span class="no">x3</span><span class="p">,</span><span class="w"> </span><span class="no">offset</span><span class="w">          </span><span class="c1">// ldr x3, [pc+0x20] =&gt; x3 = *(pc+0x20)</span>
-</span></code></pre></div>
 <p><strong>Instruction</strong></p>
-<p><a href="https://developer.arm.com/documentation/ddi0602/2024-03/Base-Instructions/LDR--literal---Load-Register--literal--?lang=en">Arm A-profile A64 Instruction Set Architecture</a> | LDR (literal)</p>
-<p>64-bit (opc == 01) : <code>LDR &lt;Xt&gt;, &lt;label&gt;</code></p>
-<div class="language-c highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">integer</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">UInt</span><span class="p">(</span><span class="n">Rt</span><span class="p">);</span>
+<p>Load Register (literal) calculates an address from the PC value and an immediate offset, loads a word from memory, and writes it to a register.</p>
+<div class="language-c highlight"><span class="filename">LDR Xt, label - offset</span><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">integer</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">UInt</span><span class="p">(</span><span class="n">Rt</span><span class="p">);</span>
 </span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="n">constant</span><span class="w"> </span><span class="n">integer</span><span class="w"> </span><span class="n">size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">UInt</span><span class="p">(</span><span class="n">opc</span><span class="o">&lt;</span><span class="mi">0</span><span class="o">&gt;</span><span class="p">);</span>
 </span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="n">boolean</span><span class="w"> </span><span class="n">nontemporal</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">FALSE</span><span class="p">;</span>
 </span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="n">boolean</span><span class="w"> </span><span class="n">tagchecked</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">FALSE</span><span class="p">;</span>
 </span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>
 </span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="n">bits</span><span class="p">(</span><span class="mi">64</span><span class="p">)</span><span class="w"> </span><span class="n">offset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SignExtend</span><span class="p">(</span><span class="n">imm19</span><span class="o">:</span><span class="err">&#39;</span><span class="mo">00</span><span class="err">&#39;</span><span class="p">,</span><span class="w"> </span><span class="mi">64</span><span class="p">);</span>
 </span></code></pre></div>
-<p><code>&lt;label&gt;</code> is the program label from which the data is to be loaded. Its offset from the address of this instruction, in the range +/-1MB, is encoded as "imm19"(23:5) times 4(Align(PC, 4)).</p>
+<p><code>&lt;label&gt;</code> is the program label from which the data is to be loaded. Its offset from the address of this instruction, in the range ±1MB, is encoded as "imm19"(23:5) times 4(Align(PC, 4)).</p>
+<div class="language-c highlight"><span class="filename">LDR Xt, label - Operation</span><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="n">bits</span><span class="p">(</span><span class="mi">64</span><span class="p">)</span><span class="w"> </span><span class="n">address</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PC64</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">offset</span><span class="p">;</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="n">boolean</span><span class="w"> </span><span class="n">privileged</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PSTATE</span><span class="p">.</span><span class="n">EL</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">EL0</span><span class="p">;</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="n">AccessDescriptor</span><span class="w"> </span><span class="n">accdesc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CreateAccDescGPR</span><span class="p">(</span><span class="n">MemOp_LOAD</span><span class="p">,</span><span class="w"> </span><span class="n">nontemporal</span><span class="p">,</span><span class="w"> </span><span class="n">privileged</span><span class="p">,</span><span class="w"> </span><span class="n">tagchecked</span><span class="p">);</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="n">X</span><span class="p">[</span><span class="n">t</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">8</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">Mem</span><span class="p">[</span><span class="n">address</span><span class="p">,</span><span class="w"> </span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="n">accdesc</span><span class="p">];</span>
+</span></code></pre></div>
+<p><strong>Usage</strong></p>
+<p>Load Register (literal) calculates an address from the PC value and an immediate oﬀset, loads a <mark>word</mark> from memory, and writes it to a register. For information about memory accesses, see <em>Load/Store addressing modes</em> in the <a href="https://developer.arm.com/documentation/ddi0487/latest">Arm Architecture Reference Manual Armv8, for Armv8-A architecture proﬁle</a>.</p>
+<p><strong>Examples</strong></p>
+<div class="language-asm highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nl">len:</span><span class="w">    </span><span class="na">.word</span><span class="w">   </span><span class="mi">0x20</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="na">.equ</span><span class="w">    </span><span class="no">offset</span><span class="p">,</span><span class="w"> </span><span class="mi">0x20</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="c1">// ...</span>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="nf">ldr</span><span class="w"> </span><span class="no">x2</span><span class="p">,</span><span class="w"> </span><span class="no">len</span><span class="w">             </span><span class="c1">// x2 = 0x20</span>
+</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="nf">ldr</span><span class="w"> </span><span class="no">x3</span><span class="p">,</span><span class="w"> </span><span class="no">offset</span><span class="w">          </span><span class="c1">// ldr x3, [pc+0x20] =&gt; x3 = *(pc+0x20)</span>
+</span></code></pre></div>
 <h2 id="ldr_pseudo-instruction">LDR pseudo-instruction<a class="headerlink" href="#ldr_pseudo-instruction" title="Permanent link">#</a></h2>
 <h3 id="a32_1">A32<a class="headerlink" href="#a32_1" title="Permanent link">#</a></h3>
 <p><a href="https://developer.arm.com/documentation/dui0802/latest">ARM Compiler armasm Reference Guide</a> | 3: A32 and T32 Instructions - 3.49 LDR pseudo-instruction<br />
 <a href="https://developer.arm.com/documentation/dui0801/latest">Arm Compiler armasm User Guide</a> | 14. A32 and T32 Instructions - 14.54 LDR pseudo-instruction</p>
 <p>Load a register with either a 32-bit immediate value or an address.</p>
 <p><strong>Syntax</strong></p>
-<div class="language-asm highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nf">LDR</span><span class="p">{</span><span class="no">cond</span><span class="p">}{.</span><span class="no">W</span><span class="p">}</span><span class="w"> </span><span class="no">Rt</span><span class="p">,</span><span class="w"> </span><span class="err">=</span><span class="no">expr</span>
-</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="nf">LDR</span><span class="p">{</span><span class="no">cond</span><span class="p">}{.</span><span class="no">W</span><span class="p">}</span><span class="w"> </span><span class="no">Rt</span><span class="p">,</span><span class="w"> </span><span class="err">=</span><span class="no">label_expr</span>
+<div class="language-asm highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="nf">LDR</span><span class="p">{</span><span class="no">cond</span><span class="p">}{.</span><span class="no">W</span><span class="p">}</span><span class="w"> </span><span class="no">Rt</span><span class="p">,</span><span class="w"> </span><span class="err">=</span><span class="no">expr</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="nf">LDR</span><span class="p">{</span><span class="no">cond</span><span class="p">}{.</span><span class="no">W</span><span class="p">}</span><span class="w"> </span><span class="no">Rt</span><span class="p">,</span><span class="w"> </span><span class="err">=</span><span class="no">label_expr</span>
 </span></code></pre></div>
 <blockquote>
 <p><code>expr</code> evaluates to a numeric value.<br />
@@ -1626,36 +1639,36 @@
 <p>The assembler places the value of <code>label_expr</code> in a literal pool and generates a PC-relative <code>LDR</code> instruction that loads the value from the literal pool.</p>
 <p>If <code>label_expr</code> is an external expression, or is not contained in the current section, the assembler places a linker relocation directive in the object ﬁle. The linker generates the address at link time.</p>
 <p>If <code>label_expr</code> is either a named or numeric local label, the assembler places a linker relocation directive in the object ﬁle and generates a symbol for that local label. The address is generated at link time. If the local label references T32 code, the T32 bit (bit 0) of the address is set.</p>
-<p>The oﬀset from the PC to the value in the literal pool must be less than ±4KB (in an A32 or 32-bit T32 encoding) or in the range 0 to +1KB (16-bit T32 encoding). You are responsible for ensuring that there is a literal pool within range.</p>
+<p>The <mark>oﬀset</mark> from the PC to the value in the literal pool must be less than ±4KB (in an A32 or 32-bit T32 encoding) or in the range 0 to +1KB (16-bit T32 encoding). You are responsible for ensuring that there is a literal pool within range.</p>
 <p>If the label referenced is in T32 code, the <code>LDR</code> pseudo-instruction sets the T32 bit (bit 0) of <code>label_expr</code>.</p>
 <p><strong>Examples</strong></p>
-<div class="language-asm highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="w">        </span><span class="nf">LDR</span><span class="w">     </span><span class="no">r3</span><span class="p">,</span><span class="err">=</span><span class="mi">0xff0</span><span class="w">    </span><span class="c1">; loads 0xff0 into R3</span>
-</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="w">                             </span><span class="c1">; =&gt;  MOV.W r3,#0xff0</span>
-</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="w">        </span><span class="nf">LDR</span><span class="w">     </span><span class="no">r1</span><span class="p">,</span><span class="err">=</span><span class="mi">0xfff</span><span class="w">    </span><span class="c1">; loads 0xfff into R1</span>
-</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="w">                             </span><span class="c1">; =&gt;  LDR r1,[pc,offset_to_litpool]</span>
-</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="w">                             </span><span class="c1">;     ...</span>
-</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="w">                             </span><span class="c1">;     litpool DCD 0xfff</span>
-</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="w">        </span><span class="nf">LDR</span><span class="w">     </span><span class="no">r2</span><span class="p">,</span><span class="err">=</span><span class="no">place</span><span class="w">    </span><span class="c1">; loads the address of</span>
-</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="w">                             </span><span class="c1">; place into R2</span>
-</span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="w">                             </span><span class="c1">; =&gt;  LDR r2,[pc,offset_to_litpool]</span>
-</span><span id="__span-6-10"><a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a><span class="w">                             </span><span class="c1">;     ...</span>
-</span><span id="__span-6-11"><a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a><span class="w">                             </span><span class="c1">;     litpool DCD place</span>
+<div class="language-asm highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="w">        </span><span class="nf">LDR</span><span class="w">     </span><span class="no">r3</span><span class="p">,</span><span class="err">=</span><span class="mi">0xff0</span><span class="w">    </span><span class="c1">; loads 0xff0 into R3</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="w">                             </span><span class="c1">; =&gt;  MOV.W r3,#0xff0</span>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="w">        </span><span class="nf">LDR</span><span class="w">     </span><span class="no">r1</span><span class="p">,</span><span class="err">=</span><span class="mi">0xfff</span><span class="w">    </span><span class="c1">; loads 0xfff into R1</span>
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="w">                             </span><span class="c1">; =&gt;  LDR r1,[pc,offset_to_litpool]</span>
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="w">                             </span><span class="c1">;     ...</span>
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="w">                             </span><span class="c1">;     litpool DCD 0xfff</span>
+</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="w">        </span><span class="nf">LDR</span><span class="w">     </span><span class="no">r2</span><span class="p">,</span><span class="err">=</span><span class="no">place</span><span class="w">    </span><span class="c1">; loads the address of</span>
+</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a><span class="w">                             </span><span class="c1">; place into R2</span>
+</span><span id="__span-8-9"><a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a><span class="w">                             </span><span class="c1">; =&gt;  LDR r2,[pc,offset_to_litpool]</span>
+</span><span id="__span-8-10"><a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a><span class="w">                             </span><span class="c1">;     ...</span>
+</span><span id="__span-8-11"><a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a><span class="w">                             </span><span class="c1">;     litpool DCD place</span>
 </span></code></pre></div>
 <h3 id="a64_1">A64<a class="headerlink" href="#a64_1" title="Permanent link">#</a></h3>
 <p><a href="https://developer.arm.com/documentation/dui0802/latest">ARM Compiler armasm Reference Guide</a> ｜ 6: A64 Data Transfer Instructions - 6.19 LDR pseudo-instruction<br />
 <a href="https://developer.arm.com/documentation/dui0801/latest">Arm Compiler armasm User Guide</a> | 18. A64 Data Transfer Instructions - 18.33 LDR pseudo-instruction</p>
 <p>Load a register with either a 32-bit or 64-bit immediate value or an address.</p>
-<p><strong>Syntax</strong>:</p>
-<div class="language-asm highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="nf">LDR</span><span class="w"> </span><span class="no">Wd</span><span class="p">,</span><span class="w"> </span><span class="err">=</span><span class="no">expr</span>
-</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="nf">LDR</span><span class="w"> </span><span class="no">Xd</span><span class="p">,</span><span class="w"> </span><span class="err">=</span><span class="no">expr</span>
-</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="nf">LDR</span><span class="w"> </span><span class="no">Wd</span><span class="p">,</span><span class="w"> </span><span class="err">=</span><span class="no">label_expr</span>
-</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="nf">LDR</span><span class="w"> </span><span class="no">Xd</span><span class="p">,</span><span class="w"> </span><span class="err">=</span><span class="no">label_expr</span>
+<p><strong>Syntax</strong></p>
+<div class="language-asm highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="nf">LDR</span><span class="w"> </span><span class="no">Wd</span><span class="p">,</span><span class="w"> </span><span class="err">=</span><span class="no">expr</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="nf">LDR</span><span class="w"> </span><span class="no">Xd</span><span class="p">,</span><span class="w"> </span><span class="err">=</span><span class="no">expr</span>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="nf">LDR</span><span class="w"> </span><span class="no">Wd</span><span class="p">,</span><span class="w"> </span><span class="err">=</span><span class="no">label_expr</span>
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="nf">LDR</span><span class="w"> </span><span class="no">Xd</span><span class="p">,</span><span class="w"> </span><span class="err">=</span><span class="no">label_expr</span>
 </span></code></pre></div>
 <blockquote>
 <p><code>expr</code> evaluates to a numeric value.<br />
 <code>label_expr</code> is a PC-relative or external expression of an address in the form of a label plus or minus a numeric value.</p>
 </blockquote>
-<p><strong>Usage</strong>:</p>
+<p><strong>Usage</strong></p>
 <p>When using the LDR pseudo-instruction, the assembler places the value of <code>expr</code> or <code>label_expr</code> in a <em>literal pool</em> and generates a PC-relative <code>LDR</code> instruction that reads the constant from the literal pool.</p>
 <div class="admonition note">
 <p class="admonition-title">LDR Rd, =label is not PIC</p>
@@ -1666,24 +1679,25 @@
 </div>
 <p>If <code>label_expr</code> is an external expression, or is not contained in the current section, the assembler places a linker relocation directive in the object ﬁle. The linker generates the address at link time.</p>
 <p>If <code>label_expr</code> is a local label, the assembler places a linker relocation directive in the object ﬁle and generates a symbol for that local label. The address is generated at link time.</p>
-<p>The oﬀset from the PC to the value in the literal pool must be less than ±1MB . You are responsible for ensuring that there is a literal pool within range.</p>
-<div class="language-asm highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="w">        </span><span class="nf">LDR</span><span class="w">     </span><span class="no">w1</span><span class="p">,</span><span class="err">=</span><span class="mi">0xfff</span><span class="w">    </span><span class="c1">; loads 0xfff into W1</span>
-</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>
-</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="w">                             </span><span class="c1">; =&gt;  LDR w1,[pc,offset_to_litpool]</span>
-</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="w">                             </span><span class="c1">;     ...</span>
-</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="w">                             </span><span class="c1">;     litpool DCD 4095</span>
-</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>
-</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="w">        </span><span class="nf">LDR</span><span class="w">     </span><span class="no">x2</span><span class="p">,</span><span class="err">=</span><span class="no">place</span><span class="w">    </span><span class="c1">; loads the address of</span>
-</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a><span class="w">                             </span><span class="c1">; place into X2</span>
-</span><span id="__span-8-9"><a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a><span class="w">                             </span><span class="c1">; =&gt;  LDR x2,[pc,offset_to_litpool]</span>
-</span><span id="__span-8-10"><a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a><span class="w">                             </span><span class="c1">;     ...</span>
-</span><span id="__span-8-11"><a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a><span class="w">                             </span><span class="c1">;     litpool DCQ place</span>
-</span><span id="__span-8-12"><a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a><span class="w">        </span><span class="nf">LDR</span><span class="w">     </span><span class="no">x3</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">x2</span><span class="p">]</span><span class="w">     </span><span class="c1">; load value from pointer(place)</span>
+<p>The <mark>oﬀset</mark> from the PC to the value in the literal pool must be less than ±1MB . You are responsible for ensuring that there is a literal pool within range.</p>
+<p><strong>Examples</strong></p>
+<div class="language-asm highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="w">        </span><span class="nf">LDR</span><span class="w">     </span><span class="no">w1</span><span class="p">,</span><span class="err">=</span><span class="mi">0xfff</span><span class="w">    </span><span class="c1">; loads 0xfff into W1</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="w">                             </span><span class="c1">; =&gt;  LDR w1,[pc,offset_to_litpool]</span>
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="w">                             </span><span class="c1">;     ...</span>
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="w">                             </span><span class="c1">;     litpool DCD 4095</span>
+</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>
+</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="w">        </span><span class="nf">LDR</span><span class="w">     </span><span class="no">x2</span><span class="p">,</span><span class="err">=</span><span class="no">place</span><span class="w">    </span><span class="c1">; loads the address of</span>
+</span><span id="__span-10-8"><a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a><span class="w">                             </span><span class="c1">; place into X2</span>
+</span><span id="__span-10-9"><a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a><span class="w">                             </span><span class="c1">; =&gt;  LDR x2,[pc,offset_to_litpool]</span>
+</span><span id="__span-10-10"><a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a><span class="w">                             </span><span class="c1">;     ...</span>
+</span><span id="__span-10-11"><a id="__codelineno-10-11" name="__codelineno-10-11" href="#__codelineno-10-11"></a><span class="w">                             </span><span class="c1">;     litpool DCQ place</span>
+</span><span id="__span-10-12"><a id="__codelineno-10-12" name="__codelineno-10-12" href="#__codelineno-10-12"></a><span class="w">        </span><span class="nf">LDR</span><span class="w">     </span><span class="no">x3</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">x2</span><span class="p">]</span><span class="w">     </span><span class="c1">; load value from pointer(place)</span>
 </span></code></pre></div>
 <div class="admonition example">
 <p class="admonition-title">load PC-relative address</p>
-<div class="language-asm highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="nf">ldr</span><span class="w"> </span><span class="no">x1</span><span class="p">,</span><span class="w"> </span><span class="err">=</span><span class="no">msg1</span>
-</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="nf">adr</span><span class="w"> </span><span class="no">x2</span><span class="p">,</span><span class="w"> </span><span class="no">msg2</span>
+<div class="language-asm highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="nf">ldr</span><span class="w"> </span><span class="no">x1</span><span class="p">,</span><span class="w"> </span><span class="err">=</span><span class="no">msg1</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="nf">adr</span><span class="w"> </span><span class="no">x2</span><span class="p">,</span><span class="w"> </span><span class="no">msg2</span>
 </span></code></pre></div>
 </div>
 <h2 id="references">references<a class="headerlink" href="#references" title="Permanent link">#</a></h2>
@@ -1816,13 +1830,13 @@
         
         
           
-          <a href="../arm-ldr-demo/" class="md-footer__link md-footer__link--next" aria-label="下一页: ARM LDR Literal and Pseudo demos">
+          <a href="../arm-ldr-demo/" class="md-footer__link md-footer__link--next" aria-label="下一页: ARM LDR literal and pseudo-instruction demos">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 下一页
               </span>
               <div class="md-ellipsis">
-                ARM LDR Literal and Pseudo demos
+                ARM LDR literal and pseudo-instruction demos
               </div>
             </div>
             <div class="md-footer__button md-icon">

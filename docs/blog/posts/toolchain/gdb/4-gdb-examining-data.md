@@ -133,9 +133,14 @@ If you use defaults for *nfu*, you need not type the slash ‘`/`’. Several co
     - `w` for Words (four bytes). This is the initial default.
     - `g` for Giant words (eight bytes).
 
-> Each time you specify a unit size with x, that size becomes the *default* unit the next time you use x. 
+    > Each time you specify a unit size with x, that size becomes the *default* unit the next time you use x. 
 
 - `addr`, starting display address, where you want GDB to begin displaying memory. The expression need not have a pointer value (though it may); it is always interpreted as an integer address of a byte of memory.
+
+<figure markdown="span">
+    ![Examine memory command breakdown](./images/examine-memory-command.png){: style="width:75%;height:75%"}
+    <figcaption>Examine memory command breakdown</figcaption>
+</figure>
 
 !!! example "x/nfu <addr\>"
 

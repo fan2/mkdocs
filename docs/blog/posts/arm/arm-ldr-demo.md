@@ -1,11 +1,13 @@
 ---
-title: ARM LDR Literal and Pseudo demos
+title: ARM LDR literal and pseudo-instruction demos
 authors:
     - xman
 date:
     created: 2023-06-06T10:00:00
 categories:
     - arm
+tags:
+    - instruction
 comments: true
 ---
 

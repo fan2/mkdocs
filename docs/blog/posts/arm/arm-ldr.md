@@ -1,5 +1,5 @@
 ---
-title: ARM LDR Literal and Pseudo instructions
+title: ARM LDR literal and pseudo-instruction
 authors:
     - xman
 date:
@@ -7,8 +7,7 @@ date:
 categories:
     - arm
 tags:
-    - AArch64
-    - AArch32
+    - instruction
 comments: true
 ---
 
@@ -35,6 +34,7 @@ All *computational* instructions assume that the registers already contain the d
 
 ### A32
 
+[Arm A-profile A32/T32 Instruction Set Architecture](https://developer.arm.com/documentation/ddi0597/2024-03/Base-Instructions/LDR--literal---Load-Register--literal--?lang=en) | LDR (literal)
 [ARM Compiler armasm Reference Guide](https://developer.arm.com/documentation/dui0802/latest) ｜ 3: A32 and T32 Instructions - 3.47 LDR (PC-relative)
 [Arm Compiler armasm User Guide](https://developer.arm.com/documentation/dui0801/latest) | 14. A32 and T32 Instructions - 14.51 LDR (PC-relative)
 
@@ -48,6 +48,37 @@ LDR{type}{cond}{.W} Rt, label
 
 > `label` is a PC-relative expression.
 > `label` must be within a limited distance of the current instruction.
+
+**Instruction**
+
+A1 (!(P == 0 && W == 1))
+
+- `LDR{<c>}{<q>} <Rt>, <label>` // (Normal form)
+- `LDR{<c>}{<q>} <Rt>, [PC, #{±}<imm>]` // (Alternative form)
+
+```c title="LDR Rt, label - imm"
+if P == '0' && W == '1' then SEE "LDRT";
+constant t = UInt(Rt);  constant imm32 = ZeroExtend(imm12, 32);
+constant add = (U == '1');  constant wback = (P == '0') || (W == '1');
+if wback then UNPREDICTABLE;
+```
+
+`<imm12>`: For encoding A1: is the 12-bit(11:0) unsigned immediate byte offset, in the range 0 to 4095, defaulting to 0 if omitted, and encoded in the "imm12" field.
+
+```c title="LDR Rt, label - Operation"
+if ConditionPassed() then
+    EncodingSpecificOperations();
+    constant base = Align(PC32,4);
+    constant address = if add then (base + imm32) else (base - imm32);
+    constant data = MemU[address,4];
+    if t == 15 then
+        if address<1:0> == '00' then
+            LoadWritePC(data);
+        else
+            UNPREDICTABLE;
+    else
+        R[t] = data;
+```
 
 **Oﬀset range and architectures**
 
@@ -65,26 +96,9 @@ A32 LDRD                                    | ±255
 32-bit T32 LDRD                             | ±1020
 16-bit T32 LDR                              | 0-1020
 
-**Instruction**
-
-[Arm A-profile A32/T32 Instruction Set Architecture](https://developer.arm.com/documentation/ddi0597/2024-03/Base-Instructions/LDR--literal---Load-Register--literal--?lang=en) | LDR (literal)
-
-A1 (!(P == 0 && W == 1))
-
-- `LDR{<c>}{<q>} <Rt>, <label>` // (Normal form)
-- `LDR{<c>}{<q>} <Rt>, [PC, #{+/-}<imm>]` // (Alternative form)
-
-```c
-if P == '0' && W == '1' then SEE "LDRT";
-constant t = UInt(Rt);  constant imm32 = ZeroExtend(imm12, 32);
-constant add = (U == '1');  constant wback = (P == '0') || (W == '1');
-if wback then UNPREDICTABLE;
-```
-
-`<imm12>`: For encoding A1: is the 12-bit(11:0) unsigned immediate byte offset, in the range 0 to 4095, defaulting to 0 if omitted, and encoded in the "imm12" field.
-
 ### A64
 
+[Arm A-profile A64 Instruction Set Architecture](https://developer.arm.com/documentation/ddi0602/2024-03/Base-Instructions/LDR--literal---Load-Register--literal--?lang=en) | LDR (literal)
 [ARM Compiler armasm Reference Guide](https://developer.arm.com/documentation/dui0802/latest) ｜ 6: A64 Data Transfer Instructions - 6.18 LDR (literal)
 [Arm Compiler armasm User Guide](https://developer.arm.com/documentation/dui0801/latest) | 18. A64 Data Transfer Instructions - 18.32 LDR (literal)
 
@@ -97,13 +111,36 @@ LDR Wt, label ; 32-bit general registers
 LDR Xt, label ; 64-bit general registers
 ```
 
-> `label`: Is the program label from which the data is to be loaded. It is an offset from the address of this instruction, in the range ±1MB.
+> `label` is the program label from which the data is to be loaded. It is an ==offset== from the address of this instruction, in the range ±1MB.
+
+**Instruction**
+
+Load Register (literal) calculates an address from the PC value and an immediate offset, loads a word from memory, and writes it to a register.
+
+```c title="LDR Xt, label - offset"
+integer t = UInt(Rt);
+constant integer size = 4 << UInt(opc<0>);
+boolean nontemporal = FALSE;
+boolean tagchecked = FALSE;
+
+bits(64) offset = SignExtend(imm19:'00', 64);
+```
+
+`<label>` is the program label from which the data is to be loaded. Its offset from the address of this instruction, in the range ±1MB, is encoded as "imm19"(23:5) times 4(Align(PC, 4)).
+
+```c title="LDR Xt, label - Operation"
+bits(64) address = PC64 + offset;
+boolean privileged = PSTATE.EL != EL0;
+AccessDescriptor accdesc = CreateAccDescGPR(MemOp_LOAD, nontemporal, privileged, tagchecked);
+
+X[t, size * 8] = Mem[address, size, accdesc];
+```
 
 **Usage**
 
 Load Register (literal) calculates an address from the PC value and an immediate oﬀset, loads a ==word== from memory, and writes it to a register. For information about memory accesses, see *Load/Store addressing modes* in the [Arm Architecture Reference Manual Armv8, for Armv8-A architecture proﬁle](https://developer.arm.com/documentation/ddi0487/latest).
 
-For example:
+**Examples**
 
 ```asm
 len:    .word   0x20
@@ -114,23 +151,6 @@ len:    .word   0x20
 ldr x2, len             // x2 = 0x20
 ldr x3, offset          // ldr x3, [pc+0x20] => x3 = *(pc+0x20)
 ```
-
-**Instruction**
-
-[Arm A-profile A64 Instruction Set Architecture](https://developer.arm.com/documentation/ddi0602/2024-03/Base-Instructions/LDR--literal---Load-Register--literal--?lang=en) | LDR (literal)
-
-64-bit (opc == 01) : `LDR <Xt>, <label>`
-
-```c
-integer t = UInt(Rt);
-constant integer size = 4 << UInt(opc<0>);
-boolean nontemporal = FALSE;
-boolean tagchecked = FALSE;
-
-bits(64) offset = SignExtend(imm19:'00', 64);
-```
-
-`<label>` is the program label from which the data is to be loaded. Its offset from the address of this instruction, in the range +/-1MB, is encoded as "imm19"(23:5) times 4(Align(PC, 4)).
 
 ## LDR pseudo-instruction
 
@@ -169,7 +189,7 @@ If `label_expr` is an external expression, or is not contained in the current se
 
 If `label_expr` is either a named or numeric local label, the assembler places a linker relocation directive in the object ﬁle and generates a symbol for that local label. The address is generated at link time. If the local label references T32 code, the T32 bit (bit 0) of the address is set.
 
-The oﬀset from the PC to the value in the literal pool must be less than ±4KB (in an A32 or 32-bit T32 encoding) or in the range 0 to +1KB (16-bit T32 encoding). You are responsible for ensuring that there is a literal pool within range.
+The ==oﬀset== from the PC to the value in the literal pool must be less than ±4KB (in an A32 or 32-bit T32 encoding) or in the range 0 to +1KB (16-bit T32 encoding). You are responsible for ensuring that there is a literal pool within range.
 
 If the label referenced is in T32 code, the `LDR` pseudo-instruction sets the T32 bit (bit 0) of `label_expr`.
 
@@ -196,7 +216,7 @@ If the label referenced is in T32 code, the `LDR` pseudo-instruction sets the T3
 
 Load a register with either a 32-bit or 64-bit immediate value or an address.
 
-**Syntax**:
+**Syntax**
 
 ```asm
 LDR Wd, =expr
@@ -208,7 +228,7 @@ LDR Xd, =label_expr
 > `expr` evaluates to a numeric value.
 > `label_expr` is a PC-relative or external expression of an address in the form of a label plus or minus a numeric value.
 
-**Usage**:
+**Usage**
 
 When using the LDR pseudo-instruction, the assembler places the value of `expr` or `label_expr` in a *literal pool* and generates a PC-relative `LDR` instruction that reads the constant from the literal pool.
 
@@ -221,7 +241,9 @@ If `label_expr` is an external expression, or is not contained in the current se
 
 If `label_expr` is a local label, the assembler places a linker relocation directive in the object ﬁle and generates a symbol for that local label. The address is generated at link time.
 
-The oﬀset from the PC to the value in the literal pool must be less than ±1MB . You are responsible for ensuring that there is a literal pool within range.
+The ==oﬀset== from the PC to the value in the literal pool must be less than ±1MB . You are responsible for ensuring that there is a literal pool within range.
+
+**Examples**
 
 ```asm
         LDR     w1,=0xfff    ; loads 0xfff into W1
