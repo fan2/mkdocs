@@ -4,6 +4,7 @@ authors:
   - xman
 date:
     created: 2021-10-08T10:00:00
+    updated: 2024-05-10T10:00:00
 categories:
     - CS
 tags:
@@ -226,7 +227,7 @@ Generate code for a 32-bit or 64-bit environment. The 32-bit environment sets in
 [数据模型](https://blog.csdn.net/wyywatdl/article/details/4683762)，[資料模型](https://ryan0988.pixnet.net/blog/post/194111613)，[64-bit data models](https://en.wikipedia.org/wiki/64-bit_computing#64-bit_data_models)
 
 TYPE      | LP32 | ILP32 | LP64 | ILP64 | LLP64
-----------|------|-------|------|-------|------
+----------|:----:|:-----:|:----:|:-----:|:-----:
 CHAR      | 8    | 8     | 8    | 8     | 8
 SHORT     | 16   | 16    | 16   | 16    | 16
 INT       | 16   | 32    | 32   | 64    | 32
@@ -260,6 +261,18 @@ Typedef | ILP32 (Beta) | LP64 | LLP64
 --------|--------------|------|------
 size_t | unsigned long | unsigned long | unsigned long long
 ptrdiff_t | signed long | signed long | signed long long
+
+[ARM Cortex-A Series Programmer's Guide for ARMv8-A](https://developer.arm.com/documentation/den0024/latest) - 5.1 The ARMv8 instruction sets - 5.1.3 Registers - Table 5-1 Variable width
+
+| Type      | ILP32 | LP64 | LLP64 |
+| --------- | :---: | :--: | :---: |
+| char      | 8     | 8    | 8     |
+| short     | 16    | 16   | 16    |
+| int       | 32    | 32   | 32    |
+| long      | 32    | 64   | 32    |
+| long long | 64    | 64   | 64    |
+| size\_t   | 32    | 64   | 64    |
+| pointer   | 32    | 64   | 64    |
 
 在 LP 数据模型下：
 

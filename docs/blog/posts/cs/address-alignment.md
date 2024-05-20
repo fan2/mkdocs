@@ -83,7 +83,20 @@ Alignment is **enforced** by making sure that every data type is organized and a
 
 [ILP32 and LP64 data models.PDF](https://scc.ustc.edu.cn/zlsc/czxt/200910/W020100308601263456982.pdf) - [HP-UX](https://en.wikipedia.org/wiki/HP-UX) 64-bit data model list ILP32 and LP64 data alignment:
 
-![ILP32-LP64-data-alignment](./images/alignment/ILP32-LP64-data-alignment.png)
+| data type   | ILP32 size | ILP32 alignment | LP64 size | LP64 alignment |
+| ----------- | :--------: | :-------------: | :-------: | :------------: |
+| char        | 1          | 1               | 1         | 1              |
+| short       | 2          | 2               | 2         | 2              |
+| int         | 4          | 4               | 4         | 4              |
+| long        | 4          | 4               | 8         | 8              |
+| long long   | 8          | 8               | 8         | 8              |
+| pointer     | 4          | 4               | 8         | 8              |
+| float       | 4          | 4               | 4         | 4              |
+| double      | 8          | 8               | 8         | 8              |
+| long double | 16         | 8               | 16        | 8              |
+| enum        | 4          | 4               | 4         | 4              |
+
+> `struct`: depends on members, aligned on the same boundary as its most strictly aligned member.
 
 ### x86 ABI
 
@@ -95,21 +108,21 @@ Alignment is **enforced** by making sure that every data type is organized and a
 - Quadword - 64 bits / 8 bytes
 - Octaword - 128 bits / 16 bytes
 
-Scalar type | C data type | Storage size (in bytes) | Recommended alignment
-------------|-------------|-------------------------|----------------------
-INT8 | `char` | 1 | Byte
-UINT8 | `unsigned char` | 1 | Byte
-INT16 | `short` | 2 | Word
-UINT16 | `unsigned short` | 2 | Word
-INT32 | `int`, `long` | 4 | Doubleword
-UINT32 | `unsigned int`, `unsigned long` | 4 | Doubleword
-INT64 | `__int64` | 8 | Quadword
-UINT64 | `unsigned __int64` | 8 | Quadword
-FP32 (single precision) | `float` | 4 | Doubleword
-FP64 (double precision) | `double` | 8 | Quadword
-POINTER | `*` | 8 | Quadword
-\_\_m64 | `struct __m64` | 8 | Quadword
-\_\_m128 | `struct __m128` | 16 | Octaword
+| Scalar type             | C data type                     | Storage size (in bytes) | Recommended alignment |
+| ----------------------- | ------------------------------- | :---------------------: | --------------------- |
+| INT8                    | `char`                          | 1                       | Byte                  |
+| UINT8                   | `unsigned char`                 | 1                       | Byte                  |
+| INT16                   | `short`                         | 2                       | Word                  |
+| UINT16                  | `unsigned short`                | 2                       | Word                  |
+| INT32                   | `int`, `long`                   | 4                       | Doubleword            |
+| UINT32                  | `unsigned int`, `unsigned long` | 4                       | Doubleword            |
+| INT64                   | `__int64`                       | 8                       | Quadword              |
+| UINT64                  | `unsigned __int64`              | 8                       | Quadword              |
+| FP32 (single precision) | `float`                         | 4                       | Doubleword            |
+| FP64 (double precision) | `double`                        | 8                       | Quadword              |
+| POINTER                 | `*`                             | 8                       | Quadword              |
+| \_\_m64                 | `struct __m64`                  | 8                       | Quadword              |
+| \_\_m128                | `struct __m128`                 | 16                      | Octaword              |
 
 参考 Apple Developer Document 相关内容:
 
@@ -145,7 +158,7 @@ POINTER | `*` | 8 | Quadword
 > 注意：这里的 `word` 沿袭了 A32/T32 下的 word-size。
 
 <figure markdown="span">
-    ![Arm-Fundamental-Alignment](./images/alignment/Arm-Fundamental-Alignment.png)
+    ![Arm-Fundamental-Alignment](./images/alignment/Arm-Fundamental-Alignment.png){: style="width:80%;height:80%"}
     <figcaption>Byte size and byte alignment of fundamental data types</figcaption>
 </figure>
 
@@ -154,42 +167,46 @@ POINTER | `*` | 8 | Quadword
 - 9.15 Address alignment in A32/T32 code
 - 9.16 Address alignment in A64 code
 
+[ARM Cortex-A Series Programmer's Guide for ARMv8-A](https://developer.arm.com/documentation/den0024/latest)
+
+- 5.1 The ARMv8 instruction sets - 5.1.2 Addressing - Alignment checking
+
 [Overview of ARM64 ABI conventions](https://learn.microsoft.com/en-us/cpp/build/arm64-windows-abi-conventions) - [Alignment](https://learn.microsoft.com/en-us/cpp/build/arm64-windows-abi-conventions#alignment)
 
 Default layout alignment for `locals`:
 
 Size in bytes | Alignment in bytes
---------------|-------------------
-1 | 1
-2 | 2
-3, 4 | 4
-> 4 | 8
+--------------|:------------------:
+1             | 1
+2             | 2
+3, 4          | 4
+\> 4          | 8
 
 Default layout alignment for `globals` and `statics`:
 
 Size in bytes | Alignment in bytes
---------------|-------------------
-1 | 1
-2 - 7 | 4
-8 - 63 | 8
->= 64 | 16
+--------------|:------------------:
+1             | 1
+2 - 7         | 4
+8 - 63        | 8
+\>= 64        | 16
 
 [Writing ARM64 code for Apple platforms](https://developer.apple.com/documentation/xcode/writing-arm64-code-for-apple-platforms) - Handle data types and data alignment properly:
 
-| Data type | Size (in bytes) | Natural alignment (in bytes) |
-|-----------|-----------------|------------------------------|
-| `BOOL`, `bool` | 1 | 1 |
-| `char` | 1 | 1 |
-| `short` | 2 | 2 |
-| `int` | 4 | 4 |
-| `long` | 8 | 8 |
-| `long long` | 8 | 8 |
-| pointer | 8 | 8 |
-| `size_t` | 8 | 8 |
-| `NSInteger` | 8 | 8 |
-| `CFIndex` | 8 | 8 |
-| `fpos_t` | 8 | 8 |
-| `off_t` | 8 | 8 |
+| Data type      | Size (in bytes) | Natural alignment (in bytes) |
+| -------------- | :-------------: | :--------------------------: |
+| `BOOL`, `bool` | 1               | 1                            |
+| `char`         | 1               | 1                            |
+| `short`        | 2               | 2                            |
+| `int`          | 4               | 4                            |
+| `long`         | 8               | 8                            |
+| `long long`    | 8               | 8                            |
+| pointer        | 8               | 8                            |
+| `size_t`       | 8               | 8                            |
+| `NSInteger`    | 8               | 8                            |
+| `CFIndex`      | 8               | 8                            |
+| `fpos_t`       | 8               | 8                            |
+| `off_t`        | 8               | 8                            |
 
 ## x86 misalignment
 
