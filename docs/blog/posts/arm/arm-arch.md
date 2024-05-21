@@ -12,11 +12,13 @@ tags:
 comments: true
 ---
 
-`ARM` 最初的简称是 *Acorn RISC Machine*。ARM 使用的内核与指令集并不一一对应。
+`ARM`'s original abbreviation was *Acorn RISC Machine*.
 
-1990年11月，Acorn、Apple 和 VLSI 共同出资创建了 ARM。Acorn RISC Machine 也正式更名为 *Advanced RISC Machine*。
+The cores and instruction sets used by ARM do not correspond one-to-one.
 
-ARM11 之后，ARM 处理器内核不再以 ARM 作为前缀。但 `ARM` 这个单词并没有在 Cortex 系列中消失，Cortex的三大系列 *M-R-A*，合起来就是 ARM。
+In November 1990, Acorn, Apple and VLSI jointly funded the creation of ARM. Acorn RISC Machine has also been officially renamed *Advanced RISC Machine*.
+
+After ARM11, ARM processor cores no longer have the ARM prefix. But the word `ARM` has not disappeared from the Cortex series. The three major series of Cortex, *M-R-A*, together are ARM.
 
 <!-- more -->
 
@@ -176,6 +178,7 @@ ARMv8-A 64-bit milestones:
 [RPi3 in ARMv8 Mode » Raspberry Pi Geek](https://www.raspberry-pi-geek.com/Archive/2017/23/Operating-the-Raspberry-Pi-3-in-64-bit-mode)
 
 [ARM Reveals Cortex-A72 Architecture Details](https://www.anandtech.com/show/9184/arm-reveals-cortex-a72-architecture-details)
+[ARM Cortex-A72 MPCore Processor Technical Reference Manual](https://developer.arm.com/documentation/100095/latest/)
 [Cortex-A72 Software Optimization Guide](https://developer.arm.com/documentation/uan0016/a/)
 
 [Arm's Cortex-A76 CPU Unveiled: Taking Aim at the Top for 7nm - Print View](https://www.anandtech.com/print/12785/arm-cortex-a76-cpu-unveiled-7nm-powerhouse)
@@ -232,6 +235,10 @@ ARMv8-A 64-bit milestones:
 [Arm Compiler for Embedded Reference Guide](https://developer.arm.com/documentation/101754/0622)
 
 - Arm Compiler for Embedded Tools Overview
+
+[ARM Compiler toolchain Assembler Reference](https://developer.arm.com/documentation/dui0489/latest)
+
+- Assembler command-line options
 
 **Quick Reference**:
 

@@ -157,7 +157,7 @@ Request Linux service to write a string of bytes/characters to the standard outp
 
 === "write.s"
 
-    ```asm linenums="1"
+    ```asm linenums="1" linenums="1" hl_lines="16 21"
         .text
         .align 2
 

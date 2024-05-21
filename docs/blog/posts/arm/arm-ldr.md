@@ -15,6 +15,8 @@ The AArch64 architecture is a classic example of a *load-store* architecture.
 
 There are three fundamental addressing modes in AArch64 instructions: register offset, immediate offset, and literal.
 
+The `LDR` instruction is either an ordinary memory access instruction or a pseudo-instruction that loads an address in a large range. When its second parameter is preceded by "`=`", it represents a pseudo-instruction.
+
 The pseudo addressing mode allows an immediate data value or the address of a label to be loaded into a register, and may result in the assembler generating more than one instruction.
 
 - Literal: `label`
