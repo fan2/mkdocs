@@ -82,6 +82,100 @@ Note that ‘`:pg_hi21:`’ is optional.
 
 ## Examples
 
+[Blue Fox: Arm Assembly Internals and Reverse Engineering](https://www.amazon.com/Blue-Fox-Assembly-Internals-Analysis/dp/1119745306)
+
+Chapter 11 Dynamic Analysis - Command-Line Debugging; Debugging a Memory Corruption
+Chapter 12 Reversing arm64 macOS Malware - Background - macOS Hello World (arm64)
+
+### gcc -S HelloWorld
+
+I'll begin with our famous doorstep program -- HelloWorld.c.
+It's commonplace but novice-friendly and worth using as a stepping stone.
+
+```c title="helloworld.c"
+#include <stdio.h>
+
+int main(int argc, char *argv[])
+{
+    printf("Hello world from C!\n");
+
+    return 0;
+}
+```
+
+Next, invoke `GCC` to compile with the `-S` option to stop before assembling.
+The `-fverbose-asm` option enriches the corresponding context information.
+
+!!! note "GCC -S -fverbose-asm"
+
+    GCC - [Overall Options](https://gcc.gnu.org/onlinedocs/gcc/Overall-Options.html)
+
+    > `-S`: Stop after the stage of compilation proper; do not assemble. The output is in the form of an assembler code file for each non-assembler input file specified.
+
+    GCC - [Options for Code Generation Conventions](https://gcc.gnu.org/onlinedocs/gcc/Code-Gen-Options.html)
+
+    > `-fverbose-asm`: Put extra commentary information in the generated assembly code to make it more readable. This option is generally only of use to those who actually need to read the generated assembly code (perhaps while debugging the compiler itself).
+
+Emit the result direct to stdout via `-o -` or specify output file(e.g. helloworld.s) and pipe it to cat. Anyway, it's completely your choice.
+
+```bash linenums="1" hl_lines="30 31"
+# gcc helloworld.c -S -fverbose-asm -o helloworld.s && cat ./helloworld.s
+$ gcc helloworld.c -S -fverbose-asm -o -
+	.arch armv8-a
+	.file	"helloworld.c"
+// GNU C17 (Ubuntu 11.4.0-1ubuntu1~22.04) version 11.4.0 (aarch64-linux-gnu)
+//	compiled by GNU C version 11.4.0, GMP version 6.2.1, MPFR version 4.1.0, MPC version 1.2.1, isl version isl-0.24-GMP
+
+// GGC heuristics: --param ggc-min-expand=91 --param ggc-min-heapsize=115878
+// options passed: -mlittle-endian -mabi=lp64 -fasynchronous-unwind-tables -fstack-protector-strong -fstack-clash-protection
+	.text
+	.section	.rodata
+	.align	3
+.LC0:
+	.string	"Hello world from C!"
+	.text
+	.align	2
+	.global	main
+	.type	main, %function
+main:
+.LFB0:
+	.cfi_startproc
+	stp	x29, x30, [sp, -32]!	//,,,
+	.cfi_def_cfa_offset 32
+	.cfi_offset 29, -32
+	.cfi_offset 30, -24
+	mov	x29, sp	//,
+	str	w0, [sp, 28]	// argc, argc
+	str	x1, [sp, 16]	// argv, argv
+// helloworld.c:4:     printf("Hello world from C!\n");
+	adrp	x0, .LC0	// tmp94,
+	add	x0, x0, :lo12:.LC0	//, tmp94,
+	bl	puts		//
+// helloworld.c:6:     return 0;
+	mov	w0, 0	// _3,
+// helloworld.c:7: }
+	ldp	x29, x30, [sp], 32	//,,,
+	.cfi_restore 30
+	.cfi_restore 29
+	.cfi_def_cfa_offset 0
+	ret	
+	.cfi_endproc
+.LFE0:
+	.size	main, .-main
+	.ident	"GCC: (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0"
+	.section	.note.GNU-stack,"",@progbits
+```
+
+Now take a close look at the generated assembly codes. Concentrate on the highlighted lines 30-31. It's a typical usage of `ADRL` which assembles to two instructions, an `ADRP` followed by `ADD`.
+
+Their co-occurrence is for calculating the address of label `.LC0`, which resides in the `.rodata` section. It comes from the first parameter of `printf` and refers to a literal string of format-specifier.
+
+```c
+int printf(const char *format, ...);
+```
+
+Well, that's enough. Eating too much at once can lead to indigestion. Let's not get into it, just get acquainted at first time. A resuscitation, two back to familiar, three back when the teacher.
+
 ### ADRP C runtime data
 
 [Programming with 64-Bit ARM Assembly Language](https://www.amazon.com/Programming-64-Bit-ARM-Assembly-Language/dp/1484258800/) | Chapter 15: Reading and Understanding Code - Code Created by GCC
