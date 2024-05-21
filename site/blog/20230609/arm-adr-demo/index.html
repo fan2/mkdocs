@@ -18,7 +18,7 @@
         <link rel="prev" href="../../20230608/arm-adrp-adrl/">
       
       
-        <link rel="next" href="../../20230610/arm-adr-ldr/">
+        <link rel="next" href="../../20230610/arm-adr2ldr/">
       
       
       <link rel="icon" href="../../../assets/hold_yourself.jpg">
@@ -1519,6 +1519,10 @@ Note that ‘<code>:pg_hi21:</code>’ is optional.</p>
 <ul>
 <li><code>adrp x0, foo</code> is equivalent to <code>adrp x0, :pg_hi21:foo</code></li>
 </ul>
+<figure><br />
+<img alt="ADRL=ADRP+ADD" src="../../arm/images/ADRL%3DADRP%2BADD.png" style="width:75%;height:75%" /><br />
+    <figcaption>ADRL = ADRP + ADD</figcaption><br />
+</figure>
 <h2 id="examples">Examples<a class="headerlink" href="#examples" title="Permanent link">#</a></h2>
 <h3 id="adrp_c_runtime_data">ADRP C runtime data<a class="headerlink" href="#adrp_c_runtime_data" title="Permanent link">#</a></h3>
 <p><a href="https://www.amazon.com/Programming-64-Bit-ARM-Assembly-Language/dp/1484258800/">Programming with 64-Bit ARM Assembly Language</a> | Chapter 15: Reading and Understanding Code - Code Created by GCC</p>
@@ -1559,7 +1563,7 @@ Note that ‘<code>:pg_hi21:</code>’ is optional.</p>
 </span><span id="__span-3-17"><a id="__codelineno-3-17" name="__codelineno-3-17"></a><span class="w">    </span><span class="err">704:</span><span class="w">        </span><span class="nf">a8c17bfd</span><span class="w">        </span><span class="no">ldp</span><span class="w">  </span><span class="no">x29</span><span class="p">,</span><span class="w"> </span><span class="no">x30</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">sp</span><span class="p">],</span><span class="w"> </span><span class="mi">#16</span>
 </span><span id="__span-3-18"><a id="__codelineno-3-18" name="__codelineno-3-18"></a><span class="w">    </span><span class="err">708:</span><span class="w">        </span><span class="nf">d65f03c0</span><span class="w">        </span><span class="no">ret</span>
 </span></code></pre></div></td></tr></table></div>
-<p>The compiler uses the <code>ADRP</code> instruction to load the values of pointers. We covered <code>ADR</code> in Chapter 5, “Thanks for the Memories”; <code>ADRP</code> works like <code>ADR</code>, <em>except</em> that it loads to a 4K page boundary. This means that it has a greater range than <code>ADR</code>, but for humans it’s harder to use. The compiler must set it to a <mark>page boundary</mark>, which in this case points to C runtime data and then uses cumbersome offsets to get to the correct data. This is good for compilers, not so good for humans to code.</p>
+<p>The compiler uses the <code>ADRP</code> instruction to load the values of pointers. We covered <code>ADR</code> in Chapter 5, “Thanks for the Memories”; <code>ADRP</code> works like <code>ADR</code>, <em>except</em> that it loads to a 4K page boundary. This means that it has a greater range than <code>ADR</code>, but for humans it’s harder to use. The compiler must set it to a page boundary, which in this case points to C runtime data and then uses cumbersome offsets to get to the correct data. This is good for compilers, not so good for humans to code.</p>
 <h3 id="adrp_farfaraway">ADRP farFarAway<a class="headerlink" href="#adrp_farfaraway" title="Permanent link">#</a></h3>
 <p><a href="https://www.amazon.com/64-Bit-Assembly-Language-Larry-Pyeatt/dp/0128192216/">ARM 64-Bit Assembly Language</a></p>
 <p>3 Load/store and branch instructions - 3.5 Branch instructions - 3.5.5 Form PC-relative address</p>
@@ -1599,7 +1603,7 @@ Note that ‘<code>:pg_hi21:</code>’ is optional.</p>
 </span></code></pre></div></td></tr></table></div>
 <p>A special notation(<code>#:lo12:</code>) is used to add only the lowest 12 bits of the label to the <code>ADRP</code> address. This fully calculates the label address because the 4 KB page is addressable with 12 bits.</p>
 <ul>
-<li><code>adrp x0, farFarAway</code>: page beginning</li>
+<li><code>adrp x0, :pg_hi21:farFarAway</code>: 4K page-aligned boundary</li>
 <li><code>add x0, x0, #:lo12:farFarAway</code>: offset within page</li>
 </ul>
 
@@ -1718,13 +1722,13 @@ Note that ‘<code>:pg_hi21:</code>’ is optional.</p>
         
         
           
-          <a href="../../20230610/arm-adr-ldr/" class="md-footer__link md-footer__link--next" aria-label="下一页: ARM ADR vs. LDR">
+          <a href="../../20230610/arm-adr2ldr/" class="md-footer__link md-footer__link--next" aria-label="下一页: ARM from ADR to LDR">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 下一页
               </span>
               <div class="md-ellipsis">
-                ARM ADR vs. LDR
+                ARM from ADR to LDR
               </div>
             </div>
             <div class="md-footer__button md-icon">
