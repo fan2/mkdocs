@@ -290,3 +290,70 @@ Command name abbreviations are allowed if unambiguous.
 
 `apropos compile`: 查看 compile 相关的话题。
 `apropos file`: 查看 file 相关的话题。
+
+## GDB Enhanced
+
+[GEF](https://github.com/hugsy/gef) (GDB Enhanced Features): a modern experience for GDB with advanced debugging capabilities for exploit devs & reverse engineers on Linux
+[pwndbg](https://github.com/pwndbg/pwndbg): Exploit Development and Reverse Engineering with GDB Made Easy
+[PEDA](https://github.com/longld/peda) - Python Exploit Development Assistance for GDB
+
+[Pwndbg + GEF + Peda — One for all, and all for one](https://infosecwriteups.com/pwndbg-gef-peda-one-for-all-and-all-for-one-714d71bf36b8)
+
+Step 1 - git clone plugin:
+
+```bash
+$ cd ~ && mkdir gdbe
+
+$ cd ~/gdbe
+$ git clone https://github.com/pwndbg/pwndbg
+$ cd pwndbg && ./setup.sh
+$ echo "source ~/gdbe/pwndbg/gdbinit.py" > ~/.gdbinit_pwndbg
+
+$ cd ~/gdbe
+$ git clone https://github.com/hugsy/gef.git
+$ cd gef && cp gef.py ~/.gdbinit-gef.py
+```
+
+Step 2 - config `.gitinit`:
+
+```bash title=".gdbinit"
+define init-pwndbg
+source ~/.gdbinit_pwndbg
+end
+document init-pwndbg
+Initializes PwnDBG
+end
+
+define init-gef
+source ~/.gdbinit-gef.py
+end
+document init-gef
+Initializes GEF (GDB Enhanced Features)
+end
+```
+
+Step 3 - create exec files in `/usr/local/bin` folder:
+
+```bash
+$ sudo vim /usr/local/bin/gdb-pwndbg
+#!/bin/sh
+exec gdb -q -ex init-pwndbg "$@"
+
+$ sudo vim /usr/local/bin/gdb-gef
+#!/bin/sh
+exec gdb -q -ex init-gef "$@"
+
+$ sudo chmod +x /usr/local/bin/gdb-*
+```
+
+Now you can test it by running either one of the three commands:
+
+- `gdb` - native
+- `gdb-pwndbg`
+- `gdb-gef`
+
+## references
+
+用GDB调试程序：[（一）](https://haoel.blog.csdn.net/article/details/2879) ～ [（七）](https://haoel.blog.csdn.net/article/details/2885)
+
+[Blue Fox: Arm Assembly Internals and Reverse Engineering](https://www.amazon.com/Blue-Fox-Assembly-Internals-Analysis/dp/1119745306) | Chapter 11 Dynamic Analysis - Command-Line Debugging

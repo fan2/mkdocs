@@ -441,7 +441,6 @@ The GCC project includes an implementation of the C++ Standard Library called `l
 - @[sourceware](https://www.sourceware.org/gdb/), [git](git://sourceware.org/git/binutils-gdb.git)
 
 VisualGDB - [GDB Command Reference](https://visualgdb.com/gdbreference/commands/)
-用GDB调试程序：[（一）](https://haoel.blog.csdn.net/article/details/2879) ～ [（七）](https://haoel.blog.csdn.net/article/details/2885)
 
 [GDB online Debugger](https://www.onlinegdb.com/)
 
