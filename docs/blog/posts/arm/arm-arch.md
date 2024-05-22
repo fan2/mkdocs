@@ -167,6 +167,10 @@ RPi 3 Model B | Feb 2016 | BCM2837 | ARMv8-A (64/32-bit) | 4× Cortex-A53 1.2 GH
 RPi 4 Model B | Jun 2019​/May 2020 | BCM2711 | ARMv8-A (64/32-bit) | 4× Cortex-A72 1.5 GHz or 1.8 GHz
 RPi 5 | Oct 2023 | BCM2712 | ARMv8.2-A (64/32-bit) | 4× Cortex-A76 2.4 GHz
 
+- [Raspberry Pi 3 Model B](https://www.raspberrypi.com/products/raspberry-pi-3-model-b/) / [Raspberry Pi 3 Model B+](https://www.raspberrypi.com/products/raspberry-pi-3-model-b-plus/) - [datasheet](https://datasheets.raspberrypi.com/rpi3/raspberry-pi-3-b-plus-product-brief.pdf)
+- [Raspberry Pi 4 Model B](https://www.raspberrypi.com/products/raspberry-pi-4-model-b/) - [Tech Specs](https://www.raspberrypi.com/products/raspberry-pi-4-model-b/specifications/), [datasheet](https://datasheets.raspberrypi.com/rpi4/raspberry-pi-4-product-brief.pdf)
+- [Raspberry Pi 5](https://www.raspberrypi.com/products/raspberry-pi-5/) - [datasheet](https://datasheets.raspberrypi.com/rpi5/raspberry-pi-5-product-brief.pdf)
+
 ARMv8-A 64-bit milestones:
 
 - Model A (no Ethernet): Nov 2018

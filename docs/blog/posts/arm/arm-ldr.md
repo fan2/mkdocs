@@ -262,11 +262,41 @@ The ==oï¬€set== from the PC to the value in the literal pool must be less than Â
         LDR     x3, [x2]     ; load value from pointer(place)
 ```
 
-!!! example "load PC-relative address"
+=== "LDR Xd, =const load value"
 
     ```asm
-    ldr x1, =msg1
-    adr x2, msg2
+        .equ my_data1, 100
+        .equ my_data2, 50
+
+        ldr x2, =my_data1
+        ldr x3, =my_data2
+
+        add x1, x2, x3
+    ```
+
+=== "LDR Xd, =label load address"
+
+    ```asm
+    my_data1:
+        .quad   100
+    my_data2:
+        .word   50
+
+        ldr x5, =my_data1
+        ldr x2, [x5]
+
+        ldr x6, =my_data2
+        ldr x3, [x6]
+
+        add x1, x2, x3
+    ```
+
+!!! example "functional equivalence of LDR/ADR"
+
+    ```asm
+    # load address of label msg
+    ldr x1, =msg
+    adr x2, msg
     ```
 
 ## references

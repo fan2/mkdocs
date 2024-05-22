@@ -434,6 +434,15 @@ main (argc=1, argv=0xfffffffff248) at test-gdb.c:22
 
 要想进入 func 函数体内部进行调试，则需要改用 `step` 单步跟踪命令。
 
+### next vs. step
+
+COMMAND | SHORTCUT | DESCRIPTION
+--------|:--------:|------------
+next n  | n        | Next [n] line[s] (stepping over function calls)
+step n  | s        | Next [n] line[s] (stepping into function calls)
+nexti n | ni       | Next [n] instruction[s] (stepping over function calls)
+stepi n | si       | Next [n] instruction[s] (stepping into function calls)
+
 ### step/finish
 
 `step`：单步跟踪，如果有函数调用，会进入该函数，类似VC等工具中的 step in。而 `next` 遇到函数调用，不会进入该函数。类似VC等工具中的 step over。

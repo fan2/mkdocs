@@ -11,6 +11,10 @@ tags:
 comments: true
 ---
 
+The best known command-line debugger is the official GNU Debugger(aka `GDB`).
+
+Vanilla GDB is an amazing tool in process debugging, just like a swiss army knife.
+
 This initial piece introduces how to use the gdb help system.
 
 1. GDB onlinedocs, concept index.
@@ -188,13 +192,13 @@ stack frame.  This is useful for breaking on return to a stack frame.
 | command                            | description                         | comment                                                  |
 | ---------------------------------- | ----------------------------------- | -------------------------------------------------------- |
 | break                              | 不带任何参数，表示在下一条指令处停住。                 | 缩略写法 `b`                                                 |
-| break \<function>                  | 在进入指定函数后停住                          | C++中可以使用 class::function 或 function(type,type) 格式来指定函数名。 |
-| break \<linenum>                   | 在指定行号停住。                            |                                                          |
+| break <function\>                  | 在进入指定函数后停住                          | C++中可以使用 class::function 或 function(type,type) 格式来指定函数名。 |
+| break <linenum\>                   | 在指定行号停住。                            |                                                          |
 | break +offset <br /> break -offset | 在当前行号的前/后偏移offset行处停住               | offiset为自然数                                              |
 | break filename\:linenum            | 在源文件filename的linenum行处停住。           |                                                          |
 | break filename\:function           | 在源文件filename的function函数的入口处停住。      |                                                          |
 | break \*address                    | 在程序运行的内存地址处停住。                      | \*main + 4: fourth byte past main()                      |
-| break ... if \<condition>          | ...可以是上述的参数。condition表示条件，在条件成立时停住。 | 比如在循环境体中，可以设置 break if i=100，表示当i为100时停住程序。              |
+| break ... if <condition\>          | ...可以是上述的参数。condition表示条件，在条件成立时停住。 | 比如在循环境体中，可以设置 break if i=100，表示当i为100时停住程序。              |
 
 可使用info命令，查看已经配置的断点信息：
 
@@ -290,67 +294,6 @@ Command name abbreviations are allowed if unambiguous.
 
 `apropos compile`: 查看 compile 相关的话题。
 `apropos file`: 查看 file 相关的话题。
-
-## GDB Enhanced
-
-[GEF](https://github.com/hugsy/gef) (GDB Enhanced Features): a modern experience for GDB with advanced debugging capabilities for exploit devs & reverse engineers on Linux
-[pwndbg](https://github.com/pwndbg/pwndbg): Exploit Development and Reverse Engineering with GDB Made Easy
-[PEDA](https://github.com/longld/peda) - Python Exploit Development Assistance for GDB
-
-[Pwndbg + GEF + Peda — One for all, and all for one](https://infosecwriteups.com/pwndbg-gef-peda-one-for-all-and-all-for-one-714d71bf36b8)
-
-Step 1 - git clone plugin:
-
-```bash
-$ cd ~ && mkdir gdbe
-
-$ cd ~/gdbe
-$ git clone https://github.com/pwndbg/pwndbg
-$ cd pwndbg && ./setup.sh
-$ echo "source ~/gdbe/pwndbg/gdbinit.py" > ~/.gdbinit_pwndbg
-
-$ cd ~/gdbe
-$ git clone https://github.com/hugsy/gef.git
-$ cd gef && cp gef.py ~/.gdbinit-gef.py
-```
-
-Step 2 - config `.gitinit`:
-
-```bash title=".gdbinit"
-define init-pwndbg
-source ~/.gdbinit_pwndbg
-end
-document init-pwndbg
-Initializes PwnDBG
-end
-
-define init-gef
-source ~/.gdbinit-gef.py
-end
-document init-gef
-Initializes GEF (GDB Enhanced Features)
-end
-```
-
-Step 3 - create exec files in `/usr/local/bin` folder:
-
-```bash
-$ sudo vim /usr/local/bin/gdb-pwndbg
-#!/bin/sh
-exec gdb -q -ex init-pwndbg "$@"
-
-$ sudo vim /usr/local/bin/gdb-gef
-#!/bin/sh
-exec gdb -q -ex init-gef "$@"
-
-$ sudo chmod +x /usr/local/bin/gdb-*
-```
-
-Now you can test it by running either one of the three commands:
-
-- `gdb` - native
-- `gdb-pwndbg`
-- `gdb-gef`
 
 ## references
 
