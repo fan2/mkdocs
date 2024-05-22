@@ -14,6 +14,20 @@ Overview of concepts of Toolchain, Cross Compiler and Cross Compiler Toolchain.
 
 <!-- more -->
 
+## bare metal
+
+[Bare machine](https://en.wikipedia.org/wiki/Bare_machine)
+
+In computer science, bare machine (or bare metal) refers to a computer executing instructions directly on logic hardware without an intervening operating system. Modern operating systems evolved through various stages, from elementary to the present day complex, highly sensitive systems incorporating many services.
+
+[ARM 64-Bit Assembly Language](https://www.amazon.com/64-Bit-Assembly-Language-Larry-Pyeatt/dp/0128192216/) | 12 Running without an operating system
+
+Sometimes, it is necessary to write assembly code to run on “bare metal”, which simply means: without an operating system. For example, when we write an operating system kernel, it must run on bare metal and a signiﬁcant part of the code (especially during the boot process) must be written in assembly language.
+
+Coding on bare metal is useful to deeply understand how the hardware works and what happens in the lowest levels of an operating system. There are some signiﬁcant differences between code that is meant to run under an operating system and code that is meant to run on bare metal.
+
+However, there are some software packages to help bare-metal programmers. For example, [Newlib](https://sourceware.org/newlib/) is a C standard library intended for use in bare-metal programs.
+
 ## Toolchain
 
 [Toolchain](https://en.wikipedia.org/wiki/Toolchain)

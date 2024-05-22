@@ -14,15 +14,13 @@ tags:
 comments: true
 ---
 
-How to compile/generate AArch32 code and run on an AArch64 machine?
+How to compile/generate AArch32 code and run on an Linux/AArch64?
 
-[Linaro](https://www.linaro.org/) empowers rapid product deployment within the dynamic Arm ecosystem.
-
-Arm GNU Toolchain is a community supported pre-built GNU compiler toolchain for Arm based CPUs.
+How to build AArch64-ELF for a popular embedded target board under Windows/x86_64 or macOS/arm64?
 
 <!-- more -->
 
-!!! question "Issues and frequently asked questions"
+!!! question "Related issues and frequently asked questions"
 
     [arm64 - Can I run an ARM32 bit App on an ARM64bit platform which is running Ubuntu 16.04 - Ask Ubuntu](https://askubuntu.com/questions/1090351/can-i-run-an-arm32-bit-app-on-an-arm64bit-platform-which-is-running-ubuntu-16-04)
     [arm - how to use aarch64-linux-gnu-objdump to disassemble V7 mode instructions (A32,T32) - Stack Overflow](https://stackoverflow.com/questions/21556051/how-to-use-aarch64-linux-gnu-objdump-to-disassemble-v7-mode-instructions-a32-t3)
@@ -30,19 +28,11 @@ Arm GNU Toolchain is a community supported pre-built GNU compiler toolchain for 
     [raspberrypi - Compiling ARMv7A (AArch32) code on an ARMv8A (AArch64) machine? - Ask Ubuntu](https://askubuntu.com/questions/1355339/compiling-armv7a-aarch32-code-on-an-armv8a-aarch64-machine)
     [gcc - Compile and run a 32bit binary on Armv8 (aarch64) running 64bit linux - Stack Overflow](https://stackoverflow.com/questions/68005179/compile-and-run-a-32bit-binary-on-armv8-aarch64-running-64bit-linux)
 
-## bare metal
+Before starting, see previous post [Compiler Toolchain](./compiler-toolchain.md) to take a glimpse at concepts of Cross Compiler Toolchain.
 
-[Bare machine](https://en.wikipedia.org/wiki/Bare_machine)
+[Linaro](https://www.linaro.org/) empowers rapid product deployment within the dynamic Arm ecosystem.
 
-In computer science, bare machine (or bare metal) refers to a computer executing instructions directly on logic hardware without an intervening operating system. Modern operating systems evolved through various stages, from elementary to the present day complex, highly sensitive systems incorporating many services.
-
-[ARM 64-Bit Assembly Language](https://www.amazon.com/64-Bit-Assembly-Language-Larry-Pyeatt/dp/0128192216/) | 12 Running without an operating system
-
-Sometimes, it is necessary to write assembly code to run on “bare metal”, which simply means: without an operating system. For example, when we write an operating system kernel, it must run on bare metal and a signiﬁcant part of the code (especially during the boot process) must be written in assembly language.
-
-Coding on bare metal is useful to deeply understand how the hardware works and what happens in the lowest levels of an operating system. There are some signiﬁcant differences between code that is meant to run under an operating system and code that is meant to run on bare metal.
-
-However, there are some software packages to help bare-metal programmers. For example, [Newlib](https://sourceware.org/newlib/) is a C standard library intended for use in bare-metal programs.
+Arm GNU Toolchain is a community supported pre-built GNU compiler toolchain for Arm based CPUs.
 
 ## Arm GNU Toolchain
 
@@ -65,16 +55,57 @@ Arm GNU Toolchain releases consists of cross toolchains for the following host o
     - Available for x86_64 and Apple silicon (beta) host architectures
     - Available for bare-metal targets only
 
-macOS (x86_64/Apple silicon) hosted cross toolchains
-
-- AArch32 bare-metal target (arm-none-eabi)
-- AArch64 bare-metal target (aarch64-none-elf)
-
 AArch64 Linux hosted cross toolchains
 
 - AArch32 bare-metal target (arm-none-eabi)
 - AArch32 GNU/Linux target with hard float (arm-none-linux-gnueabihf)
 - AArch64 ELF bare-metal target (aarch64-none-elf)
+
+macOS (x86_64/Apple silicon) hosted cross toolchains
+
+- AArch32 bare-metal target (arm-none-eabi)
+- AArch64 bare-metal target (aarch64-none-elf)
+
+---
+
+On macOS, type `brew search gcc` to search for the gcc compiler toolchain via homebrew.
+
+```bash
+$ brew search gcc
+==> Formulae
+aarch64-elf-gcc    gcc@11             gcc@6              i686-elf-gcc       ghc                ncc
+arm-none-eabi-gcc  gcc@12             gcc@7              libgccjit          grc
+gcc ✔              gcc@13             gcc@8              riscv64-elf-gcc    scc
+gcc@10             gcc@5              gcc@9              x86_64-elf-gcc     tcc
+
+==> Casks
+gcc-aarch64-embedded         gcc-arm-embedded             gcs                          icc 
+```
+
+The listed Casks `gcc-aarch64-embedded` and `gcc-arm-embedded` are issued by ArmGNUToolchain, named as "GCC ARM Embedded".
+
+```bash
+$ brew info gcc-arm-embedded
+
+==> Name
+GCC ARM Embedded
+==> Description
+Pre-built GNU bare-metal toolchain for 32-bit Arm processors
+==> Artifacts
+arm-gnu-toolchain-13.2.rel1-darwin-x86_64-arm-none-eabi.pkg (Pkg)
+/Applications/ArmGNUToolchain/13.2.Rel1/arm-none-eabi/bin/arm-none-eabi-as (Binary)
+
+$ brew info gcc-aarch64-embedded
+
+==> Name
+GCC ARM Embedded
+==> Description
+Pre-built GNU bare-metal toolchain for 64-bit Arm processors
+==> Artifacts
+arm-gnu-toolchain-13.2.rel1-darwin-x86_64-aarch64-none-elf.pkg (Pkg)
+/Applications/ArmGNUToolchain/13.2.Rel1/aarch64-none-elf/bin/aarch64-none-elf-as (Binary)
+
+```
 
 ## Cross-compiler
 
@@ -97,7 +128,35 @@ Software can be compiled on an x86 or Arm host machine.
 
 ### installation
 
-Installing on Debian based distributions such as Ubuntu
+On macOS, type `brew search gcc` to search for the gcc compiler toolchain via homebrew.
+
+```bash
+$ brew search gcc
+==> Formulae
+aarch64-elf-gcc    gcc@11             gcc@6              i686-elf-gcc       ghc                ncc
+arm-none-eabi-gcc  gcc@12             gcc@7              libgccjit          grc
+gcc ✔              gcc@13             gcc@8              riscv64-elf-gcc    scc
+gcc@10             gcc@5              gcc@9              x86_64-elf-gcc     tcc
+
+==> Casks
+gcc-aarch64-embedded         gcc-arm-embedded             gcs                          icc
+```
+
+The following three formulae are issued by gnu.org official, named as "GNU compiler collection".
+We can type `brew info formula` to show summary of information about the formula.
+
+- `gcc`: for x86-64/mach-o
+- `x86_64-elf-gcc`: for x86_64-elf
+- `aarch64-elf-gcc`: for aarch64-elf
+- `arm-none-eabi-gcc`: for arm-none-eabi(aarch32-elf?)
+
+!!! info "GCC for macOS/arm64"
+
+    According to [GCC Bugzilla – Bug 96168](https://gcc.gnu.org/bugzilla/show_bug.cgi?id=96168), GCC support for macOS/arm64 is still on the way, check progress at experimental [gcc-darwin-arm64](https://github.com/iains/gcc-darwin-arm64).
+
+---
+
+Let's focus on installation on Debian-based distributions such as Ubuntu, as I will demonstrate the following on my handy rpi3b-ubuntu.
 
 Use the `apt` command to install software packages on any Debian based Linux distribution.
 
