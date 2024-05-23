@@ -1,5 +1,5 @@
 ---
-title: Use cases for ADRP & LDR in arm64/kernel/head.S
+title: ADRP & LDR in arm64/kernel primary switch
 authors:
     - xman
 date:
@@ -8,8 +8,6 @@ date:
 categories:
     - arm
     - linux
-tags:
-    - kernel
 comments: true
 ---
 

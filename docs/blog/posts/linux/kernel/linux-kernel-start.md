@@ -1,5 +1,4 @@
 ---
-draft: true
 title: Linux Kernel Start Routine
 authors:
   - xman
@@ -12,6 +11,8 @@ comments: true
 ---
 
 The Linux booting process involves multiple stages and is in many ways similar to the BSD and other Unix-style boot processes, from which it derives. Although the Linux booting process depends very much on the computer architecture, those architectures share similar stages and software components, including system startup, bootloader execution, loading and startup of a Linux kernel image, and execution of various startup scripts and daemons. Those are grouped into 4 steps: system startup, bootloader stage, kernel stage, and init process.
+
+There are many debts waiting to be paid. Lots of work waiting to be done. At the moment I am just collecting some reference material for future study.
 
 <!-- more -->
 
@@ -34,3 +35,12 @@ The Linux booting process involves multiple stages and is in many ways similar t
 - [内存初始化（上）](http://www.wowotech.net/memory_management/mm-init-1.html)
 - 内存初始化代码分析：[（一）](http://www.wowotech.net/memory_management/__create_page_tables_code_analysis.html)，[（二）](http://www.wowotech.net/memory_management/memory-layout.html)，[（三）](http://www.wowotech.net/memory_management/mem_init_3.html)
 - [ARM64 Kernel Image Mapping的变化](http://www.wowotech.net/memory_management/436.html)
+
+[Linux ARM64 KASLR Implementation(1): Kernel Image Randomization](https://rhythm16.github.io/kaslr_en/) - [zh-tw](https://rhythm16.github.io/kaslr/)
+[Linux ARM64 KASLR Implementation(2): Linear Mapping Randomization](https://rhythm16.github.io/kaslr2_en/) - [zh-tw](https://rhythm16.github.io/kaslr2/)
+
+!!! quote "Nourishing the Lord of Life"
+
+    Daoism -> Zhuangzi : [Nourishing the Lord of Life](https://ctext.org/zhuangzi/nourishing-the-lord-of-life/)
+
+    There is a limit to our life, but to knowledge there is no limit. With what is limited to pursue after what is unlimited is a perilous thing; and when, knowing this, we still seek the increase of our knowledge, the peril cannot be averted.
