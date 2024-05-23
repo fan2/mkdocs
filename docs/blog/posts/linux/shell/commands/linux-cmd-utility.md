@@ -4,6 +4,7 @@ authors:
   - xman
 date:
     created: 2019-10-29T14:30:00
+    updated: 2024-05-18T18:30:00
 categories:
     - wiki
     - linux
@@ -26,7 +27,7 @@ cd（change directory）：切换文件目录。
 
 以下示例从 `~/` 目录切换到 `/Library/Application Support/Sublime Text 3/Packages/User`：
 
-```Shell
+```bash
 faner@FAN-MB0:~|⇒  cd /Users/faner/Library/Application\ Support/Sublime\ Text\ 3/Packages/User/
 faner@FAN-MB0:~/Library/Application Support/Sublime Text 3/Packages/User|
 ⇒  
@@ -34,7 +35,7 @@ faner@FAN-MB0:~/Library/Application Support/Sublime Text 3/Packages/User|
 
 另外一种做法是定义 shell 字符串变量，然后使用 <kbd>$</kbd> 符号解引用变量作为 cd 的参数：
 
-```Shell
+```bash
 faner@FAN-MB0:~|⇒  dir="/Users/faner/Library/Application Support/Sublime Text 3/Packages/User/"                    
 faner@FAN-MB0:~|⇒  cd $dir
 faner@FAN-MB0:~/Library/Application Support/Sublime Text 3/Packages/User|
@@ -46,7 +47,7 @@ faner@FAN-MB0:~/Library/Application Support/Sublime Text 3/Packages/User|
 
 macOS 的 zsh 命令行输入 push 然后 tab 可以查看所有 push 相关命令：
 
-```Shell
+```bash
 faner@MBP-FAN:~|⇒  push
 pushd   pushdf  pushln
 ```
@@ -60,7 +61,7 @@ pushd   pushdf  pushln
 
 `pushd` 和 `popd` 以栈的方式来运作，后进先出（Last In First Out, LIFO）。目录路径被存储在栈中，然后用 push 和 pop 操作在目录之间进行切换。
 
-```Shell
+```bash
 
 # 执行 dirs -c 清理栈之后，只剩当前目录
 faner@MBP-FAN:~|⇒  dirs
@@ -91,7 +92,7 @@ faner@MBP-FAN:~/Desktop|⇒  pushd ../Music
 -v  | 每行显示一条记录，同时展示该记录在栈中的index
 -c  | 清空目录栈
 
-```Shell
+```bash
 # 查看当前栈，0为栈顶，8为栈底
 faner@MBP-FAN:~/Music|⇒  dirs -v
 0   ~/Music
@@ -116,7 +117,7 @@ faner@MBP-FAN:~/Music|⇒  dirs -v
 对于 `pushd +n` 和 `popd +n`，索引顺序与 `dirs -v` 相反，从栈底开始计数；  
 反过来 `pushd -n` 和 `popd -n` 索引顺序与 `dirs -v` 相同，从栈顶开始计数。
 
-```Shell
+```bash
 # 从栈底（索引为0）右往左数第3个目录 ~/Movies 重新压入栈顶，相当于切换到该目录
 faner@MBP-FAN:~/Music|⇒  pushd +3
 ~/Movies ~/Documents ~/Downloads ~ ~/Music ~/Desktop ~/Applications ~/AppData ~/Pictures
@@ -141,7 +142,7 @@ faner@MBP-FAN:~/Music|⇒  popd +3
 
 dirname、basename 用于获取路径字符串的目录和文件部分。
 
-```Shell
+```bash
 $ man basename
 BASENAME(1)               BSD General Commands Manual              BASENAME(1)
 
@@ -158,21 +159,21 @@ SYNOPSIS
 
 典型应用场景：在sh脚本中，基于 dirname/basename 获取当前脚本的路径和名称。
 
-```Shell
+```bash
 echo "dirname = $(dirname $0)"
 echo "basename = $(basename $0)"
 ```
 
 例如 [transfer.sh](https://transfer.sh/) 中，从第一个参数中基于 basename 提取纯文件名：
 
-```Shell
+```bash
         file="$1"
         file_name=$(basename "$file")
 ```
 
 ## printf
 
-```Shell
+```bash
 $man bash
 
 SHELL BUILTIN COMMANDS
@@ -200,7 +201,7 @@ The format is reused as necessary to consume all of the arguments. If the format
 
 head/tail 命令支持查看文件(file)前/后指定字节(-c)或行数(-n)的内容。
 
-```Shell
+```bash
 # macOS
 $ man head
 HEAD(1)                   BSD General Commands Manual                  HEAD(1)
@@ -224,7 +225,7 @@ SYNOPSIS
 在 [bash_history](../manual/bash_history.md) 中，当过往输入历史接近 HISTSIZE 时，`history` 命令列表较长，不便翻阅。
 此时，可通过管道命令导向 `head` / `tail` 筛选查看开头/结尾部分。
 
-```Shell
+```bash
 # history日志条目按插入时间升序（从远到近）
 # 查看最远10条输入命令记录：
 $ history | head # 默认显示10条
@@ -237,13 +238,13 @@ $ history | tail -n 10
 下面通过 du 命令按占用磁盘空间大小降序列举某一目录下各个子目录。
 当子目录太多时，可重定向给 `more` 滚动查看，或重定向给 `head` 查看前10条。
 
-```Shell
+```bash
 $ du -csh ~/Library/Developer/* | sort -rh | head
 ```
 
 在 Linux 下，head 的 -n 接负号数（-NUM）表示打印除末尾几行的开头部分。
 
-```Shell
+```bash
 $ man head
        -n, --lines=[-]NUM
               print the first NUM lines instead of the first 10; with the leading
@@ -252,7 +253,7 @@ $ man head
 
 在 Linux 下，tail 的 -n 接正号数（+NUM）表示打印从第NUM行开头到尾部部分（即忽略前NUM-1行）。
 
-```Shell
+```bash
 $ man tail
        -n, --lines=[+]NUM
               output  the  last NUM lines, instead of the last 10; or use -n +NUM
@@ -263,7 +264,7 @@ $ man tail
 
 在 macOS 下由于不支持以上特性，需要按照下面的步骤实现同等效果：
 
-```Shell
+```bash
 # 先统计总行数
 lines=$(wc -l file.txt | awk '{print $1}')
 # 减去末尾10行，head显示开头部分
@@ -276,7 +277,7 @@ head -n $hl file.txt | tail -n $tl
 `-f` 参数是 tail 命令的一个突出特性，它使该命令保持活动状态，支持监视文件追加变更，并实时显示追加到到文末的内容。
 这是实时监测日志的绝妙方式，可以用来实时滚动显示日志文件最新的内容。
 
-```Shell
+```bash
 # macOS/FreeBSD/Darwin
      -f      The -f option causes tail to not stop when end of file is reached, but rather to wait for addi-
              tional data to be appended to the input.  The -f option is ignored if the standard input is a
@@ -290,7 +291,7 @@ head -n $hl file.txt | tail -n $tl
 
 以下用于实时滚动显示 nginx 最新访问日志：
 
-```Shell
+```bash
 $ tail -f nginx-access.log
 ```
 
@@ -303,7 +304,7 @@ $ tail -f nginx-access.log
 
 以上想打印除开头和结尾10行的中间部分，也可先计算好中间部分的起始行号，再用sed过滤打印：
 
-```Shell
+```bash
 # 先统计总行数
 lines=$(wc -l file.txt | awk '{print $1}')
 # 开始行号11
@@ -321,7 +322,7 @@ sed -n "$hl, $tl p" file.txt
 - `df` (Disk FileSystem)  
 - `du` (Disk Usage)  
 
-```Shell
+```bash
 $ df -lh
 Filesystem       Size   Used  Avail Capacity iused      ifree %iused  Mounted on
 /dev/disk1s1s1  466Gi   15Gi   16Gi    48%  567381 4882909539    0%   /
@@ -339,7 +340,7 @@ Filesystem       Size   Used  Avail Capacity iused      ifree %iused  Mounted on
 
 进入指定文件夹执行 `du`，列举指定目录下的文件及所有递归文件夹占用磁盘的大小。
 
-```Shell
+```bash
 du ~/Documents
 du ~/Library/Developer
 du Pods
@@ -351,7 +352,7 @@ du Pods
 - 添加 `-s` 选项，相当于 `-d 0` 指定一级目录，不递归子目录；  
 - 添加 `-c` 选项，最后会输出一条总占用大小；  
 
-```Shell
+```bash
 $ du -sh ~/Documents
 or
 $ du -h -d 0 ~/Documents
@@ -360,14 +361,14 @@ $ du -h --max-depth=0 ~/Documents
 
 统计目录 `~/Library/Developer` 占用磁盘空间大小：
 
-```Shell
+```bash
 $ du -sh ~/Library/Developer
  66G	/Users/faner/Library/Developer
 ```
 
 统计目录 `~/Library/Developer` 子目录占用磁盘空间大小：
 
-```Shell
+```bash
 $ du -csh ~/Library/Developer/*
  23G	/Users/faner/Library/Developer/CoreSimulator
 1.4G	/Users/faner/Library/Developer/XCTestDevices
@@ -379,7 +380,7 @@ $ du -csh ~/Library/Developer/*
 
 按占用磁盘空间降序（由大到小）排序：
 
-```Shell
+```bash
 $ du -sh ~/Library/Developer/* | sort -rh
  39G	/Users/faner/Library/Developer/Xcode
  23G	/Users/faner/Library/Developer/CoreSimulator
@@ -388,17 +389,55 @@ $ du -sh ~/Library/Developer/* | sort -rh
 425M	/Users/faner/Library/Developer/chromium
 ```
 
+从 [The Linux Kernel Archives](https://www.kernel.org/) 下载最新 Linux 内核源码 [2024-05-17 stable:6.9.1](https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/tree/?h=v6.9.1)，解压后统计一级子目录的大小并进行排序：
+
+```bash
+du -csh ./* | sort -rh
+1.5G	total
+1.0G	./drivers
+146M	./arch
+ 74M	./tools
+ 68M	./Documentation
+ 53M	./include
+ 50M	./sound
+ 49M	./fs
+ 36M	./net
+ 14M	./kernel
+8.2M	./lib
+5.4M	./mm
+4.1M	./scripts
+3.8M	./crypto
+3.5M	./security
+2.1M	./block
+1.6M	./samples
+880K	./rust
+732K	./MAINTAINERS
+652K	./io_uring
+320K	./virt
+276K	./ipc
+276K	./LICENSES
+196K	./init
+104K	./CREDITS
+ 76K	./usr
+ 72K	./certs
+ 68K	./Makefile
+4.0K	./README
+4.0K	./Kconfig
+4.0K	./Kbuild
+4.0K	./COPYING
+```
+
 当子目录太多时，可重定向给 `more` 滚动查看，或重定向给 `head -n 10` 查看前10条。
 
 列举 Pods 目录下所有的一级子目录（不递归）：
 
-```Shell
+```bash
 ls -1 -d Pods/* | tee ~/Downloads/Pods-tree-L1.log
 ```
 
 查看 Pods 目录下所有的一级子目录占用磁盘空间大小：
 
-```Shell
+```bash
 du -csh Pods/* | more
 du -csh Pods/* | tee ~/Downloads/Pods-tree-L1-du.log
 ls -1 -d Pods/* | xargs du -chs | tee ~/Downloads/Pods-tree-L1-du.log
@@ -408,7 +447,7 @@ ls -1 -d Pods/* | xargs du -chs | tee ~/Downloads/Pods-tree-L1-du.log
 
 The `tree` command is a recursive directory listing program that produces a depth indented listing of files and directories in a tree-like format.
 
-```Shell
+```bash
 tree --du -h /opt/ktube-media-downloader
 ```
 
@@ -438,7 +477,7 @@ There are four special variables, `scale`, `ibase`, `obase`, and `last`.
 
 输入表达式 `56.8 + 77.7`，再按回车键即可在新行得到计算结果：
 
-```Shell
+```bash
 pi@raspberrypi:~ $ bc
 bc 1.06.95
 Copyright 1991-1994, 1997, 1998, 2000, 2004, 2006 Free Software Foundation, Inc.
@@ -451,7 +490,7 @@ For details type `warranty'.
 
 也可书写代数表达式，用变量承载计算结果，作为进一步计算的操作数：
 
-```Shell
+```bash
 $ bc -q # -q 不显示冗长的欢迎信息
 a=2+3;
 a
@@ -463,7 +502,7 @@ b
 
 2. 可通过 bc 内置的 **`scale`** 变量可指定浮点数计算输出精度：
 
-```Shell
+```bash
 $ bc -q
 5 * 7 /3
 11
@@ -473,7 +512,7 @@ scale=2; 5 * 7 /3
 
 3. 在终端可基于[数据流重定向或管道](https://www.cnblogs.com/mingcaoyouxin/p/4077264.html)作为 `bc` 的输入表达式：
 
-```Shell
+```bash
 $ echo "56.8 + 77.7" | bc
 134.5
 ```
@@ -482,7 +521,7 @@ $ echo "56.8 + 77.7" | bc
 
 对于简单的单行运算，可用 echo 重定向或内联重定向实现：
 
-```Shell
+```bash
 $ bc <<< "56.8 + 77.7"
 134.5
 ```
@@ -494,7 +533,7 @@ bc命令能识别输入重定向，允许你将一个文件重定向到bc命令�
 最好的办法是使用内联输入重定向，它允许你直接在命令行中重定向数据。  
 在shell脚本中，你可以将输出赋给一个变量。
 
-```Shell
+```bash
 variable=$(bc << EOF
            options
            statements
@@ -506,7 +545,7 @@ variable=$(bc << EOF
 
 以下在终端测试这种用法：
 
-```Shell
+```bash
 $ bc << EOF
 heredoc> 56.8 + 77.7
 heredoc> EOF
@@ -517,7 +556,7 @@ heredoc> EOF
 
 在shell脚本中，可调用bash计算器帮助处理浮点运算。可以用命令替换运行bc命令，并将输出赋给一个变量。基本格式如下：
 
-```Shell
+```bash
 variable=$(echo "options; expression" | bc)
 ```
 
@@ -525,7 +564,7 @@ variable=$(echo "options; expression" | bc)
 
 以下为在 shell scripts 调用 bc 对常量表达式做计算的示例:
 
-```Shell
+```bash
 $ result=$(echo "scale=2; 5 * 7 /3;" | bc)
 $ echo $result
 11.66
@@ -533,7 +572,7 @@ $ echo $result
 
 以下为在 shell scripts 调用 bc 对变量表达式做计算的示例:
 
-```Shell
+```bash
 $ var1=100
 $ var2=45
 $ result=`echo "scale=2; $var1 / $var2" | bc`
@@ -549,7 +588,7 @@ $ echo $result
 
 下面是在脚本中使用这种写法的例子。
 
-```Shell
+```bash
 $ cat test12.sh
 #!/bin/bash
 
@@ -567,7 +606,7 @@ EOF)
 echo The final answer for this mess is $var5
 ```
 
-```Shell
+```bash
 $ chmod u+x test12.sh
 $ ./test12.sh
 The final answer for this mess is 2813.9882
@@ -581,7 +620,7 @@ The final answer for this mess is 2813.9882
 
 bc 内置的 **`last`** 变量代表上个表达式的计算结果，可将 last 变量作为后续表达式的操作数，进行二次计算：
 
-```Shell
+```bash
 $ bc -q
 2+3
 5
@@ -593,7 +632,7 @@ last*4
 
 默认输入和输出都是基于十进制：
 
-```Shell
+```bash
 $ bc -q
 ibase
 10
@@ -603,14 +642,14 @@ obase
 
 在 bc 命令解释器中输入 `ibase=10;obase=16;2017`，转换输出2017（十进制）的十六进制：
 
-```Shell
+```bash
 ibase=10;obase=16;2017
 7E1
 ```
 
 或者 echo 分号相隔的表达式重定向作为 bc 的输入进行解释运行：
 
-```Shell
+```bash
 $ echo "ibase=10;obase=16;2017" | bc
 7E1
 ```
@@ -619,7 +658,7 @@ $ echo "ibase=10;obase=16;2017" | bc
 
 先将十进制转换成二进制：
 
-```Shell
+```bash
 $ no=100
 $ echo "obase=2;$no" | bc 
 1100100
@@ -627,7 +666,7 @@ $ echo "obase=2;$no" | bc
 
 再将二进制转换回十进制
 
-```Shell
+```bash
 $ no=1100100
 $ echo "obase=10;ibase=2;$no" | bc
 100
@@ -635,7 +674,7 @@ $ echo "obase=10;ibase=2;$no" | bc
 
 需要注意先写obase再写ibase，否则出错：
 
-```Shell
+```bash
 $ no=1100100
 $ echo "ibase=2;obase=10;$no" | bc
 1100100
@@ -653,7 +692,7 @@ crc32 - Perform a 32bit Cyclic Redundancy Check
 
 计算从 [crx4chrome](https://www.crx4chrome.com/) 离线下载的 [Vimium CRX 1.60.3 for Chrome](https://www.crx4chrome.com/crx/731/)  插件的 crc32 校验和：
 
-```Shell
+```bash
 faner@FAN-MB0:~/Downloads/crx|
 ⇒  crc32 dbepggeogbaibhgnhhndojpepiihcmeb-1.60.3-Crx4Chrome.com.crx 
 db950177
@@ -667,14 +706,14 @@ md5 -- calculate a message-digest fingerprint (checksum) for a file
 
 md5 命令后的默认输入参数为文件名，也可通过 `-s` 选项指定计算字符串参数的MD5。
 
-```Shell
+```bash
      -s string
              Print a checksum of the given string.
 ```
 
 计算从 [crx4chrome](https://www.crx4chrome.com/) 离线下载的 [Vimium CRX 1.60.3 for Chrome](https://www.crx4chrome.com/crx/731/)  插件的 MD5：
 
-```Shell
+```bash
 faner@FAN-MB0:~/Downloads/crx|
 ⇒  md5 dbepggeogbaibhgnhhndojpepiihcmeb-1.60.3-Crx4Chrome.com.crx 
 MD5 (dbepggeogbaibhgnhhndojpepiihcmeb-1.60.3-Crx4Chrome.com.crx) = c98057821ee3cede87d911ead832dcc1
@@ -686,7 +725,7 @@ MD5 (dbepggeogbaibhgnhhndojpepiihcmeb-1.60.3-Crx4Chrome.com.crx) = c98057821ee3c
 
 计算下载到本地的 Vimium CRX 1.60.3 for Chrome 插件所在路径字符串的 MD5 值：
 
-```Shell
+```bash
 faner@FAN-MB0:~/Downloads/crx|
 ⇒  md5 -s "/Users/faner/Downloads/crx/dbepggeogbaibhgnhhndojpepiihcmeb-1.60.3-Crx4Chrome.com.crx" 
 MD5 ("/Users/faner/Downloads/crx/dbepggeogbaibhgnhhndojpepiihcmeb-1.60.3-Crx4Chrome.com.crx") = 2f6f9a98b561f995564793765c205a66
@@ -696,7 +735,7 @@ MD5 ("/Users/faner/Downloads/crx/dbepggeogbaibhgnhhndojpepiihcmeb-1.60.3-Crx4Chr
 
 shasum - Print or Check SHA Checksums
 
-```Shell
+```bash
 SYNOPSIS
         Usage: shasum [OPTION]... [FILE]...
         Print or check SHA checksums.
@@ -716,7 +755,7 @@ When verifying SHA-512/224 or SHA-512/256 checksums, indicate the **algorithm** 
 
 计算从 [crx4chrome](https://www.crx4chrome.com/) 离线下载的 [Vimium CRX 1.60.3 for Chrome](https://www.crx4chrome.com/crx/731/) 插件的 SHA-1：
 
-```Shell
+```bash
 faner@FAN-MB0:~/Downloads/crx|
 ⇒  shasum dbepggeogbaibhgnhhndojpepiihcmeb-1.60.3-Crx4Chrome.com.crx 
 476c61437d3c34e38ed1ee15950d202ded0902c8  dbepggeogbaibhgnhhndojpepiihcmeb-1.60.3-Crx4Chrome.com.crx
@@ -740,7 +779,7 @@ faner@FAN-MB0:~/Downloads/crx|
 
 第一种方式是基于 printf 函数格式化输出：
 
-```Shell
+```bash
 # hexadecimal to decimal
 $ printf '%d\n' 0x24
 36
@@ -751,7 +790,7 @@ $ printf '%x\n' 36
 
 第二种方式是基于 `$((...))` 表达式，将其他进制转换为十进制：
 
-```Shell
+```bash
 # binary to decimal
 $ echo "$((2#101010101))"
 341
@@ -765,7 +804,7 @@ $ echo "$((16#FF))"
 
 第三种方式是基于上文提到的bc计算器，实现任意进制间互转：
 
-```Shell
+```bash
 # binary to decimal
 $ echo 'obase=10;ibase=2;101010101' | bc
 341
@@ -783,7 +822,7 @@ $ bc <<< 'obase=10;ibase=16;FE'
 
 Linux/Unix（macOS）下的命令行工具 `od` 可按指定进制格式查看文档：
 
-```Shell
+```bash
 pi@raspberrypi:~ $ od --version
 od (GNU coreutils) 8.26
 Copyright (C) 2016 Free Software Foundation, Inc.
@@ -794,7 +833,7 @@ There is NO WARRANTY, to the extent permitted by law.
 Written by Jim Meyering.
 ```
 
-```Shell
+```bash
 pi@raspberrypi:~ $ man od
 
 NAME
@@ -836,7 +875,7 @@ SYNOPSIS
 
 以下示例 hex dump `tuple.h` 文件开头的64字节：
 
-```Shell
+```bash
 # 等效 od -N 64 -A x -t xCa tuple.h
 faner@MBP-FAN:~/Downloads|⇒  od -N 64 -A x -t x1a tuple.h
 0000000    ef  bb  bf  0d  0a  23  70  72  61  67  6d  61  20  6f  6e  63
@@ -854,7 +893,7 @@ faner@MBP-FAN:~/Downloads|⇒  od -N 64 -A x -t x1a tuple.h
 
 还有一个od类似的命令行工具是xxd。
 
-```Shell
+```bash
 XXD(1)                                                                                                XXD(1)
 
 
@@ -876,7 +915,7 @@ DESCRIPTION
 
 [dstebila/bin2hex.sh](https://gist.github.com/dstebila/1731faaad1da66475db1)
 
-```Shell
+```bash
 #!/bin/bash
 
 # Read either the first argument or from stdin
@@ -893,7 +932,7 @@ tr -d '\n'
 
 Linux/Unix（macOS）下的命令行工具 `hexdump` 可按指定进制格式查看文档：
 
-```Shell
+```bash
 pi@raspberrypi:~ $ man hexdump
 
 NAME
@@ -920,7 +959,7 @@ SYNOPSIS
 
 > 如果开头3个字节为 `ef bb bf`，则为带 BOM 编码；否则为不带 BOM 编码。
 
-```Shell
+```bash
 # 等效 hexdump -C litetransfer.cpp | head -n 4
 faner@MBP-FAN:~/Downloads|⇒  hexdump -n 64 -C tuple.h
 00000000  ef bb bf 0d 0a 23 70 72  61 67 6d 61 20 6f 6e 63  |.....#pragma onc|
@@ -932,7 +971,7 @@ faner@MBP-FAN:~/Downloads|⇒  hexdump -n 64 -C tuple.h
 
 ### strings
 
-```Shell
+```bash
 pi@raspberrypi:~ $ man strings
 
 STRINGS(1)                          GNU Development Tools                          STRINGS(1)
@@ -957,7 +996,7 @@ SYNOPSIS
 
 ### rev
 
-```Shell
+```bash
 NAME
      rev -- reverse lines of a file
 
@@ -969,14 +1008,14 @@ DESCRIPTION
      every line.  If no files are specified, the standard input is read.
 ```
 
-```Shell
+```bash
 echo "Bash Shell" | rev
 llehS hsaB
 ```
 
 ### fuser
 
-```Shell
+```bash
 $ man fuser
 NAME
        fuser - list process IDs of all processes that have one or more files open
@@ -987,7 +1026,7 @@ SYNOPSIS
 
 ### lsof
 
-```Shell
+```bash
 NAME
        lsof - list open files
 
@@ -999,7 +1038,7 @@ SYNOPSIS
 
 查找监听指定端口的进程PID：
 
-```Shell
+```bash
 lsof -i :8010 | awk 'NR>1 {print $2}' | xargs kill -KILL
 ```
 
@@ -1026,7 +1065,7 @@ macOS/Linux 下还可以安装 `jq` 命令行工具，将压缩/转义的json字
 
 以下将压缩转义的json字符串格式化为JSON对象输出控制台并存储到 banner-exposure.json 文件。
 
-```Shell
+```bash
 $ echo "{\"bizName\":\"yidian\",\"plat\":\"h5\",\"actionName\":\"banner\",\"actionType\":\"exposure\",\"extra\":{\"value\":{\"banner_id\":\"3303\",\"title\":\"体检季来了：你最关心的各种检查，这里都有\",\"index\":0}}}" | jq | tee banner-exposure.json
 {
   "bizName": "yidian",
@@ -1045,7 +1084,7 @@ $ echo "{\"bizName\":\"yidian\",\"plat\":\"h5\",\"actionName\":\"banner\",\"acti
 
 以下对 banner-exposure.json 文件中的内容压缩为一行输出。
 
-```Shell
+```bash
 $ cat banner-exposure.json | jq -c .
 {"bizName":"yidian","plat":"h5","actionName":"banner","actionType":"exposure","extra":{"value":{"banner_id":"3303","title":"体检季来了：你最关心的各种检查，这里都有","index":0}}}
 ```

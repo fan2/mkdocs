@@ -1,0 +1,1972 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="在别处或在路上">
+      
+      
+        <meta name="author" content="Cliff Fan">
+      
+      
+        <link rel="canonical" href="https://duetorun.com/blog/20230612/arm64-kernel-adrp-ldr/">
+      
+      
+        <link rel="prev" href="../../20230610/arm-adr-ldr/">
+      
+      
+        <link rel="next" href="../../20231001/sre-toolkit/">
+      
+      
+      <link rel="icon" href="../../../assets/hold_yourself.jpg">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.15">
+    
+    
+      
+        <title>Use cases for ADRP & LDR in arm64/kernel/head.S - ElseWhere</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.7e359304.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function n(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],n("js",new Date),n("config","G-XGW41EGL31"),document.addEventListener("DOMContentLoaded",function(){document.forms.search&&document.forms.search.query.addEventListener("blur",function(){this.value&&n("event","search",{search_term:this.value})}),document$.subscribe(function(){var a=document.forms.feedback;if(void 0!==a)for(var e of a.querySelectorAll("[type=submit]"))e.addEventListener("click",function(e){e.preventDefault();var t=document.location.pathname,e=this.getAttribute("data-md-value");n("event","feedback",{page:t,data:e}),a.firstElementChild.disabled=!0;e=a.querySelector(".md-feedback__note [data-md-value='"+e+"']");e&&(e.hidden=!1)}),a.hidden=!1}),location$.subscribe(function(e){n("config","G-XGW41EGL31",{page_path:e.pathname})})});var e=document.createElement("script");e.async=!0,e.src="https://www.googletagmanager.com/gtag/js?id=G-XGW41EGL31",document.getElementById("__analytics").insertAdjacentElement("afterEnd",e)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+    
+  
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#vmlinuxldss" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../../.." title="ElseWhere" class="md-header__button md-logo" aria-label="ElseWhere" data-md-component="logo">
+      
+  <img src="../../../assets/hold_yourself.jpg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ElseWhere
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Use cases for ADRP & LDR in arm64/kernel/head.S
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1M8 13h8v-2H8v2m9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1 0 1.71-1.39 3.1-3.1 3.1h-4V17h4a5 5 0 0 0 5-5 5 5 0 0 0-5-5Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="indigo"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5M7 15a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="标签" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../about/" class="md-tabs__link">
+        
+  
+    
+  
+  About
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../" class="md-tabs__link">
+          
+  
+  Blog
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../link/" class="md-tabs__link">
+        
+  
+    
+  
+  Link
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" hidden>
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="ElseWhere" class="md-nav__button md-logo" aria-label="ElseWhere" data-md-component="logo">
+      
+  <img src="../../../assets/hold_yourself.jpg" alt="logo">
+
+    </a>
+    ElseWhere
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../about/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    About
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Blog
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      <a href="../../" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Archive
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            Archive
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2024/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2024
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2023/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2023
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2022/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2022
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2021/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2021
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2020/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2020
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2019/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2019
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2018/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2018
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2017/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2017
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2015/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2015
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2009/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2009
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Categories
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            Categories
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/cs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CS
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/arm/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    arm
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/c/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    c
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/cpp/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    cpp
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/editor/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    editor
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/excerpt/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    excerpt
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/git/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    git
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/linux/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    linux
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/macos/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    macOS
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/markdown/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    markdown
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/material/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    material
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/mkdocs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    mkdocs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/nginx/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    nginx
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/python/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    python
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/resource/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    resource
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/shell/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    shell
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/toolchain/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    toolchain
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/ubuntu/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ubuntu
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/vim/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    vim
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/webdav/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    webDAV
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/wiki/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    wiki
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/zsh/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    zsh
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../link/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Link
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#vmlinuxldss" class="md-nav__link">
+    <span class="md-ellipsis">
+      vmlinux.lds.S
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#heads" class="md-nav__link">
+    <span class="md-ellipsis">
+      head.S
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#__primary_switch" class="md-nav__link">
+    <span class="md-ellipsis">
+      __primary_switch
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="__primary_switch">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#adrp_x0_kernel_start" class="md-nav__link">
+    <span class="md-ellipsis">
+      adrp x0, KERNEL_START
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ldr_x8___primary_switched" class="md-nav__link">
+    <span class="md-ellipsis">
+      ldr x8, =__primary_switched
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#__primary_switched" class="md-nav__link">
+    <span class="md-ellipsis">
+      __primary_switched
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+  <div class="md-content md-content--post" data-md-component="content">
+    <div class="md-sidebar md-sidebar--post" data-md-component="sidebar" data-md-type="navigation">
+      <div class="md-sidebar__scrollwrap">
+        <div class="md-sidebar__inner md-post">
+          <nav class="md-nav md-nav--primary">
+            <div class="md-post__back">
+              <div class="md-nav__title md-nav__container">
+                <a href="../../" class="md-nav__link">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+                  <span class="md-ellipsis">
+                    回到主页
+                  </span>
+                </a>
+              </div>
+            </div>
+            
+              <div class="md-post__authors md-typeset">
+                
+                  <div class="md-profile md-post__profile">
+                    <span class="md-author md-author--long">
+                      <img src="https://duetorun.com/assets/carve_yourself.jpg" alt="Cliff Fan">
+                    </span>
+                    <span class="md-profile__description">
+                      <strong>
+                        
+                          Cliff Fan
+                        
+                      </strong>
+                      <br>
+                      Just do IT
+                    </span>
+                  </div>
+                
+              </div>
+            
+            <ul class="md-post__meta md-nav__list">
+              <li class="md-nav__item md-nav__item--section">
+                <div class="md-post__title">
+                  <span class="md-ellipsis">
+                    元数据
+                  </span>
+                </div>
+                <nav class="md-nav">
+                  <ul class="md-nav__list">
+                    <li class="md-nav__item">
+                      <div class="md-nav__link">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 19H5V8h14m-3-7v2H8V1H6v2H5c-1.11 0-2 .89-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-1V1m-1 11h-5v5h5v-5Z"/></svg>
+                        <time datetime="2023-06-12 10:00:00" class="md-ellipsis">2023年6月12日</time>
+                      </div>
+                    </li>
+                    
+                      <li class="md-nav__item">
+                        <div class="md-nav__link">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15 13h1.5v2.82l2.44 1.41-.75 1.3L15 16.69V13m4-5H5v11h4.67c-.43-.91-.67-1.93-.67-3a7 7 0 0 1 7-7c1.07 0 2.09.24 3 .67V8M5 21a2 2 0 0 1-2-2V5c0-1.11.89-2 2-2h1V1h2v2h8V1h2v2h1a2 2 0 0 1 2 2v6.1c1.24 1.26 2 2.99 2 4.9a7 7 0 0 1-7 7c-1.91 0-3.64-.76-4.9-2H5m11-9.85A4.85 4.85 0 0 0 11.15 16c0 2.68 2.17 4.85 4.85 4.85A4.85 4.85 0 0 0 20.85 16c0-2.68-2.17-4.85-4.85-4.85Z"/></svg>
+                          <time datetime="2024-05-14 10:00:00" class="md-ellipsis">2024年5月14日</time>
+                        </div>
+                      </li>
+                    
+                    
+                      <li class="md-nav__item">
+                        <div class="md-nav__link">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 3v15h3V3H9m3 2 4 13 3-1-4-13-3 1M5 5v13h3V5H5M3 19v2h18v-2H3Z"/></svg>
+                          <span class="md-ellipsis">
+                            分类于
+                            
+                              <a href="../../category/arm/">arm</a>, 
+                              <a href="../../category/linux/">linux</a></span>
+                        </div>
+                      </li>
+                    
+                    
+                      
+                      <li class="md-nav__item">
+                        <div class="md-nav__link">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7h1.5Z"/></svg>
+                          <span class="md-ellipsis">
+                            
+                              需要 6 分钟阅读时间
+                            
+                          </span>
+                        </div>
+                      </li>
+                    
+                    <!-- Add by Cliff.Fan, 29Mar24. -->
+                    <li class="md-nav__item">
+                      <div class="md-nav__link">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m19 1-5 5v11l5-4.5V1m2 4v13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V6c-1.45-1.1-3.55-1.5-5.5-1.5-1.95 0-4.05.4-5.5 1.5v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1M10 18.41C8.75 18.09 7.5 18 6.5 18c-1.06 0-2.32.19-3.5.5V7.13c.91-.4 2.14-.63 3.5-.63 1.36 0 2.59.23 3.5.63v11.28Z"/></svg>
+                        <span class="md-ellipsis" id="busuanzi_container_page_pv">
+                          阅读量：<span id="busuanzi_value_page_pv">N/A</span>
+                        </span>
+                      </div>
+                    </li>
+                  </ul>
+                </nav>
+              </li>
+            </ul>
+          </nav>
+          
+        </div>
+      </div>
+    </div>
+    <article class="md-content__inner md-typeset">
+      
+        
+  
+  
+
+<nav class="md-tags" >
+  
+    
+    
+    
+      <span class="md-tag">kernel</span>
+    
+  
+</nav>
+
+
+
+  <h1>Use cases for ADRP & LDR in arm64/kernel/head.S</h1>
+
+<p>In <a href="https://github.com/torvalds/linux/tree/master/arch/arm64/kernel">linux arm64 kernel</a>, the <em>transition</em> of the PC from the physical address space to the real virtual address space is completed with the last three instructions of <a href="https://github.com/torvalds/linux/blob/v6.9/arch/arm64/kernel/head.S">head.S</a> after MMU enabled.</p>
+<div class="language-asm highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="w">    </span><span class="nf">ldr</span><span class="w">     </span><span class="no">x8</span><span class="p">,</span><span class="w"> </span><span class="err">=</span><span class="no">__primary_switched</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">    </span><span class="nf">adrp</span><span class="w">    </span><span class="no">x0</span><span class="p">,</span><span class="w"> </span><span class="no">KERNEL_START</span><span class="w">        </span><span class="c1">// __pa(KERNEL_START)</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">    </span><span class="nf">br</span><span class="w">      </span><span class="no">x8</span><span class="w">                      </span><span class="c1">// executed with the MMU enabled</span>
+</span></code></pre></div>
+<!-- more -->
+
+<h2 id="vmlinuxldss">vmlinux.lds.S<a class="headerlink" href="#vmlinuxldss" title="Permanent link">#</a></h2>
+<p>The target file generated after kernel compilation is <code>vmlinux</code> in ELF format. The vmlinux is each source code according to the rules set by <code>vmlinux.lds</code>. The object file obtained after linking is not an executable file and cannot be run on the ARM platform.</p>
+<p>The <code>vmlinux.lds</code> is generated after sorting the output of the linker <code>ld</code> by the <code>vmlinux.lds.S</code> during kernel compilation; <code>vmlinux.lds.S</code> is used to sort the sections in the output file and define related symbols.</p>
+<p>When the kernel is compiled, <code>vmlinux.lds</code> serves as the linker script of the Makefile and participates in linking to generate the kernel image <code>vmlinux</code>.</p>
+<p>In short, <code>vmlinux</code> is generated according to the <code>vmlinux.lds</code> linker script, and <code>vmlinux.lds</code> is generated by <code>vmlinux.lds.S</code>.</p>
+<p>In linux/arch/arm64/kernel, the <code>vmlinux.lds.S</code> is the linking script for arm64 kernel.</p>
+<p><code>ENTRY(_text)</code> declared the kernel entry is <em><code>_text</code></em>, defined in section <code>.head.text</code>.</p>
+<div class="language-asm highlight"><span class="filename">arch/arm64/kernel/vmlinux.lds.S</span><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1">// [...snip...]</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="nf">ENTRY</span><span class="p">(</span><span class="no">_text</span><span class="p">)</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="c1">// [...snip...]</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="c1">#define IDMAP_TEXT                      \</span>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">    </span><span class="err">.</span><span class="w"> </span><span class="err">=</span><span class="w"> </span><span class="nf">ALIGN</span><span class="p">(</span><span class="no">SZ_4K</span><span class="p">)</span><span class="c1">;                   \</span>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="w">    </span><span class="nf">__idmap_text_start</span><span class="w"> </span><span class="err">=</span><span class="w"> </span><span class="p">.</span><span class="c1">;             \</span>
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">    </span><span class="err">*(</span><span class="na">.idmap.text</span><span class="p">)</span><span class="w">                      </span><span class="err">\</span>
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="w">    </span><span class="nf">__idmap_text_end</span><span class="w"> </span><span class="err">=</span><span class="w"> </span><span class="p">.</span><span class="c1">;</span>
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a>
+</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="c1">// [...snip...]</span>
+</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a>
+</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="nf">SECTIONS</span>
+</span><span id="__span-1-16"><a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="err">{</span>
+</span><span id="__span-1-17"><a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a><span class="w">    </span><span class="err">.</span><span class="w"> </span><span class="err">=</span><span class="w"> </span><span class="nf">KIMAGE_VADDR</span><span class="c1">;</span>
+</span><span id="__span-1-18"><a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a>
+</span><span id="__span-1-19"><a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a><span class="w">    </span><span class="na">.head.text</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-1-20"><a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a><span class="w">        </span><span class="nf">_text</span><span class="w"> </span><span class="err">=</span><span class="w"> </span><span class="p">.</span><span class="c1">;</span>
+</span><span id="__span-1-21"><a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a><span class="w">        </span><span class="nf">HEAD_TEXT</span>
+</span><span id="__span-1-22"><a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a><span class="w">    </span><span class="err">}</span>
+</span><span id="__span-1-23"><a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a><span class="w">    </span><span class="na">.text</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="no">ALIGN</span><span class="p">(</span><span class="no">SEGMENT_ALIGN</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w">  </span><span class="cm">/* Real text segment        */</span>
+</span><span id="__span-1-24"><a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a><span class="w">        </span><span class="nf">_stext</span><span class="w"> </span><span class="err">=</span><span class="w"> </span><span class="p">.</span><span class="c1">;                 /* Text and read-only data    */</span>
+</span><span id="__span-1-25"><a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a><span class="w">            </span><span class="nf">IRQENTRY_TEXT</span>
+</span><span id="__span-1-26"><a id="__codelineno-1-26" name="__codelineno-1-26" href="#__codelineno-1-26"></a><span class="w">            </span><span class="nf">SOFTIRQENTRY_TEXT</span>
+</span><span id="__span-1-27"><a id="__codelineno-1-27" name="__codelineno-1-27" href="#__codelineno-1-27"></a><span class="w">            </span><span class="nf">ENTRY_TEXT</span>
+</span><span id="__span-1-28"><a id="__codelineno-1-28" name="__codelineno-1-28" href="#__codelineno-1-28"></a><span class="w">            </span><span class="nf">TEXT_TEXT</span>
+</span><span id="__span-1-29"><a id="__codelineno-1-29" name="__codelineno-1-29" href="#__codelineno-1-29"></a><span class="w">            </span><span class="nf">SCHED_TEXT</span>
+</span><span id="__span-1-30"><a id="__codelineno-1-30" name="__codelineno-1-30" href="#__codelineno-1-30"></a><span class="w">            </span><span class="nf">LOCK_TEXT</span>
+</span><span id="__span-1-31"><a id="__codelineno-1-31" name="__codelineno-1-31" href="#__codelineno-1-31"></a><span class="w">            </span><span class="nf">KPROBES_TEXT</span>
+</span><span id="__span-1-32"><a id="__codelineno-1-32" name="__codelineno-1-32" href="#__codelineno-1-32"></a><span class="w">            </span><span class="nf">HYPERVISOR_TEXT</span>
+</span><span id="__span-1-33"><a id="__codelineno-1-33" name="__codelineno-1-33" href="#__codelineno-1-33"></a><span class="w">            </span><span class="err">*(</span><span class="na">.gnu.warning</span><span class="p">)</span>
+</span><span id="__span-1-34"><a id="__codelineno-1-34" name="__codelineno-1-34" href="#__codelineno-1-34"></a><span class="w">    </span><span class="err">}</span>
+</span><span id="__span-1-35"><a id="__codelineno-1-35" name="__codelineno-1-35" href="#__codelineno-1-35"></a>
+</span><span id="__span-1-36"><a id="__codelineno-1-36" name="__codelineno-1-36" href="#__codelineno-1-36"></a><span class="w">    </span><span class="err">.</span><span class="w"> </span><span class="err">=</span><span class="w"> </span><span class="nf">ALIGN</span><span class="p">(</span><span class="no">SEGMENT_ALIGN</span><span class="p">)</span><span class="c1">;</span>
+</span><span id="__span-1-37"><a id="__codelineno-1-37" name="__codelineno-1-37" href="#__codelineno-1-37"></a><span class="w">    </span><span class="nf">_etext</span><span class="w"> </span><span class="err">=</span><span class="w"> </span><span class="p">.</span><span class="c1">;            /* End of text section */</span>
+</span><span id="__span-1-38"><a id="__codelineno-1-38" name="__codelineno-1-38" href="#__codelineno-1-38"></a>
+</span><span id="__span-1-39"><a id="__codelineno-1-39" name="__codelineno-1-39" href="#__codelineno-1-39"></a><span class="w">    </span><span class="c1">// [...snip...]</span>
+</span><span id="__span-1-40"><a id="__codelineno-1-40" name="__codelineno-1-40" href="#__codelineno-1-40"></a>
+</span><span id="__span-1-41"><a id="__codelineno-1-41" name="__codelineno-1-41" href="#__codelineno-1-41"></a><span class="err">}</span>
+</span></code></pre></div>
+<p>The section names <code>__HEAD</code> and <code>__INIT</code> are defined in init.h, of which the <code>__HEAD</code> is an alias of the section <code>.head.text</code>.</p>
+<div class="language-c highlight"><span class="filename">include/linux/init.h</span><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="cm">/* For assembly routines */</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="cp">#define __HEAD      .section    &quot;.head.text&quot;,&quot;ax&quot;</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="cp">#define __INIT      .section    &quot;.init.text&quot;,&quot;ax&quot;</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="cp">#define __FINIT     .previous</span>
+</span></code></pre></div>
+<p>Following the word "HEAD", there is a corresponding assembly file, <code>head.S</code>, in which the first instruction of the kernel is actually located.</p>
+<h2 id="heads">head.S<a class="headerlink" href="#heads" title="Permanent link">#</a></h2>
+<p>In head.S, the section directive macro <code>__HEAD</code> comes first and covers the subsequent instructions.</p>
+<p>Skip the special NOP(<code>efi_signature_nop</code>), <code>b primary_entry</code> comes up, it heads to kernel start.</p>
+<div class="language-asm highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">arch/arm64/kernel/head.S</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-44">44</a></span>
+<span class="normal"><a href="#__codelineno-3-45">45</a></span>
+<span class="normal"><a href="#__codelineno-3-46">46</a></span>
+<span class="normal"><a href="#__codelineno-3-47">47</a></span>
+<span class="normal"><a href="#__codelineno-3-48">48</a></span>
+<span class="normal"><a href="#__codelineno-3-49">49</a></span>
+<span class="normal"><a href="#__codelineno-3-50">50</a></span>
+<span class="normal"><a href="#__codelineno-3-51">51</a></span>
+<span class="normal"><a href="#__codelineno-3-52">52</a></span>
+<span class="normal"><a href="#__codelineno-3-53">53</a></span>
+<span class="normal"><a href="#__codelineno-3-54">54</a></span>
+<span class="normal"><a href="#__codelineno-3-55">55</a></span>
+<span class="normal"><a href="#__codelineno-3-56">56</a></span>
+<span class="normal"><a href="#__codelineno-3-57">57</a></span>
+<span class="normal"><a href="#__codelineno-3-58">58</a></span>
+<span class="normal"><a href="#__codelineno-3-59">59</a></span>
+<span class="normal"><a href="#__codelineno-3-60">60</a></span>
+<span class="normal"><a href="#__codelineno-3-61">61</a></span>
+<span class="normal"><a href="#__codelineno-3-62">62</a></span>
+<span class="normal"><a href="#__codelineno-3-63">63</a></span>
+<span class="normal"><a href="#__codelineno-3-64">64</a></span>
+<span class="normal"><a href="#__codelineno-3-65">65</a></span>
+<span class="normal"><a href="#__codelineno-3-66">66</a></span>
+<span class="normal"><a href="#__codelineno-3-67">67</a></span>
+<span class="normal"><a href="#__codelineno-3-68">68</a></span>
+<span class="normal"><a href="#__codelineno-3-69">69</a></span>
+<span class="normal"><a href="#__codelineno-3-70">70</a></span>
+<span class="normal"><a href="#__codelineno-3-71">71</a></span>
+<span class="normal"><a href="#__codelineno-3-72">72</a></span>
+<span class="normal"><a href="#__codelineno-3-73">73</a></span>
+<span class="normal"><a href="#__codelineno-3-74">74</a></span>
+<span class="normal"><a href="#__codelineno-3-75">75</a></span>
+<span class="normal"><a href="#__codelineno-3-76">76</a></span>
+<span class="normal"><a href="#__codelineno-3-77">77</a></span>
+<span class="normal"><a href="#__codelineno-3-78">78</a></span>
+<span class="normal"><a href="#__codelineno-3-79">79</a></span>
+<span class="normal"><a href="#__codelineno-3-80">80</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-3-44"><a id="__codelineno-3-44" name="__codelineno-3-44"></a><span class="cm">/*</span>
+</span><span id="__span-3-45"><a id="__codelineno-3-45" name="__codelineno-3-45"></a><span class="cm"> * Kernel startup entry point.</span>
+</span><span id="__span-3-46"><a id="__codelineno-3-46" name="__codelineno-3-46"></a><span class="cm"> * ---------------------------</span>
+</span><span id="__span-3-47"><a id="__codelineno-3-47" name="__codelineno-3-47"></a><span class="cm"> *</span>
+</span><span id="__span-3-48"><a id="__codelineno-3-48" name="__codelineno-3-48"></a><span class="cm"> * The requirements are:</span>
+</span><span id="__span-3-49"><a id="__codelineno-3-49" name="__codelineno-3-49"></a><span class="cm"> *   MMU = off, D-cache = off, I-cache = on or off,</span>
+</span><span id="__span-3-50"><a id="__codelineno-3-50" name="__codelineno-3-50"></a><span class="cm"> *   x0 = physical address to the FDT blob.</span>
+</span><span id="__span-3-51"><a id="__codelineno-3-51" name="__codelineno-3-51"></a><span class="cm"> *</span>
+</span><span id="__span-3-52"><a id="__codelineno-3-52" name="__codelineno-3-52"></a><span class="cm"> * Note that the callee-saved registers are used for storing variables</span>
+</span><span id="__span-3-53"><a id="__codelineno-3-53" name="__codelineno-3-53"></a><span class="cm"> * that are useful before the MMU is enabled. The allocations are described</span>
+</span><span id="__span-3-54"><a id="__codelineno-3-54" name="__codelineno-3-54"></a><span class="cm"> * in the entry routines.</span>
+</span><span id="__span-3-55"><a id="__codelineno-3-55" name="__codelineno-3-55"></a><span class="cm"> */</span>
+</span><span id="__span-3-56"><a id="__codelineno-3-56" name="__codelineno-3-56"></a><span class="w">    </span><span class="nf">__HEAD</span>
+</span><span id="__span-3-57"><a id="__codelineno-3-57" name="__codelineno-3-57"></a><span class="w">    </span><span class="cm">/*</span>
+</span><span id="__span-3-58"><a id="__codelineno-3-58" name="__codelineno-3-58"></a><span class="cm">     * DO NOT MODIFY. Image header expected by Linux boot-loaders.</span>
+</span><span id="__span-3-59"><a id="__codelineno-3-59" name="__codelineno-3-59"></a><span class="cm">     */</span>
+</span><span id="__span-3-60"><a id="__codelineno-3-60" name="__codelineno-3-60"></a><span class="w">    </span><span class="nf">efi_signature_nop</span><span class="w">            </span><span class="c1">// special NOP to identity as PE/COFF executable</span>
+</span><span id="__span-3-61"><a id="__codelineno-3-61" name="__codelineno-3-61"></a><span class="hll"><span class="w">    </span><span class="nf">b</span><span class="w">    </span><span class="no">primary_entry</span><span class="w">           </span><span class="c1">// branch to kernel start, magic</span>
+</span></span><span id="__span-3-62"><a id="__codelineno-3-62" name="__codelineno-3-62"></a>
+</span><span id="__span-3-63"><a id="__codelineno-3-63" name="__codelineno-3-63"></a><span class="w">    </span><span class="c1">// [...snip...]</span>
+</span><span id="__span-3-64"><a id="__codelineno-3-64" name="__codelineno-3-64"></a>
+</span><span id="__span-3-65"><a id="__codelineno-3-65" name="__codelineno-3-65"></a><span class="w">    </span><span class="na">.section</span><span class="w"> </span><span class="s">&quot;.idmap.text&quot;</span><span class="p">,</span><span class="s">&quot;a&quot;</span>
+</span><span id="__span-3-66"><a id="__codelineno-3-66" name="__codelineno-3-66"></a>
+</span><span id="__span-3-67"><a id="__codelineno-3-67" name="__codelineno-3-67"></a><span class="w">    </span><span class="cm">/*</span>
+</span><span id="__span-3-68"><a id="__codelineno-3-68" name="__codelineno-3-68"></a><span class="cm">     * The following callee saved general purpose registers are used on the</span>
+</span><span id="__span-3-69"><a id="__codelineno-3-69" name="__codelineno-3-69"></a><span class="cm">     * primary lowlevel boot path:</span>
+</span><span id="__span-3-70"><a id="__codelineno-3-70" name="__codelineno-3-70"></a><span class="cm">     *</span>
+</span><span id="__span-3-71"><a id="__codelineno-3-71" name="__codelineno-3-71"></a><span class="cm">     *  Register   Scope                      Purpose</span>
+</span><span id="__span-3-72"><a id="__codelineno-3-72" name="__codelineno-3-72"></a><span class="cm">     *  x19        primary_entry() .. start_kernel()        whether we entered with the MMU on</span>
+</span><span id="__span-3-73"><a id="__codelineno-3-73" name="__codelineno-3-73"></a><span class="cm">     *  x20        primary_entry() .. __primary_switch()    CPU boot mode</span>
+</span><span id="__span-3-74"><a id="__codelineno-3-74" name="__codelineno-3-74"></a><span class="cm">     *  x21        primary_entry() .. start_kernel()        FDT pointer passed at boot in x0</span>
+</span><span id="__span-3-75"><a id="__codelineno-3-75" name="__codelineno-3-75"></a><span class="cm">     */</span>
+</span><span id="__span-3-76"><a id="__codelineno-3-76" name="__codelineno-3-76"></a><span class="nf">SYM_CODE_START</span><span class="p">(</span><span class="no">primary_entry</span><span class="p">)</span>
+</span><span id="__span-3-77"><a id="__codelineno-3-77" name="__codelineno-3-77"></a>
+</span><span id="__span-3-78"><a id="__codelineno-3-78" name="__codelineno-3-78"></a><span class="w">    </span><span class="c1">// [...snip...]</span>
+</span><span id="__span-3-79"><a id="__codelineno-3-79" name="__codelineno-3-79"></a>
+</span><span id="__span-3-80"><a id="__codelineno-3-80" name="__codelineno-3-80"></a><span class="nf">SYM_CODE_END</span><span class="p">(</span><span class="no">primary_entry</span><span class="p">)</span>
+</span></code></pre></div></td></tr></table></div>
+<p>The first two subroutines of <code>primary_entry</code>, <code>record_mmu_state</code> and <code>preserve_boot_args</code>, are covered by the <code>__INIT</code> section(.init.text).</p>
+<p>The following subroutines are covered by the <code>.idmap.text</code> section:</p>
+<ol>
+<li>
+<p><code>__pi_create_init_idmap</code> : defined in pi/map_range.c, create initial ID map.</p>
+<ul>
+<li><a href="https://lore.kernel.org/lkml/20230307140522.2311461-38-ardb@kernel.org/">[PATCH v3 37/60] arm64: kernel: Create initial ID map from C code</a></li>
+</ul>
+</li>
+<li>
+<p><code>dcache_inval_poc</code>: invalidate page tables have been populated with non-cacheable accesses(MMU disabled)</p>
+</li>
+<li><code>dcache_clean_poc</code>: if MMU and caches on, clean the ID mapped part of the primary boot code to the PoC</li>
+<li><code>init_kernel_el</code>: Starting from EL2(Hypervisor) or EL1(OS Kernel), configure the CPU to execute at proper level</li>
+<li><code>__cpu_setup</code>: defined in mm/proc.S, Initialise the processor for turning the MMU on.</li>
+<li><code>__primary_switch</code>: see below.</li>
+</ol>
+<h2 id="__primary_switch">__primary_switch<a class="headerlink" href="#__primary_switch" title="Permanent link">#</a></h2>
+<div class="language-asm highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">arch/arm64/kernel/head.S</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-4-521">521</a></span>
+<span class="normal"><a href="#__codelineno-4-522">522</a></span>
+<span class="normal"><a href="#__codelineno-4-523">523</a></span>
+<span class="normal"><a href="#__codelineno-4-524">524</a></span>
+<span class="normal"><a href="#__codelineno-4-525">525</a></span>
+<span class="normal"><a href="#__codelineno-4-526">526</a></span>
+<span class="normal"><a href="#__codelineno-4-527">527</a></span>
+<span class="normal"><a href="#__codelineno-4-528">528</a></span>
+<span class="normal"><a href="#__codelineno-4-529">529</a></span>
+<span class="normal"><a href="#__codelineno-4-530">530</a></span>
+<span class="normal"><a href="#__codelineno-4-531">531</a></span>
+<span class="normal"><a href="#__codelineno-4-532">532</a></span>
+<span class="normal"><a href="#__codelineno-4-533">533</a></span>
+<span class="normal"><a href="#__codelineno-4-534">534</a></span>
+<span class="normal"><a href="#__codelineno-4-535">535</a></span>
+<span class="normal"><a href="#__codelineno-4-536">536</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-4-521"><a id="__codelineno-4-521" name="__codelineno-4-521"></a><span class="nf">SYM_FUNC_START_LOCAL</span><span class="p">(</span><span class="no">__primary_switch</span><span class="p">)</span>
+</span><span id="__span-4-522"><a id="__codelineno-4-522" name="__codelineno-4-522"></a><span class="hll"><span class="w">    </span><span class="nf">adrp</span><span class="w">    </span><span class="no">x1</span><span class="p">,</span><span class="w"> </span><span class="no">reserved_pg_dir</span><span class="w">     </span><span class="c1">// ex- init_pg_dir?</span>
+</span></span><span id="__span-4-523"><a id="__codelineno-4-523" name="__codelineno-4-523"></a><span class="hll"><span class="w">    </span><span class="nf">adrp</span><span class="w">    </span><span class="no">x2</span><span class="p">,</span><span class="w"> </span><span class="no">init_idmap_pg_dir</span>
+</span></span><span id="__span-4-524"><a id="__codelineno-4-524" name="__codelineno-4-524"></a><span class="w">    </span><span class="nf">bl</span><span class="w">      </span><span class="no">__enable_mmu</span>
+</span><span id="__span-4-525"><a id="__codelineno-4-525" name="__codelineno-4-525"></a>
+</span><span id="__span-4-526"><a id="__codelineno-4-526" name="__codelineno-4-526"></a><span class="w">    </span><span class="nf">adrp</span><span class="w">    </span><span class="no">x1</span><span class="p">,</span><span class="w"> </span><span class="no">early_init_stack</span>
+</span><span id="__span-4-527"><a id="__codelineno-4-527" name="__codelineno-4-527"></a><span class="w">    </span><span class="nf">mov</span><span class="w">     </span><span class="no">sp</span><span class="p">,</span><span class="w"> </span><span class="no">x1</span>
+</span><span id="__span-4-528"><a id="__codelineno-4-528" name="__codelineno-4-528"></a><span class="w">    </span><span class="nf">mov</span><span class="w">     </span><span class="no">x29</span><span class="p">,</span><span class="w"> </span><span class="no">xzr</span>
+</span><span id="__span-4-529"><a id="__codelineno-4-529" name="__codelineno-4-529"></a><span class="w">    </span><span class="nf">mov</span><span class="w">     </span><span class="no">x0</span><span class="p">,</span><span class="w"> </span><span class="no">x20</span><span class="w">                 </span><span class="c1">// pass the full boot status</span>
+</span><span id="__span-4-530"><a id="__codelineno-4-530" name="__codelineno-4-530"></a><span class="w">    </span><span class="nf">mov</span><span class="w">     </span><span class="no">x1</span><span class="p">,</span><span class="w"> </span><span class="no">x21</span><span class="w">                 </span><span class="c1">// pass the FDT</span>
+</span><span id="__span-4-531"><a id="__codelineno-4-531" name="__codelineno-4-531"></a><span class="w">    </span><span class="nf">bl</span><span class="w">      </span><span class="no">__pi_early_map_kernel</span><span class="w">   </span><span class="c1">// Map and relocate the kernel</span>
+</span><span id="__span-4-532"><a id="__codelineno-4-532" name="__codelineno-4-532"></a>
+</span><span id="__span-4-533"><a id="__codelineno-4-533" name="__codelineno-4-533"></a><span class="hll"><span class="w">    </span><span class="nf">ldr</span><span class="w">     </span><span class="no">x8</span><span class="p">,</span><span class="w"> </span><span class="err">=</span><span class="no">__primary_switched</span>
+</span></span><span id="__span-4-534"><a id="__codelineno-4-534" name="__codelineno-4-534"></a><span class="hll"><span class="w">    </span><span class="nf">adrp</span><span class="w">    </span><span class="no">x0</span><span class="p">,</span><span class="w"> </span><span class="no">KERNEL_START</span><span class="w">        </span><span class="c1">// __pa(KERNEL_START)</span>
+</span></span><span id="__span-4-535"><a id="__codelineno-4-535" name="__codelineno-4-535"></a><span class="w">    </span><span class="nf">br</span><span class="w">      </span><span class="no">x8</span><span class="w">                      </span><span class="c1">// executed with the MMU enabled</span>
+</span><span id="__span-4-536"><a id="__codelineno-4-536" name="__codelineno-4-536"></a><span class="nf">SYM_FUNC_END</span><span class="p">(</span><span class="no">__primary_switch</span><span class="p">)</span>
+</span></code></pre></div></td></tr></table></div>
+<p>In <code>__primary_switch</code>, after starting the MMU, it will map and relocate the kernel, then jump to the virtual entry point.</p>
+<ul>
+<li><a href="https://lore.kernel.org/lkml/1460992188-23295-4-git-send-email-ard.biesheuvel@linaro.org/">[PATCH 3/8] arm64: kernel: perform relocation processing from ID map - Ard Biesheuvel</a></li>
+</ul>
+<p>Before <code>__enable_mmu</code>, <code>adrp x1, reserved_pg_dir</code> and <code>adrp x2, init_idmap_pg_dir</code> load PC-relative address, calculated at run-time, pure physical address.</p>
+<ul>
+<li>CPU would fault the reference of linking virtual address if using <code>LDR</code> without MMU.</li>
+</ul>
+<p><code>__pi_early_map_kernel</code>: defined in pi/map_kernel.c, takes over map and kernel relocation workload.</p>
+<ul>
+<li><a href="https://lore.kernel.org/lkml/20230307140522.2311461-35-ardb@kernel.org/">[PATCH v3 34/60] arm64: head: Move early kernel mapping routines into C code - Ard Biesheuvel</a></li>
+</ul>
+<p>Label <code>KIMAGE_VADDR</code> is declared before <code>_text</code> in vmlinux.lds.S.</p>
+<div class="language-c highlight"><span class="filename">arch/arm64/include/asm/memory.h</span><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="cm">/* the offset between the kernel virtual and physical mappings */</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="k">extern</span><span class="w"> </span><span class="n">u64</span><span class="w">          </span><span class="n">kimage_voffset</span><span class="p">;</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="k">static</span><span class="w"> </span><span class="kr">inline</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="nf">kaslr_offset</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="p">{</span>
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="p">(</span><span class="n">u64</span><span class="p">)</span><span class="o">&amp;</span><span class="n">_text</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">KIMAGE_VADDR</span><span class="p">;</span>
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="p">}</span>
+</span></code></pre></div>
+<div class="language-c highlight"><span class="filename">arch/arm64/kernel/pi/map_kernel.c</span><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="n">asmlinkage</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">__init</span><span class="w"> </span><span class="n">early_map_kernel</span><span class="p">(</span><span class="n">u64</span><span class="w"> </span><span class="n">boot_status</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">fdt</span><span class="p">)</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="p">{</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="w">    </span><span class="n">u64</span><span class="w"> </span><span class="n">va_base</span><span class="p">,</span><span class="w"> </span><span class="n">pa_base</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">u64</span><span class="p">)</span><span class="o">&amp;</span><span class="n">_text</span><span class="p">;</span>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="w">    </span><span class="c1">// [...snip...]</span>
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="w">    </span><span class="n">va_base</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">KIMAGE_VADDR</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">kaslr_offset</span><span class="p">;</span>
+</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="w">    </span><span class="n">map_kernel</span><span class="p">(</span><span class="n">kaslr_offset</span><span class="p">,</span><span class="w"> </span><span class="n">va_base</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">pa_base</span><span class="p">,</span><span class="w"> </span><span class="n">root_level</span><span class="p">);</span><span class="w"> </span><span class="c1">// map_segment...</span>
+</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="p">}</span>
+</span></code></pre></div>
+<div class="admonition question">
+<p class="admonition-title">Why not just bl __primary_switched?</p>
+<p>After <code>__enable_mmu</code> and <code>__pi_early_map_kernel</code>, why not just call <code>bl __primary_switched</code> directly?</p>
+<ul>
+<li>Using <code>LDR</code> here is to locate from the running address to the link address.</li>
+</ul>
+</div>
+<h3 id="adrp_x0_kernel_start">adrp x0, KERNEL_START<a class="headerlink" href="#adrp_x0_kernel_start" title="Permanent link">#</a></h3>
+<p>The <code>X0</code> register would obtain the runtime address through the <code>ADRP</code> instruction. That is the actual physical address of the operation. You might wonder why is the running address obtained by <code>ARDP</code> the physical address since the MMU has already turned on?</p>
+<p>Going one step further, we could find that the <code>__primary_switch</code> subroutine is located in the ".idmap.text" section, which is the <em>identity mapping</em>. So although the address we get is a virtual address, it is the same as the actual physical address(VA=PA).</p>
+<p>Let's take a closer look at what <code>KERNEL_START</code> is.</p>
+<div class="language-asm highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="c1">//arch/arm64/kernel/head.S</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="c1">#define __PHYS_OFFSET       KERNEL_START</span>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="c1">//arch/arm64/include/asm/memory.h</span>
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="c1">#define KERNEL_START        _text</span>
+</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="c1">#define KERNEL_END          _end</span>
+</span></code></pre></div>
+<p><code>__PHYS_OFFSET</code>/<code>KERNEL_START</code> actually ends up being <code>_text</code>, which is the physical start position of the kernel image. Therefore, after the kernel image is copied from boot to memory, the starting position of the image in physical memory is where <code>_text</code> is located. So the instruction <code>adrp x0, KERNEL_START</code> will set the physical start address of the kernel image in memory to <code>X0</code> as parameter for <code>__primary_switched</code>.</p>
+<h3 id="ldr_x8___primary_switched">ldr x8, =__primary_switched<a class="headerlink" href="#ldr_x8___primary_switched" title="Permanent link">#</a></h3>
+<p><code>__primary_switched</code> is the symbol of the kernel, and its virtual address has been determined during the kernel compilation and linking process.</p>
+<p>This instruction puts the virtual address of label <code>__primary_switched</code> into the <code>X8</code> register.</p>
+<p>Then <code>br x8</code> instruction executes, the PC jumps to the real virtual address space for execution.</p>
+<div class="admonition info">
+<p class="admonition-title">switch from section .idmap.text to init.text</p>
+<p><code>__primary_switch</code> is located in the <code>.idmap.text</code> section.<br />
+<code>__primary_switched</code> and macro <code>init_cpu_task</code> are covered by the <code>__INIT</code> section(.init.text).</p>
+</div>
+<h2 id="__primary_switched">__primary_switched<a class="headerlink" href="#__primary_switched" title="Permanent link">#</a></h2>
+<p><code>__primary_switched</code>(x0 = __pa(KERNEL_START)) is executed with the MMU enabled.</p>
+<ol>
+<li><code>msr vbar_el1, x8</code>: Set up an exception vector table.</li>
+<li>As commented, <code>kimage_voffset</code>=VA(_text)-PA(_text).</li>
+<li>Sets the <code>__boot_cpu_mode</code> flag depending on the CPU boot mode.</li>
+<li><code>bl start_kernel</code> invoke <code>start_kernel</code> defined in init/main.c.</li>
+</ol>
+<div class="language-asm highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">arch/arm64/kernel/head.S</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-8-212">212</a></span>
+<span class="normal"><a href="#__codelineno-8-213">213</a></span>
+<span class="normal"><a href="#__codelineno-8-214">214</a></span>
+<span class="normal"><a href="#__codelineno-8-215">215</a></span>
+<span class="normal"><a href="#__codelineno-8-216">216</a></span>
+<span class="normal"><a href="#__codelineno-8-217">217</a></span>
+<span class="normal"><a href="#__codelineno-8-218">218</a></span>
+<span class="normal"><a href="#__codelineno-8-219">219</a></span>
+<span class="normal"><a href="#__codelineno-8-220">220</a></span>
+<span class="normal"><a href="#__codelineno-8-221">221</a></span>
+<span class="normal"><a href="#__codelineno-8-222">222</a></span>
+<span class="normal"><a href="#__codelineno-8-223">223</a></span>
+<span class="normal"><a href="#__codelineno-8-224">224</a></span>
+<span class="normal"><a href="#__codelineno-8-225">225</a></span>
+<span class="normal"><a href="#__codelineno-8-226">226</a></span>
+<span class="normal"><a href="#__codelineno-8-227">227</a></span>
+<span class="normal"><a href="#__codelineno-8-228">228</a></span>
+<span class="normal"><a href="#__codelineno-8-229">229</a></span>
+<span class="normal"><a href="#__codelineno-8-230">230</a></span>
+<span class="normal"><a href="#__codelineno-8-231">231</a></span>
+<span class="normal"><a href="#__codelineno-8-232">232</a></span>
+<span class="normal"><a href="#__codelineno-8-233">233</a></span>
+<span class="normal"><a href="#__codelineno-8-234">234</a></span>
+<span class="normal"><a href="#__codelineno-8-235">235</a></span>
+<span class="normal"><a href="#__codelineno-8-236">236</a></span>
+<span class="normal"><a href="#__codelineno-8-237">237</a></span>
+<span class="normal"><a href="#__codelineno-8-238">238</a></span>
+<span class="normal"><a href="#__codelineno-8-239">239</a></span>
+<span class="normal"><a href="#__codelineno-8-240">240</a></span>
+<span class="normal"><a href="#__codelineno-8-241">241</a></span>
+<span class="normal"><a href="#__codelineno-8-242">242</a></span>
+<span class="normal"><a href="#__codelineno-8-243">243</a></span>
+<span class="normal"><a href="#__codelineno-8-244">244</a></span>
+<span class="normal"><a href="#__codelineno-8-245">245</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-8-212"><a id="__codelineno-8-212" name="__codelineno-8-212"></a><span class="cm">/*</span>
+</span><span id="__span-8-213"><a id="__codelineno-8-213" name="__codelineno-8-213"></a><span class="cm"> * The following fragment of code is executed with the MMU enabled.</span>
+</span><span id="__span-8-214"><a id="__codelineno-8-214" name="__codelineno-8-214"></a><span class="cm"> *</span>
+</span><span id="__span-8-215"><a id="__codelineno-8-215" name="__codelineno-8-215"></a><span class="cm"> *   x0 = __pa(KERNEL_START)</span>
+</span><span id="__span-8-216"><a id="__codelineno-8-216" name="__codelineno-8-216"></a><span class="cm"> */</span>
+</span><span id="__span-8-217"><a id="__codelineno-8-217" name="__codelineno-8-217"></a><span class="nf">SYM_FUNC_START_LOCAL</span><span class="p">(</span><span class="no">__primary_switched</span><span class="p">)</span>
+</span><span id="__span-8-218"><a id="__codelineno-8-218" name="__codelineno-8-218"></a><span class="w">    </span><span class="nf">adr_l</span><span class="w">    </span><span class="no">x4</span><span class="p">,</span><span class="w"> </span><span class="no">init_task</span>
+</span><span id="__span-8-219"><a id="__codelineno-8-219" name="__codelineno-8-219"></a><span class="w">    </span><span class="nf">init_cpu_task</span><span class="w"> </span><span class="no">x4</span><span class="p">,</span><span class="w"> </span><span class="no">x5</span><span class="p">,</span><span class="w"> </span><span class="no">x6</span>
+</span><span id="__span-8-220"><a id="__codelineno-8-220" name="__codelineno-8-220"></a>
+</span><span id="__span-8-221"><a id="__codelineno-8-221" name="__codelineno-8-221"></a><span class="w">    </span><span class="nf">adr_l</span><span class="w">    </span><span class="no">x8</span><span class="p">,</span><span class="w"> </span><span class="no">vectors</span><span class="w">            </span><span class="c1">// load VBAR_EL1 with virtual</span>
+</span><span id="__span-8-222"><a id="__codelineno-8-222" name="__codelineno-8-222"></a><span class="hll"><span class="w">    </span><span class="nf">msr</span><span class="w">    </span><span class="no">vbar_el1</span><span class="p">,</span><span class="w"> </span><span class="no">x8</span><span class="w">             </span><span class="c1">// vector table address</span>
+</span></span><span id="__span-8-223"><a id="__codelineno-8-223" name="__codelineno-8-223"></a><span class="w">    </span><span class="nf">isb</span>
+</span><span id="__span-8-224"><a id="__codelineno-8-224" name="__codelineno-8-224"></a>
+</span><span id="__span-8-225"><a id="__codelineno-8-225" name="__codelineno-8-225"></a><span class="w">    </span><span class="nf">stp</span><span class="w">    </span><span class="no">x29</span><span class="p">,</span><span class="w"> </span><span class="no">x30</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">sp</span><span class="p">,</span><span class="w"> </span><span class="mi">#-16</span><span class="p">]!</span>
+</span><span id="__span-8-226"><a id="__codelineno-8-226" name="__codelineno-8-226"></a><span class="w">    </span><span class="nf">mov</span><span class="w">    </span><span class="no">x29</span><span class="p">,</span><span class="w"> </span><span class="no">sp</span>
+</span><span id="__span-8-227"><a id="__codelineno-8-227" name="__codelineno-8-227"></a>
+</span><span id="__span-8-228"><a id="__codelineno-8-228" name="__codelineno-8-228"></a><span class="w">    </span><span class="nf">str_l</span><span class="w">    </span><span class="no">x21</span><span class="p">,</span><span class="w"> </span><span class="no">__fdt_pointer</span><span class="p">,</span><span class="w"> </span><span class="no">x5</span><span class="w"> </span><span class="c1">// Save FDT pointer</span>
+</span><span id="__span-8-229"><a id="__codelineno-8-229" name="__codelineno-8-229"></a>
+</span><span id="__span-8-230"><a id="__codelineno-8-230" name="__codelineno-8-230"></a><span class="w">    </span><span class="nf">adrp</span><span class="w">    </span><span class="no">x4</span><span class="p">,</span><span class="w"> </span><span class="no">_text</span><span class="w">               </span><span class="c1">// Save the offset between</span>
+</span><span id="__span-8-231"><a id="__codelineno-8-231" name="__codelineno-8-231"></a><span class="w">    </span><span class="nf">sub</span><span class="w">    </span><span class="no">x4</span><span class="p">,</span><span class="w"> </span><span class="no">x4</span><span class="p">,</span><span class="w"> </span><span class="no">x0</span><span class="w">               </span><span class="c1">// the kernel virtual and</span>
+</span><span id="__span-8-232"><a id="__codelineno-8-232" name="__codelineno-8-232"></a><span class="hll"><span class="w">    </span><span class="nf">str_l</span><span class="w">    </span><span class="no">x4</span><span class="p">,</span><span class="w"> </span><span class="no">kimage_voffset</span><span class="p">,</span><span class="w"> </span><span class="no">x5</span><span class="w"> </span><span class="c1">// physical mappings</span>
+</span></span><span id="__span-8-233"><a id="__codelineno-8-233" name="__codelineno-8-233"></a>
+</span><span id="__span-8-234"><a id="__codelineno-8-234" name="__codelineno-8-234"></a><span class="w">    </span><span class="nf">mov</span><span class="w">    </span><span class="no">x0</span><span class="p">,</span><span class="w"> </span><span class="no">x20</span>
+</span><span id="__span-8-235"><a id="__codelineno-8-235" name="__codelineno-8-235"></a><span class="hll"><span class="w">    </span><span class="nf">bl</span><span class="w">    </span><span class="no">set_cpu_boot_mode_flag</span>
+</span></span><span id="__span-8-236"><a id="__codelineno-8-236" name="__codelineno-8-236"></a>
+</span><span id="__span-8-237"><a id="__codelineno-8-237" name="__codelineno-8-237"></a><span class="c1">#if defined(CONFIG_KASAN_GENERIC) || defined(CONFIG_KASAN_SW_TAGS)</span>
+</span><span id="__span-8-238"><a id="__codelineno-8-238" name="__codelineno-8-238"></a><span class="w">    </span><span class="nf">bl</span><span class="w">    </span><span class="no">kasan_early_init</span>
+</span><span id="__span-8-239"><a id="__codelineno-8-239" name="__codelineno-8-239"></a><span class="c1">#endif</span>
+</span><span id="__span-8-240"><a id="__codelineno-8-240" name="__codelineno-8-240"></a><span class="w">    </span><span class="nf">mov</span><span class="w">    </span><span class="no">x0</span><span class="p">,</span><span class="w"> </span><span class="no">x20</span>
+</span><span id="__span-8-241"><a id="__codelineno-8-241" name="__codelineno-8-241"></a><span class="w">    </span><span class="nf">bl</span><span class="w">    </span><span class="no">finalise_el2</span><span class="w">              </span><span class="c1">// Prefer VHE if possible</span>
+</span><span id="__span-8-242"><a id="__codelineno-8-242" name="__codelineno-8-242"></a><span class="w">    </span><span class="nf">ldp</span><span class="w">    </span><span class="no">x29</span><span class="p">,</span><span class="w"> </span><span class="no">x30</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">sp</span><span class="p">],</span><span class="w"> </span><span class="mi">#16</span>
+</span><span id="__span-8-243"><a id="__codelineno-8-243" name="__codelineno-8-243"></a><span class="hll"><span class="w">    </span><span class="nf">bl</span><span class="w">    </span><span class="no">start_kernel</span>
+</span></span><span id="__span-8-244"><a id="__codelineno-8-244" name="__codelineno-8-244"></a><span class="w">    </span><span class="nf">ASM_BUG</span><span class="p">()</span>
+</span><span id="__span-8-245"><a id="__codelineno-8-245" name="__codelineno-8-245"></a><span class="nf">SYM_FUNC_END</span><span class="p">(</span><span class="no">__primary_switched</span><span class="p">)</span>
+</span></code></pre></div></td></tr></table></div>
+
+
+
+
+
+
+
+  
+  
+
+
+
+  
+
+
+  
+
+
+
+  <h2 id="__comments">评论</h2>
+  <!-- Insert generated snippet here -->
+  <script src="https://giscus.app/client.js"
+    data-repo="fan2/mkdocs"
+    data-repo-id="R_kgDOLltxSg"
+    data-category="Announcements"
+    data-category-id="DIC_kwDOLltxSs4CeURH"
+    data-mapping="pathname"
+    data-strict="0"
+    data-reactions-enabled="1"
+    data-emit-metadata="1"
+    data-input-position="top"
+    data-theme="preferred_color_scheme"
+    data-lang="zh-CN"
+    data-loading="lazy"
+    crossorigin="anonymous"
+    async>
+  </script>
+
+  <!-- Synchronize Giscus theme with palette -->
+  <script>
+    var giscus = document.querySelector("script[src*=giscus]")
+
+    // Set palette on initial load
+    var palette = __md_get("__palette")
+    if (palette && typeof palette.color === "object") {
+      var theme = palette.color.scheme === "slate"
+        ? "transparent_dark"
+        : "light"
+
+      // Instruct Giscus to set theme
+      giscus.setAttribute("data-theme", theme) 
+    }
+
+    // Register event handlers after documented loaded
+    document.addEventListener("DOMContentLoaded", function() {
+      var ref = document.querySelector("[data-md-component=palette]")
+      ref.addEventListener("change", function() {
+        var palette = __md_get("__palette")
+        if (palette && typeof palette.color === "object") {
+          var theme = palette.color.scheme === "slate"
+            ? "transparent_dark"
+            : "light"
+
+          // Instruct Giscus to change theme
+          var frame = document.querySelector(".giscus-frame")
+          frame.contentWindow.postMessage(
+            { giscus: { setConfig: { theme } } },
+            "https://giscus.app"
+          )
+        }
+      })
+    })
+  </script>
+
+      
+    </article>
+  </div>
+
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+        
+      
+      <nav class="md-footer__inner md-grid" aria-label="页脚" >
+        
+          
+          <a href="../../20230610/arm-adr-ldr/" class="md-footer__link md-footer__link--prev" aria-label="上一页: ARM ADR vs. LDR">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                上一页
+              </span>
+              <div class="md-ellipsis">
+                ARM ADR vs. LDR
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../../20231001/sre-toolkit/" class="md-footer__link md-footer__link--next" aria-label="下一页: Software Reverse Engineering Toolkits">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                下一页
+              </span>
+              <div class="md-ellipsis">
+                Software Reverse Engineering Toolkits
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2024- Cliff Fan
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["toc.follow", "header.autohide", "navigation.tabs", "navigation.top", "navigation.footer", "navigation.tracking", "content.code.copy", "content.code.select", "content.code.annotate"], "search": "../../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.bd41221c.min.js"></script>
+      
+        <script src="../../../javascripts/mathjax.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+        <script src="https://vercount.one/js"></script>
+      
+    
+  </body>
+</html>

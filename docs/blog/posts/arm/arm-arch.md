@@ -188,6 +188,10 @@ ARMv8-A 64-bit milestones:
 [Arm's Cortex-A76 CPU Unveiled: Taking Aim at the Top for 7nm - Print View](https://www.anandtech.com/print/12785/arm-cortex-a76-cpu-unveiled-7nm-powerhouse)
 [Arm Cortex-A76 Software Optimization Guide](https://developer.arm.com/documentation/pjdoc466751330-7215/latest/)
 
+[raspberrypi/firmware](https://github.com/raspberrypi/firmware/)
+[raspberrypi/linux](https://github.com/raspberrypi/linux)
+[ARM/RaspberryPi - Ubuntu Wiki](https://wiki.ubuntu.com/ARM/RaspberryPi)
+
 ## a64-isa-guide
 
 [A64 Instruction Set Architecture Guide](https://developer.arm.com/documentation/102374/latest/)
