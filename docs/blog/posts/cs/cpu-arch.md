@@ -108,7 +108,7 @@ Arm defines three architecture profiles: Application (**A**), Real-time (**R**),
 
 ### docs
 
-[Documentation – Arm Developer](https://developer.arm.com/documentation/)
+[Arm Developer](https://developer.arm.com/) - [Documentation](https://developer.arm.com/documentation/)
 
 [Arm CPU Architecture – Arm®](https://www.arm.com/en/architecture/cpu)
 

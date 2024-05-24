@@ -554,14 +554,15 @@ Hi A32!
 
 ## references
 
-radcolor - [arm-linux-gnueabi](https://github.com/radcolor/arm-linux-gnueabi) / [aarch64-linux-gnu](https://github.com/radcolor/aarch64-linux-gnu)
+radcolor prebuilt - [arm-linux-gnueabi](https://github.com/radcolor/arm-linux-gnueabi) / [aarch64-linux-gnu](https://github.com/radcolor/aarch64-linux-gnu)
 
 [What is the difference between arm-linux-gcc and arm-none-linux-gnueabi](https://stackoverflow.com/questions/13797693/what-is-the-difference-between-arm-linux-gcc-and-arm-none-linux-gnueabi)
 [20.04 - How to install "gcc-arm-linux-gnueabihf" specific version? - Ask Ubuntu](https://askubuntu.com/questions/1448687/how-to-install-gcc-arm-linux-gnueabihf-specific-version)
-Debian/Ubuntu 安装交叉工具链：[gcc-arm-linux-gnueabi](https://blog.csdn.net/qq_39397165/article/details/103252179)，[gcc-aarch64-linux-gnu](https://blog.csdn.net/song_lee/article/details/105487177)
 
-[QEMU documentation](https://www.qemu.org/docs/master/user/main.html)
-[QemuUserEmulation - Debian Wiki](https://wiki.debian.org/QemuUserEmulation)
+Debian/Ubuntu 安装交叉工具链：[gcc-arm-linux-gnueabi](https://blog.csdn.net/qq_39397165/article/details/103252179)，[gcc-aarch64-linux-gnu](https://blog.csdn.net/song_lee/article/details/105487177)
+[Embedded Programming with the GNU Toolchain](https://www.bravegnu.org/gnu-eprog/index.html) - [gnu-eprog@github](https://github.com/bravegnu/gnu-eprog)
+
+[QEMU documentation](https://www.qemu.org/docs/master/user/main.html), [QemuUserEmulation](https://wiki.debian.org/QemuUserEmulation)
 Emulating ARM with QEMU on Debian/Ubuntu: [gist1](https://gist.github.com/bruce30262/e0f12eddea638efe7332), [gist2](https://gist.github.com/luk6xff/9f8d2520530a823944355e59343eadc1)
 
 [qemu-user-static/docs/developers_guide.md](https://github.com/multiarch/qemu-user-static/blob/master/docs/developers_guide.md)
