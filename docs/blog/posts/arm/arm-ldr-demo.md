@@ -397,7 +397,7 @@ Dump of .text section
     0x0000aaaaaaaaaeac <TestLDR2_+8>:     44 78 61 f8 ldr x4, [x2, x1, lsl #3]
     0x0000aaaaaaaaaeb0 <TestLDR2_+12>:    60 00 04 8b add x0, x3, x4
     0x0000aaaaaaaaaeb4 <TestLDR2_+16>:    c0 03 5f d6 ret
-    0x0000aaaaaaaaaeb8 <TestLDR3_+0>:     42 fe ff 10 adr x2, 0xaaaaaaaaae804 <- PC relative address (A3)
+    0x0000aaaaaaaaaeb8 <TestLDR3_+0>:     42 fe ff 10 adr x2, 0xaaaaaaaaae80 <- PC relative address (A3)
     0x0000aaaaaaaaaebc <TestLDR3_+4>:     43 58 e0 78 ldrsh w3, [x2, w0, uxtw #1]
     0x0000aaaaaaaaaec0 <TestLDR3_+8>:     44 78 e1 78 ldrsh w4, [x2, x1, 1s1 #1]
     0x0000aaaaaaaaaec4 <TestLDR3_+12>:    60 00 04 0b add w0, w3, w4

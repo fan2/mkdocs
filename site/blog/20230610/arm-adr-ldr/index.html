@@ -90,7 +90,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#ldr_for_short_distances" class="md-skip">
+        <a href="#adr_faster_than_indirect_ldr" class="md-skip">
           跳转至
         </a>
       
@@ -1281,9 +1281,9 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#ldr_for_short_distances" class="md-nav__link">
+  <a href="#adr_faster_than_indirect_ldr" class="md-nav__link">
     <span class="md-ellipsis">
-      LDR for short distances
+      ADR faster than indirect LDR
     </span>
   </a>
   
@@ -1423,7 +1423,7 @@
 <p>Since both the <code>LDR</code> pseudo-instruction and the <code>ADRP</code> instruction can load the address of a label, and the <code>LDR</code> pseudo-instruction can address the 64-bit address space, and the addressing range of the <code>ADRP</code> instruction is the current PC address ±4GB, then what is the necessity of having an <code>ADRP</code> instruction when there's already an <code>LDR</code> pseudo-instruction?</p>
 <!-- more -->
 
-<h2 id="ldr_for_short_distances">LDR for short distances<a class="headerlink" href="#ldr_for_short_distances" title="Permanent link">#</a></h2>
+<h2 id="adr_faster_than_indirect_ldr">ADR faster than indirect LDR<a class="headerlink" href="#adr_faster_than_indirect_ldr" title="Permanent link">#</a></h2>
 <p>In <a href="../../20230401/arm-toolchain/">Arm GNU Toolchain</a> and <a href="../../20230604/a64-svc/">ARM64 System calls</a>, we call <code>svc #0</code> to request Linux system call to write a character string to standard output device. It uses a combination of <code>adr</code>, <code>ldr</code> and <code>mov</code> instructions.</p>
 <div class="language-asm highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">write64.s</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1"> 1</a></span>
 <span class="normal"><a href="#__codelineno-0-2"> 2</a></span>
@@ -1521,6 +1521,7 @@
 </span><span id="__span-1-20"><a id="__codelineno-1-20" name="__codelineno-1-20"></a><span class="w">        </span><span class="nf">bx</span><span class="w"> </span><span class="no">r3</span><span class="w">                              </span><span class="c1">// jump to target</span>
 </span></code></pre></div></td></tr></table></div>
 <p>The next instruction, <code>adr r3,CvtTab</code> (form PC relative address), loads the address of CvtTab into <code>R3</code>. The <code>ADR</code> instruction is used here instead of a <code>ldr r3,=CvtTab</code> instruction since the target label is located within ±4095 bytes of the PC. Using an <code>ADR</code> instruction is also slightly <em>faster</em> since it eliminates the extra memory read cycle that the <code>LDR</code> instruction needs to load the target address from a literal pool as explained in Chapter 2. Following the <code>ADR</code> instruction is a <code>LDR r3,[r3,r2,lsl #2]</code> instruction that loads the correct label address from CvtTab.</p>
+<p>The range of <code>ADR</code> is just as limited as an unconditional <code>b</code> or a <code>bl</code>. To address a label that is a greater distance away, yet within 4 GB in either direction, the <code>ADRP</code> instruction can be used in AArch64.</p>
 <h2 id="ldr_or_adr_non-pic_or_pic">LDR or ADR? non-PIC or PIC?<a class="headerlink" href="#ldr_or_adr_non-pic_or_pic" title="Permanent link">#</a></h2>
 <p>An address loaded using the <code>LDR</code> pseudo-instruction is ﬁxed at link time, so the code is <em>not</em> position-independent(<em>non-PIC</em>). The address holding the <mark>constant</mark> remains valid regardless of where the linker places the ELF section containing the <code>LDR</code> instruction.</p>
 <p>Meanwhile, <code>ADR</code> produces <a href="https://en.wikipedia.org/wiki/Position-independent_code">position-independent</a>(<em>PIC</em>) code, because the assembler generates an instruction that adds or subtracts a value to the <code>PC</code>. The expansive <code>ADRL</code> pseudo-instruction produces position-independent code too, because the address is PC-relative or register-relative.</p>

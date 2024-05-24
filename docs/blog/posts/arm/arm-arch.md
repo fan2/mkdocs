@@ -67,16 +67,6 @@ Arm defines three architecture profiles: Application (***A***), Real-time (***R*
 
 [AArch64](https://en.wikipedia.org/wiki/AArch64): `AArch64` or `ARM64` is the 64-bit extension of the ARM architecture family. It was first introduced with the ***Armv8-A*** architecture, and had many extension updates.
 
-```Shell
-# mbpa2991-macOS
-$ arch
-arm64
-
-# rpi4b-ubuntu
-$ arch
-aarch64
-```
-
 Announced in October 2011, **ARMv8-A** represents a fundamental change to the ARM architecture. It adds an optional 64-bit architecture, named "`AArch64`", and the associated new "`A64`" instruction set.
 
 AArch64 provides user-space *compatibility* with the existing 32-bit architecture ("`AArch32`" / ARMv7-A), and instruction set ("`A32`"). The 16-32bit Thumb instruction set is referred to as "`T32`" and has no 64-bit counterpart.
@@ -103,6 +93,41 @@ model | Arch | Spec | ISA | Suffixes
 ------|------|------|-----|---------
 64 + 32 bit | AArch64 | ARMv8-A | A64 + A32 | v8-A
 32 + 16 (Thumb) bit | AArch32 | ARMv8-R / ARMv7-A | A32 + T32 | -A32 / -R / v7-A.
+
+[Differences between arm64 and aarch64](https://stackoverflow.com/questions/31851611/differences-between-arm64-and-aarch64)
+
+Originally there was just the 32-bit architecture, called "ARM".
+
+The ARMv8-A spec introduced a new 64-bit execution state called "AArch64", short for "Arm Architecture 64-bit", which is the official name. The official then retroactively renamed the old 32-bit architecture "AArch32".
+
+"arm64" is an unofficial name some people use because the official name sucks.
+
+It seems that ARM64 was created by Apple and AARCH64 by the others, most notably GNU/GCC guys.
+
+```bash
+# mbpa2991-macOS
+$ arch
+arm64
+
+# rpi4b-ubuntu
+$ arch
+aarch64
+```
+
+The following commands is excerpted from [Arm GNU Toolchain](https://developer.arm.com/Tools%20and%20Software/GNU%20Toolchain) - [Downloads](https://developer.arm.com/downloads/-/arm-gnu-toolchain-downloads):
+
+```bash
+sudo apt install gcc-arm-none-eabi -y
+# arm-linux-gnueabihf-gcc
+sudo apt install gcc-arm-linux-gnueabihf -y
+# aarch64-linux-gnu-gcc
+sudo apt install gcc-aarch64-linux-gnu -y
+```
+
+The following section is taken from the online manual of the GAS:
+
+- [ARM-Dependent (Using as)](https://sourceware.org/binutils/docs/as/ARM_002dDependent.html)
+- [AArch64-Dependent (Using as)](https://sourceware.org/binutils/docs/as/AArch64_002dDependent.html)
 
 ### AArch64 features
 

@@ -28,6 +28,8 @@ There are many debts waiting to be paid. Lots of work waiting to be done. At the
 
 [Linux 内核内存初始化](https://zhuanlan.zhihu.com/p/645314088)
 [Linux 内存初始化-启动阶段的内存初始化](https://zhuanlan.zhihu.com/p/619480064)
+
+[内存映射第一步：idmap & swapper](https://blog.csdn.net/xiaoqiaoq0/article/details/107967119)
 [arm64关于idmap和swapper mapping的理解](https://blog.csdn.net/qq_30025621/article/details/89388622)
 
 蜗窝科技：

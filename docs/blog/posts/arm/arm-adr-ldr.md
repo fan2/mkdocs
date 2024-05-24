@@ -15,7 +15,7 @@ Since both the `LDR` pseudo-instruction and the `ADRP` instruction can load the 
 
 <!-- more -->
 
-## LDR for short distances
+## ADR faster than indirect LDR
 
 In [Arm GNU Toolchain](../toolchain/arm-toolchain.md) and [ARM64 System calls](./a64-svc.md), we call `svc #0` to request Linux system call to write a character string to standard output device. It uses a combination of `adr`, `ldr` and `mov` instructions.
 
@@ -75,6 +75,8 @@ PackedConvertF32_:
 ```
 
 The next instruction, `adr r3,CvtTab` (form PC relative address), loads the address of CvtTab into `R3`. The `ADR` instruction is used here instead of a `ldr r3,=CvtTab` instruction since the target label is located within ±4095 bytes of the PC. Using an `ADR` instruction is also slightly *faster* since it eliminates the extra memory read cycle that the `LDR` instruction needs to load the target address from a literal pool as explained in Chapter 2. Following the `ADR` instruction is a `LDR r3,[r3,r2,lsl #2]` instruction that loads the correct label address from CvtTab.
+
+The range of `ADR` is just as limited as an unconditional `b` or a `bl`. To address a label that is a greater distance away, yet within 4 GB in either direction, the `ADRP` instruction can be used in AArch64.
 
 ## LDR or ADR? non-PIC or PIC?
 

@@ -209,6 +209,7 @@ If the label referenced is in T32 code, the `LDR` pseudo-instruction sets the T3
                              ; =>  LDR r2,[pc,offset_to_litpool]
                              ;     ...
                              ;     litpool DCD place
+        LDR     r3, [r2]     ; load value from pointer(place)
 ```
 
 ### A64
