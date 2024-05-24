@@ -76,6 +76,16 @@ SECTIONS
 
     // [...snip...]
 
+    /* code sections that are never executed via the kernel mapping */
+    .rodata.text : {
+        TRAMP_TEXT
+        HIBERNATE_TEXT
+        KEXEC_TEXT
+        IDMAP_TEXT
+        . = ALIGN(PAGE_SIZE);
+    }
+
+    // [...snip...]
 }
 ```
 
@@ -249,7 +259,10 @@ Then `br x8` instruction executes, the PC jumps to the real virtual address spac
 `__primary_switched`(x0 = __pa(KERNEL_START)) is executed with the MMU enabled.
 
 1. `msr vbar_el1, x8`: Set up an exception vector table.
-2. As commented, `kimage_voffset`=VA(_text)-PA(_text).
+
+    - macro `kernel_ventry` and `vectors` defined in arch/arm64/kernel/entry.S.
+
+2. As commented, `kimage_voffset` = \_\_va(_text) - \_\_pa(_text).
 3. Sets the `__boot_cpu_mode` flag depending on the CPU boot mode.
 4. `bl start_kernel` invoke `start_kernel` defined in init/main.c.
 
@@ -289,3 +302,7 @@ SYM_FUNC_START_LOCAL(__primary_switched)
     ASM_BUG()
 SYM_FUNC_END(__primary_switched)
 ```
+
+After kernel mapping, the `IDMAP_TEXT` was moved to `.rodata.text`, for it would never execute again. Please refer to [move identity map out of .text mapping](https://github.com/torvalds/linux/commit/af7249b317e4d0b3d5a0ebbb7ee7a0f336ca7bca).
+
+> start_kernel -> setup_arch -> cpu_uninstall_idmap -> cpu_switch_mm.

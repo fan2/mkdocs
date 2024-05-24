@@ -18,7 +18,7 @@
         <link rel="prev" href="../../20230610/arm-adr-ldr/">
       
       
-        <link rel="next" href="../../20231001/sre-toolkit/">
+        <link rel="next" href="../../20230615/gas-directives/">
       
       
       <link rel="icon" href="../../../assets/hold_yourself.jpg">
@@ -1511,7 +1511,17 @@
 </span><span id="__span-1-38"><a id="__codelineno-1-38" name="__codelineno-1-38" href="#__codelineno-1-38"></a>
 </span><span id="__span-1-39"><a id="__codelineno-1-39" name="__codelineno-1-39" href="#__codelineno-1-39"></a><span class="w">    </span><span class="c1">// [...snip...]</span>
 </span><span id="__span-1-40"><a id="__codelineno-1-40" name="__codelineno-1-40" href="#__codelineno-1-40"></a>
-</span><span id="__span-1-41"><a id="__codelineno-1-41" name="__codelineno-1-41" href="#__codelineno-1-41"></a><span class="err">}</span>
+</span><span id="__span-1-41"><a id="__codelineno-1-41" name="__codelineno-1-41" href="#__codelineno-1-41"></a><span class="w">    </span><span class="cm">/* code sections that are never executed via the kernel mapping */</span>
+</span><span id="__span-1-42"><a id="__codelineno-1-42" name="__codelineno-1-42" href="#__codelineno-1-42"></a><span class="w">    </span><span class="na">.rodata.text</span><span class="w"> </span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-1-43"><a id="__codelineno-1-43" name="__codelineno-1-43" href="#__codelineno-1-43"></a><span class="w">        </span><span class="nf">TRAMP_TEXT</span>
+</span><span id="__span-1-44"><a id="__codelineno-1-44" name="__codelineno-1-44" href="#__codelineno-1-44"></a><span class="w">        </span><span class="nf">HIBERNATE_TEXT</span>
+</span><span id="__span-1-45"><a id="__codelineno-1-45" name="__codelineno-1-45" href="#__codelineno-1-45"></a><span class="w">        </span><span class="nf">KEXEC_TEXT</span>
+</span><span id="__span-1-46"><a id="__codelineno-1-46" name="__codelineno-1-46" href="#__codelineno-1-46"></a><span class="w">        </span><span class="nf">IDMAP_TEXT</span>
+</span><span id="__span-1-47"><a id="__codelineno-1-47" name="__codelineno-1-47" href="#__codelineno-1-47"></a><span class="w">        </span><span class="err">.</span><span class="w"> </span><span class="err">=</span><span class="w"> </span><span class="nf">ALIGN</span><span class="p">(</span><span class="no">PAGE_SIZE</span><span class="p">)</span><span class="c1">;</span>
+</span><span id="__span-1-48"><a id="__codelineno-1-48" name="__codelineno-1-48" href="#__codelineno-1-48"></a><span class="w">    </span><span class="err">}</span>
+</span><span id="__span-1-49"><a id="__codelineno-1-49" name="__codelineno-1-49" href="#__codelineno-1-49"></a>
+</span><span id="__span-1-50"><a id="__codelineno-1-50" name="__codelineno-1-50" href="#__codelineno-1-50"></a><span class="w">    </span><span class="c1">// [...snip...]</span>
+</span><span id="__span-1-51"><a id="__codelineno-1-51" name="__codelineno-1-51" href="#__codelineno-1-51"></a><span class="err">}</span>
 </span></code></pre></div>
 <p>The section names <code>__HEAD</code> and <code>__INIT</code> are defined in init.h, of which the <code>__HEAD</code> is an alias of the section <code>.head.text</code>.</p>
 <div class="language-c highlight"><span class="filename">include/linux/init.h</span><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="cm">/* For assembly routines */</span>
@@ -1708,8 +1718,15 @@
 <h2 id="__primary_switched">__primary_switched<a class="headerlink" href="#__primary_switched" title="Permanent link">#</a></h2>
 <p><code>__primary_switched</code>(x0 = __pa(KERNEL_START)) is executed with the MMU enabled.</p>
 <ol>
-<li><code>msr vbar_el1, x8</code>: Set up an exception vector table.</li>
-<li>As commented, <code>kimage_voffset</code>=VA(_text)-PA(_text).</li>
+<li>
+<p><code>msr vbar_el1, x8</code>: Set up an exception vector table.</p>
+<ul>
+<li>macro <code>kernel_ventry</code> and <code>vectors</code> defined in arch/arm64/kernel/entry.S.</li>
+</ul>
+</li>
+<li>
+<p>As commented, <code>kimage_voffset</code> = __va(_text) - __pa(_text).</p>
+</li>
 <li>Sets the <code>__boot_cpu_mode</code> flag depending on the CPU boot mode.</li>
 <li><code>bl start_kernel</code> invoke <code>start_kernel</code> defined in init/main.c.</li>
 </ol>
@@ -1781,6 +1798,10 @@
 </span></span><span id="__span-8-244"><a id="__codelineno-8-244" name="__codelineno-8-244"></a><span class="w">    </span><span class="nf">ASM_BUG</span><span class="p">()</span>
 </span><span id="__span-8-245"><a id="__codelineno-8-245" name="__codelineno-8-245"></a><span class="nf">SYM_FUNC_END</span><span class="p">(</span><span class="no">__primary_switched</span><span class="p">)</span>
 </span></code></pre></div></td></tr></table></div>
+<p>After kernel mapping, the <code>IDMAP_TEXT</code> was moved to <code>.rodata.text</code>, for it would never execute again. Please refer to <a href="https://github.com/torvalds/linux/commit/af7249b317e4d0b3d5a0ebbb7ee7a0f336ca7bca">move identity map out of .text mapping</a>.</p>
+<blockquote>
+<p>start_kernel -&gt; setup_arch -&gt; cpu_uninstall_idmap -&gt; cpu_switch_mm.</p>
+</blockquote>
 
 
 
@@ -1897,13 +1918,13 @@
         
         
           
-          <a href="../../20231001/sre-toolkit/" class="md-footer__link md-footer__link--next" aria-label="下一页: Software Reverse Engineering Toolkits">
+          <a href="../../20230615/gas-directives/" class="md-footer__link md-footer__link--next" aria-label="下一页: GNU Assembler Directives">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 下一页
               </span>
               <div class="md-ellipsis">
-                Software Reverse Engineering Toolkits
+                GNU Assembler Directives
               </div>
             </div>
             <div class="md-footer__button md-icon">

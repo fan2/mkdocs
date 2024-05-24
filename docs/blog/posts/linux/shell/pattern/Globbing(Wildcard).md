@@ -85,7 +85,7 @@ Bash 中常用通配符只有3个: `*`, `?`, `[list]`。
 
 #### demo
 
-```Shell
+```bash
 *.txt               # 匹配全部后缀为.txt的文件
 file?.log           # 匹配file1.log, file2.log, ...
 [a-z]*.log          # 匹配a-z开头的.log文件
@@ -97,7 +97,15 @@ file?.log           # 匹配file1.log, file2.log, ...
 
 如: `\*`, `'*'`, `"*"` 都表示 `*` 本身，不通配任何文件。
 
-```Shell
+将 helloc.c 和 hellocpp.cpp 移动到 hello 文件夹下：
+
+```bash
+mv helloc*.c* hello
+```
+
+`*` 出现在路径中进行路径匹配：
+
+```bash
 # 匹配 usr/include 下的一级子目录（不递归）
 ls -d usr/include/*/
 # 匹配 usr/include 下的所有子目录（递归）
@@ -111,16 +119,23 @@ ls -l /etc/**/*.conf
 
 在 /usr/include 目录下（递归）查找名称为 wordsize.h 的文件。
 
-```Shell
+```bash
 $ find /usr/include -type f -name wordsize.h
 /usr/include/aarch64-linux-gnu/bits/wordsize.h
 ```
 
-如果知道这个头文件在旗下一级 target 的 bits 目录下，可以缩小范围通配查找：
+如果知道这个头文件在旗下某个一级 target 的 bits 目录下，可缩小范围通配查找：
 
-```Shell
+```bash
 $ find /usr/include/*/bits -type f -name wordsize.h
 /usr/include/aarch64-linux-gnu/bits/wordsize.h
+```
+
+移除当前目录下名称为 helloworld，后缀为 `.s` 或 `.o` 的文件：
+
+```bash
+$ rm helloworld.[so]
+$ rm helloworld.{s,o}
 ```
 
 ### cheatsheet
