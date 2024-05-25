@@ -1,5 +1,5 @@
 ---
-title: Calling conventions
+title: ABI & Calling conventions
 authors:
   - xman
 date:
@@ -7,7 +7,6 @@ date:
 categories:
     - CS
 tags:
-    - ABI
     - x86
     - arm
 comments: true

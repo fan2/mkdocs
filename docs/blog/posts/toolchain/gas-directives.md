@@ -80,6 +80,7 @@ There are several directives that allow the programmer to allocate and initializ
 - `[.asciz | string ] "string"`: each string is followed by an ASCII NULL character (zero). The “z” in `.asciz` stands for *zero*.
 - `[.float | .single] flonums`: In AArch64, they are 4-byte IEEE standard single precision numbers.
 - `.double flonums`: In AArch64, they are stored as 8-byte IEEE standard double precision numbers.
+- `.rept count`: Repeat the sequence of lines between the `.rept` directive and the next `.endr` directive *count* times.
 
 ### Filling and aligning
 

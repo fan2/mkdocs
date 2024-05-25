@@ -48,9 +48,15 @@ comments: true
 - A32 and T32 Instructions
 - A64 General/Data Transfer Instructions
 
+[Arm Compiler User Guide](https://developer.arm.com/documentation/DUI1093/e)
+
+- Using Common Compiler Options
+- Mapping Code and Data to the Target
+
 [Arm Compiler for Embedded Reference Guide](https://developer.arm.com/documentation/101754/0622)
 
 - Arm Compiler for Embedded Tools Overview
+- armclang/armlink/armelf/armar Reference
 
 [Arm Compiler for Embedded User Guide](https://developer.arm.com/documentation/100748/0622?lang=en)
 
@@ -63,6 +69,10 @@ comments: true
 [Getting Started with Arm Assembly Language](https://developer.arm.com/documentation/107829/0200) based on Ubuntu 22.04 LTS & Raspberry Pi Zero 2 W.
 
 > The code can be compiled using GNU Compiler Collection ([GCC](https://gcc.gnu.org/)), and the program can run on an Arm Fixed Virtual Platform ([FVP](https://developer.arm.com/Tools%20and%20Software/Fixed%20Virtual%20Platforms)).
+
+[Compiler Explorer](https://gcc.godbolt.org/) @[github](https://github.com/compiler-explorer/compiler-explorer)
+
+- Run compilers interactively from your web browser and interact with the assembly
 
 tiarmclang - [GNU-Syntax Arm Assembly Language Reference Guide](https://software-dl.ti.com/codegen/docs/tiarmclang/compiler_tools_user_guide/gnu_syntax_arm_asm_language/index.html)
 TI - [ARM Assembly Language Tools v18.1.0.LTS User's Guide](https://downloads.ti.com/docs/esd/SPNU118U/)

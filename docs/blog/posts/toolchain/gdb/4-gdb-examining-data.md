@@ -145,7 +145,14 @@ If you use defaults for *nfu*, you need not type the slash ‘`/`’. Several co
 !!! example "x/nfu <addr\>"
 
     1. `x/3uh 0x54320` is a request to display three halfwords (`h`) of memory, formatted as unsigned decimal integers (‘`u`’), starting at address 0x54320.
-    2. `x/4xw $sp` prints the four words (‘`w`’) of memory *above* the stack pointer in hexadecimal (‘`x`’).
+    2. `x/xg $fp` hexdump double/giant word (‘`g`’) of memory addressed by the frame pointer(`x29`) in hexadecimal (‘`x`’).
+    3. `x/4xg $sp` hexdump four double/giant words of memory following the stack pointer in hexadecimal (‘`x`’).
+
+        - `x/xg $sp+24`: hexdump double word of address `$sp+24`.
+        - `x/xw $sp+28`: hexdump word of address `$sp+28`.
+
+    4. `x/i $pc`: print the instruction to be executed next with.
+    5. `x/10i main` prints ten instructions of `disassemble main`.
 
 ## display
 
@@ -183,9 +190,10 @@ Since A64 instructions are still 32 bits long as A32(except for T32 mode), we ca
 !!! example "x/ni $pc"
 
     1. `x/i $pc`: print the instruction to be executed next with.
-    2. `x/4i $pc`: prints four instructions following `$pc`.
+    2. `x/3i $pc`: prints three downward instructions include `$pc`.
     3. `x/2i $pc-8`: prints two instructions above `$pc`.
-    4. `x/2i $pc+4`: prints two instructions below `$pc`.
+    4. `x/3i $pc-8`: prints three upward instructions include `$pc`.
+    5. `x/2i $pc+4`: prints two instructions below `$pc`.
 
 在调试 [Getting Started with Arm Assembly Language](https://developer.arm.com/documentation/107829/0200) - 9. Example: equation calculation 中，汇编函数 kinetic_energy 调用返回 main 中的 printf 函数，其第 1 个参数为 `const char *format`，存放在 x0 寄存器，可以进一步使用 `examine` 命令检查指针指向的内存中的格式字符串。
 

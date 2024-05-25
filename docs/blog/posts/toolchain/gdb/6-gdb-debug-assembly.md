@@ -50,7 +50,7 @@ GCC [Code Gen Options](https://gcc.gnu.org/onlinedocs/gcc-13.2.0/gcc/Code-Gen-Op
 
 help disassemble:
 
-```Shell
+```bash
 (gdb) help disas
 Disassemble a specified section of memory.
 Usage: disassemble[/m|/r|/s] START [, END]
@@ -87,27 +87,48 @@ Show mixed source+assembly with `/m`(mixed source) or `/s`(source).
 
 `/m` 为 source line order，忽略了一些内联展开（inlined code）和指令重排（re-ordered）优化，`/s` 为实际运行的 PC address order。
 
-初步学习对比 src 到 asm 的直接翻译，可以使用 `/m` 选项；考虑 ni/si 单步跟踪指令序列的实际运行，则建议使用 `/s` 选项。
-
 参考官网在线文档给出的示例，对比 disas /m main 和 disas /s main 输出，分析优化前后指令序列的区别。
 
 !!! note "prefer /s to /m"
 
     The `/m` option is **deprecated** as its output is not useful when there is either inlined code or re-ordered code. The `/s` option is the **preferred** choice. Here is an example for AMD x86-64 showing the difference between `/m` output and `/s` output. This example has one *inline* function defined in a header file, and the code is compiled with ‘-O2’ optimization. Note how the `/m` output is missing the disassembly of several instructions that are present in the `/s` output.
 
+初步学习对比 src 到 asm 的直接翻译，可以使用 `/m` 选项；考虑 ni/si 单步跟踪指令序列的实际运行，则建议使用 `/s` 选项。
+
 ### disas \_start
 
-gdb 输入 `starti` 将在 ld.so 的 `_start` 函数处停住，这是整个程序第一条指令的地址。
+在终端输入 `gdb test-gdb` 启动 GDB Console。
 
-```Shell
+```bash
 # tb _start + run
+(gdb) disas _start
+Dump of assembler code for function _start:
+   0x0000000000000640 <+0>:	nop
+   0x0000000000000644 <+4>:	mov	x29, #0x0                   	// #0
+   0x0000000000000648 <+8>:	mov	x30, #0x0                   	// #0
+   0x000000000000064c <+12>:	mov	x5, x0
+   0x0000000000000650 <+16>:	ldr	x1, [sp]
+   0x0000000000000654 <+20>:	add	x2, sp, #0x8
+   0x0000000000000658 <+24>:	mov	x6, sp
+   0x000000000000065c <+28>:	adrp	x0, 0x10000
+   0x0000000000000660 <+32>:	ldr	x0, [x0, #4080]
+   0x0000000000000664 <+36>:	mov	x3, #0x0                   	// #0
+   0x0000000000000668 <+40>:	mov	x4, #0x0                   	// #0
+   0x000000000000066c <+44>:	bl	0x5f0 <__libc_start_main@plt>
+   0x0000000000000670 <+48>:	bl	0x620 <abort@plt>
+End of assembler dump.
+```
+
+在 GDB 中输入 `starti` 将在 ld.so 的 `_start` 函数处停住，这是整个程序第一条指令的地址。
+
+```bash hl_lines="16"
 (gdb) starti
 Starting program: /home/pifan/Projects/cpp/test-gdb
 
 Program stopped.
-0x0000fffff7fd9c48 in _start () from /lib/ld-linux-aarch64.so.1
+0x0000fffff7fd9c40 in _start () from /lib/ld-linux-aarch64.so.1
 
-(gdb) disas /m _start
+(gdb) disas _start
 Dump of assembler code for function _start:
    0x0000aaaaaaaa0640 <+0>:	nop
    0x0000aaaaaaaa0644 <+4>:	mov	x29, #0x0                   	// #0
@@ -129,68 +150,131 @@ End of assembler dump.
 
 ### disas func
 
-```Shell
-(gdb) disas /m func
-Dump of assembler code for function func:
-5	{
-   0x0000aaaaaaaa0754 <+0>:	sub	sp, sp, #0x20
-   0x0000aaaaaaaa0758 <+4>:	str	w0, [sp, #12]
+以下对比 GDB `disas` 和 GNU binutils 中的 `objdump` 反汇编 func 函数的输出：
 
-6	    int sum=0,i;
-=> 0x0000aaaaaaaa075c <+8>:	str	wzr, [sp, #24]
+=== "disas /s func"
 
-7	    for(i=0; i<n; i++)
-   0x0000aaaaaaaa0760 <+12>:	str	wzr, [sp, #28]
-   0x0000aaaaaaaa0764 <+16>:	b	0xaaaaaaaa0784 <func+48>
-   0x0000aaaaaaaa0778 <+36>:	ldr	w0, [sp, #28]
-   0x0000aaaaaaaa077c <+40>:	add	w0, w0, #0x1
-   0x0000aaaaaaaa0780 <+44>:	str	w0, [sp, #28]
-   0x0000aaaaaaaa0784 <+48>:	ldr	w1, [sp, #28]
-   0x0000aaaaaaaa0788 <+52>:	ldr	w0, [sp, #12]
-   0x0000aaaaaaaa078c <+56>:	cmp	w1, w0
-   0x0000aaaaaaaa0790 <+60>:	b.lt	0xaaaaaaaa0768 <func+20>  // b.tstop
+    ```bash
+    (gdb) disas /s func
+    Dump of assembler code for function func:
+    test-gdb.c:
+    4	{
+    0x0000aaaaaaaa0754 <+0>:	sub	sp, sp, #0x20
+    0x0000aaaaaaaa0758 <+4>:	str	w0, [sp, #12]
 
-8	    {
-9	        sum+=i;
-   0x0000aaaaaaaa0768 <+20>:	ldr	w1, [sp, #24]
-   0x0000aaaaaaaa076c <+24>:	ldr	w0, [sp, #28]
-   0x0000aaaaaaaa0770 <+28>:	add	w0, w1, w0
-   0x0000aaaaaaaa0774 <+32>:	str	w0, [sp, #24]
+    5	    int sum=0,i;
+    0x0000aaaaaaaa075c <+8>:	str	wzr, [sp, #24]
 
-10	    }
-11	    return sum;
-   0x0000aaaaaaaa0794 <+64>:	ldr	w0, [sp, #24]
+    6	    for(i=0; i<n; i++)
+    0x0000aaaaaaaa0760 <+12>:	str	wzr, [sp, #28]
+    0x0000aaaaaaaa0764 <+16>:	b	0xaaaaaaaa0784 <func+48>
 
-12	}
-   0x0000aaaaaaaa0798 <+68>:	add	sp, sp, #0x20
-   0x0000aaaaaaaa079c <+72>:	ret
+    7	    {
+    8	        sum+=i;
+    0x0000aaaaaaaa0768 <+20>:	ldr	w1, [sp, #24]
+    0x0000aaaaaaaa076c <+24>:	ldr	w0, [sp, #28]
+    0x0000aaaaaaaa0770 <+28>:	add	w0, w1, w0
+    0x0000aaaaaaaa0774 <+32>:	str	w0, [sp, #24]
 
-End of assembler dump.
-```
+    6	    for(i=0; i<n; i++)
+    0x0000aaaaaaaa0778 <+36>:	ldr	w0, [sp, #28]
+    0x0000aaaaaaaa077c <+40>:	add	w0, w0, #0x1
+    0x0000aaaaaaaa0780 <+44>:	str	w0, [sp, #28]
+    0x0000aaaaaaaa0784 <+48>:	ldr	w1, [sp, #28]
+    0x0000aaaaaaaa0788 <+52>:	ldr	w0, [sp, #12]
+    0x0000aaaaaaaa078c <+56>:	cmp	w1, w0
+    0x0000aaaaaaaa0790 <+60>:	b.lt	0xaaaaaaaa0768 <func+20>  // b.tstop
+
+    9	    }
+    10	    return sum;
+    0x0000aaaaaaaa0794 <+64>:	ldr	w0, [sp, #24]
+
+    11	}
+    0x0000aaaaaaaa0798 <+68>:	add	sp, sp, #0x20
+    0x0000aaaaaaaa079c <+72>:	ret
+    End of assembler dump.
+    ```
+
+=== "objdump --disassemble=func -S"
+
+    ```asm
+    (gdb) !objdump --disassemble=func -S --source-comment test-gdb
+
+    test-gdb:     file format elf64-littleaarch64
+
+
+    Disassembly of section .init:
+
+    Disassembly of section .plt:
+
+    Disassembly of section .text:
+
+    0000000000000754 <func>:
+    # #include <stdio.h>
+    #
+    # int func(int n)
+    # {
+    754:	d10083ff 	sub	sp, sp, #0x20
+    758:	b9000fe0 	str	w0, [sp, #12]
+    #     int sum=0,i;
+    75c:	b9001bff 	str	wzr, [sp, #24]
+    #     for(i=0; i<n; i++)
+    760:	b9001fff 	str	wzr, [sp, #28]
+    764:	14000008 	b	784 <func+0x30>
+    #     {
+    #         sum+=i;
+    768:	b9401be1 	ldr	w1, [sp, #24]
+    76c:	b9401fe0 	ldr	w0, [sp, #28]
+    770:	0b000020 	add	w0, w1, w0
+    774:	b9001be0 	str	w0, [sp, #24]
+    #     for(i=0; i<n; i++)
+    778:	b9401fe0 	ldr	w0, [sp, #28]
+    77c:	11000400 	add	w0, w0, #0x1
+    780:	b9001fe0 	str	w0, [sp, #28]
+    784:	b9401fe1 	ldr	w1, [sp, #28]
+    788:	b9400fe0 	ldr	w0, [sp, #12]
+    78c:	6b00003f 	cmp	w1, w0
+    790:	54fffecb 	b.lt	768 <func+0x14>  // b.tstop
+    #     }
+    #     return sum;
+    794:	b9401be0 	ldr	w0, [sp, #24]
+    # }
+    798:	910083ff 	add	sp, sp, #0x20
+    79c:	d65f03c0 	ret
+
+    Disassembly of section .fini:
+    ```
 
 `-r` 选项以十六进制显示原始机器指令（raw instructions），不显示源代码：
 
-    (gdb) disas /r func
-    Dump of assembler code for function func:
-       0x0000000000000754 <+0>:	ff 83 00 d1	sub	sp, sp, #0x20
-       0x0000000000000758 <+4>:	e0 0f 00 b9	str	w0, [sp, #12]
-       0x000000000000075c <+8>:	ff 1b 00 b9	str	wzr, [sp, #24]
-       0x0000000000000760 <+12>:	ff 1f 00 b9	str	wzr, [sp, #28]
-       0x0000000000000764 <+16>:	08 00 00 14	b	0x784 <func+48>
-       0x0000000000000768 <+20>:	e1 1b 40 b9	ldr	w1, [sp, #24]
-       0x000000000000076c <+24>:	e0 1f 40 b9	ldr	w0, [sp, #28]
-       0x0000000000000770 <+28>:	20 00 00 0b	add	w0, w1, w0
-       0x0000000000000774 <+32>:	e0 1b 00 b9	str	w0, [sp, #24]
-       0x0000000000000778 <+36>:	e0 1f 40 b9	ldr	w0, [sp, #28]
-       0x000000000000077c <+40>:	00 04 00 11	add	w0, w0, #0x1
-       0x0000000000000780 <+44>:	e0 1f 00 b9	str	w0, [sp, #28]
-       0x0000000000000784 <+48>:	e1 1f 40 b9	ldr	w1, [sp, #28]
-       0x0000000000000788 <+52>:	e0 0f 40 b9	ldr	w0, [sp, #12]
-       0x000000000000078c <+56>:	3f 00 00 6b	cmp	w1, w0
-       0x0000000000000790 <+60>:	cb fe ff 54	b.lt	0x768 <func+20>  // b.tstop
-       0x0000000000000794 <+64>:	e0 1b 40 b9	ldr	w0, [sp, #24]
-       0x0000000000000798 <+68>:	ff 83 00 91	add	sp, sp, #0x20
-       0x000000000000079c <+72>:	c0 03 5f d6	ret
+- 也可以 `disas /rs` 同时显示机器指令编码和源码。
+
+```bash
+(gdb) disas /r func
+Dump of assembler code for function func:
+   0x0000aaaaaaaa0754 <+0>:	ff 83 00 d1	sub	sp, sp, #0x20
+   0x0000aaaaaaaa0758 <+4>:	e0 0f 00 b9	str	w0, [sp, #12]
+   0x0000aaaaaaaa075c <+8>:	ff 1b 00 b9	str	wzr, [sp, #24]
+   0x0000aaaaaaaa0760 <+12>:	ff 1f 00 b9	str	wzr, [sp, #28]
+   0x0000aaaaaaaa0764 <+16>:	08 00 00 14	b	0xaaaaaaaa0784 <func+48>
+   0x0000aaaaaaaa0768 <+20>:	e1 1b 40 b9	ldr	w1, [sp, #24]
+   0x0000aaaaaaaa076c <+24>:	e0 1f 40 b9	ldr	w0, [sp, #28]
+   0x0000aaaaaaaa0770 <+28>:	20 00 00 0b	add	w0, w1, w0
+   0x0000aaaaaaaa0774 <+32>:	e0 1b 00 b9	str	w0, [sp, #24]
+   0x0000aaaaaaaa0778 <+36>:	e0 1f 40 b9	ldr	w0, [sp, #28]
+   0x0000aaaaaaaa077c <+40>:	00 04 00 11	add	w0, w0, #0x1
+   0x0000aaaaaaaa0780 <+44>:	e0 1f 00 b9	str	w0, [sp, #28]
+   0x0000aaaaaaaa0784 <+48>:	e1 1f 40 b9	ldr	w1, [sp, #28]
+   0x0000aaaaaaaa0788 <+52>:	e0 0f 40 b9	ldr	w0, [sp, #12]
+   0x0000aaaaaaaa078c <+56>:	3f 00 00 6b	cmp	w1, w0
+   0x0000aaaaaaaa0790 <+60>:	cb fe ff 54	b.lt	0xaaaaaaaa0768 <func+20>  // b.tstop
+   0x0000aaaaaaaa0794 <+64>:	e0 1b 40 b9	ldr	w0, [sp, #24]
+   0x0000aaaaaaaa0798 <+68>:	ff 83 00 91	add	sp, sp, #0x20
+   0x0000aaaaaaaa079c <+72>:	c0 03 5f d6	ret
+End of assembler dump.
+```
+
+Instructions are still 4-byte(32 bits) long and mostly the same as A32.
 
 ## auto display
 
@@ -211,7 +295,7 @@ End of assembler dump.
 
 gdb test-gdb 后，设置自动打印 pc，设置函数断点（b func），然后执行 `start` 启动运行（停止在 main 函数）。
 
-```Shell
+```bash
 # 设置自动打印 pc
 (gdb) display/i $pc
 1: x/i $pc
@@ -236,7 +320,7 @@ Temporary breakpoint 2, main (argc=1, argv=0xfffffffff358) at test-gdb.c:16
 
 执行 `continue` 运行到下一个断点，即 func 函数断点，运行至函数体中的第一条语句。
 
-```Shell
+```bash
 # continue to next breakpoint
 (gdb) c
 Continuing.
@@ -250,7 +334,7 @@ Breakpoint 1, func (n=250) at test-gdb.c:5
 
 执行 `next` 运行到 func 函数中的 for 循环条件语句。
 
-```Shell
+```bash
 # execute for-control instruction 1
 (gdb) n
 6	    for(i=0; i<n; i++)
@@ -262,7 +346,7 @@ Breakpoint 1, func (n=250) at test-gdb.c:5
 
 再执行 `next` 运行到 func 函数中的 for 循环体语句（暂停在第 1 条指令），然后 si 3 次执行完循环体剩下的指令。
 
-```Shell
+```bash
 # next stops at the first instruction of for-body source line
 (gdb) n
 8	        sum+=i;
@@ -306,7 +390,7 @@ si 单步跟踪 C 语句 `sum += i`，每次自动打印该步运行的机器指
 
 `tui enable` / `tui disable`: 开启进入 / 禁用退出 TUI 模式。
 
-```Shell
+```bash
 (gdb) help tui
 Text User Interface commands.
 
@@ -327,7 +411,7 @@ Command name abbreviations are allowed if unambiguous.
 
 执行 `info win` 可以列举当前显示的窗口（win），默认打开 src 源码窗口，中间是 status 状态栏，底下是 cmd 窗口部分。
 
-```Shell
+```bash
 (gdb) info win
 Name   Lines Columns Focus
 src    34    100     (has focus)
@@ -337,7 +421,7 @@ cmd    18    100
 
 执行 `layout` 命令可以切换窗口布局：
 
-```Shell
+```bash
 (gdb) help layout
 Change the layout of windows.
 Usage: layout prev | next | LAYOUT-NAME
@@ -381,3 +465,5 @@ Command name abbreviations are allowed if unambiguous.
 *   ctrl + x，再按1：单窗口模式
 *   ctrl + x，再按2：双窗口模式
 *   ctrl + x，再按a：退出 TUI 模式
+
+当然，我们也可以安装 GDB 增强扩展插件 `GEF` 或 `pwndbg`，参考下篇《[GDB Enhanced Extensions](./7-gdb-enhanced.md)》。
