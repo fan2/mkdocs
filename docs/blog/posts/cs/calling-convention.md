@@ -193,4 +193,6 @@ Some registers have special signiﬁcance in the PCS:
 
 ## refs
 
+[Linux Foundation Referenced Specifications](https://refspecs.linuxfoundation.org/)
+
 [常见函数调用约定(x86、x64、arm、arm64)](https://zhuanlan.zhihu.com/p/34282144)
