@@ -49,40 +49,49 @@ To tell GCC to emit extra information for use by a debugger, in almost all cases
 gcc 编译链接 C 代码，添加 `-g` 选项生成调试信息，才能够使用 GDB 进行调试。
 
 ```Shell
+# -g defaults to -gdwarf = -gdwarf-5
 $ cc helloc.c -o helloc -g
 $ c++ hellocpp.cpp -o hellocpp -g
 ```
 
 ## Display debugging information
 
-### readelf -w
+refer to [DWARF Debugging Format](../dwarf-debugging.md).
 
-`-w` / --debug-dump: Displays the contents of the DWARF debug sections in the file, if any are present.
+`readelf -S` --section-headers : Display the sections' header
+`objdump -h`, --[section-]headers : Display the contents of the section headers
 
-```Shell
-           -w[lLiaprmfFsOoRtUuTgAckK]
-           --debug-dump[=rawline,=decodedline,=info,=abbrev,=pubnames,=aranges,=macro,=frames,=frames-interp,=str,=str-offsets,=loc,=Ranges,=pubtypes,=trace_info,=trace_abbrev,=trace_aranges,=gdb_index,=addr,=cu_index,=links,=follow-links]
-               Displays the contents of the DWARF debug sections in the
-               file, if any are present.
-               "l"
-               "=rawline"
-                   Displays the contents of the .debug_line section in a raw
-                   format.
+- .debug_aranges
+- .debug_info
+- .debug_abbrev
+- .debug_line
+- .debug_str
+- .debug_line_str
 
-           "l"
-           "=rawline"
-               Displays the contents of the .debug_line section in a raw
-               format.
+---
 
-           "L"
-           "=decodedline"
-               Displays the interpreted contents of the .debug_line
-               section.
+`Readelf` can display and decode the DWARF data in an object or executable file. The options are
+
+The DWARF listing for all but the smallest programs is quite voluminous, so it would be a good idea to direct `readelf`'s output to a file and then browse the file with *less* or an editor such as *vi*.
+
+```bash
+-w - display all DWARF sections
+-w[liaprmfFso] display specific sections -
+    l - line table
+    i - debug info
+    a - abbreviation table
+    p - public names
+    r - ranges
+    m - macro table
+    f - debug frame (encoded)
+    F - debug frame (decoded)
+    s - string table
+    o - location lists
 ```
 
 `-wl`（--debug-dump=rawline）打印 .debug\_line section。
 
-```Shell
+```bash
 pifan@rpi4b-ubuntu $ readelf -wl helloc
 Raw dump of debug contents of section .debug_line:
 
@@ -102,61 +111,11 @@ Raw dump of debug contents of section .debug_line:
 ...
 ```
 
-其他相关选项：`--dwarf-depth`, `--dwarf-start`
+---
 
-```Shell
-       --dwarf-depth=n
-           Limit the dump of the ".debug_info" section to n children.
-           This is only useful with --debug-dump=info.  The default is
-           to print all DIEs; the special value 0 for n will also have
-           this effect.
+`objdump -W` 同 `readelf -w`。`-Wl`（--dwarf=rawline）打印 .debug\_line section。
 
-           With a non-zero value for n, DIEs at or deeper than n levels
-           will not be printed.  The range for n is zero-based.
-
-       --dwarf-start=n
-           Print only DIEs beginning with the DIE numbered n.  This is
-           only useful with --debug-dump=info.
-```
-
-### objdump
-
-#### -g
-
-```Shell
-       -g
-       --debugging
-           Display debugging information.  This attempts to parse STABS
-           debugging format information stored in the file and print it
-           out using a C like syntax.  If no STABS debugging was found
-           this option falls back on the -W option to print any DWARF
-           information in the file.
-```
-
-#### -W
-
-`objdump -W` 同 `readelf -w`。
-
-```Shell
-       -W[lLiaprmfFsoORtUuTgAckK]
-       --dwarf[=rawline,=decodedline,=info,=abbrev,=pubnames,=aranges,=macro,=frames,=frames-interp,=str,=str-offsets,=loc,=Ranges,=pubtypes,=trace_info,=trace_abbrev,=trace_aranges,=gdb_index,=addr,=cu_index,=links,=follow-links]
-           Displays the contents of the DWARF debug sections in the
-           file, if any are present.
-
-           "l"
-           "=rawline"
-               Displays the contents of the .debug_line section in a raw
-               format.
-
-           "L"
-           "=decodedline"
-               Displays the interpreted contents of the .debug_line
-               section.
-```
-
-`-Wl`（--dwarf=rawline）打印 .debug\_line section。
-
-```Shell
+```bash
 pifan@rpi4b-ubuntu $ objdump -Wl helloc
 
 helloc:     file format elf64-littleaarch64
@@ -177,18 +136,4 @@ Raw dump of debug contents of section .debug_line:
   Opcode Base:                 13
 
 ...
-```
-
-#### misc
-
-```Shell
-       -G
-       --stabs
-           Display the full contents of any sections requested.  Display
-           the contents of the .stab and .stab.index and .stab.excl
-           sections from an ELF file.  This is only useful on systems
-           (such as Solaris 2.0) in which ".stab" debugging symbol-table
-           entries are carried in an ELF section.  In most other file
-           formats, debugging symbol-table entries are interleaved with
-           linkage symbols, and are visible in the --syms output.
 ```
