@@ -250,6 +250,18 @@ window will appear.
                 Doesn't work for :execute and :normal.
 ```
 
+### 分屏示例
+
+以下基于 `vim -O` 打开3个文件的垂直三列分屏再进行水平分屏：
+
+1. 将光标切换聚焦到第一个窗口 `usr_01.txt` 上，执行 `:sp usr_04.txt` 在上面水平切割出的新窗口打开 `usr_04.txt`。
+2. `<C-w>l`切换到 `usr_02.txt` 窗口，执行 `:sp usr_05.txt` 在上面水平切割出的新窗口打开 `usr_05.txt`。
+3. `<C-w>l`切换到 `usr_03.txt` 窗口，执行 `:sp usr_06.txt` 在上面水平切割出的新窗口打开 `usr_06.txt`。
+
+最终分割出六宫格布局：
+
+![vim -O + split.png](images/vim_-O_+_split.png)
+
 ### 切换分屏
 
 输入 `:h CTRL-W` 可查看 index.txt 中的 Window commands 列表。  
@@ -271,27 +283,6 @@ window will appear.
 除了使用 `CTRL-W [count] {arg}` 快捷键，也可以使用底行命令 `:wincmd {arg}` 切换窗格。
 
 > arg 可取 j、k、h、l、w、t、b、p、q。
-
-### 移动窗格
-
-指令                | 作用
--------------------|---------------
-`<C-w>H`(CTRL-W_H) | move current window to the far left
-`<C-w>J`(CTRL-W_J) | move current window to the very bottom
-`<C-w>K`(CTRL-W_K) | move current window to the very top
-`<C-w>L`(CTRL-W_L) | move current window to the far right
-
-### 分屏示例
-
-以下基于 `vim -O` 打开3个文件的垂直三列分屏再进行水平分屏：
-
-1. 将光标切换聚焦到第一个窗口 `usr_01.txt` 上，执行 `:sp usr_04.txt` 在上面水平切割出的新窗口打开 `usr_04.txt`。
-2. `<C-w>l`切换到 `usr_02.txt` 窗口，执行 `:sp usr_05.txt` 在上面水平切割出的新窗口打开 `usr_05.txt`。
-3. `<C-w>l`切换到 `usr_03.txt` 窗口，执行 `:sp usr_06.txt` 在上面水平切割出的新窗口打开 `usr_06.txt`。
-
-最终分割出六宫格布局：
-
-![vim -O + split.png](images/vim_-O_+_split.png)
 
 ### 尺寸调整
 
@@ -353,6 +344,15 @@ CTRL-W |        Set current window width to N (default: widest possible).
 > [vim 改变窗口的大小](http://blog.csdn.net/vanwaals/article/details/6457233)  
 > [vim窗口调整高度和宽度](http://blog.csdn.net/cbbbc/article/details/44316881)  
 > [vim: vs sp 调整窗口高度和宽度](http://www.cnblogs.com/xuechao/archive/2011/03/29/1999292.html)  
+
+### 移动窗格
+
+指令                | 作用
+-------------------|---------------
+`<C-w>H`(CTRL-W_H) | move current window to the far left
+`<C-w>J`(CTRL-W_J) | move current window to the very bottom
+`<C-w>K`(CTRL-W_K) | move current window to the very top
+`<C-w>L`(CTRL-W_L) | move current window to the far right
 
 ## 多标签
 

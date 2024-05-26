@@ -96,7 +96,7 @@ Therefore, when declaring storage, it is important that double-words, words, and
 
 - `.balign[lw] abs-expr, abs-expr, abs-expr`: Adjust the location counter to a particular storage boundary. The ﬁrst expression is the byte-multiple for the alignment request.
 
-    - For example, `.balign 16` will insert ﬁll bytes until the location counter is an even multiple of 16.
+    - For example, `.balign 16` = `.align 4` will insert ﬁll bytes until the location counter is an even multiple of 16.
 
 - `[.skip | .space] size, fill`: Allocate a large area of memory and initialize it all to the same value. It is very useful for declaring large arrays in the `.bss` section.
 

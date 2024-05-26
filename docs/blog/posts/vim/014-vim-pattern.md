@@ -16,7 +16,9 @@ comments: true
 
 <!-- more -->
 
-## [如何去掉当次搜索高亮？](http://forum.ubuntu.org.cn/viewtopic.php?p=815643)
+## clear search highlighting
+
+[如何去掉当次搜索高亮？](http://forum.ubuntu.org.cn/viewtopic.php?p=815643)
 
 [highlight - Vim clear last search highlighting - Stack Overflow](https://stackoverflow.com/questions/657447/vim-clear-last-search-highlighting)
 
@@ -37,11 +39,15 @@ map <esc> :noh <CR>
 
 [Clear search highlight - VimTricks](https://vimtricks.com/p/clear-search-highlight/)
 
-## [incsearch](http://www.vim.org/scripts/script.php?script_id=5038)
+## incrementally highlights pattern
+
+[incsearch](http://www.vim.org/scripts/script.php?script_id=5038)
 
 [`incsearch.vim`](https://github.com/haya14busa/incsearch.vim) incrementally highlights ALL pattern matches unlike default 'incsearch'.
 
-## [Search across multiple lines](https://vim.fandom.com/wiki/Search_across_multiple_lines)
+## Search across multiple lines
+
+[Search across multiple lines](https://vim.fandom.com/wiki/Search_across_multiple_lines)
 
 [How to substitute text across line breaks?](https://vi.stackexchange.com/questions/2830/how-to-substitute-text-across-line-breaks)  
 [How to do a multiline search in vim](https://blog-en.openalfa.com/how-to-do-a-multiline-search-in-vim)  
@@ -62,7 +68,7 @@ meta   | pattern
 `\_$`  | the end of a line (zero width)
 `\_.`  | any character including a newline
 
-### 非贪婪模式
+### shortest match first
 
 相关议题：`:h non-greedy`
 
@@ -85,7 +91,9 @@ meta   | pattern
 
 但这并不是我们想要的，空行还是非预期占位一行。
 
-### [Delete all lines containing a pattern](https://vim.fandom.com/wiki/Delete_all_lines_containing_a_pattern)
+### delete all patterns
+
+[Delete all lines containing a pattern](https://vim.fandom.com/wiki/Delete_all_lines_containing_a_pattern)
 
 [How to delete a multi-line match?](https://vi.stackexchange.com/questions/5265/how-to-delete-a-multi-line-match)  
 [Efficient way to delete line containing certain text in vim with prompt](https://stackoverflow.com/questions/46781951/efficient-way-to-delete-line-containing-certain-text-in-vim-with-prompt)  

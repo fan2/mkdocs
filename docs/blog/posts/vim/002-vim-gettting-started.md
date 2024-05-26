@@ -353,7 +353,7 @@ hello world from vim!
 
 #### write
 
-使用 vim 打开 \<vimfile\> 进行编辑时，vim 会自动在当前文件路径下创建一个名为`.<vimfile>.swp` 的缓存副本（swap buffer），最终需要调用 `:w`（`:write`）命令将副本中的编辑（diff）写入（patch）文件保存。
+使用 vim 打开 <vimfile\> 进行编辑时，vim 会自动在当前文件路径下创建一个名为`.<vimfile>.swp` 的缓存副本（swap buffer），最终需要调用 `:w`（`:write`）命令将副本中的编辑（diff）写入（patch）文件保存。
 
 调用 `vim` 命令打开文件时，可以指定 `-n` 选项，此时无需创建swp文件，直接在内存中针对源文件编辑保存。
 

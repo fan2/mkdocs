@@ -345,9 +345,16 @@ If you want to split the window vertically, use: `:vertical terminal`, Or short:
 - `:0tab :ter`: 在最左侧新建 tab 打开终端；  
 - `:$tab :ter`: 在最右侧新建 tab 打开终端；  
 
+[Scroll up to in Vim term - Super User](https://superuser.com/questions/1439330/scroll-up-to-in-vim-term)
+
+- `<C-w><S-n>`(CTRL-W_N): pauses the terminal, navigate it like any buffer.
+- Pressing `i` takes you back into the terminal as you were before.
+
+关于切换分屏、尺寸调整、移动窗格，参考 [vim窗格](./012-vim-win-tab.md)。
+
 ### 返回 NORMAL 模式
 
 按键           | 说明                   | 备注
 --------------|------------------------|--------
 `<C-c>`       | **CTRL-C**:Interrupt current (search) command; <br/>**i_CTRL-C**: Quit insert mode, go back to Normal mode. | **CTRL-C**<br/>**i_CTRL-C**
-`<Esc>` / `<C-[>` | End insert or Replace mode, <br/>go back to Normal mode. | **i_\<Esc\>**<br/>**i_CTRL-\[**
+`<Esc>` / `<C-[>` | End insert or Replace mode, <br/>go back to Normal mode. | **i_<Esc\>**<br/>**i_CTRL-\[**

@@ -183,8 +183,8 @@ Arguments:
 滚屏定位可参考：**`/usr/share/vim/vim[0-9][0-9]/doc/scroll.txt`**
 可通过 `:help CTRL-D` 或 `:h CTRL-U` 搜索帮助。
 
-> \<C-f\> / \<C-b\> 在 bash shell 命令行输入中是向前/后移动一个字符。  
-> \<C-d\> 在 bash shell 命令行输入中是向前删除一个字符；\<C-u\> 则是向后删除到行首或整行。  
+> <C-f\> / <C-b\> 在 bash shell 命令行输入中是向前/后移动一个字符。  
+> <C-d\> 在 bash shell 命令行输入中是向前删除一个字符；<C-u\> 则是向后删除到行首或整行。  
 
 **等效实现**：
 

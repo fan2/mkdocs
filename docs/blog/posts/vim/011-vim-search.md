@@ -46,8 +46,8 @@ comments: true
 --------------------|----------------|--------
 `/phrase`           | searches FORWARD for the phrase  | `\c`可以忽略大小写（ignore case），`\C`则区分大小写
 `?phrase`           | searches BACKWARD for the phrase | `\c`可以忽略大小写（ignore case），`\C`则区分大小写
-`*phrase`           | search forward : `/\<phrase\>`   | 向下查找当前光标所在单词
-`#phrase`           | search backward : `?\<phrase\>`  | 向上查找当前光标所在单词
+`*phrase`           | search forward : `/<phrase>`   | 向下查找当前光标所在单词
+`#phrase`           | search backward : `?<phrase>`  | 向上查找当前光标所在单词
 
 在 `/` 或 `?` 后输入关键字后，按回车键开始搜索，然后按 <kbd>n</kbd>/<kbd>N</kbd> 查找下/上一个。
 
@@ -193,7 +193,7 @@ http://vimregex.com/
 
 3. 执行 `:sav filterlines.txt` 可将结果 buffer 保存到指定文件（filterlines.txt）中。  
 
-## `:s` 查找替换（THE SUBSTITUTE COMMAND）
+## `:s` 查找替换
 
 > 对应帮助文档：change.txt
 
