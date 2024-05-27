@@ -76,7 +76,7 @@ comments: true
 
 > `q/` 和 `q?` 可查看查找历史。
 
-### visual
+### visual expansion
 
 查找命令不仅限于在普通模式下使用，还可以在可视模式及操作符待决模式中使用它。
 
@@ -91,7 +91,7 @@ comments: true
 
 ## `:g` 通配
 
-```
+```bash
                                                 :g :global E148
 :[range]g[lobal]/{pattern}/[cmd]
                         Execute the Ex command [cmd] (default ":p") on the
@@ -106,65 +106,6 @@ comments: true
 
 - 执行 `:g/{pattern}/d` 删除所有匹配行。  
 - 执行 `:g/{pattern}/m0` 或 `:g/{pattern}/m$` 跳转到第一个或最后一个匹配行。  
-
-#### Permute Lines: Reverse
-
-经典案例：[Reverse order of lines](https://vim.fandom.com/wiki/Reverse_order_of_lines)
-
-reverse all lines in the current buffer:
-
-```
-:g/^/m0
-```
-
-1. `:` start command-line mode.  
-2. `g` means you'll take an action on any lines where a regular expression matches  
-3. `/` begins the regular expression (could have used any valid delimiter)  
-4. `^` matches the start of a line (which matches all lines in the buffer)  
-5. the second `/` ends the regular expression; the rest is an Ex command to execute on all matched lines (i.e. all lines in buffer)  
-6. `m` means move (`:help :move`)  
-7. `0` is the destination line (beginning of buffer)  
-
-> 在 Unix-like 系统上，如果有 `tac` 命令，可以执行 `:%!tac` 利用外部命令实现行序翻转。
-
-以下为 /share/vim/vim82/doc/change.txt 中关于 `:move` 帮助的部分文字：
-
-```
-1346 :[range]m[ove] {address}                        :m :mo :move E134
-1347                         Move the lines given by [range] to below the line
-1348                         given by {address}.
-1349
-1350 ==============================================================================
-1351 6. Formatting text                                      formatting
-1352
-1353 :[range]ce[nter] [width]                                :ce :center
-1354                         Center lines in [range] between [width] columns
-1355                         (default 'textwidth' or 80 when 'textwidth' is 0).
-```
-
-执行 `:1350,1353g/^/m1349`，可将 1350~1353 这4行移动到 1349 行下面（的1350行），实现行序翻转：
-
-```
-1346 :[range]m[ove] {address}                        :m :mo :move E134
-1347                         Move the lines given by [range] to below the line
-1348                         given by {address}.
-1349
-1350 :[range]ce[nter] [width]                                :ce :center
-1351
-1352 6. Formatting text                                      formatting
-1353 ==============================================================================
-1354                         Center lines in [range] between [width] columns
-1355                         (default 'textwidth' or 80 when 'textwidth' is 0).
-```
-
-可分步执行查看逐行移动的操作结果：
-
-1. `:1350m1349`：将1350行移动到1350行，不变；  
-2. `:1351m1349`：将1351行移动到1350行，原1350行下移至1351行；  
-3. `:1352m1349`：将1352行移动到1350行，1350行（原1351行）下移至1351行；  
-4. `:1353m1349`：将1353行移动到1350行，1350行（原1352行）下移至1351行；  
-
-> 在 Unix-like 系统上，如果有 `tac` 命令，可以执行 `:1350,1353!tac` 利用外部命令实现行序翻转。
 
 ### regex
 
@@ -193,6 +134,93 @@ http://vimregex.com/
 
 3. 执行 `:sav filterlines.txt` 可将结果 buffer 保存到指定文件（filterlines.txt）中。  
 
+### Permute Lines: Reverse
+
+经典案例：[Reverse order of lines](https://vim.fandom.com/wiki/Reverse_order_of_lines)
+
+reverse all lines in the current buffer:
+
+```vim
+:g/^/m0
+```
+
+1. `:` start command-line mode.  
+2. `g` means you'll take an action on any lines where a regular expression matches  
+3. `/` begins the regular expression (could have used any valid delimiter)  
+4. `^` matches the start of a line (which matches all lines in the buffer)  
+5. the second `/` ends the regular expression; the rest is an Ex command to execute on all matched lines (i.e. all lines in buffer)  
+6. `m` means move (`:help :move`)  
+7. `0` is the destination line (beginning of buffer)  
+
+> 在 Unix-like 系统上，如果有 `tac` 命令，可以执行 `:%!tac` 利用外部命令实现行序翻转。
+
+以下为 /share/vim/vim82/doc/change.txt 中关于 `:move` 帮助的部分文字：
+
+```bash
+1346 :[range]m[ove] {address}                        :m :mo :move E134
+1347                         Move the lines given by [range] to below the line
+1348                         given by {address}.
+1349
+1350 ==============================================================================
+1351 6. Formatting text                                      formatting
+1352
+1353 :[range]ce[nter] [width]                                :ce :center
+1354                         Center lines in [range] between [width] columns
+1355                         (default 'textwidth' or 80 when 'textwidth' is 0).
+```
+
+执行 `:1350,1353g/^/m1349`，可将 1350~1353 这4行移动到 1349 行下面（的1350行），实现行序翻转：
+
+```bash
+1346 :[range]m[ove] {address}                        :m :mo :move E134
+1347                         Move the lines given by [range] to below the line
+1348                         given by {address}.
+1349
+1350 :[range]ce[nter] [width]                                :ce :center
+1351
+1352 6. Formatting text                                      formatting
+1353 ==============================================================================
+1354                         Center lines in [range] between [width] columns
+1355                         (default 'textwidth' or 80 when 'textwidth' is 0).
+```
+
+可分步执行查看逐行移动的操作结果：
+
+1. `:1350m1349`：将1350行移动到1350行，不变；  
+2. `:1351m1349`：将1351行移动到1350行，原1350行下移至1351行；  
+3. `:1352m1349`：将1352行移动到1350行，1350行（原1351行）下移至1351行；  
+4. `:1353m1349`：将1353行移动到1350行，1350行（原1352行）下移至1351行；  
+
+> 在 Unix-like 系统上，如果有 `tac` 命令，可以执行 `:1350,1353!tac` 利用外部命令实现行序翻转。
+
+### Delete Global Pattern Lines
+
+[search - How to delete searched line and next - Vi and Vim Stack Exchange](https://vi.stackexchange.com/questions/8504/how-to-delete-searched-line-and-next)
+
+`:g/{pattern}/,+3d`: delete the current line and the 3 following
+
+[Delete all lines containing a pattern | Vim Tips Wiki | Fandom](https://vim.fandom.com/wiki/Delete_all_lines_containing_a_pattern)
+
+deleting all lines that are empty or that contain only whitespace:
+
+```vim
+:g/^\s*$/d
+```
+
+To specify lines that do not contain a pattern, use `g!`, which is equivalent to `v`.
+
+The next example shows use of \| ("or") to delete all lines except those that contain "error" or "warn" or "fail":
+
+```vim
+:v/error\|warn\|fail/d
+```
+
+`g` can also be combined with a range to restrict it to certain lines only. For example to delete all lines containing "profile" from the current line to the end of the file:
+
+```vim
+:.,$g/profile/d
+```
+
 ## `:s` 查找替换
 
 > 对应帮助文档：change.txt
@@ -216,7 +244,7 @@ http://vimregex.com/
 
 可以参考分析帮助文档中的示例：
 
-```Shell
+```bash
 Examples: >
 # \0: replaced with the whole matched pattern
   :s/a\|b/xxx\0xxx/g             modifies "a b"      to "xxxaxxx xxxbxxx"
@@ -242,7 +270,37 @@ command         text    result ~
 
 ```
 
-### 示例
+### substitute delete
+
+将换行符（old=`^$\n`）的空行替换为空（new=空），相当于移除空行。
+
+- `:%s/^$\n//g` or `:1,$s/^$\n//g`
+
+`:%s/\n//g`：删除换行符；  
+`:%s/\r//g`：删除DOS文件中的回车符`^M`；  
+
+[vi - Efficient way to delete line containing certain text in vim with prompt - Stack Overflow](https://stackoverflow.com/questions/46781951/efficient-way-to-delete-line-containing-certain-text-in-vim-with-prompt)
+
+The most efficient way is to combine :glboal and :norm
+
+```vim
+:g/test/norm dd
+:g/test/d
+```
+
+Substitute with matched pattern:
+
+```vim
+:%s/.*text.*\n//gc
+```
+
+Mix `:help global` and `:help substitute`:
+
+```vim
+:g/text/s/.*\n//c
+```
+
+### add comment
 
 > [VIM多行注释/反注释](http://blog.csdn.net/xufeng0991/article/details/50201561)  
 > [vim多行注释和取消注释](http://www.cnblogs.com/Ph-one/p/5641872.html)  
@@ -251,32 +309,23 @@ command         text    result ~
 
 1. 在所有行首添加注释符号（//）：  
 
-`:%s/^/\/\//g`  
-`:%s#^#//#g`（用 `#` 或 `+` 代替 `/`，old 或 new 中的 `/` 不用转义）  
+    - `:%s/^/\/\//g`  
+    - `:%s#^#//#g`（用 `#` 或 `+` 代替 `/`，old 或 new 中的 `/` 不用转义）  
 
-> 说明：行首（old=`^`）替换为注释符号（new=`//`）。  
->> 若将 `^` 替换为 `$` 则针对行尾操作。  
+    > 说明：行首（old=`^`）替换为注释符号（new=`//`）。 
+    > 若将 `^` 替换为 `$` 则针对行尾操作。  
 
 2. 为 20~50 行首添加注释符号（//）：  
 
-`:20,50 s/^/\/\//g`  
-`:20,50s#^#//#g`  
+    - `:20,50 s/^/\/\//g` or `:20,50s#^#//#g`
 
-> 在 markdown 文档的 143~145这3行首插入 `- `，使之成为 Unordered List：`143,145s#^#- #`  
->> 如果是行尾的话，将 `^` 换成 `$`。  
+3. 在 markdown 文档的 143~145 这3行首插入 `- `，使之成为 Unordered List：
 
-3. 为 20~50 行首移除注释符号（//）：
+    - `143,145s#^#- #`
 
-`:20,50 s/^\/\///g`  
-`:20,50s#^//##g`  
+4. 为 20~50 行首移除注释符号（//）：
 
-> 行首的注释符号（old=`^//`）替换为空（new=空），相当于删除。  
+    - `:20,50 s/^\/\///g`  
+    - `:20,50s#^//##g`  
 
-4. 将空行删除：
-
-`:1,$s/^$\n//g`
-
-> 将首行到末行（全文）中内容为换行符（old=`^$\n`）的空行替换为空（new=空），相当于移除空行。  
-
-`:%s/\n//g`：删除换行符；  
-`:%s/\r//g`：删除DOS文件中的回车符`^M`；  
+    > 说明：行首的注释符号（old=`^//`）替换为空（new=空），相当于删除。  
