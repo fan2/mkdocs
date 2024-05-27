@@ -1,0 +1,1961 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="在别处或在路上">
+      
+      
+        <meta name="author" content="Cliff Fan">
+      
+      
+        <link rel="canonical" href="https://duetorun.com/blog/20230620/gnu-binutils/">
+      
+      
+        <link rel="prev" href="../../20230618/dwarf-debugging/">
+      
+      
+        <link rel="next" href="../../20230622/addr2line/">
+      
+      
+      <link rel="icon" href="../../../assets/hold_yourself.jpg">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.15">
+    
+    
+      
+        <title>GNU Binutils - ElseWhere</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.7e359304.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function n(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],n("js",new Date),n("config","G-XGW41EGL31"),document.addEventListener("DOMContentLoaded",function(){document.forms.search&&document.forms.search.query.addEventListener("blur",function(){this.value&&n("event","search",{search_term:this.value})}),document$.subscribe(function(){var a=document.forms.feedback;if(void 0!==a)for(var e of a.querySelectorAll("[type=submit]"))e.addEventListener("click",function(e){e.preventDefault();var t=document.location.pathname,e=this.getAttribute("data-md-value");n("event","feedback",{page:t,data:e}),a.firstElementChild.disabled=!0;e=a.querySelector(".md-feedback__note [data-md-value='"+e+"']");e&&(e.hidden=!1)}),a.hidden=!1}),location$.subscribe(function(e){n("config","G-XGW41EGL31",{page_path:e.pathname})})});var e=document.createElement("script");e.async=!0,e.src="https://www.googletagmanager.com/gtag/js?id=G-XGW41EGL31",document.getElementById("__analytics").insertAdjacentElement("afterEnd",e)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+    
+  
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#headers" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../../.." title="ElseWhere" class="md-header__button md-logo" aria-label="ElseWhere" data-md-component="logo">
+      
+  <img src="../../../assets/hold_yourself.jpg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ElseWhere
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              GNU Binutils
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1M8 13h8v-2H8v2m9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1 0 1.71-1.39 3.1-3.1 3.1h-4V17h4a5 5 0 0 0 5-5 5 5 0 0 0-5-5Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="indigo"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5M7 15a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="标签" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../about/" class="md-tabs__link">
+        
+  
+    
+  
+  About
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../" class="md-tabs__link">
+          
+  
+  Blog
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../link/" class="md-tabs__link">
+        
+  
+    
+  
+  Link
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" hidden>
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="ElseWhere" class="md-nav__button md-logo" aria-label="ElseWhere" data-md-component="logo">
+      
+  <img src="../../../assets/hold_yourself.jpg" alt="logo">
+
+    </a>
+    ElseWhere
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../about/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    About
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Blog
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      <a href="../../" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Archive
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            Archive
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2024/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2024
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2023/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2023
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2022/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2022
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2021/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2021
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2020/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2020
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2019/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2019
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2018/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2018
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2017/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2017
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2015/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2015
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2009/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2009
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Categories
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            Categories
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/cs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CS
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/arm/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    arm
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/c/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    c
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/cpp/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    cpp
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/editor/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    editor
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/excerpt/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    excerpt
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/git/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    git
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/linux/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    linux
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/macos/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    macOS
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/markdown/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    markdown
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/material/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    material
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/mkdocs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    mkdocs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/nginx/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    nginx
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/python/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    python
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/resource/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    resource
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/shell/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    shell
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/toolchain/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    toolchain
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/ubuntu/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ubuntu
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/vim/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    vim
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/webdav/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    webDAV
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/wiki/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    wiki
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/zsh/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    zsh
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../link/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Link
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#headers" class="md-nav__link">
+    <span class="md-ellipsis">
+      headers
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sections" class="md-nav__link">
+    <span class="md-ellipsis">
+      sections
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#symbols" class="md-nav__link">
+    <span class="md-ellipsis">
+      symbols
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="symbols">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#syms" class="md-nav__link">
+    <span class="md-ellipsis">
+      syms
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nm" class="md-nav__link">
+    <span class="md-ellipsis">
+      nm
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#dwarf" class="md-nav__link">
+    <span class="md-ellipsis">
+      DWARF
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ctf" class="md-nav__link">
+    <span class="md-ellipsis">
+      CTF
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#manipulate" class="md-nav__link">
+    <span class="md-ellipsis">
+      manipulate
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="manipulate">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#strip" class="md-nav__link">
+    <span class="md-ellipsis">
+      strip
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#objcopy" class="md-nav__link">
+    <span class="md-ellipsis">
+      objcopy
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+  <div class="md-content md-content--post" data-md-component="content">
+    <div class="md-sidebar md-sidebar--post" data-md-component="sidebar" data-md-type="navigation">
+      <div class="md-sidebar__scrollwrap">
+        <div class="md-sidebar__inner md-post">
+          <nav class="md-nav md-nav--primary">
+            <div class="md-post__back">
+              <div class="md-nav__title md-nav__container">
+                <a href="../../" class="md-nav__link">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+                  <span class="md-ellipsis">
+                    回到主页
+                  </span>
+                </a>
+              </div>
+            </div>
+            
+              <div class="md-post__authors md-typeset">
+                
+                  <div class="md-profile md-post__profile">
+                    <span class="md-author md-author--long">
+                      <img src="https://duetorun.com/assets/carve_yourself.jpg" alt="Cliff Fan">
+                    </span>
+                    <span class="md-profile__description">
+                      <strong>
+                        
+                          Cliff Fan
+                        
+                      </strong>
+                      <br>
+                      Just do IT
+                    </span>
+                  </div>
+                
+              </div>
+            
+            <ul class="md-post__meta md-nav__list">
+              <li class="md-nav__item md-nav__item--section">
+                <div class="md-post__title">
+                  <span class="md-ellipsis">
+                    元数据
+                  </span>
+                </div>
+                <nav class="md-nav">
+                  <ul class="md-nav__list">
+                    <li class="md-nav__item">
+                      <div class="md-nav__link">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 19H5V8h14m-3-7v2H8V1H6v2H5c-1.11 0-2 .89-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-1V1m-1 11h-5v5h5v-5Z"/></svg>
+                        <time datetime="2023-06-20 10:00:00" class="md-ellipsis">2023年6月20日</time>
+                      </div>
+                    </li>
+                    
+                    
+                      <li class="md-nav__item">
+                        <div class="md-nav__link">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 3v15h3V3H9m3 2 4 13 3-1-4-13-3 1M5 5v13h3V5H5M3 19v2h18v-2H3Z"/></svg>
+                          <span class="md-ellipsis">
+                            分类于
+                            
+                              <a href="../../category/toolchain/">toolchain</a></span>
+                        </div>
+                      </li>
+                    
+                    
+                      
+                      <li class="md-nav__item">
+                        <div class="md-nav__link">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7h1.5Z"/></svg>
+                          <span class="md-ellipsis">
+                            
+                              需要 7 分钟阅读时间
+                            
+                          </span>
+                        </div>
+                      </li>
+                    
+                    <!-- Add by Cliff.Fan, 29Mar24. -->
+                    <li class="md-nav__item">
+                      <div class="md-nav__link">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m19 1-5 5v11l5-4.5V1m2 4v13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V6c-1.45-1.1-3.55-1.5-5.5-1.5-1.95 0-4.05.4-5.5 1.5v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1M10 18.41C8.75 18.09 7.5 18 6.5 18c-1.06 0-2.32.19-3.5.5V7.13c.91-.4 2.14-.63 3.5-.63 1.36 0 2.59.23 3.5.63v11.28Z"/></svg>
+                        <span class="md-ellipsis" id="busuanzi_container_page_pv">
+                          阅读量：<span id="busuanzi_value_page_pv">N/A</span>
+                        </span>
+                      </div>
+                    </li>
+                  </ul>
+                </nav>
+              </li>
+            </ul>
+          </nav>
+          
+        </div>
+      </div>
+    </div>
+    <article class="md-content__inner md-typeset">
+      
+        
+
+
+  <h1>GNU Binutils</h1>
+
+<p><code>objdump</code> is the mother of all binary tools.<br />
+<code>readelf</code> subsumes the functionality of <code>size</code> and <code>nm</code>.<br />
+<code>objcopy</code> contains most of the functionality of <code>strip</code>.</p>
+<!-- more -->
+
+<p><a href="https://en.wikipedia.org/wiki/GNU_Binary_Utilities">GNU Binary Utilities</a> - <a href="https://sourceware.org/elfutils/">elfutils</a><br />
+<a href="https://www.gnu.org/savannah-checkouts/gnu/hurd/binutils.html">GNU Hurd</a> / <a href="https://www.gnu.org/software/binutils/">GNU Binutils</a> - @<a href="https://sourceware.org/binutils/">sourceware</a> - <a href="https://sourceware.org/binutils/docs/">Documentation</a></p>
+<ul>
+<li><a href="https://man7.org/linux/man-pages/man1/readelf.1.html">readelf</a> - display information about ELF files</li>
+<li><a href="https://man7.org/linux/man-pages/man1/objdump.1.html">objdump</a> - display information from object files</li>
+<li><a href="https://man7.org/linux/man-pages/man1/strings.1.html">strings</a> - print the sequences of printable characters in files</li>
+<li><a href="https://man7.org/linux/man-pages/man1/nm.1.html">nm</a> - list symbols from object files</li>
+<li><a href="https://man7.org/linux/man-pages/man1/size.1.html">size</a> - list section sizes and total size of binary files</li>
+<li><a href="https://man7.org/linux/man-pages/man1/strip.1.html">strip</a> - discard symbols and other data from object files</li>
+<li><a href="https://man7.org/linux/man-pages/man1/objcopy.1.html">objcopy</a> - copy and translate object files</li>
+</ul>
+<p>This article focuses on using GNU binutils to view and manipulate ELF files.</p>
+<h2 id="headers">headers<a class="headerlink" href="#headers" title="Permanent link">#</a></h2>
+<p>One way to view the architecture that an ELF binary is compiled to is via the <code>file</code> command.</p>
+<p>The <code>readelf</code> command can display useful information about files in the ELF file format. It provides options to display ELF file header, program headers and section headers.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>$<span class="w"> </span>readelf<span class="w"> </span>--help
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">  </span>-h<span class="w"> </span>--file-header<span class="w">       </span>Display<span class="w"> </span>the<span class="w"> </span>ELF<span class="w"> </span>file<span class="w"> </span>header
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">  </span>-l<span class="w"> </span>--program-headers<span class="w">   </span>Display<span class="w"> </span>the<span class="w"> </span>program<span class="w"> </span>headers
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">     </span>--segments<span class="w">          </span>An<span class="w"> </span><span class="nb">alias</span><span class="w"> </span><span class="k">for</span><span class="w"> </span>--program-headers
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="w">  </span>-S<span class="w"> </span>--section-headers<span class="w">   </span>Display<span class="w"> </span>the<span class="w"> </span>sections<span class="err">&#39;</span><span class="w"> </span>header
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">     </span>--sections<span class="w">          </span>An<span class="w"> </span><span class="nb">alias</span><span class="w"> </span><span class="k">for</span><span class="w"> </span>--section-headers
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="w">  </span>-t<span class="w"> </span>--section-details<span class="w">   </span>Display<span class="w"> </span>the<span class="w"> </span>section<span class="w"> </span>details.<span class="w"> </span>Implies<span class="w"> </span>-S.
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="w">  </span>-e<span class="w"> </span>--headers<span class="w">           </span>Equivalent<span class="w"> </span>to:<span class="w"> </span>-h<span class="w"> </span>-l<span class="w"> </span>-S
+</span></code></pre></div>
+<p>Meanwhile, <code>objdump</code> also provides equivalent options for displaying ELF header information.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>$<span class="w"> </span>objdump<span class="w"> </span>--help
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">  </span>-a,<span class="w"> </span>--archive-headers<span class="w">    </span>Display<span class="w"> </span>archive<span class="w"> </span>header<span class="w"> </span>information
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">  </span>-f,<span class="w"> </span>--file-headers<span class="w">       </span>Display<span class="w"> </span>the<span class="w"> </span>contents<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>overall<span class="w"> </span>file<span class="w"> </span>header
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">  </span>-h,<span class="w"> </span>--<span class="o">[</span>section-<span class="o">]</span>headers<span class="w">  </span>Display<span class="w"> </span>the<span class="w"> </span>contents<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>section<span class="w"> </span>headers
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">  </span>-x,<span class="w"> </span>--all-headers<span class="w">        </span>Display<span class="w"> </span>the<span class="w"> </span>contents<span class="w"> </span>of<span class="w"> </span>all<span class="w"> </span>headers
+</span></code></pre></div>
+<p>Apart from <code>readelf -S</code> and <code>objdump -h</code>, we can use <code>size -Ax $ELF</code> to display a brief section size summary.</p>
+<div class="admonition note">
+<p class="admonition-title">section Type &amp; Flags</p>
+<p>Refer to <a href="https://sourceware.org/binutils/docs/as/Section.html">Section (Using as)</a> for a knowledge of optional <code>Type</code> and <code>Flags</code> of ELF Version against the output of <code>readelf -S</code>.</p>
+</div>
+<h2 id="sections">sections<a class="headerlink" href="#sections" title="Permanent link">#</a></h2>
+<p>Pass <code>-p</code>/<code>-x</code> option to <code>readelf</code> can dump contents of specified section as strings/bytes.</p>
+<ul>
+<li>e.g. <code>readelf -x .text</code> or <code>readelf -p .rodata</code></li>
+</ul>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>$<span class="w"> </span>readelf<span class="w"> </span>--help
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">  </span>-x<span class="w"> </span>--hex-dump<span class="o">=</span>&lt;number<span class="p">|</span>name&gt;
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">                         </span>Dump<span class="w"> </span>the<span class="w"> </span>contents<span class="w"> </span>of<span class="w"> </span>section<span class="w"> </span>&lt;number<span class="p">|</span>name&gt;<span class="w"> </span>as<span class="w"> </span>bytes
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">  </span>-p<span class="w"> </span>--string-dump<span class="o">=</span>&lt;number<span class="p">|</span>name&gt;
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">                         </span>Dump<span class="w"> </span>the<span class="w"> </span>contents<span class="w"> </span>of<span class="w"> </span>section<span class="w"> </span>&lt;number<span class="p">|</span>name&gt;<span class="w"> </span>as<span class="w"> </span>strings
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">  </span>-R<span class="w"> </span>--relocated-dump<span class="o">=</span>&lt;number<span class="p">|</span>name&gt;
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">                         </span>Dump<span class="w"> </span>the<span class="w"> </span>relocated<span class="w"> </span>contents<span class="w"> </span>of<span class="w"> </span>section<span class="w"> </span>&lt;number<span class="p">|</span>name&gt;
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>
+</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="w">  </span>-n<span class="w"> </span>--notes<span class="w">             </span>Display<span class="w"> </span>the<span class="w"> </span>core<span class="w"> </span>notes<span class="w"> </span><span class="o">(</span><span class="k">if</span><span class="w"> </span>present<span class="o">)</span>
+</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="w">  </span>-r<span class="w"> </span>--relocs<span class="w">            </span>Display<span class="w"> </span>the<span class="w"> </span>relocations<span class="w"> </span><span class="o">(</span><span class="k">if</span><span class="w"> </span>present<span class="o">)</span>
+</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="w">  </span>-u<span class="w"> </span>--unwind<span class="w">            </span>Display<span class="w"> </span>the<span class="w"> </span>unwind<span class="w"> </span>info<span class="w"> </span><span class="o">(</span><span class="k">if</span><span class="w"> </span>present<span class="o">)</span>
+</span><span id="__span-2-13"><a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="w">  </span>-d<span class="w"> </span>--dynamic<span class="w">           </span>Display<span class="w"> </span>the<span class="w"> </span>dynamic<span class="w"> </span>section<span class="w"> </span><span class="o">(</span><span class="k">if</span><span class="w"> </span>present<span class="o">)</span>
+</span><span id="__span-2-14"><a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>
+</span><span id="__span-2-15"><a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a><span class="w">  </span>-V<span class="w"> </span>--version-info<span class="w">      </span>Display<span class="w"> </span>the<span class="w"> </span>version<span class="w"> </span>sections<span class="w"> </span><span class="o">(</span><span class="k">if</span><span class="w"> </span>present<span class="o">)</span>
+</span><span id="__span-2-16"><a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a><span class="w">  </span>-A<span class="w"> </span>--arch-specific<span class="w">     </span>Display<span class="w"> </span>architecture<span class="w"> </span>specific<span class="w"> </span>information<span class="w"> </span><span class="o">(</span><span class="k">if</span><span class="w"> </span>any<span class="o">)</span>
+</span></code></pre></div>
+<p>Equivalently, use <code>objdump -j $section -s</code> or <code>objdump --seciont=$section</code> to display information for specified section.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>$<span class="w"> </span>objdump<span class="w"> </span>--help
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">  </span>-j,<span class="w"> </span>--section<span class="o">=</span>NAME<span class="w">       </span>Only<span class="w"> </span>display<span class="w"> </span>information<span class="w"> </span><span class="k">for</span><span class="w"> </span>section<span class="w"> </span>NAME
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">  </span>-r,<span class="w"> </span>--reloc<span class="w">              </span>Display<span class="w"> </span>the<span class="w"> </span>relocation<span class="w"> </span>entries<span class="w"> </span><span class="k">in</span><span class="w"> </span>the<span class="w"> </span>file
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">  </span>-R,<span class="w"> </span>--dynamic-reloc<span class="w">      </span>Display<span class="w"> </span>the<span class="w"> </span>dynamic<span class="w"> </span>relocation<span class="w"> </span>entries<span class="w"> </span><span class="k">in</span><span class="w"> </span>the<span class="w"> </span>file
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="w">  </span>-s,<span class="w"> </span>--full-contents<span class="w">      </span>Display<span class="w"> </span>the<span class="w"> </span>full<span class="w"> </span>contents<span class="w"> </span>of<span class="w"> </span>all<span class="w"> </span>sections<span class="w"> </span>requested
+</span></code></pre></div>
+<h2 id="symbols">symbols<a class="headerlink" href="#symbols" title="Permanent link">#</a></h2>
+<h3 id="syms">syms<a class="headerlink" href="#syms" title="Permanent link">#</a></h3>
+<p>Type <code>readelf -s</code> to display the symbol table.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>$<span class="w"> </span>readelf<span class="w"> </span>--help
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">  </span>-s<span class="w"> </span>--syms<span class="w">              </span>Display<span class="w"> </span>the<span class="w"> </span>symbol<span class="w"> </span>table
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">     </span>--symbols<span class="w">           </span>An<span class="w"> </span><span class="nb">alias</span><span class="w"> </span><span class="k">for</span><span class="w"> </span>--syms
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="w">     </span>--dyn-syms<span class="w">          </span>Display<span class="w"> </span>the<span class="w"> </span>dynamic<span class="w"> </span>symbol<span class="w"> </span>table
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="w">     </span>--lto-syms<span class="w">          </span>Display<span class="w"> </span>LTO<span class="w"> </span>symbol<span class="w"> </span>tables
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="w">     </span>--sym-base<span class="o">=[</span><span class="m">0</span><span class="p">|</span><span class="m">8</span><span class="p">|</span><span class="m">10</span><span class="p">|</span><span class="m">16</span><span class="o">]</span>
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="w">                         </span>Force<span class="w"> </span>base<span class="w"> </span><span class="k">for</span><span class="w"> </span>symbol<span class="w"> </span>sizes.<span class="w">  </span>The<span class="w"> </span>options<span class="w"> </span>are
+</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="w">                         </span>mixed<span class="w"> </span><span class="o">(</span>the<span class="w"> </span>default<span class="o">)</span>,<span class="w"> </span>octal,<span class="w"> </span>decimal,<span class="w"> </span>hexadecimal.
+</span></code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">read -s Type &amp; Bind</p>
+<p>Refer to <a href="https://sourceware.org/binutils/docs/as/Type.html">Type (Using as)</a> for a knowledge of the <em>Type</em> column, such as <code>STT_FUNC</code>,<code>STT_OBJECT</code>,<code>STT_NOTYPE</code>,etc.<br />
+Refer to <a href="https://man7.org/linux/man-pages/man1/objdump.1.html">objdump</a> for a knowledge of the <em>Bind</em> column, such as <code>l</code>(<code>LOCAL</code>),<code>g</code>(<code>GLOBAL</code>),<code>w</code>(<code>WEAK</code>),etc.</p>
+</div>
+<p>The equivalent option for <code>objdump</code> is <code>-t</code>.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>$<span class="w"> </span>objdump<span class="w"> </span>--help
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">  </span>-t,<span class="w"> </span>--syms<span class="w">               </span>Display<span class="w"> </span>the<span class="w"> </span>contents<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>symbol<span class="w"> </span>table<span class="o">(</span>s<span class="o">)</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">  </span>-T,<span class="w"> </span>--dynamic-syms<span class="w">       </span>Display<span class="w"> </span>the<span class="w"> </span>contents<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>dynamic<span class="w"> </span>symbol<span class="w"> </span>table
+</span></code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">objdump -t flags</p>
+<p>Refer to <a href="https://man7.org/linux/man-pages/man1/objdump.1.html">objdump</a> for a knowledge of the flag characters, such as <code>l</code>/<code>g</code>,<code>I</code>/<code>i</code>,<code>d</code>/<code>D</code>,<code>F</code>/<code>f</code>,etc.</p>
+</div>
+<h3 id="nm">nm<a class="headerlink" href="#nm" title="Permanent link">#</a></h3>
+<p>List symbols in [file(s)] (a.out by default).</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>$<span class="w"> </span>nm<span class="w"> </span>--help
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="w">  </span>-D,<span class="w"> </span>--dynamic<span class="w">          </span>Display<span class="w"> </span>dynamic<span class="w"> </span>symbols<span class="w"> </span>instead<span class="w"> </span>of<span class="w"> </span>normal<span class="w"> </span>symbols
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="w">      </span>--defined-only<span class="w">     </span>Display<span class="w"> </span>only<span class="w"> </span>defined<span class="w"> </span>symbols
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="w">  </span>-g,<span class="w"> </span>--extern-only<span class="w">      </span>Display<span class="w"> </span>only<span class="w"> </span>external<span class="w"> </span>symbols
+</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="w">    </span>--ifunc-chars<span class="o">=</span>CHARS<span class="w">  </span>Characters<span class="w"> </span>to<span class="w"> </span>use<span class="w"> </span>when<span class="w"> </span>displaying<span class="w"> </span>ifunc<span class="w"> </span>symbols
+</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>
+</span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="w">  </span>-l,<span class="w"> </span>--line-numbers<span class="w">     </span>Use<span class="w"> </span>debugging<span class="w"> </span>information<span class="w"> </span>to<span class="w"> </span>find<span class="w"> </span>a<span class="w"> </span>filename<span class="w"> </span>and
+</span><span id="__span-6-10"><a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a><span class="w">                           </span>line<span class="w"> </span>number<span class="w"> </span><span class="k">for</span><span class="w"> </span>each<span class="w"> </span>symbol
+</span><span id="__span-6-11"><a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a><span class="w">  </span>-n,<span class="w"> </span>--numeric-sort<span class="w">     </span>Sort<span class="w"> </span>symbols<span class="w"> </span>numerically<span class="w"> </span>by<span class="w"> </span>address
+</span><span id="__span-6-12"><a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a>
+</span><span id="__span-6-13"><a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a><span class="w">  </span>-r,<span class="w"> </span>--reverse-sort<span class="w">     </span>Reverse<span class="w"> </span>the<span class="w"> </span>sense<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>sort
+</span><span id="__span-6-14"><a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a>
+</span><span id="__span-6-15"><a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a><span class="w">  </span>-S,<span class="w"> </span>--print-size<span class="w">       </span>Print<span class="w"> </span>size<span class="w"> </span>of<span class="w"> </span>defined<span class="w"> </span>symbols
+</span><span id="__span-6-16"><a id="__codelineno-6-16" name="__codelineno-6-16" href="#__codelineno-6-16"></a>
+</span><span id="__span-6-17"><a id="__codelineno-6-17" name="__codelineno-6-17" href="#__codelineno-6-17"></a><span class="w">  </span>-s,<span class="w"> </span>--print-armap<span class="w">      </span>Include<span class="w"> </span>index<span class="w"> </span><span class="k">for</span><span class="w"> </span>symbols<span class="w"> </span>from<span class="w"> </span>archive<span class="w"> </span>members
+</span><span id="__span-6-18"><a id="__codelineno-6-18" name="__codelineno-6-18" href="#__codelineno-6-18"></a><span class="w">      </span>--quiet<span class="w">            </span>Suppress<span class="w"> </span><span class="s2">&quot;no symbols&quot;</span><span class="w"> </span>diagnostic
+</span><span id="__span-6-19"><a id="__codelineno-6-19" name="__codelineno-6-19" href="#__codelineno-6-19"></a><span class="w">      </span>--size-sort<span class="w">        </span>Sort<span class="w"> </span>symbols<span class="w"> </span>by<span class="w"> </span>size
+</span><span id="__span-6-20"><a id="__codelineno-6-20" name="__codelineno-6-20" href="#__codelineno-6-20"></a><span class="w">      </span>--special-syms<span class="w">     </span>Include<span class="w"> </span>special<span class="w"> </span>symbols<span class="w"> </span><span class="k">in</span><span class="w"> </span>the<span class="w"> </span>output
+</span><span id="__span-6-21"><a id="__codelineno-6-21" name="__codelineno-6-21" href="#__codelineno-6-21"></a><span class="w">      </span>--synthetic<span class="w">        </span>Display<span class="w"> </span>synthetic<span class="w"> </span>symbols<span class="w"> </span>as<span class="w"> </span>well
+</span><span id="__span-6-22"><a id="__codelineno-6-22" name="__codelineno-6-22" href="#__codelineno-6-22"></a>
+</span><span id="__span-6-23"><a id="__codelineno-6-23" name="__codelineno-6-23" href="#__codelineno-6-23"></a><span class="w">  </span>-u,<span class="w"> </span>--undefined-only<span class="w">   </span>Display<span class="w"> </span>only<span class="w"> </span>undefined<span class="w"> </span>symbols
+</span></code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">nm symbol type</p>
+<p>Refer to <a href="https://man7.org/linux/man-pages/man1/nm.1.html">nm</a> for a knowledge of the symbol type, such as <code>T</code>/<code>t</code>,<code>D</code>/<code>d</code>,<code>B</code>/<code>b</code>,<code>U</code>, etc.</p>
+</div>
+<h2 id="dwarf">DWARF<a class="headerlink" href="#dwarf" title="Permanent link">#</a></h2>
+<p><a href="https://dwarfstd.org/doc/Debugging%20using%20DWARF-2012.pdf">DWARF Introduction</a>: Debugging Information Entry (<code>DIE</code>)</p>
+<ul>
+<li>refer to related post: <a href="../../20230618/dwarf-debugging/">DWARF Debugging Format</a>.</li>
+</ul>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>$<span class="w"> </span>readelf<span class="w"> </span>--help
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="w">  </span>-w<span class="w"> </span>--debug-dump<span class="o">[</span>a/<span class="o">=</span>abbrev,<span class="w"> </span>A/<span class="o">=</span>addr,<span class="w"> </span>r/<span class="o">=</span>aranges,<span class="w"> </span>c/<span class="o">=</span>cu_index,<span class="w"> </span>L/<span class="o">=</span>decodedline,
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="w">                  </span>f/<span class="o">=</span>frames,<span class="w"> </span>F/<span class="o">=</span>frames-interp,<span class="w"> </span>g/<span class="o">=</span>gdb_index,<span class="w"> </span>i/<span class="o">=</span>info,<span class="w"> </span>o/<span class="o">=</span>loc,
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="w">                  </span>m/<span class="o">=</span>macro,<span class="w"> </span>p/<span class="o">=</span>pubnames,<span class="w"> </span>t/<span class="o">=</span>pubtypes,<span class="w"> </span>R/<span class="o">=</span>Ranges,<span class="w"> </span>l/<span class="o">=</span>rawline,
+</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="w">                  </span>s/<span class="o">=</span>str,<span class="w"> </span>O/<span class="o">=</span>str-offsets,<span class="w"> </span>u/<span class="o">=</span>trace_abbrev,<span class="w"> </span>T/<span class="o">=</span>trace_aranges,
+</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="w">                  </span>U/<span class="o">=</span>trace_info<span class="o">]</span>
+</span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>
+</span><span id="__span-7-9"><a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a><span class="w">  </span>--dwarf-depth<span class="o">=</span>N<span class="w">        </span>Do<span class="w"> </span>not<span class="w"> </span>display<span class="w"> </span>DIEs<span class="w"> </span>at<span class="w"> </span>depth<span class="w"> </span>N<span class="w"> </span>or<span class="w"> </span>greater
+</span><span id="__span-7-10"><a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a><span class="w">  </span>--dwarf-start<span class="o">=</span>N<span class="w">        </span>Display<span class="w"> </span>DIEs<span class="w"> </span>starting<span class="w"> </span>at<span class="w"> </span>offset<span class="w"> </span>N
+</span></code></pre></div>
+<p><code>readelf -w</code> is almost equivalent to <code>objdump -W</code>.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>$<span class="w"> </span>objdump<span class="w"> </span>--help
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="w">  </span>-g,<span class="w"> </span>--debugging<span class="w">          </span>Display<span class="w"> </span>debug<span class="w"> </span>information<span class="w"> </span><span class="k">in</span><span class="w"> </span>object<span class="w"> </span>file
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="w">  </span>-e,<span class="w"> </span>--debugging-tags<span class="w">     </span>Display<span class="w"> </span>debug<span class="w"> </span>information<span class="w"> </span>using<span class="w"> </span>ctags<span class="w"> </span>style
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="w">  </span>-G,<span class="w"> </span>--stabs<span class="w">              </span>Display<span class="w"> </span><span class="o">(</span><span class="k">in</span><span class="w"> </span>raw<span class="w"> </span>form<span class="o">)</span><span class="w"> </span>any<span class="w"> </span>STABS<span class="w"> </span>info<span class="w"> </span><span class="k">in</span><span class="w"> </span>the<span class="w"> </span>file
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="w">  </span>-W,<span class="w"> </span>--dwarf<span class="o">[</span>a/<span class="o">=</span>abbrev,<span class="w"> </span>A/<span class="o">=</span>addr,<span class="w"> </span>r/<span class="o">=</span>aranges,<span class="w"> </span>c/<span class="o">=</span>cu_index,<span class="w"> </span>L/<span class="o">=</span>decodedline,
+</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="w">              </span>f/<span class="o">=</span>frames,<span class="w"> </span>F/<span class="o">=</span>frames-interp,<span class="w"> </span>g/<span class="o">=</span>gdb_index,<span class="w"> </span>i/<span class="o">=</span>info,<span class="w"> </span>o/<span class="o">=</span>loc,
+</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a><span class="w">              </span>m/<span class="o">=</span>macro,<span class="w"> </span>p/<span class="o">=</span>pubnames,<span class="w"> </span>t/<span class="o">=</span>pubtypes,<span class="w"> </span>R/<span class="o">=</span>Ranges,<span class="w"> </span>l/<span class="o">=</span>rawline,
+</span><span id="__span-8-9"><a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a><span class="w">              </span>s/<span class="o">=</span>str,<span class="w"> </span>O/<span class="o">=</span>str-offsets,<span class="w"> </span>u/<span class="o">=</span>trace_abbrev,<span class="w"> </span>T/<span class="o">=</span>trace_aranges,
+</span><span id="__span-8-10"><a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a><span class="w">              </span>U/<span class="o">=</span>trace_info<span class="o">]</span>
+</span><span id="__span-8-11"><a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a><span class="w">                           </span>Display<span class="w"> </span>the<span class="w"> </span>contents<span class="w"> </span>of<span class="w"> </span>DWARF<span class="w"> </span>debug<span class="w"> </span>sections
+</span></code></pre></div>
+<p>Both <code>readelf</code> and <code>objdump</code> support <code>--dwarf-depth</code> / <code>--dwarf-start</code> options.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>$<span class="w"> </span>man<span class="w"> </span>objdump
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="w">       </span>--dwarf-depth<span class="o">=</span>n
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="w">           </span>Limit<span class="w"> </span>the<span class="w"> </span>dump<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span><span class="s2">&quot;.debug_info&quot;</span><span class="w"> </span>section<span class="w"> </span>to<span class="w"> </span>n<span class="w"> </span>children.
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="w">           </span>This<span class="w"> </span>is<span class="w"> </span>only<span class="w"> </span>useful<span class="w"> </span>with<span class="w"> </span>--debug-dump<span class="o">=</span>info.<span class="w">  </span>The<span class="w"> </span>default<span class="w"> </span>is
+</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="w">           </span>to<span class="w"> </span>print<span class="w"> </span>all<span class="w"> </span>DIEs<span class="p">;</span><span class="w"> </span>the<span class="w"> </span>special<span class="w"> </span>value<span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="k">for</span><span class="w"> </span>n<span class="w"> </span>will<span class="w"> </span>also<span class="w"> </span>have
+</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="w">           </span>this<span class="w"> </span>effect.
+</span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a>
+</span><span id="__span-9-9"><a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a><span class="w">           </span>With<span class="w"> </span>a<span class="w"> </span>non-zero<span class="w"> </span>value<span class="w"> </span><span class="k">for</span><span class="w"> </span>n,<span class="w"> </span>DIEs<span class="w"> </span>at<span class="w"> </span>or<span class="w"> </span>deeper<span class="w"> </span>than<span class="w"> </span>n<span class="w"> </span>levels
+</span><span id="__span-9-10"><a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a><span class="w">           </span>will<span class="w"> </span>not<span class="w"> </span>be<span class="w"> </span>printed.<span class="w">  </span>The<span class="w"> </span>range<span class="w"> </span><span class="k">for</span><span class="w"> </span>n<span class="w"> </span>is<span class="w"> </span>zero-based.
+</span><span id="__span-9-11"><a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a>
+</span><span id="__span-9-12"><a id="__codelineno-9-12" name="__codelineno-9-12" href="#__codelineno-9-12"></a><span class="w">       </span>--dwarf-start<span class="o">=</span>n
+</span><span id="__span-9-13"><a id="__codelineno-9-13" name="__codelineno-9-13" href="#__codelineno-9-13"></a><span class="w">           </span>Print<span class="w"> </span>only<span class="w"> </span>DIEs<span class="w"> </span>beginning<span class="w"> </span>with<span class="w"> </span>the<span class="w"> </span>DIE<span class="w"> </span>numbered<span class="w"> </span>n.<span class="w">  </span>This<span class="w"> </span>is
+</span><span id="__span-9-14"><a id="__codelineno-9-14" name="__codelineno-9-14" href="#__codelineno-9-14"></a><span class="w">           </span>only<span class="w"> </span>useful<span class="w"> </span>with<span class="w"> </span>--debug-dump<span class="o">=</span>info.
+</span><span id="__span-9-15"><a id="__codelineno-9-15" name="__codelineno-9-15" href="#__codelineno-9-15"></a>
+</span><span id="__span-9-16"><a id="__codelineno-9-16" name="__codelineno-9-16" href="#__codelineno-9-16"></a><span class="w">           </span>If<span class="w"> </span>specified,<span class="w"> </span>this<span class="w"> </span>option<span class="w"> </span>will<span class="w"> </span>suppress<span class="w"> </span>printing<span class="w"> </span>of<span class="w"> </span>any
+</span><span id="__span-9-17"><a id="__codelineno-9-17" name="__codelineno-9-17" href="#__codelineno-9-17"></a><span class="w">           </span>header<span class="w"> </span>information<span class="w"> </span>and<span class="w"> </span>all<span class="w"> </span>DIEs<span class="w"> </span>before<span class="w"> </span>the<span class="w"> </span>DIE<span class="w"> </span>numbered<span class="w"> </span>n.
+</span><span id="__span-9-18"><a id="__codelineno-9-18" name="__codelineno-9-18" href="#__codelineno-9-18"></a><span class="w">           </span>Only<span class="w"> </span>siblings<span class="w"> </span>and<span class="w"> </span>children<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>specified<span class="w"> </span>DIE<span class="w"> </span>will<span class="w"> </span>be
+</span><span id="__span-9-19"><a id="__codelineno-9-19" name="__codelineno-9-19" href="#__codelineno-9-19"></a><span class="w">           </span>printed.
+</span><span id="__span-9-20"><a id="__codelineno-9-20" name="__codelineno-9-20" href="#__codelineno-9-20"></a>
+</span><span id="__span-9-21"><a id="__codelineno-9-21" name="__codelineno-9-21" href="#__codelineno-9-21"></a><span class="w">           </span>This<span class="w"> </span>can<span class="w"> </span>be<span class="w"> </span>used<span class="w"> </span><span class="k">in</span><span class="w"> </span>conjunction<span class="w"> </span>with<span class="w"> </span>--dwarf-depth.
+</span></code></pre></div>
+<h2 id="ctf">CTF<a class="headerlink" href="#ctf" title="Permanent link">#</a></h2>
+<p><a href="https://sourceware.org/binutils/docs/ctf-spec.html">The CTF File Format</a><br />
+<a href="https://man.omnios.org/man5/ctf">CTF(5)</a> — Compact C Type Format<br />
+<a href="https://manpages.ubuntu.com/manpages/focal/en/man1/ctfdump.1.html">Ubuntu Manpage: ctfdump — dump the SUNW_ctf section of an ELF file</a></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>$<span class="w"> </span>readelf<span class="w"> </span>--help
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="w">  </span>--ctf<span class="o">=</span>&lt;number<span class="p">|</span>name&gt;<span class="w">    </span>Display<span class="w"> </span>CTF<span class="w"> </span>info<span class="w"> </span>from<span class="w"> </span>section<span class="w"> </span>&lt;number<span class="p">|</span>name&gt;
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="w">  </span>--ctf-parent<span class="o">=</span>&lt;name&gt;<span class="w">    </span>Use<span class="w"> </span>CTF<span class="w"> </span>archive<span class="w"> </span>member<span class="w"> </span>&lt;name&gt;<span class="w"> </span>as<span class="w"> </span>the<span class="w"> </span>CTF<span class="w"> </span>parent
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="w">  </span>--ctf-symbols<span class="o">=</span>&lt;number<span class="p">|</span>name&gt;
+</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a><span class="w">                         </span>Use<span class="w"> </span>section<span class="w"> </span>&lt;number<span class="p">|</span>name&gt;<span class="w"> </span>as<span class="w"> </span>the<span class="w"> </span>CTF<span class="w"> </span>external<span class="w"> </span>symtab
+</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="w">  </span>--ctf-strings<span class="o">=</span>&lt;number<span class="p">|</span>name&gt;
+</span><span id="__span-10-8"><a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a><span class="w">                         </span>Use<span class="w"> </span>section<span class="w"> </span>&lt;number<span class="p">|</span>name&gt;<span class="w"> </span>as<span class="w"> </span>the<span class="w"> </span>CTF<span class="w"> </span>external<span class="w"> </span>strtab
+</span></code></pre></div>
+<p><code>objdump</code> provide equivalent options as <code>readelf</code> in dumping CTF info.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>$<span class="w"> </span>objdump<span class="w"> </span>--help
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="w">  </span>-L,<span class="w"> </span>--process-links<span class="w">      </span>Display<span class="w"> </span>the<span class="w"> </span>contents<span class="w"> </span>of<span class="w"> </span>non-debug<span class="w"> </span>sections<span class="w"> </span><span class="k">in</span>
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="w">                            </span>separate<span class="w"> </span>debuginfo<span class="w"> </span>files.<span class="w">  </span><span class="o">(</span>Implies<span class="w"> </span>-WK<span class="o">)</span>
+</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="w">      </span>--ctf<span class="o">[=</span>SECTION<span class="o">]</span><span class="w">      </span>Display<span class="w"> </span>CTF<span class="w"> </span>info<span class="w"> </span>from<span class="w"> </span>SECTION,<span class="w"> </span><span class="o">(</span>default<span class="w"> </span><span class="sb">`</span>.ctf<span class="err">&#39;</span><span class="o">)</span>
+</span></code></pre></div>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>$<span class="w"> </span>man<span class="w"> </span>objdump
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="w">       </span>--ctf<span class="o">[=</span>section<span class="o">]</span>
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="w">           </span>Display<span class="w"> </span>the<span class="w"> </span>contents<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>specified<span class="w"> </span>CTF<span class="w"> </span>section.<span class="w">  </span>CTF
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="w">           </span>sections<span class="w"> </span>themselves<span class="w"> </span>contain<span class="w"> </span>many<span class="w"> </span>subsections,<span class="w"> </span>all<span class="w"> </span>of<span class="w"> </span>which
+</span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a><span class="w">           </span>are<span class="w"> </span>displayed<span class="w"> </span><span class="k">in</span><span class="w"> </span>order.
+</span><span id="__span-12-7"><a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a>
+</span><span id="__span-12-8"><a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a><span class="w">           </span>By<span class="w"> </span>default,<span class="w"> </span>display<span class="w"> </span>the<span class="w"> </span>name<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>section<span class="w"> </span>named<span class="w"> </span>.ctf,<span class="w"> </span>which
+</span><span id="__span-12-9"><a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a><span class="w">           </span>is<span class="w"> </span>the<span class="w"> </span>name<span class="w"> </span>emitted<span class="w"> </span>by<span class="w"> </span>ld.
+</span><span id="__span-12-10"><a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a>
+</span><span id="__span-12-11"><a id="__codelineno-12-11" name="__codelineno-12-11" href="#__codelineno-12-11"></a><span class="w">       </span>--ctf-parent<span class="o">=</span>member
+</span><span id="__span-12-12"><a id="__codelineno-12-12" name="__codelineno-12-12" href="#__codelineno-12-12"></a><span class="w">           </span>If<span class="w"> </span>the<span class="w"> </span>CTF<span class="w"> </span>section<span class="w"> </span>contains<span class="w"> </span>ambiguously-defined<span class="w"> </span>types,<span class="w"> </span>it
+</span><span id="__span-12-13"><a id="__codelineno-12-13" name="__codelineno-12-13" href="#__codelineno-12-13"></a><span class="w">           </span>will<span class="w"> </span>consist<span class="w"> </span>of<span class="w"> </span>an<span class="w"> </span>archive<span class="w"> </span>of<span class="w"> </span>many<span class="w"> </span>CTF<span class="w"> </span>dictionaries,<span class="w"> </span>all
+</span><span id="__span-12-14"><a id="__codelineno-12-14" name="__codelineno-12-14" href="#__codelineno-12-14"></a><span class="w">           </span>inheriting<span class="w"> </span>from<span class="w"> </span>one<span class="w"> </span>dictionary<span class="w"> </span>containing<span class="w"> </span>unambiguous<span class="w"> </span>types.
+</span><span id="__span-12-15"><a id="__codelineno-12-15" name="__codelineno-12-15" href="#__codelineno-12-15"></a><span class="w">           </span>This<span class="w"> </span>member<span class="w"> </span>is<span class="w"> </span>by<span class="w"> </span>default<span class="w"> </span>named<span class="w"> </span>.ctf,<span class="w"> </span>like<span class="w"> </span>the<span class="w"> </span>section
+</span><span id="__span-12-16"><a id="__codelineno-12-16" name="__codelineno-12-16" href="#__codelineno-12-16"></a><span class="w">           </span>containing<span class="w"> </span>it,<span class="w"> </span>but<span class="w"> </span>it<span class="w"> </span>is<span class="w"> </span>possible<span class="w"> </span>to<span class="w"> </span>change<span class="w"> </span>this<span class="w"> </span>name<span class="w"> </span>using
+</span><span id="__span-12-17"><a id="__codelineno-12-17" name="__codelineno-12-17" href="#__codelineno-12-17"></a><span class="w">           </span>the<span class="w"> </span><span class="s2">&quot;ctf_link_set_memb_name_changer&quot;</span><span class="w"> </span><span class="k">function</span><span class="w"> </span>at<span class="w"> </span>link<span class="w"> </span>time.
+</span><span id="__span-12-18"><a id="__codelineno-12-18" name="__codelineno-12-18" href="#__codelineno-12-18"></a><span class="w">           </span>When<span class="w"> </span>looking<span class="w"> </span>at<span class="w"> </span>CTF<span class="w"> </span>archives<span class="w"> </span>that<span class="w"> </span>have<span class="w"> </span>been<span class="w"> </span>created<span class="w"> </span>by<span class="w"> </span>a
+</span><span id="__span-12-19"><a id="__codelineno-12-19" name="__codelineno-12-19" href="#__codelineno-12-19"></a><span class="w">           </span>linker<span class="w"> </span>that<span class="w"> </span>uses<span class="w"> </span>the<span class="w"> </span>name<span class="w"> </span>changer<span class="w"> </span>to<span class="w"> </span>rename<span class="w"> </span>the<span class="w"> </span>parent
+</span><span id="__span-12-20"><a id="__codelineno-12-20" name="__codelineno-12-20" href="#__codelineno-12-20"></a><span class="w">           </span>archive<span class="w"> </span>member,<span class="w"> </span>--ctf-parent<span class="w"> </span>can<span class="w"> </span>be<span class="w"> </span>used<span class="w"> </span>to<span class="w"> </span>specify<span class="w"> </span>the<span class="w"> </span>name
+</span><span id="__span-12-21"><a id="__codelineno-12-21" name="__codelineno-12-21" href="#__codelineno-12-21"></a><span class="w">           </span>used<span class="w"> </span><span class="k">for</span><span class="w"> </span>the<span class="w"> </span>parent.
+</span></code></pre></div>
+<h2 id="manipulate">manipulate<a class="headerlink" href="#manipulate" title="Permanent link">#</a></h2>
+<p><a href="https://stackoverflow.com/questions/31453859/how-to-remove-a-specific-elf-section-without-stripping-other-symbols">gcc - How to remove a specific ELF section, without stripping other symbols? - Stack Overflow</a></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>$<span class="w"> </span>man<span class="w"> </span>objdump
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="w">       </span>--adjust-vma<span class="o">=</span>offset
+</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="w">           </span>When<span class="w"> </span>dumping<span class="w"> </span>information,<span class="w"> </span>first<span class="w"> </span>add<span class="w"> </span>offset<span class="w"> </span>to<span class="w"> </span>all<span class="w"> </span>the<span class="w"> </span>section
+</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a><span class="w">           </span>addresses.<span class="w">  </span>This<span class="w"> </span>is<span class="w"> </span>useful<span class="w"> </span><span class="k">if</span><span class="w"> </span>the<span class="w"> </span>section<span class="w"> </span>addresses<span class="w"> </span><span class="k">do</span><span class="w"> </span>not
+</span><span id="__span-13-6"><a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a><span class="w">           </span>correspond<span class="w"> </span>to<span class="w"> </span>the<span class="w"> </span>symbol<span class="w"> </span>table,<span class="w"> </span>which<span class="w"> </span>can<span class="w"> </span>happen<span class="w"> </span>when<span class="w"> </span>putting
+</span><span id="__span-13-7"><a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a><span class="w">           </span>sections<span class="w"> </span>at<span class="w"> </span>particular<span class="w"> </span>addresses<span class="w"> </span>when<span class="w"> </span>using<span class="w"> </span>a<span class="w"> </span>format<span class="w"> </span>which
+</span><span id="__span-13-8"><a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a><span class="w">           </span>can<span class="w"> </span>not<span class="w"> </span>represent<span class="w"> </span>section<span class="w"> </span>addresses,<span class="w"> </span>such<span class="w"> </span>as<span class="w"> </span>a.out.
+</span></code></pre></div>
+<h3 id="strip">strip<a class="headerlink" href="#strip" title="Permanent link">#</a></h3>
+<p>In embedded systems, resources are often limited. Sometimes in order to reduce the space occupied by program files (such as FLASH), we can remove debugging information from the program. The most commonly used tool is to use the <code>strip</code> tool to achieve this purpose. However, the same purpose can be achieved using <code>objcopy --strip-debug</code>.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>$<span class="w"> </span>strip<span class="w"> </span>--help
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="w">  </span>-R<span class="w"> </span>--remove-section<span class="o">=</span>&lt;name&gt;<span class="w">       </span>Also<span class="w"> </span>remove<span class="w"> </span>section<span class="w"> </span>&lt;name&gt;<span class="w"> </span>from<span class="w"> </span>the<span class="w"> </span>output
+</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="w">     </span>--remove-relocations<span class="w"> </span>&lt;name&gt;<span class="w">   </span>Remove<span class="w"> </span>relocations<span class="w"> </span>from<span class="w"> </span>section<span class="w"> </span>&lt;name&gt;
+</span><span id="__span-14-5"><a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a><span class="w">  </span>-s<span class="w"> </span>--strip-all<span class="w">                   </span>Remove<span class="w"> </span>all<span class="w"> </span>symbol<span class="w"> </span>and<span class="w"> </span>relocation<span class="w"> </span>information
+</span><span id="__span-14-6"><a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a><span class="w">  </span>-g<span class="w"> </span>-S<span class="w"> </span>-d<span class="w"> </span>--strip-debug<span class="w">           </span>Remove<span class="w"> </span>all<span class="w"> </span>debugging<span class="w"> </span>symbols<span class="w"> </span><span class="p">&amp;</span><span class="w"> </span>sections
+</span><span id="__span-14-7"><a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a><span class="w">     </span>--strip-dwo<span class="w">                   </span>Remove<span class="w"> </span>all<span class="w"> </span>DWO<span class="w"> </span>sections
+</span><span id="__span-14-8"><a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a><span class="w">     </span>--strip-unneeded<span class="w">              </span>Remove<span class="w"> </span>all<span class="w"> </span>symbols<span class="w"> </span>not<span class="w"> </span>needed<span class="w"> </span>by<span class="w"> </span>relocations
+</span><span id="__span-14-9"><a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a><span class="w">     </span>--only-keep-debug<span class="w">             </span>Strip<span class="w"> </span>everything<span class="w"> </span>but<span class="w"> </span>the<span class="w"> </span>debug<span class="w"> </span>information
+</span><span id="__span-14-10"><a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a>
+</span><span id="__span-14-11"><a id="__codelineno-14-11" name="__codelineno-14-11" href="#__codelineno-14-11"></a><span class="w">  </span>-N<span class="w"> </span>--strip-symbol<span class="o">=</span>&lt;name&gt;<span class="w">         </span>Do<span class="w"> </span>not<span class="w"> </span>copy<span class="w"> </span>symbol<span class="w"> </span>&lt;name&gt;
+</span><span id="__span-14-12"><a id="__codelineno-14-12" name="__codelineno-14-12" href="#__codelineno-14-12"></a><span class="w">     </span>--keep-section<span class="o">=</span>&lt;name&gt;<span class="w">         </span>Do<span class="w"> </span>not<span class="w"> </span>strip<span class="w"> </span>section<span class="w"> </span>&lt;name&gt;
+</span><span id="__span-14-13"><a id="__codelineno-14-13" name="__codelineno-14-13" href="#__codelineno-14-13"></a><span class="w">  </span>-K<span class="w"> </span>--keep-symbol<span class="o">=</span>&lt;name&gt;<span class="w">          </span>Do<span class="w"> </span>not<span class="w"> </span>strip<span class="w"> </span>symbol<span class="w"> </span>&lt;name&gt;
+</span><span id="__span-14-14"><a id="__codelineno-14-14" name="__codelineno-14-14" href="#__codelineno-14-14"></a><span class="w">     </span>--keep-section-symbols<span class="w">        </span>Do<span class="w"> </span>not<span class="w"> </span>strip<span class="w"> </span>section<span class="w"> </span>symbols
+</span><span id="__span-14-15"><a id="__codelineno-14-15" name="__codelineno-14-15" href="#__codelineno-14-15"></a><span class="w">     </span>--keep-file-symbols<span class="w">           </span>Do<span class="w"> </span>not<span class="w"> </span>strip<span class="w"> </span>file<span class="w"> </span>symbol<span class="o">(</span>s<span class="o">)</span>
+</span><span id="__span-14-16"><a id="__codelineno-14-16" name="__codelineno-14-16" href="#__codelineno-14-16"></a><span class="w">  </span>-w<span class="w"> </span>--wildcard<span class="w">                    </span>Permit<span class="w"> </span>wildcard<span class="w"> </span><span class="k">in</span><span class="w"> </span>symbol<span class="w"> </span>comparison
+</span><span id="__span-14-17"><a id="__codelineno-14-17" name="__codelineno-14-17" href="#__codelineno-14-17"></a><span class="w">  </span>-x<span class="w"> </span>--discard-all<span class="w">                 </span>Remove<span class="w"> </span>all<span class="w"> </span>non-global<span class="w"> </span>symbols
+</span><span id="__span-14-18"><a id="__codelineno-14-18" name="__codelineno-14-18" href="#__codelineno-14-18"></a><span class="w">  </span>-X<span class="w"> </span>--discard-locals<span class="w">              </span>Remove<span class="w"> </span>any<span class="w"> </span>compiler-generated<span class="w"> </span>symbols
+</span></code></pre></div>
+<h3 id="objcopy">objcopy<a class="headerlink" href="#objcopy" title="Permanent link">#</a></h3>
+<p><a href="https://mshrimp.github.io/2020/04/19/Linux%E5%86%85%E6%A0%B8%E5%90%AF%E5%8A%A8%E6%B5%81%E7%A8%8B-%E5%9F%BA%E4%BA%8EARM64/">Linux内核启动流程-基于ARM64</a></p>
+<blockquote>
+<p>vmlinux is a generated uncompressed pure kernel binary with all user-defined kernel components, but it is unable to boot the system. In order to load the Linux kernel image into memory and in an executable state, the kernel build system uses the <code>objcopy</code> command to clear unnecessary sections, compress vmlinux in ELF format, load and link through the bootloader, and finally generate a bootable binary zImage.</p>
+</blockquote>
+<p><a href="https://www.cnblogs.com/arnoldlu/p/14102272.html">简析Linux镜像生成过程: vmlinux-&gt;uImage</a></p>
+<ol>
+<li>Generate <code>vmlinux</code> and <code>System.map</code> files by running <code>link-vmlinux.sh</code>.</li>
+<li>Use <code>objcopy</code> to remove unnecessary segments in vmlinux and output binary format Image.</li>
+<li>Compress the Image and output compressed files in different formats, such as <code>Image.gz</code> corresponding to gzip.</li>
+<li>Add uboot header information to Image.gz to generate <code>uImage</code> file.</li>
+</ol>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>$<span class="w"> </span>objcopy<span class="w"> </span>--help
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a><span class="w">  </span>-j<span class="w"> </span>--only-section<span class="w"> </span>&lt;name&gt;<span class="w">         </span>Only<span class="w"> </span>copy<span class="w"> </span>section<span class="w"> </span>&lt;name&gt;<span class="w"> </span>into<span class="w"> </span>the<span class="w"> </span>output
+</span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a><span class="w">     </span>--add-gnu-debuglink<span class="o">=</span>&lt;file&gt;<span class="w">    </span>Add<span class="w"> </span>section<span class="w"> </span>.gnu_debuglink<span class="w"> </span>linking<span class="w"> </span>to<span class="w"> </span>&lt;file&gt;
+</span><span id="__span-15-5"><a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a><span class="w">  </span>-R<span class="w"> </span>--remove-section<span class="w"> </span>&lt;name&gt;<span class="w">       </span>Remove<span class="w"> </span>section<span class="w"> </span>&lt;name&gt;<span class="w"> </span>from<span class="w"> </span>the<span class="w"> </span>output
+</span><span id="__span-15-6"><a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a><span class="w">     </span>--remove-relocations<span class="w"> </span>&lt;name&gt;<span class="w">   </span>Remove<span class="w"> </span>relocations<span class="w"> </span>from<span class="w"> </span>section<span class="w"> </span>&lt;name&gt;
+</span><span id="__span-15-7"><a id="__codelineno-15-7" name="__codelineno-15-7" href="#__codelineno-15-7"></a><span class="w">  </span>-S<span class="w"> </span>--strip-all<span class="w">                   </span>Remove<span class="w"> </span>all<span class="w"> </span>symbol<span class="w"> </span>and<span class="w"> </span>relocation<span class="w"> </span>information
+</span><span id="__span-15-8"><a id="__codelineno-15-8" name="__codelineno-15-8" href="#__codelineno-15-8"></a><span class="w">  </span>-g<span class="w"> </span>--strip-debug<span class="w">                 </span>Remove<span class="w"> </span>all<span class="w"> </span>debugging<span class="w"> </span>symbols<span class="w"> </span><span class="p">&amp;</span><span class="w"> </span>sections
+</span><span id="__span-15-9"><a id="__codelineno-15-9" name="__codelineno-15-9" href="#__codelineno-15-9"></a><span class="w">     </span>--strip-dwo<span class="w">                   </span>Remove<span class="w"> </span>all<span class="w"> </span>DWO<span class="w"> </span>sections
+</span><span id="__span-15-10"><a id="__codelineno-15-10" name="__codelineno-15-10" href="#__codelineno-15-10"></a><span class="w">     </span>--strip-unneeded<span class="w">              </span>Remove<span class="w"> </span>all<span class="w"> </span>symbols<span class="w"> </span>not<span class="w"> </span>needed<span class="w"> </span>by<span class="w"> </span>relocations
+</span><span id="__span-15-11"><a id="__codelineno-15-11" name="__codelineno-15-11" href="#__codelineno-15-11"></a>
+</span><span id="__span-15-12"><a id="__codelineno-15-12" name="__codelineno-15-12" href="#__codelineno-15-12"></a><span class="w">  </span>-N<span class="w"> </span>--strip-symbol<span class="w"> </span>&lt;name&gt;<span class="w">         </span>Do<span class="w"> </span>not<span class="w"> </span>copy<span class="w"> </span>symbol<span class="w"> </span>&lt;name&gt;
+</span><span id="__span-15-13"><a id="__codelineno-15-13" name="__codelineno-15-13" href="#__codelineno-15-13"></a>
+</span><span id="__span-15-14"><a id="__codelineno-15-14" name="__codelineno-15-14" href="#__codelineno-15-14"></a><span class="w">  </span>-K<span class="w"> </span>--keep-symbol<span class="w"> </span>&lt;name&gt;<span class="w">          </span>Do<span class="w"> </span>not<span class="w"> </span>strip<span class="w"> </span>symbol<span class="w"> </span>&lt;name&gt;
+</span><span id="__span-15-15"><a id="__codelineno-15-15" name="__codelineno-15-15" href="#__codelineno-15-15"></a>
+</span><span id="__span-15-16"><a id="__codelineno-15-16" name="__codelineno-15-16" href="#__codelineno-15-16"></a><span class="w">  </span>-L<span class="w"> </span>--localize-symbol<span class="w"> </span>&lt;name&gt;<span class="w">      </span>Force<span class="w"> </span>symbol<span class="w"> </span>&lt;name&gt;<span class="w"> </span>to<span class="w"> </span>be<span class="w"> </span>marked<span class="w"> </span>as<span class="w"> </span>a<span class="w"> </span><span class="nb">local</span>
+</span><span id="__span-15-17"><a id="__codelineno-15-17" name="__codelineno-15-17" href="#__codelineno-15-17"></a><span class="w">     </span>--globalize-symbol<span class="w"> </span>&lt;name&gt;<span class="w">     </span>Force<span class="w"> </span>symbol<span class="w"> </span>&lt;name&gt;<span class="w"> </span>to<span class="w"> </span>be<span class="w"> </span>marked<span class="w"> </span>as<span class="w"> </span>a<span class="w"> </span>global
+</span><span id="__span-15-18"><a id="__codelineno-15-18" name="__codelineno-15-18" href="#__codelineno-15-18"></a><span class="w">  </span>-G<span class="w"> </span>--keep-global-symbol<span class="w"> </span>&lt;name&gt;<span class="w">   </span>Localize<span class="w"> </span>all<span class="w"> </span>symbols<span class="w"> </span>except<span class="w"> </span>&lt;name&gt;
+</span><span id="__span-15-19"><a id="__codelineno-15-19" name="__codelineno-15-19" href="#__codelineno-15-19"></a>
+</span><span id="__span-15-20"><a id="__codelineno-15-20" name="__codelineno-15-20" href="#__codelineno-15-20"></a><span class="w">  </span>-x<span class="w"> </span>--discard-all<span class="w">                 </span>Remove<span class="w"> </span>all<span class="w"> </span>non-global<span class="w"> </span>symbols
+</span><span id="__span-15-21"><a id="__codelineno-15-21" name="__codelineno-15-21" href="#__codelineno-15-21"></a><span class="w">  </span>-X<span class="w"> </span>--discard-locals<span class="w">              </span>Remove<span class="w"> </span>any<span class="w"> </span>compiler-generated<span class="w"> </span>symbols
+</span></code></pre></div>
+
+
+
+
+
+
+
+  
+  
+
+
+
+  
+
+
+  
+
+
+
+  <h2 id="__comments">评论</h2>
+  <!-- Insert generated snippet here -->
+  <script src="https://giscus.app/client.js"
+    data-repo="fan2/mkdocs"
+    data-repo-id="R_kgDOLltxSg"
+    data-category="Announcements"
+    data-category-id="DIC_kwDOLltxSs4CeURH"
+    data-mapping="pathname"
+    data-strict="0"
+    data-reactions-enabled="1"
+    data-emit-metadata="1"
+    data-input-position="top"
+    data-theme="preferred_color_scheme"
+    data-lang="zh-CN"
+    data-loading="lazy"
+    crossorigin="anonymous"
+    async>
+  </script>
+
+  <!-- Synchronize Giscus theme with palette -->
+  <script>
+    var giscus = document.querySelector("script[src*=giscus]")
+
+    // Set palette on initial load
+    var palette = __md_get("__palette")
+    if (palette && typeof palette.color === "object") {
+      var theme = palette.color.scheme === "slate"
+        ? "transparent_dark"
+        : "light"
+
+      // Instruct Giscus to set theme
+      giscus.setAttribute("data-theme", theme) 
+    }
+
+    // Register event handlers after documented loaded
+    document.addEventListener("DOMContentLoaded", function() {
+      var ref = document.querySelector("[data-md-component=palette]")
+      ref.addEventListener("change", function() {
+        var palette = __md_get("__palette")
+        if (palette && typeof palette.color === "object") {
+          var theme = palette.color.scheme === "slate"
+            ? "transparent_dark"
+            : "light"
+
+          // Instruct Giscus to change theme
+          var frame = document.querySelector(".giscus-frame")
+          frame.contentWindow.postMessage(
+            { giscus: { setConfig: { theme } } },
+            "https://giscus.app"
+          )
+        }
+      })
+    })
+  </script>
+
+      
+    </article>
+  </div>
+
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+        
+      
+      <nav class="md-footer__inner md-grid" aria-label="页脚" >
+        
+          
+          <a href="../../20230618/dwarf-debugging/" class="md-footer__link md-footer__link--prev" aria-label="上一页: DWARF Debugging Format">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                上一页
+              </span>
+              <div class="md-ellipsis">
+                DWARF Debugging Format
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../../20230622/addr2line/" class="md-footer__link md-footer__link--next" aria-label="下一页: addr2line - resolve address to symbol">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                下一页
+              </span>
+              <div class="md-ellipsis">
+                addr2line - resolve address to symbol
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2024- Cliff Fan
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["toc.follow", "header.autohide", "navigation.tabs", "navigation.top", "navigation.footer", "navigation.tracking", "content.code.copy", "content.code.select", "content.code.annotate"], "search": "../../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.bd41221c.min.js"></script>
+      
+        <script src="../../../javascripts/mathjax.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+        <script src="https://vercount.one/js"></script>
+      
+    
+  </body>
+</html>

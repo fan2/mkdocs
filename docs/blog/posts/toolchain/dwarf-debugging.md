@@ -71,10 +71,41 @@ To tell GCC to emit extra information for use by a debugger, in almost all cases
 gcc 编译链接 C 代码，添加 `-g` 选项生成调试信息，才能够使用 GDB 进行调试。
 
 ```Shell
-$ cc helloc.c -o helloc -g
-$ cc helloc.c -o helloc -gdwarf
-$ cc helloc.c -o helloc -gdwarf-5
+$ cc test-gdb.c -o test-gdb -g
+$ cc test-gdb.c -o test-gdb -gdwarf
+$ cc test-gdb.c -o test-gdb -gdwarf-5
 ```
+
+??? info "test-gdb.c"
+
+    ```c linenums="1"
+    #include <stdio.h>
+
+    int func(int n)
+    {
+        int sum=0,i;
+        for(i=0; i<n; i++)
+        {
+            sum+=i;
+        }
+        return sum;
+    }
+
+    int main(int argc, char* argv[])
+    {
+        int i;
+        long result = 0;
+        for(i=1; i<=100; i++)
+        {
+            result += i;
+        }
+
+        printf("result[1-100] = %ld\n", result );
+        printf("result[1-250] = %d\n", func(250) );
+
+        return 0;
+    }
+    ```
 
 ## dump DWARF information
 
@@ -97,21 +128,17 @@ The DWARF listing for all but the smallest programs is quite voluminous, so it w
 `-w` / --debug-dump: Displays the contents of the DWARF debug sections in the file, if any are present.
 
 ```bash
--w - display all DWARF sections
--w[liaprmfFso] display specific sections -
-    l - line table
-    i - debug info
-    a - abbreviation table
-    p - public names
-    r - ranges
-    m - macro table
-    f - debug frame (encoded)
-    F - debug frame (decoded)
-    s - string table
-    o - location lists
+$ readelf --help
+  -w --debug-dump[a/=abbrev, A/=addr, r/=aranges, c/=cu_index, L/=decodedline,
+                  f/=frames, F/=frames-interp, g/=gdb_index, i/=info, o/=loc,
+                  m/=macro, p/=pubnames, t/=pubtypes, R/=Ranges, l/=rawline,
+                  s/=str, O/=str-offsets, u/=trace_abbrev, T/=trace_aranges,
+                  U/=trace_info]
+                         Display the contents of DWARF debug sections
 ```
 
 ```bash
+$ man readelf
            -w[lLiaprmfFsOoRtUuTgAckK]
            --debug-dump[=rawline,=decodedline,=info,=abbrev,=pubnames,=aranges,=macro,=frames,=frames-interp,=str,=str-offsets,=loc,=Ranges,=pubtypes,=trace_info,=trace_abbrev,=trace_aranges,=gdb_index,=addr,=cu_index,=links,=follow-links]
                Displays the contents of the DWARF debug sections in the
@@ -135,15 +162,15 @@ The DWARF listing for all but the smallest programs is quite voluminous, so it w
 `-wl`（--debug-dump=rawline）打印 .debug\_line section。
 
 ```bash
-pifan@rpi4b-ubuntu $ readelf -wl helloc
+pifan@rpi3b-ubuntu $ readelf -wl test-gdb
 Raw dump of debug contents of section .debug_line:
 
   Offset:                      0x0
-  Length:                      78
+  Length:                      153
   DWARF Version:               5
   Address size (bytes):        8
   Segment selector (bytes):    0
-  Prologue Length:             42
+  Prologue Length:             51
   Minimum Instruction Length:  4
   Maximum Ops per Instruction: 1
   Initial value of 'is_stmt':  1
@@ -157,6 +184,7 @@ Raw dump of debug contents of section .debug_line:
 其他相关选项：`--dwarf-depth`, `--dwarf-start`
 
 ```bash
+$ man readelf
        --dwarf-depth=n
            Limit the dump of the ".debug_info" section to n children.
            This is only useful with --debug-dump=info.  The default is
@@ -176,6 +204,8 @@ Raw dump of debug contents of section .debug_line:
 #### -g
 
 ```bash
+$ man objdump
+
        -g
        --debugging
            Display debugging information.  This attempts to parse STABS
@@ -190,6 +220,8 @@ Raw dump of debug contents of section .debug_line:
 `objdump -W` 同 `readelf -w`。
 
 ```bash
+$ man objdump
+
        -W[lLiaprmfFsoORtUuTgAckK]
        --dwarf[=rawline,=decodedline,=info,=abbrev,=pubnames,=aranges,=macro,=frames,=frames-interp,=str,=str-offsets,=loc,=Ranges,=pubtypes,=trace_info,=trace_abbrev,=trace_aranges,=gdb_index,=addr,=cu_index,=links,=follow-links]
            Displays the contents of the DWARF debug sections in the
@@ -209,18 +241,18 @@ Raw dump of debug contents of section .debug_line:
 `-Wl`（--dwarf=rawline）打印 .debug\_line section。
 
 ```bash
-pifan@rpi4b-ubuntu $ objdump -Wl helloc
+pifan@rpi3b-ubuntu $ objdump -Wl test-gdb
 
-helloc:     file format elf64-littleaarch64
+test-gdb:     file format elf64-littleaarch64
 
 Raw dump of debug contents of section .debug_line:
 
   Offset:                      0x0
-  Length:                      78
+  Length:                      153
   DWARF Version:               5
   Address size (bytes):        8
   Segment selector (bytes):    0
-  Prologue Length:             42
+  Prologue Length:             51
   Minimum Instruction Length:  4
   Maximum Ops per Instruction: 1
   Initial value of 'is_stmt':  1
@@ -234,6 +266,8 @@ Raw dump of debug contents of section .debug_line:
 #### misc
 
 ```bash
+$ man objdump
+
        -G
        --stabs
            Display the full contents of any sections requested.  Display

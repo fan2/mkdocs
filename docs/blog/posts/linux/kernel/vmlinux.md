@@ -45,6 +45,10 @@ In short, `vmlinux` is generated according to the `vmlinux.lds` linker script, a
 
 ## references
 
+[简析Linux镜像生成过程: vmlinux->uImage](https://www.cnblogs.com/arnoldlu/p/14102272.html)
+
+![vmlinux-uImage](./images/vmlinux-uImage.png)
+
 [Linux内核链接脚本vmlinux.lds.S详解](https://blog.csdn.net/shift_wwx/article/details/134209465)
 [linux内核链接脚本vmlinux.lds分析（十一）](https://www.cnblogs.com/jianhua1992/p/16852795.html)
 

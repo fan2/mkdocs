@@ -219,6 +219,10 @@ EM_RISCV       | 243   | RISC-V
 
 [Executable and Linkable Format (ELF).pdf](https://www.cs.cmu.edu/afs/cs/academic/class/15213-f00/docs/elf.pdf)
 
+[ELF 文件 - CTF Wiki](https://ctf-wiki.org/executable/elf/structure/basic-info/)
+
 [Binary analysis - ELF’s Story](https://aleeamini.com/category/binary-analysis/)
 
 [The ELF format - how programs look from the inside](https://www.caichinger.com/elf.html)
+
+[Linux Reverse Engineering CTFs for Beginners](https://osandamalith.com/2019/02/11/linux-reverse-engineering-ctfs-for-beginners/)
