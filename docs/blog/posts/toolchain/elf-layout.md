@@ -52,9 +52,9 @@ An ELF file has two views: the program header shows the *segments* used at run t
 
 The `segments` contain information that is needed for run time execution of the file, while `sections` contain important data for linking and relocation. Any byte in the entire file can be owned by one section at most, and orphan bytes can occur which are unowned by any section.
 
-1. File header
-2. Program header
-3. Section header
+1. File header: `file $ELF`; `objdump -f $ELF`; `readelf -h $ELF`.
+2. Program header: `readelf -lW $ELF`
+3. Section header: `readelf -SW $ELF`; `objdump -hw $ELF`
 
 <figure markdown="span">
     ![64-bit-ELF-glance](./images/64-bit-ELF-glance.png){: style="width:90%;height:90%"}

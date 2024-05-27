@@ -14,46 +14,7 @@ comments: true
 
 <!-- more -->
 
-To tell GCC to emit extra information for use by a debugger, in almost all cases you need only to add `-g` to your other options.
-
-```bash
-$ cc test-gdb.c -o test-gdb -g
-$ cc test-gdb.c -o test-gdb -gdwarf
-$ cc test-gdb.c -o test-gdb -gdwarf-5
-```
-
-??? info "test-gdb.c"
-
-    ```c linenums="1"
-    #include <stdio.h>
-
-    int func(int n)
-    {
-        int sum=0,i;
-        for(i=0; i<n; i++)
-        {
-            sum+=i;
-        }
-        return sum;
-    }
-
-    int main(int argc, char* argv[])
-    {
-        int i;
-        long result = 0;
-        for(i=1; i<=100; i++)
-        {
-            result += i;
-        }
-
-        printf("result[1-100] = %ld\n", result );
-        printf("result[1-250] = %d\n", func(250) );
-
-        return 0;
-    }
-    ```
-
-## help
+## help tour
 
 We can invoke `objdump -d $OBJ_FILE` or `objdump -d $ELF_FILE` to disassemble object file or ELF file.
 
@@ -111,6 +72,83 @@ $ man objdump
                mode.  Note: "intel-mnemonic" implies "intel" and
                "att-mnemonic" implies "att".
 ```
+
+## demo program
+
+??? info "test-gdb.c"
+
+    ```c linenums="1"
+    #include <stdio.h>
+
+    int func(int n)
+    {
+        int sum=0,i;
+        for(i=0; i<n; i++)
+        {
+            sum+=i;
+        }
+        return sum;
+    }
+
+    int main(int argc, char* argv[])
+    {
+        int i;
+        long result = 0;
+        for(i=1; i<=100; i++)
+        {
+            result += i;
+        }
+
+        printf("result[1-100] = %ld\n", result );
+        printf("result[1-250] = %d\n", func(250) );
+
+        return 0;
+    }
+    ```
+
+To tell GCC to emit extra information for use by a debugger, in almost all cases you need only to add `-g` to your other options.
+
+```bash
+$ cc test-gdb.c -o test-gdb -g
+$ cc test-gdb.c -o test-gdb -gdwarf
+$ cc test-gdb.c -o test-gdb -gdwarf-5
+```
+
+??? info "test-gdb ELF header"
+
+    ```bash
+    $ file test-gdb
+    test-gdb: ELF 64-bit LSB pie executable, ARM aarch64, version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux-aarch64.so.1, BuildID[sha1]=65f667a433bbb8c27eeb9bab8db76816d07292dd, for GNU/Linux 3.7.0, with debug_info, not stripped
+
+    $ objdump -f test-gdb
+
+    test-gdb:     file format elf64-littleaarch64
+    architecture: aarch64, flags 0x00000150:
+    HAS_SYMS, DYNAMIC, D_PAGED
+    start address 0x0000000000000640
+
+    $ readelf -h test-gdb
+    ELF Header:
+      Magic:   7f 45 4c 46 02 01 01 00 00 00 00 00 00 00 00 00
+      Class:                             ELF64
+      Data:                              2's complement, little endian
+      Version:                           1 (current)
+      OS/ABI:                            UNIX - System V
+      ABI Version:                       0
+      Type:                              DYN (Position-Independent Executable file)
+      Machine:                           AArch64
+      Version:                           0x1
+      Entry point address:               0x640
+      Start of program headers:          64 (bytes into file)
+      Start of section headers:          8368 (bytes into file)
+      Flags:                             0x0
+      Size of this header:               64 (bytes)
+      Size of program headers:           56 (bytes)
+      Number of program headers:         9
+      Size of section headers:           64 (bytes)
+      Number of section headers:         34
+      Section header string table index: 33
+    ```
 
 ## disassemble
 
@@ -516,35 +554,33 @@ section               size      addr
 .text                0x1dc     0x640
 .fini                 0x14     0x81c
 
-$ readelf -S test-gdb
+$ readelf -SW test-gdb
 There are 34 section headers, starting at offset 0x20b0:
 
 Section Headers:
-  [Nr] Name              Type             Address           Offset
-       Size              EntSize          Flags  Link  Info  Align
+  [Nr] Name              Type            Address          Off    Size   ES Flg Lk Inf Al
+  [ 0]                   NULL            0000000000000000 000000 000000 00      0   0  0
+  [ 1] .interp           PROGBITS        0000000000000238 000238 00001b 00   A  0   0  1
 
-  [11] .init             PROGBITS         00000000000005b8  000005b8
-       0000000000000018  0000000000000000  AX       0     0     4
+  [11] .init             PROGBITS        00000000000005b8 0005b8 000018 00  AX  0   0  4
+  [12] .plt              PROGBITS        00000000000005d0 0005d0 000070 00  AX  0   0 16
+  [13] .text             PROGBITS        0000000000000640 000640 0001dc 00  AX  0   0 64
+  [14] .fini             PROGBITS        000000000000081c 00081c 000014 00  AX  0   0  4
+  [15] .rodata           PROGBITS        0000000000000830 000830 000034 00   A  0   0  8
 
-  [13] .text             PROGBITS         0000000000000640  00000640
-       00000000000001dc  0000000000000000  AX       0     0     64
-  [14] .fini             PROGBITS         000000000000081c  0000081c
-       0000000000000014  0000000000000000  AX       0     0     4
-
-$ objdump -h test-gdb
+$ objdump -hw test-gdb
 
 test-gdb:     file format elf64-littleaarch64
 
 Sections:
-Idx Name          Size      VMA               LMA               File off  Algn
+Idx Name               Size      VMA               LMA               File off  Algn  Flags
+  0 .interp            0000001b  0000000000000238  0000000000000238  00000238  2**0  CONTENTS, ALLOC, LOAD, READONLY, DATA
 
- 10 .init         00000018  00000000000005b8  00000000000005b8  000005b8  2**2
-                  CONTENTS, ALLOC, LOAD, READONLY, CODE
-
- 12 .text         000001dc  0000000000000640  0000000000000640  00000640  2**6
-                  CONTENTS, ALLOC, LOAD, READONLY, CODE
- 13 .fini         00000014  000000000000081c  000000000000081c  0000081c  2**2
-                  CONTENTS, ALLOC, LOAD, READONLY, CODE
+ 10 .init              00000018  00000000000005b8  00000000000005b8  000005b8  2**2  CONTENTS, ALLOC, LOAD, READONLY, CODE
+ 11 .plt               00000070  00000000000005d0  00000000000005d0  000005d0  2**4  CONTENTS, ALLOC, LOAD, READONLY, CODE
+ 12 .text              000001dc  0000000000000640  0000000000000640  00000640  2**6  CONTENTS, ALLOC, LOAD, READONLY, CODE
+ 13 .fini              00000014  000000000000081c  000000000000081c  0000081c  2**2  CONTENTS, ALLOC, LOAD, READONLY, CODE
+ 14 .rodata            00000034  0000000000000830  0000000000000830  00000830  2**3  CONTENTS, ALLOC, LOAD, READONLY, DATA
 ```
 
 As you can see from the output above, the `.init` section starts at 0x5b8 with size 0x18, ends at 0x5d0.

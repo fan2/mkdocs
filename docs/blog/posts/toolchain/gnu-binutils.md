@@ -44,6 +44,8 @@ $ readelf --help
      --sections          An alias for --section-headers
   -t --section-details   Display the section details. Implies -S.
   -e --headers           Equivalent to: -h -l -S
+
+  -W --wide              Allow output width to exceed 80 characters
 ```
 
 Meanwhile, `objdump` also provides equivalent options for displaying ELF header information.
@@ -55,6 +57,8 @@ $ objdump --help
   -f, --file-headers       Display the contents of the overall file header
   -h, --[section-]headers  Display the contents of the section headers
   -x, --all-headers        Display the contents of all headers
+
+  -w, --wide                     Format output for more than 80 columns
 ```
 
 Apart from `readelf -S` and `objdump -h`, we can use `size -Ax $ELF` to display a brief section size summary.
@@ -62,6 +66,8 @@ Apart from `readelf -S` and `objdump -h`, we can use `size -Ax $ELF` to display 
 !!! note "section Type & Flags"
 
     Refer to [Section (Using as)](https://sourceware.org/binutils/docs/as/Section.html) for a knowledge of optional `Type` and `Flags` of ELF Version against the output of `readelf -S`.
+
+    **Key to Flags**: W (write), A (alloc), X (execute), M (merge), S (strings), I (info), L (link order), O (extra OS processing required), G (group), T (TLS), C (compressed), x (unknown), o (OS specific), E (exclude), D (mbind), p (processor specific)
 
 ## sections
 

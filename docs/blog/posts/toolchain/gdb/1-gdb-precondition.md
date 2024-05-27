@@ -61,6 +61,8 @@ refer to [DWARF Debugging Format](../dwarf-debugging.md).
 `readelf -S` --section-headers : Display the sections' header
 `objdump -h`, --[section-]headers : Display the contents of the section headers
 
+Common DWARF Debugging Sections:
+
 - .debug_aranges
 - .debug_info
 - .debug_abbrev
