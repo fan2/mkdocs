@@ -1,11 +1,11 @@
 ---
-title: addr2line - resolve address to symbol
+title: addr2line - resolve address
 authors:
     - xman
 date:
     created: 2023-06-22T10:00:00
 categories:
-    - toolchain
+    - elf
 comments: true
 ---
 

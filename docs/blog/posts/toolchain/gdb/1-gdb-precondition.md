@@ -56,10 +56,10 @@ $ c++ hellocpp.cpp -o hellocpp -g
 
 ## Display debugging information
 
-refer to [DWARF Debugging Format](../dwarf-debugging.md).
+refer to [DWARF Debugging Format](../../elf/dwarf-debugging.md).
 
-`readelf -S` --section-headers : Display the sections' header
-`objdump -h`, --[section-]headers : Display the contents of the section headers
+- `readelf -S` --section-headers : Display the sections' header
+- `objdump -h`, --[section-]headers : Display the contents of the section headers
 
 Common DWARF Debugging Sections:
 

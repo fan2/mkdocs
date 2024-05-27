@@ -5,7 +5,7 @@ authors:
 date:
     created: 2023-06-18T10:00:00
 categories:
-    - toolchain
+    - elf
 comments: true
 ---
 

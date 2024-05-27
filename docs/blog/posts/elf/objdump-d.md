@@ -5,7 +5,7 @@ authors:
 date:
     created: 2023-06-24T10:00:00
 categories:
-    - toolchain
+    - elf
 comments: true
 ---
 
@@ -609,6 +609,9 @@ Disassembly of section .init:
 ## intermix source+assembly
 
 This final comprehensive example demonstrates disassembling the specified symbol/function with a mix of source code comment markers and line numbers.
+
+- `[-S|--source]`: Display source code intermixed with disassembly, if possible. Implies `-d`.
+- `[--source-comment[=text]]`: Like the `-S` option, but all source code lines are displayed with a prefix of txt(defaults to `#`).
 
 From the output, we can see that the one-line simple C code `sum+=i;` is translated into four machine instructions. That's exactly what the compiler did behind the scenes. It sheds light on the working mechanism at a low level.
 

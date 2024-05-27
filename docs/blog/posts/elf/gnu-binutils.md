@@ -1,11 +1,12 @@
 ---
-title: GNU Binutils
+title: GNU Binutils - readelf & objdump
 authors:
     - xman
 date:
     created: 2023-06-20T10:00:00
 categories:
     - toolchain
+    - elf
 comments: true
 ---
 
@@ -180,7 +181,7 @@ $ nm --help
 
 [DWARF Introduction](https://dwarfstd.org/doc/Debugging%20using%20DWARF-2012.pdf): Debugging Information Entry (`DIE`)
 
-- refer to related post: [DWARF Debugging Format](./dwarf-debugging.md).
+- refer to related post: [DWARF Debugging Format](../elf/dwarf-debugging.md).
 
 ```bash
 $ readelf --help
