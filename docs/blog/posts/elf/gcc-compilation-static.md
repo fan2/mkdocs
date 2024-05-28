@@ -338,6 +338,8 @@ ELF Header:
   Section header string table index: 30
 ```
 
+The output of `objdump -f` shows that the BFD format specific flags are `EXEC_P, HAS_SYMS, D_PAGED`.
+
 ### program Header
 
 We can also type `readelf -l` to display the information contained in the file's segment headers.

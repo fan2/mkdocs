@@ -241,6 +241,8 @@ $ man objdump
 ## CTF
 
 [The CTF File Format](https://sourceware.org/binutils/docs/ctf-spec.html)
+[Binutils](https://www.gnu.org/software/binutils/)@[sourceware](https://sourceware.org/binutils/): libctf - A library for manipulating the CTF debug format.
+
 [CTF(5)](https://man.omnios.org/man5/ctf) — Compact C Type Format
 [Ubuntu Manpage: ctfdump — dump the SUNW_ctf section of an ELF file](https://manpages.ubuntu.com/manpages/focal/en/man1/ctfdump.1.html)
 

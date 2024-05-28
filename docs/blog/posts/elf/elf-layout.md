@@ -13,6 +13,7 @@ The Executable and Linkable Format (`ELF`), is a common standard file format for
 
 <!-- more -->
 
+[ELF - OSDev Wiki](https://wiki.osdev.org/ELF)
 [Executable and Linkable Format](https://en.wikipedia.org/wiki/Executable_and_Linkable_Format)
 
 - sysvabi64 - [System V ABI for the Arm® 64-bit Architecture (AArch64)](https://github.com/ARM-software/abi-aa/blob/844a79fd4c77252a11342709e3b27b2c9f590cf1/sysvabi64/sysvabi64.rst)
@@ -189,10 +190,80 @@ EM_X86_64      | 62    | AMD x86-64 architecture
 EM_AARCH64     | 183   | ARM AARCH64
 EM_RISCV       | 243   | RISC-V
 
+## BFD
+
+[Binary File Descriptor library](https://en.wikipedia.org/wiki/Binary_File_Descriptor_library)
+
+The Binary File Descriptor library (BFD) is the GNU Project's main mechanism for the portable manipulation of object files in a variety of formats. As of 2003, it supports approximately 50 file formats for some 25 instruction set architectures.
+
+[bfd - GCC Wiki](https://gcc.gnu.org/wiki/bfd)
+
+BFD is a package which allows applications to use the same routines to operate on object files whatever the object file format. A new object file format can be supported simply by creating a new BFD back end and adding it to the library.
+
+BFD is split into two parts: the front end, and the back ends (one for each object file format).
+
+1. The *front end* of BFD provides the interface to the user. It manages memory and various canonical data structures. The front end also decides which back end to use and when to call back end routines.
+2. The *back ends* provide BFD its view of the real world. Each back end provides a set of calls which the BFD front end can use to maintain its canonical form. The back ends also may keep around information for their own use, for greater efficiency.
+
+[GNU Manuals Online](https://www.gnu.org/manual/manual.en.html) - [BFD](https://sourceware.org/binutils/docs/bfd/)
+
+1. [Overview](https://sourceware.org/binutils/docs/bfd/Overview.html)
+2. [BFD front end](https://sourceware.org/binutils/docs/bfd/BFD-front-end.html)
+3. [BFD back ends](https://sourceware.org/binutils/docs/bfd/BFD-back-ends.html)
+
+[Binutils](https://www.gnu.org/software/binutils/)@[sourceware](https://sourceware.org/binutils/): [libbfd](https://sourceware.org/binutils/docs/bfd.pdf) - A library for manipulating binary files in a variety of different formats.
+
+Using ld - [BFD](https://ftp.gnu.org/old-gnu/Manuals/ld-2.9.1/html_mono/ld.html#SEC30): You can use `objdump -i` to list all the formats available for your configuration.
+
+```bash
+$ objdump -i
+BFD header file version (GNU Binutils for Ubuntu) 2.38
+
+```
+
+[binutils/bfd/bfd-in2.h](https://github.com/CyberGrandChallenge/binutils/blob/master/bfd/bfd-in2.h)
+
+```c
+/* BFD contains relocation entries.  */
+#define HAS_RELOC                   0x1
+
+/* BFD is directly executable.  */
+#define EXEC_P                      0x2
+
+/* BFD has symbols.  */
+#define HAS_SYMS                   0x10
+
+/* BFD is a dynamic object.  */
+#define DYNAMIC                    0x40
+
+/* BFD is dynamically paged (this is like an a.out ZMAGIC file) (the
+linker sets this by default, but clears it for -r or -n or -N).  */
+#define D_PAGED                   0x100
+```
+
+When you type `objdump -f` or `objdump -x` to display the contents of the overall/all file header(s), you'll see these Format_specific flags.
+
+---
+
+[Installing necessary packages to use libbfd library](https://askubuntu.com/questions/1385118/installing-necessary-packages-to-use-libbfd-binary-file-descriptor-library):
+
+```bash
+$ apt search binutils-dev
+Sorting... Done
+Full Text Search... Done
+binutils-dev/jammy-updates,jammy-security 2.38-4ubuntu2.6 arm64
+  GNU binary utilities (BFD development files)
+
+$ sudo apt-get install binutils-dev
+
+```
+
 ## refs
 
 [Linux Foundation Referenced Specifications](https://refspecs.linuxfoundation.org/)
-[TIS - ELF Specification Version 1.2](https://refspecs.linuxfoundation.org/elf/elf.pdf)
+
+- [TIS - ELF Specification Version 1.1](https://www.cs.cmu.edu/afs/cs/academic/class/15213-f00/docs/elf.pdf)
+- [TIS - ELF Specification Version 1.2](https://refspecs.linuxfoundation.org/elf/elf.pdf)
 
 [ARM Cortex-A Series Programmer's Guide for ARMv8-A](https://developer.arm.com/documentation/den0024/latest)
 
@@ -216,8 +287,6 @@ EM_RISCV       | 243   | RISC-V
 [ELF Format Cheatsheet](https://gist.github.com/x0nu11byt3/bcb35c3de461e5fb66173071a2379779)
 
 [Differences Between ELF-32 and ELF-64](https://interrupt.memfault.com/blog/elf-format-differences)
-
-[Executable and Linkable Format (ELF).pdf](https://www.cs.cmu.edu/afs/cs/academic/class/15213-f00/docs/elf.pdf)
 
 [ELF 文件 - CTF Wiki](https://ctf-wiki.org/executable/elf/structure/basic-info/)
 
