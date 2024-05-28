@@ -453,6 +453,21 @@ $ find . -size +1M -print
               cept that `.' matches newline), but this can be changed with the -regextype option.
 ```
 
+[linux - How to use regex with find command?](https://stackoverflow.com/questions/6844785/how-to-use-regex-with-find-command)
+[Find Command in Linux With Regex [5 Examples]](https://linuxhandbook.com/find-with-regex/)
+[Linux Find Command With Regular Expressions](https://www.baeldung.com/linux/find-command-regex)
+
+```bash
+# ls -l /usr/lib/gcc/aarch64-linux-gnu/11 /usr/lib/aarch64-linux-gnu /usr/lib /lib/aarch64-linux-gnu /lib/ | grep -E "libgcc(_s|_eh)?\."
+# find /usr/lib/gcc/aarch64-linux-gnu/11 /usr/lib/aarch64-linux-gnu /usr/lib /lib/aarch64-linux-gnu /lib/ -type f -name "libgcc*\.*"
+$ find /usr/lib/gcc/aarch64-linux-gnu/11 /usr/lib/aarch64-linux-gnu /usr/lib /lib/aarch64-linux-gnu /lib/ -type f -regextype egrep -iregex ".*libgcc(_s|_eh)?\..*"
+```
+
+```bash
+# ls -l /usr/lib/gcc/aarch64-linux-gnu/11 /usr/lib/aarch64-linux-gnu /usr/lib /lib/aarch64-linux-gnu /lib/ | grep -E "libc\."
+$ find /usr/lib/gcc/aarch64-linux-gnu/11 /usr/lib/aarch64-linux-gnu /usr/lib /lib/aarch64-linux-gnu /lib/ -type f -name "libc\.*"
+```
+
 #### -depth
 
 find 命令在使用时会遍历所有的子目录，首先查找当前目录中的文件，然后再在其子目录中查找。
@@ -925,11 +940,31 @@ $ find . \( -path ./jpeg -prune -o -path ./mp3 -prune \) -o -print
 $ find . -type f -not -path '*/mp3/*'
 ```
 
-[Find command Exclude or Ignore Files (e.g. Ignore All Hidden .dot Files )](https://www.cyberciti.biz/faq/find-command-exclude-ignore-files/)  
+[linux - How do I exclude a directory when using `find`? - Stack Overflow](https://stackoverflow.com/questions/4210042/how-do-i-exclude-a-directory-when-using-find)
+
+Use the -prune primary. For example, if you want to exclude ./misc:
+
+```bash
+$ find . -path ./misc -prune -o -name '*.txt' -print
+```
+
+[Find command Exclude or Ignore Files (e.g. Ignore All Hidden .dot Files )](https://www.cyberciti.biz/faq/find-command-exclude-ignore-files/)
 
 ```Shell
 # find all *.txt files in the current directory but exclude ./Movies/, ./Downloads/, and ./Music/ folders:
 $ find . -type f -name "*.txt" ! -path "./Movies/*" ! -path "./Downloads/*" ! -path "./Music/*" 
+```
+
+To exclude multiple directories, OR them between parentheses.
+
+```bash
+find . -type d \( -path ./dir1 -o -path ./dir2 -o -path ./dir3 \) -prune -o -name '*.txt' -print
+```
+
+And, to exclude directories with a specific name at any level, use the -name primary instead of -path.
+
+```bash
+$ find . -type d -name node_modules -prune -o -name '*.json' -print
 ```
 
 实测：

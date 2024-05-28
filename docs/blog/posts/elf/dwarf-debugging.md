@@ -107,6 +107,8 @@ $ cc test-gdb.c -o test-gdb -gdwarf-5
     }
     ```
 
+If we compare the dry run output of `cc test-gdb.c -###` and `cc test-gdb.c -### -g`, we'll see that the `-g` option only leads to a `--gdwarf-5` option for the `as` step.
+
 ## dump DWARF information
 
 `readelf -S` --section-headers : Display the sections' header

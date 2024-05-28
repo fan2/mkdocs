@@ -347,10 +347,11 @@ Do not implicitly link with standard C++ libraries.
 - [Documentation for the GNU C Library](https://sourceware.org/glibc/manual/)
 - [The GNU C Reference Manual](https://www.gnu.org/software/gnu-c-manual/gnu-c-manual.html)
 
-GNU C sourceware:
+GNU C sourceware: [sourceware](https://sourceware.org/glibc/)
 
-- @[sourceware](https://sourceware.org/glibc/), [git](git://sourceware.org/git/glibc.git)
-- [Index of /gnu/libc](https://ftp.gnu.org/gnu/libc/)
+- [Release tarballs](https://ftp.gnu.org/gnu/libc/)
+- [Sources](https://sourceware.org/glibc/sources.html) - [gitweb](https://sourceware.org/git/?p=glibc.git)
+- [git](git://sourceware.org/git/glibc.git) - [Unofficial mirror @github](https://github.com/bminor/glibc)
 
 [Linux的libc库](https://blog.csdn.net/Erice_s/article/details/106184779)，[libc、glibc 和 glib 的关系](https://blog.csdn.net/yasi_xi/article/details/9899599)
 [What is the role of libc(glibc) in our linux app?](https://stackoverflow.com/questions/11372872/what-is-the-role-of-libcglibc-in-our-linux-app)

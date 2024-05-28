@@ -12,6 +12,10 @@ comments: true
 
 Overview of concepts of Toolchain, Cross Compiler and Cross Compiler Toolchain.
 
+In computing, a [compiler](https://en.wikipedia.org/wiki/Compiler) is a computer program that translates computer code written in one programming language (the source language) into another language (the target language). The name "compiler" is primarily used for programs that translate source code from a high-level programming language to a low-level programming language (e.g. assembly language, object code, or machine code) to create an executable program.
+
+There are many different types of compilers which produce output in different useful forms. A [cross-compiler](https://en.wikipedia.org/wiki/Cross-compiler) produces code for a different CPU or operating system than the one on which the cross-compiler itself runs. A [bootstrap compiler](https://en.wikipedia.org/wiki/Bootstrap_compiler) is often a temporary compiler, used for compiling a more permanent or better optimised compiler for a language.
+
 <!-- more -->
 
 ## bare metal

@@ -1,0 +1,2268 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="在别处或在路上">
+      
+      
+        <meta name="author" content="Cliff Fan">
+      
+      
+        <link rel="canonical" href="https://duetorun.com/blog/20230617/gcc-compilation-dynamic/">
+      
+      
+        <link rel="prev" href="../compilation-process/">
+      
+      
+        <link rel="next" href="../gcc-compilation-static/">
+      
+      
+      <link rel="icon" href="../../../assets/hold_yourself.jpg">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.15">
+    
+    
+      
+        <title>GCC Compilation Quick Tour - dynamic - ElseWhere</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.7e359304.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function n(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],n("js",new Date),n("config","G-XGW41EGL31"),document.addEventListener("DOMContentLoaded",function(){document.forms.search&&document.forms.search.query.addEventListener("blur",function(){this.value&&n("event","search",{search_term:this.value})}),document$.subscribe(function(){var a=document.forms.feedback;if(void 0!==a)for(var e of a.querySelectorAll("[type=submit]"))e.addEventListener("click",function(e){e.preventDefault();var t=document.location.pathname,e=this.getAttribute("data-md-value");n("event","feedback",{page:t,data:e}),a.firstElementChild.disabled=!0;e=a.querySelector(".md-feedback__note [data-md-value='"+e+"']");e&&(e.hidden=!1)}),a.hidden=!1}),location$.subscribe(function(e){n("config","G-XGW41EGL31",{page_path:e.pathname})})});var e=document.createElement("script");e.async=!0,e.src="https://www.googletagmanager.com/gtag/js?id=G-XGW41EGL31",document.getElementById("__analytics").insertAdjacentElement("afterEnd",e)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+    
+  
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#explore_toolchain" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../../.." title="ElseWhere" class="md-header__button md-logo" aria-label="ElseWhere" data-md-component="logo">
+      
+  <img src="../../../assets/hold_yourself.jpg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ElseWhere
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              GCC Compilation Quick Tour - dynamic
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1M8 13h8v-2H8v2m9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1 0 1.71-1.39 3.1-3.1 3.1h-4V17h4a5 5 0 0 0 5-5 5 5 0 0 0-5-5Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="indigo"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5M7 15a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="标签" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../about/" class="md-tabs__link">
+        
+  
+    
+  
+  About
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../" class="md-tabs__link">
+          
+  
+  Blog
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../link/" class="md-tabs__link">
+        
+  
+    
+  
+  Link
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" hidden>
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="ElseWhere" class="md-nav__button md-logo" aria-label="ElseWhere" data-md-component="logo">
+      
+  <img src="../../../assets/hold_yourself.jpg" alt="logo">
+
+    </a>
+    ElseWhere
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../about/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    About
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Blog
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      <a href="../../" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Archive
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            Archive
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2024/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2024
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2023/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2023
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2022/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2022
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2021/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2021
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2020/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2020
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2019/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2019
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2018/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2018
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2017/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2017
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2015/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2015
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2009/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2009
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Categories
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            Categories
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/cs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CS
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/arm/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    arm
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/c/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    c
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/cpp/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    cpp
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/editor/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    editor
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/elf/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    elf
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/excerpt/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    excerpt
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/git/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    git
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/linux/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    linux
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/macos/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    macOS
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/markdown/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    markdown
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/material/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    material
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/mkdocs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    mkdocs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/nginx/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    nginx
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/python/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    python
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/resource/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    resource
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/shell/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    shell
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/toolchain/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    toolchain
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/ubuntu/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ubuntu
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/vim/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    vim
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/webdav/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    webDAV
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/wiki/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    wiki
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/zsh/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    zsh
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../link/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Link
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#explore_toolchain" class="md-nav__link">
+    <span class="md-ellipsis">
+      explore toolchain
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#gcc_compile" class="md-nav__link">
+    <span class="md-ellipsis">
+      gcc compile
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="gcc compile">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#collect_gcc" class="md-nav__link">
+    <span class="md-ellipsis">
+      COLLECT_GCC
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configure" class="md-nav__link">
+    <span class="md-ellipsis">
+      configure
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#collect_gcc_options" class="md-nav__link">
+    <span class="md-ellipsis">
+      COLLECT_GCC_OPTIONS
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#collect2" class="md-nav__link">
+    <span class="md-ellipsis">
+      collect2
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="collect2">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#crt_object" class="md-nav__link">
+    <span class="md-ellipsis">
+      CRT object
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#-lgcc_s_-lc" class="md-nav__link">
+    <span class="md-ellipsis">
+      -lgcc_s -lc
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#outcome_elf" class="md-nav__link">
+    <span class="md-ellipsis">
+      outcome ELF
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="outcome ELF">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#elf_header" class="md-nav__link">
+    <span class="md-ellipsis">
+      ELF Header
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#program_header" class="md-nav__link">
+    <span class="md-ellipsis">
+      program Header
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#entry_point" class="md-nav__link">
+    <span class="md-ellipsis">
+      Entry Point
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gdb_debug" class="md-nav__link">
+    <span class="md-ellipsis">
+      gdb debug
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+  <div class="md-content md-content--post" data-md-component="content">
+    <div class="md-sidebar md-sidebar--post" data-md-component="sidebar" data-md-type="navigation">
+      <div class="md-sidebar__scrollwrap">
+        <div class="md-sidebar__inner md-post">
+          <nav class="md-nav md-nav--primary">
+            <div class="md-post__back">
+              <div class="md-nav__title md-nav__container">
+                <a href="../../" class="md-nav__link">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+                  <span class="md-ellipsis">
+                    回到主页
+                  </span>
+                </a>
+              </div>
+            </div>
+            
+              <div class="md-post__authors md-typeset">
+                
+                  <div class="md-profile md-post__profile">
+                    <span class="md-author md-author--long">
+                      <img src="https://duetorun.com/assets/carve_yourself.jpg" alt="Cliff Fan">
+                    </span>
+                    <span class="md-profile__description">
+                      <strong>
+                        
+                          Cliff Fan
+                        
+                      </strong>
+                      <br>
+                      Just do IT
+                    </span>
+                  </div>
+                
+              </div>
+            
+            <ul class="md-post__meta md-nav__list">
+              <li class="md-nav__item md-nav__item--section">
+                <div class="md-post__title">
+                  <span class="md-ellipsis">
+                    元数据
+                  </span>
+                </div>
+                <nav class="md-nav">
+                  <ul class="md-nav__list">
+                    <li class="md-nav__item">
+                      <div class="md-nav__link">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 19H5V8h14m-3-7v2H8V1H6v2H5c-1.11 0-2 .89-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-1V1m-1 11h-5v5h5v-5Z"/></svg>
+                        <time datetime="2023-06-17 10:00:00" class="md-ellipsis">2023年6月17日</time>
+                      </div>
+                    </li>
+                    
+                    
+                      <li class="md-nav__item">
+                        <div class="md-nav__link">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 3v15h3V3H9m3 2 4 13 3-1-4-13-3 1M5 5v13h3V5H5M3 19v2h18v-2H3Z"/></svg>
+                          <span class="md-ellipsis">
+                            分类于
+                            
+                              <a href="../../category/elf/">elf</a></span>
+                        </div>
+                      </li>
+                    
+                    
+                      
+                      <li class="md-nav__item">
+                        <div class="md-nav__link">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7h1.5Z"/></svg>
+                          <span class="md-ellipsis">
+                            
+                              需要 19 分钟阅读时间
+                            
+                          </span>
+                        </div>
+                      </li>
+                    
+                    <!-- Add by Cliff.Fan, 29Mar24. -->
+                    <li class="md-nav__item">
+                      <div class="md-nav__link">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m19 1-5 5v11l5-4.5V1m2 4v13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V6c-1.45-1.1-3.55-1.5-5.5-1.5-1.95 0-4.05.4-5.5 1.5v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1M10 18.41C8.75 18.09 7.5 18 6.5 18c-1.06 0-2.32.19-3.5.5V7.13c.91-.4 2.14-.63 3.5-.63 1.36 0 2.59.23 3.5.63v11.28Z"/></svg>
+                        <span class="md-ellipsis" id="busuanzi_container_page_pv">
+                          阅读量：<span id="busuanzi_value_page_pv">N/A</span>
+                        </span>
+                      </div>
+                    </li>
+                  </ul>
+                </nav>
+              </li>
+            </ul>
+          </nav>
+          
+        </div>
+      </div>
+    </div>
+    <article class="md-content__inner md-typeset">
+      
+        
+
+
+  <h1>GCC Compilation Quick Tour - dynamic</h1>
+
+<p>The compilation is the process of converting the source code of the C language into machine code.</p>
+<p>As C is a mid-level language, it needs a compiler to convert it into an executable code so that the program can be run on our machine.</p>
+<p>In this article, let's do a hands-on practice to take a close look at the basic compilation of C program with GCC.</p>
+<!-- more -->
+
+<p>Let's start by exploring the installed gcc compiler toolchain. First, let's look at the host machine on which it resides.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>$<span class="w"> </span>uname<span class="w"> </span>-a
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>Linux<span class="w"> </span>rpi3b-ubuntu<span class="w"> </span><span class="m">5</span>.15.0-1055-raspi<span class="w"> </span><span class="c1">#58-Ubuntu SMP PREEMPT Sat May 4 03:52:40 UTC 2024 aarch64 aarch64 aarch64 GNU/Linux</span>
+</span></code></pre></div>
+<h2 id="explore_toolchain">explore toolchain<a class="headerlink" href="#explore_toolchain" title="Permanent link">#</a></h2>
+<p>Explore <code>gcc</code> entity(real body):</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>$<span class="w"> </span>which<span class="w"> </span>gcc
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>/usr/bin/gcc
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>$<span class="w"> </span>readlink<span class="w"> </span><span class="sb">`</span>which<span class="w"> </span>gcc<span class="sb">`</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>gcc-11
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>$<span class="w"> </span>which<span class="w"> </span>gcc-11
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>/usr/bin/gcc-11
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>$<span class="w"> </span>readlink<span class="w"> </span><span class="sb">`</span>which<span class="w"> </span>gcc-11<span class="sb">`</span>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>aarch64-linux-gnu-gcc-11
+</span></code></pre></div>
+<p>Show <code>gcc</code> version:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># gcc version</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>$<span class="w"> </span>gcc<span class="w"> </span>--version
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>gcc<span class="w"> </span><span class="o">(</span>Ubuntu<span class="w"> </span><span class="m">11</span>.4.0-1ubuntu1~22.04<span class="o">)</span><span class="w"> </span><span class="m">11</span>.4.0
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>Copyright<span class="w"> </span><span class="o">(</span>C<span class="o">)</span><span class="w"> </span><span class="m">2021</span><span class="w"> </span>Free<span class="w"> </span>Software<span class="w"> </span>Foundation,<span class="w"> </span>Inc.
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>This<span class="w"> </span>is<span class="w"> </span>free<span class="w"> </span>software<span class="p">;</span><span class="w"> </span>see<span class="w"> </span>the<span class="w"> </span><span class="nb">source</span><span class="w"> </span><span class="k">for</span><span class="w"> </span>copying<span class="w"> </span>conditions.<span class="w">  </span>There<span class="w"> </span>is<span class="w"> </span>NO
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>warranty<span class="p">;</span><span class="w"> </span>not<span class="w"> </span>even<span class="w"> </span><span class="k">for</span><span class="w"> </span>MERCHANTABILITY<span class="w"> </span>or<span class="w"> </span>FITNESS<span class="w"> </span>FOR<span class="w"> </span>A<span class="w"> </span>PARTICULAR<span class="w"> </span>PURPOSE.
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>$<span class="w"> </span>gcc<span class="w"> </span>-v
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>Using<span class="w"> </span>built-in<span class="w"> </span>specs.
+</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="nv">COLLECT_GCC</span><span class="o">=</span>gcc
+</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="nv">COLLECT_LTO_WRAPPER</span><span class="o">=</span>/usr/lib/gcc/aarch64-linux-gnu/11/lto-wrapper
+</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>Target:<span class="w"> </span>aarch64-linux-gnu
+</span><span id="__span-2-13"><a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>Configured<span class="w"> </span>with:<span class="w"> </span>../src/configure<span class="w"> </span>-v<span class="w"> </span>--with-pkgversion<span class="o">=</span><span class="s1">&#39;Ubuntu 11.4.0-1ubuntu1~22.04&#39;</span><span class="w"> </span>--with-bugurl<span class="o">=</span>file:///usr/share/doc/gcc-11/README.Bugs<span class="w"> </span>--enable-languages<span class="o">=</span>c,ada,c++,go,d,fortran,objc,obj-c++,m2<span class="w"> </span>--prefix<span class="o">=</span>/usr<span class="w"> </span>--with-gcc-major-version-only<span class="w"> </span>--program-suffix<span class="o">=</span>-11<span class="w"> </span>--program-prefix<span class="o">=</span>aarch64-linux-gnu-<span class="w"> </span>--enable-shared<span class="w"> </span>--enable-linker-build-id<span class="w"> </span>--libexecdir<span class="o">=</span>/usr/lib<span class="w"> </span>--without-included-gettext<span class="w"> </span>--enable-threads<span class="o">=</span>posix<span class="w"> </span>--libdir<span class="o">=</span>/usr/lib<span class="w"> </span>--enable-nls<span class="w"> </span>--enable-bootstrap<span class="w"> </span>--enable-clocale<span class="o">=</span>gnu<span class="w"> </span>--enable-libstdcxx-debug<span class="w"> </span>--enable-libstdcxx-time<span class="o">=</span>yes<span class="w"> </span>--with-default-libstdcxx-abi<span class="o">=</span>new<span class="w"> </span>--enable-gnu-unique-object<span class="w"> </span>--disable-libquadmath<span class="w"> </span>--disable-libquadmath-support<span class="w"> </span>--enable-plugin<span class="w"> </span>--enable-default-pie<span class="w"> </span>--with-system-zlib<span class="w"> </span>--enable-libphobos-checking<span class="o">=</span>release<span class="w"> </span>--with-target-system-zlib<span class="o">=</span>auto<span class="w"> </span>--enable-objc-gc<span class="o">=</span>auto<span class="w"> </span>--enable-multiarch<span class="w"> </span>--enable-fix-cortex-a53-843419<span class="w"> </span>--disable-werror<span class="w"> </span>--enable-checking<span class="o">=</span>release<span class="w"> </span>--build<span class="o">=</span>aarch64-linux-gnu<span class="w"> </span>--host<span class="o">=</span>aarch64-linux-gnu<span class="w"> </span>--target<span class="o">=</span>aarch64-linux-gnu<span class="w"> </span>--with-build-config<span class="o">=</span>bootstrap-lto-lean<span class="w"> </span>--enable-link-serialization<span class="o">=</span><span class="m">2</span>
+</span><span id="__span-2-14"><a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>Thread<span class="w"> </span>model:<span class="w"> </span>posix
+</span><span id="__span-2-15"><a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a>Supported<span class="w"> </span>LTO<span class="w"> </span>compression<span class="w"> </span>algorithms:<span class="w"> </span>zlib<span class="w"> </span>zstd
+</span><span id="__span-2-16"><a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a>gcc<span class="w"> </span>version<span class="w"> </span><span class="m">11</span>.4.0<span class="w"> </span><span class="o">(</span>Ubuntu<span class="w"> </span><span class="m">11</span>.4.0-1ubuntu1~22.04<span class="o">)</span>
+</span></code></pre></div>
+<p>Show <code>as</code>/<code>ld</code> version:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>$<span class="w"> </span>which<span class="w"> </span>as
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>/usr/bin/as
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>$<span class="w"> </span>readlink<span class="w"> </span><span class="sb">`</span>which<span class="w"> </span>as<span class="sb">`</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>aarch64-linux-gnu-as
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>$<span class="w"> </span>as<span class="w"> </span>-v
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>GNU<span class="w"> </span>assembler<span class="w"> </span>version<span class="w"> </span><span class="m">2</span>.38<span class="w"> </span><span class="o">(</span>aarch64-linux-gnu<span class="o">)</span><span class="w"> </span>using<span class="w"> </span>BFD<span class="w"> </span>version<span class="w"> </span><span class="o">(</span>GNU<span class="w"> </span>Binutils<span class="w"> </span><span class="k">for</span><span class="w"> </span>Ubuntu<span class="o">)</span><span class="w"> </span><span class="m">2</span>.38
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>^C
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>
+</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>$<span class="w"> </span>as<span class="w"> </span>--version
+</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>GNU<span class="w"> </span>assembler<span class="w"> </span><span class="o">(</span>GNU<span class="w"> </span>Binutils<span class="w"> </span><span class="k">for</span><span class="w"> </span>Ubuntu<span class="o">)</span><span class="w"> </span><span class="m">2</span>.38
+</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>Copyright<span class="w"> </span><span class="o">(</span>C<span class="o">)</span><span class="w"> </span><span class="m">2022</span><span class="w"> </span>Free<span class="w"> </span>Software<span class="w"> </span>Foundation,<span class="w"> </span>Inc.
+</span><span id="__span-3-13"><a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>This<span class="w"> </span>program<span class="w"> </span>is<span class="w"> </span>free<span class="w"> </span>software<span class="p">;</span><span class="w"> </span>you<span class="w"> </span>may<span class="w"> </span>redistribute<span class="w"> </span>it<span class="w"> </span>under<span class="w"> </span>the<span class="w"> </span>terms<span class="w"> </span>of
+</span><span id="__span-3-14"><a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>the<span class="w"> </span>GNU<span class="w"> </span>General<span class="w"> </span>Public<span class="w"> </span>License<span class="w"> </span>version<span class="w"> </span><span class="m">3</span><span class="w"> </span>or<span class="w"> </span>later.
+</span><span id="__span-3-15"><a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a>This<span class="w"> </span>program<span class="w"> </span>has<span class="w"> </span>absolutely<span class="w"> </span>no<span class="w"> </span>warranty.
+</span><span id="__span-3-16"><a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>This<span class="w"> </span>assembler<span class="w"> </span>was<span class="w"> </span>configured<span class="w"> </span><span class="k">for</span><span class="w"> </span>a<span class="w"> </span>target<span class="w"> </span>of<span class="w"> </span><span class="sb">`</span>aarch64-linux-gnu<span class="err">&#39;</span>.
+</span><span id="__span-3-17"><a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a>
+</span><span id="__span-3-18"><a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a>$<span class="w"> </span>which<span class="w"> </span>ld
+</span><span id="__span-3-19"><a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a>/usr/bin/ld
+</span><span id="__span-3-20"><a id="__codelineno-3-20" name="__codelineno-3-20" href="#__codelineno-3-20"></a>$<span class="w"> </span>readlink<span class="w"> </span><span class="sb">`</span>which<span class="w"> </span>ld<span class="sb">`</span>
+</span><span id="__span-3-21"><a id="__codelineno-3-21" name="__codelineno-3-21" href="#__codelineno-3-21"></a>aarch64-linux-gnu-ld
+</span><span id="__span-3-22"><a id="__codelineno-3-22" name="__codelineno-3-22" href="#__codelineno-3-22"></a>
+</span><span id="__span-3-23"><a id="__codelineno-3-23" name="__codelineno-3-23" href="#__codelineno-3-23"></a>$<span class="w"> </span>ld<span class="w"> </span>-v
+</span><span id="__span-3-24"><a id="__codelineno-3-24" name="__codelineno-3-24" href="#__codelineno-3-24"></a>GNU<span class="w"> </span>ld<span class="w"> </span><span class="o">(</span>GNU<span class="w"> </span>Binutils<span class="w"> </span><span class="k">for</span><span class="w"> </span>Ubuntu<span class="o">)</span><span class="w"> </span><span class="m">2</span>.38
+</span><span id="__span-3-25"><a id="__codelineno-3-25" name="__codelineno-3-25" href="#__codelineno-3-25"></a>
+</span><span id="__span-3-26"><a id="__codelineno-3-26" name="__codelineno-3-26" href="#__codelineno-3-26"></a>$<span class="w"> </span>ld<span class="w"> </span>--version
+</span><span id="__span-3-27"><a id="__codelineno-3-27" name="__codelineno-3-27" href="#__codelineno-3-27"></a>GNU<span class="w"> </span>ld<span class="w"> </span><span class="o">(</span>GNU<span class="w"> </span>Binutils<span class="w"> </span><span class="k">for</span><span class="w"> </span>Ubuntu<span class="o">)</span><span class="w"> </span><span class="m">2</span>.38
+</span><span id="__span-3-28"><a id="__codelineno-3-28" name="__codelineno-3-28" href="#__codelineno-3-28"></a>Copyright<span class="w"> </span><span class="o">(</span>C<span class="o">)</span><span class="w"> </span><span class="m">2022</span><span class="w"> </span>Free<span class="w"> </span>Software<span class="w"> </span>Foundation,<span class="w"> </span>Inc.
+</span><span id="__span-3-29"><a id="__codelineno-3-29" name="__codelineno-3-29" href="#__codelineno-3-29"></a>This<span class="w"> </span>program<span class="w"> </span>is<span class="w"> </span>free<span class="w"> </span>software<span class="p">;</span><span class="w"> </span>you<span class="w"> </span>may<span class="w"> </span>redistribute<span class="w"> </span>it<span class="w"> </span>under<span class="w"> </span>the<span class="w"> </span>terms<span class="w"> </span>of
+</span><span id="__span-3-30"><a id="__codelineno-3-30" name="__codelineno-3-30" href="#__codelineno-3-30"></a>the<span class="w"> </span>GNU<span class="w"> </span>General<span class="w"> </span>Public<span class="w"> </span>License<span class="w"> </span>version<span class="w"> </span><span class="m">3</span><span class="w"> </span>or<span class="w"> </span><span class="o">(</span>at<span class="w"> </span>your<span class="w"> </span>option<span class="o">)</span><span class="w"> </span>a<span class="w"> </span>later<span class="w"> </span>version.
+</span><span id="__span-3-31"><a id="__codelineno-3-31" name="__codelineno-3-31" href="#__codelineno-3-31"></a>This<span class="w"> </span>program<span class="w"> </span>has<span class="w"> </span>absolutely<span class="w"> </span>no<span class="w"> </span>warranty.
+</span></code></pre></div>
+<h2 id="gcc_compile">gcc compile<a class="headerlink" href="#gcc_compile" title="Permanent link">#</a></h2>
+<p>GCC - <a href="https://gcc.gnu.org/onlinedocs/gcc/Overall-Options.html">Overall Options</a></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>-v
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>Print<span class="w"> </span><span class="o">(</span>on<span class="w"> </span>standard<span class="w"> </span>error<span class="w"> </span>output<span class="o">)</span><span class="w"> </span>the<span class="w"> </span>commands<span class="w"> </span>executed<span class="w"> </span>to<span class="w"> </span>run<span class="w"> </span>the<span class="w"> </span>stages<span class="w"> </span>of<span class="w"> </span>compilation.<span class="w"> </span>Also<span class="w"> </span>print<span class="w"> </span>the<span class="w"> </span>version<span class="w"> </span>number<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>compiler<span class="w"> </span>driver<span class="w"> </span>program<span class="w"> </span>and<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>preprocessor<span class="w"> </span>and<span class="w"> </span>the<span class="w"> </span>compiler<span class="w"> </span>proper.
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>-###
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>Like<span class="w"> </span>-v<span class="w"> </span>except<span class="w"> </span>the<span class="w"> </span>commands<span class="w"> </span>are<span class="w"> </span>not<span class="w"> </span>executed<span class="w"> </span>and<span class="w"> </span>arguments<span class="w"> </span>are<span class="w"> </span>quoted<span class="w"> </span>unless<span class="w"> </span>they<span class="w"> </span>contain<span class="w"> </span>only<span class="w"> </span>alphanumeric<span class="w"> </span>characters<span class="w"> </span>or<span class="w"> </span>./-_.<span class="w"> </span>This<span class="w"> </span>is<span class="w"> </span>useful<span class="w"> </span><span class="k">for</span><span class="w"> </span>shell<span class="w"> </span>scripts<span class="w"> </span>to<span class="w"> </span>capture<span class="w"> </span>the<span class="w"> </span>driver-generated<span class="w"> </span><span class="nb">command</span><span class="w"> </span>lines.
+</span></code></pre></div>
+<p>Do a trial run with <code>-###</code>: <code>gcc -## 0701.c</code>. Use this to see what gcc would do without actually doing it.</p>
+<p>Do compile <code>0701.c</code> with verbose logging by <code>gcc -v 0701.c</code>:</p>
+<div class="admonition info">
+<ol>
+<li>/usr/lib/gcc/aarch64-linux-gnu/11/<code>cc1</code> 0701.c -o /tmp/ccm9rMTX.s</li>
+<li><code>as</code> -v -EL -mabi=lp64 -o /tmp/ccMWnd3L.o /tmp/ccm9rMTX.s</li>
+<li>/usr/lib/gcc/aarch64-linux-gnu/11/<code>collect2</code> /lib/ld-linux-aarch64.so.1 Scrt1.o crti.o crtbeginS.o /tmp/ccMWnd3L.o -lc -lgcc crtendS.o crtn.o</li>
+</ol>
+</div>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>$<span class="w"> </span>gcc<span class="w"> </span>-v<span class="w"> </span><span class="m">0701</span>.c
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>Using<span class="w"> </span>built-in<span class="w"> </span>specs.
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="nv">COLLECT_GCC</span><span class="o">=</span>gcc
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="nv">COLLECT_LTO_WRAPPER</span><span class="o">=</span>/usr/lib/gcc/aarch64-linux-gnu/11/lto-wrapper
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>Target:<span class="w"> </span>aarch64-linux-gnu
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>Configured<span class="w"> </span>with:<span class="w"> </span>../src/configure<span class="w"> </span>-v<span class="w"> </span>--with-pkgversion<span class="o">=</span><span class="s1">&#39;Ubuntu 11.4.0-1ubuntu1~22.04&#39;</span><span class="w"> </span>--with-bugurl<span class="o">=</span>file:///usr/share/doc/gcc-11/README.Bugs<span class="w"> </span>--enable-languages<span class="o">=</span>c,ada,c++,go,d,fortran,objc,obj-c++,m2<span class="w"> </span>--prefix<span class="o">=</span>/usr<span class="w"> </span>--with-gcc-major-version-only<span class="w"> </span>--program-suffix<span class="o">=</span>-11<span class="w"> </span>--program-prefix<span class="o">=</span>aarch64-linux-gnu-<span class="w"> </span>--enable-shared<span class="w"> </span>--enable-linker-build-id<span class="w"> </span>--libexecdir<span class="o">=</span>/usr/lib<span class="w"> </span>--without-included-gettext<span class="w"> </span>--enable-threads<span class="o">=</span>posix<span class="w"> </span>--libdir<span class="o">=</span>/usr/lib<span class="w"> </span>--enable-nls<span class="w"> </span>--enable-bootstrap<span class="w"> </span>--enable-clocale<span class="o">=</span>gnu<span class="w"> </span>--enable-libstdcxx-debug<span class="w"> </span>--enable-libstdcxx-time<span class="o">=</span>yes<span class="w"> </span>--with-default-libstdcxx-abi<span class="o">=</span>new<span class="w"> </span>--enable-gnu-unique-object<span class="w"> </span>--disable-libquadmath<span class="w"> </span>--disable-libquadmath-support<span class="w"> </span>--enable-plugin<span class="w"> </span>--enable-default-pie<span class="w"> </span>--with-system-zlib<span class="w"> </span>--enable-libphobos-checking<span class="o">=</span>release<span class="w"> </span>--with-target-system-zlib<span class="o">=</span>auto<span class="w"> </span>--enable-objc-gc<span class="o">=</span>auto<span class="w"> </span>--enable-multiarch<span class="w"> </span>--enable-fix-cortex-a53-843419<span class="w"> </span>--disable-werror<span class="w"> </span>--enable-checking<span class="o">=</span>release<span class="w"> </span>--build<span class="o">=</span>aarch64-linux-gnu<span class="w"> </span>--host<span class="o">=</span>aarch64-linux-gnu<span class="w"> </span>--target<span class="o">=</span>aarch64-linux-gnu<span class="w"> </span>--with-build-config<span class="o">=</span>bootstrap-lto-lean<span class="w"> </span>--enable-link-serialization<span class="o">=</span><span class="m">2</span>
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>Thread<span class="w"> </span>model:<span class="w"> </span>posix
+</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>Supported<span class="w"> </span>LTO<span class="w"> </span>compression<span class="w"> </span>algorithms:<span class="w"> </span>zlib<span class="w"> </span>zstd
+</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>gcc<span class="w"> </span>version<span class="w"> </span><span class="m">11</span>.4.0<span class="w"> </span><span class="o">(</span>Ubuntu<span class="w"> </span><span class="m">11</span>.4.0-1ubuntu1~22.04<span class="o">)</span>
+</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="nv">COLLECT_GCC_OPTIONS</span><span class="o">=</span><span class="s1">&#39;-v&#39;</span><span class="w"> </span><span class="s1">&#39;-mlittle-endian&#39;</span><span class="w"> </span><span class="s1">&#39;-mabi=lp64&#39;</span><span class="w"> </span><span class="s1">&#39;-dumpdir&#39;</span><span class="w"> </span><span class="s1">&#39;a-&#39;</span>
+</span><span id="__span-5-11"><a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a><span class="w"> </span>/usr/lib/gcc/aarch64-linux-gnu/11/cc1<span class="w"> </span>-quiet<span class="w"> </span>-v<span class="w"> </span>-imultiarch<span class="w"> </span>aarch64-linux-gnu<span class="w"> </span><span class="m">0701</span>.c<span class="w"> </span>-quiet<span class="w"> </span>-dumpdir<span class="w"> </span>a-<span class="w"> </span>-dumpbase<span class="w"> </span><span class="m">0701</span>.c<span class="w"> </span>-dumpbase-ext<span class="w"> </span>.c<span class="w"> </span>-mlittle-endian<span class="w"> </span>-mabi<span class="o">=</span>lp64<span class="w"> </span>-version<span class="w"> </span>-fasynchronous-unwind-tables<span class="w"> </span>-fstack-protector-strong<span class="w"> </span>-Wformat<span class="w"> </span>-Wformat-security<span class="w"> </span>-fstack-clash-protection<span class="w"> </span>-o<span class="w"> </span>/tmp/ccm9rMTX.s
+</span><span id="__span-5-12"><a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a>GNU<span class="w"> </span>C17<span class="w"> </span><span class="o">(</span>Ubuntu<span class="w"> </span><span class="m">11</span>.4.0-1ubuntu1~22.04<span class="o">)</span><span class="w"> </span>version<span class="w"> </span><span class="m">11</span>.4.0<span class="w"> </span><span class="o">(</span>aarch64-linux-gnu<span class="o">)</span>
+</span><span id="__span-5-13"><a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a><span class="w">    </span>compiled<span class="w"> </span>by<span class="w"> </span>GNU<span class="w"> </span>C<span class="w"> </span>version<span class="w"> </span><span class="m">11</span>.4.0,<span class="w"> </span>GMP<span class="w"> </span>version<span class="w"> </span><span class="m">6</span>.2.1,<span class="w"> </span>MPFR<span class="w"> </span>version<span class="w"> </span><span class="m">4</span>.1.0,<span class="w"> </span>MPC<span class="w"> </span>version<span class="w"> </span><span class="m">1</span>.2.1,<span class="w"> </span>isl<span class="w"> </span>version<span class="w"> </span>isl-0.24-GMP
+</span><span id="__span-5-14"><a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a>
+</span><span id="__span-5-15"><a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a>GGC<span class="w"> </span>heuristics:<span class="w"> </span>--param<span class="w"> </span>ggc-min-expand<span class="o">=</span><span class="m">91</span><span class="w"> </span>--param<span class="w"> </span>ggc-min-heapsize<span class="o">=</span><span class="m">115878</span>
+</span><span id="__span-5-16"><a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a>ignoring<span class="w"> </span>nonexistent<span class="w"> </span>directory<span class="w"> </span><span class="s2">&quot;/usr/local/include/aarch64-linux-gnu&quot;</span>
+</span><span id="__span-5-17"><a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a>ignoring<span class="w"> </span>nonexistent<span class="w"> </span>directory<span class="w"> </span><span class="s2">&quot;/usr/lib/gcc/aarch64-linux-gnu/11/include-fixed&quot;</span>
+</span><span id="__span-5-18"><a id="__codelineno-5-18" name="__codelineno-5-18" href="#__codelineno-5-18"></a>ignoring<span class="w"> </span>nonexistent<span class="w"> </span>directory<span class="w"> </span><span class="s2">&quot;/usr/lib/gcc/aarch64-linux-gnu/11/../../../../aarch64-linux-gnu/include&quot;</span>
+</span><span id="__span-5-19"><a id="__codelineno-5-19" name="__codelineno-5-19" href="#__codelineno-5-19"></a><span class="c1">#include &quot;...&quot; search starts here:</span>
+</span><span id="__span-5-20"><a id="__codelineno-5-20" name="__codelineno-5-20" href="#__codelineno-5-20"></a><span class="c1">#include &lt;...&gt; search starts here:</span>
+</span><span id="__span-5-21"><a id="__codelineno-5-21" name="__codelineno-5-21" href="#__codelineno-5-21"></a><span class="w"> </span>/usr/lib/gcc/aarch64-linux-gnu/11/include
+</span><span id="__span-5-22"><a id="__codelineno-5-22" name="__codelineno-5-22" href="#__codelineno-5-22"></a><span class="w"> </span>/usr/local/include
+</span><span id="__span-5-23"><a id="__codelineno-5-23" name="__codelineno-5-23" href="#__codelineno-5-23"></a><span class="w"> </span>/usr/include/aarch64-linux-gnu
+</span><span id="__span-5-24"><a id="__codelineno-5-24" name="__codelineno-5-24" href="#__codelineno-5-24"></a><span class="w"> </span>/usr/include
+</span><span id="__span-5-25"><a id="__codelineno-5-25" name="__codelineno-5-25" href="#__codelineno-5-25"></a>End<span class="w"> </span>of<span class="w"> </span>search<span class="w"> </span>list.
+</span><span id="__span-5-26"><a id="__codelineno-5-26" name="__codelineno-5-26" href="#__codelineno-5-26"></a>GNU<span class="w"> </span>C17<span class="w"> </span><span class="o">(</span>Ubuntu<span class="w"> </span><span class="m">11</span>.4.0-1ubuntu1~22.04<span class="o">)</span><span class="w"> </span>version<span class="w"> </span><span class="m">11</span>.4.0<span class="w"> </span><span class="o">(</span>aarch64-linux-gnu<span class="o">)</span>
+</span><span id="__span-5-27"><a id="__codelineno-5-27" name="__codelineno-5-27" href="#__codelineno-5-27"></a><span class="w">    </span>compiled<span class="w"> </span>by<span class="w"> </span>GNU<span class="w"> </span>C<span class="w"> </span>version<span class="w"> </span><span class="m">11</span>.4.0,<span class="w"> </span>GMP<span class="w"> </span>version<span class="w"> </span><span class="m">6</span>.2.1,<span class="w"> </span>MPFR<span class="w"> </span>version<span class="w"> </span><span class="m">4</span>.1.0,<span class="w"> </span>MPC<span class="w"> </span>version<span class="w"> </span><span class="m">1</span>.2.1,<span class="w"> </span>isl<span class="w"> </span>version<span class="w"> </span>isl-0.24-GMP
+</span><span id="__span-5-28"><a id="__codelineno-5-28" name="__codelineno-5-28" href="#__codelineno-5-28"></a>
+</span><span id="__span-5-29"><a id="__codelineno-5-29" name="__codelineno-5-29" href="#__codelineno-5-29"></a>GGC<span class="w"> </span>heuristics:<span class="w"> </span>--param<span class="w"> </span>ggc-min-expand<span class="o">=</span><span class="m">91</span><span class="w"> </span>--param<span class="w"> </span>ggc-min-heapsize<span class="o">=</span><span class="m">115878</span>
+</span><span id="__span-5-30"><a id="__codelineno-5-30" name="__codelineno-5-30" href="#__codelineno-5-30"></a>Compiler<span class="w"> </span>executable<span class="w"> </span>checksum:<span class="w"> </span>52ed857e9cd110e5efaa797811afcfbb
+</span><span id="__span-5-31"><a id="__codelineno-5-31" name="__codelineno-5-31" href="#__codelineno-5-31"></a><span class="nv">COLLECT_GCC_OPTIONS</span><span class="o">=</span><span class="s1">&#39;-v&#39;</span><span class="w"> </span><span class="s1">&#39;-mlittle-endian&#39;</span><span class="w"> </span><span class="s1">&#39;-mabi=lp64&#39;</span><span class="w"> </span><span class="s1">&#39;-dumpdir&#39;</span><span class="w"> </span><span class="s1">&#39;a-&#39;</span>
+</span><span id="__span-5-32"><a id="__codelineno-5-32" name="__codelineno-5-32" href="#__codelineno-5-32"></a><span class="w"> </span>as<span class="w"> </span>-v<span class="w"> </span>-EL<span class="w"> </span>-mabi<span class="o">=</span>lp64<span class="w"> </span>-o<span class="w"> </span>/tmp/ccMWnd3L.o<span class="w"> </span>/tmp/ccm9rMTX.s
+</span><span id="__span-5-33"><a id="__codelineno-5-33" name="__codelineno-5-33" href="#__codelineno-5-33"></a>GNU<span class="w"> </span>assembler<span class="w"> </span>version<span class="w"> </span><span class="m">2</span>.38<span class="w"> </span><span class="o">(</span>aarch64-linux-gnu<span class="o">)</span><span class="w"> </span>using<span class="w"> </span>BFD<span class="w"> </span>version<span class="w"> </span><span class="o">(</span>GNU<span class="w"> </span>Binutils<span class="w"> </span><span class="k">for</span><span class="w"> </span>Ubuntu<span class="o">)</span><span class="w"> </span><span class="m">2</span>.38
+</span><span id="__span-5-34"><a id="__codelineno-5-34" name="__codelineno-5-34" href="#__codelineno-5-34"></a><span class="nv">COMPILER_PATH</span><span class="o">=</span>/usr/lib/gcc/aarch64-linux-gnu/11/:/usr/lib/gcc/aarch64-linux-gnu/11/:/usr/lib/gcc/aarch64-linux-gnu/:/usr/lib/gcc/aarch64-linux-gnu/11/:/usr/lib/gcc/aarch64-linux-gnu/
+</span><span id="__span-5-35"><a id="__codelineno-5-35" name="__codelineno-5-35" href="#__codelineno-5-35"></a><span class="nv">LIBRARY_PATH</span><span class="o">=</span>/usr/lib/gcc/aarch64-linux-gnu/11/:/usr/lib/gcc/aarch64-linux-gnu/11/../../../aarch64-linux-gnu/:/usr/lib/gcc/aarch64-linux-gnu/11/../../../../lib/:/lib/aarch64-linux-gnu/:/lib/../lib/:/usr/lib/aarch64-linux-gnu/:/usr/lib/../lib/:/usr/lib/gcc/aarch64-linux-gnu/11/../../../:/lib/:/usr/lib/
+</span><span id="__span-5-36"><a id="__codelineno-5-36" name="__codelineno-5-36" href="#__codelineno-5-36"></a><span class="nv">COLLECT_GCC_OPTIONS</span><span class="o">=</span><span class="s1">&#39;-v&#39;</span><span class="w"> </span><span class="s1">&#39;-mlittle-endian&#39;</span><span class="w"> </span><span class="s1">&#39;-mabi=lp64&#39;</span><span class="w"> </span><span class="s1">&#39;-dumpdir&#39;</span><span class="w"> </span><span class="s1">&#39;a.&#39;</span>
+</span><span id="__span-5-37"><a id="__codelineno-5-37" name="__codelineno-5-37" href="#__codelineno-5-37"></a><span class="w"> </span>/usr/lib/gcc/aarch64-linux-gnu/11/collect2<span class="w"> </span>-plugin<span class="w"> </span>/usr/lib/gcc/aarch64-linux-gnu/11/liblto_plugin.so<span class="w"> </span>-plugin-opt<span class="o">=</span>/usr/lib/gcc/aarch64-linux-gnu/11/lto-wrapper<span class="w"> </span>-plugin-opt<span class="o">=</span>-fresolution<span class="o">=</span>/tmp/ccyiqbzK.res<span class="w"> </span>-plugin-opt<span class="o">=</span>-pass-through<span class="o">=</span>-lgcc<span class="w"> </span>-plugin-opt<span class="o">=</span>-pass-through<span class="o">=</span>-lgcc_s<span class="w"> </span>-plugin-opt<span class="o">=</span>-pass-through<span class="o">=</span>-lc<span class="w"> </span>-plugin-opt<span class="o">=</span>-pass-through<span class="o">=</span>-lgcc<span class="w"> </span>-plugin-opt<span class="o">=</span>-pass-through<span class="o">=</span>-lgcc_s<span class="w"> </span>--build-id<span class="w"> </span>--eh-frame-hdr<span class="w"> </span>--hash-style<span class="o">=</span>gnu<span class="w"> </span>--as-needed<span class="w"> </span>-dynamic-linker<span class="w"> </span>/lib/ld-linux-aarch64.so.1<span class="w"> </span>-X<span class="w"> </span>-EL<span class="w"> </span>-maarch64linux<span class="w"> </span>--fix-cortex-a53-843419<span class="w"> </span>-pie<span class="w"> </span>-z<span class="w"> </span>now<span class="w"> </span>-z<span class="w"> </span>relro<span class="w"> </span>/usr/lib/gcc/aarch64-linux-gnu/11/../../../aarch64-linux-gnu/Scrt1.o<span class="w"> </span>/usr/lib/gcc/aarch64-linux-gnu/11/../../../aarch64-linux-gnu/crti.o<span class="w"> </span>/usr/lib/gcc/aarch64-linux-gnu/11/crtbeginS.o<span class="w"> </span>-L/usr/lib/gcc/aarch64-linux-gnu/11<span class="w"> </span>-L/usr/lib/gcc/aarch64-linux-gnu/11/../../../aarch64-linux-gnu<span class="w"> </span>-L/usr/lib/gcc/aarch64-linux-gnu/11/../../../../lib<span class="w"> </span>-L/lib/aarch64-linux-gnu<span class="w"> </span>-L/lib/../lib<span class="w"> </span>-L/usr/lib/aarch64-linux-gnu<span class="w"> </span>-L/usr/lib/../lib<span class="w"> </span>-L/usr/lib/gcc/aarch64-linux-gnu/11/../../..<span class="w"> </span>/tmp/ccMWnd3L.o<span class="w"> </span>-lgcc<span class="w"> </span>--push-state<span class="w"> </span>--as-needed<span class="w"> </span>-lgcc_s<span class="w"> </span>--pop-state<span class="w"> </span>-lc<span class="w"> </span>-lgcc<span class="w"> </span>--push-state<span class="w"> </span>--as-needed<span class="w"> </span>-lgcc_s<span class="w"> </span>--pop-state<span class="w"> </span>/usr/lib/gcc/aarch64-linux-gnu/11/crtendS.o<span class="w"> </span>/usr/lib/gcc/aarch64-linux-gnu/11/../../../aarch64-linux-gnu/crtn.o
+</span><span id="__span-5-38"><a id="__codelineno-5-38" name="__codelineno-5-38" href="#__codelineno-5-38"></a><span class="nv">COLLECT_GCC_OPTIONS</span><span class="o">=</span><span class="s1">&#39;-v&#39;</span><span class="w"> </span><span class="s1">&#39;-mlittle-endian&#39;</span><span class="w"> </span><span class="s1">&#39;-mabi=lp64&#39;</span><span class="w"> </span><span class="s1">&#39;-dumpdir&#39;</span><span class="w"> </span><span class="s1">&#39;a.&#39;</span>
+</span></code></pre></div>
+<h3 id="collect_gcc">COLLECT_GCC<a class="headerlink" href="#collect_gcc" title="Permanent link">#</a></h3>
+<p>What does the first two lines mean?</p>
+<ul>
+<li>Using built-in specs.</li>
+<li>COLLECT_GCC=gcc</li>
+</ul>
+<p><a href="../../20200202/mainstream-compiler/">Mainstream Compiler</a> - <a href="https://en.wikibooks.org/wiki/GNU_C_Compiler_Internals/GNU_C_Compiler_Architecture">GNU C Compiler Internals/Architecture</a></p>
+<p>For a C source file they are the preprocessor and compiler <code>cc1</code>, the assembler <code>as</code>, and the linker <code>collect2</code>. The first and the third programs come with a GCC <em>distribution</em>, the assembler is a part of the GNU <em>binutils</em> package.</p>
+<figure><br />
+<img alt="GCC_Architecture" src="../../toolchain/images/GCC_Architecture.jpeg" /><br />
+</figure>
+<p><a href="https://gcc.gnu.org/onlinedocs/gcc/Developer-Options.html">Developer Options</a>: <code>-dumpspecs</code> : Print the compiler’s built-in <a href="https://gcc.gnu.org/onlinedocs/gcc/Spec-Files.html">Spec Files</a>:</p>
+<ul>
+<li>cpp : Options to pass to the C preprocessor</li>
+<li>cc1 : Options to pass to the C compiler</li>
+<li>cc1plus : Options to pass to the C++ compiler</li>
+</ul>
+<p><a href="https://gcc.gnu.org/onlinedocs/cpp/">cpp - The C Preprocessor</a></p>
+<ul>
+<li><a href="https://gcc.gnu.org/onlinedocs/cpp/Invocation.html">Invocation</a>: the preprocessor is actually <em>integrated</em> with the compiler rather than a separate program.</li>
+<li><a href="https://gcc.gnu.org/onlinedocs/gcc/Preprocessor-Options.html">Preprocessor Options</a>: <code>-no-integrated-cpp</code>: Perform preprocessing as a <em>separate</em> pass before compilation.</li>
+</ul>
+<p><a href="https://gcc.gnu.org/wiki/FAQ#include_search_path">FAQ - GCC Wiki</a>: the GCC C compiler (<code>cc1</code>) and C++ compiler (<code>cc1cplus</code>)</p>
+<p><a href="https://stackoverflow.com/questions/13753854/why-cc1-is-called-cc1">Why cc1 is called cc1?</a> <a href="https://unix.stackexchange.com/questions/77779/relationship-between-cc1-and-gcc">Relationship between cc1 and gcc?</a></p>
+<blockquote>
+<p>The 1 in <code>cc1</code> indicates that it is the first stage of the build process. The second stage is <code>collect2</code>.</p>
+</blockquote>
+<p><a href="https://gcc.gnu.org/onlinedocs/gccint/Collect2.html">Collect2 (GCC Internals)</a>: The program <code>collect2</code> is installed as <code>ld</code> in the directory where the passes of the compiler are installed.</p>
+<h3 id="configure">configure<a class="headerlink" href="#configure" title="Permanent link">#</a></h3>
+<p>At this time, let's get acquainted with the following configure items:</p>
+<ul>
+<li>--prefix=/usr --with-gcc-major-version-only --program-suffix=-11 --program-prefix=aarch64-linux-gnu- // usr/bin/aarch64-linux-gnu-[gcc,as,ld]-11</li>
+<li>--enable-shared // dynamic link shared library(glibc)</li>
+<li>--enable-linker-build-id</li>
+<li>--libexecdir=/usr/lib</li>
+<li>--without-included-gettext</li>
+<li>--enable-threads=posix</li>
+<li>--libdir=/usr/lib</li>
+<li>--enable-plugin</li>
+<li>--enable-default-pie</li>
+<li>--enable-multiarch</li>
+<li>--enable-fix-cortex-a53-843419</li>
+<li>--build=aarch64-linux-gnu</li>
+<li>--host=aarch64-linux-gnu</li>
+<li>--target=aarch64-linux-gnu</li>
+</ul>
+<p>Please refer to the following links to get a knowledge of <code>libexecdir</code> and <code>libdir</code>:</p>
+<ul>
+<li><a href="https://www.gnu.org/prep/standards/html_node/Directory-Variables.html">Directory Variables (GNU Coding Standards)</a></li>
+<li><a href="https://www.gnu.org/savannah-checkouts/gnu/autoconf/manual/autoconf-2.72/html_node/Installation-Directory-Variables.html">Installation Directory Variables (Autoconf)</a></li>
+</ul>
+<p>In the future, when the time is right, we will carry out further exploration.</p>
+<h3 id="collect_gcc_options">COLLECT_GCC_OPTIONS<a class="headerlink" href="#collect_gcc_options" title="Permanent link">#</a></h3>
+<ol>
+<li><code>-mlittle-endian</code> / as <code>-EL</code>: specify endianess, refer to <a href="../../20211007/byte-order-endianess/">Byte Order(Endianess)</a>.</li>
+<li><code>-mabi=lp64</code>: specify data model, refer to <a href="../../20211008/data-model/">Data Models</a>.</li>
+</ol>
+<h3 id="collect2">collect2<a class="headerlink" href="#collect2" title="Permanent link">#</a></h3>
+<p><a href="https://sourceware.org/binutils/docs/ld/Options.html">Options (LD)</a>: </p>
+<blockquote>
+<p><code>[-L searchdir|--library-path=searchdir]</code>: Add path <em>searchdir</em> to the list of paths that <code>ld</code> will search for archive libraries and <code>ld</code> control scripts.</p>
+</blockquote>
+<p>Simplify <code>LIBRARY_PATH</code>, the searchdir is as follows:</p>
+<ul>
+<li>/usr/lib/gcc/aarch64-linux-gnu/11/</li>
+<li>/usr/lib/aarch64-linux-gnu/</li>
+<li>/usr/lib/</li>
+<li>/lib/aarch64-linux-gnu/</li>
+<li>/lib/</li>
+</ul>
+<p>Deduplication to just two root paths: <code>/usr/lib/</code>, <code>/lib/</code>.</p>
+<p>Ignore anything that's blocking the view, the remaining core is as follows.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>-dynamic-linker<span class="w"> </span>/lib/ld-linux-aarch64.so.1
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>/usr/lib/aarch64-linux-gnu/Scrt1.o
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>/usr/lib/aarch64-linux-gnu/crti.o
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>/usr/lib/gcc/aarch64-linux-gnu/11/crtbeginS.o
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>
+</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>/tmp/ccMWnd3L.o
+</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>
+</span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>-lgcc
+</span><span id="__span-6-10"><a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a>--push-state<span class="w"> </span>--as-needed<span class="w"> </span>-lgcc_s<span class="w"> </span>--pop-state
+</span><span id="__span-6-11"><a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a>-lc
+</span><span id="__span-6-12"><a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a>-lgcc
+</span><span id="__span-6-13"><a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a>--push-state<span class="w"> </span>--as-needed<span class="w"> </span>-lgcc_s<span class="w"> </span>--pop-state
+</span><span id="__span-6-14"><a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a>
+</span><span id="__span-6-15"><a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a>/usr/lib/gcc/aarch64-linux-gnu/11/crtendS.o
+</span><span id="__span-6-16"><a id="__codelineno-6-16" name="__codelineno-6-16" href="#__codelineno-6-16"></a>/usr/lib/aarch64-linux-gnu/crtn.o
+</span></code></pre></div>
+<p>You should have noticed that <code>/tmp/ccMWnd3L.o</code> is exactly the direct assembler product of our C code (0701.c), surrounded by C runtime object code and linker facilities.</p>
+<p>I won't go into the details of the linking procedure at this point, but let's figure out what the link input is first.</p>
+<h4 id="crt_object">CRT object<a class="headerlink" href="#crt_object" title="Permanent link">#</a></h4>
+<div class="admonition note">
+<p class="admonition-title">Why does C runtime code come in the form of object code files?</p>
+<p>《<a href="https://att.newsmth.net/nForum/att/CProgramming/3213/245">C语言标准与实现</a>》 | 07 C 源文件的编译和链接</p>
+<p>In a C program, <code>_start</code> must be provided by the C runtime code. If the runtime code is placed in the library file, we cannot guarantee that <code>ld</code> will definitely copy these codes into the executable. 07-01 is a good example, it does not reference any other symbols. In this case, the code represented by <code>_start</code> cannot be copied into the executable by <code>ld</code>. Therefore, in the end, <code>ld</code> will not be able to find the starting point of execution <code>_start</code>, which will produce incorrect output.</p>
+<p>Therefore, the C runtime code <em>must</em> be linked as an object code file. We all know that when <code>ld</code> links the object code file, it copies all the ".data" area, ".text" area, ".bss" area, etc. of each object code file into the executable file. This ensures that <code>ld</code> will eventually find <code>_start</code> for sure.</p>
+</div>
+<p>For more information on CRT(C Runtime), please refer to <a href="https://stackoverflow.com/questions/22160888/what-is-the-difference-between-crtbegin-o-crtbegint-o-and-crtbegins-o">crtbegin.o vs. crtbeginS.o</a> and <a href="https://dev.gentoo.org/~vapier/crt.txt">Mini FAQ about the misc libc/gcc crt files.</a>.</p>
+<ol>
+<li>/usr/lib/aarch64-linux-gnu/<strong><code>Scrt1.o</code></strong>: Used in place of <code>crt1.o</code> when generating PIEs.</li>
+<li>/usr/lib/aarch64-linux-gnu/<strong><code>crti.o</code></strong>: Defines the function <em>prologs</em> for the <code>.init</code> and <code>.fini</code> sections (with the <code>_init</code> and <code>_fini</code> symbols respectively).</li>
+<li>/usr/lib/gcc/aarch64-linux-gnu/11/<strong><code>crtbeginS.o</code></strong>: Used in place of <code>crtbegin.o</code> when generating shared objects/PIEs.</li>
+<li>/usr/lib/gcc/aarch64-linux-gnu/11/<strong><code>crtendS.o</code></strong>: Used in place of <code>crtend.o</code> when generating shared objects/PIEs.</li>
+<li>/usr/lib/aarch64-linux-gnu/<strong><code>crtn.o</code></strong>: Defines the function <em>epilogs</em> for the <code>.init</code>/<code>.fini</code> sections.</li>
+</ol>
+<p>Now, let's find out all the related CRT object code files.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="c1"># rough ls-grep</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="c1"># ls -l /usr/lib/* /lib/* | grep -iE &quot;crt.*\.[o|s]&quot;</span>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="c1"># find the most</span>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="c1"># find /usr/lib/ /lib/ -type f -iname &quot;*crt*\.*&quot;</span>
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="c1"># limit suffix</span>
+</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="c1"># find /usr/lib/ /lib/ -type f -iname &quot;*crt*\.o&quot;</span>
+</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="c1"># specify filename pattern</span>
+</span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a><span class="c1"># find /usr/lib/ /lib/ -type f -regextype egrep -iregex &quot;.*crt(begin|end|1|i|n)?(S|T)?\.o&quot;</span>
+</span><span id="__span-7-9"><a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a><span class="c1"># exclude gcc-corss(! = -not)</span>
+</span><span id="__span-7-10"><a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a><span class="c1"># find /usr/lib/ /lib/ ! -path &quot;*/gcc-cross/*&quot; -type f -regextype egrep -iregex &quot;.*crt(begin|end|1|i|n)?(S|T)?\.o&quot;</span>
+</span><span id="__span-7-11"><a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a><span class="c1"># find /usr/lib/ /lib/ -type f -regextype egrep -iregex &quot;.*crt(begin|end|1|i|n)?(S|T)?\.o&quot; ! -path &quot;*/gcc-cross/*&quot;</span>
+</span><span id="__span-7-12"><a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a><span class="c1"># find /usr/lib/ /lib/ -path &quot;*/gcc-cross&quot; -prune -o -type f -regextype egrep -iregex &quot;.*crt(begin|end|1|i|n)?(S|T)?\.o&quot;</span>
+</span><span id="__span-7-13"><a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a><span class="c1"># search primary libdir</span>
+</span><span id="__span-7-14"><a id="__codelineno-7-14" name="__codelineno-7-14" href="#__codelineno-7-14"></a>$<span class="w"> </span>find<span class="w"> </span>/usr/lib/<span class="w"> </span>-not<span class="w"> </span><span class="se">\(</span><span class="w"> </span>-path<span class="w"> </span><span class="s2">&quot;*/gcc-cross&quot;</span><span class="w"> </span>-prune<span class="w"> </span><span class="se">\)</span><span class="w"> </span>-type<span class="w"> </span>f<span class="w"> </span>-regextype<span class="w"> </span>egrep<span class="w"> </span>-iregex<span class="w"> </span><span class="s2">&quot;.*crt(begin|end|1|i|n)?(S|T)?\.o&quot;</span>
+</span><span id="__span-7-15"><a id="__codelineno-7-15" name="__codelineno-7-15" href="#__codelineno-7-15"></a>/usr/lib/gcc/aarch64-linux-gnu/11/crtbegin.o
+</span><span id="__span-7-16"><a id="__codelineno-7-16" name="__codelineno-7-16" href="#__codelineno-7-16"></a>/usr/lib/gcc/aarch64-linux-gnu/11/crtbeginS.o
+</span><span id="__span-7-17"><a id="__codelineno-7-17" name="__codelineno-7-17" href="#__codelineno-7-17"></a>/usr/lib/gcc/aarch64-linux-gnu/11/crtendS.o
+</span><span id="__span-7-18"><a id="__codelineno-7-18" name="__codelineno-7-18" href="#__codelineno-7-18"></a>/usr/lib/gcc/aarch64-linux-gnu/11/crtbeginT.o
+</span><span id="__span-7-19"><a id="__codelineno-7-19" name="__codelineno-7-19" href="#__codelineno-7-19"></a>/usr/lib/gcc/aarch64-linux-gnu/11/crtend.o
+</span><span id="__span-7-20"><a id="__codelineno-7-20" name="__codelineno-7-20" href="#__codelineno-7-20"></a>/usr/lib/aarch64-linux-gnu/Mcrt1.o
+</span><span id="__span-7-21"><a id="__codelineno-7-21" name="__codelineno-7-21" href="#__codelineno-7-21"></a>/usr/lib/aarch64-linux-gnu/Scrt1.o
+</span><span id="__span-7-22"><a id="__codelineno-7-22" name="__codelineno-7-22" href="#__codelineno-7-22"></a>/usr/lib/aarch64-linux-gnu/crt1.o
+</span><span id="__span-7-23"><a id="__codelineno-7-23" name="__codelineno-7-23" href="#__codelineno-7-23"></a>/usr/lib/aarch64-linux-gnu/crti.o
+</span><span id="__span-7-24"><a id="__codelineno-7-24" name="__codelineno-7-24" href="#__codelineno-7-24"></a>/usr/lib/aarch64-linux-gnu/crtn.o
+</span><span id="__span-7-25"><a id="__codelineno-7-25" name="__codelineno-7-25" href="#__codelineno-7-25"></a>/usr/lib/aarch64-linux-gnu/gcrt1.o
+</span><span id="__span-7-26"><a id="__codelineno-7-26" name="__codelineno-7-26" href="#__codelineno-7-26"></a>/usr/lib/aarch64-linux-gnu/grcrt1.o
+</span><span id="__span-7-27"><a id="__codelineno-7-27" name="__codelineno-7-27" href="#__codelineno-7-27"></a>/usr/lib/aarch64-linux-gnu/rcrt1.o
+</span></code></pre></div>
+<hr />
+<p>For gcc-cross compiler arm-linux-gnueabihf, here they are:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="c1"># find /lib/gcc-cross/arm-linux-gnueabihf/11 /usr/lib/gcc-cross/arm-linux-gnueabihf/11 /usr/arm-linux-gnueabihf/lib -type f -regextype egrep -iregex &quot;.*crt(begin|end|1|i|n)?(S|T)?\.o&quot;</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="c1"># search primary libdir</span>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>$<span class="w"> </span>find<span class="w"> </span>/usr/lib/gcc-cross/arm-linux-gnueabihf/11<span class="w"> </span>/usr/arm-linux-gnueabihf/lib<span class="w"> </span>-type<span class="w"> </span>f<span class="w"> </span>-regextype<span class="w"> </span>egrep<span class="w"> </span>-iregex<span class="w"> </span><span class="s2">&quot;.*crt(begin|end|1|i|n)?(S|T)?\.o&quot;</span>
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>/usr/lib/gcc-cross/arm-linux-gnueabihf/11/crtbegin.o
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>/usr/lib/gcc-cross/arm-linux-gnueabihf/11/crtbeginS.o
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>/usr/lib/gcc-cross/arm-linux-gnueabihf/11/crtendS.o
+</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>/usr/lib/gcc-cross/arm-linux-gnueabihf/11/crtbeginT.o
+</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>/usr/lib/gcc-cross/arm-linux-gnueabihf/11/crtend.o
+</span><span id="__span-8-9"><a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a>/usr/arm-linux-gnueabihf/lib/Scrt1.o
+</span><span id="__span-8-10"><a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a>/usr/arm-linux-gnueabihf/lib/Mcrt1.o
+</span><span id="__span-8-11"><a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a>/usr/arm-linux-gnueabihf/lib/gcrt1.o
+</span><span id="__span-8-12"><a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a>/usr/arm-linux-gnueabihf/lib/crt1.o
+</span><span id="__span-8-13"><a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a>/usr/arm-linux-gnueabihf/lib/crti.o
+</span><span id="__span-8-14"><a id="__codelineno-8-14" name="__codelineno-8-14" href="#__codelineno-8-14"></a>/usr/arm-linux-gnueabihf/lib/crtn.o
+</span></code></pre></div>
+<h4 id="-lgcc_s_-lc">-lgcc_s -lc<a class="headerlink" href="#-lgcc_s_-lc" title="Permanent link">#</a></h4>
+<p><code>[-l namespec|--library=namespec]</code>: Add the archive or object file specified by namespec to the list of files to link.</p>
+<ul>
+<li><code>-lgcc</code>/<code>-lgcc_s</code>: link <code>gcc</code></li>
+<li><code>-lc</code>: link <code>glibc</code></li>
+</ul>
+<p><a href="https://gcc.gnu.org/onlinedocs/libstdc++/manual/abi.html">ABI Policy and Guidelines</a> - <a href="https://gcc.gnu.org/onlinedocs/gccint/Libgcc.html">Libgcc</a></p>
+<blockquote>
+<p>GCC provides a low-level runtime library, <code>libgcc.a</code> or <code>libgcc_s.so.1</code> on some platforms. GCC generates calls to routines in this library automatically, whenever it needs to perform some operation that is too complicated to emit inline code for.</p>
+</blockquote>
+<p>Find out <strong>libgcc</strong> static library(<code>.a</code>) and dynamic library(<code>.so</code>):</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="c1"># rough ls-grep</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="c1"># ls -l /usr/lib/* /lib/* | grep -iE &quot;libgcc(_s|_eh)?\..*&quot;</span>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="c1"># find the most</span>
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="c1"># find /usr/lib/ /lib/ -type f -iname &quot;libgcc*\.*&quot;</span>
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="c1"># specify filename pattern</span>
+</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="c1"># find /usr/lib/ /lib/ -type f -regextype egrep -iregex &quot;.*libgcc(_s|_eh)?\..*&quot;</span>
+</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="c1"># exclude gcc-corss(! = -not)</span>
+</span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a><span class="c1"># find /usr/lib/ /lib/ ! -path &quot;*/gcc-cross/*&quot; -type f -regextype egrep -iregex &quot;.*libgcc(_s|_eh)?\..*&quot;</span>
+</span><span id="__span-9-9"><a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a><span class="c1"># find /usr/lib/ /lib/ -type f -regextype egrep -iregex &quot;.*libgcc(_s|_eh)?\..*&quot; ! -path &quot;*/gcc-cross/*&quot;</span>
+</span><span id="__span-9-10"><a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a><span class="c1"># find /usr/lib/ /lib/ -path &quot;*/gcc-cross&quot; -prune -o -type f -regextype egrep -iregex &quot;.*libgcc(_s|_eh)?\..*&quot;</span>
+</span><span id="__span-9-11"><a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a><span class="c1"># search primary libdir</span>
+</span><span id="__span-9-12"><a id="__codelineno-9-12" name="__codelineno-9-12" href="#__codelineno-9-12"></a>$<span class="w"> </span>find<span class="w"> </span>/usr/lib/<span class="w"> </span>-not<span class="w"> </span><span class="se">\(</span><span class="w"> </span>-path<span class="w"> </span><span class="s2">&quot;*/gcc-cross&quot;</span><span class="w"> </span>-prune<span class="w"> </span><span class="se">\)</span><span class="w"> </span>-type<span class="w"> </span>f<span class="w"> </span>-regextype<span class="w"> </span>egrep<span class="w"> </span>-iregex<span class="w"> </span><span class="s2">&quot;.*libgcc(_s|_eh)?\..*&quot;</span>
+</span><span id="__span-9-13"><a id="__codelineno-9-13" name="__codelineno-9-13" href="#__codelineno-9-13"></a>/usr/lib/gcc/aarch64-linux-gnu/11/libgcc_s.so
+</span><span id="__span-9-14"><a id="__codelineno-9-14" name="__codelineno-9-14" href="#__codelineno-9-14"></a>/usr/lib/gcc/aarch64-linux-gnu/11/libgcc_eh.a
+</span><span id="__span-9-15"><a id="__codelineno-9-15" name="__codelineno-9-15" href="#__codelineno-9-15"></a>/usr/lib/gcc/aarch64-linux-gnu/11/libgcc.a
+</span><span id="__span-9-16"><a id="__codelineno-9-16" name="__codelineno-9-16" href="#__codelineno-9-16"></a>/usr/lib/aarch64-linux-gnu/libgcc_s.so.1
+</span></code></pre></div>
+<p><a href="https://www.gnu.org/software/libc/">The GNU C Library</a> - <a href="https://en.wikipedia.org/wiki/Glibc">wiki</a></p>
+<ul>
+<li><a href="https://sourceware.org/glibc/manual/">Documentation for the GNU C Library</a></li>
+<li><a href="https://www.gnu.org/software/gnu-c-manual/gnu-c-manual.html">The GNU C Reference Manual</a></li>
+</ul>
+<p>GNU C sourceware: <a href="https://sourceware.org/glibc/">sourceware</a></p>
+<ul>
+<li><a href="https://ftp.gnu.org/gnu/libc/">Release tarballs</a></li>
+<li><a href="https://sourceware.org/glibc/sources.html">Sources</a> - <a href="https://sourceware.org/git/?p=glibc.git">gitweb</a></li>
+<li><a href="git://sourceware.org/git/glibc.git">git</a> - <a href="https://github.com/bminor/glibc">Unofficial mirror @github</a></li>
+</ul>
+<p>Find out <strong>glibc</strong> static library(<code>.a</code>) and dynamic library(<code>.so</code>):</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="c1"># rough ls-grep</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="c1"># ls -l /usr/lib/* /lib/* | grep -iE &quot;libc\..*&quot;</span>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="c1"># find the most</span>
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="c1"># find /usr/lib/ /lib/ -type f -iname &quot;libc\.*&quot;</span>
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="c1"># specify filename pattern</span>
+</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a><span class="c1"># find /usr/lib/ /lib/ -type f -regextype egrep -iregex &quot;.*libc\..*&quot;</span>
+</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="c1"># find /usr/lib/ /lib/ -type f -regextype egrep -iregex &quot;.*libc\.(a|so)&quot;</span>
+</span><span id="__span-10-8"><a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a><span class="c1"># exclude gcc-corss(! = -not)</span>
+</span><span id="__span-10-9"><a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a><span class="c1"># find /usr/lib/ /lib/ ! -path &quot;*/python3/*&quot; -type f -regextype egrep -iregex &quot;.*libc\..*&quot;</span>
+</span><span id="__span-10-10"><a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a><span class="c1"># find /usr/lib/ /lib/ -type f -regextype egrep -iregex &quot;.*libc\..*&quot; ! -path &quot;*/python3/*&quot;</span>
+</span><span id="__span-10-11"><a id="__codelineno-10-11" name="__codelineno-10-11" href="#__codelineno-10-11"></a><span class="c1"># find /usr/lib/ /lib/ -path &quot;*/python3&quot; -prune -o -type f -regextype egrep -iregex &quot;.*libc\..*&quot;</span>
+</span><span id="__span-10-12"><a id="__codelineno-10-12" name="__codelineno-10-12" href="#__codelineno-10-12"></a><span class="c1"># search primary libdir</span>
+</span><span id="__span-10-13"><a id="__codelineno-10-13" name="__codelineno-10-13" href="#__codelineno-10-13"></a>$<span class="w"> </span>find<span class="w"> </span>/usr/lib/<span class="w"> </span>-not<span class="w"> </span><span class="se">\(</span><span class="w"> </span>-path<span class="w"> </span><span class="s2">&quot;*/python3&quot;</span><span class="w"> </span>-prune<span class="w"> </span><span class="se">\)</span><span class="w"> </span>-type<span class="w"> </span>f<span class="w"> </span>-regextype<span class="w"> </span>egrep<span class="w"> </span>-iregex<span class="w"> </span><span class="s2">&quot;.*libc\..*&quot;</span>
+</span><span id="__span-10-14"><a id="__codelineno-10-14" name="__codelineno-10-14" href="#__codelineno-10-14"></a>/usr/lib/aarch64-linux-gnu/libc.so.6
+</span><span id="__span-10-15"><a id="__codelineno-10-15" name="__codelineno-10-15" href="#__codelineno-10-15"></a>/usr/lib/aarch64-linux-gnu/libc.a
+</span><span id="__span-10-16"><a id="__codelineno-10-16" name="__codelineno-10-16" href="#__codelineno-10-16"></a>/usr/lib/aarch64-linux-gnu/libc.so
+</span></code></pre></div>
+<p>The <code>ldd</code> command can print out shared object dependencies, adding <code>-v</code> for verbose details.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>$<span class="w"> </span>ldd<span class="w"> </span>-v<span class="w"> </span>a.out
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="w">    </span>linux-vdso.so.1<span class="w"> </span><span class="o">(</span>0x0000ffff93272000<span class="o">)</span>
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="w">    </span>libc.so.6<span class="w"> </span><span class="o">=</span>&gt;<span class="w"> </span>/lib/aarch64-linux-gnu/libc.so.6<span class="w"> </span><span class="o">(</span>0x0000ffff93060000<span class="o">)</span>
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="w">    </span>/lib/ld-linux-aarch64.so.1<span class="w"> </span><span class="o">(</span>0x0000ffff93239000<span class="o">)</span>
+</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>
+</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a><span class="w">    </span>Version<span class="w"> </span>information:
+</span><span id="__span-11-7"><a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a><span class="w">    </span>./a.out:
+</span><span id="__span-11-8"><a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a><span class="w">        </span>libc.so.6<span class="w"> </span><span class="o">(</span>GLIBC_2.17<span class="o">)</span><span class="w"> </span><span class="o">=</span>&gt;<span class="w"> </span>/lib/aarch64-linux-gnu/libc.so.6
+</span><span id="__span-11-9"><a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a><span class="w">        </span>libc.so.6<span class="w"> </span><span class="o">(</span>GLIBC_2.34<span class="o">)</span><span class="w"> </span><span class="o">=</span>&gt;<span class="w"> </span>/lib/aarch64-linux-gnu/libc.so.6
+</span><span id="__span-11-10"><a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a><span class="w">    </span>/lib/aarch64-linux-gnu/libc.so.6:
+</span><span id="__span-11-11"><a id="__codelineno-11-11" name="__codelineno-11-11" href="#__codelineno-11-11"></a><span class="w">        </span>ld-linux-aarch64.so.1<span class="w"> </span><span class="o">(</span>GLIBC_PRIVATE<span class="o">)</span><span class="w"> </span><span class="o">=</span>&gt;<span class="w"> </span>/lib/ld-linux-aarch64.so.1
+</span><span id="__span-11-12"><a id="__codelineno-11-12" name="__codelineno-11-12" href="#__codelineno-11-12"></a><span class="w">        </span>ld-linux-aarch64.so.1<span class="w"> </span><span class="o">(</span>GLIBC_2.17<span class="o">)</span><span class="w"> </span><span class="o">=</span>&gt;<span class="w"> </span>/lib/ld-linux-aarch64.so.1
+</span></code></pre></div>
+<p>Why doesn't it include <code>libgcc_s.so</code>? As <code>--as-needed</code> indicates, it doesn't need to in our case.</p>
+<p>The <code>libgcc_s.so</code> usually comes along with <code>libstdc++.so</code> when compile C++ code with <code>g++</code>.</p>
+<hr />
+<p>For gcc-cross compiler arm-linux-gnueabihf, here they are:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="c1"># find /lib/gcc-cross/arm-linux-gnueabihf/11 /usr/lib/gcc-cross/arm-linux-gnueabihf/11 /usr/arm-linux-gnueabihf/lib -type f -regextype egrep -iregex &quot;.*libgcc(_s|_eh)?\..*&quot;</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="c1"># search primary libdir</span>
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>$<span class="w"> </span>find<span class="w"> </span>/usr/lib/gcc-cross/arm-linux-gnueabihf/11<span class="w"> </span>/usr/arm-linux-gnueabihf/lib<span class="w"> </span>-type<span class="w"> </span>f<span class="w"> </span>-regextype<span class="w"> </span>egrep<span class="w"> </span>-iregex<span class="w"> </span><span class="s2">&quot;.*libgcc(_s|_eh)?\..*&quot;</span>
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>/usr/lib/gcc-cross/arm-linux-gnueabihf/11/libgcc_s.so
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>/usr/lib/gcc-cross/arm-linux-gnueabihf/11/libgcc_eh.a
+</span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a>/usr/lib/gcc-cross/arm-linux-gnueabihf/11/libgcc.a
+</span><span id="__span-12-7"><a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a>/usr/arm-linux-gnueabihf/lib/libgcc_s.so.1
+</span><span id="__span-12-8"><a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a>
+</span><span id="__span-12-9"><a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a><span class="c1"># find /lib/gcc-cross/arm-linux-gnueabihf/11 /usr/lib/gcc-cross/arm-linux-gnueabihf/11 /usr/arm-linux-gnueabihf/lib -type f -regextype egrep -iregex &quot;.*libc\..*&quot;</span>
+</span><span id="__span-12-10"><a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a><span class="c1"># search primary libdir</span>
+</span><span id="__span-12-11"><a id="__codelineno-12-11" name="__codelineno-12-11" href="#__codelineno-12-11"></a>$<span class="w"> </span>find<span class="w"> </span>/usr/lib/gcc-cross/arm-linux-gnueabihf/11<span class="w"> </span>/usr/arm-linux-gnueabihf/lib<span class="w"> </span>-type<span class="w"> </span>f<span class="w"> </span>-regextype<span class="w"> </span>egrep<span class="w"> </span>-iregex<span class="w"> </span><span class="s2">&quot;.*libc\..*&quot;</span>
+</span><span id="__span-12-12"><a id="__codelineno-12-12" name="__codelineno-12-12" href="#__codelineno-12-12"></a>/usr/arm-linux-gnueabihf/lib/libc.so.6
+</span><span id="__span-12-13"><a id="__codelineno-12-13" name="__codelineno-12-13" href="#__codelineno-12-13"></a>/usr/arm-linux-gnueabihf/lib/libc.a
+</span><span id="__span-12-14"><a id="__codelineno-12-14" name="__codelineno-12-14" href="#__codelineno-12-14"></a>/usr/arm-linux-gnueabihf/lib/libc.so
+</span></code></pre></div>
+<h2 id="outcome_elf">outcome ELF<a class="headerlink" href="#outcome_elf" title="Permanent link">#</a></h2>
+<p>As we didn't give <code>-o</code> to specify output filename for the product, the default executable filename is <code>a.out</code>.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>-o<span class="w"> </span>file
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>Place<span class="w"> </span>the<span class="w"> </span>primary<span class="w"> </span>output<span class="w"> </span><span class="k">in</span><span class="w"> </span>file<span class="w"> </span>file.<span class="w"> </span>This<span class="w"> </span>applies<span class="w"> </span>to<span class="w"> </span>whatever<span class="w"> </span>sort<span class="w"> </span>of<span class="w"> </span>output<span class="w"> </span>is<span class="w"> </span>being<span class="w"> </span>produced,<span class="w"> </span>whether<span class="w"> </span>it<span class="w"> </span>be<span class="w"> </span>an<span class="w"> </span>executable<span class="w"> </span>file,<span class="w"> </span>an<span class="w"> </span>object<span class="w"> </span>file,<span class="w"> </span>an<span class="w"> </span>assembler<span class="w"> </span>file<span class="w"> </span>or<span class="w"> </span>preprocessed<span class="w"> </span>C<span class="w"> </span>code.
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>
+</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>If<span class="w"> </span>-o<span class="w"> </span>is<span class="w"> </span>not<span class="w"> </span>specified,<span class="w"> </span>the<span class="w"> </span>default<span class="w"> </span>is<span class="w"> </span>to<span class="w"> </span>put<span class="w"> </span>an<span class="w"> </span>executable<span class="w"> </span>file<span class="w"> </span><span class="k">in</span><span class="w"> </span>a.out,<span class="w"> </span>the<span class="w"> </span>object<span class="w"> </span>file<span class="w"> </span><span class="k">for</span><span class="w"> </span>source.suffix<span class="w"> </span><span class="k">in</span><span class="w"> </span>source.o,<span class="w"> </span>its<span class="w"> </span>assembler<span class="w"> </span>file<span class="w"> </span><span class="k">in</span><span class="w"> </span>source.s,<span class="w"> </span>a<span class="w"> </span>precompiled<span class="w"> </span>header<span class="w"> </span>file<span class="w"> </span><span class="k">in</span><span class="w"> </span>source.suffix.gch,<span class="w"> </span>and<span class="w"> </span>all<span class="w"> </span>preprocessed<span class="w"> </span>C<span class="w"> </span><span class="nb">source</span><span class="w"> </span>on<span class="w"> </span>standard<span class="w"> </span>output.
+</span></code></pre></div>
+<h3 id="elf_header">ELF Header<a class="headerlink" href="#elf_header" title="Permanent link">#</a></h3>
+<p>Now, let's check the <a href="../../20230616/elf-layout/">ELF</a> header.</p>
+<p>From the output of <code>file a.out</code>, we're informed that the ELF is dynamically linked, requires interpreter <code>/lib/ld-linux-aarch64.so.1</code> to load and run. The output of <code>readelf -h</code> also confirms this point, the Type is <code>DYN</code> (Position-Independent Executable file).</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>$<span class="w"> </span>file<span class="w"> </span>a.out
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>a.out:<span class="w"> </span>ELF<span class="w"> </span><span class="m">64</span>-bit<span class="w"> </span>LSB<span class="w"> </span>pie<span class="w"> </span>executable,<span class="w"> </span>ARM<span class="w"> </span>aarch64,<span class="w"> </span>version<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="o">(</span>SYSV<span class="o">)</span>,<span class="w"> </span>dynamically<span class="w"> </span>linked,<span class="w"> </span>interpreter<span class="w"> </span>/lib/ld-linux-aarch64.so.1,<span class="w"> </span>BuildID<span class="o">[</span>sha1<span class="o">]=</span>429e4cbff3d62b27c644cef2b8aaf62d380b9690,<span class="w"> </span><span class="k">for</span><span class="w"> </span>GNU/Linux<span class="w"> </span><span class="m">3</span>.7.0,<span class="w"> </span>not<span class="w"> </span>stripped
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>
+</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a>$<span class="w"> </span>objdump<span class="w"> </span>-f<span class="w"> </span>a.out
+</span><span id="__span-14-5"><a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a>
+</span><span id="__span-14-6"><a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a>a.out:<span class="w">     </span>file<span class="w"> </span>format<span class="w"> </span>elf64-littleaarch64
+</span><span id="__span-14-7"><a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a>architecture:<span class="w"> </span>aarch64,<span class="w"> </span>flags<span class="w"> </span>0x00000150:
+</span><span id="__span-14-8"><a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a>HAS_SYMS,<span class="w"> </span>DYNAMIC,<span class="w"> </span>D_PAGED
+</span><span id="__span-14-9"><a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a>start<span class="w"> </span>address<span class="w"> </span>0x0000000000000640
+</span><span id="__span-14-10"><a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a>
+</span><span id="__span-14-11"><a id="__codelineno-14-11" name="__codelineno-14-11" href="#__codelineno-14-11"></a>$<span class="w"> </span>readelf<span class="w"> </span>-h<span class="w"> </span>a.out
+</span><span id="__span-14-12"><a id="__codelineno-14-12" name="__codelineno-14-12" href="#__codelineno-14-12"></a>ELF<span class="w"> </span>Header:
+</span><span id="__span-14-13"><a id="__codelineno-14-13" name="__codelineno-14-13" href="#__codelineno-14-13"></a><span class="w">  </span>Magic:<span class="w">   </span>7f<span class="w"> </span><span class="m">45</span><span class="w"> </span>4c<span class="w"> </span><span class="m">46</span><span class="w"> </span><span class="m">02</span><span class="w"> </span><span class="m">01</span><span class="w"> </span><span class="m">01</span><span class="w"> </span><span class="m">00</span><span class="w"> </span><span class="m">00</span><span class="w"> </span><span class="m">00</span><span class="w"> </span><span class="m">00</span><span class="w"> </span><span class="m">00</span><span class="w"> </span><span class="m">00</span><span class="w"> </span><span class="m">00</span><span class="w"> </span><span class="m">00</span><span class="w"> </span><span class="m">00</span>
+</span><span id="__span-14-14"><a id="__codelineno-14-14" name="__codelineno-14-14" href="#__codelineno-14-14"></a><span class="w">  </span>Class:<span class="w">                             </span>ELF64
+</span><span id="__span-14-15"><a id="__codelineno-14-15" name="__codelineno-14-15" href="#__codelineno-14-15"></a><span class="w">  </span>Data:<span class="w">                              </span><span class="m">2</span><span class="err">&#39;</span>s<span class="w"> </span>complement,<span class="w"> </span>little<span class="w"> </span>endian
+</span><span id="__span-14-16"><a id="__codelineno-14-16" name="__codelineno-14-16" href="#__codelineno-14-16"></a><span class="w">  </span>Version:<span class="w">                           </span><span class="m">1</span><span class="w"> </span><span class="o">(</span>current<span class="o">)</span>
+</span><span id="__span-14-17"><a id="__codelineno-14-17" name="__codelineno-14-17" href="#__codelineno-14-17"></a><span class="w">  </span>OS/ABI:<span class="w">                            </span>UNIX<span class="w"> </span>-<span class="w"> </span>System<span class="w"> </span>V
+</span><span id="__span-14-18"><a id="__codelineno-14-18" name="__codelineno-14-18" href="#__codelineno-14-18"></a><span class="w">  </span>ABI<span class="w"> </span>Version:<span class="w">                       </span><span class="m">0</span>
+</span><span id="__span-14-19"><a id="__codelineno-14-19" name="__codelineno-14-19" href="#__codelineno-14-19"></a><span class="w">  </span>Type:<span class="w">                              </span>DYN<span class="w"> </span><span class="o">(</span>Position-Independent<span class="w"> </span>Executable<span class="w"> </span>file<span class="o">)</span>
+</span><span id="__span-14-20"><a id="__codelineno-14-20" name="__codelineno-14-20" href="#__codelineno-14-20"></a><span class="w">  </span>Machine:<span class="w">                           </span>AArch64
+</span><span id="__span-14-21"><a id="__codelineno-14-21" name="__codelineno-14-21" href="#__codelineno-14-21"></a><span class="w">  </span>Version:<span class="w">                           </span>0x1
+</span><span id="__span-14-22"><a id="__codelineno-14-22" name="__codelineno-14-22" href="#__codelineno-14-22"></a><span class="w">  </span>Entry<span class="w"> </span>point<span class="w"> </span>address:<span class="w">               </span>0x640
+</span><span id="__span-14-23"><a id="__codelineno-14-23" name="__codelineno-14-23" href="#__codelineno-14-23"></a><span class="w">  </span>Start<span class="w"> </span>of<span class="w"> </span>program<span class="w"> </span>headers:<span class="w">          </span><span class="m">64</span><span class="w"> </span><span class="o">(</span>bytes<span class="w"> </span>into<span class="w"> </span>file<span class="o">)</span>
+</span><span id="__span-14-24"><a id="__codelineno-14-24" name="__codelineno-14-24" href="#__codelineno-14-24"></a><span class="w">  </span>Start<span class="w"> </span>of<span class="w"> </span>section<span class="w"> </span>headers:<span class="w">          </span><span class="m">7080</span><span class="w"> </span><span class="o">(</span>bytes<span class="w"> </span>into<span class="w"> </span>file<span class="o">)</span>
+</span><span id="__span-14-25"><a id="__codelineno-14-25" name="__codelineno-14-25" href="#__codelineno-14-25"></a><span class="w">  </span>Flags:<span class="w">                             </span>0x0
+</span><span id="__span-14-26"><a id="__codelineno-14-26" name="__codelineno-14-26" href="#__codelineno-14-26"></a><span class="w">  </span>Size<span class="w"> </span>of<span class="w"> </span>this<span class="w"> </span>header:<span class="w">               </span><span class="m">64</span><span class="w"> </span><span class="o">(</span>bytes<span class="o">)</span>
+</span><span id="__span-14-27"><a id="__codelineno-14-27" name="__codelineno-14-27" href="#__codelineno-14-27"></a><span class="w">  </span>Size<span class="w"> </span>of<span class="w"> </span>program<span class="w"> </span>headers:<span class="w">           </span><span class="m">56</span><span class="w"> </span><span class="o">(</span>bytes<span class="o">)</span>
+</span><span id="__span-14-28"><a id="__codelineno-14-28" name="__codelineno-14-28" href="#__codelineno-14-28"></a><span class="w">  </span>Number<span class="w"> </span>of<span class="w"> </span>program<span class="w"> </span>headers:<span class="w">         </span><span class="m">9</span>
+</span><span id="__span-14-29"><a id="__codelineno-14-29" name="__codelineno-14-29" href="#__codelineno-14-29"></a><span class="w">  </span>Size<span class="w"> </span>of<span class="w"> </span>section<span class="w"> </span>headers:<span class="w">           </span><span class="m">64</span><span class="w"> </span><span class="o">(</span>bytes<span class="o">)</span>
+</span><span id="__span-14-30"><a id="__codelineno-14-30" name="__codelineno-14-30" href="#__codelineno-14-30"></a><span class="w">  </span>Number<span class="w"> </span>of<span class="w"> </span>section<span class="w"> </span>headers:<span class="w">         </span><span class="m">28</span>
+</span><span id="__span-14-31"><a id="__codelineno-14-31" name="__codelineno-14-31" href="#__codelineno-14-31"></a><span class="w">  </span>Section<span class="w"> </span>header<span class="w"> </span>string<span class="w"> </span>table<span class="w"> </span>index:<span class="w"> </span><span class="m">27</span>
+</span></code></pre></div>
+<h3 id="program_header">program Header<a class="headerlink" href="#program_header" title="Permanent link">#</a></h3>
+<p>We can also type <code>readelf -l</code> to display the information contained in the file's segment headers.</p>
+<blockquote>
+<p>The section-to-segment listing shows which logical sections lie inside each given segment. For example, here we can see that the <code>INTERP</code> segment contains only the <code>.interp</code> section.</p>
+</blockquote>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>$<span class="w"> </span>readelf<span class="w"> </span>-lW<span class="w"> </span>a.out
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>Elf<span class="w"> </span>file<span class="w"> </span><span class="nb">type</span><span class="w"> </span>is<span class="w"> </span>DYN<span class="w"> </span><span class="o">(</span>Position-Independent<span class="w"> </span>Executable<span class="w"> </span>file<span class="o">)</span>
+</span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a>Entry<span class="w"> </span>point<span class="w"> </span>0x640
+</span><span id="__span-15-5"><a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a>There<span class="w"> </span>are<span class="w"> </span><span class="m">9</span><span class="w"> </span>program<span class="w"> </span>headers,<span class="w"> </span>starting<span class="w"> </span>at<span class="w"> </span>offset<span class="w"> </span><span class="m">64</span>
+</span><span id="__span-15-6"><a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a>
+</span><span id="__span-15-7"><a id="__codelineno-15-7" name="__codelineno-15-7" href="#__codelineno-15-7"></a>Program<span class="w"> </span>Headers:
+</span><span id="__span-15-8"><a id="__codelineno-15-8" name="__codelineno-15-8" href="#__codelineno-15-8"></a><span class="w">  </span>Type<span class="w">           </span>Offset<span class="w">   </span>VirtAddr<span class="w">           </span>PhysAddr<span class="w">           </span>FileSiz<span class="w">  </span>MemSiz<span class="w">   </span>Flg<span class="w"> </span>Align
+</span><span id="__span-15-9"><a id="__codelineno-15-9" name="__codelineno-15-9" href="#__codelineno-15-9"></a><span class="w">  </span>PHDR<span class="w">           </span>0x000040<span class="w"> </span>0x0000000000000040<span class="w"> </span>0x0000000000000040<span class="w"> </span>0x0001f8<span class="w"> </span>0x0001f8<span class="w"> </span>R<span class="w">   </span>0x8
+</span><span id="__span-15-10"><a id="__codelineno-15-10" name="__codelineno-15-10" href="#__codelineno-15-10"></a><span class="w">  </span>INTERP<span class="w">         </span>0x000238<span class="w"> </span>0x0000000000000238<span class="w"> </span>0x0000000000000238<span class="w"> </span>0x00001b<span class="w"> </span>0x00001b<span class="w"> </span>R<span class="w">   </span>0x1
+</span><span id="__span-15-11"><a id="__codelineno-15-11" name="__codelineno-15-11" href="#__codelineno-15-11"></a><span class="w">      </span><span class="o">[</span>Requesting<span class="w"> </span>program<span class="w"> </span>interpreter:<span class="w"> </span>/lib/ld-linux-aarch64.so.1<span class="o">]</span>
+</span><span id="__span-15-12"><a id="__codelineno-15-12" name="__codelineno-15-12" href="#__codelineno-15-12"></a><span class="w">  </span>LOAD<span class="w">           </span>0x000000<span class="w"> </span>0x0000000000000000<span class="w"> </span>0x0000000000000000<span class="w"> </span>0x000894<span class="w"> </span>0x000894<span class="w"> </span>R<span class="w"> </span>E<span class="w"> </span>0x10000
+</span><span id="__span-15-13"><a id="__codelineno-15-13" name="__codelineno-15-13" href="#__codelineno-15-13"></a><span class="w">  </span>LOAD<span class="w">           </span>0x000d90<span class="w"> </span>0x0000000000010d90<span class="w"> </span>0x0000000000010d90<span class="w"> </span>0x000280<span class="w"> </span>0x000288<span class="w"> </span>RW<span class="w">  </span>0x10000
+</span><span id="__span-15-14"><a id="__codelineno-15-14" name="__codelineno-15-14" href="#__codelineno-15-14"></a><span class="w">  </span>DYNAMIC<span class="w">        </span>0x000da0<span class="w"> </span>0x0000000000010da0<span class="w"> </span>0x0000000000010da0<span class="w"> </span>0x0001f0<span class="w"> </span>0x0001f0<span class="w"> </span>RW<span class="w">  </span>0x8
+</span><span id="__span-15-15"><a id="__codelineno-15-15" name="__codelineno-15-15" href="#__codelineno-15-15"></a><span class="w">  </span>NOTE<span class="w">           </span>0x000254<span class="w"> </span>0x0000000000000254<span class="w"> </span>0x0000000000000254<span class="w"> </span>0x000044<span class="w"> </span>0x000044<span class="w"> </span>R<span class="w">   </span>0x4
+</span><span id="__span-15-16"><a id="__codelineno-15-16" name="__codelineno-15-16" href="#__codelineno-15-16"></a><span class="w">  </span>GNU_EH_FRAME<span class="w">   </span>0x0007a8<span class="w"> </span>0x00000000000007a8<span class="w"> </span>0x00000000000007a8<span class="w"> </span>0x00003c<span class="w"> </span>0x00003c<span class="w"> </span>R<span class="w">   </span>0x4
+</span><span id="__span-15-17"><a id="__codelineno-15-17" name="__codelineno-15-17" href="#__codelineno-15-17"></a><span class="w">  </span>GNU_STACK<span class="w">      </span>0x000000<span class="w"> </span>0x0000000000000000<span class="w"> </span>0x0000000000000000<span class="w"> </span>0x000000<span class="w"> </span>0x000000<span class="w"> </span>RW<span class="w">  </span>0x10
+</span><span id="__span-15-18"><a id="__codelineno-15-18" name="__codelineno-15-18" href="#__codelineno-15-18"></a><span class="w">  </span>GNU_RELRO<span class="w">      </span>0x000d90<span class="w"> </span>0x0000000000010d90<span class="w"> </span>0x0000000000010d90<span class="w"> </span>0x000270<span class="w"> </span>0x000270<span class="w"> </span>R<span class="w">   </span>0x1
+</span><span id="__span-15-19"><a id="__codelineno-15-19" name="__codelineno-15-19" href="#__codelineno-15-19"></a>
+</span><span id="__span-15-20"><a id="__codelineno-15-20" name="__codelineno-15-20" href="#__codelineno-15-20"></a><span class="w"> </span>Section<span class="w"> </span>to<span class="w"> </span>Segment<span class="w"> </span>mapping:
+</span><span id="__span-15-21"><a id="__codelineno-15-21" name="__codelineno-15-21" href="#__codelineno-15-21"></a><span class="w">  </span>Segment<span class="w"> </span>Sections...
+</span><span id="__span-15-22"><a id="__codelineno-15-22" name="__codelineno-15-22" href="#__codelineno-15-22"></a><span class="w">   </span><span class="m">00</span>
+</span><span id="__span-15-23"><a id="__codelineno-15-23" name="__codelineno-15-23" href="#__codelineno-15-23"></a><span class="w">   </span><span class="m">01</span><span class="w">     </span>.interp
+</span><span id="__span-15-24"><a id="__codelineno-15-24" name="__codelineno-15-24" href="#__codelineno-15-24"></a><span class="w">   </span><span class="m">02</span><span class="w">     </span>.interp<span class="w"> </span>.note.gnu.build-id<span class="w"> </span>.note.ABI-tag<span class="w"> </span>.gnu.hash<span class="w"> </span>.dynsym<span class="w"> </span>.dynstr<span class="w"> </span>.gnu.version<span class="w"> </span>.gnu.version_r<span class="w"> </span>.rela.dyn<span class="w"> </span>.rela.plt<span class="w"> </span>.init<span class="w"> </span>.plt<span class="w"> </span>.text<span class="w"> </span>.fini<span class="w"> </span>.rodata<span class="w"> </span>.eh_frame_hdr<span class="w"> </span>.eh_frame
+</span><span id="__span-15-25"><a id="__codelineno-15-25" name="__codelineno-15-25" href="#__codelineno-15-25"></a><span class="w">   </span><span class="m">03</span><span class="w">     </span>.init_array<span class="w"> </span>.fini_array<span class="w"> </span>.dynamic<span class="w"> </span>.got<span class="w"> </span>.data<span class="w"> </span>.bss
+</span><span id="__span-15-26"><a id="__codelineno-15-26" name="__codelineno-15-26" href="#__codelineno-15-26"></a><span class="w">   </span><span class="m">04</span><span class="w">     </span>.dynamic
+</span><span id="__span-15-27"><a id="__codelineno-15-27" name="__codelineno-15-27" href="#__codelineno-15-27"></a><span class="w">   </span><span class="m">05</span><span class="w">     </span>.note.gnu.build-id<span class="w"> </span>.note.ABI-tag
+</span><span id="__span-15-28"><a id="__codelineno-15-28" name="__codelineno-15-28" href="#__codelineno-15-28"></a><span class="w">   </span><span class="m">06</span><span class="w">     </span>.eh_frame_hdr
+</span><span id="__span-15-29"><a id="__codelineno-15-29" name="__codelineno-15-29" href="#__codelineno-15-29"></a><span class="w">   </span><span class="m">07</span>
+</span><span id="__span-15-30"><a id="__codelineno-15-30" name="__codelineno-15-30" href="#__codelineno-15-30"></a><span class="w">   </span><span class="m">08</span><span class="w">     </span>.init_array<span class="w"> </span>.fini_array<span class="w"> </span>.dynamic<span class="w"> </span>.got
+</span></code></pre></div>
+<p><a href="https://www.amazon.com/Blue-Fox-Assembly-Internals-Analysis/dp/1119745306">Blue Fox: Arm Assembly Internals and Reverse Engineering</a> | Chapter 2 ELF File Format Internals - ELF Program Headers:</p>
+<p>The <code>INTERP</code> header is used to tell the operating system that an ELF file needs the help of another program to bring itself into memory. In almost all cases, this program will be the operating system loader file, which in this case is at the path <code>/lib/ld-linux-aarch64.so.1</code>.</p>
+<p>When a program is executed, the operating system uses this header to load the supporting loader into memory and schedules the <em><code>loader</code></em>, rather than the program itself, as the <em>initial</em> target for execution. The use of an external loader is necessary if the program makes use of dynamically linked libraries. The external loader manages the program’s global symbol table, handles connecting binaries together in a process called <em><code>relocation</code></em>, and then eventually calls into the program’s entry point when it is ready.</p>
+<p>Since this is the case for virtually all nontrivial programs except the loader itself, almost all programs will use this field to specify the system loader. The <code>INTERP</code> header is relevant only to program files themselves; for shared libraries loaded either during initial program load or dynamically during program execution, the value is ignored.</p>
+<h3 id="entry_point">Entry Point<a class="headerlink" href="#entry_point" title="Permanent link">#</a></h3>
+<p>The starting point of <code>a.out</code> can be seen in the output of <code>objdump -f</code> and <code>readelf -h</code>.</p>
+<ul>
+<li><code>objdump -f a.out</code>: start address 0x0000000000000640</li>
+<li><code>readelf -h a.out</code>: Entry point address: 0x640</li>
+</ul>
+<p>We can use <code>addr2line</code> to resolve/translate the address to symbol:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>$<span class="w"> </span>addr2line<span class="w"> </span>-f<span class="w"> </span>-e<span class="w"> </span>a.out<span class="w"> </span>0x640
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>_start
+</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>??:?
+</span></code></pre></div>
+<p>It turns out that symbol <code>_start</code> is at address 0x640, which is actually the entry point of the C program.</p>
+<p>As the collect2 options show, <code>_start</code> is defined in <code>/usr/lib/aarch64-linux-gnu/Scrt1.o</code>.</p>
+<div class="language-bash highlight"><span class="filename">objdump -d Scrt1.o</span><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>$<span class="w"> </span>objdump<span class="w"> </span>-d<span class="w"> </span>/usr/lib/aarch64-linux-gnu/Scrt1.o
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>
+</span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>/usr/lib/aarch64-linux-gnu/Scrt1.o:<span class="w">     </span>file<span class="w"> </span>format<span class="w"> </span>elf64-littleaarch64
+</span><span id="__span-17-4"><a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a>
+</span><span id="__span-17-5"><a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a>
+</span><span id="__span-17-6"><a id="__codelineno-17-6" name="__codelineno-17-6" href="#__codelineno-17-6"></a>Disassembly<span class="w"> </span>of<span class="w"> </span>section<span class="w"> </span>.text:
+</span><span id="__span-17-7"><a id="__codelineno-17-7" name="__codelineno-17-7" href="#__codelineno-17-7"></a>
+</span><span id="__span-17-8"><a id="__codelineno-17-8" name="__codelineno-17-8" href="#__codelineno-17-8"></a><span class="m">0000000000000000</span><span class="w"> </span>&lt;_start&gt;:
+</span><span id="__span-17-9"><a id="__codelineno-17-9" name="__codelineno-17-9" href="#__codelineno-17-9"></a><span class="w">   </span><span class="m">0</span>:<span class="w">   </span>d503201f<span class="w">    </span>nop
+</span><span id="__span-17-10"><a id="__codelineno-17-10" name="__codelineno-17-10" href="#__codelineno-17-10"></a><span class="w">   </span><span class="m">4</span>:<span class="w">   </span>d280001d<span class="w">    </span>mov<span class="w"> </span>x29,<span class="w"> </span><span class="c1">#0x0                       // #0</span>
+</span><span id="__span-17-11"><a id="__codelineno-17-11" name="__codelineno-17-11" href="#__codelineno-17-11"></a><span class="w">   </span><span class="m">8</span>:<span class="w">   </span>d280001e<span class="w">    </span>mov<span class="w"> </span>x30,<span class="w"> </span><span class="c1">#0x0                       // #0</span>
+</span><span id="__span-17-12"><a id="__codelineno-17-12" name="__codelineno-17-12" href="#__codelineno-17-12"></a><span class="w">   </span>c:<span class="w">   </span>aa0003e5<span class="w">    </span>mov<span class="w"> </span>x5,<span class="w"> </span>x0
+</span><span id="__span-17-13"><a id="__codelineno-17-13" name="__codelineno-17-13" href="#__codelineno-17-13"></a><span class="w">  </span><span class="m">10</span>:<span class="w">   </span>f94003e1<span class="w">    </span>ldr<span class="w"> </span>x1,<span class="w"> </span><span class="o">[</span>sp<span class="o">]</span>
+</span><span id="__span-17-14"><a id="__codelineno-17-14" name="__codelineno-17-14" href="#__codelineno-17-14"></a><span class="w">  </span><span class="m">14</span>:<span class="w">   </span>910023e2<span class="w">    </span>add<span class="w"> </span>x2,<span class="w"> </span>sp,<span class="w"> </span><span class="c1">#0x8</span>
+</span><span id="__span-17-15"><a id="__codelineno-17-15" name="__codelineno-17-15" href="#__codelineno-17-15"></a><span class="w">  </span><span class="m">18</span>:<span class="w">   </span>910003e6<span class="w">    </span>mov<span class="w"> </span>x6,<span class="w"> </span>sp
+</span><span id="__span-17-16"><a id="__codelineno-17-16" name="__codelineno-17-16" href="#__codelineno-17-16"></a><span class="w">  </span>1c:<span class="w">   </span><span class="m">90000000</span><span class="w">    </span>adrp<span class="w">    </span>x0,<span class="w"> </span><span class="m">0</span><span class="w"> </span>&lt;main&gt;
+</span><span id="__span-17-17"><a id="__codelineno-17-17" name="__codelineno-17-17" href="#__codelineno-17-17"></a><span class="w">  </span><span class="m">20</span>:<span class="w">   </span>f9400000<span class="w">    </span>ldr<span class="w"> </span>x0,<span class="w"> </span><span class="o">[</span>x0<span class="o">]</span>
+</span><span id="__span-17-18"><a id="__codelineno-17-18" name="__codelineno-17-18" href="#__codelineno-17-18"></a><span class="w">  </span><span class="m">24</span>:<span class="w">   </span>d2800003<span class="w">    </span>mov<span class="w"> </span>x3,<span class="w"> </span><span class="c1">#0x0                    // #0</span>
+</span><span id="__span-17-19"><a id="__codelineno-17-19" name="__codelineno-17-19" href="#__codelineno-17-19"></a><span class="w">  </span><span class="m">28</span>:<span class="w">   </span>d2800004<span class="w">    </span>mov<span class="w"> </span>x4,<span class="w"> </span><span class="c1">#0x0                    // #0</span>
+</span><span id="__span-17-20"><a id="__codelineno-17-20" name="__codelineno-17-20" href="#__codelineno-17-20"></a><span class="w">  </span>2c:<span class="w">   </span><span class="m">94000000</span><span class="w">    </span>bl<span class="w">  </span><span class="m">0</span><span class="w"> </span>&lt;__libc_start_main&gt;
+</span><span id="__span-17-21"><a id="__codelineno-17-21" name="__codelineno-17-21" href="#__codelineno-17-21"></a><span class="w">  </span><span class="m">30</span>:<span class="w">   </span><span class="m">94000000</span><span class="w">    </span>bl<span class="w">  </span><span class="m">0</span><span class="w"> </span>&lt;abort&gt;
+</span></code></pre></div>
+<p>Although, by convention, C and C++ programs “begin” at the <code>main</code> function, programs do not actually begin execution here. Instead, they begin execution in a small stub of assembly code, traditionally at the symbol called <code>_start</code>. When linking against the standard C runtime, the <code>_start</code> function is usually a small stub of code that passes control to the <em>libc</em> helper function <code>__libc_start_main</code>. This function then prepares the parameters for the program’s <code>main</code> function and invokes it. The <code>main</code> function then runs the program’s core logic, and if main returns to <code>__libc_start_main</code>, the return value of <code>main</code> is then passed to <code>exit</code> to gracefully exit the program.</p>
+<h3 id="gdb_debug">gdb debug<a class="headerlink" href="#gdb_debug" title="Permanent link">#</a></h3>
+<p>Now just type <code>gdb a.out</code> to run the programme <code>a.out</code> with GDB. Here I'm using customised <code>gdb-pwndbg</code> instead of naked <code>gdb</code>, because I've installed the GDB Enhanced Extension <a href="https://github.com/pwndbg/pwndbg">pwndbg</a>.</p>
+<blockquote>
+<p>related post: <a href="../../20200204/0-gdb-man-help/">GDB manual &amp; help</a> &amp; <a href="../../20200310/7-gdb-enhanced/">GDB Enhanced Extensions</a>.</p>
+</blockquote>
+<p>After launched the GDB Console, type <code>entry</code> to start the debugged program stopping at its entrypoint address.</p>
+<div class="admonition note">
+<p class="admonition-title">difference between entry and starti</p>
+<p>Note that the entrypoint may not be the first instruction executed by the program.<br />
+If you want to stop on the first executed instruction, use the GDB's <code>starti</code> command.</p>
+</div>
+<p>It just stops at the entrypoint <code>_start</code> as expected:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>$<span class="w"> </span>gdb-pwndbg<span class="w"> </span>a.out
+</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>Reading<span class="w"> </span>symbols<span class="w"> </span>from<span class="w"> </span>a.out...
+</span><span id="__span-18-3"><a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a><span class="o">(</span>No<span class="w"> </span>debugging<span class="w"> </span>symbols<span class="w"> </span>found<span class="w"> </span><span class="k">in</span><span class="w"> </span>a.out<span class="o">)</span>
+</span><span id="__span-18-4"><a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a>pwndbg:<span class="w"> </span>loaded<span class="w"> </span><span class="m">157</span><span class="w"> </span>pwndbg<span class="w"> </span>commands<span class="w"> </span>and<span class="w"> </span><span class="m">47</span><span class="w"> </span>shell<span class="w"> </span>commands.<span class="w"> </span>Type<span class="w"> </span>pwndbg<span class="w"> </span><span class="o">[</span>--shell<span class="w"> </span><span class="p">|</span><span class="w"> </span>--all<span class="o">]</span><span class="w"> </span><span class="o">[</span>filter<span class="o">]</span><span class="w"> </span><span class="k">for</span><span class="w"> </span>a<span class="w"> </span>list.
+</span><span id="__span-18-5"><a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a>pwndbg:<span class="w"> </span>created<span class="w"> </span><span class="nv">$rebase</span>,<span class="w"> </span><span class="nv">$base</span>,<span class="w"> </span><span class="nv">$ida</span><span class="w"> </span>GDB<span class="w"> </span>functions<span class="w"> </span><span class="o">(</span>can<span class="w"> </span>be<span class="w"> </span>used<span class="w"> </span>with<span class="w"> </span>print/break<span class="o">)</span>
+</span><span id="__span-18-6"><a id="__codelineno-18-6" name="__codelineno-18-6" href="#__codelineno-18-6"></a>-------<span class="w"> </span>tip<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>day<span class="w"> </span><span class="o">(</span>disable<span class="w"> </span>with<span class="w"> </span><span class="nb">set</span><span class="w"> </span>show-tips<span class="w"> </span>off<span class="o">)</span><span class="w"> </span>-------
+</span><span id="__span-18-7"><a id="__codelineno-18-7" name="__codelineno-18-7" href="#__codelineno-18-7"></a>Use<span class="w"> </span>the<span class="w"> </span>procinfo<span class="w"> </span><span class="nb">command</span><span class="w"> </span><span class="k">for</span><span class="w"> </span>better<span class="w"> </span>process<span class="w"> </span>introspection<span class="w"> </span><span class="o">(</span>than<span class="w"> </span>the<span class="w"> </span>GDB<span class="err">&#39;</span>s<span class="w"> </span>info<span class="w"> </span>proc<span class="w"> </span><span class="nb">command</span><span class="o">)</span>
+</span><span id="__span-18-8"><a id="__codelineno-18-8" name="__codelineno-18-8" href="#__codelineno-18-8"></a>pwndbg&gt;<span class="w"> </span>entry
+</span><span id="__span-18-9"><a id="__codelineno-18-9" name="__codelineno-18-9" href="#__codelineno-18-9"></a>Temporary<span class="w"> </span>breakpoint<span class="w"> </span><span class="m">1</span><span class="w"> </span>at<span class="w"> </span>0xaaaaaaaa0640
+</span><span id="__span-18-10"><a id="__codelineno-18-10" name="__codelineno-18-10" href="#__codelineno-18-10"></a><span class="o">[</span>Thread<span class="w"> </span>debugging<span class="w"> </span>using<span class="w"> </span>libthread_db<span class="w"> </span>enabled<span class="o">]</span>
+</span><span id="__span-18-11"><a id="__codelineno-18-11" name="__codelineno-18-11" href="#__codelineno-18-11"></a>Using<span class="w"> </span>host<span class="w"> </span>libthread_db<span class="w"> </span>library<span class="w"> </span><span class="s2">&quot;/lib/aarch64-linux-gnu/libthread_db.so.1&quot;</span>.
+</span><span id="__span-18-12"><a id="__codelineno-18-12" name="__codelineno-18-12" href="#__codelineno-18-12"></a>
+</span><span id="__span-18-13"><a id="__codelineno-18-13" name="__codelineno-18-13" href="#__codelineno-18-13"></a>Temporary<span class="w"> </span>breakpoint<span class="w"> </span><span class="m">1</span>,<span class="w"> </span>0x0000aaaaaaaa0640<span class="w"> </span><span class="k">in</span><span class="w"> </span>_start<span class="w"> </span><span class="o">()</span>
+</span><span id="__span-18-14"><a id="__codelineno-18-14" name="__codelineno-18-14" href="#__codelineno-18-14"></a>
+</span><span id="__span-18-15"><a id="__codelineno-18-15" name="__codelineno-18-15" href="#__codelineno-18-15"></a>────────────────────────────────────────<span class="o">[</span><span class="w"> </span>BACKTRACE<span class="w"> </span><span class="o">]</span>────────────────────────────────────────
+</span><span id="__span-18-16"><a id="__codelineno-18-16" name="__codelineno-18-16" href="#__codelineno-18-16"></a><span class="w"> </span>►<span class="w"> </span><span class="m">0</span><span class="w">   </span>0xaaaaaaaa0640<span class="w"> </span>_start
+</span><span id="__span-18-17"><a id="__codelineno-18-17" name="__codelineno-18-17" href="#__codelineno-18-17"></a>─────────────────────────────────────────────────────────────────────────────────────────────
+</span></code></pre></div>
+<p>Then type <code>b main</code> to set a breakpoint at the <code>main()</code> function, then type <code>c</code> to continue.</p>
+<ul>
+<li>Or you can just type <code>until main</code> to run until main.</li>
+</ul>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>pwndbg&gt;<span class="w"> </span>b<span class="w"> </span>main
+</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a>Breakpoint<span class="w"> </span><span class="m">3</span><span class="w"> </span>at<span class="w"> </span>0xaaaaaaaa076c
+</span><span id="__span-19-3"><a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a>pwndbg&gt;<span class="w"> </span>c
+</span><span id="__span-19-4"><a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a>Continuing.
+</span><span id="__span-19-5"><a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a>
+</span><span id="__span-19-6"><a id="__codelineno-19-6" name="__codelineno-19-6" href="#__codelineno-19-6"></a>Breakpoint<span class="w"> </span><span class="m">3</span>,<span class="w"> </span>0x0000aaaaaaaa076c<span class="w"> </span><span class="k">in</span><span class="w"> </span>main<span class="w"> </span><span class="o">()</span>
+</span><span id="__span-19-7"><a id="__codelineno-19-7" name="__codelineno-19-7" href="#__codelineno-19-7"></a>
+</span><span id="__span-19-8"><a id="__codelineno-19-8" name="__codelineno-19-8" href="#__codelineno-19-8"></a>────────────────────────────────────────<span class="o">[</span><span class="w"> </span>BACKTRACE<span class="w"> </span><span class="o">]</span>────────────────────────────────────────
+</span><span id="__span-19-9"><a id="__codelineno-19-9" name="__codelineno-19-9" href="#__codelineno-19-9"></a><span class="w"> </span>►<span class="w"> </span><span class="m">0</span><span class="w">   </span>0xaaaaaaaa076c<span class="w"> </span>main+24
+</span><span id="__span-19-10"><a id="__codelineno-19-10" name="__codelineno-19-10" href="#__codelineno-19-10"></a><span class="w">   </span><span class="m">1</span><span class="w">   </span>0xfffff7e273fc<span class="w"> </span>__libc_start_call_main+108
+</span><span id="__span-19-11"><a id="__codelineno-19-11" name="__codelineno-19-11" href="#__codelineno-19-11"></a><span class="w">   </span><span class="m">2</span><span class="w">   </span>0xfffff7e274cc<span class="w"> </span>__libc_start_main+152
+</span><span id="__span-19-12"><a id="__codelineno-19-12" name="__codelineno-19-12" href="#__codelineno-19-12"></a><span class="w">   </span><span class="m">3</span><span class="w">   </span>0xaaaaaaaa0670<span class="w"> </span>_start+48
+</span><span id="__span-19-13"><a id="__codelineno-19-13" name="__codelineno-19-13" href="#__codelineno-19-13"></a>─────────────────────────────────────────────────────────────────────────────────────────────
+</span></code></pre></div>
+<p>Look at the <code>BACKTRACE</code> context, it works as designed in <code>/usr/lib/aarch64-linux-gnu/Scrt1.o</code>.</p>
+<p>Type <code>info [dll|sharedlibrary]</code> to show status of loaded shared object libraries.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>pwndbg&gt;<span class="w"> </span>info<span class="w"> </span>dll
+</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>From<span class="w">                </span>To<span class="w">                  </span>Syms<span class="w"> </span>Read<span class="w">   </span>Shared<span class="w"> </span>Object<span class="w"> </span>Library
+</span><span id="__span-20-3"><a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a>0x0000fffff7fc3c40<span class="w">  </span>0x0000fffff7fe20a4<span class="w">  </span>Yes<span class="w">         </span>/lib/ld-linux-aarch64.so.1
+</span><span id="__span-20-4"><a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a>0x0000fffff7e27040<span class="w">  </span>0x0000fffff7f33090<span class="w">  </span>Yes<span class="w">         </span>/lib/aarch64-linux-gnu/libc.so.6
+</span></code></pre></div>
+<p>Everything is anticipated, under control.</p>
+
+
+
+
+
+
+
+  
+  
+
+
+
+  
+
+
+  
+
+
+
+  <h2 id="__comments">评论</h2>
+  <!-- Insert generated snippet here -->
+  <script src="https://giscus.app/client.js"
+    data-repo="fan2/mkdocs"
+    data-repo-id="R_kgDOLltxSg"
+    data-category="Announcements"
+    data-category-id="DIC_kwDOLltxSs4CeURH"
+    data-mapping="pathname"
+    data-strict="0"
+    data-reactions-enabled="1"
+    data-emit-metadata="1"
+    data-input-position="top"
+    data-theme="preferred_color_scheme"
+    data-lang="zh-CN"
+    data-loading="lazy"
+    crossorigin="anonymous"
+    async>
+  </script>
+
+  <!-- Synchronize Giscus theme with palette -->
+  <script>
+    var giscus = document.querySelector("script[src*=giscus]")
+
+    // Set palette on initial load
+    var palette = __md_get("__palette")
+    if (palette && typeof palette.color === "object") {
+      var theme = palette.color.scheme === "slate"
+        ? "transparent_dark"
+        : "light"
+
+      // Instruct Giscus to set theme
+      giscus.setAttribute("data-theme", theme) 
+    }
+
+    // Register event handlers after documented loaded
+    document.addEventListener("DOMContentLoaded", function() {
+      var ref = document.querySelector("[data-md-component=palette]")
+      ref.addEventListener("change", function() {
+        var palette = __md_get("__palette")
+        if (palette && typeof palette.color === "object") {
+          var theme = palette.color.scheme === "slate"
+            ? "transparent_dark"
+            : "light"
+
+          // Instruct Giscus to change theme
+          var frame = document.querySelector(".giscus-frame")
+          frame.contentWindow.postMessage(
+            { giscus: { setConfig: { theme } } },
+            "https://giscus.app"
+          )
+        }
+      })
+    })
+  </script>
+
+      
+    </article>
+  </div>
+
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+        
+      
+      <nav class="md-footer__inner md-grid" aria-label="页脚" >
+        
+          
+          <a href="../compilation-process/" class="md-footer__link md-footer__link--prev" aria-label="上一页: Program Compilation Process">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                上一页
+              </span>
+              <div class="md-ellipsis">
+                Program Compilation Process
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../gcc-compilation-static/" class="md-footer__link md-footer__link--next" aria-label="下一页: GCC Compilation Quick Tour - static">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                下一页
+              </span>
+              <div class="md-ellipsis">
+                GCC Compilation Quick Tour - static
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2024- Cliff Fan
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["toc.follow", "header.autohide", "navigation.tabs", "navigation.top", "navigation.footer", "navigation.tracking", "content.code.copy", "content.code.select", "content.code.annotate"], "search": "../../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.bd41221c.min.js"></script>
+      
+        <script src="../../../javascripts/mathjax.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+        <script src="https://vercount.one/js"></script>
+      
+    
+  </body>
+</html>

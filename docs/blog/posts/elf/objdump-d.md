@@ -542,6 +542,8 @@ Disassembly of section .fini:
 
 ## disassemble addr range
 
+### disas section
+
 Dump section headers through `size -Ax`, `readelf -S` and `objdump -h`:
 
 ```bash
@@ -604,6 +606,127 @@ Disassembly of section .init:
  5c4:	9400002c 	bl	674 <call_weak_fn>
  5c8:	a8c17bfd 	ldp	x29, x30, [sp], #16
  5cc:	d65f03c0 	ret
+```
+
+### disas symbol
+
+We can compile with option `-static` to create a static executable:
+
+```bash
+$ gcc -v 0701.c -static -o b.out
+```
+
+As per the `-static` link policy, it will assemble glibc(`libc.a`) into the final product `b.out`.
+
+Check SYMBOL TABLE with `readelf -s` or `objdump -t`/`objdump -x` and we can see that `b.out` assembles/links a lot of CRT(C RunTime) and STD(C STanDard Library) implementation object files.
+
+```bash
+$ objdump -t b.out
+
+b.out:     file format elf64-littleaarch64
+
+SYMBOL TABLE:
+
+[...snip...]
+
+0000000000000000 l    df *ABS*	0000000000000000 crt1.o
+0000000000000000 l    df *ABS*	0000000000000000 crti.o
+0000000000000000 l    df *ABS*	0000000000000000 crtn.o
+0000000000000000 l    df *ABS*	0000000000000000 exit.o
+0000000000000000 l    df *ABS*	0000000000000000 cxa_atexit.o
+
+[...snip...]
+
+0000000000000000 l    df *ABS*	0000000000000000 stdio.o
+0000000000000000 l    df *ABS*	0000000000000000 strcmp.o
+0000000000000000 l    df *ABS*	0000000000000000 strcpy.o
+0000000000000000 l    df *ABS*	0000000000000000 strlen.o
+0000000000000000 l    df *ABS*	0000000000000000 strncmp.o
+0000000000000000 l    df *ABS*	0000000000000000 strstr.o
+0000000000000000 l    df *ABS*	0000000000000000 qsort.o
+
+[...snip...]
+
+```
+
+Then type `nm -S` and grep function `strlen`, it lists five versions.
+
+```bash
+$ nm -S b.out | grep strlen
+0000000000415650 0000000000000028 i __strlen
+0000000000415650 0000000000000028 i strlen
+0000000000418440 000000000000013c T __strlen_asimd
+0000000000415650 0000000000000028 t __strlen_ifunc
+00000000004183c0 0000000000000074 T __strlen_mte
+```
+
+If we type `objdump --disassemble=strlen b.out`, it fails to disassemble because the symbol type `i` indicates it's for the PE format.
+
+Look at the other three symbols, they are local/global symbols in the text (code) section as the symbol type `t/T` indicates.
+
+Try `objdump --disassemble=__strlen_ifunc b.out`, it disassembles successfully.
+
+```bash
+$ objdump --disassemble=__strlen_ifunc b.out
+
+b.out:     file format elf64-littleaarch64
+
+
+Disassembly of section .init:
+
+Disassembly of section .plt:
+
+Disassembly of section .text:
+
+0000000000415650 <__strlen_ifunc>:
+  415650:	900003e2 	adrp	x2, 491000 <tunable_list+0x528>
+  415654:	f0000001 	adrp	x1, 418000 <__memset_emag>
+  415658:	f0000000 	adrp	x0, 418000 <__memset_emag>
+  41565c:	91110021 	add	x1, x1, #0x440
+  415660:	f9470c42 	ldr	x2, [x2, #3608]
+  415664:	910f0000 	add	x0, x0, #0x3c0
+  415668:	f9400042 	ldr	x2, [x2]
+  41566c:	f26e005f 	tst	x2, #0x40000
+  415670:	9a811000 	csel	x0, x0, x1, ne  // ne = any
+  415674:	d65f03c0 	ret
+
+Disassembly of section __libc_freeres_fn:
+
+Disassembly of section .fini:
+```
+
+Another way is to calculate the start/stop address of the symbol `__strlen_ifunc` and invoke `objdump -d` with the options `--start-address` and `--stop-address`.
+
+> objdump -d --start-address=0x415650 --stop-address=0x415678 b.out
+
+The last way is to use GDB disassemble, according to [Ciro Santilli](https://stackoverflow.com/a/51971434/3721132).
+
+```bash
+$ man gdb
+--batch
+           Run in batch mode.
+-e file
+           Use file as the executable file to execute when appropriate
+-x file
+           Execute GDB commands from file.
+```
+
+Invoke GDB to load `file b.out` and execute `disassemble/rs 0x415650` to disassemble the symbol at the address in place.
+
+```bash
+$ gdb -batch -ex 'file b.out' -ex 'disassemble/rs 0x415650'
+Dump of assembler code for function strlen:
+   0x0000000000415650 <+0>:	e2 03 00 90	adrp	x2, 0x491000 <tunable_list+1320>
+   0x0000000000415654 <+4>:	01 00 00 f0	adrp	x1, 0x418000 <__memset_emag>
+   0x0000000000415658 <+8>:	00 00 00 f0	adrp	x0, 0x418000 <__memset_emag>
+   0x000000000041565c <+12>:	21 00 11 91	add	x1, x1, #0x440
+   0x0000000000415660 <+16>:	42 0c 47 f9	ldr	x2, [x2, #3608]
+   0x0000000000415664 <+20>:	00 00 0f 91	add	x0, x0, #0x3c0
+   0x0000000000415668 <+24>:	42 00 40 f9	ldr	x2, [x2]
+   0x000000000041566c <+28>:	5f 00 6e f2	tst	x2, #0x40000
+   0x0000000000415670 <+32>:	00 10 81 9a	csel	x0, x0, x1, ne  // ne = any
+   0x0000000000415674 <+36>:	c0 03 5f d6	ret
+End of assembler dump.
 ```
 
 ## intermix source+assembly
