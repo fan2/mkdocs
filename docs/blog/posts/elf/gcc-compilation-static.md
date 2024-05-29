@@ -3,7 +3,7 @@ title: GCC Compilation Quick Tour - static
 authors:
     - xman
 date:
-    created: 2023-06-17T11:00:00
+    created: 2023-06-26T09:00:00
 categories:
     - elf
 comments: true
@@ -81,7 +81,7 @@ COLLECT_GCC_OPTIONS='-v' '-static' '-o' 'b.out' '-mlittle-endian' '-mabi=lp64' '
 
 The configuration of autoconf is almost the same as default dynamic link.
 
-### COLLECT_GCC_OPTIONS
+### OPTIONS
 
 Nothing more than the default except an additional manually formulated option `-static`.
 

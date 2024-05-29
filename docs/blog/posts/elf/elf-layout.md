@@ -13,9 +13,9 @@ The Executable and Linkable Format (`ELF`), is a common standard file format for
 
 <!-- more -->
 
-[ELF - OSDev Wiki](https://wiki.osdev.org/ELF)
-[Executable and Linkable Format](https://en.wikipedia.org/wiki/Executable_and_Linkable_Format)
+[Executable and Linkable Format](https://en.wikipedia.org/wiki/Executable_and_Linkable_Format) - [ELF - OSDev Wiki](https://wiki.osdev.org/ELF)
 
+- [Linux Foundation Referenced Specifications](https://refspecs.linuxfoundation.org/) - TIS - ELF: [v1.1](https://www.cs.cmu.edu/afs/cs/academic/class/15213-f00/docs/elf.pdf), [v1.2](https://refspecs.linuxfoundation.org/elf/elf.pdf)
 - sysvabi64 - [System V ABI for the Arm® 64-bit Architecture (AArch64)](https://github.com/ARM-software/abi-aa/blob/844a79fd4c77252a11342709e3b27b2c9f590cf1/sysvabi64/sysvabi64.rst)
 - aaelf64 - [ELF for the Arm® 64-bit Architecture (AArch64)](https://github.com/ARM-software/abi-aa/blob/main/aaelf64/aaelf64.rst)
 
@@ -30,7 +30,7 @@ elf - format of Executable and Linking Format (ELF) files
 
 Each ELF file is made up of one ELF header, followed by file data. The data can include:
 
-- `Program header table`, describing zero or more memory segments
+- `Program header table`, describing zero or more [memory segments](https://en.wikipedia.org/wiki/Memory_segmentation)
 - `Section header table`, describing zero or more sections
 - `Data` referred to by entries in the program header table or section header table
 
@@ -190,99 +190,50 @@ EM_X86_64      | 62    | AMD x86-64 architecture
 EM_AARCH64     | 183   | ARM AARCH64
 EM_RISCV       | 243   | RISC-V
 
-## BFD
+To view, dump, analyse or manipulate the object file and ELF file, you need [GNU binutils](./gnu-binutils.md) such as `readelf`, `objdump`, `strip`, `objcopy`, `libbfd`, etc.
 
-[Binary File Descriptor library](https://en.wikipedia.org/wiki/Binary_File_Descriptor_library)
+## sections
 
-The Binary File Descriptor library (BFD) is the GNU Project's main mechanism for the portable manipulation of object files in a variety of formats. As of 2003, it supports approximately 50 file formats for some 25 instruction set architectures.
+Please refer to the following materials for further details.
 
-[bfd - GCC Wiki](https://gcc.gnu.org/wiki/bfd)
+- [TIS - ELF v1.2](https://refspecs.linuxfoundation.org/elf/elf.pdf) | Book I: ELF - 1. Object Files - Sections
+- [aaelf64](https://github.com/ARM-software/abi-aa/blob/main/aaelf64/aaelf64.rst) | 5 Object Files - 5.3 Sections
+- [ELF Format Cheatsheet](https://gist.github.com/x0nu11byt3/bcb35c3de461e5fb66173071a2379779) | Sections
+- [《ARM64体系结构编程与实践》](https://item.jd.com/13119117.html) | 第 8 章 GNU 汇编器 - 8.1 编译流程与 ELF 文件
+- [Learning Linux Binary Analysis](https://www.amazon.com/Learning-Binary-Analysis-elfmaster-ONeill/dp/1782167102) | Chapter 2: The ELF Binary Format - ELF section headers
+- [Practical Binary Analysis](https://www.amazon.com/Practical-Binary-Analysis-Instrumentation-Disassembly/dp/1593279124) | Chapter 2: The ELF Format - 2.3 Sections
+- [Arm Assembly Internals and Reverse Engineering](https://www.amazon.com/Blue-Fox-Assembly-Internals-Analysis/dp/1119745306) | Chapter 2 ELF File Format Internals - ELF Section Headers
+- [Computer Systems - A Programmer’s Perspective](https://www.amazon.com/Computer-Systems-OHallaron-Randal-Bryant/dp/1292101768/) | Chapter 7: Linking - 7.3: Object Files ; 7.8: Executable Object Files
 
-BFD is a package which allows applications to use the same routines to operate on object files whatever the object file format. A new object file format can be supported simply by creating a new BFD back end and adding it to the library.
+## symbols
 
-BFD is split into two parts: the front end, and the back ends (one for each object file format).
+Please refer to the following materials for further details.
 
-1. The *front end* of BFD provides the interface to the user. It manages memory and various canonical data structures. The front end also decides which back end to use and when to call back end routines.
-2. The *back ends* provide BFD its view of the real world. Each back end provides a set of calls which the BFD front end can use to maintain its canonical form. The back ends also may keep around information for their own use, for greater efficiency.
+[TIS - ELF v1.2](https://refspecs.linuxfoundation.org/elf/elf.pdf) | Book I: ELF
 
-[GNU Manuals Online](https://www.gnu.org/manual/manual.en.html) - [BFD](https://sourceware.org/binutils/docs/bfd/)
+- 1\. Object Files - Symbol Table; Relocation
+- 2\. Program Loading and Dynamic Linking
 
-1. [Overview](https://sourceware.org/binutils/docs/bfd/Overview.html)
-2. [BFD front end](https://sourceware.org/binutils/docs/bfd/BFD-front-end.html)
-3. [BFD back ends](https://sourceware.org/binutils/docs/bfd/BFD-back-ends.html)
+ARM Specifications @[github](https://github.com/ARM-software/abi-aa/releases)
 
-[Binutils](https://www.gnu.org/software/binutils/)@[sourceware](https://sourceware.org/binutils/): [libbfd](https://sourceware.org/binutils/docs/bfd.pdf) - A library for manipulating binary files in a variety of different formats.
+- [sysvabi64](https://github.com/ARM-software/abi-aa/blob/844a79fd4c77252a11342709e3b27b2c9f590cf1/sysvabi64/sysvabi64.rst) | 9 Program Loading and Dynamic Linking
+- [aaelf64](https://github.com/ARM-software/abi-aa/blob/main/aaelf64/aaelf64.rst) | 5 Object Files - 5.7   Relocation
+- [aaelf64](https://github.com/ARM-software/abi-aa/blob/main/aaelf64/aaelf64.rst) | 6 Program Loading and Dynamic Linking
 
-Using ld - [BFD](https://ftp.gnu.org/old-gnu/Manuals/ld-2.9.1/html_mono/ld.html#SEC30): You can use `objdump -i` to list all the formats available for your configuration.
+[ELF Format Cheatsheet](https://gist.github.com/x0nu11byt3/bcb35c3de461e5fb66173071a2379779) | Symbols; Dynamic Linking; Relocation; loading
 
-```bash
-$ objdump -i
-BFD header file version (GNU Binutils for Ubuntu) 2.38
+[《ARM64体系结构编程与实践》](https://item.jd.com/13119117.html) | 第 9 章 链接器与链接脚本 - 9.3 重定位
 
-```
+[Learning Linux Binary Analysis](https://www.amazon.com/Learning-Binary-Analysis-elfmaster-ONeill/dp/1782167102) | Chapter 2: The ELF Binary Format - ELF symbols; ELF relocations; ELF dynamic linking
 
-[binutils/bfd/bfd-in2.h](https://github.com/CyberGrandChallenge/binutils/blob/master/bfd/bfd-in2.h)
+[Arm Assembly Internals and Reverse Engineering](https://www.amazon.com/Blue-Fox-Assembly-Internals-Analysis/dp/1119745306) | Chapter 2 ELF File Format Internals
 
-```c
-/* BFD contains relocation entries.  */
-#define HAS_RELOC                   0x1
+- ELF Section Headers - Symbols
+- The Dynamic Section and Dynamic Loading
 
-/* BFD is directly executable.  */
-#define EXEC_P                      0x2
+[Computer Systems - A Programmer’s Perspective](https://www.amazon.com/Computer-Systems-OHallaron-Randal-Bryant/dp/1292101768/) | Chapter 7: Linking - 7.4 ~ 7.13
 
-/* BFD has symbols.  */
-#define HAS_SYMS                   0x10
-
-/* BFD is a dynamic object.  */
-#define DYNAMIC                    0x40
-
-/* BFD is dynamically paged (this is like an a.out ZMAGIC file) (the
-linker sets this by default, but clears it for -r or -n or -N).  */
-#define D_PAGED                   0x100
-```
-
-When you type `objdump -f` or `objdump -x` to display the contents of the overall/all file header(s), you'll see these Format_specific flags.
-
----
-
-[Installing necessary packages to use libbfd library](https://askubuntu.com/questions/1385118/installing-necessary-packages-to-use-libbfd-binary-file-descriptor-library):
-
-```bash
-$ apt search binutils-dev
-Sorting... Done
-Full Text Search... Done
-binutils-dev/jammy-updates,jammy-security 2.38-4ubuntu2.6 arm64
-  GNU binary utilities (BFD development files)
-
-$ sudo apt-get install binutils-dev
-
-```
-
-## refs
-
-[Linux Foundation Referenced Specifications](https://refspecs.linuxfoundation.org/)
-
-- [TIS - ELF Specification Version 1.1](https://www.cs.cmu.edu/afs/cs/academic/class/15213-f00/docs/elf.pdf)
-- [TIS - ELF Specification Version 1.2](https://refspecs.linuxfoundation.org/elf/elf.pdf)
-
-[ARM Cortex-A Series Programmer's Guide for ARMv8-A](https://developer.arm.com/documentation/den0024/latest)
-
-- Chapter 9 The ABI for ARM 64-bit Architecture
-
-[Blue Fox: Arm Assembly Internals and Reverse Engineering](https://www.amazon.com/Blue-Fox-Assembly-Internals-Analysis/dp/1119745306)
-
-- Chapter 2 ELF File Format Internals
-
-[Learning Linux Binary Analysis](https://www.amazon.com/Learning-Binary-Analysis-elfmaster-ONeill/dp/1782167102)
-
-- Chapter 2: The ELF Binary Format
-
-[Practical Binary Analysis](https://www.amazon.com/Practical-Binary-Analysis-Instrumentation-Disassembly/dp/1593279124)
-
-- Chapter 1: Anatomy of a Binary
-- Chapter 2: The ELF Format
-
----
+## references
 
 [ELF Format Cheatsheet](https://gist.github.com/x0nu11byt3/bcb35c3de461e5fb66173071a2379779)
 

@@ -62,6 +62,8 @@ $ objdump --help
   -w, --wide                     Format output for more than 80 columns
 ```
 
+## sections
+
 Apart from `readelf -S` and `objdump -h`, we can use `size -Ax $ELF` to display a brief section size summary.
 
 !!! note "section Type & Flags"
@@ -69,8 +71,6 @@ Apart from `readelf -S` and `objdump -h`, we can use `size -Ax $ELF` to display 
     Refer to [Section (Using as)](https://sourceware.org/binutils/docs/as/Section.html) for a knowledge of optional `Type` and `Flags` of ELF Version against the output of `readelf -S`.
 
     **Key to Flags**: W (write), A (alloc), X (execute), M (merge), S (strings), I (info), L (link order), O (extra OS processing required), G (group), T (TLS), C (compressed), x (unknown), o (OS specific), E (exclude), D (mbind), p (processor specific)
-
-## sections
 
 Pass `-p`/`-x` option to `readelf` can dump contents of specified section as strings/bytes.
 
@@ -240,10 +240,14 @@ $ man objdump
 
 ## CTF
 
-[The CTF File Format](https://sourceware.org/binutils/docs/ctf-spec.html)
+[The CTF File Format](https://sourceware.org/binutils/docs/ctf-spec.html) - [Compact C Type Format](https://man.omnios.org/man5/ctf)
+
+The `CTF` file format compactly describes C types and the association between function and data symbols and types: if embedded in ELF objects, it can exploit the ELF string table to reduce duplication further.
+
+There are two major pieces to CTF: the *archive* and the *dictionary*. Some relatives and ancestors of CTF call dictionaries *containers*: the archive format is unique to this variant of CTF. (Much of the source code still uses the old term.)
+
 [Binutils](https://www.gnu.org/software/binutils/)@[sourceware](https://sourceware.org/binutils/): libctf - A library for manipulating the CTF debug format.
 
-[CTF(5)](https://man.omnios.org/man5/ctf) — Compact C Type Format
 [Ubuntu Manpage: ctfdump — dump the SUNW_ctf section of an ELF file](https://manpages.ubuntu.com/manpages/focal/en/man1/ctfdump.1.html)
 
 ```bash
@@ -294,6 +298,8 @@ $ man objdump
 ## manipulate
 
 [gcc - How to remove a specific ELF section, without stripping other symbols? - Stack Overflow](https://stackoverflow.com/questions/31453859/how-to-remove-a-specific-elf-section-without-stripping-other-symbols)
+
+[Computer Systems - A Programmer’s Perspective](https://www.amazon.com/Computer-Systems-OHallaron-Randal-Bryant/dp/1292101768/) | Chapter 7: Linking - 7.14: Tools for Manipulating Object Files
 
 ```bash
 $ man objdump
@@ -367,3 +373,73 @@ $ objcopy --help
   -x --discard-all                 Remove all non-global symbols
   -X --discard-locals              Remove any compiler-generated symbols
 ```
+
+### BFD
+
+[Binary File Descriptor library](https://en.wikipedia.org/wiki/Binary_File_Descriptor_library)
+
+The Binary File Descriptor library (`BFD`) is the GNU Project's main mechanism for the portable *manipulation* of object files in a variety of formats. As of 2003, it supports approximately 50 file formats for some 25 instruction set architectures.
+
+[bfd - GCC Wiki](https://gcc.gnu.org/wiki/bfd)
+
+`BFD` is a package which allows applications to use the same routines to operate on object files whatever the object file format. A new object file format can be supported simply by creating a new BFD back end and adding it to the library.
+
+BFD is split into two parts: the front end, and the back ends (one for each object file format).
+
+1. The *front end* of BFD provides the interface to the user. It manages memory and various canonical data structures. The front end also decides which back end to use and when to call back end routines.
+2. The *back ends* provide BFD its view of the real world. Each back end provides a set of calls which the BFD front end can use to maintain its canonical form. The back ends also may keep around information for their own use, for greater efficiency.
+
+[GNU Manuals Online](https://www.gnu.org/manual/manual.en.html) - [BFD](https://sourceware.org/binutils/docs/bfd/)
+
+1. [Overview](https://sourceware.org/binutils/docs/bfd/Overview.html)
+2. [BFD front end](https://sourceware.org/binutils/docs/bfd/BFD-front-end.html)
+3. [BFD back ends](https://sourceware.org/binutils/docs/bfd/BFD-back-ends.html)
+
+[Binutils](https://www.gnu.org/software/binutils/)@[sourceware](https://sourceware.org/binutils/): [libbfd](https://sourceware.org/binutils/docs/bfd.pdf) - A library for manipulating binary files in a variety of different formats.
+
+Using ld - [BFD](https://ftp.gnu.org/old-gnu/Manuals/ld-2.9.1/html_mono/ld.html#SEC30): You can use `objdump -i` to list all the formats available for your configuration.
+
+```bash
+$ objdump -i
+BFD header file version (GNU Binutils for Ubuntu) 2.38
+
+```
+
+[binutils/bfd/bfd-in2.h](https://github.com/CyberGrandChallenge/binutils/blob/master/bfd/bfd-in2.h)
+
+```c
+/* BFD contains relocation entries. */
+#define HAS_RELOC                   0x1
+
+/* BFD is directly executable. */
+#define EXEC_P                      0x2
+
+/* BFD has symbols. */
+#define HAS_SYMS                   0x10
+
+/* BFD is a dynamic object. */
+#define DYNAMIC                    0x40
+
+/* BFD is dynamically paged (this is like an a.out ZMAGIC file) (the
+linker sets this by default, but clears it for -r or -n or -N).  */
+#define D_PAGED                   0x100
+```
+
+When you type `objdump -f` or `objdump -x` to display the contents of the overall/all file header(s), you'll see these Format_specific flags.
+
+---
+
+[Installing necessary packages to use libbfd library](https://askubuntu.com/questions/1385118/installing-necessary-packages-to-use-libbfd-binary-file-descriptor-library):
+
+```bash
+$ apt search binutils-dev
+Sorting... Done
+Full Text Search... Done
+binutils-dev/jammy-updates,jammy-security 2.38-4ubuntu2.6 arm64
+  GNU binary utilities (BFD development files)
+
+$ sudo apt-get install binutils-dev
+
+```
+
+[Practical Binary Analysis](https://www.amazon.com/Practical-Binary-Analysis-Instrumentation-Disassembly/dp/1593279124) - Chapter 4: Building a Binary Loader Using libbfd

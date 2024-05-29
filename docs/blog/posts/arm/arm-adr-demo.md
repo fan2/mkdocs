@@ -116,7 +116,7 @@ In Linux kernel for arm64, the assembler has defined some handy pseudo-op macros
 
 ## Examples
 
-[Blue Fox: Arm Assembly Internals and Reverse Engineering](https://www.amazon.com/Blue-Fox-Assembly-Internals-Analysis/dp/1119745306)
+[Arm Assembly Internals and Reverse Engineering](https://www.amazon.com/Blue-Fox-Assembly-Internals-Analysis/dp/1119745306)
 
 Chapter 11 Dynamic Analysis - Command-Line Debugging; Debugging a Memory Corruption
 Chapter 12 Reversing arm64 macOS Malware - Background - macOS Hello World (arm64)

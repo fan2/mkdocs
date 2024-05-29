@@ -222,7 +222,7 @@ These constants the Assembler creates are placed at the *end* of the `.text` sec
 
 ### Literal (PC-Relative) Addressing
 
-[Blue Fox: Arm Assembly Internals and Reverse Engineering](https://www.amazon.com/Blue-Fox-Assembly-Internals-Analysis/dp/1119745306) | Chapter 6 Memory Access Instructions - Addressing Modes and Offset Forms - Literal (PC-Relative) Addressing - Loading Constants
+[Arm Assembly Internals and Reverse Engineering](https://www.amazon.com/Blue-Fox-Assembly-Internals-Analysis/dp/1119745306) | Chapter 6 Memory Access Instructions - Addressing Modes and Offset Forms - Literal (PC-Relative) Addressing - Loading Constants
 
 `LDR` can also load a constant value or the address of a label using the specialized syntax `LDR Rn,=value`. This syntax is also useful for cases when you write assembly and a constant cannot be directly encoded into a `MOV` instruction.
 

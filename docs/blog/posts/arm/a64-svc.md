@@ -221,6 +221,6 @@ Hi A64!
 
 [^1]:[ARM Assembly Language: Fundamentals and Techniques, 2nd Edition](https://www.oreilly.com/library/view/arm-assembly-language/9781482229851/) | Chapter 14: Exception Handling : ARM7TDMI - 14.8 PROCEDURES FOR HANDLING EXCEPTIONS - 14.8.5 SVCs
 
-[^2]:[Blue Fox: Arm Assembly Internals and Reverse Engineering](https://www.amazon.com/Blue-Fox-Assembly-Internals-Analysis/dp/1119745306) | Chapter 3 OS Fundamentals - OS Architecture Overview - User Mode vs. Kernel Mode, System Calls
+[^2]:[Arm Assembly Internals and Reverse Engineering](https://www.amazon.com/Blue-Fox-Assembly-Internals-Analysis/dp/1119745306) | Chapter 3 OS Fundamentals - OS Architecture Overview - User Mode vs. Kernel Mode, System Calls
 
 [^3]: [Programming with 64-Bit ARM Assembly Language](https://www.amazon.com/Programming-64-Bit-ARM-Assembly-Language/dp/1484258800/) | Chapter 1: Getting Started - Hello World - Assembly Instructions

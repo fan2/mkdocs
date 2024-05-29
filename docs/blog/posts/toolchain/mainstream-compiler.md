@@ -34,7 +34,7 @@ The following concepts/topics will be involved:
 
 !!! abstract "What is GCC?"
 
-    The GNU Compiler Collection includes front ends for [](https://gcc.gnu.org/c99status.html), [C++](https://gcc.gnu.org/projects/cxx-status.html), Objective-C, Fortran, Ada, Go, and D, as well as libraries for these languages (libstdc++,...). GCC was originally written as the compiler for the [GNU operating system](http://www.gnu.org/gnu/thegnuproject.html). The GNU system was developed to be 100% free software, free in the sense that it respects the user's freedom.
+    The GNU Compiler Collection includes front ends for [C](https://gcc.gnu.org/c99status.html), [C++](https://gcc.gnu.org/projects/cxx-status.html), Objective-C, Fortran, Ada, Go, and D, as well as libraries for these languages (libstdc++,...). GCC was originally written as the compiler for the [GNU operating system](http://www.gnu.org/gnu/thegnuproject.html). The GNU system was developed to be 100% free software, free in the sense that it respects the user's freedom.
 
     We strive to provide regular, high quality [releases](https://gcc.gnu.org/releases.html), which we want to work well on a variety of native and cross targets (including GNU/Linux), and encourage everyone to contribute changes or help testing GCC.
 
@@ -45,7 +45,7 @@ The following concepts/topics will be involved:
 - [Option Summary](https://gcc.gnu.org/onlinedocs/gcc/Option-Summary.html)
 - [Overall Options](https://gcc.gnu.org/onlinedocs/gcc/Overall-Options.html)
 
-[GCC Internals)](https://gcc.gnu.org/onlinedocs/gccint/index.html)
+[GCC Internals](https://gcc.gnu.org/onlinedocs/gccint/index.html)
 
 ### Architecture
 

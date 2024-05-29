@@ -16,7 +16,9 @@ You can debug a program from the command line using `GDB` or even more powerful 
 
 <!-- more -->
 
-[Blue Fox: Arm Assembly Internals and Reverse Engineering](https://www.amazon.com/Blue-Fox-Assembly-Internals-Analysis/dp/1119745306) | Chapter 10 Static Analysis - Static Analysis Tools
+[Practical Binary Analysis](https://www.amazon.com/Practical-Binary-Analysis-Instrumentation-Disassembly/dp/1593279124) | Chapter 6: Disassembly and Binary Analysis Fundamentals
+
+[Arm Assembly Internals and Reverse Engineering](https://www.amazon.com/Blue-Fox-Assembly-Internals-Analysis/dp/1119745306) | Chapter 10 Static Analysis - Static Analysis Tools
 
 ## Disassembler
 

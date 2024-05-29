@@ -3,7 +3,7 @@ title: GCC Compilation Quick Tour - dynamic
 authors:
     - xman
 date:
-    created: 2023-06-17T10:00:00
+    created: 2023-06-25T09:00:00
 categories:
     - elf
 comments: true
@@ -24,7 +24,7 @@ $ uname -a
 Linux rpi3b-ubuntu 5.15.0-1055-raspi #58-Ubuntu SMP PREEMPT Sat May 4 03:52:40 UTC 2024 aarch64 aarch64 aarch64 GNU/Linux
 ```
 
-## explore toolchain
+## gcc version
 
 Explore `gcc` entity(real body):
 
@@ -159,40 +159,6 @@ COLLECT_GCC_OPTIONS='-v' '-mlittle-endian' '-mabi=lp64' '-dumpdir' 'a.'
 COLLECT_GCC_OPTIONS='-v' '-mlittle-endian' '-mabi=lp64' '-dumpdir' 'a.'
 ```
 
-### COLLECT_GCC
-
-What does the first two lines mean?
-
-- Using built-in specs.
-- COLLECT_GCC=gcc
-
-[Mainstream Compiler](../toolchain/mainstream-compiler.md) - [GNU C Compiler Internals/Architecture](https://en.wikibooks.org/wiki/GNU_C_Compiler_Internals/GNU_C_Compiler_Architecture)
-
-For a C source file they are the preprocessor and compiler `cc1`, the assembler `as`, and the linker `collect2`. The first and the third programs come with a GCC *distribution*, the assembler is a part of the GNU *binutils* package.
-
-<figure markdown="span">
-    ![GCC_Architecture](../toolchain/images/GCC_Architecture.jpeg)
-</figure>
-
-[Developer Options](https://gcc.gnu.org/onlinedocs/gcc/Developer-Options.html): `-dumpspecs` : Print the compiler’s built-in [Spec Files](https://gcc.gnu.org/onlinedocs/gcc/Spec-Files.html):
-
-- cpp : Options to pass to the C preprocessor
-- cc1 : Options to pass to the C compiler
-- cc1plus : Options to pass to the C++ compiler
-
-[cpp - The C Preprocessor](https://gcc.gnu.org/onlinedocs/cpp/)
-
-- [Invocation](https://gcc.gnu.org/onlinedocs/cpp/Invocation.html): the preprocessor is actually *integrated* with the compiler rather than a separate program.
-- [Preprocessor Options](https://gcc.gnu.org/onlinedocs/gcc/Preprocessor-Options.html): `-no-integrated-cpp`: Perform preprocessing as a *separate* pass before compilation.
-
-[FAQ - GCC Wiki](https://gcc.gnu.org/wiki/FAQ#include_search_path): the GCC C compiler (`cc1`) and C++ compiler (`cc1cplus`)
-
-[Why cc1 is called cc1?](https://stackoverflow.com/questions/13753854/why-cc1-is-called-cc1) [Relationship between cc1 and gcc?](https://unix.stackexchange.com/questions/77779/relationship-between-cc1-and-gcc)
-
-> The 1 in `cc1` indicates that it is the first stage of the build process. The second stage is `collect2`.
-
-[Collect2 (GCC Internals)](https://gcc.gnu.org/onlinedocs/gccint/Collect2.html): The program `collect2` is installed as `ld` in the directory where the passes of the compiler are installed.
-
 ### configure
 
 At this time, let's get acquainted with the following configure items:
@@ -219,7 +185,7 @@ Please refer to the following links to get a knowledge of `libexecdir` and `libd
 
 In the future, when the time is right, we will carry out further exploration.
 
-### COLLECT_GCC_OPTIONS
+### OPTIONS
 
 1. `-mlittle-endian` / as `-EL`: specify endianess, refer to [Byte Order(Endianess)](../cs/byte-order-endianess.md).
 2. `-mabi=lp64`: specify data model, refer to [Data Models](../cs/data-model.md).
@@ -275,7 +241,7 @@ I won't go into the details of the linking procedure at this point, but let's fi
 
     Therefore, the C runtime code *must* be linked as an object code file. We all know that when `ld` links the object code file, it copies all the ".data" area, ".text" area, ".bss" area, etc. of each object code file into the executable file. This ensures that `ld` will eventually find `_start` for sure.
 
-For more information on CRT(C Runtime), please refer to [crtbegin.o vs. crtbeginS.o](https://stackoverflow.com/questions/22160888/what-is-the-difference-between-crtbegin-o-crtbegint-o-and-crtbegins-o) and [Mini FAQ about the misc libc/gcc crt files.](https://dev.gentoo.org/~vapier/crt.txt).
+For more information on CRT(C Runtime), please refer to [crtbegin.o vs. crtbeginS.o](https://stackoverflow.com/questions/22160888/what-is-the-difference-between-crtbegin-o-crtbegint-o-and-crtbegins-o), [Mini FAQ about the misc libc/gcc crt files.](https://dev.gentoo.org/~vapier/crt.txt) and [ELF Format Cheatsheet](https://gist.github.com/x0nu11byt3/bcb35c3de461e5fb66173071a2379779) | Sections, Common objects and functions.
 
 1. /usr/lib/aarch64-linux-gnu/**`Scrt1.o`**: Used in place of `crt1.o` when generating PIEs.
 2. /usr/lib/aarch64-linux-gnu/**`crti.o`**: Defines the function *prologs* for the `.init` and `.fini` sections (with the `_init` and `_fini` symbols respectively).
@@ -534,7 +500,7 @@ Program Headers:
    08     .init_array .fini_array .dynamic .got
 ```
 
-[Blue Fox: Arm Assembly Internals and Reverse Engineering](https://www.amazon.com/Blue-Fox-Assembly-Internals-Analysis/dp/1119745306) | Chapter 2 ELF File Format Internals - ELF Program Headers:
+[Arm Assembly Internals and Reverse Engineering](https://www.amazon.com/Blue-Fox-Assembly-Internals-Analysis/dp/1119745306) | Chapter 2 ELF File Format Internals - ELF Program Headers:
 
 The `INTERP` header is used to tell the operating system that an ELF file needs the help of another program to bring itself into memory. In almost all cases, this program will be the operating system loader file, which in this case is at the path `/lib/ld-linux-aarch64.so.1`.
 

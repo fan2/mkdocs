@@ -150,7 +150,7 @@ End of assembler dump.
 
 ### disas func
 
-以下对比 GDB `disas` 和 GNU binutils 中的 `objdump` 反汇编 func 函数的输出：
+以下对比 GDB `disas` 和 GNU binutils 中的 [objdump --disassemble](../../elf/objdump-d.md) 反汇编 func 函数的输出：
 
 === "disas /s func"
 

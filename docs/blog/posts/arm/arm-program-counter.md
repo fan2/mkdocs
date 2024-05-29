@@ -40,7 +40,7 @@ During execution, the `PC` does not contain the address of the currently executi
 
 ---
 
-[Blue Fox: Arm Assembly Internals and Reverse Engineering](https://www.amazon.com/Blue-Fox-Assembly-Internals-Analysis/dp/1119745306) | Chapter 4 The Arm Architecture
+[Arm Assembly Internals and Reverse Engineering](https://www.amazon.com/Blue-Fox-Assembly-Internals-Analysis/dp/1119745306) | Chapter 4 The Arm Architecture
 
 The AArch32 Execution State - AArch32 Registers
 
@@ -120,7 +120,7 @@ Branch instructions load the destination address into the PC.
 
 ---
 
-[Blue Fox: Arm Assembly Internals and Reverse Engineering](https://www.amazon.com/Blue-Fox-Assembly-Internals-Analysis/dp/1119745306)
+[Arm Assembly Internals and Reverse Engineering](https://www.amazon.com/Blue-Fox-Assembly-Internals-Analysis/dp/1119745306)
 
 **Chapter 4 The Arm Architecture**
 

@@ -187,21 +187,11 @@ $ objdump -f test-gdb
 start address 0x0000000000000640
 ```
 
-!!! note "Ubuntu GCC 编译链接 C/C++"
+[ELF Format Cheatsheet](https://gist.github.com/x0nu11byt3/bcb35c3de461e5fb66173071a2379779) | Sections, Common objects and functions:
 
-    ubuntu 上编译链接 C 代码：dry-run: `gcc stdc.c -##`；compile: `gcc stdc.c -o c.out -v`。
-
-    - gcc 依次调用 cc1->as->collect2，链接 Scrt1.o,crti.o,crtbeginS.o,`-lc`（[g]libc）,crtendS.o,crtn.o。
-
-    ubuntu 上编译链接 C++ 代码：dry-run: `g++ stdcpp.cpp -##`；compile: `g++ stdcpp.cpp -o cpp.out -v`。
-
-    - g++ 依次调用 cc1plus->as->collect2，链接 Scrt1.o,crti.o,crtbeginS.o,`-lstdc++`（libstdc++）,crtendS.o,crtn.o。
-
-    **说明**：
-
-    - gcc 的 `cc1` 已经集成了 [cpp](https://gcc.gnu.org/onlinedocs/cpp/Invocation.html) 预处理。
-    - [collect2](https://gcc.gnu.org/onlinedocs/gccint/Collect2.html) 内部调用 *real* `ld` 完成最终的链接工作。
-    - 关于 crt(C Runtime)，参考 [crtbegin.o vs. crtbeginS.o](https://stackoverflow.com/questions/22160888/what-is-the-difference-between-crtbegin-o-crtbegint-o-and-crtbegins-o) 和 [Mini FAQ about the misc libc/gcc crt files.](https://dev.gentoo.org/~vapier/crt.txt)。
+- `_start`: This is where `e_entry` points to, and first code to be executed.
+- `.init`: Executable code that performs initialization tasks and needs to run before any other code in the binary is executed (Then it has `SHF_EXECINSTR` flag) The system executes the code in the `.init` section *before* transferring control to the *`main`* entry point of the binary.
+- `.fini`: The contrary as `.init`, it has executable code that must run *after* the *`main`* program completes.
 
 ## resolve a function
 

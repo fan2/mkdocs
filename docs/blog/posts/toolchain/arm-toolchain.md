@@ -483,7 +483,7 @@ zsh: no such file or directory: ./write32
 
 To run ARM ELF32 under Aarch64(A64), we have to resort to QEMU emulator. The emulator will interpret the ARM machine code and simulate it using the local processor.
 
-> [Blue Fox: Arm Assembly Internals and Reverse Engineering](https://www.amazon.com/Blue-Fox-Assembly-Internals-Analysis/dp/1119745306) | Chapter 9 Arm Environments - Emulation with QEMU
+> [Arm Assembly Internals and Reverse Engineering](https://www.amazon.com/Blue-Fox-Assembly-Internals-Analysis/dp/1119745306) | Chapter 9 Arm Environments - Emulation with QEMU
 
 Let’s first install the following packages:
 

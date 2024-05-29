@@ -780,7 +780,7 @@ Ubuntu 下执行 gcc/g++ 命令，调用 collect2 和 ld 链接，最终报错�
 
     - gcc 的 `cc1` 已经集成了 [cpp](https://gcc.gnu.org/onlinedocs/cpp/Invocation.html) 预处理。
     - [collect2](https://gcc.gnu.org/onlinedocs/gccint/Collect2.html) 内部调用 *real* `ld` 完成最终的链接工作。
-    - 关于 crt(C Runtime)，参考 [crtbegin.o vs. crtbeginS.o](https://stackoverflow.com/questions/22160888/what-is-the-difference-between-crtbegin-o-crtbegint-o-and-crtbegins-o) 和 [Mini FAQ about the misc libc/gcc crt files.](https://dev.gentoo.org/~vapier/crt.txt)。
+    - 关于 crt(C Runtime)，参考 [crtbegin.o vs. crtbeginS.o](https://stackoverflow.com/questions/22160888/what-is-the-difference-between-crtbegin-o-crtbegint-o-and-crtbegins-o)，[Mini FAQ about the misc libc/gcc crt files.](https://dev.gentoo.org/~vapier/crt.txt) 和 [ELF Format Cheatsheet](https://gist.github.com/x0nu11byt3/bcb35c3de461e5fb66173071a2379779) | Sections, Common objects and functions。
 
 ---
 
