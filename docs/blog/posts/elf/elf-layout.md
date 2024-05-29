@@ -16,17 +16,18 @@ The Executable and Linkable Format (`ELF`), is a common standard file format for
 [Executable and Linkable Format](https://en.wikipedia.org/wiki/Executable_and_Linkable_Format) - [ELF - OSDev Wiki](https://wiki.osdev.org/ELF)
 
 - [Linux Foundation Referenced Specifications](https://refspecs.linuxfoundation.org/) - TIS - ELF: [v1.1](https://www.cs.cmu.edu/afs/cs/academic/class/15213-f00/docs/elf.pdf), [v1.2](https://refspecs.linuxfoundation.org/elf/elf.pdf)
+- [Ubuntu Manpage: elf - format of Executable and Linking Format (ELF) files](https://manpages.ubuntu.com/manpages/noble/en/man5/elf.5.html)
 - sysvabi64 - [System V ABI for the Arm® 64-bit Architecture (AArch64)](https://github.com/ARM-software/abi-aa/blob/844a79fd4c77252a11342709e3b27b2c9f590cf1/sysvabi64/sysvabi64.rst)
 - aaelf64 - [ELF for the Arm® 64-bit Architecture (AArch64)](https://github.com/ARM-software/abi-aa/blob/main/aaelf64/aaelf64.rst)
 
 In computing, the Executable and Linkable Format (***ELF***, formerly named Extensible Linking Format), is a common standard file format for executable files, object code, shared libraries, and core dumps. First published in the specification for the application binary interface (ABI) of the Unix operating system version named System V Release 4 (SVR4), and later in the Tool Interface Standard, it was quickly accepted among different vendors of Unix systems. In 1999, it was chosen as the standard binary file format for Unix and Unix-like systems on x86 processors by the 86open project.
 
+## layout
+
 ```bash
 $ man elf
 elf - format of Executable and Linking Format (ELF) files
 ```
-
-## layout
 
 Each ELF file is made up of one ELF header, followed by file data. The data can include:
 
@@ -63,6 +64,10 @@ The `segments` contain information that is needed for run time execution of the 
 </figure>
 
 ## header
+
+```bash
+$ vim -M /usr/include/elf.h
+```
 
 ??? info "/usr/include/elf.h"
 
@@ -194,9 +199,21 @@ To view, dump, analyse or manipulate the object file and ELF file, you need [GNU
 
 ## sections
 
+[TIS - ELF v1.2](https://refspecs.linuxfoundation.org/elf/elf.pdf) | Book I: ELF - 1. Object Files - Sections
+
+An object file's **`section header table`** lets one locate all the file's sections.
+
+> refer to struct `Elf32_Shdr`/`Elf64_Shdr` and `sh_type`(Section Types) defined in /usr/include/elf.h.
+
+**`Sections`** contain all information in an object file, *except* the ELF header, the program header table, and the section header table. Moreover, object files' sections satisfy several conditions.
+
+- Every section in an object file has exactly one section header describing it. Section headers may exist that do not have a section.
+- Each section occupies one contiguous (possibly empty) sequence of bytes within a file.
+- Sections in a file may not overlap. No byte in a file resides in more than one section.
+- An object file may have inactive space. The various headers and the sections might not "cover" every byte in an object file. The contents of the inactive data are unspecified.
+
 Please refer to the following materials for further details.
 
-- [TIS - ELF v1.2](https://refspecs.linuxfoundation.org/elf/elf.pdf) | Book I: ELF - 1. Object Files - Sections
 - [aaelf64](https://github.com/ARM-software/abi-aa/blob/main/aaelf64/aaelf64.rst) | 5 Object Files - 5.3 Sections
 - [ELF Format Cheatsheet](https://gist.github.com/x0nu11byt3/bcb35c3de461e5fb66173071a2379779) | Sections
 - [《ARM64体系结构编程与实践》](https://item.jd.com/13119117.html) | 第 8 章 GNU 汇编器 - 8.1 编译流程与 ELF 文件
@@ -206,6 +223,8 @@ Please refer to the following materials for further details.
 - [Computer Systems - A Programmer’s Perspective](https://www.amazon.com/Computer-Systems-OHallaron-Randal-Bryant/dp/1292101768/) | Chapter 7: Linking - 7.3: Object Files ; 7.8: Executable Object Files
 
 ## symbols
+
+> refer to struct `Elf32_Sym`/`Elf64_Sym` and `st_info`(ST_BIND, ST_TYPE) defined in /usr/include/elf.h.
 
 Please refer to the following materials for further details.
 

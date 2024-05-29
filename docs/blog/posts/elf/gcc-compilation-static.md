@@ -9,15 +9,94 @@ categories:
 comments: true
 ---
 
-Previously, we've taken a look at the basic compilation of C programs using GCC. It links dynamically by default.
+[Previously](./gcc-compilation-dynamic.md), we've taken a look at the basic compilation of C programs using GCC. It links dynamically by default.
 
 In this article, we simply add a `-static` option to GCC to change its default link policy from dynamic to static.
 
-We then go on to make a basic comparison of the processes and products of dynamic linking and static linking.
+We then go on to make a basic comparison of the processes of dynamic linking and static linking.
 
 <!-- more -->
 
----
+Let's start by exploring the installed gcc compiler toolchain. First, let's look at the host machine on which it resides.
+
+```bash
+$ uname -a
+Linux rpi3b-ubuntu 5.15.0-1055-raspi #58-Ubuntu SMP PREEMPT Sat May 4 03:52:40 UTC 2024 aarch64 aarch64 aarch64 GNU/Linux
+```
+
+## gcc version
+
+Explore `gcc` entity(real body):
+
+```bash
+$ which gcc
+/usr/bin/gcc
+$ readlink `which gcc`
+gcc-11
+$ which gcc-11
+/usr/bin/gcc-11
+$ readlink `which gcc-11`
+aarch64-linux-gnu-gcc-11
+```
+
+Show `gcc` version:
+
+```bash
+# gcc version
+$ gcc --version
+gcc (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0
+Copyright (C) 2021 Free Software Foundation, Inc.
+This is free software; see the source for copying conditions.  There is NO
+warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+$ gcc -v
+Using built-in specs.
+COLLECT_GCC=gcc
+COLLECT_LTO_WRAPPER=/usr/lib/gcc/aarch64-linux-gnu/11/lto-wrapper
+Target: aarch64-linux-gnu
+Configured with: ../src/configure -v --with-pkgversion='Ubuntu 11.4.0-1ubuntu1~22.04' --with-bugurl=file:///usr/share/doc/gcc-11/README.Bugs --enable-languages=c,ada,c++,go,d,fortran,objc,obj-c++,m2 --prefix=/usr --with-gcc-major-version-only --program-suffix=-11 --program-prefix=aarch64-linux-gnu- --enable-shared --enable-linker-build-id --libexecdir=/usr/lib --without-included-gettext --enable-threads=posix --libdir=/usr/lib --enable-nls --enable-bootstrap --enable-clocale=gnu --enable-libstdcxx-debug --enable-libstdcxx-time=yes --with-default-libstdcxx-abi=new --enable-gnu-unique-object --disable-libquadmath --disable-libquadmath-support --enable-plugin --enable-default-pie --with-system-zlib --enable-libphobos-checking=release --with-target-system-zlib=auto --enable-objc-gc=auto --enable-multiarch --enable-fix-cortex-a53-843419 --disable-werror --enable-checking=release --build=aarch64-linux-gnu --host=aarch64-linux-gnu --target=aarch64-linux-gnu --with-build-config=bootstrap-lto-lean --enable-link-serialization=2
+Thread model: posix
+Supported LTO compression algorithms: zlib zstd
+gcc version 11.4.0 (Ubuntu 11.4.0-1ubuntu1~22.04)
+```
+
+Show `as`/`ld` version:
+
+```bash
+$ which as
+/usr/bin/as
+$ readlink `which as`
+aarch64-linux-gnu-as
+
+$ as -v
+GNU assembler version 2.38 (aarch64-linux-gnu) using BFD version (GNU Binutils for Ubuntu) 2.38
+^C
+
+$ as --version
+GNU assembler (GNU Binutils for Ubuntu) 2.38
+Copyright (C) 2022 Free Software Foundation, Inc.
+This program is free software; you may redistribute it under the terms of
+the GNU General Public License version 3 or later.
+This program has absolutely no warranty.
+This assembler was configured for a target of `aarch64-linux-gnu'.
+
+$ which ld
+/usr/bin/ld
+$ readlink `which ld`
+aarch64-linux-gnu-ld
+
+$ ld -v
+GNU ld (GNU Binutils for Ubuntu) 2.38
+
+$ ld --version
+GNU ld (GNU Binutils for Ubuntu) 2.38
+Copyright (C) 2022 Free Software Foundation, Inc.
+This program is free software; you may redistribute it under the terms of
+the GNU General Public License version 3 or (at your option) a later version.
+This program has absolutely no warranty.
+```
+
+## gcc -static
 
 When compiling links with gcc, dynamic linking is used by default. There are two ways to specify static linking:
 
@@ -32,9 +111,7 @@ GCC [Link Options](https://gcc.gnu.org/onlinedocs/gcc/Link-Options.html) provide
 - -static-libgcc
 - -static-libstdc++
 
-## gcc -static
-
-We can compile with option `-static` to create a static executable:
+Add option `-static` to `gcc` to create a static executable:
 
 ```bash
 $ gcc -v 0701.c -static -o b.out
@@ -247,7 +324,7 @@ In the `--disable-shared` configuration we have:
 
 That's only partially true: Whether `libgcc_eh` or `libgcc_s` is used depends on `-static-libgcc` parameter. `libgcc_s` should be a shared object and is fine to link then. `libgcc_eh` on the other hand is the *exception handling* part split off from `libgcc` and is always a *static* library. Linking `libgcc_eh` into a shared library would be an issue, but it only appears if `-static` or `-static-libgcc` is being used.
 
-## outcome ELF
+## outcome
 
 As we give `-o` to specify output filename for the product, the outcome executable filename is `b.out`.
 
@@ -266,226 +343,3 @@ $ ls -hl .
 -rwxrwxr-x 1 pifan pifan 8.7K  5月 28 11:39 a.out
 -rwxrwxr-x 1 pifan pifan 636K  5月 27 22:20 b.out
 ```
-
-Check SYMBOL TABLE with `readelf -s` or `objdump -t`/`objdump -x` and we can see that `b.out` assembles/links a lot of CRT(C RunTime) and STD(C STanDard Library) implementation object files.
-
-```bash
-$ objdump -t b.out
-
-b.out:     file format elf64-littleaarch64
-
-SYMBOL TABLE:
-
-[...snip...]
-
-0000000000000000 l    df *ABS*	0000000000000000 crt1.o
-0000000000000000 l    df *ABS*	0000000000000000 crti.o
-0000000000000000 l    df *ABS*	0000000000000000 crtn.o
-0000000000000000 l    df *ABS*	0000000000000000 exit.o
-0000000000000000 l    df *ABS*	0000000000000000 cxa_atexit.o
-
-[...snip...]
-
-0000000000000000 l    df *ABS*	0000000000000000 stdio.o
-0000000000000000 l    df *ABS*	0000000000000000 strcmp.o
-0000000000000000 l    df *ABS*	0000000000000000 strcpy.o
-0000000000000000 l    df *ABS*	0000000000000000 strlen.o
-0000000000000000 l    df *ABS*	0000000000000000 strncmp.o
-0000000000000000 l    df *ABS*	0000000000000000 strstr.o
-0000000000000000 l    df *ABS*	0000000000000000 qsort.o
-
-[...snip...]
-
-```
-
-### ELF Header
-
-Now, let's check the [ELF](./elf-layout.md) header.
-
-From the output of `file b.out`, we're informed that the ELF is statically linked, doesn't require interpreter like `/lib/ld-linux-aarch64.so.1`. The output of `readelf -h` also confirms this point, the Type is `EXEC` (Executable file).
-
-```bash
-$ file b.out
-b.out: ELF 64-bit LSB executable, ARM aarch64, version 1 (GNU/Linux), statically linked, BuildID[sha1]=d07e249ba4213f0123c940c5cb1f068b9b2822e9, for GNU/Linux 3.7.0, not stripped
-
-$ objdump -f b.out
-
-b.out:     file format elf64-littleaarch64
-architecture: aarch64, flags 0x00000112:
-EXEC_P, HAS_SYMS, D_PAGED
-start address 0x0000000000400580
-
-$ readelf -h b.out
-ELF Header:
-  Magic:   7f 45 4c 46 02 01 01 03 00 00 00 00 00 00 00 00
-  Class:                             ELF64
-  Data:                              2's complement, little endian
-  Version:                           1 (current)
-  OS/ABI:                            UNIX - GNU
-  ABI Version:                       0
-  Type:                              EXEC (Executable file)
-  Machine:                           AArch64
-  Version:                           0x1
-  Entry point address:               0x400580
-  Start of program headers:          64 (bytes into file)
-  Start of section headers:          648768 (bytes into file)
-  Flags:                             0x0
-  Size of this header:               64 (bytes)
-  Size of program headers:           56 (bytes)
-  Number of program headers:         6
-  Size of section headers:           64 (bytes)
-  Number of section headers:         31
-  Section header string table index: 30
-```
-
-The output of `objdump -f` shows that the BFD format specific flags are `EXEC_P, HAS_SYMS, D_PAGED`.
-
-### program Header
-
-We can also type `readelf -l` to display the information contained in the file's segment headers.
-
-> The section-to-segment listing shows which logical sections lie inside each given segment. Unlike DYN, there is no `INTERP` segment, which contains the `.interp` section. But it contains a `TLS` segment, which contains `.tdata` and `.tbss`.
-
-```bash
-$ readelf -lW b.out
-
-Elf file type is EXEC (Executable file)
-Entry point 0x400580
-There are 6 program headers, starting at offset 64
-
-Program Headers:
-  Type           Offset   VirtAddr           PhysAddr           FileSiz  MemSiz   Flg Align
-  LOAD           0x000000 0x0000000000400000 0x0000000000400000 0x07d9ac 0x07d9ac R E 0x10000
-  LOAD           0x07e830 0x000000000048e830 0x000000000048e830 0x0057f8 0x00ae98 RW  0x10000
-  NOTE           0x000190 0x0000000000400190 0x0000000000400190 0x000044 0x000044 R   0x4
-  TLS            0x07e830 0x000000000048e830 0x000000000048e830 0x000020 0x000068 R   0x8
-  GNU_STACK      0x000000 0x0000000000000000 0x0000000000000000 0x000000 0x000000 RW  0x10
-  GNU_RELRO      0x07e830 0x000000000048e830 0x000000000048e830 0x0037d0 0x0037d0 R   0x1
-
- Section to Segment mapping:
-  Segment Sections...
-   00     .note.gnu.build-id .note.ABI-tag .rela.plt .init .plt .text __libc_freeres_fn .fini .rodata .stapsdt.base .eh_frame .gcc_except_table
-   01     .tdata .init_array .fini_array .data.rel.ro .got .got.plt .data __libc_subfreeres __libc_IO_vtables __libc_atexit .bss __libc_freeres_ptrs
-   02     .note.gnu.build-id .note.ABI-tag
-   03     .tdata .tbss
-   04
-   05     .tdata .init_array .fini_array .data.rel.ro .got
-```
-
-### Entry Point
-
-The starting point of `b.out` can be seen in the output of `objdump -f` and `readelf -h`.
-
-- `objdump -f b.out`: start address 0x0000000000400580
-- `readelf -h b.out`: Entry point address: 0x400580
-
-We can use `addr2line` to resolve/translate the address to symbol:
-
-```bash
-$ addr2line -f -e b.out 0x400580
-_start
-??:?
-```
-
-Unsurprisingly, it turns out that symbol `_start` is actually the entry point of the C program.
-
-As the collect2 options show, `_start` is defined in `/usr/lib/aarch64-linux-gnu/crt1.o`.
-
-```bash title="objdump -d crt1.o"
-$ objdump -d /usr/lib/aarch64-linux-gnu/crt1.o
-
-/usr/lib/aarch64-linux-gnu/crt1.o:     file format elf64-littleaarch64
-
-
-Disassembly of section .text:
-
-0000000000000000 <_start>:
-   0:	d503201f 	nop
-   4:	d280001d 	mov	x29, #0x0                   	// #0
-   8:	d280001e 	mov	x30, #0x0                   	// #0
-   c:	aa0003e5 	mov	x5, x0
-  10:	f94003e1 	ldr	x1, [sp]
-  14:	910023e2 	add	x2, sp, #0x8
-  18:	910003e6 	mov	x6, sp
-  1c:	90000000 	adrp	x0, 0 <_start>
-  20:	91000000 	add	x0, x0, #0x0
-  24:	d2800003 	mov	x3, #0x0                   	// #0
-  28:	d2800004 	mov	x4, #0x0                   	// #0
-  2c:	94000000 	bl	0 <__libc_start_main>
-  30:	94000000 	bl	0 <abort>
-
-0000000000000034 <__wrap_main>:
-  34:	d503201f 	nop
-  38:	14000000 	b	0 <main>
-  3c:	d503201f 	nop
-
-0000000000000040 <_dl_relocate_static_pie>:
-  40:	d65f03c0 	ret
-```
-
-Although, by convention, C and C++ programs “begin” at the `main` function, programs do not actually begin execution here. Instead, they begin execution in a small stub of assembly code, traditionally at the symbol called `_start`. When linking against the standard C runtime, the `_start` function is usually a small stub of code that passes control to the *libc* helper function `__libc_start_main`. This function then prepares the parameters for the program’s `main` function and invokes it. The `main` function then runs the program’s core logic, and if main returns to `__libc_start_main`, the return value of `main` is then passed to `exit` to gracefully exit the program.
-
-### gdb debug
-
-Now just type `gdb b.out` to run the programme `b.out` with GDB. Here I'm using customised `gdb-pwndbg` instead of naked `gdb`, because I've installed the GDB Enhanced Extension [pwndbg](https://github.com/pwndbg/pwndbg).
-
-> related post: [GDB manual & help](../toolchain/gdb/0-gdb-man-help.md) & [GDB Enhanced Extensions](../toolchain/gdb/7-gdb-enhanced.md).
-
-After launched the GDB Console, type `entry` to start the debugged program stopping at its entrypoint address.
-
-!!! note "difference between entry and starti"
-
-    Note that the entrypoint may not be the first instruction executed by the program.
-    If you want to stop on the first executed instruction, use the GDB's `starti` command.
-
-It just stops at the entrypoint `_start` as expected:
-
-```bash
-$ gdb-pwndbg b.out
-Reading symbols from b.out...
-(No debugging symbols found in b.out)
-pwndbg: loaded 157 pwndbg commands and 47 shell commands. Type pwndbg [--shell | --all] [filter] for a list.
-pwndbg: created $rebase, $base, $ida GDB functions (can be used with print/break)
-------- tip of the day (disable with set show-tips off) -------
-Use GDB's dprintf command to print all calls to given function. E.g. dprintf malloc, "malloc(%p)\n", (void*)$rdi will print all malloc calls
-pwndbg> entry
-Temporary breakpoint 1 at 0x400580
-
-Temporary breakpoint 1, 0x0000000000400580 in _start ()
-
-───────────────────────────────────────────────[ BACKTRACE ]────────────────────────────────────────────────
- ► 0         0x400580 _start
-────────────────────────────────────────────────────────────────────────────────────────────────────────────
-```
-
-Then type `b main` to set a breakpoint at the `main()` function, then type `c` to continue.
-
-```bash
-pwndbg> b main
-Breakpoint 2 at 0x4006ec
-pwndbg> i b
-Num     Type           Disp Enb Address            What
-2       breakpoint     keep y   0x00000000004006ec <main+24>
-pwndbg> c
-Continuing.
-
-Breakpoint 2, 0x00000000004006ec in main ()
-
-───────────────────────────────────────────────[ BACKTRACE ]────────────────────────────────────────────────
- ► 0         0x4006ec main+24
-   1         0x4007a4 __libc_start_call_main+84
-   2         0x400b24 __libc_start_main_impl+836
-   3         0x4005b0 _start+48
-────────────────────────────────────────────────────────────────────────────────────────────────────────────
-```
-
-Look at the `BACKTRACE` context, it works as designed in `/usr/lib/aarch64-linux-gnu/crt1.o`.
-
-Type `info [dll|sharedlibrary]` to show status of loaded shared object libraries.
-
-```bash
-pwndbg> info dll
-No shared libraries loaded at this time.
-```
-
-Everything is anticipated, under control.

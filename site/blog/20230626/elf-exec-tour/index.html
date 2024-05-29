@@ -1,0 +1,1934 @@
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="在别处或在路上">
+      
+      
+        <meta name="author" content="Cliff Fan">
+      
+      
+        <link rel="canonical" href="https://duetorun.com/blog/20230626/elf-exec-tour/">
+      
+      
+        <link rel="prev" href="../gcc-compilation-static/">
+      
+      
+        <link rel="next" href="../../20230627/gcc-compilation-stage/">
+      
+      
+      <link rel="icon" href="../../../assets/hold_yourself.jpg">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.15">
+    
+    
+      
+        <title>EXEC ELF Walkthrough - ElseWhere</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.7e359304.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function n(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],n("js",new Date),n("config","G-XGW41EGL31"),document.addEventListener("DOMContentLoaded",function(){document.forms.search&&document.forms.search.query.addEventListener("blur",function(){this.value&&n("event","search",{search_term:this.value})}),document$.subscribe(function(){var a=document.forms.feedback;if(void 0!==a)for(var e of a.querySelectorAll("[type=submit]"))e.addEventListener("click",function(e){e.preventDefault();var t=document.location.pathname,e=this.getAttribute("data-md-value");n("event","feedback",{page:t,data:e}),a.firstElementChild.disabled=!0;e=a.querySelector(".md-feedback__note [data-md-value='"+e+"']");e&&(e.hidden=!1)}),a.hidden=!1}),location$.subscribe(function(e){n("config","G-XGW41EGL31",{page_path:e.pathname})})});var e=document.createElement("script");e.async=!0,e.src="https://www.googletagmanager.com/gtag/js?id=G-XGW41EGL31",document.getElementById("__analytics").insertAdjacentElement("afterEnd",e)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+    
+  
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#elf_header" class="md-skip">
+          跳转至
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="页眉">
+    <a href="../../.." title="ElseWhere" class="md-header__button md-logo" aria-label="ElseWhere" data-md-component="logo">
+      
+  <img src="../../../assets/hold_yourself.jpg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ElseWhere
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              EXEC ELF Walkthrough
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1M8 13h8v-2H8v2m9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1 0 1.71-1.39 3.1-3.1 3.1h-4V17h4a5 5 0 0 0 5-5 5 5 0 0 0-5-5Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="indigo"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5M7 15a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="搜索" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="查找">
+        
+        <button type="reset" class="md-search__icon md-icon" title="清空当前内容" aria-label="清空当前内容" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            正在初始化搜索引擎
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="标签" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../about/" class="md-tabs__link">
+        
+  
+    
+  
+  About
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../" class="md-tabs__link">
+          
+  
+  Blog
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../link/" class="md-tabs__link">
+        
+  
+    
+  
+  Link
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" hidden>
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="导航栏" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="ElseWhere" class="md-nav__button md-logo" aria-label="ElseWhere" data-md-component="logo">
+      
+  <img src="../../../assets/hold_yourself.jpg" alt="logo">
+
+    </a>
+    ElseWhere
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../about/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    About
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Blog
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      <a href="../../" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Archive
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            Archive
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2024/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2024
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2023/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2023
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2022/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2022
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2021/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2021
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2020/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2020
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2019/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2019
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2018/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2018
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2017/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2017
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2015/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2015
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2009/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2009
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Categories
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            Categories
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/cs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CS
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/arm/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    arm
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/c/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    c
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/cpp/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    cpp
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/editor/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    editor
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/elf/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    elf
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/excerpt/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    excerpt
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/git/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    git
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/linux/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    linux
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/macos/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    macOS
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/markdown/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    markdown
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/material/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    material
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/mkdocs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    mkdocs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/nginx/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    nginx
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/python/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    python
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/resource/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    resource
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/shell/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    shell
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/toolchain/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    toolchain
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/ubuntu/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ubuntu
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/vim/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    vim
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/webdav/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    webDAV
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/wiki/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    wiki
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/zsh/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    zsh
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../link/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Link
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="目录">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      目录
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#elf_header" class="md-nav__link">
+    <span class="md-ellipsis">
+      ELF Header
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#section_header" class="md-nav__link">
+    <span class="md-ellipsis">
+      section header
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#symbol_table" class="md-nav__link">
+    <span class="md-ellipsis">
+      symbol table
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#program_header" class="md-nav__link">
+    <span class="md-ellipsis">
+      program Header
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#entry_point" class="md-nav__link">
+    <span class="md-ellipsis">
+      Entry Point
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#gdb_debug" class="md-nav__link">
+    <span class="md-ellipsis">
+      gdb debug
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+  <div class="md-content md-content--post" data-md-component="content">
+    <div class="md-sidebar md-sidebar--post" data-md-component="sidebar" data-md-type="navigation">
+      <div class="md-sidebar__scrollwrap">
+        <div class="md-sidebar__inner md-post">
+          <nav class="md-nav md-nav--primary">
+            <div class="md-post__back">
+              <div class="md-nav__title md-nav__container">
+                <a href="../../" class="md-nav__link">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+                  <span class="md-ellipsis">
+                    回到主页
+                  </span>
+                </a>
+              </div>
+            </div>
+            
+              <div class="md-post__authors md-typeset">
+                
+                  <div class="md-profile md-post__profile">
+                    <span class="md-author md-author--long">
+                      <img src="https://duetorun.com/assets/carve_yourself.jpg" alt="Cliff Fan">
+                    </span>
+                    <span class="md-profile__description">
+                      <strong>
+                        
+                          Cliff Fan
+                        
+                      </strong>
+                      <br>
+                      Just do IT
+                    </span>
+                  </div>
+                
+              </div>
+            
+            <ul class="md-post__meta md-nav__list">
+              <li class="md-nav__item md-nav__item--section">
+                <div class="md-post__title">
+                  <span class="md-ellipsis">
+                    元数据
+                  </span>
+                </div>
+                <nav class="md-nav">
+                  <ul class="md-nav__list">
+                    <li class="md-nav__item">
+                      <div class="md-nav__link">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 19H5V8h14m-3-7v2H8V1H6v2H5c-1.11 0-2 .89-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-1V1m-1 11h-5v5h5v-5Z"/></svg>
+                        <time datetime="2023-06-26 11:00:00" class="md-ellipsis">2023年6月26日</time>
+                      </div>
+                    </li>
+                    
+                    
+                      <li class="md-nav__item">
+                        <div class="md-nav__link">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 3v15h3V3H9m3 2 4 13 3-1-4-13-3 1M5 5v13h3V5H5M3 19v2h18v-2H3Z"/></svg>
+                          <span class="md-ellipsis">
+                            分类于
+                            
+                              <a href="../../category/elf/">elf</a></span>
+                        </div>
+                      </li>
+                    
+                    
+                      
+                      <li class="md-nav__item">
+                        <div class="md-nav__link">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7h1.5Z"/></svg>
+                          <span class="md-ellipsis">
+                            
+                              需要 9 分钟阅读时间
+                            
+                          </span>
+                        </div>
+                      </li>
+                    
+                    <!-- Add by Cliff.Fan, 29Mar24. -->
+                    <li class="md-nav__item">
+                      <div class="md-nav__link">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m19 1-5 5v11l5-4.5V1m2 4v13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V6c-1.45-1.1-3.55-1.5-5.5-1.5-1.95 0-4.05.4-5.5 1.5v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1M10 18.41C8.75 18.09 7.5 18 6.5 18c-1.06 0-2.32.19-3.5.5V7.13c.91-.4 2.14-.63 3.5-.63 1.36 0 2.59.23 3.5.63v11.28Z"/></svg>
+                        <span class="md-ellipsis" id="busuanzi_container_page_pv">
+                          阅读量：<span id="busuanzi_value_page_pv">N/A</span>
+                        </span>
+                      </div>
+                    </li>
+                  </ul>
+                </nav>
+              </li>
+            </ul>
+          </nav>
+          
+        </div>
+      </div>
+    </div>
+    <article class="md-content__inner md-typeset">
+      
+        
+
+
+  <h1>EXEC ELF Walkthrough</h1>
+
+<p><a href="../gcc-compilation-static/">Previously</a> we've compiled our C demo program with <code>gcc -static</code> command.</p>
+<p>By passing a <code>-static</code> option, we demand GCC to change its default link policy from dynamic to static.</p>
+<p>In this article, I'll practice using <a href="../../20230620/gnu-binutils/">GNU binutils</a> to take a close look at the <code>b.out</code> product.</p>
+<!-- more -->
+
+<h2 id="elf_header">ELF Header<a class="headerlink" href="#elf_header" title="Permanent link">#</a></h2>
+<p>Now, let's check the <a href="../../20230616/elf-layout/">ELF</a> header.</p>
+<p>From the output of <code>file b.out</code>, we're informed that the ELF is statically linked, doesn't require interpreter like <code>/lib/ld-linux-aarch64.so.1</code>. The output of <code>readelf -h</code> also confirms this point, the Type is <code>EXEC</code> (Executable file).</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>$<span class="w"> </span>file<span class="w"> </span>b.out
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>b.out:<span class="w"> </span>ELF<span class="w"> </span><span class="m">64</span>-bit<span class="w"> </span>LSB<span class="w"> </span>executable,<span class="w"> </span>ARM<span class="w"> </span>aarch64,<span class="w"> </span>version<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="o">(</span>GNU/Linux<span class="o">)</span>,<span class="w"> </span>statically<span class="w"> </span>linked,<span class="w"> </span>BuildID<span class="o">[</span>sha1<span class="o">]=</span>d07e249ba4213f0123c940c5cb1f068b9b2822e9,<span class="w"> </span><span class="k">for</span><span class="w"> </span>GNU/Linux<span class="w"> </span><span class="m">3</span>.7.0,<span class="w"> </span>not<span class="w"> </span>stripped
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>$<span class="w"> </span>objdump<span class="w"> </span>-f<span class="w"> </span>b.out
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>b.out:<span class="w">     </span>file<span class="w"> </span>format<span class="w"> </span>elf64-littleaarch64
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>architecture:<span class="w"> </span>aarch64,<span class="w"> </span>flags<span class="w"> </span>0x00000112:
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>EXEC_P,<span class="w"> </span>HAS_SYMS,<span class="w"> </span>D_PAGED
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>start<span class="w"> </span>address<span class="w"> </span>0x0000000000400580
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>$<span class="w"> </span>readelf<span class="w"> </span>-h<span class="w"> </span>b.out
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>ELF<span class="w"> </span>Header:
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="w">  </span>Magic:<span class="w">   </span>7f<span class="w"> </span><span class="m">45</span><span class="w"> </span>4c<span class="w"> </span><span class="m">46</span><span class="w"> </span><span class="m">02</span><span class="w"> </span><span class="m">01</span><span class="w"> </span><span class="m">01</span><span class="w"> </span><span class="m">03</span><span class="w"> </span><span class="m">00</span><span class="w"> </span><span class="m">00</span><span class="w"> </span><span class="m">00</span><span class="w"> </span><span class="m">00</span><span class="w"> </span><span class="m">00</span><span class="w"> </span><span class="m">00</span><span class="w"> </span><span class="m">00</span><span class="w"> </span><span class="m">00</span>
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="w">  </span>Class:<span class="w">                             </span>ELF64
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="w">  </span>Data:<span class="w">                              </span><span class="m">2</span><span class="err">&#39;</span>s<span class="w"> </span>complement,<span class="w"> </span>little<span class="w"> </span>endian
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="w">  </span>Version:<span class="w">                           </span><span class="m">1</span><span class="w"> </span><span class="o">(</span>current<span class="o">)</span>
+</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="w">  </span>OS/ABI:<span class="w">                            </span>UNIX<span class="w"> </span>-<span class="w"> </span>GNU
+</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a><span class="w">  </span>ABI<span class="w"> </span>Version:<span class="w">                       </span><span class="m">0</span>
+</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a><span class="w">  </span>Type:<span class="w">                              </span>EXEC<span class="w"> </span><span class="o">(</span>Executable<span class="w"> </span>file<span class="o">)</span>
+</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a><span class="w">  </span>Machine:<span class="w">                           </span>AArch64
+</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a><span class="w">  </span>Version:<span class="w">                           </span>0x1
+</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a><span class="w">  </span>Entry<span class="w"> </span>point<span class="w"> </span>address:<span class="w">               </span>0x400580
+</span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a><span class="w">  </span>Start<span class="w"> </span>of<span class="w"> </span>program<span class="w"> </span>headers:<span class="w">          </span><span class="m">64</span><span class="w"> </span><span class="o">(</span>bytes<span class="w"> </span>into<span class="w"> </span>file<span class="o">)</span>
+</span><span id="__span-0-24"><a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a><span class="w">  </span>Start<span class="w"> </span>of<span class="w"> </span>section<span class="w"> </span>headers:<span class="w">          </span><span class="m">648768</span><span class="w"> </span><span class="o">(</span>bytes<span class="w"> </span>into<span class="w"> </span>file<span class="o">)</span>
+</span><span id="__span-0-25"><a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a><span class="w">  </span>Flags:<span class="w">                             </span>0x0
+</span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a><span class="w">  </span>Size<span class="w"> </span>of<span class="w"> </span>this<span class="w"> </span>header:<span class="w">               </span><span class="m">64</span><span class="w"> </span><span class="o">(</span>bytes<span class="o">)</span>
+</span><span id="__span-0-27"><a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a><span class="w">  </span>Size<span class="w"> </span>of<span class="w"> </span>program<span class="w"> </span>headers:<span class="w">           </span><span class="m">56</span><span class="w"> </span><span class="o">(</span>bytes<span class="o">)</span>
+</span><span id="__span-0-28"><a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a><span class="w">  </span>Number<span class="w"> </span>of<span class="w"> </span>program<span class="w"> </span>headers:<span class="w">         </span><span class="m">6</span>
+</span><span id="__span-0-29"><a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a><span class="w">  </span>Size<span class="w"> </span>of<span class="w"> </span>section<span class="w"> </span>headers:<span class="w">           </span><span class="m">64</span><span class="w"> </span><span class="o">(</span>bytes<span class="o">)</span>
+</span><span id="__span-0-30"><a id="__codelineno-0-30" name="__codelineno-0-30" href="#__codelineno-0-30"></a><span class="w">  </span>Number<span class="w"> </span>of<span class="w"> </span>section<span class="w"> </span>headers:<span class="w">         </span><span class="m">31</span>
+</span><span id="__span-0-31"><a id="__codelineno-0-31" name="__codelineno-0-31" href="#__codelineno-0-31"></a><span class="w">  </span>Section<span class="w"> </span>header<span class="w"> </span>string<span class="w"> </span>table<span class="w"> </span>index:<span class="w"> </span><span class="m">30</span>
+</span></code></pre></div>
+<p>The output of <code>objdump -f</code> shows that the BFD format specific flags are <code>EXEC_P, HAS_SYMS, D_PAGED</code>.</p>
+<h2 id="section_header">section header<a class="headerlink" href="#section_header" title="Permanent link">#</a></h2>
+<ol>
+<li><code>readelf [-S|--section-headers|--sections]</code>: Display the sections' header.</li>
+<li><code>objdump [-h|--section-headers|--headers]</code>: Display the contents of the section headers.</li>
+</ol>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">readelf -SW b.out</label><label for="__tabbed_1_2">objdump -hw b.out</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>$<span class="w"> </span>readelf<span class="w"> </span>-SW<span class="w"> </span>b.out
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>There<span class="w"> </span>are<span class="w"> </span><span class="m">31</span><span class="w"> </span>section<span class="w"> </span>headers,<span class="w"> </span>starting<span class="w"> </span>at<span class="w"> </span>offset<span class="w"> </span>0x9e640:
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>Section<span class="w"> </span>Headers:
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="o">[</span>Nr<span class="o">]</span><span class="w"> </span>Name<span class="w">              </span>Type<span class="w">            </span>Address<span class="w">          </span>Off<span class="w">    </span>Size<span class="w">   </span>ES<span class="w"> </span>Flg<span class="w"> </span>Lk<span class="w"> </span>Inf<span class="w"> </span>Al
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="o">[</span><span class="w"> </span><span class="m">0</span><span class="o">]</span><span class="w">                   </span>NULL<span class="w">            </span><span class="m">0000000000000000</span><span class="w"> </span><span class="m">000000</span><span class="w"> </span><span class="m">000000</span><span class="w"> </span><span class="m">00</span><span class="w">      </span><span class="m">0</span><span class="w">   </span><span class="m">0</span><span class="w">  </span><span class="m">0</span>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="o">[</span><span class="w"> </span><span class="m">1</span><span class="o">]</span><span class="w"> </span>.note.gnu.build-id<span class="w"> </span>NOTE<span class="w">            </span><span class="m">0000000000400190</span><span class="w"> </span><span class="m">000190</span><span class="w"> </span><span class="m">000024</span><span class="w"> </span><span class="m">00</span><span class="w">   </span>A<span class="w">  </span><span class="m">0</span><span class="w">   </span><span class="m">0</span><span class="w">  </span><span class="m">4</span>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="o">[</span><span class="w"> </span><span class="m">2</span><span class="o">]</span><span class="w"> </span>.note.ABI-tag<span class="w">     </span>NOTE<span class="w">            </span>00000000004001b4<span class="w"> </span>0001b4<span class="w"> </span><span class="m">000020</span><span class="w"> </span><span class="m">00</span><span class="w">   </span>A<span class="w">  </span><span class="m">0</span><span class="w">   </span><span class="m">0</span><span class="w">  </span><span class="m">4</span>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="o">[</span><span class="w"> </span><span class="m">3</span><span class="o">]</span><span class="w"> </span>.rela.plt<span class="w">         </span>RELA<span class="w">            </span>00000000004001d8<span class="w"> </span>0001d8<span class="w"> </span>0000a8<span class="w"> </span><span class="m">18</span><span class="w">  </span>AI<span class="w"> </span><span class="m">28</span><span class="w">  </span><span class="m">19</span><span class="w">  </span><span class="m">8</span>
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="o">[</span><span class="w"> </span><span class="m">4</span><span class="o">]</span><span class="w"> </span>.init<span class="w">             </span>PROGBITS<span class="w">        </span><span class="m">0000000000400280</span><span class="w"> </span><span class="m">000280</span><span class="w"> </span><span class="m">000018</span><span class="w"> </span><span class="m">00</span><span class="w">  </span>AX<span class="w">  </span><span class="m">0</span><span class="w">   </span><span class="m">0</span><span class="w">  </span><span class="m">4</span>
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a><span class="o">[</span><span class="w"> </span><span class="m">5</span><span class="o">]</span><span class="w"> </span>.plt<span class="w">              </span>PROGBITS<span class="w">        </span>00000000004002a0<span class="w"> </span>0002a0<span class="w"> </span><span class="m">000070</span><span class="w"> </span><span class="m">00</span><span class="w">  </span>AX<span class="w">  </span><span class="m">0</span><span class="w">   </span><span class="m">0</span><span class="w"> </span><span class="m">16</span>
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="o">[</span><span class="w"> </span><span class="m">6</span><span class="o">]</span><span class="w"> </span>.text<span class="w">             </span>PROGBITS<span class="w">        </span><span class="m">0000000000400340</span><span class="w"> </span><span class="m">000340</span><span class="w"> </span>056fb4<span class="w"> </span><span class="m">00</span><span class="w">  </span>AX<span class="w">  </span><span class="m">0</span><span class="w">   </span><span class="m">0</span><span class="w"> </span><span class="m">64</span>
+</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="o">[</span><span class="w"> </span><span class="m">7</span><span class="o">]</span><span class="w"> </span>__libc_freeres_fn<span class="w"> </span>PROGBITS<span class="w">        </span><span class="m">0000000000457300</span><span class="w"> </span><span class="m">057300</span><span class="w"> </span>000b24<span class="w"> </span><span class="m">00</span><span class="w">  </span>AX<span class="w">  </span><span class="m">0</span><span class="w">   </span><span class="m">0</span><span class="w"> </span><span class="m">16</span>
+</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="o">[</span><span class="w"> </span><span class="m">8</span><span class="o">]</span><span class="w"> </span>.fini<span class="w">             </span>PROGBITS<span class="w">        </span>0000000000457e24<span class="w"> </span>057e24<span class="w"> </span><span class="m">000014</span><span class="w"> </span><span class="m">00</span><span class="w">  </span>AX<span class="w">  </span><span class="m">0</span><span class="w">   </span><span class="m">0</span><span class="w">  </span><span class="m">4</span>
+</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="o">[</span><span class="w"> </span><span class="m">9</span><span class="o">]</span><span class="w"> </span>.rodata<span class="w">           </span>PROGBITS<span class="w">        </span>0000000000457e40<span class="w"> </span>057e40<span class="w"> </span>01a0d8<span class="w"> </span><span class="m">00</span><span class="w">   </span>A<span class="w">  </span><span class="m">0</span><span class="w">   </span><span class="m">0</span><span class="w"> </span><span class="m">16</span>
+</span><span id="__span-1-16"><a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="o">[</span><span class="m">10</span><span class="o">]</span><span class="w"> </span>.stapsdt.base<span class="w">     </span>PROGBITS<span class="w">        </span>0000000000471f18<span class="w"> </span>071f18<span class="w"> </span><span class="m">000001</span><span class="w"> </span><span class="m">00</span><span class="w">   </span>A<span class="w">  </span><span class="m">0</span><span class="w">   </span><span class="m">0</span><span class="w">  </span><span class="m">1</span>
+</span><span id="__span-1-17"><a id="__codelineno-1-17" name="__codelineno-1-17" href="#__codelineno-1-17"></a><span class="o">[</span><span class="m">11</span><span class="o">]</span><span class="w"> </span>.eh_frame<span class="w">         </span>PROGBITS<span class="w">        </span>0000000000471f20<span class="w"> </span>071f20<span class="w"> </span>00b984<span class="w"> </span><span class="m">00</span><span class="w">   </span>A<span class="w">  </span><span class="m">0</span><span class="w">   </span><span class="m">0</span><span class="w">  </span><span class="m">8</span>
+</span><span id="__span-1-18"><a id="__codelineno-1-18" name="__codelineno-1-18" href="#__codelineno-1-18"></a><span class="o">[</span><span class="m">12</span><span class="o">]</span><span class="w"> </span>.gcc_except_table<span class="w"> </span>PROGBITS<span class="w">        </span>000000000047d8a4<span class="w"> </span>07d8a4<span class="w"> </span><span class="m">000108</span><span class="w"> </span><span class="m">00</span><span class="w">   </span>A<span class="w">  </span><span class="m">0</span><span class="w">   </span><span class="m">0</span><span class="w">  </span><span class="m">1</span>
+</span><span id="__span-1-19"><a id="__codelineno-1-19" name="__codelineno-1-19" href="#__codelineno-1-19"></a><span class="o">[</span><span class="m">13</span><span class="o">]</span><span class="w"> </span>.tdata<span class="w">            </span>PROGBITS<span class="w">        </span>000000000048e830<span class="w"> </span>07e830<span class="w"> </span><span class="m">000020</span><span class="w"> </span><span class="m">00</span><span class="w"> </span>WAT<span class="w">  </span><span class="m">0</span><span class="w">   </span><span class="m">0</span><span class="w">  </span><span class="m">8</span>
+</span><span id="__span-1-20"><a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a><span class="o">[</span><span class="m">14</span><span class="o">]</span><span class="w"> </span>.tbss<span class="w">             </span>NOBITS<span class="w">          </span>000000000048e850<span class="w"> </span>07e850<span class="w"> </span><span class="m">000048</span><span class="w"> </span><span class="m">00</span><span class="w"> </span>WAT<span class="w">  </span><span class="m">0</span><span class="w">   </span><span class="m">0</span><span class="w">  </span><span class="m">8</span>
+</span><span id="__span-1-21"><a id="__codelineno-1-21" name="__codelineno-1-21" href="#__codelineno-1-21"></a><span class="o">[</span><span class="m">15</span><span class="o">]</span><span class="w"> </span>.init_array<span class="w">       </span>INIT_ARRAY<span class="w">      </span>000000000048e850<span class="w"> </span>07e850<span class="w"> </span><span class="m">000010</span><span class="w"> </span><span class="m">08</span><span class="w">  </span>WA<span class="w">  </span><span class="m">0</span><span class="w">   </span><span class="m">0</span><span class="w">  </span><span class="m">8</span>
+</span><span id="__span-1-22"><a id="__codelineno-1-22" name="__codelineno-1-22" href="#__codelineno-1-22"></a><span class="o">[</span><span class="m">16</span><span class="o">]</span><span class="w"> </span>.fini_array<span class="w">       </span>FINI_ARRAY<span class="w">      </span>000000000048e860<span class="w"> </span>07e860<span class="w"> </span><span class="m">000008</span><span class="w"> </span><span class="m">08</span><span class="w">  </span>WA<span class="w">  </span><span class="m">0</span><span class="w">   </span><span class="m">0</span><span class="w">  </span><span class="m">8</span>
+</span><span id="__span-1-23"><a id="__codelineno-1-23" name="__codelineno-1-23" href="#__codelineno-1-23"></a><span class="o">[</span><span class="m">17</span><span class="o">]</span><span class="w"> </span>.data.rel.ro<span class="w">      </span>PROGBITS<span class="w">        </span>000000000048e868<span class="w"> </span>07e868<span class="w"> </span><span class="m">003348</span><span class="w"> </span><span class="m">00</span><span class="w">  </span>WA<span class="w">  </span><span class="m">0</span><span class="w">   </span><span class="m">0</span><span class="w">  </span><span class="m">8</span>
+</span><span id="__span-1-24"><a id="__codelineno-1-24" name="__codelineno-1-24" href="#__codelineno-1-24"></a><span class="o">[</span><span class="m">18</span><span class="o">]</span><span class="w"> </span>.got<span class="w">              </span>PROGBITS<span class="w">        </span>0000000000491bb0<span class="w"> </span>081bb0<span class="w"> </span><span class="m">000438</span><span class="w"> </span><span class="m">08</span><span class="w">  </span>WA<span class="w">  </span><span class="m">0</span><span class="w">   </span><span class="m">0</span><span class="w">  </span><span class="m">8</span>
+</span><span id="__span-1-25"><a id="__codelineno-1-25" name="__codelineno-1-25" href="#__codelineno-1-25"></a><span class="o">[</span><span class="m">19</span><span class="o">]</span><span class="w"> </span>.got.plt<span class="w">          </span>PROGBITS<span class="w">        </span>0000000000491fe8<span class="w"> </span>081fe8<span class="w"> </span><span class="m">000050</span><span class="w"> </span><span class="m">08</span><span class="w">  </span>WA<span class="w">  </span><span class="m">0</span><span class="w">   </span><span class="m">0</span><span class="w">  </span><span class="m">8</span>
+</span><span id="__span-1-26"><a id="__codelineno-1-26" name="__codelineno-1-26" href="#__codelineno-1-26"></a><span class="o">[</span><span class="m">20</span><span class="o">]</span><span class="w"> </span>.data<span class="w">             </span>PROGBITS<span class="w">        </span><span class="m">0000000000492038</span><span class="w"> </span><span class="m">082038</span><span class="w"> </span><span class="m">001910</span><span class="w"> </span><span class="m">00</span><span class="w">  </span>WA<span class="w">  </span><span class="m">0</span><span class="w">   </span><span class="m">0</span><span class="w">  </span><span class="m">8</span>
+</span><span id="__span-1-27"><a id="__codelineno-1-27" name="__codelineno-1-27" href="#__codelineno-1-27"></a><span class="o">[</span><span class="m">21</span><span class="o">]</span><span class="w"> </span>__libc_subfreeres<span class="w"> </span>PROGBITS<span class="w">        </span><span class="m">0000000000493948</span><span class="w"> </span><span class="m">083948</span><span class="w"> </span><span class="m">000048</span><span class="w"> </span><span class="m">00</span><span class="w"> </span>WAR<span class="w">  </span><span class="m">0</span><span class="w">   </span><span class="m">0</span><span class="w">  </span><span class="m">8</span>
+</span><span id="__span-1-28"><a id="__codelineno-1-28" name="__codelineno-1-28" href="#__codelineno-1-28"></a><span class="o">[</span><span class="m">22</span><span class="o">]</span><span class="w"> </span>__libc_IO_vtables<span class="w"> </span>PROGBITS<span class="w">        </span><span class="m">0000000000493990</span><span class="w"> </span><span class="m">083990</span><span class="w"> </span><span class="m">000690</span><span class="w"> </span><span class="m">00</span><span class="w">  </span>WA<span class="w">  </span><span class="m">0</span><span class="w">   </span><span class="m">0</span><span class="w">  </span><span class="m">8</span>
+</span><span id="__span-1-29"><a id="__codelineno-1-29" name="__codelineno-1-29" href="#__codelineno-1-29"></a><span class="o">[</span><span class="m">23</span><span class="o">]</span><span class="w"> </span>__libc_atexit<span class="w">     </span>PROGBITS<span class="w">        </span><span class="m">0000000000494020</span><span class="w"> </span><span class="m">084020</span><span class="w"> </span><span class="m">000008</span><span class="w"> </span><span class="m">00</span><span class="w"> </span>WAR<span class="w">  </span><span class="m">0</span><span class="w">   </span><span class="m">0</span><span class="w">  </span><span class="m">8</span>
+</span><span id="__span-1-30"><a id="__codelineno-1-30" name="__codelineno-1-30" href="#__codelineno-1-30"></a><span class="o">[</span><span class="m">24</span><span class="o">]</span><span class="w"> </span>.bss<span class="w">              </span>NOBITS<span class="w">          </span><span class="m">0000000000494028</span><span class="w"> </span><span class="m">084028</span><span class="w"> </span><span class="m">005680</span><span class="w"> </span><span class="m">00</span><span class="w">  </span>WA<span class="w">  </span><span class="m">0</span><span class="w">   </span><span class="m">0</span><span class="w">  </span><span class="m">8</span>
+</span><span id="__span-1-31"><a id="__codelineno-1-31" name="__codelineno-1-31" href="#__codelineno-1-31"></a><span class="o">[</span><span class="m">25</span><span class="o">]</span><span class="w"> </span>__libc_freeres_ptrs<span class="w"> </span>NOBITS<span class="w">          </span>00000000004996a8<span class="w"> </span><span class="m">084028</span><span class="w"> </span><span class="m">000020</span><span class="w"> </span><span class="m">00</span><span class="w">  </span>WA<span class="w">  </span><span class="m">0</span><span class="w">   </span><span class="m">0</span><span class="w">  </span><span class="m">8</span>
+</span><span id="__span-1-32"><a id="__codelineno-1-32" name="__codelineno-1-32" href="#__codelineno-1-32"></a><span class="o">[</span><span class="m">26</span><span class="o">]</span><span class="w"> </span>.comment<span class="w">          </span>PROGBITS<span class="w">        </span><span class="m">0000000000000000</span><span class="w"> </span><span class="m">084028</span><span class="w"> </span>00002b<span class="w"> </span><span class="m">01</span><span class="w">  </span>MS<span class="w">  </span><span class="m">0</span><span class="w">   </span><span class="m">0</span><span class="w">  </span><span class="m">1</span>
+</span><span id="__span-1-33"><a id="__codelineno-1-33" name="__codelineno-1-33" href="#__codelineno-1-33"></a><span class="o">[</span><span class="m">27</span><span class="o">]</span><span class="w"> </span>.note.stapsdt<span class="w">     </span>NOTE<span class="w">            </span><span class="m">0000000000000000</span><span class="w"> </span><span class="m">084054</span><span class="w"> </span>0013a4<span class="w"> </span><span class="m">00</span><span class="w">      </span><span class="m">0</span><span class="w">   </span><span class="m">0</span><span class="w">  </span><span class="m">4</span>
+</span><span id="__span-1-34"><a id="__codelineno-1-34" name="__codelineno-1-34" href="#__codelineno-1-34"></a><span class="o">[</span><span class="m">28</span><span class="o">]</span><span class="w"> </span>.symtab<span class="w">           </span>SYMTAB<span class="w">          </span><span class="m">0000000000000000</span><span class="w"> </span>0853f8<span class="w"> </span><span class="m">012378</span><span class="w"> </span><span class="m">18</span><span class="w">     </span><span class="m">29</span><span class="w"> </span><span class="m">1945</span><span class="w">  </span><span class="m">8</span>
+</span><span id="__span-1-35"><a id="__codelineno-1-35" name="__codelineno-1-35" href="#__codelineno-1-35"></a><span class="o">[</span><span class="m">29</span><span class="o">]</span><span class="w"> </span>.strtab<span class="w">           </span>STRTAB<span class="w">          </span><span class="m">0000000000000000</span><span class="w"> </span><span class="m">097770</span><span class="w"> </span>006d86<span class="w"> </span><span class="m">00</span><span class="w">      </span><span class="m">0</span><span class="w">   </span><span class="m">0</span><span class="w">  </span><span class="m">1</span>
+</span><span id="__span-1-36"><a id="__codelineno-1-36" name="__codelineno-1-36" href="#__codelineno-1-36"></a><span class="o">[</span><span class="m">30</span><span class="o">]</span><span class="w"> </span>.shstrtab<span class="w">         </span>STRTAB<span class="w">          </span><span class="m">0000000000000000</span><span class="w"> </span>09e4f6<span class="w"> </span><span class="m">000144</span><span class="w"> </span><span class="m">00</span><span class="w">      </span><span class="m">0</span><span class="w">   </span><span class="m">0</span><span class="w">  </span><span class="m">1</span>
+</span><span id="__span-1-37"><a id="__codelineno-1-37" name="__codelineno-1-37" href="#__codelineno-1-37"></a>Key<span class="w"> </span>to<span class="w"> </span>Flags:
+</span><span id="__span-1-38"><a id="__codelineno-1-38" name="__codelineno-1-38" href="#__codelineno-1-38"></a>W<span class="w"> </span><span class="o">(</span>write<span class="o">)</span>,<span class="w"> </span>A<span class="w"> </span><span class="o">(</span>alloc<span class="o">)</span>,<span class="w"> </span>X<span class="w"> </span><span class="o">(</span>execute<span class="o">)</span>,<span class="w"> </span>M<span class="w"> </span><span class="o">(</span>merge<span class="o">)</span>,<span class="w"> </span>S<span class="w"> </span><span class="o">(</span>strings<span class="o">)</span>,<span class="w"> </span>I<span class="w"> </span><span class="o">(</span>info<span class="o">)</span>,
+</span><span id="__span-1-39"><a id="__codelineno-1-39" name="__codelineno-1-39" href="#__codelineno-1-39"></a>L<span class="w"> </span><span class="o">(</span>link<span class="w"> </span>order<span class="o">)</span>,<span class="w"> </span>O<span class="w"> </span><span class="o">(</span>extra<span class="w"> </span>OS<span class="w"> </span>processing<span class="w"> </span>required<span class="o">)</span>,<span class="w"> </span>G<span class="w"> </span><span class="o">(</span>group<span class="o">)</span>,<span class="w"> </span>T<span class="w"> </span><span class="o">(</span>TLS<span class="o">)</span>,
+</span><span id="__span-1-40"><a id="__codelineno-1-40" name="__codelineno-1-40" href="#__codelineno-1-40"></a>C<span class="w"> </span><span class="o">(</span>compressed<span class="o">)</span>,<span class="w"> </span>x<span class="w"> </span><span class="o">(</span>unknown<span class="o">)</span>,<span class="w"> </span>o<span class="w"> </span><span class="o">(</span>OS<span class="w"> </span>specific<span class="o">)</span>,<span class="w"> </span>E<span class="w"> </span><span class="o">(</span>exclude<span class="o">)</span>,
+</span><span id="__span-1-41"><a id="__codelineno-1-41" name="__codelineno-1-41" href="#__codelineno-1-41"></a>R<span class="w"> </span><span class="o">(</span>retain<span class="o">)</span>,<span class="w"> </span>D<span class="w"> </span><span class="o">(</span>mbind<span class="o">)</span>,<span class="w"> </span>p<span class="w"> </span><span class="o">(</span>processor<span class="w"> </span>specific<span class="o">)</span>
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>$<span class="w"> </span>objdump<span class="w"> </span>-hw<span class="w"> </span>b.out
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>b.out:<span class="w">     </span>file<span class="w"> </span>format<span class="w"> </span>elf64-littleaarch64
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>Sections:
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>Idx<span class="w"> </span>Name<span class="w">                </span>Size<span class="w">      </span>VMA<span class="w">               </span>LMA<span class="w">               </span>File<span class="w"> </span>off<span class="w">  </span>Algn<span class="w">  </span>Flags
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="m">0</span><span class="w"> </span>.note.gnu.build-id<span class="w">  </span><span class="m">00000024</span><span class="w">  </span><span class="m">0000000000400190</span><span class="w">  </span><span class="m">0000000000400190</span><span class="w">  </span><span class="m">00000190</span><span class="w">  </span><span class="m">2</span>**2<span class="w">  </span>CONTENTS,<span class="w"> </span>ALLOC,<span class="w"> </span>LOAD,<span class="w"> </span>READONLY,<span class="w"> </span>DATA
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="m">1</span><span class="w"> </span>.note.ABI-tag<span class="w">       </span><span class="m">00000020</span><span class="w">  </span>00000000004001b4<span class="w">  </span>00000000004001b4<span class="w">  </span>000001b4<span class="w">  </span><span class="m">2</span>**2<span class="w">  </span>CONTENTS,<span class="w"> </span>ALLOC,<span class="w"> </span>LOAD,<span class="w"> </span>READONLY,<span class="w"> </span>DATA
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="m">2</span><span class="w"> </span>.rela.plt<span class="w">           </span>000000a8<span class="w">  </span>00000000004001d8<span class="w">  </span>00000000004001d8<span class="w">  </span>000001d8<span class="w">  </span><span class="m">2</span>**3<span class="w">  </span>CONTENTS,<span class="w"> </span>ALLOC,<span class="w"> </span>LOAD,<span class="w"> </span>READONLY,<span class="w"> </span>DATA
+</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="m">3</span><span class="w"> </span>.init<span class="w">               </span><span class="m">00000018</span><span class="w">  </span><span class="m">0000000000400280</span><span class="w">  </span><span class="m">0000000000400280</span><span class="w">  </span><span class="m">00000280</span><span class="w">  </span><span class="m">2</span>**2<span class="w">  </span>CONTENTS,<span class="w"> </span>ALLOC,<span class="w"> </span>LOAD,<span class="w"> </span>READONLY,<span class="w"> </span>CODE
+</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="m">4</span><span class="w"> </span>.plt<span class="w">                </span><span class="m">00000070</span><span class="w">  </span>00000000004002a0<span class="w">  </span>00000000004002a0<span class="w">  </span>000002a0<span class="w">  </span><span class="m">2</span>**4<span class="w">  </span>CONTENTS,<span class="w"> </span>ALLOC,<span class="w"> </span>LOAD,<span class="w"> </span>READONLY,<span class="w"> </span>CODE
+</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="m">5</span><span class="w"> </span>.text<span class="w">               </span>00056fb4<span class="w">  </span><span class="m">0000000000400340</span><span class="w">  </span><span class="m">0000000000400340</span><span class="w">  </span><span class="m">00000340</span><span class="w">  </span><span class="m">2</span>**6<span class="w">  </span>CONTENTS,<span class="w"> </span>ALLOC,<span class="w"> </span>LOAD,<span class="w"> </span>READONLY,<span class="w"> </span>CODE
+</span><span id="__span-2-13"><a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="m">6</span><span class="w"> </span>__libc_freeres_fn<span class="w">   </span>00000b24<span class="w">  </span><span class="m">0000000000457300</span><span class="w">  </span><span class="m">0000000000457300</span><span class="w">  </span><span class="m">00057300</span><span class="w">  </span><span class="m">2</span>**4<span class="w">  </span>CONTENTS,<span class="w"> </span>ALLOC,<span class="w"> </span>LOAD,<span class="w"> </span>READONLY,<span class="w"> </span>CODE
+</span><span id="__span-2-14"><a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a><span class="m">7</span><span class="w"> </span>.fini<span class="w">               </span><span class="m">00000014</span><span class="w">  </span>0000000000457e24<span class="w">  </span>0000000000457e24<span class="w">  </span>00057e24<span class="w">  </span><span class="m">2</span>**2<span class="w">  </span>CONTENTS,<span class="w"> </span>ALLOC,<span class="w"> </span>LOAD,<span class="w"> </span>READONLY,<span class="w"> </span>CODE
+</span><span id="__span-2-15"><a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a><span class="m">8</span><span class="w"> </span>.rodata<span class="w">             </span>0001a0d8<span class="w">  </span>0000000000457e40<span class="w">  </span>0000000000457e40<span class="w">  </span>00057e40<span class="w">  </span><span class="m">2</span>**4<span class="w">  </span>CONTENTS,<span class="w"> </span>ALLOC,<span class="w"> </span>LOAD,<span class="w"> </span>READONLY,<span class="w"> </span>DATA
+</span><span id="__span-2-16"><a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a><span class="m">9</span><span class="w"> </span>.stapsdt.base<span class="w">       </span><span class="m">00000001</span><span class="w">  </span>0000000000471f18<span class="w">  </span>0000000000471f18<span class="w">  </span>00071f18<span class="w">  </span><span class="m">2</span>**0<span class="w">  </span>CONTENTS,<span class="w"> </span>ALLOC,<span class="w"> </span>LOAD,<span class="w"> </span>READONLY,<span class="w"> </span>DATA
+</span><span id="__span-2-17"><a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a><span class="m">10</span><span class="w"> </span>.eh_frame<span class="w">           </span>0000b984<span class="w">  </span>0000000000471f20<span class="w">  </span>0000000000471f20<span class="w">  </span>00071f20<span class="w">  </span><span class="m">2</span>**3<span class="w">  </span>CONTENTS,<span class="w"> </span>ALLOC,<span class="w"> </span>LOAD,<span class="w"> </span>READONLY,<span class="w"> </span>DATA
+</span><span id="__span-2-18"><a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a><span class="m">11</span><span class="w"> </span>.gcc_except_table<span class="w">   </span><span class="m">00000108</span><span class="w">  </span>000000000047d8a4<span class="w">  </span>000000000047d8a4<span class="w">  </span>0007d8a4<span class="w">  </span><span class="m">2</span>**0<span class="w">  </span>CONTENTS,<span class="w"> </span>ALLOC,<span class="w"> </span>LOAD,<span class="w"> </span>READONLY,<span class="w"> </span>DATA
+</span><span id="__span-2-19"><a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a><span class="m">12</span><span class="w"> </span>.tdata<span class="w">              </span><span class="m">00000020</span><span class="w">  </span>000000000048e830<span class="w">  </span>000000000048e830<span class="w">  </span>0007e830<span class="w">  </span><span class="m">2</span>**3<span class="w">  </span>CONTENTS,<span class="w"> </span>ALLOC,<span class="w"> </span>LOAD,<span class="w"> </span>DATA,<span class="w"> </span>THREAD_LOCAL
+</span><span id="__span-2-20"><a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a><span class="m">13</span><span class="w"> </span>.tbss<span class="w">               </span><span class="m">00000048</span><span class="w">  </span>000000000048e850<span class="w">  </span>000000000048e850<span class="w">  </span>0007e850<span class="w">  </span><span class="m">2</span>**3<span class="w">  </span>ALLOC,<span class="w"> </span>THREAD_LOCAL
+</span><span id="__span-2-21"><a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a><span class="m">14</span><span class="w"> </span>.init_array<span class="w">         </span><span class="m">00000010</span><span class="w">  </span>000000000048e850<span class="w">  </span>000000000048e850<span class="w">  </span>0007e850<span class="w">  </span><span class="m">2</span>**3<span class="w">  </span>CONTENTS,<span class="w"> </span>ALLOC,<span class="w"> </span>LOAD,<span class="w"> </span>DATA
+</span><span id="__span-2-22"><a id="__codelineno-2-22" name="__codelineno-2-22" href="#__codelineno-2-22"></a><span class="m">15</span><span class="w"> </span>.fini_array<span class="w">         </span><span class="m">00000008</span><span class="w">  </span>000000000048e860<span class="w">  </span>000000000048e860<span class="w">  </span>0007e860<span class="w">  </span><span class="m">2</span>**3<span class="w">  </span>CONTENTS,<span class="w"> </span>ALLOC,<span class="w"> </span>LOAD,<span class="w"> </span>DATA
+</span><span id="__span-2-23"><a id="__codelineno-2-23" name="__codelineno-2-23" href="#__codelineno-2-23"></a><span class="m">16</span><span class="w"> </span>.data.rel.ro<span class="w">        </span><span class="m">00003348</span><span class="w">  </span>000000000048e868<span class="w">  </span>000000000048e868<span class="w">  </span>0007e868<span class="w">  </span><span class="m">2</span>**3<span class="w">  </span>CONTENTS,<span class="w"> </span>ALLOC,<span class="w"> </span>LOAD,<span class="w"> </span>DATA
+</span><span id="__span-2-24"><a id="__codelineno-2-24" name="__codelineno-2-24" href="#__codelineno-2-24"></a><span class="m">17</span><span class="w"> </span>.got<span class="w">                </span><span class="m">00000438</span><span class="w">  </span>0000000000491bb0<span class="w">  </span>0000000000491bb0<span class="w">  </span>00081bb0<span class="w">  </span><span class="m">2</span>**3<span class="w">  </span>CONTENTS,<span class="w"> </span>ALLOC,<span class="w"> </span>LOAD,<span class="w"> </span>DATA
+</span><span id="__span-2-25"><a id="__codelineno-2-25" name="__codelineno-2-25" href="#__codelineno-2-25"></a><span class="m">18</span><span class="w"> </span>.got.plt<span class="w">            </span><span class="m">00000050</span><span class="w">  </span>0000000000491fe8<span class="w">  </span>0000000000491fe8<span class="w">  </span>00081fe8<span class="w">  </span><span class="m">2</span>**3<span class="w">  </span>CONTENTS,<span class="w"> </span>ALLOC,<span class="w"> </span>LOAD,<span class="w"> </span>DATA
+</span><span id="__span-2-26"><a id="__codelineno-2-26" name="__codelineno-2-26" href="#__codelineno-2-26"></a><span class="m">19</span><span class="w"> </span>.data<span class="w">               </span><span class="m">00001910</span><span class="w">  </span><span class="m">0000000000492038</span><span class="w">  </span><span class="m">0000000000492038</span><span class="w">  </span><span class="m">00082038</span><span class="w">  </span><span class="m">2</span>**3<span class="w">  </span>CONTENTS,<span class="w"> </span>ALLOC,<span class="w"> </span>LOAD,<span class="w"> </span>DATA
+</span><span id="__span-2-27"><a id="__codelineno-2-27" name="__codelineno-2-27" href="#__codelineno-2-27"></a><span class="m">20</span><span class="w"> </span>__libc_subfreeres<span class="w">   </span><span class="m">00000048</span><span class="w">  </span><span class="m">0000000000493948</span><span class="w">  </span><span class="m">0000000000493948</span><span class="w">  </span><span class="m">00083948</span><span class="w">  </span><span class="m">2</span>**3<span class="w">  </span>CONTENTS,<span class="w"> </span>ALLOC,<span class="w"> </span>LOAD,<span class="w"> </span>DATA
+</span><span id="__span-2-28"><a id="__codelineno-2-28" name="__codelineno-2-28" href="#__codelineno-2-28"></a><span class="m">21</span><span class="w"> </span>__libc_IO_vtables<span class="w">   </span><span class="m">00000690</span><span class="w">  </span><span class="m">0000000000493990</span><span class="w">  </span><span class="m">0000000000493990</span><span class="w">  </span><span class="m">00083990</span><span class="w">  </span><span class="m">2</span>**3<span class="w">  </span>CONTENTS,<span class="w"> </span>ALLOC,<span class="w"> </span>LOAD,<span class="w"> </span>DATA
+</span><span id="__span-2-29"><a id="__codelineno-2-29" name="__codelineno-2-29" href="#__codelineno-2-29"></a><span class="m">22</span><span class="w"> </span>__libc_atexit<span class="w">       </span><span class="m">00000008</span><span class="w">  </span><span class="m">0000000000494020</span><span class="w">  </span><span class="m">0000000000494020</span><span class="w">  </span><span class="m">00084020</span><span class="w">  </span><span class="m">2</span>**3<span class="w">  </span>CONTENTS,<span class="w"> </span>ALLOC,<span class="w"> </span>LOAD,<span class="w"> </span>DATA
+</span><span id="__span-2-30"><a id="__codelineno-2-30" name="__codelineno-2-30" href="#__codelineno-2-30"></a><span class="m">23</span><span class="w"> </span>.bss<span class="w">                </span><span class="m">00005680</span><span class="w">  </span><span class="m">0000000000494028</span><span class="w">  </span><span class="m">0000000000494028</span><span class="w">  </span><span class="m">00084028</span><span class="w">  </span><span class="m">2</span>**3<span class="w">  </span>ALLOC
+</span><span id="__span-2-31"><a id="__codelineno-2-31" name="__codelineno-2-31" href="#__codelineno-2-31"></a><span class="m">24</span><span class="w"> </span>__libc_freeres_ptrs<span class="w"> </span><span class="m">00000020</span><span class="w">  </span>00000000004996a8<span class="w">  </span>00000000004996a8<span class="w">  </span><span class="m">00084028</span><span class="w">  </span><span class="m">2</span>**3<span class="w">  </span>ALLOC
+</span><span id="__span-2-32"><a id="__codelineno-2-32" name="__codelineno-2-32" href="#__codelineno-2-32"></a><span class="m">25</span><span class="w"> </span>.comment<span class="w">            </span>0000002b<span class="w">  </span><span class="m">0000000000000000</span><span class="w">  </span><span class="m">0000000000000000</span><span class="w">  </span><span class="m">00084028</span><span class="w">  </span><span class="m">2</span>**0<span class="w">  </span>CONTENTS,<span class="w"> </span>READONLY
+</span><span id="__span-2-33"><a id="__codelineno-2-33" name="__codelineno-2-33" href="#__codelineno-2-33"></a><span class="m">26</span><span class="w"> </span>.note.stapsdt<span class="w">       </span>000013a4<span class="w">  </span><span class="m">0000000000000000</span><span class="w">  </span><span class="m">0000000000000000</span><span class="w">  </span><span class="m">00084054</span><span class="w">  </span><span class="m">2</span>**2<span class="w">  </span>CONTENTS,<span class="w"> </span>READONLY
+</span></code></pre></div>
+</div>
+</div>
+</div>
+<h2 id="symbol_table">symbol table<a class="headerlink" href="#symbol_table" title="Permanent link">#</a></h2>
+<ol>
+<li><code>readelf [-s|--syms|--symbols]</code>: Displays the entries in symbol table section of the file, if it has one. If a symbol has version information associated with it then this is displayed as well.</li>
+<li><code>objdump [-t|--syms]</code>: Print the symbol table entries of the file. This is similar to the information provided by the <code>nm</code> program, although the display format is different.</li>
+<li><code>nm</code> - list symbols from object files.</li>
+</ol>
+<p>Check it out with any of the above commands, and we will see that <code>b.out</code> assembles/links a lot of CRT(C RunTime) and STD(C STanDard Library) object files. It's really verbose, the number of symbol table entries and symbols is almost 40 times more than <code>a.out</code>.</p>
+<p>I'm not going to paste it in here as it would take up too much space. We can regenerate it whenever we need it.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>$<span class="w"> </span>objdump<span class="w"> </span>-t<span class="w"> </span>b.out
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>b.out:<span class="w">     </span>file<span class="w"> </span>format<span class="w"> </span>elf64-littleaarch64
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>SYMBOL<span class="w"> </span>TABLE:
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="o">[</span>...snip...<span class="o">]</span>
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="m">0000000000000000</span><span class="w"> </span>l<span class="w">    </span>df<span class="w"> </span>*ABS*<span class="w">  </span><span class="m">0000000000000000</span><span class="w"> </span>crt1.o
+</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="m">0000000000000000</span><span class="w"> </span>l<span class="w">    </span>df<span class="w"> </span>*ABS*<span class="w">  </span><span class="m">0000000000000000</span><span class="w"> </span>crti.o
+</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="m">0000000000000000</span><span class="w"> </span>l<span class="w">    </span>df<span class="w"> </span>*ABS*<span class="w">  </span><span class="m">0000000000000000</span><span class="w"> </span>crtn.o
+</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="m">0000000000000000</span><span class="w"> </span>l<span class="w">    </span>df<span class="w"> </span>*ABS*<span class="w">  </span><span class="m">0000000000000000</span><span class="w"> </span>exit.o
+</span><span id="__span-3-13"><a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a><span class="m">0000000000000000</span><span class="w"> </span>l<span class="w">    </span>df<span class="w"> </span>*ABS*<span class="w">  </span><span class="m">0000000000000000</span><span class="w"> </span>cxa_atexit.o
+</span><span id="__span-3-14"><a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>
+</span><span id="__span-3-15"><a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a><span class="o">[</span>...snip...<span class="o">]</span>
+</span><span id="__span-3-16"><a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>
+</span><span id="__span-3-17"><a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a><span class="m">0000000000000000</span><span class="w"> </span>l<span class="w">    </span>df<span class="w"> </span>*ABS*<span class="w">  </span><span class="m">0000000000000000</span><span class="w"> </span>stdio.o
+</span><span id="__span-3-18"><a id="__codelineno-3-18" name="__codelineno-3-18" href="#__codelineno-3-18"></a><span class="m">0000000000000000</span><span class="w"> </span>l<span class="w">    </span>df<span class="w"> </span>*ABS*<span class="w">  </span><span class="m">0000000000000000</span><span class="w"> </span>strcmp.o
+</span><span id="__span-3-19"><a id="__codelineno-3-19" name="__codelineno-3-19" href="#__codelineno-3-19"></a><span class="m">0000000000000000</span><span class="w"> </span>l<span class="w">    </span>df<span class="w"> </span>*ABS*<span class="w">  </span><span class="m">0000000000000000</span><span class="w"> </span>strcpy.o
+</span><span id="__span-3-20"><a id="__codelineno-3-20" name="__codelineno-3-20" href="#__codelineno-3-20"></a><span class="m">0000000000000000</span><span class="w"> </span>l<span class="w">    </span>df<span class="w"> </span>*ABS*<span class="w">  </span><span class="m">0000000000000000</span><span class="w"> </span>strlen.o
+</span><span id="__span-3-21"><a id="__codelineno-3-21" name="__codelineno-3-21" href="#__codelineno-3-21"></a><span class="m">0000000000000000</span><span class="w"> </span>l<span class="w">    </span>df<span class="w"> </span>*ABS*<span class="w">  </span><span class="m">0000000000000000</span><span class="w"> </span>strncmp.o
+</span><span id="__span-3-22"><a id="__codelineno-3-22" name="__codelineno-3-22" href="#__codelineno-3-22"></a><span class="m">0000000000000000</span><span class="w"> </span>l<span class="w">    </span>df<span class="w"> </span>*ABS*<span class="w">  </span><span class="m">0000000000000000</span><span class="w"> </span>strstr.o
+</span><span id="__span-3-23"><a id="__codelineno-3-23" name="__codelineno-3-23" href="#__codelineno-3-23"></a><span class="m">0000000000000000</span><span class="w"> </span>l<span class="w">    </span>df<span class="w"> </span>*ABS*<span class="w">  </span><span class="m">0000000000000000</span><span class="w"> </span>qsort.o
+</span><span id="__span-3-24"><a id="__codelineno-3-24" name="__codelineno-3-24" href="#__codelineno-3-24"></a>
+</span><span id="__span-3-25"><a id="__codelineno-3-25" name="__codelineno-3-25" href="#__codelineno-3-25"></a><span class="o">[</span>...snip...<span class="o">]</span>
+</span></code></pre></div>
+<h2 id="program_header">program Header<a class="headerlink" href="#program_header" title="Permanent link">#</a></h2>
+<p>We can also type <code>readelf -l</code> to display the information contained in the file's segment headers.</p>
+<blockquote>
+<p>The section-to-segment listing shows which logical sections lie inside each given segment. Unlike DYN, there is no <code>INTERP</code> segment, which contains the <code>.interp</code> section. But it contains a <code>TLS</code> segment, which contains <code>.tdata</code> and <code>.tbss</code>.<br />
+The last two sections <code>.comment</code> and <code>.note.stapsdt</code> don't map to any segment.</p>
+</blockquote>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>$<span class="w"> </span>readelf<span class="w"> </span>-lW<span class="w"> </span>b.out
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>Elf<span class="w"> </span>file<span class="w"> </span><span class="nb">type</span><span class="w"> </span>is<span class="w"> </span>EXEC<span class="w"> </span><span class="o">(</span>Executable<span class="w"> </span>file<span class="o">)</span>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>Entry<span class="w"> </span>point<span class="w"> </span>0x400580
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>There<span class="w"> </span>are<span class="w"> </span><span class="m">6</span><span class="w"> </span>program<span class="w"> </span>headers,<span class="w"> </span>starting<span class="w"> </span>at<span class="w"> </span>offset<span class="w"> </span><span class="m">64</span>
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>Program<span class="w"> </span>Headers:
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="w">  </span>Type<span class="w">           </span>Offset<span class="w">   </span>VirtAddr<span class="w">           </span>PhysAddr<span class="w">           </span>FileSiz<span class="w">  </span>MemSiz<span class="w">   </span>Flg<span class="w"> </span>Align
+</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="w">  </span>LOAD<span class="w">           </span>0x000000<span class="w"> </span>0x0000000000400000<span class="w"> </span>0x0000000000400000<span class="w"> </span>0x07d9ac<span class="w"> </span>0x07d9ac<span class="w"> </span>R<span class="w"> </span>E<span class="w"> </span>0x10000
+</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="w">  </span>LOAD<span class="w">           </span>0x07e830<span class="w"> </span>0x000000000048e830<span class="w"> </span>0x000000000048e830<span class="w"> </span>0x0057f8<span class="w"> </span>0x00ae98<span class="w"> </span>RW<span class="w">  </span>0x10000
+</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="w">  </span>NOTE<span class="w">           </span>0x000190<span class="w"> </span>0x0000000000400190<span class="w"> </span>0x0000000000400190<span class="w"> </span>0x000044<span class="w"> </span>0x000044<span class="w"> </span>R<span class="w">   </span>0x4
+</span><span id="__span-4-12"><a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a><span class="w">  </span>TLS<span class="w">            </span>0x07e830<span class="w"> </span>0x000000000048e830<span class="w"> </span>0x000000000048e830<span class="w"> </span>0x000020<span class="w"> </span>0x000068<span class="w"> </span>R<span class="w">   </span>0x8
+</span><span id="__span-4-13"><a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a><span class="w">  </span>GNU_STACK<span class="w">      </span>0x000000<span class="w"> </span>0x0000000000000000<span class="w"> </span>0x0000000000000000<span class="w"> </span>0x000000<span class="w"> </span>0x000000<span class="w"> </span>RW<span class="w">  </span>0x10
+</span><span id="__span-4-14"><a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a><span class="w">  </span>GNU_RELRO<span class="w">      </span>0x07e830<span class="w"> </span>0x000000000048e830<span class="w"> </span>0x000000000048e830<span class="w"> </span>0x0037d0<span class="w"> </span>0x0037d0<span class="w"> </span>R<span class="w">   </span>0x1
+</span><span id="__span-4-15"><a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a>
+</span><span id="__span-4-16"><a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a><span class="w"> </span>Section<span class="w"> </span>to<span class="w"> </span>Segment<span class="w"> </span>mapping:
+</span><span id="__span-4-17"><a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a><span class="w">  </span>Segment<span class="w"> </span>Sections...
+</span><span id="__span-4-18"><a id="__codelineno-4-18" name="__codelineno-4-18" href="#__codelineno-4-18"></a><span class="w">   </span><span class="m">00</span><span class="w">     </span>.note.gnu.build-id<span class="w"> </span>.note.ABI-tag<span class="w"> </span>.rela.plt<span class="w"> </span>.init<span class="w"> </span>.plt<span class="w"> </span>.text<span class="w"> </span>__libc_freeres_fn<span class="w"> </span>.fini<span class="w"> </span>.rodata<span class="w"> </span>.stapsdt.base<span class="w"> </span>.eh_frame<span class="w"> </span>.gcc_except_table
+</span><span id="__span-4-19"><a id="__codelineno-4-19" name="__codelineno-4-19" href="#__codelineno-4-19"></a><span class="w">   </span><span class="m">01</span><span class="w">     </span>.tdata<span class="w"> </span>.init_array<span class="w"> </span>.fini_array<span class="w"> </span>.data.rel.ro<span class="w"> </span>.got<span class="w"> </span>.got.plt<span class="w"> </span>.data<span class="w"> </span>__libc_subfreeres<span class="w"> </span>__libc_IO_vtables<span class="w"> </span>__libc_atexit<span class="w"> </span>.bss<span class="w"> </span>__libc_freeres_ptrs
+</span><span id="__span-4-20"><a id="__codelineno-4-20" name="__codelineno-4-20" href="#__codelineno-4-20"></a><span class="w">   </span><span class="m">02</span><span class="w">     </span>.note.gnu.build-id<span class="w"> </span>.note.ABI-tag
+</span><span id="__span-4-21"><a id="__codelineno-4-21" name="__codelineno-4-21" href="#__codelineno-4-21"></a><span class="w">   </span><span class="m">03</span><span class="w">     </span>.tdata<span class="w"> </span>.tbss
+</span><span id="__span-4-22"><a id="__codelineno-4-22" name="__codelineno-4-22" href="#__codelineno-4-22"></a><span class="w">   </span><span class="m">04</span>
+</span><span id="__span-4-23"><a id="__codelineno-4-23" name="__codelineno-4-23" href="#__codelineno-4-23"></a><span class="w">   </span><span class="m">05</span><span class="w">     </span>.tdata<span class="w"> </span>.init_array<span class="w"> </span>.fini_array<span class="w"> </span>.data.rel.ro<span class="w"> </span>.got
+</span></code></pre></div>
+<h2 id="entry_point">Entry Point<a class="headerlink" href="#entry_point" title="Permanent link">#</a></h2>
+<p>The starting point of <code>b.out</code> can be seen in the output of <code>objdump -f</code> and <code>readelf -h</code>.</p>
+<ul>
+<li><code>objdump -f b.out</code>: start address 0x0000000000400580</li>
+<li><code>readelf -h b.out</code>: Entry point address: 0x400580</li>
+</ul>
+<p>We can use <code>addr2line</code> to resolve/translate the address to symbol:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>$<span class="w"> </span>addr2line<span class="w"> </span>-f<span class="w"> </span>-e<span class="w"> </span>b.out<span class="w"> </span>0x400580
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>_start
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>??:?
+</span></code></pre></div>
+<p>Unsurprisingly, it turns out that symbol <code>_start</code> is actually the entry point of the C program.</p>
+<p>As the collect2 options show, <code>_start</code> is defined in <code>/usr/lib/aarch64-linux-gnu/crt1.o</code>.</p>
+<div class="language-bash highlight"><span class="filename">objdump -d crt1.o</span><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>$<span class="w"> </span>objdump<span class="w"> </span>-d<span class="w"> </span>/usr/lib/aarch64-linux-gnu/crt1.o
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>/usr/lib/aarch64-linux-gnu/crt1.o:<span class="w">     </span>file<span class="w"> </span>format<span class="w"> </span>elf64-littleaarch64
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>Disassembly<span class="w"> </span>of<span class="w"> </span>section<span class="w"> </span>.text:
+</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>
+</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="m">0000000000000000</span><span class="w"> </span>&lt;_start&gt;:
+</span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="w">   </span><span class="m">0</span>:<span class="w">   </span>d503201f<span class="w">    </span>nop
+</span><span id="__span-6-10"><a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a><span class="w">   </span><span class="m">4</span>:<span class="w">   </span>d280001d<span class="w">    </span>mov<span class="w"> </span>x29,<span class="w"> </span><span class="c1">#0x0                       // #0</span>
+</span><span id="__span-6-11"><a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a><span class="w">   </span><span class="m">8</span>:<span class="w">   </span>d280001e<span class="w">    </span>mov<span class="w"> </span>x30,<span class="w"> </span><span class="c1">#0x0                       // #0</span>
+</span><span id="__span-6-12"><a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a><span class="w">   </span>c:<span class="w">   </span>aa0003e5<span class="w">    </span>mov<span class="w"> </span>x5,<span class="w"> </span>x0
+</span><span id="__span-6-13"><a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a><span class="w">  </span><span class="m">10</span>:<span class="w">   </span>f94003e1<span class="w">    </span>ldr<span class="w"> </span>x1,<span class="w"> </span><span class="o">[</span>sp<span class="o">]</span>
+</span><span id="__span-6-14"><a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a><span class="w">  </span><span class="m">14</span>:<span class="w">   </span>910023e2<span class="w">    </span>add<span class="w"> </span>x2,<span class="w"> </span>sp,<span class="w"> </span><span class="c1">#0x8</span>
+</span><span id="__span-6-15"><a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a><span class="w">  </span><span class="m">18</span>:<span class="w">   </span>910003e6<span class="w">    </span>mov<span class="w"> </span>x6,<span class="w"> </span>sp
+</span><span id="__span-6-16"><a id="__codelineno-6-16" name="__codelineno-6-16" href="#__codelineno-6-16"></a><span class="w">  </span>1c:<span class="w">   </span><span class="m">90000000</span><span class="w">    </span>adrp<span class="w">    </span>x0,<span class="w"> </span><span class="m">0</span><span class="w"> </span>&lt;_start&gt;
+</span><span id="__span-6-17"><a id="__codelineno-6-17" name="__codelineno-6-17" href="#__codelineno-6-17"></a><span class="w">  </span><span class="m">20</span>:<span class="w">   </span><span class="m">91000000</span><span class="w">    </span>add<span class="w"> </span>x0,<span class="w"> </span>x0,<span class="w"> </span><span class="c1">#0x0</span>
+</span><span id="__span-6-18"><a id="__codelineno-6-18" name="__codelineno-6-18" href="#__codelineno-6-18"></a><span class="w">  </span><span class="m">24</span>:<span class="w">   </span>d2800003<span class="w">    </span>mov<span class="w"> </span>x3,<span class="w"> </span><span class="c1">#0x0                    // #0</span>
+</span><span id="__span-6-19"><a id="__codelineno-6-19" name="__codelineno-6-19" href="#__codelineno-6-19"></a><span class="w">  </span><span class="m">28</span>:<span class="w">   </span>d2800004<span class="w">    </span>mov<span class="w"> </span>x4,<span class="w"> </span><span class="c1">#0x0                    // #0</span>
+</span><span id="__span-6-20"><a id="__codelineno-6-20" name="__codelineno-6-20" href="#__codelineno-6-20"></a><span class="w">  </span>2c:<span class="w">   </span><span class="m">94000000</span><span class="w">    </span>bl<span class="w">  </span><span class="m">0</span><span class="w"> </span>&lt;__libc_start_main&gt;
+</span><span id="__span-6-21"><a id="__codelineno-6-21" name="__codelineno-6-21" href="#__codelineno-6-21"></a><span class="w">  </span><span class="m">30</span>:<span class="w">   </span><span class="m">94000000</span><span class="w">    </span>bl<span class="w">  </span><span class="m">0</span><span class="w"> </span>&lt;abort&gt;
+</span><span id="__span-6-22"><a id="__codelineno-6-22" name="__codelineno-6-22" href="#__codelineno-6-22"></a>
+</span><span id="__span-6-23"><a id="__codelineno-6-23" name="__codelineno-6-23" href="#__codelineno-6-23"></a><span class="m">0000000000000034</span><span class="w"> </span>&lt;__wrap_main&gt;:
+</span><span id="__span-6-24"><a id="__codelineno-6-24" name="__codelineno-6-24" href="#__codelineno-6-24"></a><span class="w">  </span><span class="m">34</span>:<span class="w">   </span>d503201f<span class="w">    </span>nop
+</span><span id="__span-6-25"><a id="__codelineno-6-25" name="__codelineno-6-25" href="#__codelineno-6-25"></a><span class="w">  </span><span class="m">38</span>:<span class="w">   </span><span class="m">14000000</span><span class="w">    </span>b<span class="w">   </span><span class="m">0</span><span class="w"> </span>&lt;main&gt;
+</span><span id="__span-6-26"><a id="__codelineno-6-26" name="__codelineno-6-26" href="#__codelineno-6-26"></a><span class="w">  </span>3c:<span class="w">   </span>d503201f<span class="w">    </span>nop
+</span><span id="__span-6-27"><a id="__codelineno-6-27" name="__codelineno-6-27" href="#__codelineno-6-27"></a>
+</span><span id="__span-6-28"><a id="__codelineno-6-28" name="__codelineno-6-28" href="#__codelineno-6-28"></a><span class="m">0000000000000040</span><span class="w"> </span>&lt;_dl_relocate_static_pie&gt;:
+</span><span id="__span-6-29"><a id="__codelineno-6-29" name="__codelineno-6-29" href="#__codelineno-6-29"></a><span class="w">  </span><span class="m">40</span>:<span class="w">   </span>d65f03c0<span class="w">    </span>ret
+</span></code></pre></div>
+<p>Although, by convention, C and C++ programs “begin” at the <code>main</code> function, programs do not actually begin execution here. Instead, they begin execution in a small stub of assembly code, traditionally at the symbol called <code>_start</code>. When linking against the standard C runtime, the <code>_start</code> function is usually a small stub of code that passes control to the <em>libc</em> helper function <code>__libc_start_main</code>. This function then prepares the parameters for the program’s <code>main</code> function and invokes it. The <code>main</code> function then runs the program’s core logic, and if main returns to <code>__libc_start_main</code>, the return value of <code>main</code> is then passed to <code>exit</code> to gracefully exit the program.</p>
+<h2 id="gdb_debug">gdb debug<a class="headerlink" href="#gdb_debug" title="Permanent link">#</a></h2>
+<p>Now just type <code>gdb b.out</code> to run the programme <code>b.out</code> with GDB. Here I'm using customised <code>gdb-pwndbg</code> instead of naked <code>gdb</code>, because I've installed the GDB Enhanced Extension <a href="https://github.com/pwndbg/pwndbg">pwndbg</a>.</p>
+<blockquote>
+<p>related post: <a href="../../20200204/0-gdb-man-help/">GDB manual &amp; help</a> &amp; <a href="../../20200310/7-gdb-enhanced/">GDB Enhanced Extensions</a>.</p>
+</blockquote>
+<p>After launched the GDB Console, type <code>entry</code> to start the debugged program stopping at its entrypoint address.</p>
+<div class="admonition note">
+<p class="admonition-title">difference between entry and starti</p>
+<p>Note that the entrypoint may not be the first instruction executed by the program.<br />
+If you want to stop on the first executed instruction, use the GDB's <code>starti</code> command.</p>
+</div>
+<p>It just stops at the entrypoint <code>_start</code> as expected:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>$<span class="w"> </span>gdb-pwndbg<span class="w"> </span>b.out
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>Reading<span class="w"> </span>symbols<span class="w"> </span>from<span class="w"> </span>b.out...
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="o">(</span>No<span class="w"> </span>debugging<span class="w"> </span>symbols<span class="w"> </span>found<span class="w"> </span><span class="k">in</span><span class="w"> </span>b.out<span class="o">)</span>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>pwndbg:<span class="w"> </span>loaded<span class="w"> </span><span class="m">157</span><span class="w"> </span>pwndbg<span class="w"> </span>commands<span class="w"> </span>and<span class="w"> </span><span class="m">47</span><span class="w"> </span>shell<span class="w"> </span>commands.<span class="w"> </span>Type<span class="w"> </span>pwndbg<span class="w"> </span><span class="o">[</span>--shell<span class="w"> </span><span class="p">|</span><span class="w"> </span>--all<span class="o">]</span><span class="w"> </span><span class="o">[</span>filter<span class="o">]</span><span class="w"> </span><span class="k">for</span><span class="w"> </span>a<span class="w"> </span>list.
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>pwndbg:<span class="w"> </span>created<span class="w"> </span><span class="nv">$rebase</span>,<span class="w"> </span><span class="nv">$base</span>,<span class="w"> </span><span class="nv">$ida</span><span class="w"> </span>GDB<span class="w"> </span>functions<span class="w"> </span><span class="o">(</span>can<span class="w"> </span>be<span class="w"> </span>used<span class="w"> </span>with<span class="w"> </span>print/break<span class="o">)</span>
+</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a>-------<span class="w"> </span>tip<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>day<span class="w"> </span><span class="o">(</span>disable<span class="w"> </span>with<span class="w"> </span><span class="nb">set</span><span class="w"> </span>show-tips<span class="w"> </span>off<span class="o">)</span><span class="w"> </span>-------
+</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a>Use<span class="w"> </span>GDB<span class="err">&#39;</span>s<span class="w"> </span>dprintf<span class="w"> </span><span class="nb">command</span><span class="w"> </span>to<span class="w"> </span>print<span class="w"> </span>all<span class="w"> </span>calls<span class="w"> </span>to<span class="w"> </span>given<span class="w"> </span><span class="k">function</span>.<span class="w"> </span>E.g.<span class="w"> </span>dprintf<span class="w"> </span>malloc,<span class="w"> </span><span class="s2">&quot;malloc(%p)\n&quot;</span>,<span class="w"> </span><span class="o">(</span>void*<span class="o">)</span><span class="nv">$rdi</span><span class="w"> </span>will<span class="w"> </span>print<span class="w"> </span>all<span class="w"> </span>malloc<span class="w"> </span>calls
+</span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>pwndbg&gt;<span class="w"> </span>entry
+</span><span id="__span-7-9"><a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>Temporary<span class="w"> </span>breakpoint<span class="w"> </span><span class="m">1</span><span class="w"> </span>at<span class="w"> </span>0x400580
+</span><span id="__span-7-10"><a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a>
+</span><span id="__span-7-11"><a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a>Temporary<span class="w"> </span>breakpoint<span class="w"> </span><span class="m">1</span>,<span class="w"> </span>0x0000000000400580<span class="w"> </span><span class="k">in</span><span class="w"> </span>_start<span class="w"> </span><span class="o">()</span>
+</span><span id="__span-7-12"><a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a>
+</span><span id="__span-7-13"><a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a>───────────────────────────────────────────────<span class="o">[</span><span class="w"> </span>BACKTRACE<span class="w"> </span><span class="o">]</span>────────────────────────────────────────────────
+</span><span id="__span-7-14"><a id="__codelineno-7-14" name="__codelineno-7-14" href="#__codelineno-7-14"></a><span class="w"> </span>►<span class="w"> </span><span class="m">0</span><span class="w">         </span>0x400580<span class="w"> </span>_start
+</span><span id="__span-7-15"><a id="__codelineno-7-15" name="__codelineno-7-15" href="#__codelineno-7-15"></a>────────────────────────────────────────────────────────────────────────────────────────────────────────────
+</span></code></pre></div>
+<p>Then type <code>b main</code> to set a breakpoint at the <code>main()</code> function, then type <code>c</code> to continue.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>pwndbg&gt;<span class="w"> </span>b<span class="w"> </span>main
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>Breakpoint<span class="w"> </span><span class="m">2</span><span class="w"> </span>at<span class="w"> </span>0x4006ec
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>pwndbg&gt;<span class="w"> </span>i<span class="w"> </span>b
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>Num<span class="w">     </span>Type<span class="w">           </span>Disp<span class="w"> </span>Enb<span class="w"> </span>Address<span class="w">            </span>What
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="m">2</span><span class="w">       </span>breakpoint<span class="w">     </span>keep<span class="w"> </span>y<span class="w">   </span>0x00000000004006ec<span class="w"> </span>&lt;main+24&gt;
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>pwndbg&gt;<span class="w"> </span>c
+</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>Continuing.
+</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>
+</span><span id="__span-8-9"><a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a>Breakpoint<span class="w"> </span><span class="m">2</span>,<span class="w"> </span>0x00000000004006ec<span class="w"> </span><span class="k">in</span><span class="w"> </span>main<span class="w"> </span><span class="o">()</span>
+</span><span id="__span-8-10"><a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a>
+</span><span id="__span-8-11"><a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a>───────────────────────────────────────────────<span class="o">[</span><span class="w"> </span>BACKTRACE<span class="w"> </span><span class="o">]</span>────────────────────────────────────────────────
+</span><span id="__span-8-12"><a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a><span class="w"> </span>►<span class="w"> </span><span class="m">0</span><span class="w">         </span>0x4006ec<span class="w"> </span>main+24
+</span><span id="__span-8-13"><a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a><span class="w">   </span><span class="m">1</span><span class="w">         </span>0x4007a4<span class="w"> </span>__libc_start_call_main+84
+</span><span id="__span-8-14"><a id="__codelineno-8-14" name="__codelineno-8-14" href="#__codelineno-8-14"></a><span class="w">   </span><span class="m">2</span><span class="w">         </span>0x400b24<span class="w"> </span>__libc_start_main_impl+836
+</span><span id="__span-8-15"><a id="__codelineno-8-15" name="__codelineno-8-15" href="#__codelineno-8-15"></a><span class="w">   </span><span class="m">3</span><span class="w">         </span>0x4005b0<span class="w"> </span>_start+48
+</span><span id="__span-8-16"><a id="__codelineno-8-16" name="__codelineno-8-16" href="#__codelineno-8-16"></a>────────────────────────────────────────────────────────────────────────────────────────────────────────────
+</span></code></pre></div>
+<p>Look at the <code>BACKTRACE</code> context, it works as designed in <code>/usr/lib/aarch64-linux-gnu/crt1.o</code>.</p>
+<p>Type <code>info [dll|sharedlibrary]</code> to show status of loaded shared object libraries.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>pwndbg&gt;<span class="w"> </span>info<span class="w"> </span>dll
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>No<span class="w"> </span>shared<span class="w"> </span>libraries<span class="w"> </span>loaded<span class="w"> </span>at<span class="w"> </span>this<span class="w"> </span>time.
+</span></code></pre></div>
+<p>Everything is anticipated, under control.</p>
+
+
+
+
+
+
+
+  
+  
+
+
+
+  
+
+
+  
+
+
+
+  <h2 id="__comments">评论</h2>
+  <!-- Insert generated snippet here -->
+  <script src="https://giscus.app/client.js"
+    data-repo="fan2/mkdocs"
+    data-repo-id="R_kgDOLltxSg"
+    data-category="Announcements"
+    data-category-id="DIC_kwDOLltxSs4CeURH"
+    data-mapping="pathname"
+    data-strict="0"
+    data-reactions-enabled="1"
+    data-emit-metadata="1"
+    data-input-position="top"
+    data-theme="preferred_color_scheme"
+    data-lang="zh-CN"
+    data-loading="lazy"
+    crossorigin="anonymous"
+    async>
+  </script>
+
+  <!-- Synchronize Giscus theme with palette -->
+  <script>
+    var giscus = document.querySelector("script[src*=giscus]")
+
+    // Set palette on initial load
+    var palette = __md_get("__palette")
+    if (palette && typeof palette.color === "object") {
+      var theme = palette.color.scheme === "slate"
+        ? "transparent_dark"
+        : "light"
+
+      // Instruct Giscus to set theme
+      giscus.setAttribute("data-theme", theme) 
+    }
+
+    // Register event handlers after documented loaded
+    document.addEventListener("DOMContentLoaded", function() {
+      var ref = document.querySelector("[data-md-component=palette]")
+      ref.addEventListener("change", function() {
+        var palette = __md_get("__palette")
+        if (palette && typeof palette.color === "object") {
+          var theme = palette.color.scheme === "slate"
+            ? "transparent_dark"
+            : "light"
+
+          // Instruct Giscus to change theme
+          var frame = document.querySelector(".giscus-frame")
+          frame.contentWindow.postMessage(
+            { giscus: { setConfig: { theme } } },
+            "https://giscus.app"
+          )
+        }
+      })
+    })
+  </script>
+
+      
+    </article>
+  </div>
+
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  回到页面顶部
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+        
+      
+      <nav class="md-footer__inner md-grid" aria-label="页脚" >
+        
+          
+          <a href="../gcc-compilation-static/" class="md-footer__link md-footer__link--prev" aria-label="上一页: GCC Compilation Quick Tour - static">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                上一页
+              </span>
+              <div class="md-ellipsis">
+                GCC Compilation Quick Tour - static
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../../20230627/gcc-compilation-stage/" class="md-footer__link md-footer__link--next" aria-label="下一页: GCC Compilation Stage">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                下一页
+              </span>
+              <div class="md-ellipsis">
+                GCC Compilation Stage
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2024- Cliff Fan
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["toc.follow", "header.autohide", "navigation.tabs", "navigation.top", "navigation.footer", "navigation.tracking", "content.code.copy", "content.code.select", "content.code.annotate"], "search": "../../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "\u5df2\u590d\u5236", "clipboard.copy": "\u590d\u5236", "search.result.more.one": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.more.other": "\u5728\u8be5\u9875\u4e0a\u8fd8\u6709 # \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.none": "\u6ca1\u6709\u627e\u5230\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.one": "\u627e\u5230 1 \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.other": "# \u4e2a\u7b26\u5408\u6761\u4ef6\u7684\u7ed3\u679c", "search.result.placeholder": "\u952e\u5165\u4ee5\u5f00\u59cb\u641c\u7d22", "search.result.term.missing": "\u7f3a\u5c11", "select.version": "\u9009\u62e9\u5f53\u524d\u7248\u672c"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.bd41221c.min.js"></script>
+      
+        <script src="../../../javascripts/mathjax.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+        <script src="https://vercount.one/js"></script>
+      
+    
+  </body>
+</html>

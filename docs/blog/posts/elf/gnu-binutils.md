@@ -95,6 +95,15 @@ $ readelf --help
   -A --arch-specific     Display architecture specific information (if any)
 ```
 
+For example, use `readelf -p` to dump string of sections:
+
+```bash
+$ readelf -p .comment test-gdb
+$ readelf -p .interp test-gdb
+$ readelf -p .strtab test-gdb
+$ readelf -p .shstrtab test-gdb
+```
+
 Equivalently, use `objdump -j $section -s` or `objdump --seciont=$section` to display information for specified section.
 
 ```bash
@@ -105,6 +114,13 @@ $ objdump --help
   -R, --dynamic-reloc      Display the dynamic relocation entries in the file
 
   -s, --full-contents      Display the full contents of all sections requested
+```
+
+Use `objdump -j` to display the contents of specified sections:
+
+```bash
+$ objdump -j .comment -s test-gdb
+$ objdump -j .interp -s test-gdb
 ```
 
 ## symbols

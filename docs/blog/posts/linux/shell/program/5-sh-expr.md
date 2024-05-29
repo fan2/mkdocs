@@ -405,3 +405,43 @@ $ echo $value2
 $ printf "%.3f\n" $value2
 3.333
 ```
+
+实际案例：`readelf -SW test-gdb` 读取其中的 section `.interp` 的 Offset=0x000238, size=0x00001b。
+
+```bash
+$ readelf -SW test-gdb
+
+Section Headers:
+  [Nr] Name              Type            Address          Off    Size   ES Flg Lk Inf Al
+  [ 0]                   NULL            0000000000000000 000000 000000 00      0   0  0
+  [ 1] .interp           PROGBITS        0000000000000238 000238 00001b 00   A  0   0  1
+
+  [26] .strtab           STRTAB          0000000000000000 001898 000237 00      0   0  1
+  [27] .shstrtab         STRTAB          0000000000000000 001acf 0000fa 00      0   0  1
+```
+
+调用 [od(octal dump) 和 hd(hex dump)](../commands/linux-cmd-hexdump.md) 工具均可打印其内容：
+
+```bash
+$ od -j 0x000238 -N 0x00001b -S 3 test-gdb
+0001070 /lib/ld-linux-aarch64.so.1
+$ hd -s 0x000238 -n 0x00001b test-gdb
+00000238  2f 6c 69 62 2f 6c 64 2d  6c 69 6e 75 78 2d 61 61  |/lib/ld-linux-aa|
+00000248  72 63 68 36 34 2e 73 6f  2e 31 00                 |rch64.so.1.|
+00000253
+```
+
+假设我们不想要 od 和 hd 开头的偏移量，只想打印纯净的 bytearray 对应的字符串（strings），可以考虑使用 head+tail+strings：
+
+```bash
+$ head -c 0x000238+0x00001b test-gdb | tail -c 0x00001b | strings
+head: invalid number of bytes: ‘0x000238+0x00001b’
+tail: invalid number of bytes: ‘0x00001b’
+```
+
+报错显示 head/tail 的 `-c` 选项参数不支持十六进制，只支持十进制。可以将十六进制表达式用 `$(())` 包围起来解决该问题：
+
+```bash
+$ head -c $((0x000238+0x00001b)) test-gdb | tail -c $((0x00001b)) | strings
+/lib/ld-linux-aarch64.so.1
+```

@@ -1,6 +1,5 @@
 ---
-draft: true
-title: gcc -c object glimpse
+title: REL ELF Walkthrough
 authors:
     - xman
 date:
@@ -10,7 +9,11 @@ categories:
 comments: true
 ---
 
+[Previously](./gcc-compilation-stage.md) we've compiled our C demo program with `gcc -c` command.
+
 `gcc -c` compile or assemble the source files, but *do not link*. The linking stage simply is not done. The ultimate output is in the form of an object file for each source file.
+
+In this article, I'll practice using [GNU binutils](./gnu-binutils.md) to take a close look at the `test-gdb.o` product.
 
 <!-- more -->
 
@@ -69,14 +72,6 @@ ELF Header:
   Section header string table index: 12
 ```
 
-We can take this output and analyse it against the two previous results: [dynamic](./gcc-compilation-dynamic.md) & [static](./gcc-compilation-static.md).
-
-At this stage, `readelf -h` shows that `test-gdb.o`'s type is `REL` (*Relocatable* file), not yet executable, neither `DYN` pie nor integrated `EXEC`.
-
-The output of `objdump -f` shows that the BFD format specific flags are `HAS_RELOC, HAS_SYMS`. The keyword is `HAS_RELOC`, which distinguishes between direct executable (`EXEC_P`) and PIE executable (`DYNAMIC`).
-
----
-
 Use [hexdump](../linux/shell/commands/linux-cmd-hexdump.md) to check the ELF Identification(e_ident[EI_NIDENT]) on the first 16 bytes in `Elf64_Ehdr`:
 
 ```bash
@@ -99,25 +94,15 @@ $ hexdump -s 18 -n 2 -e '"%07.7_ax " /2 "%04x " "\n"' test-gdb.o
 0000012 00b7
 ```
 
+We can take this output and analyse it against the two previous results: [dynamic](./gcc-compilation-dynamic.md) & [static](./gcc-compilation-static.md).
+
+At this stage, `readelf -h` shows that `test-gdb.o`'s type is `REL` (*Relocatable* file), not yet executable, neither `DYN` pie nor integrated `EXEC`.
+
+The output of `objdump -f` shows that the BFD format specific flags are `HAS_RELOC, HAS_SYMS`. The keyword is `HAS_RELOC`, which distinguishes between direct executable (`EXEC_P`) and PIE executable (`DYNAMIC`).
+
+ELF type `relocatable` means that the file is marked as a relocatable piece of code or sometimes called an object file. Relocatable object files are generally pieces of Position independent code (PIC) that have not yet been linked into an executable. You will often see `.o` files in a compiled code base. These are the files that hold code and data suitable for creating an executable file.
+
 ## sections
-
-`objdump [-h|--section-headers|--headers]`: Display the contents of the section headers.
-
-```bash
-$ objdump -hw test-gdb.o
-
-test-gdb.o:     file format elf64-littleaarch64
-
-Sections:
-Idx Name            Size      VMA               LMA               File off  Algn  Flags
-  0 .text           000000c8  0000000000000000  0000000000000000  00000040  2**2  CONTENTS, ALLOC, LOAD, RELOC, READONLY, CODE
-  1 .data           00000000  0000000000000000  0000000000000000  00000108  2**0  CONTENTS, ALLOC, LOAD, DATA
-  2 .bss            00000000  0000000000000000  0000000000000000  00000108  2**0  ALLOC
-  3 .rodata         0000002c  0000000000000000  0000000000000000  00000108  2**3  CONTENTS, ALLOC, LOAD, READONLY, DATA
-  4 .comment        0000002c  0000000000000000  0000000000000000  00000134  2**0  CONTENTS, READONLY
-  5 .note.GNU-stack 00000000  0000000000000000  0000000000000000  00000160  2**0  CONTENTS, READONLY
-  6 .eh_frame       00000050  0000000000000000  0000000000000000  00000160  2**3  CONTENTS, ALLOC, LOAD, RELOC, READONLY, DATA
-```
 
 `readelf [-S|--section-headers|--sections]`: Display the sections' header.
 
@@ -147,38 +132,29 @@ Key to Flags:
   D (mbind), p (processor specific)
 ```
 
+`objdump [-h|--section-headers|--headers]`: Display the contents of the section headers.
+
+```bash
+$ objdump -hw test-gdb.o
+
+test-gdb.o:     file format elf64-littleaarch64
+
+Sections:
+Idx Name            Size      VMA               LMA               File off  Algn  Flags
+  0 .text           000000c8  0000000000000000  0000000000000000  00000040  2**2  CONTENTS, ALLOC, LOAD, RELOC, READONLY, CODE
+  1 .data           00000000  0000000000000000  0000000000000000  00000108  2**0  CONTENTS, ALLOC, LOAD, DATA
+  2 .bss            00000000  0000000000000000  0000000000000000  00000108  2**0  ALLOC
+  3 .rodata         0000002c  0000000000000000  0000000000000000  00000108  2**3  CONTENTS, ALLOC, LOAD, READONLY, DATA
+  4 .comment        0000002c  0000000000000000  0000000000000000  00000134  2**0  CONTENTS, READONLY
+  5 .note.GNU-stack 00000000  0000000000000000  0000000000000000  00000160  2**0  CONTENTS, READONLY
+  6 .eh_frame       00000050  0000000000000000  0000000000000000  00000160  2**3  CONTENTS, ALLOC, LOAD, RELOC, READONLY, DATA
+```
+
 Compared to `objdump -h`, `readelf -S` outputs three more types of `RELA`, `SYMTAB` and `STRTAB`.
 
 ## symbols
 
 ### symbol table
-
-[objdump [-t|--syms]](https://man7.org/linux/man-pages/man1/objdump.1.html): Print the symbol table entries of the file.
-
-1. `l`/`g`: local, global
-2. `d`: debugging symbol
-3. `df`: debugging symbol - file
-4. `F`: function
-5. `UND`: undefined
-
-```bash
-$ objdump -t test-gdb.o
-
-test-gdb.o:     file format elf64-littleaarch64
-
-SYMBOL TABLE:
-0000000000000000 l    df *ABS*	0000000000000000 test-gdb.c
-0000000000000000 l    d  .text	0000000000000000 .text
-0000000000000000 l    d  .data	0000000000000000 .data
-0000000000000000 l    d  .bss	0000000000000000 .bss
-0000000000000000 l    d  .rodata	0000000000000000 .rodata
-0000000000000000 l    d  .note.GNU-stack	0000000000000000 .note.GNU-stack
-0000000000000000 l    d  .eh_frame	0000000000000000 .eh_frame
-0000000000000000 l    d  .comment	0000000000000000 .comment
-0000000000000000 g     F .text	000000000000004c func
-000000000000004c g     F .text	000000000000007c main
-0000000000000000         *UND*	0000000000000000 printf
-```
 
 `readelf [-s|--syms|--symbols]`: Displays the entries in symbol table section of the file, if it has one.
 
@@ -205,6 +181,33 @@ Symbol table '.symtab' contains 15 entries:
     13: 000000000000004c   124 FUNC    GLOBAL DEFAULT    1 main
     14: 0000000000000000     0 NOTYPE  GLOBAL DEFAULT  UND printf
 
+```
+
+[objdump [-t|--syms]](https://man7.org/linux/man-pages/man1/objdump.1.html): Print the symbol table entries of the file.
+
+1. `l`/`g`: local, global
+2. `d`: debugging symbol
+3. `df`: debugging symbol - file
+4. `F`: function
+5. `UND`: undefined
+
+```bash
+$ objdump -t test-gdb.o
+
+test-gdb.o:     file format elf64-littleaarch64
+
+SYMBOL TABLE:
+0000000000000000 l    df *ABS*	0000000000000000 test-gdb.c
+0000000000000000 l    d  .text	0000000000000000 .text
+0000000000000000 l    d  .data	0000000000000000 .data
+0000000000000000 l    d  .bss	0000000000000000 .bss
+0000000000000000 l    d  .rodata	0000000000000000 .rodata
+0000000000000000 l    d  .note.GNU-stack	0000000000000000 .note.GNU-stack
+0000000000000000 l    d  .eh_frame	0000000000000000 .eh_frame
+0000000000000000 l    d  .comment	0000000000000000 .comment
+0000000000000000 g     F .text	000000000000004c func
+000000000000004c g     F .text	000000000000007c main
+0000000000000000         *UND*	0000000000000000 printf
 ```
 
 ### List symbols
