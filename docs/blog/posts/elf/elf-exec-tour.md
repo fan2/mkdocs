@@ -187,6 +187,66 @@ SYMBOL TABLE:
 
 ```
 
+If you are an old hand at C programming, you are probably familiar with the `.o` file names listed above. Almost every `.o` file has a corresponding C library function. You've probably guessed where they come from. Yes, they're extracted from `libc.a` and copied into the final executable ELF.
+
+An archive is a single file holding a collection of other files in a structure that makes it possible to retrieve the original individual files (called members of the archive). A static library such as `libc.a` is actually just a package of all `.o` files.
+
+The GNU [ar](https://man7.org/linux/man-pages/man1/ar.1.html) program creates, modifies, and extracts from archives.
+
+`ar t`: Display a table listing the contents of archive, or those of the files listed in `member`... that are present in the archive.
+
+```bash
+# the entire content of libc.a is lengthy and verbose
+# ar t /usr/arm-linux-gnueabihf/lib/libc.a
+# filter members prefixed with "str"
+$ ar t /usr/arm-linux-gnueabihf/lib/libc.a | egrep "^str(cmp|cpy|len|str)"
+strcmp.o
+strcpy.o
+strlen.o
+strstr.o
+strcpy_chk.o
+
+# specify member "strlen.o"
+$ ar t /usr/arm-linux-gnueabihf/lib/libc.a strlen.o
+strlen.o
+```
+
+`ar x`: Extract members (named member) from the archive.
+
+```bash
+# extract strcpy.o into output dir
+$ ar x /usr/arm-linux-gnueabihf/lib/libc.a strcpy.o --output ~/Downloads
+```
+
+On the other hand, we can call `nm` to view the index information in the archive file.
+
+> `[-s|--print-armap]`: When listing symbols from archive members, include the index: a mapping (stored in the archive by `ar` or `ranlib`) of which modules contain definitions for which names.
+
+```bash
+$ nm -s /usr/arm-linux-gnueabihf/lib/libc.a
+
+strcpy.o:
+00000000 T __stpcpy
+00000000 W stpcpy
+00000010 T strcpy
+
+strlen.o:
+00000000 T strlen
+
+strstr.o:
+         U _GLOBAL_OFFSET_TABLE_
+         U memcmp
+         U memset
+         U __stack_chk_fail
+         U __stack_chk_guard
+         U strchr
+         U strlen
+         U __strnlen
+0000031c T strstr
+00000000 t two_way_long_needle
+
+```
+
 ## program Header
 
 We can also type `readelf -l` to display the information contained in the file's segment headers.

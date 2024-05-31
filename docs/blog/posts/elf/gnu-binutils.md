@@ -62,6 +62,30 @@ $ objdump --help
   -w, --wide                     Format output for more than 80 columns
 ```
 
+### program headers
+
+```bash
+$ readelf -lW a.out
+```
+
+Using `rabin2` to view segments and section2segment mapping separately:
+
+```bash
+$ radare2.rabin2 -h
+
+ -SS             segments
+ -SSS            sections mapping to segments
+
+```
+
+### section headers
+
+```bash
+$ readelf -SW a.out
+$ objdump -hw a.out
+$ radare2.rabin2 -S a.out
+```
+
 ## sections
 
 Apart from `readelf -S` and `objdump -h`, we can use `size -Ax $ELF` to display a brief section size summary.
@@ -83,13 +107,6 @@ $ readelf --help
                          Dump the contents of section <number|name> as bytes
   -p --string-dump=<number|name>
                          Dump the contents of section <number|name> as strings
-  -R --relocated-dump=<number|name>
-                         Dump the relocated contents of section <number|name>
-
-  -n --notes             Display the core notes (if present)
-  -r --relocs            Display the relocations (if present)
-  -u --unwind            Display the unwind info (if present)
-  -d --dynamic           Display the dynamic section (if present)
 
   -V --version-info      Display the version sections (if present)
   -A --arch-specific     Display architecture specific information (if any)
@@ -109,9 +126,6 @@ Equivalently, use `objdump -j $section -s` or `objdump --seciont=$section` to di
 ```bash
 $ objdump --help
   -j, --section=NAME       Only display information for section NAME
-
-  -r, --reloc              Display the relocation entries in the file
-  -R, --dynamic-reloc      Display the dynamic relocation entries in the file
 
   -s, --full-contents      Display the full contents of all sections requested
 ```
@@ -193,6 +207,72 @@ $ nm --help
 
     Refer to [nm](https://man7.org/linux/man-pages/man1/nm.1.html) for a knowledge of the symbol type, such as `T`/`t`,`D`/`d`,`B`/`b`,`U`, etc.
 
+### demos
+
+Display the symbol table:
+
+```bash
+$ readelf -s a.out
+$ objdump -t a.out
+$ radare2.rabin2 -s a.out
+```
+
+Display the dynamic symbol table:
+
+```bash
+# Display the contents of the dynamic symbol table
+objdump -T a.out
+# Display the dynamic symbol table
+readelf --dyn-syms a.out
+# Display dynamic symbols instead of normal symbols
+nm -D a.out
+# find imported objects by an executable, as well as their offsets in its PLT.
+radare2.rabin2 -i a.out
+```
+
+## reloc
+
+`readelf [-r|--dynamic]`: Displays the contents of the file's dynamic section, if it has one.
+`readelf [-d|--relocs]`: Displays the contents of the file's relocation section, if it has one.
+
+```bash
+$ readelf --help
+
+  -R --relocated-dump=<number|name>
+                         Dump the relocated contents of section <number|name>
+
+  -n --notes             Display the core notes (if present)
+  -r --relocs            Display the relocations (if present)
+  -u --unwind            Display the unwind info (if present)
+  -d --dynamic           Display the dynamic section (if present)
+```
+
+`objdump [-r|--reloc]`: Print the relocation entries of the file.  If used with `-d` or `-D`, the relocations are printed interspersed with the disassembly.
+`objdump [-R|--dynamic-reloc]`: Print the dynamic relocation entries of the file. This is only meaningful for dynamic objects, such as certain types of shared libraries.
+
+```bash
+$ objdump --help
+  -r, --reloc              Display the relocation entries in the file
+  -R, --dynamic-reloc      Display the dynamic relocation entries in the file
+```
+
+Frequently used commands for dynamic-reloc:
+
+```bash
+# Dump the relocated contents of section .text
+$ readelf -R .text a.out
+# Display the dynamic section (if present)
+$ readelf -d a.out
+# Display the relocations (if present)
+$ readelf -r a.out
+# Display the dynamic relocation entries in the file
+$ objdump -R a.out
+# interspersed with the disassembly
+$ objdump -Rd a.out
+# display relocations
+$ radare2.rabin2 -R a.out
+```
+
 ## DWARF
 
 [DWARF Introduction](https://dwarfstd.org/doc/Debugging%20using%20DWARF-2012.pdf): Debugging Information Entry (`DIE`)
@@ -253,6 +333,8 @@ $ man objdump
 
            This can be used in conjunction with --dwarf-depth.
 ```
+
+[rabin2 -d](https://book.rada.re/tools/rabin2/intro.html): show debug/dwarf information
 
 ## CTF
 

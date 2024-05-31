@@ -102,6 +102,16 @@ The output of `objdump -f` shows that the BFD format specific flags are `HAS_REL
 
 ELF type `relocatable` means that the file is marked as a relocatable piece of code or sometimes called an object file. Relocatable object files are generally pieces of Position independent code (PIC) that have not yet been linked into an executable. You will often see `.o` files in a compiled code base. These are the files that hold code and data suitable for creating an executable file.
 
+No program headers exist in relocatable objects (ELF files of type `ET_REL`) because `.o` files are meant to be linked into an executable, but not meant to be loaded directly into memory; therefore, `readelf -l` will yield no results on `test-gdb.o`.
+
+```bash
+$ readelf -lW test-gdb.o
+
+There are no program headers in this file.
+```
+
+Linux loadable kernel modules are actually `ET_REL` objects and are an exception to the rule because they do get loaded directly into kernel memory and relocated on the fly.
+
 ## sections
 
 `readelf [-S|--section-headers|--sections]`: Display the sections' header.
@@ -151,6 +161,17 @@ Idx Name            Size      VMA               LMA               File off  Algn
 ```
 
 Compared to `objdump -h`, `readelf -S` outputs three more types of `RELA`, `SYMTAB` and `STRTAB`.
+
+We can see that many of the sections we talked about are present, but there are also some that are not. If we compile `test-gdb.o` into an executable, we will see that many new sections have been added, including 
+`.interp`, `.dynsym`, `.plt`, `.dynamic`, `.got` and other sections that are related to dynamic linking and runtime relocations.
+
+```bash
+# dynamically linked, DYN (Position-Independent Executable file)
+$ gcc test-gdb.o -o test-gdb.so
+
+# dynamically linked, EXEC (Executable file)
+$ ld /usr/lib/aarch64-linux-gnu/Scrt1.o /usr/lib/aarch64-linux-gnu/crti.o /usr/lib/gcc/aarch64-linux-gnu/11/crtbeginS.o test-gdb.o /usr/lib/aarch64-linux-gnu/libc.so /usr/lib/gcc/aarch64-linux-gnu/11/crtendS.o /usr/lib/aarch64-linux-gnu/crtn.o -o test-gdb.so
+```
 
 ## symbols
 

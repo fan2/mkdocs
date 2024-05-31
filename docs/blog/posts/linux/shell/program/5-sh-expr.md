@@ -416,6 +416,8 @@ Section Headers:
   [ 0]                   NULL            0000000000000000 000000 000000 00      0   0  0
   [ 1] .interp           PROGBITS        0000000000000238 000238 00001b 00   A  0   0  1
 
+  [11] .init             PROGBITS        00000000000005b8 0005b8 000018 00  AX  0   0  4
+
   [26] .strtab           STRTAB          0000000000000000 001898 000237 00      0   0  1
   [27] .shstrtab         STRTAB          0000000000000000 001acf 0000fa 00      0   0  1
 ```
@@ -439,9 +441,39 @@ head: invalid number of bytes: ‘0x000238+0x00001b’
 tail: invalid number of bytes: ‘0x00001b’
 ```
 
-报错显示 head/tail 的 `-c` 选项参数不支持十六进制，只支持十进制。可以将十六进制表达式用 `$(())` 包围起来解决该问题：
+报错显示 head/tail 的 `-c` 选项参数不支持十六进制，只支持十进制。
+可以将十六进制表达式用 `$(())` 包围起来解决该问题：
 
 ```bash
 $ head -c $((0x000238+0x00001b)) test-gdb | tail -c $((0x00001b)) | strings
 /lib/ld-linux-aarch64.so.1
+```
+
+---
+
+另外，我们可以使用 `objdump -j .init -d test-gdb` 来反汇编指定的 section `.init`。
+另一种方式是指定地址范围 [--start-address, --stop-address)，但这两个选项参数同样只认十进制。
+
+```bash
+$ objdump -d --start-address=0x5b8 --stop-address=0x5b8+0x18 test-gdb
+objdump: --stop-address: bad number: 0x5b8+0x18
+```
+
+可以将计算结束地址的十六进制表达式用 `$(())` 包围起来解决该问题：
+
+```bash
+$ objdump -d --start-address=0x5b8 --stop-address=$((0x5b8+0x18)) test-gdb
+
+test-gdb:     file format elf64-littleaarch64
+
+
+Disassembly of section .init:
+
+00000000000005b8 <_init>:
+ 5b8:	d503201f 	nop
+ 5bc:	a9bf7bfd 	stp	x29, x30, [sp, #-16]!
+ 5c0:	910003fd 	mov	x29, sp
+ 5c4:	9400002c 	bl	674 <call_weak_fn>
+ 5c8:	a8c17bfd 	ldp	x29, x30, [sp], #16
+ 5cc:	d65f03c0 	ret
 ```

@@ -12,13 +12,13 @@
         <meta name="author" content="Cliff Fan">
       
       
-        <link rel="canonical" href="https://duetorun.com/blog/20230616/elf-layout/">
+        <link rel="canonical" href="https://duetorun.com/blog/20230620/gnu-binutils-strings/">
       
       
-        <link rel="prev" href="../../20230615/gas-directives/">
+        <link rel="prev" href="../gnu-binutils/">
       
       
-        <link rel="next" href="../../20230617/compilation-process/">
+        <link rel="next" href="../../20230622/addr2line/">
       
       
       <link rel="icon" href="../../../assets/hold_yourself.jpg">
@@ -26,7 +26,7 @@
     
     
       
-        <title>ELF layout - ElseWhere</title>
+        <title>GNU Binutils - strings - ElseWhere</title>
       
     
     
@@ -90,7 +90,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#layout" class="md-skip">
+        <a href="#odstrings" class="md-skip">
           跳转至
         </a>
       
@@ -123,7 +123,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              ELF layout
+              GNU Binutils - strings
             
           </span>
         </div>
@@ -1304,45 +1304,27 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#layout" class="md-nav__link">
+  <a href="#odstrings" class="md-nav__link">
     <span class="md-ellipsis">
-      layout
+      od/strings
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#header" class="md-nav__link">
+  <a href="#rabin2" class="md-nav__link">
     <span class="md-ellipsis">
-      header
+      rabin2
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#sections" class="md-nav__link">
+  <a href="#refs" class="md-nav__link">
     <span class="md-ellipsis">
-      sections
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#symbols" class="md-nav__link">
-    <span class="md-ellipsis">
-      symbols
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#references" class="md-nav__link">
-    <span class="md-ellipsis">
-      references
+      refs
     </span>
   </a>
   
@@ -1404,7 +1386,7 @@
                     <li class="md-nav__item">
                       <div class="md-nav__link">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 19H5V8h14m-3-7v2H8V1H6v2H5c-1.11 0-2 .89-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-1V1m-1 11h-5v5h5v-5Z"/></svg>
-                        <time datetime="2023-06-16 10:00:00" class="md-ellipsis">2023年6月16日</time>
+                        <time datetime="2023-06-20 12:00:00" class="md-ellipsis">2023年6月20日</time>
                       </div>
                     </li>
                     
@@ -1415,6 +1397,7 @@
                           <span class="md-ellipsis">
                             分类于
                             
+                              <a href="../../category/toolchain/">toolchain</a>, 
                               <a href="../../category/elf/">elf</a></span>
                         </div>
                       </li>
@@ -1426,7 +1409,7 @@
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7h1.5Z"/></svg>
                           <span class="md-ellipsis">
                             
-                              需要 7 分钟阅读时间
+                              需要 4 分钟阅读时间
                             
                           </span>
                         </div>
@@ -1455,442 +1438,147 @@
         
 
 
-  <h1>ELF layout</h1>
+  <h1>GNU Binutils - strings</h1>
 
-<p>The Executable and Linkable Format (<code>ELF</code>), is a common standard file format for executable files, object code, shared libraries, and core dumps.</p>
+<p><a href="https://man7.org/linux/man-pages/man1/strings.1.html">strings</a> - print the sequences of printable characters in files.</p>
+<p>For each <em>file</em> given, GNU <code>strings</code> prints the printable character sequences that are at least 4 characters long (or the number given with the options below) and are followed by an unprintable character.</p>
+<p>strings is mainly useful for determining the contents of non-text files.</p>
 <!-- more -->
 
-<p><a href="https://en.wikipedia.org/wiki/Executable_and_Linkable_Format">Executable and Linkable Format</a> - <a href="https://wiki.osdev.org/ELF">ELF - OSDev Wiki</a></p>
-<ul>
-<li><a href="https://refspecs.linuxfoundation.org/">Linux Foundation Referenced Specifications</a> - TIS - ELF: <a href="https://www.cs.cmu.edu/afs/cs/academic/class/15213-f00/docs/elf.pdf">v1.1</a>, <a href="https://refspecs.linuxfoundation.org/elf/elf.pdf">v1.2</a></li>
-<li><a href="https://manpages.ubuntu.com/manpages/noble/en/man5/elf.5.html">Ubuntu Manpage: elf - format of Executable and Linking Format (ELF) files</a></li>
-<li>sysvabi64 - <a href="https://github.com/ARM-software/abi-aa/blob/844a79fd4c77252a11342709e3b27b2c9f590cf1/sysvabi64/sysvabi64.rst">System V ABI for the Arm® 64-bit Architecture (AArch64)</a></li>
-<li>aaelf64 - <a href="https://github.com/ARM-software/abi-aa/blob/main/aaelf64/aaelf64.rst">ELF for the Arm® 64-bit Architecture (AArch64)</a></li>
-</ul>
-<p>In computing, the Executable and Linkable Format (<strong><em>ELF</em></strong>, formerly named Extensible Linking Format), is a common standard file format for executable files, object code, shared libraries, and core dumps. First published in the specification for the application binary interface (ABI) of the Unix operating system version named System V Release 4 (SVR4), and later in the Tool Interface Standard, it was quickly accepted among different vendors of Unix systems. In 1999, it was chosen as the standard binary file format for Unix and Unix-like systems on x86 processors by the 86open project.</p>
-<h2 id="layout">layout<a class="headerlink" href="#layout" title="Permanent link">#</a></h2>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>$<span class="w"> </span>man<span class="w"> </span>elf
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>elf<span class="w"> </span>-<span class="w"> </span>format<span class="w"> </span>of<span class="w"> </span>Executable<span class="w"> </span>and<span class="w"> </span>Linking<span class="w"> </span>Format<span class="w"> </span><span class="o">(</span>ELF<span class="o">)</span><span class="w"> </span>files
+<p>strings 一般用于查看二进制程序文件中的可显示/打印字符。</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>pifan@rpi3b-ubuntu<span class="w"> </span>$<span class="w"> </span>man<span class="w"> </span>strings
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>STRINGS<span class="o">(</span><span class="m">1</span><span class="o">)</span><span class="w">                                 </span>GNU<span class="w"> </span>Development<span class="w"> </span>Tools<span class="w">                                </span>STRINGS<span class="o">(</span><span class="m">1</span><span class="o">)</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>NAME
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="w">       </span>strings<span class="w"> </span>-<span class="w"> </span>print<span class="w"> </span>the<span class="w"> </span>sequences<span class="w"> </span>of<span class="w"> </span>printable<span class="w"> </span>characters<span class="w"> </span><span class="k">in</span><span class="w"> </span>files
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>SYNOPSIS
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="w">       </span>strings<span class="w"> </span><span class="o">[</span>-afovV<span class="o">]</span><span class="w"> </span><span class="o">[</span>-min-len<span class="o">]</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="w">               </span><span class="o">[</span>-n<span class="w"> </span>min-len<span class="o">]</span><span class="w"> </span><span class="o">[</span>--bytes<span class="o">=</span>min-len<span class="o">]</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="w">               </span><span class="o">[</span>-t<span class="w"> </span>radix<span class="o">]</span><span class="w"> </span><span class="o">[</span>--radix<span class="o">=</span>radix<span class="o">]</span>
+</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="w">               </span><span class="o">[</span>-e<span class="w"> </span>encoding<span class="o">]</span><span class="w"> </span><span class="o">[</span>--encoding<span class="o">=</span>encoding<span class="o">]</span>
+</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="w">               </span><span class="o">[</span>-U<span class="w"> </span>method<span class="o">]</span><span class="w"> </span><span class="o">[</span>--unicode<span class="o">=</span>method<span class="o">]</span>
+</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a><span class="w">               </span><span class="o">[</span>-<span class="o">]</span><span class="w"> </span><span class="o">[</span>--all<span class="o">]</span><span class="w"> </span><span class="o">[</span>--print-file-name<span class="o">]</span>
+</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="w">               </span><span class="o">[</span>-T<span class="w"> </span>bfdname<span class="o">]</span><span class="w"> </span><span class="o">[</span>--target<span class="o">=</span>bfdname<span class="o">]</span>
+</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="w">               </span><span class="o">[</span>-w<span class="o">]</span><span class="w"> </span><span class="o">[</span>--include-all-whitespace<span class="o">]</span>
+</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a><span class="w">               </span><span class="o">[</span>-s<span class="o">]</span><span class="w"> </span><span class="o">[</span>--output-separator<span class="w"> </span>sep_string<span class="o">]</span>
+</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="w">               </span><span class="o">[</span>--help<span class="o">]</span><span class="w"> </span><span class="o">[</span>--version<span class="o">]</span><span class="w"> </span>file...
 </span></code></pre></div>
-<p>Each ELF file is made up of one ELF header, followed by file data. The data can include:</p>
-<ul>
-<li><code>Program header table</code>, describing zero or more <a href="https://en.wikipedia.org/wiki/Memory_segmentation">memory segments</a></li>
-<li><code>Section header table</code>, describing zero or more sections</li>
-<li><code>Data</code> referred to by entries in the program header table or section header table</li>
-</ul>
-<!-- ![Elf-layout](https://upload.wikimedia.org/wikipedia/commons/7/77/Elf-layout--en.svg) -->
-
-<figure><br />
-<img alt="Elf-layout" src="../../elf/images/Elf-layout.svg" style="width:60%;height:60%" /><br />
-</figure>
-<p>An ELF file has two views: the program header shows the <em>segments</em> used at run time, whereas the section header lists the set of <em>sections</em>.</p>
-<figure><br />
-<img alt="ELF-LinkingView&amp;ExecutionView" src="../../elf/images/ELF-LinkingView-ExecutionView.png" style="width:75%;height:75%" /><br />
-    <figcaption>Linking View vs. Execution View</figcaption><br />
-</figure>
-<!-- ![Structure of an ELF file with key entries highlighted](https://upload.wikimedia.org/wikipedia/commons/e/e4/ELF_Executable_and_Linkable_Format_diagram_by_Ange_Albertini.png) -->
-
-<p><img alt="ELF_Executable_and_Linkable_Format" src="../../elf/images/ELF_Executable_and_Linkable_Format.png" /></p>
-<p>The <code>segments</code> contain information that is needed for run time execution of the file, while <code>sections</code> contain important data for linking and relocation. Any byte in the entire file can be owned by one section at most, and orphan bytes can occur which are unowned by any section.</p>
-<ol>
-<li>File header: <code>file $ELF</code>; <code>objdump -f $ELF</code>; <code>readelf -h $ELF</code>.</li>
-<li>Program header: <code>readelf -lW $ELF</code></li>
-<li>Section header: <code>readelf -SW $ELF</code>; <code>objdump -hw $ELF</code></li>
-</ol>
-<figure><br />
-<img alt="64-bit-ELF-glance" src="../../elf/images/64-bit-ELF-glance.png" style="width:90%;height:90%" /><br />
-    <figcaption>A 64-bit ELF binary at a glance</figcaption><br />
-</figure>
-<h2 id="header">header<a class="headerlink" href="#header" title="Permanent link">#</a></h2>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>$<span class="w"> </span>vim<span class="w"> </span>-M<span class="w"> </span>/usr/include/elf.h
+<p>假设我们执行 <code>readelf -SW test-gdb</code> 获取得到部分段的 Offset/Size 如下所示：</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>$<span class="w"> </span>readelf<span class="w"> </span>-SW<span class="w"> </span>test-gdb
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>Section<span class="w"> </span>Headers:
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">  </span><span class="o">[</span>Nr<span class="o">]</span><span class="w"> </span>Name<span class="w">              </span>Type<span class="w">            </span>Address<span class="w">          </span>Off<span class="w">    </span>Size<span class="w">   </span>ES<span class="w"> </span>Flg<span class="w"> </span>Lk<span class="w"> </span>Inf<span class="w"> </span>Al
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="w">  </span><span class="o">[</span><span class="w"> </span><span class="m">0</span><span class="o">]</span><span class="w">                   </span>NULL<span class="w">            </span><span class="m">0000000000000000</span><span class="w"> </span><span class="m">000000</span><span class="w"> </span><span class="m">000000</span><span class="w"> </span><span class="m">00</span><span class="w">      </span><span class="m">0</span><span class="w">   </span><span class="m">0</span><span class="w">  </span><span class="m">0</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="w">  </span><span class="o">[</span><span class="w"> </span><span class="m">1</span><span class="o">]</span><span class="w"> </span>.interp<span class="w">           </span>PROGBITS<span class="w">        </span><span class="m">0000000000000238</span><span class="w"> </span><span class="m">000238</span><span class="w"> </span>00001b<span class="w"> </span><span class="m">00</span><span class="w">   </span>A<span class="w">  </span><span class="m">0</span><span class="w">   </span><span class="m">0</span><span class="w">  </span><span class="m">1</span>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="w">  </span><span class="o">[</span><span class="w"> </span><span class="m">6</span><span class="o">]</span><span class="w"> </span>.dynstr<span class="w">           </span>STRTAB<span class="w">          </span>00000000000003a8<span class="w"> </span>0003a8<span class="w"> </span><span class="m">000094</span><span class="w"> </span><span class="m">00</span><span class="w">   </span>A<span class="w">  </span><span class="m">0</span><span class="w">   </span><span class="m">0</span><span class="w">  </span><span class="m">1</span>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="w">  </span><span class="o">[</span><span class="m">15</span><span class="o">]</span><span class="w"> </span>.rodata<span class="w">           </span>PROGBITS<span class="w">        </span><span class="m">0000000000000830</span><span class="w"> </span><span class="m">000830</span><span class="w"> </span><span class="m">000034</span><span class="w"> </span><span class="m">00</span><span class="w">   </span>A<span class="w">  </span><span class="m">0</span><span class="w">   </span><span class="m">0</span><span class="w">  </span><span class="m">8</span>
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="w">  </span><span class="o">[</span><span class="m">23</span><span class="o">]</span><span class="w"> </span>.bss<span class="w">              </span>NOBITS<span class="w">          </span><span class="m">0000000000011010</span><span class="w"> </span><span class="m">001010</span><span class="w"> </span><span class="m">000008</span><span class="w"> </span><span class="m">00</span><span class="w">  </span>WA<span class="w">  </span><span class="m">0</span><span class="w">   </span><span class="m">0</span><span class="w">  </span><span class="m">1</span>
+</span><span id="__span-1-13"><a id="__codelineno-1-13" name="__codelineno-1-13" href="#__codelineno-1-13"></a><span class="w">  </span><span class="o">[</span><span class="m">24</span><span class="o">]</span><span class="w"> </span>.comment<span class="w">          </span>PROGBITS<span class="w">        </span><span class="m">0000000000000000</span><span class="w"> </span><span class="m">001010</span><span class="w"> </span>00002b<span class="w"> </span><span class="m">01</span><span class="w">  </span>MS<span class="w">  </span><span class="m">0</span><span class="w">   </span><span class="m">0</span><span class="w">  </span><span class="m">1</span>
+</span><span id="__span-1-14"><a id="__codelineno-1-14" name="__codelineno-1-14" href="#__codelineno-1-14"></a><span class="w">  </span><span class="o">[</span><span class="m">25</span><span class="o">]</span><span class="w"> </span>.symtab<span class="w">           </span>SYMTAB<span class="w">          </span><span class="m">0000000000000000</span><span class="w"> </span><span class="m">001040</span><span class="w"> </span><span class="m">000858</span><span class="w"> </span><span class="m">18</span><span class="w">     </span><span class="m">26</span><span class="w">  </span><span class="m">65</span><span class="w">  </span><span class="m">8</span>
+</span><span id="__span-1-15"><a id="__codelineno-1-15" name="__codelineno-1-15" href="#__codelineno-1-15"></a><span class="w">  </span><span class="o">[</span><span class="m">26</span><span class="o">]</span><span class="w"> </span>.strtab<span class="w">           </span>STRTAB<span class="w">          </span><span class="m">0000000000000000</span><span class="w"> </span><span class="m">001898</span><span class="w"> </span><span class="m">000237</span><span class="w"> </span><span class="m">00</span><span class="w">      </span><span class="m">0</span><span class="w">   </span><span class="m">0</span><span class="w">  </span><span class="m">1</span>
+</span><span id="__span-1-16"><a id="__codelineno-1-16" name="__codelineno-1-16" href="#__codelineno-1-16"></a><span class="w">  </span><span class="o">[</span><span class="m">27</span><span class="o">]</span><span class="w"> </span>.shstrtab<span class="w">         </span>STRTAB<span class="w">          </span><span class="m">0000000000000000</span><span class="w"> </span>001acf<span class="w"> </span>0000fa<span class="w"> </span><span class="m">00</span><span class="w">      </span><span class="m">0</span><span class="w">   </span><span class="m">0</span><span class="w">  </span><span class="m">1</span>
 </span></code></pre></div>
-<details class="info">
-<summary>/usr/include/elf.h</summary>
-<div class="language-c highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="cm">/* Type of addresses.  */</span>
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="k">typedef</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">Elf32_Addr</span><span class="p">;</span>
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="k">typedef</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">Elf64_Addr</span><span class="p">;</span>
-</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>
-</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="cm">/* Type of file offsets.  */</span>
-</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="k">typedef</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">Elf32_Off</span><span class="p">;</span>
-</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="k">typedef</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">Elf64_Off</span><span class="p">;</span>
-</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>
-</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="cm">/* The ELF file header.  This appears at the start of every ELF file. */</span>
-</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>
-</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="cp">#define EI_NIDENT (16)</span>
-</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>
-</span><span id="__span-2-13"><a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a><span class="k">typedef</span><span class="w"> </span><span class="k">struct</span>
-</span><span id="__span-2-14"><a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a><span class="p">{</span>
-</span><span id="__span-2-15"><a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a><span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="n">e_ident</span><span class="p">[</span><span class="n">EI_NIDENT</span><span class="p">];</span><span class="w"> </span><span class="cm">/* Magic number and other info */</span>
-</span><span id="__span-2-16"><a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a><span class="w">  </span><span class="n">Elf32_Half</span><span class="w">    </span><span class="n">e_type</span><span class="p">;</span><span class="w">         </span><span class="cm">/* Object file type */</span>
-</span><span id="__span-2-17"><a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a><span class="w">  </span><span class="n">Elf32_Half</span><span class="w">    </span><span class="n">e_machine</span><span class="p">;</span><span class="w">      </span><span class="cm">/* Architecture */</span>
-</span><span id="__span-2-18"><a id="__codelineno-2-18" name="__codelineno-2-18" href="#__codelineno-2-18"></a><span class="w">  </span><span class="n">Elf32_Word</span><span class="w">    </span><span class="n">e_version</span><span class="p">;</span><span class="w">      </span><span class="cm">/* Object file version */</span>
-</span><span id="__span-2-19"><a id="__codelineno-2-19" name="__codelineno-2-19" href="#__codelineno-2-19"></a><span class="w">  </span><span class="n">Elf32_Addr</span><span class="w">    </span><span class="n">e_entry</span><span class="p">;</span><span class="w">        </span><span class="cm">/* Entry point virtual address */</span>
-</span><span id="__span-2-20"><a id="__codelineno-2-20" name="__codelineno-2-20" href="#__codelineno-2-20"></a><span class="w">  </span><span class="n">Elf32_Off</span><span class="w">     </span><span class="n">e_phoff</span><span class="p">;</span><span class="w">        </span><span class="cm">/* Program header table file offset */</span>
-</span><span id="__span-2-21"><a id="__codelineno-2-21" name="__codelineno-2-21" href="#__codelineno-2-21"></a><span class="w">  </span><span class="n">Elf32_Off</span><span class="w">     </span><span class="n">e_shoff</span><span class="p">;</span><span class="w">        </span><span class="cm">/* Section header table file offset */</span>
-</span><span id="__span-2-22"><a id="__codelineno-2-22" name="__codelineno-2-22" href="#__codelineno-2-22"></a><span class="w">  </span><span class="n">Elf32_Word</span><span class="w">    </span><span class="n">e_flags</span><span class="p">;</span><span class="w">        </span><span class="cm">/* Processor-specific flags */</span>
-</span><span id="__span-2-23"><a id="__codelineno-2-23" name="__codelineno-2-23" href="#__codelineno-2-23"></a><span class="w">  </span><span class="n">Elf32_Half</span><span class="w">    </span><span class="n">e_ehsize</span><span class="p">;</span><span class="w">       </span><span class="cm">/* ELF header size in bytes */</span>
-</span><span id="__span-2-24"><a id="__codelineno-2-24" name="__codelineno-2-24" href="#__codelineno-2-24"></a><span class="w">  </span><span class="n">Elf32_Half</span><span class="w">    </span><span class="n">e_phentsize</span><span class="p">;</span><span class="w">    </span><span class="cm">/* Program header table entry size */</span>
-</span><span id="__span-2-25"><a id="__codelineno-2-25" name="__codelineno-2-25" href="#__codelineno-2-25"></a><span class="w">  </span><span class="n">Elf32_Half</span><span class="w">    </span><span class="n">e_phnum</span><span class="p">;</span><span class="w">        </span><span class="cm">/* Program header table entry count */</span>
-</span><span id="__span-2-26"><a id="__codelineno-2-26" name="__codelineno-2-26" href="#__codelineno-2-26"></a><span class="w">  </span><span class="n">Elf32_Half</span><span class="w">    </span><span class="n">e_shentsize</span><span class="p">;</span><span class="w">    </span><span class="cm">/* Section header table entry size */</span>
-</span><span id="__span-2-27"><a id="__codelineno-2-27" name="__codelineno-2-27" href="#__codelineno-2-27"></a><span class="w">  </span><span class="n">Elf32_Half</span><span class="w">    </span><span class="n">e_shnum</span><span class="p">;</span><span class="w">        </span><span class="cm">/* Section header table entry count */</span>
-</span><span id="__span-2-28"><a id="__codelineno-2-28" name="__codelineno-2-28" href="#__codelineno-2-28"></a><span class="w">  </span><span class="n">Elf32_Half</span><span class="w">    </span><span class="n">e_shstrndx</span><span class="p">;</span><span class="w">     </span><span class="cm">/* Section header string table index */</span>
-</span><span id="__span-2-29"><a id="__codelineno-2-29" name="__codelineno-2-29" href="#__codelineno-2-29"></a><span class="p">}</span><span class="w"> </span><span class="n">Elf32_Ehdr</span><span class="p">;</span>
-</span><span id="__span-2-30"><a id="__codelineno-2-30" name="__codelineno-2-30" href="#__codelineno-2-30"></a>
-</span><span id="__span-2-31"><a id="__codelineno-2-31" name="__codelineno-2-31" href="#__codelineno-2-31"></a><span class="k">typedef</span><span class="w"> </span><span class="k">struct</span>
-</span><span id="__span-2-32"><a id="__codelineno-2-32" name="__codelineno-2-32" href="#__codelineno-2-32"></a><span class="p">{</span>
-</span><span id="__span-2-33"><a id="__codelineno-2-33" name="__codelineno-2-33" href="#__codelineno-2-33"></a><span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="n">e_ident</span><span class="p">[</span><span class="n">EI_NIDENT</span><span class="p">];</span><span class="w"> </span><span class="cm">/* Magic number and other info */</span>
-</span><span id="__span-2-34"><a id="__codelineno-2-34" name="__codelineno-2-34" href="#__codelineno-2-34"></a><span class="w">  </span><span class="n">Elf64_Half</span><span class="w">    </span><span class="n">e_type</span><span class="p">;</span><span class="w">         </span><span class="cm">/* Object file type */</span>
-</span><span id="__span-2-35"><a id="__codelineno-2-35" name="__codelineno-2-35" href="#__codelineno-2-35"></a><span class="w">  </span><span class="n">Elf64_Half</span><span class="w">    </span><span class="n">e_machine</span><span class="p">;</span><span class="w">      </span><span class="cm">/* Architecture */</span>
-</span><span id="__span-2-36"><a id="__codelineno-2-36" name="__codelineno-2-36" href="#__codelineno-2-36"></a><span class="w">  </span><span class="n">Elf64_Word</span><span class="w">    </span><span class="n">e_version</span><span class="p">;</span><span class="w">      </span><span class="cm">/* Object file version */</span>
-</span><span id="__span-2-37"><a id="__codelineno-2-37" name="__codelineno-2-37" href="#__codelineno-2-37"></a><span class="w">  </span><span class="n">Elf64_Addr</span><span class="w">    </span><span class="n">e_entry</span><span class="p">;</span><span class="w">        </span><span class="cm">/* Entry point virtual address */</span>
-</span><span id="__span-2-38"><a id="__codelineno-2-38" name="__codelineno-2-38" href="#__codelineno-2-38"></a><span class="w">  </span><span class="n">Elf64_Off</span><span class="w">     </span><span class="n">e_phoff</span><span class="p">;</span><span class="w">        </span><span class="cm">/* Program header table file offset */</span>
-</span><span id="__span-2-39"><a id="__codelineno-2-39" name="__codelineno-2-39" href="#__codelineno-2-39"></a><span class="w">  </span><span class="n">Elf64_Off</span><span class="w">     </span><span class="n">e_shoff</span><span class="p">;</span><span class="w">        </span><span class="cm">/* Section header table file offset */</span>
-</span><span id="__span-2-40"><a id="__codelineno-2-40" name="__codelineno-2-40" href="#__codelineno-2-40"></a><span class="w">  </span><span class="n">Elf64_Word</span><span class="w">    </span><span class="n">e_flags</span><span class="p">;</span><span class="w">        </span><span class="cm">/* Processor-specific flags */</span>
-</span><span id="__span-2-41"><a id="__codelineno-2-41" name="__codelineno-2-41" href="#__codelineno-2-41"></a><span class="w">  </span><span class="n">Elf64_Half</span><span class="w">    </span><span class="n">e_ehsize</span><span class="p">;</span><span class="w">       </span><span class="cm">/* ELF header size in bytes */</span>
-</span><span id="__span-2-42"><a id="__codelineno-2-42" name="__codelineno-2-42" href="#__codelineno-2-42"></a><span class="w">  </span><span class="n">Elf64_Half</span><span class="w">    </span><span class="n">e_phentsize</span><span class="p">;</span><span class="w">    </span><span class="cm">/* Program header table entry size */</span>
-</span><span id="__span-2-43"><a id="__codelineno-2-43" name="__codelineno-2-43" href="#__codelineno-2-43"></a><span class="w">  </span><span class="n">Elf64_Half</span><span class="w">    </span><span class="n">e_phnum</span><span class="p">;</span><span class="w">        </span><span class="cm">/* Program header table entry count */</span>
-</span><span id="__span-2-44"><a id="__codelineno-2-44" name="__codelineno-2-44" href="#__codelineno-2-44"></a><span class="w">  </span><span class="n">Elf64_Half</span><span class="w">    </span><span class="n">e_shentsize</span><span class="p">;</span><span class="w">    </span><span class="cm">/* Section header table entry size */</span>
-</span><span id="__span-2-45"><a id="__codelineno-2-45" name="__codelineno-2-45" href="#__codelineno-2-45"></a><span class="w">  </span><span class="n">Elf64_Half</span><span class="w">    </span><span class="n">e_shnum</span><span class="p">;</span><span class="w">        </span><span class="cm">/* Section header table entry count */</span>
-</span><span id="__span-2-46"><a id="__codelineno-2-46" name="__codelineno-2-46" href="#__codelineno-2-46"></a><span class="w">  </span><span class="n">Elf64_Half</span><span class="w">    </span><span class="n">e_shstrndx</span><span class="p">;</span><span class="w">     </span><span class="cm">/* Section header string table index */</span>
-</span><span id="__span-2-47"><a id="__codelineno-2-47" name="__codelineno-2-47" href="#__codelineno-2-47"></a><span class="p">}</span><span class="w"> </span><span class="n">Elf64_Ehdr</span><span class="p">;</span>
+<p>查阅相关资料（<a href="https://refspecs.linuxfoundation.org/elf/elf.pdf">TIS - ELF v1.2</a>）可知，以下几个 section 的内容都是字符串，其中 3 个 section 的 Type 为 STRTAB —— String Table。</p>
+<ul>
+<li><code>.interp</code>: map to segment INTERP, contains only the location and size to a null terminated string describing where the program interpreter is. It is generally the location of the dynamic linker, which is also the program interpreter.</li>
+<li><code>.dynstr</code>: This section holds strings needed for dynamic linking, most commonly the strings that represent the names associated with symbol table entries.</li>
+<li><code>.comment</code>: This section holds version control information.</li>
+<li><code>.strtab</code>: This section holds strings, most commonly the strings that represent the names associated with symbol table entries.</li>
+<li><code>.shstrtab</code>: This section holds section names.</li>
+</ul>
+<p>可使用 <code>readelf -p</code> 或 <code>objdump -j</code> 读取 section <code>.interp</code> 的内容：</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>$<span class="w"> </span>readelf<span class="w"> </span>-p<span class="w"> </span>.interp<span class="w"> </span>test-gdb
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>String<span class="w"> </span>dump<span class="w"> </span>of<span class="w"> </span>section<span class="w"> </span><span class="s1">&#39;.interp&#39;</span>:
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">  </span><span class="o">[</span><span class="w">     </span><span class="m">0</span><span class="o">]</span><span class="w">  </span>/lib/ld-linux-aarch64.so.1
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>$<span class="w"> </span>objdump<span class="w"> </span>-j<span class="w"> </span>.interp<span class="w"> </span>-s<span class="w"> </span>test-gdb
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>test-gdb:<span class="w">     </span>file<span class="w"> </span>format<span class="w"> </span>elf64-littleaarch64
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>
+</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>Contents<span class="w"> </span>of<span class="w"> </span>section<span class="w"> </span>.interp:
+</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="w"> </span><span class="m">0238</span><span class="w"> </span>2f6c6962<span class="w"> </span>2f6c642d<span class="w"> </span>6c696e75<span class="w"> </span>782d6161<span class="w">  </span>/lib/ld-linux-aa
+</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="w"> </span><span class="m">0248</span><span class="w"> </span><span class="m">72636836</span><span class="w"> </span>342e736f<span class="w"> </span>2e3100<span class="w">             </span>rch64.so.1.
 </span></code></pre></div>
-</details>
-<p>The initial 16 bytes correspond to the <code>e_ident</code> member, which means "ELF Identification".<br />
-It markes the file as an object file and provide machine-independent data with which to decode and interpret the file's contents.</p>
-<blockquote>
-<p>hexdump: <code>hd -n 16 $ELF</code></p>
-</blockquote>
-<table>
-<thead>
-<tr>
-<th>Name</th>
-<th>Value</th>
-<th>Purpose</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>EI_MAGO</td>
-<td>0</td>
-<td>File identification byte 0 index</td>
-</tr>
-<tr>
-<td>EI_MAG1</td>
-<td>1</td>
-<td>File identification byte 1 index</td>
-</tr>
-<tr>
-<td>EI_MAG2</td>
-<td>2</td>
-<td>File identification byte 2 index</td>
-</tr>
-<tr>
-<td>EI_MAG3</td>
-<td>3</td>
-<td>File identification byte 3 index</td>
-</tr>
-<tr>
-<td>EI_CLASS</td>
-<td>4</td>
-<td>File class byte index</td>
-</tr>
-<tr>
-<td>EI_DATA</td>
-<td>5</td>
-<td>Data encoding byte index</td>
-</tr>
-<tr>
-<td>EI_VERSION</td>
-<td>6</td>
-<td>File version byte index</td>
-</tr>
-<tr>
-<td>EI_OSABI</td>
-<td>7</td>
-<td>OS ABI identification</td>
-</tr>
-<tr>
-<td>EI_ABIVERSION</td>
-<td>8</td>
-<td>ABI version</td>
-</tr>
-<tr>
-<td>EI_PAD</td>
-<td>9</td>
-<td>Byte index of padding bytes</td>
-</tr>
-</tbody>
-</table>
-<p>A file's first 4 bytes hold a "magic number," identifying the file as an ELF object file.</p>
-<table>
-<thead>
-<tr>
-<th>Name</th>
-<th>Value</th>
-<th>Position</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>ELFMAGO</td>
-<td>0x7f</td>
-<td>e_ident[EI_MAG0]</td>
-</tr>
-<tr>
-<td>ELFMAG1</td>
-<td>'E'</td>
-<td>e_ident[EI_MAG1]</td>
-</tr>
-<tr>
-<td>ELFMAG2</td>
-<td>'I'</td>
-<td>e_ident[EI_MAG2]</td>
-</tr>
-<tr>
-<td>ELFMAG3</td>
-<td>'F'</td>
-<td>e_ident[EI_MAG3]</td>
-</tr>
-</tbody>
-</table>
-<p>The next byte, <code>e_ident[EI_CLASS]</code>, identifies the file's class, or capacity.</p>
-<table>
-<thead>
-<tr>
-<th>Name</th>
-<th>Value</th>
-<th>Meaning</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>ELFCLASSNONE</td>
-<td>0</td>
-<td>Invalid class</td>
-</tr>
-<tr>
-<td>ELFCLASS32</td>
-<td>1</td>
-<td>32-b it objects</td>
-</tr>
-<tr>
-<td>ELFCLASS64</td>
-<td>2</td>
-<td>64-b it objects</td>
-</tr>
-</tbody>
-</table>
-<p>Byte <code>e_ident[EI_DATA]</code> specifies the data encoding of the processor-specific data in the object file. The following encodings are currently defined.</p>
-<table>
-<thead>
-<tr>
-<th>Name</th>
-<th>Value</th>
-<th>Meaning</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>ELFDATANONE</td>
-<td>0</td>
-<td>Invalid data encoding</td>
-</tr>
-<tr>
-<td>ELFDATA2LSB</td>
-<td>1</td>
-<td>2's complement, little endian</td>
-</tr>
-<tr>
-<td>ELFDATA2MSB</td>
-<td>2</td>
-<td>2's complement, big endian</td>
-</tr>
-</tbody>
-</table>
-<p><code>e_type</code> identifies the object file type.</p>
-<blockquote>
-<p><code>hexdump -s 16 -n 2 -e '"%07.7_ax  " /2 "%04x " "\n"' $ELF</code></p>
-</blockquote>
-<table>
-<thead>
-<tr>
-<th>Name</th>
-<th>Value</th>
-<th>Meaning</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>ET_NONE</td>
-<td>0</td>
-<td>No file type</td>
-</tr>
-<tr>
-<td>ET_REL</td>
-<td>1</td>
-<td>Relocatable file</td>
-</tr>
-<tr>
-<td>ET_EXEC</td>
-<td>2</td>
-<td>Executable file</td>
-</tr>
-<tr>
-<td>ET_DYN</td>
-<td>3</td>
-<td>Shared object file</td>
-</tr>
-<tr>
-<td>ET_CORE</td>
-<td>4</td>
-<td>Core file</td>
-</tr>
-</tbody>
-</table>
-<p><code>e_machine</code> specifies the required architecture for an individual file.</p>
-<blockquote>
-<p><code>hexdump -s 18 -n 2 -e '"%07.7_ax  " /2 "%04x " "\n"' $ELF</code></p>
-</blockquote>
-<table>
-<thead>
-<tr>
-<th>Name</th>
-<th>Value</th>
-<th>Meaning</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>EM_NONE</td>
-<td>0</td>
-<td>No machine</td>
-</tr>
-<tr>
-<td>EM_SPARC</td>
-<td>2</td>
-<td>SUN SPARC</td>
-</tr>
-<tr>
-<td>EM_386</td>
-<td>3</td>
-<td>Intel 80386</td>
-</tr>
-<tr>
-<td>EM_68K</td>
-<td>4</td>
-<td>Motorola m68k family</td>
-</tr>
-<tr>
-<td>EM_88K</td>
-<td>5</td>
-<td>Motorola m88k family</td>
-</tr>
-<tr>
-<td>EM_MIPS</td>
-<td>8</td>
-<td>MIPS R3000 big-endian</td>
-</tr>
-<tr>
-<td>EM_MIPS_RS3_LE</td>
-<td>10</td>
-<td>MIPS R3000 little-endian</td>
-</tr>
-<tr>
-<td>EM_ARM</td>
-<td>40</td>
-<td>ARM</td>
-</tr>
-<tr>
-<td>EM_X86_64</td>
-<td>62</td>
-<td>AMD x86-64 architecture</td>
-</tr>
-<tr>
-<td>EM_AARCH64</td>
-<td>183</td>
-<td>ARM AARCH64</td>
-</tr>
-<tr>
-<td>EM_RISCV</td>
-<td>243</td>
-<td>RISC-V</td>
-</tr>
-</tbody>
-</table>
-<p>To view, dump, analyse or manipulate the object file and ELF file, you need <a href="../../20230620/gnu-binutils/">GNU binutils</a> such as <code>readelf</code>, <code>objdump</code>, <code>strip</code>, <code>objcopy</code>, <code>libbfd</code>, etc.</p>
-<h2 id="sections">sections<a class="headerlink" href="#sections" title="Permanent link">#</a></h2>
-<p><a href="https://refspecs.linuxfoundation.org/elf/elf.pdf">TIS - ELF v1.2</a> | Book I: ELF - 1. Object Files - Sections</p>
-<p>An object file's <strong><code>section header table</code></strong> lets one locate all the file's sections.</p>
-<blockquote>
-<p>refer to struct <code>Elf32_Shdr</code>/<code>Elf64_Shdr</code> and <code>sh_type</code>(Section Types) defined in /usr/include/elf.h.</p>
-</blockquote>
-<p><strong><code>Sections</code></strong> contain all information in an object file, <em>except</em> the ELF header, the program header table, and the section header table. Moreover, object files' sections satisfy several conditions.</p>
-<ul>
-<li>Every section in an object file has exactly one section header describing it. Section headers may exist that do not have a section.</li>
-<li>Each section occupies one contiguous (possibly empty) sequence of bytes within a file.</li>
-<li>Sections in a file may not overlap. No byte in a file resides in more than one section.</li>
-<li>An object file may have inactive space. The various headers and the sections might not "cover" every byte in an object file. The contents of the inactive data are unspecified.</li>
+<p>其他几个 section 使用 <code>readelf -p</code> 或 <code>objdump -j</code> 读取情况如下：</p>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> readelf -p .dynstr test-gdb</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> objdump -j .dynstr -s test-gdb</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> readelf -p .rodata test-gdb</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> objdump -j .rodata -s test-gdb</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> readelf -p .comment test-gdb</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> objdump -j .comment -s test-gdb</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> readelf -p .strtab test-gdb</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> objdump -j .strtab test-gdb</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled checked/><span class="task-list-indicator"></span></label> readelf -p .shstrtab test-gdb</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> objdump -j .shstrtab test-gdb</li>
 </ul>
-<hr />
-<p>Please refer to the following materials for further details.</p>
+<h2 id="odstrings">od/strings<a class="headerlink" href="#odstrings" title="Permanent link">#</a></h2>
+<p><code>readelf -S</code> 列出的 Section Headers，每个条目都给出了对应 section 相对 ELF 文件的的 Offset/Size。</p>
+<p>除了使用 <code>readelf -p</code> 或 <code>objdump -j</code>，还可综合使用 hexdump,strings 等工具 dump 指定范围的 bytearray/strings。</p>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:3"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><input id="__tabbed_1_3" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">od/strings all</label><label for="__tabbed_1_2">od/hexdump range</label><label for="__tabbed_1_3">head | tail | strings</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1"># offset in octet format</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>$<span class="w"> </span>od<span class="w"> </span>-S<span class="w"> </span><span class="m">3</span><span class="w"> </span>test-gdb
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>$<span class="w"> </span>strings<span class="w"> </span>-t<span class="w"> </span>o<span class="w"> </span>-n<span class="w"> </span><span class="m">3</span><span class="w"> </span>test-gdb
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="c1"># offset in hex format, default -n 4</span>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>$<span class="w"> </span>strings<span class="w"> </span>-t<span class="w"> </span>x<span class="w"> </span>test-gdb
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># .interp</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>$<span class="w"> </span>od<span class="w"> </span>-j<span class="w"> </span>0x000238<span class="w"> </span>-N<span class="w"> </span>0x00001b<span class="w"> </span>-S<span class="w"> </span><span class="m">3</span><span class="w"> </span>test-gdb
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>$<span class="w"> </span>hd<span class="w"> </span>-s<span class="w"> </span>0x000238<span class="w"> </span>-n<span class="w"> </span>0x00001b<span class="w"> </span>test-gdb
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="c1"># one-byte named character</span>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="c1"># od -j 0x000238 -N 0x00001b -a test-gdb</span>
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="c1"># hexdump -s 0x001898 -n 0x000237 -c test-gdb</span>
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="c1"># .strtab</span>
+</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>$<span class="w"> </span>od<span class="w"> </span>-j<span class="w"> </span>0x001898<span class="w"> </span>-N<span class="w"> </span>0x000237<span class="w"> </span>-S<span class="w"> </span><span class="m">3</span><span class="w"> </span>test-gdb
+</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>$<span class="w"> </span>hd<span class="w"> </span>-s<span class="w"> </span>0x001898<span class="w"> </span>-n<span class="w"> </span>0x000237<span class="w"> </span>test-gdb
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1"># -c 只能接受十进制，故使用 $(()) 封闭计算表达式。</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="c1"># .comment</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>$<span class="w"> </span>head<span class="w"> </span>-c<span class="w"> </span><span class="k">$((</span><span class="m">0x001010</span><span class="o">+</span><span class="m">0x00002b</span><span class="k">))</span><span class="w"> </span>test-gdb<span class="w"> </span><span class="p">|</span><span class="w"> </span>tail<span class="w"> </span>-c<span class="w"> </span><span class="k">$((</span><span class="m">0x00002b</span><span class="k">))</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>strings
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="c1"># .shstrtab</span>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>$<span class="w"> </span>head<span class="w"> </span>-c<span class="w"> </span><span class="k">$((</span><span class="m">0x001acf</span><span class="o">+</span><span class="m">0x0000fa</span><span class="k">))</span><span class="w"> </span>test-gdb<span class="w"> </span><span class="p">|</span><span class="w"> </span>tail<span class="w"> </span>-c<span class="w"> </span><span class="k">$((</span><span class="m">0x0000fa</span><span class="k">))</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>strings
+</span></code></pre></div>
+</div>
+</div>
+</div>
+<p>自动提取 test-gdb 指定 section 的 Offset/Size，然后提取纯字符串的半自动化脚本如下：</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nv">section</span><span class="o">=</span><span class="s2">&quot;\.shstrtab&quot;</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="nv">pattern</span><span class="o">=</span><span class="s2">&quot;.*</span><span class="nv">$section</span><span class="s2">\s.*&quot;</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="nv">secitem</span><span class="o">=</span><span class="k">$(</span>readelf<span class="w"> </span>-SW<span class="w"> </span>test-gdb<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>-E<span class="w"> </span><span class="nv">$pattern</span><span class="k">)</span>
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="nv">off</span><span class="o">=</span><span class="s2">&quot;0x&quot;</span><span class="sb">`</span><span class="nb">echo</span><span class="w"> </span><span class="nv">$secitem</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;{print $5}&#39;</span><span class="sb">`</span>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="nv">sz</span><span class="o">=</span><span class="s2">&quot;0x&quot;</span><span class="sb">`</span><span class="nb">echo</span><span class="w"> </span><span class="nv">$secitem</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;{print $6}&#39;</span><span class="sb">`</span>
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>head<span class="w"> </span>-c<span class="w"> </span><span class="k">$((</span><span class="nv">off</span><span class="o">+</span><span class="nv">sz</span><span class="k">))</span><span class="w"> </span>test-gdb<span class="w"> </span><span class="p">|</span><span class="w"> </span>tail<span class="w"> </span>-c<span class="w"> </span><span class="k">$((</span><span class="nv">sz</span><span class="k">))</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>strings
+</span></code></pre></div>
+<h2 id="rabin2">rabin2<a class="headerlink" href="#rabin2" title="Permanent link">#</a></h2>
+<p><a href="https://snapcraft.io/install/radare2/ubuntu#install">Install radare2 on Ubuntu using the Snap Store | Snapcraft</a></p>
+<p><a href="https://www.radare.org/n/">radare2</a>.<a href="https://book.rada.re/tools/rabin2/intro.html">Rabin2</a> is a command-line utility that can analyze and extract information from binary files. It’s commonly used for reverse engineering, analyzing malware, and forensics analysis.</p>
+<p><a href="https://book.rada.re/tools/rabin2/strings.html">Strings - The Official Radare2 Book</a></p>
+<p>Simply, we can use the <code>-zz</code> flag to get the strings from the whole binary file:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>$<span class="w"> </span>radare2.rabin2<span class="w"> </span>-zz<span class="w"> </span>test-gdb
+</span></code></pre></div>
+<p>The <code>-z</code> option is used to list readable strings found in the <code>.rodata</code> section of ELF binaries, or the <code>.text</code> section of PE files.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>$<span class="w"> </span>radare2.rabin2<span class="w"> </span>-z<span class="w"> </span>test-gdb
+</span></code></pre></div>
+<h2 id="refs">refs<a class="headerlink" href="#refs" title="Permanent link">#</a></h2>
 <ul>
-<li><a href="https://github.com/ARM-software/abi-aa/blob/main/aaelf64/aaelf64.rst">aaelf64</a> | 5 Object Files - 5.3 Sections</li>
-<li><a href="https://gist.github.com/x0nu11byt3/bcb35c3de461e5fb66173071a2379779">ELF Format Cheatsheet</a> | Sections</li>
-<li><a href="https://item.jd.com/13119117.html">《ARM64体系结构编程与实践》</a> | 第 8 章 GNU 汇编器 - 8.1 编译流程与 ELF 文件</li>
-<li><a href="https://www.amazon.com/Learning-Binary-Analysis-elfmaster-ONeill/dp/1782167102">Learning Linux Binary Analysis</a> | Chapter 2: The ELF Binary Format - ELF section headers</li>
-<li><a href="https://www.amazon.com/Practical-Binary-Analysis-Instrumentation-Disassembly/dp/1593279124">Practical Binary Analysis</a> | Chapter 2: The ELF Format - 2.3 Sections</li>
-<li><a href="https://www.amazon.com/Blue-Fox-Assembly-Internals-Analysis/dp/1119745306">Arm Assembly Internals and Reverse Engineering</a> | Chapter 2 ELF File Format Internals - ELF Section Headers</li>
-<li><a href="https://www.amazon.com/Computer-Systems-OHallaron-Randal-Bryant/dp/1292101768/">Computer Systems - A Programmer’s Perspective</a> | Chapter 7: Linking - 7.3: Object Files ; 7.8: Executable Object Files</li>
+<li><a href="https://serverfault.com/questions/406791/linux-command-to-retrieve-a-byte-range-from-a-file">Linux command to retrieve a byte range from a file - Server Fault</a></li>
+<li><a href="https://stackoverflow.com/questions/218912/linux-command-like-cat-to-read-a-specified-quantity-of-characters">Linux command (like cat) to read a specified quantity of characters - Stack Overflow</a></li>
+<li><a href="https://stackoverflow.com/questions/2614764/how-to-create-a-hex-dump-of-file-containing-only-the-hex-characters-without-spac">linux - How to create a hex dump of file containing only the hex characters without spaces in bash? - Stack Overflow</a></li>
+<li><a href="https://www.baeldung.com/linux/find-string-binary-file">Finding Strings From Binary Files in Linux | Baeldung on Linux</a></li>
 </ul>
-<h2 id="symbols">symbols<a class="headerlink" href="#symbols" title="Permanent link">#</a></h2>
-<p>Symbols are a symbolic reference to some type of data or code such as a global variable or function.</p>
-<p><a href="https://refspecs.linuxfoundation.org/elf/elf.pdf">TIS - ELF v1.2</a> | Book I: ELF - 1. Object Files - Symbol Table</p>
-<p>An object file's symbol table holds information needed to locate and relocate a program's symbolic definitions and references.</p>
-<blockquote>
-<p>refer to struct <code>Elf32_Sym</code>/<code>Elf64_Sym</code> and <code>st_info</code>(ST_BIND: Symbol bindings, ST_TYPE: Symbol types) defined in /usr/include/elf.h.</p>
-</blockquote>
-<p>A symbol table index is a subscript into this array. Index 0 both designates the first entry in the table and serves as the undefined symbol index.</p>
-<p>In each symbol table, all symbols with STB_LOCAL binding precede the weak and global symbols. A symbol's type provides a general classification for the associated entity.</p>
-<p><strong>Symbol Values</strong>: Symbol table entries for different object file types have slightly different interpretations for the <code>st_value</code> member.</p>
-<ul>
-<li>In relocatable files, <code>st_value</code> holds alignment constraints for a symbol whose section index is <code>SHN_COMMON</code>.</li>
-<li>In relocatable files, <code>st_value</code> holds a section offset for a defined symbol. That is, <code>st_value</code> is an offset from the beginning of the section that <code>st_shndx</code> identifies.</li>
-<li>In executable and shared object files, <code>st_value</code> holds a <em>virtual address</em>. To make these files' symbols more useful for the dynamic linker, the section offset (file interpretation) gives way to a virtual address (memory interpretation) for which the section number is irrelevant.</li>
-</ul>
-<hr />
-<p>Please refer to the following materials for further details.</p>
-<p><a href="https://refspecs.linuxfoundation.org/elf/elf.pdf">TIS - ELF v1.2</a> | Book I: ELF</p>
-<ul>
-<li>1. Object Files - Symbol Table; Relocation</li>
-<li>2. Program Loading and Dynamic Linking</li>
-</ul>
-<p>ARM Specifications @<a href="https://github.com/ARM-software/abi-aa/releases">github</a></p>
-<ul>
-<li><a href="https://github.com/ARM-software/abi-aa/blob/844a79fd4c77252a11342709e3b27b2c9f590cf1/sysvabi64/sysvabi64.rst">sysvabi64</a> | 9 Program Loading and Dynamic Linking</li>
-<li><a href="https://github.com/ARM-software/abi-aa/blob/main/aaelf64/aaelf64.rst">aaelf64</a> | 5 Object Files - 5.7   Relocation</li>
-<li><a href="https://github.com/ARM-software/abi-aa/blob/main/aaelf64/aaelf64.rst">aaelf64</a> | 6 Program Loading and Dynamic Linking</li>
-</ul>
-<p><a href="https://gist.github.com/x0nu11byt3/bcb35c3de461e5fb66173071a2379779">ELF Format Cheatsheet</a> | Symbols; Dynamic Linking; Relocation; loading</p>
-<p><a href="https://item.jd.com/13119117.html">《ARM64体系结构编程与实践》</a> | 第 9 章 链接器与链接脚本 - 9.3 重定位</p>
-<p><a href="https://www.amazon.com/Learning-Binary-Analysis-elfmaster-ONeill/dp/1782167102">Learning Linux Binary Analysis</a> | Chapter 2: The ELF Binary Format - ELF symbols; ELF relocations; ELF dynamic linking</p>
-<p><a href="https://www.amazon.com/Blue-Fox-Assembly-Internals-Analysis/dp/1119745306">Arm Assembly Internals and Reverse Engineering</a> | Chapter 2 ELF File Format Internals</p>
-<ul>
-<li>ELF Section Headers - Symbols</li>
-<li>The Dynamic Section and Dynamic Loading</li>
-</ul>
-<p><a href="https://www.amazon.com/Computer-Systems-OHallaron-Randal-Bryant/dp/1292101768/">Computer Systems - A Programmer’s Perspective</a> | Chapter 7: Linking - 7.4 ~ 7.13</p>
-<h2 id="references">references<a class="headerlink" href="#references" title="Permanent link">#</a></h2>
-<p><a href="https://interrupt.memfault.com/blog/elf-format-differences">ELF-32 vs. ELF-64</a><br />
-HP - <a href="http://www.staroceans.org/e-book/elf-64-hp.pdf">ELF-64 Object File Format v1.4</a><br />
-uClibc - <a href="https://uclibc.org/docs/elf-64-gen.pdf">ELF-64 Object File Format v1.5</a><br />
-MIPS - <a href="https://irix7.com/techpubs/007-4658-001.pdf">64-bit ELF Object File Spec v2.5</a></p>
-<p><a href="https://www.caichinger.com/elf.html">The ELF format</a><br />
-<a href="https://ctf-wiki.org/executable/elf/structure/basic-info/">ELF 文件 - CTF Wiki</a><br />
-<a href="https://gist.github.com/x0nu11byt3/bcb35c3de461e5fb66173071a2379779">ELF Format Cheatsheet</a><br />
-<a href="https://aleeamini.com/category/binary-analysis/">Binary analysis - ELF’s Story</a><br />
-<a href="https://maskray.me/blog/2024-01-14-exploring-object-file-formats">Exploring object file formats</a><br />
-<a href="https://maskray.me/blog/2024-05-26-evolution-of-elf-object-file-format">Evolution of the ELF object file format</a><br />
-<a href="https://osandamalith.com/2019/02/11/linux-reverse-engineering-ctfs-for-beginners/">Linux Reverse Engineering CTFs for Beginners</a></p>
 
 
 
@@ -1990,7 +1678,7 @@ MIPS - <a href="https://irix7.com/techpubs/007-4658-001.pdf">64-bit ELF Object F
       <nav class="md-footer__inner md-grid" aria-label="页脚" >
         
           
-          <a href="../../20230615/gas-directives/" class="md-footer__link md-footer__link--prev" aria-label="上一页: GNU Assembler Directives">
+          <a href="../gnu-binutils/" class="md-footer__link md-footer__link--prev" aria-label="上一页: GNU Binutils - readelf &amp; objdump">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
@@ -2000,20 +1688,20 @@ MIPS - <a href="https://irix7.com/techpubs/007-4658-001.pdf">64-bit ELF Object F
                 上一页
               </span>
               <div class="md-ellipsis">
-                GNU Assembler Directives
+                GNU Binutils - readelf & objdump
               </div>
             </div>
           </a>
         
         
           
-          <a href="../../20230617/compilation-process/" class="md-footer__link md-footer__link--next" aria-label="下一页: Program Compilation Process">
+          <a href="../../20230622/addr2line/" class="md-footer__link md-footer__link--next" aria-label="下一页: addr2line - resolve address">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 下一页
               </span>
               <div class="md-ellipsis">
-                Program Compilation Process
+                addr2line - resolve address
               </div>
             </div>
             <div class="md-footer__button md-icon">

@@ -326,9 +326,9 @@ That's only partially true: Whether `libgcc_eh` or `libgcc_s` is used depends on
 
 ## outcome
 
-As we give `-o` to specify output filename for the product, the outcome executable filename is `b.out`.
+When the link editor processes an archive library, it extracts library members and copies them into the output object file. These statically linked services are available during execution without involving the dynamic linker.
 
-As per the `-static` link policy, it will assemble glibc(`libc.a`) into the final product `b.out`.
+As we give `-o` to specify output filename for the product, the outcome executable filename is `b.out`. As per the `-static` link policy, it will assemble glibc(`libc.a`) into the final product `b.out`.
 
 `b.out` swells macroscopically and enormously in size in contrast to `a.out`.
 

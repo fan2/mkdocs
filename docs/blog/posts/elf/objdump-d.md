@@ -423,6 +423,47 @@ The first and last sections `.init` and `.fini` are simply copied from `crti.o`.
 
 ## disassemble section
 
+Dump section headers through `size -Ax`, `readelf -S` and `objdump -h`:
+
+```bash
+$ size -Ax test-gdb
+test-gdb  :
+section               size      addr
+
+.init                 0x18     0x5b8
+
+.text                0x1dc     0x640
+.fini                 0x14     0x81c
+
+$ readelf -SW test-gdb
+There are 34 section headers, starting at offset 0x20b0:
+
+Section Headers:
+  [Nr] Name              Type            Address          Off    Size   ES Flg Lk Inf Al
+  [ 0]                   NULL            0000000000000000 000000 000000 00      0   0  0
+  [ 1] .interp           PROGBITS        0000000000000238 000238 00001b 00   A  0   0  1
+
+  [11] .init             PROGBITS        00000000000005b8 0005b8 000018 00  AX  0   0  4
+  [12] .plt              PROGBITS        00000000000005d0 0005d0 000070 00  AX  0   0 16
+  [13] .text             PROGBITS        0000000000000640 000640 0001dc 00  AX  0   0 64
+  [14] .fini             PROGBITS        000000000000081c 00081c 000014 00  AX  0   0  4
+  [15] .rodata           PROGBITS        0000000000000830 000830 000034 00   A  0   0  8
+
+$ objdump -hw test-gdb
+
+test-gdb:     file format elf64-littleaarch64
+
+Sections:
+Idx Name               Size      VMA               LMA               File off  Algn  Flags
+  0 .interp            0000001b  0000000000000238  0000000000000238  00000238  2**0  CONTENTS, ALLOC, LOAD, READONLY, DATA
+
+ 10 .init              00000018  00000000000005b8  00000000000005b8  000005b8  2**2  CONTENTS, ALLOC, LOAD, READONLY, CODE
+ 11 .plt               00000070  00000000000005d0  00000000000005d0  000005d0  2**4  CONTENTS, ALLOC, LOAD, READONLY, CODE
+ 12 .text              000001dc  0000000000000640  0000000000000640  00000640  2**6  CONTENTS, ALLOC, LOAD, READONLY, CODE
+ 13 .fini              00000014  000000000000081c  000000000000081c  0000081c  2**2  CONTENTS, ALLOC, LOAD, READONLY, CODE
+ 14 .rodata            00000034  0000000000000830  0000000000000830  00000830  2**3  CONTENTS, ALLOC, LOAD, READONLY, DATA
+```
+
 Last time, in [addr2line - resolve address](./addr2line.md), we've used `addr2line` to resolve the first symbol resided in the entry of a section, such as `.init` and `.fini`.
 
 Specifying `-j $section` to `objdump -d` would disassemble selected sections. So we can simply type `objdump -d -j $section` to disassemble the entire section.
@@ -591,53 +632,14 @@ Disassembly of section .fini:
 
 ### disas section
 
-Dump section headers through `size -Ax`, `readelf -S` and `objdump -h`:
-
-```bash
-$ size -Ax test-gdb
-test-gdb  :
-section               size      addr
-
-.init                 0x18     0x5b8
-
-.text                0x1dc     0x640
-.fini                 0x14     0x81c
-
-$ readelf -SW test-gdb
-There are 34 section headers, starting at offset 0x20b0:
-
-Section Headers:
-  [Nr] Name              Type            Address          Off    Size   ES Flg Lk Inf Al
-  [ 0]                   NULL            0000000000000000 000000 000000 00      0   0  0
-  [ 1] .interp           PROGBITS        0000000000000238 000238 00001b 00   A  0   0  1
-
-  [11] .init             PROGBITS        00000000000005b8 0005b8 000018 00  AX  0   0  4
-  [12] .plt              PROGBITS        00000000000005d0 0005d0 000070 00  AX  0   0 16
-  [13] .text             PROGBITS        0000000000000640 000640 0001dc 00  AX  0   0 64
-  [14] .fini             PROGBITS        000000000000081c 00081c 000014 00  AX  0   0  4
-  [15] .rodata           PROGBITS        0000000000000830 000830 000034 00   A  0   0  8
-
-$ objdump -hw test-gdb
-
-test-gdb:     file format elf64-littleaarch64
-
-Sections:
-Idx Name               Size      VMA               LMA               File off  Algn  Flags
-  0 .interp            0000001b  0000000000000238  0000000000000238  00000238  2**0  CONTENTS, ALLOC, LOAD, READONLY, DATA
-
- 10 .init              00000018  00000000000005b8  00000000000005b8  000005b8  2**2  CONTENTS, ALLOC, LOAD, READONLY, CODE
- 11 .plt               00000070  00000000000005d0  00000000000005d0  000005d0  2**4  CONTENTS, ALLOC, LOAD, READONLY, CODE
- 12 .text              000001dc  0000000000000640  0000000000000640  00000640  2**6  CONTENTS, ALLOC, LOAD, READONLY, CODE
- 13 .fini              00000014  000000000000081c  000000000000081c  0000081c  2**2  CONTENTS, ALLOC, LOAD, READONLY, CODE
- 14 .rodata            00000034  0000000000000830  0000000000000830  00000830  2**3  CONTENTS, ALLOC, LOAD, READONLY, DATA
-```
-
-As you can see from the output above, the `.init` section starts at 0x5b8 with size 0x18, ends at 0x5d0.
+As you can see from the output of `size -Ax`, `readelf -S` or `objdump -h`, the `.init` section starts at 0x5b8 with size 0x18, ends at 0x5d0.
 
 Use the following command to disassemble the addressed range [start, end).
 
+> It's equivalent implementation of `objdump -d -j .init test-gdb`.
+
 ```bash
-$ objdump -d --start-address=0x5b8 --stop-address=0x5d0 test-gdb
+$ objdump -d --start-address=0x5b8 --stop-address=$((0x5b8+0x18)) test-gdb
 
 test-gdb:     file format elf64-littleaarch64
 
@@ -653,7 +655,16 @@ Disassembly of section .init:
  5cc:	d65f03c0 	ret
 ```
 
-It's equivalent to `objdump -d -j .init test-gdb`.
+A semi-automatic script that extracts the Offset/Size of the section specified by test-gdb and then calls `objdump -d` to disassemble for the specified address range is as follows.
+
+```bash
+section="\.init"
+pattern=".*$section\s.*"
+secitem=$(readelf -SW test-gdb | grep -E $pattern)
+off="0x"`echo $secitem | awk '{print $5}'`
+sz="0x"`echo $secitem | awk '{print $6}'`
+objdump -d --start-address=$off --stop-address=$((off+sz)) test-gdb
+```
 
 ### disas symbol
 
@@ -744,7 +755,7 @@ Disassembly of section .fini:
 
 Another way is to calculate the start/stop address of the symbol `__strlen_ifunc` and invoke `objdump -d` with the options `--start-address` and `--stop-address`.
 
-> objdump -d --start-address=0x415650 --stop-address=0x415678 b.out
+> objdump -d --start-address=0x415650 --stop-address=$((0x415650+0x28)) b.out
 
 The last way is to use [GDB disassemble](../toolchain/gdb/6-gdb-debug-assembly.md), according to [Ciro Santilli](https://stackoverflow.com/a/51971434/3721132).
 

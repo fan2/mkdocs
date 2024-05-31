@@ -212,6 +212,8 @@ An object file's **`section header table`** lets one locate all the file's secti
 - Sections in a file may not overlap. No byte in a file resides in more than one section.
 - An object file may have inactive space. The various headers and the sections might not "cover" every byte in an object file. The contents of the inactive data are unspecified.
 
+---
+
 Please refer to the following materials for further details.
 
 - [aaelf64](https://github.com/ARM-software/abi-aa/blob/main/aaelf64/aaelf64.rst) | 5 Object Files - 5.3 Sections
@@ -224,7 +226,25 @@ Please refer to the following materials for further details.
 
 ## symbols
 
-> refer to struct `Elf32_Sym`/`Elf64_Sym` and `st_info`(ST_BIND, ST_TYPE) defined in /usr/include/elf.h.
+Symbols are a symbolic reference to some type of data or code such as a global variable or function.
+
+[TIS - ELF v1.2](https://refspecs.linuxfoundation.org/elf/elf.pdf) | Book I: ELF - 1. Object Files - Symbol Table
+
+An object file's symbol table holds information needed to locate and relocate a program's symbolic definitions and references.
+
+> refer to struct `Elf32_Sym`/`Elf64_Sym` and `st_info`(ST_BIND: Symbol bindings, ST_TYPE: Symbol types) defined in /usr/include/elf.h.
+
+A symbol table index is a subscript into this array. Index 0 both designates the first entry in the table and serves as the undefined symbol index.
+
+In each symbol table, all symbols with STB_LOCAL binding precede the weak and global symbols. A symbol's type provides a general classification for the associated entity.
+
+**Symbol Values**: Symbol table entries for different object file types have slightly different interpretations for the `st_value` member.
+
+- In relocatable files, `st_value` holds alignment constraints for a symbol whose section index is `SHN_COMMON`.
+- In relocatable files, `st_value` holds a section offset for a defined symbol. That is, `st_value` is an offset from the beginning of the section that `st_shndx` identifies.
+- In executable and shared object files, `st_value` holds a *virtual address*. To make these files' symbols more useful for the dynamic linker, the section offset (file interpretation) gives way to a virtual address (memory interpretation) for which the section number is irrelevant.
+
+---
 
 Please refer to the following materials for further details.
 
@@ -254,14 +274,15 @@ ARM Specifications @[github](https://github.com/ARM-software/abi-aa/releases)
 
 ## references
 
-[ELF Format Cheatsheet](https://gist.github.com/x0nu11byt3/bcb35c3de461e5fb66173071a2379779)
+[ELF-32 vs. ELF-64](https://interrupt.memfault.com/blog/elf-format-differences)
+HP - [ELF-64 Object File Format v1.4](http://www.staroceans.org/e-book/elf-64-hp.pdf)
+uClibc - [ELF-64 Object File Format v1.5](https://uclibc.org/docs/elf-64-gen.pdf)
+MIPS - [64-bit ELF Object File Spec v2.5](https://irix7.com/techpubs/007-4658-001.pdf)
 
-[Differences Between ELF-32 and ELF-64](https://interrupt.memfault.com/blog/elf-format-differences)
-
+[The ELF format](https://www.caichinger.com/elf.html)
 [ELF 文件 - CTF Wiki](https://ctf-wiki.org/executable/elf/structure/basic-info/)
-
+[ELF Format Cheatsheet](https://gist.github.com/x0nu11byt3/bcb35c3de461e5fb66173071a2379779)
 [Binary analysis - ELF’s Story](https://aleeamini.com/category/binary-analysis/)
-
-[The ELF format - how programs look from the inside](https://www.caichinger.com/elf.html)
-
+[Exploring object file formats](https://maskray.me/blog/2024-01-14-exploring-object-file-formats)
+[Evolution of the ELF object file format](https://maskray.me/blog/2024-05-26-evolution-of-elf-object-file-format)
 [Linux Reverse Engineering CTFs for Beginners](https://osandamalith.com/2019/02/11/linux-reverse-engineering-ctfs-for-beginners/)
