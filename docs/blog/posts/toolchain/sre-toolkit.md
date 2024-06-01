@@ -51,6 +51,8 @@ Software Reverse Engineering(SRE) Toolkit:
 - [IDA Pro](https://hex-rays.com/ida-pro/): A powerful disassembler and a versatile debugger.
 - [Binary Ninja](https://binary.ninja/): an interactive decompiler, disassembler, debugger, and binary analysis platform.
 
+- [rscloura/Doldrums](https://github.com/rscloura/Doldrums): A Flutter/Dart reverse engineering tool.
+
 ## references
 
 [Compiler Explorer](https://gcc.godbolt.org/) @[github](https://github.com/compiler-explorer/compiler-explorer)

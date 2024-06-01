@@ -15,10 +15,11 @@ The Radare2 project is a set of small command-line utilities that can be used to
 
 <!-- more -->
 
-- [Radare2 Book](https://book.rada.re/) - [intro](https://github.com/radareorg/radare2/blob/master/doc/intro.md#analyze)
+- [Radare2 Book](https://book.rada.re/) - [intro](https://github.com/radareorg/radare2/blob/master/doc/intro.md#analyze) - [wiki](https://r2wiki.readthedocs.io/en/latest/)
 - [How-To: Radare2](https://r2.cole-ellis.com/)
+- [r2 cheatsheet.pdf](https://scoding.de/uploads/r2_cs.pdf)
 - [radare2-cheatsheet](https://github.com/historypeats/radare2-cheatsheet)
-- [Cheatsheet - r2wiki](https://r2wiki.readthedocs.io/en/latest/home/misc/cheatsheet/)
+- [another radare2 cheatsheet](https://gist.github.com/williballenthin/6857590dab3e2a6559d7)
 
 ## installation
 
@@ -151,6 +152,11 @@ $ snap aliases radare2
 Command  Alias  Notes
 radare2  r2     manual
 
+$ snap aliases
+Command  Alias  Notes
+lxd.lxc  lxc    -
+radare2  r2     manual
+
 $ r2 -v
 radare2 5.9.2 0 @ linux-arm-64
 birth: git.5.9.2 2024-05-27__15:16:35
@@ -175,6 +181,139 @@ $ r2 -d test-gdb
 
 ```bash
 $ r2 -Ad test-gdb
+```
+
+Open file in write mode:
+
+```bash
+$ r2 -Adw test-gdb
+```
+
+whereis/which shell command:
+
+```bash
+[0x000000000000]> wh r2
+/snap/radare2/2571/bin/r2
+[0x000000000000]> wh rabin2
+/snap/radare2/2571/bin/rabin2
+```
+
+You can run radare2 toolset utilities such as `rabin2`, `rax2`, `ragg2`, `rafind2` directly from the r2 console.
+
+### reopen
+
+list opened files:
+
+```bash
+| o                         list opened files
+| ob[?] [lbdos] [...]       list opened binary files backed by fd
+| oo[?][+bcdnm]             reopen current file (see oo?) (reload in rw or debugger)
+```
+
+Check current opened/debugging file:
+
+```bash
+[0x000000000000]> i ~baddr
+baddr    0xaaaacb8f0000
+
+[0x000000000000]> i ~^file
+file     /home/pifan/Projects/cpp/test-gdb
+
+[0x000000000000]> ob
+* 0 3 arm-64 ba:0xaaaacb8f0000 sz:8361 /home/pifan/Projects/cpp/test-gdb
+```
+
+reopen current file:
+
+```bash
+[0x000000000000]> oo?
+Usage: oo [arg]  Map opened files
+| oo           reopen current file
+| oo+          reopen in read-write
+| oob [baddr]  reopen loading rbin info (change base address?)
+| ooc          reopen core with current file
+| ood[?]       reopen in debug mode
+| oom[?]       reopen in malloc://
+| oon          reopen without loading rbin info
+| oon+         reopen in read-write mode without loading rbin info
+| oonn         reopen without loading rbin info, but with header flags
+| oonn+        reopen in read-write mode without loading rbin info, but with
+```
+
+reload current file:
+
+```bash
+[0x000000000000]> do?
+Usage: do   # Debug (re)open commands
+| do            open process (reload, alias for 'oo')
+| doo [args]    Reopen in debug mode with args (alias for 'ood')
+| doof [args]   Reopen in debug mode from file (alias for 'oodf')
+```
+
+### shell
+
+The `!` prefix is used to execute a command in shell context.
+
+List the toolset utility binutils with the same directory:
+
+```bash
+[0x000000000000]> !ls -l /snap/radare2/2571/bin/
+```
+
+Execute external shell to read ELF headers:
+
+```bash
+[0x000000000000]> !readelf -h test-gdb
+[0x000000000000]> !objdump -f test-gdb
+```
+
+Execute radare2 internal command with external/internal mode:
+
+```bash
+[0x000000000000]> !radare2.rabin2 -I test-gdb
+[0x000000000000]> rabin2 -I test-gdb
+[0x000000000000]> iI
+
+[0x000000000000]> rabin2 -e test-gdb
+[0x000000000000]> ie
+```
+
+Read section headers from both external/internal mode:
+
+```bash
+[0x000000000000]> ! readelf -SW a.out
+[0x000000000000]> ! objdump -hw a.out
+[0x000000000000]> rabin2 -S test-gdb
+[0x000000000000]> iS
+```
+
+Read segments from internal mode:
+
+```bash
+[0x000000000000]> rabin2 -SSS test-gdb
+[0x000000000000]> rabin2 -SS test-gdb
+[0x000000000000]> iSS
+```
+
+The standard UNIX pipe `|` is also available in the radare2 shell. You can use it to filter the output of an r2 command with any shell program that reads from stdin, such as `grep`, `less`, `wc`. If you do not want to spawn anything, or you can’t, or the target system does not have the basic UNIX tools you need (Windows or embedded users), you can also use the built-in grep (`~`).
+
+```bash
+[0x000000000000]> # i ~baddr
+[0x000000000000]> i | grep baddr
+baddr    0xaaaacb8f0000
+
+[0x000000000000]> # i ~^file
+[0x000000000000]> i | grep ^file
+file     /home/pifan/Projects/cpp/test-gdb
+```
+
+Combining internal and external commands via pipe to extract the current filename for further use.
+
+```bash
+[0x000000000000]> ob | awk '{print $NF}'
+/home/pifan/Projects/cpp/test-gdb
+[0x000000000000]> i | awk '/^file/ {print $NF}'
+/home/pifan/Projects/cpp/test-gdb
 ```
 
 ## analysis
@@ -309,6 +448,8 @@ Usage: i  Get info from opened file (see rabin2's manpage)
 | iz[?]        strings in data sections (in JSON/Base64)
 ```
 
+`i` / `iI`: show binary info, inclue `baddr`(base address).
+
 ### entrypoint
 
 - `ie`: entrypoint
@@ -316,6 +457,9 @@ Usage: i  Get info from opened file (see rabin2's manpage)
 - `ieee`: entries+constructors
 
 ```bash
+[0xffffaa6d6c40]> ieq
+0xaaaae48e0640
+
 [0xffffaa6d6c40]> ie
 [Entrypoints]
 vaddr=0xaaaae48e0640 paddr=0x00000640 haddr=0x00000018 hvaddr=0xaaaae48e0018 type=program
@@ -349,6 +493,9 @@ vaddr=0xaaaae48e0640 paddr=0x00000640 haddr=0x00000018 hvaddr=0xaaaae48e0018 typ
 Query for detailed usages of subcommands:
 
 ```bash
+[0x000000000000]> !readelf -s test-gdb
+[0x000000000000]> !objdump -t test-gdb
+[0x000000000000]> !radare2.rabin2 -s test-gdb
 [0x000000000000]> is?
 Usage: is [*hjq]  List symbols from current selected binary
 | is,[table-query]  list symbols in table using given expression
@@ -804,14 +951,51 @@ To open visual panels, use `v` command, press `q` to exit.
 
 The useful Debugger view shows us the Disassembly, Stack and Registers. We can move around the binary via seeking and stepping.
 
-Use the `p` command to cycle through the views. Use `P` to cycle through the views in reverse.
+Use the `p`/`P` command to swap current panel with the first/last one.
 
-Type `:` to enter Bottom Command mode and type `v` to return back to Visual Panels mode.
+Type `?` to open the help panel, press `X` to close the help panel.
 
-- In Visual Panels mode, we can type `s` to step, `c` to continue.
-- In Bottom Command mode, we can set breakpoints using the `db` command, then `dc` run to the breakpoint.
+```bash
+| |      split current panel vertically
+| -      split current panel horizontally
+| :      run r2 command in prompt
+| !      swap into visual mode
+| .      seek to PC or entrypoint
+| *      show decompiler in the current panel
+| /      highlight the keyword
+| [1-9]  follow jmp/call identified by shortcut (like ;[1])
+| ' '    (space) toggle graph / panels
+| tab    go to the next panel
+| Enter  maximize current panel in zoom mode
+| b      browse symbols, flags, configurations, classes, .
+| c      toggle cursor
+| D      show disassembly in the current panel
+| g      go/seek to given offset
+| G      go/seek to highlight
+| hjkl   move around (left-down-up-right)
+| HJKL   move around (left-down-up-right) by page
+| m      select the menu panel
+| q      quit, or close a tab
+| Q      close all the tabs and quit
+| n/N    seek next/prev function/flag/hit (scr.nkey)
+| s/S    step in / step over
+| t/T    tab prompt / close a tab
+| V      go to the graph mode
+| x      show xrefs/refs of current function from/to data/
+| X      close current panel
+| z      swap current panel with the first one
+```
 
-We can easily switch between Visual Panels mode and Bottom Command mode at any time.
+1. `Tab`: move the focus to the next panel without changing their position.
+2. `Enter`: maximize current panel in zoom mode. Press `Enter` or `q` to quit.
+3. `space`: toggle graph / panels.
+4. `m`: select the menu panel, use `hjkl` to navigate and `Enter` to choose.
+5. `.`: seek to PC or entrypoint.
+6. `g`: go/seek to given offset/address.
+7. `s`/`S`: step in / step over.
+
+Type `:` to enter Bottom Command mode, run r2 commands in prompt, e.g., `db`, `dc`.
+Press `v`/`q` to exit and return back to Visual Panels mode.
 
 ### VV
 
@@ -841,43 +1025,6 @@ Type `?` to list all the commands of Visual Graph mode.
 ```
 
 Note the designations of each module node, such as `o[a-z]`, then type `oa` / `ob` / `oc` to change central focus.
-
-## reopen
-
-list opened files:
-
-```bash
-| o                         list opened files
-| ob[?] [lbdos] [...]       list opened binary files backed by fd
-| oo[?][+bcdnm]             reopen current file (see oo?) (reload in rw or debugger)
-```
-
-reopen current file:
-
-```bash
-[0x000000000000]> oo?
-Usage: oo [arg]  Map opened files
-| oo           reopen current file
-| oo+          reopen in read-write
-| oob [baddr]  reopen loading rbin info (change base address?)
-| ooc          reopen core with current file
-| ood[?]       reopen in debug mode
-| oom[?]       reopen in malloc://
-| oon          reopen without loading rbin info
-| oon+         reopen in read-write mode without loading rbin info
-| oonn         reopen without loading rbin info, but with header flags
-| oonn+        reopen in read-write mode without loading rbin info, but with
-```
-
-reload current file:
-
-```bash
-[0x000000000000]> do?
-Usage: do   # Debug (re)open commands
-| do            open process (reload, alias for 'oo')
-| doo [args]    Reopen in debug mode with args (alias for 'ood')
-| doof [args]   Reopen in debug mode from file (alias for 'oodf')
-```
 
 ## refs
 

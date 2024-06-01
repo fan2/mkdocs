@@ -29,11 +29,10 @@ Load register (PC-relative literal).
 **Syntax**
 
 ```asm
-LDR Wt, label ; 32-bit
-LDR Xt, label ; 64-bit
+ADRP Xd, label
 ```
 
-> `label` is the program label from which the data is to be loaded. It is an offset from the address of this instruction, in the range ±1MB.
+> `label` is the program label whose 4KB page address is to be calculated. An offset from the page address of this instruction, in the range ±4GB.
 
 **Instruction**
 
