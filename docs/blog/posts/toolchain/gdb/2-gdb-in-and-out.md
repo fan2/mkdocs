@@ -224,7 +224,7 @@ Executes *command* and sends its output to *shell_command*. Note that no space i
 
 In case the *command* contains a `|`, the option `-d` delim can be used to specify an alternate delimiter string delim that separates the *command* from the *shell_command*.
 
-The convenience variables `$_shell_exitcode` and `$_shell_exitsignal` can be used to examine the exit status of the last shell command launched by *shell*, *make*, *pipe* and *|*. See [Convenience Variables](https://sourceware.org/gdb/current/onlinedocs/gdb.html/Convenience-Vars.html#Convenience-Vars).
+The convenience variables `$_shell_exitcode` and `$_shell_exitsignal` can be used to examine the exit status of the last shell command launched by *shell*, *make*, *pipe* and *|*. See [Convenience Variables](https://sourceware.org/gdb/current/onlinedocs/gdb.html/Convenience-Vars.html).
 
 ## info && list
 

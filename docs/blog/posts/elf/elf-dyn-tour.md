@@ -15,7 +15,6 @@ In this article, I'll practice using [GNU binutils](./gnu-binutils.md) to take a
 
 <!-- more -->
 
-
 ## ELF Header
 
 Now, let's check the [ELF](./elf-layout.md) header.

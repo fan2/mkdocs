@@ -58,6 +58,42 @@ $3 = 101 'e'
 $4 = 1100101
 ```
 
+### expr
+
+[17.1 Assignment to Variables](https://sourceware.org/gdb/current/onlinedocs/gdb.html/Assignment.html)
+[set variable (gdb mode only)](https://www.irya.unam.mx/computo/sites/manuales/fce12/debugger/cl/commandref/gdb_mode/cmd_set_variable.htm)
+
+```bash
+(gdb) p 0x000238+0x00001b
+$1 = 595
+(gdb) p/x $1
+$2 = 0x253
+```
+
+[10.12 Convenience Variables](https://sourceware.org/gdb/current/onlinedocs/gdb.html/Convenience-Vars.html)
+
+```bash
+init-if-undefined $variable = expression
+```
+
+Set a convenience variable if it has not already been set, so there is no side-effects.
+
+```bash
+(gdb) init-if-undefined $baddr = 0xaaaaaaaa0000
+(gdb) init-if-undefined $paddr = 0x640
+(gdb) p /x $baddr+$paddr
+$3 = 0xaaaaaaaa0640
+```
+
+Define a variable for the GDB console context: `set [var] $x=expr`.
+
+```bash
+# var is optional
+(gdb) set var $entry_addr=$baddr+$paddr
+(gdb) p/x $entry_addr
+$4 = 0xaaaaaaaa0640
+```
+
 ### register
 
 print 也可以打印寄存器内容，以 `$` 符号开头引用寄存器，区别普通变量。
@@ -153,6 +189,23 @@ If you use defaults for *nfu*, you need not type the slash ‘`/`’. Several co
 
     4. `x/i $pc`: print the instruction to be executed next with, equivalent to `disassemble $pc,$pc+4`.
     5. `x/10i main` prints ten instructions of `disassemble main`.
+
+### Convenience Vars
+
+[10.12 Convenience Variables](https://sourceware.org/gdb/current/onlinedocs/gdb.html/Convenience-Vars.html)
+
+`$_`: The variable `$_` is automatically set by the `x` command to the last *address* examined (see Examining Memory). Other commands which provide a default address for `x` to examine also set `$_` to that address; these commands include info line and info breakpoint. The type of `$_` is void * except when set by the `x` command, in which case it is a pointer to the type of `$__`.
+
+`$__`: The variable `$__` is automatically set by the `x` command to the *value* found in the last address examined. Its type is chosen to match the format in which the data was printed.
+
+```bash
+(gdb) x/xg $fp
+0xfffffffff210:	0x0000000000000001
+(gdb) p $_
+$4 = (int64_t *) 0xfffffffff210
+(gdb) p $__
+$5 = 1
+```
 
 ## display
 
