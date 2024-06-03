@@ -228,6 +228,8 @@ Set number of additional lines to print for the nearpc command to 12.
 pwndbg> nearpc
 ```
 
+Type `context` to takes effect immediately.
+
 Type `configfile` to show the changed configs:
 
 ```bash
@@ -333,7 +335,7 @@ Set default looks great with `solarized light`:
 ```bash
 pwndbg> set syntax-highlight-style default
 Set Source code / assembly syntax highlight stylename of pygments module to 'default'.
-pwndbg> context
+pwndbg> context # takes effect immediately
 ```
 
 Type `themefile` to show the changed configs:

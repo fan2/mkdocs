@@ -149,9 +149,30 @@ Line number 27 out of range; test-gdb.c has 26 lines.
 
 使用 `rbreak .` 通配所有函数，即在所有函数处设置断点，方便 [逐函数调试](https://stackoverflow.com/questions/14694520/how-to-let-gdb-continue-until-the-program-enters-another-function/31249717#31249717)。为了防止频繁的匹配确认，可以提前执行 `set confirm off` 关闭确认。
 
+以下执行 GDB `starti` 启动运行后，通过 `b _start` 设置断点，命中当前 interpreter `ld-linux-aarch64.so` 和 `libc.so` entry point 两个位置：
+
+```bash
+(gdb) starti
+Starting program: /home/pifan/Projects/cpp/test-gdb
+
+Program stopped.
+0x0000fffff7fd9c40 in _start () from /lib/ld-linux-aarch64.so.1
+(gdb) b _start
+Breakpoint 1 at 0xaaaaaaaa0640 (2 locations)
+(gdb) i b
+Num     Type           Disp Enb Address            What
+1       breakpoint     keep y   <MULTIPLE>
+1.1                         y   0x0000aaaaaaaa0640 <_start>
+1.2                         y   0x0000fffff7fd9c48 <_start+8>
+```
+
 在 main 函数、第 22 行、func 函数以及第 8 行下断点，其中第 8 行为条件断点。
 
+> 注意 `b *main` 和 `b main` 断点位置的区别。
+
 ```Shell
+pwndbg> b *main
+Breakpoint 2 at 0x7a0: file test-gdb.c, line 14.
 (gdb) b main
 Breakpoint 1 at 0x7b0: file test-gdb.c, line 16.
 (gdb) b 22
@@ -160,6 +181,37 @@ Breakpoint 2 at 0x7e8: file test-gdb.c, line 22.
 Breakpoint 3 at 0x75c: file test-gdb.c, line 5.
 (gdb) b 8 if i==50
 Breakpoint 4 at 0x768: file test-gdb.c, line 8.
+```
+
+还可以通过指定地址 [break *addr](https://stackoverflow.com/questions/5459581/how-to-break-on-assembly-instruction-at-a-given-address-in-gdb) 的方式下断点：
+
+```Shell
+(gdb) starti
+Starting program: /home/pifan/Projects/cpp/test-gdb
+
+Program stopped.
+0x0000fffff7fd9c40 in _start () from /lib/ld-linux-aarch64.so.1
+
+# obtain symbol _start's stored address.
+(gdb) i addr _start
+Symbol "_start" is at 0xaaaaaaaa0640 in a file compiled without debugging.
+
+# set breakpoint at specified address.
+(gdb) b *0xaaaaaaaa0640
+Breakpoint 1 at 0xaaaaaaaa0640
+
+# obtain symbol main's stored address.
+(gdb) i addr main
+Symbol "main" is a function at address 0xaaaaaaaa07a0.
+
+# set breakpoint at specified address, equivalent to b *main.
+(gdb) b *0xaaaaaaaa07a0
+Breakpoint 2 at 0xaaaaaaaa07a0: file test-gdb.c, line 14.
+
+(gdb) i b
+Num     Type           Disp Enb Address            What
+1       breakpoint     keep y   0x0000aaaaaaaa0640 <_start>
+2       breakpoint     keep y   0x0000aaaaaaaa07a0 in main at test-gdb.c:14
 ```
 
 可使用 info 命令，查看已经配置的断点信息：

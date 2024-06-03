@@ -76,6 +76,18 @@ Print the backtrace of the entire stack, show you `where` the execution is halte
 
 backtrace 显示的是 Call Stack，每一层函数都有自己的栈帧（Stack Frame）。
 
+```bash
+(gdb) starti
+Starting program: /home/pifan/Projects/cpp/test-gdb
+
+Program stopped.
+0x0000fffff7fd9c40 in _start () from /lib/ld-linux-aarch64.so.1
+(gdb) where
+#0  0x0000fffff7fd9c40 in _start () from /lib/ld-linux-aarch64.so.1
+#1  0x0000000000000000 in ?? ()
+Backtrace stopped: previous frame identical to this frame (corrupt stack?)
+```
+
 ## Frame Info
 
 [8.4 Information About a Frame](https://sourceware.org/gdb/current/onlinedocs/gdb.html/Frame-Info.html#Frame-Info)
@@ -96,6 +108,30 @@ backtrace 显示的是 Call Stack，每一层函数都有自己的栈帧（Stack
 执行 `frame` / `info frame` 可以查看当前栈帧的简要/详情信息。
 
 如果你要查看某一层的信息，则需要切换当前的栈。一般来说，程序停止时，最顶层的栈就是当前栈，如果你要查看栈下面层的详细信息，首先要做的是切换当前栈。
+
+```bash
+(gdb) b func
+Breakpoint 3 at 0xaaaaaaaa075c: file test-gdb.c, line 5.
+(gdb) c
+Continuing.
+result[1-100] = 5050
+
+Breakpoint 3, func (n=250) at test-gdb.c:5
+5	    int sum=0,i;
+(gdb) bt
+#0  func (n=250) at test-gdb.c:5
+#1  0x0000aaaaaaaa0800 in main (argc=1, argv=0xfffffffff218) at test-gdb.c:23
+(gdb) f
+#0  func (n=250) at test-gdb.c:5
+5	    int sum=0,i;
+(gdb) i f
+Stack level 0, frame at 0xfffffffff070:
+ pc = 0xaaaaaaaa075c in func (test-gdb.c:5); saved pc = 0xaaaaaaaa0800
+ called by frame at 0xfffffffff0a0
+ source language c.
+ Arglist at 0xfffffffff050, args: n=250
+ Locals at 0xfffffffff050, Previous frame's sp is 0xfffffffff070
+```
 
 ## Frame Switch
 

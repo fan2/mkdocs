@@ -95,6 +95,53 @@ Show mixed source+assembly with `/m`(mixed source) or `/s`(source).
 
 初步学习对比 src 到 asm 的直接翻译，可以使用 `/m` 选项；考虑 ni/si 单步跟踪指令序列的实际运行，则建议使用 `/s` 选项。
 
+### disas address
+
+一种常用的需求是反汇编检查当前 PC 周边的指令。
+
+使用 `x` 命令可打印指定内存处存放的指令，参考 [GDB Examining Data](./4-gdb-examining-data.md)。
+
+```bash
+(gdb) starti
+Starting program: /home/pifan/Projects/cpp/test-gdb
+
+Program stopped.
+0x0000fffff7fd9c40 in _start () from /lib/ld-linux-aarch64.so.1
+
+(gdb) where
+#0  0x0000fffff7fd9c40 in _start () from /lib/ld-linux-aarch64.so.1
+#1  0x0000000000000000 in ?? ()
+Backtrace stopped: previous frame identical to this frame (corrupt stack?)
+
+(gdb) x/i $pc
+=> 0xfffff7fd9c40 <_start>:	bti	c
+
+(gdb) x/3i $pc
+=> 0xfffff7fd9c40 <_start>:	bti	c
+   0xfffff7fd9c44 <_start+4>:	mov	x0, sp
+   0xfffff7fd9c48 <_start+8>:	bl	0xfffff7fda610 <_dl_start>
+```
+
+按照 help disassemble 说明，可以给定地址范围进行反汇编。
+
+```bash
+Disassemble a specified section of memory.
+Usage: disassemble[/m|/r|/s] START [, END]
+```
+
+因此，可以使用 `$pc` 解引用指针，然后调用 disassemble 反汇编。
+
+```bash
+(gdb) disas $pc, $pc+12
+Dump of assembler code from 0xfffff7fd9c40 to 0xfffff7fd9c4c:
+=> 0x0000fffff7fd9c40 <_start+0>:	bti	c
+   0x0000fffff7fd9c44 <_start+4>:	mov	x0, sp
+   0x0000fffff7fd9c48 <_start+8>:	bl	0xfffff7fda610 <_dl_start>
+```
+
+在汇编语言中，标签和符号(label/symbol)用于标识地址。
+因此，可直接 `disas symbol` 反汇编指定符号/函数。
+
 ### disas \_start
 
 在终端输入 `gdb test-gdb` 启动 GDB Console。
@@ -128,6 +175,7 @@ Starting program: /home/pifan/Projects/cpp/test-gdb
 Program stopped.
 0x0000fffff7fd9c40 in _start () from /lib/ld-linux-aarch64.so.1
 
+# disas libc.so/_start
 (gdb) disas _start
 Dump of assembler code for function _start:
    0x0000aaaaaaaa0640 <+0>:	nop
@@ -144,6 +192,17 @@ Dump of assembler code for function _start:
    0x0000aaaaaaaa066c <+44>:	bl	0xaaaaaaaa05f0 <__libc_start_main@plt>
    0x0000aaaaaaaa0670 <+48>:	bl	0xaaaaaaaa0620 <abort@plt>
 End of assembler dump.
+```
+
+也可以先解析出符号的地址，再调用 `disas addr` 反汇编。
+
+```bash
+# help info address
+(gdb) i addr _start
+Symbol "_start" is at 0xaaaaaaaa0640 in a file compiled without debugging.
+
+(gdb) disas 0xaaaaaaaa0640
+[...ditto...]
 ```
 
 接下来，可使用 nexti/stepi 进行汇编指令级调试。

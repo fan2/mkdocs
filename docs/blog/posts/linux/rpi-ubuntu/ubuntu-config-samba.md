@@ -166,6 +166,15 @@ $ sudo umount /media/WDHD/
 $ sudo mount -t hfsplus -o force,rw,uid=pifan,gid=ubuntu /dev/sda3 /media/WDHD
 ```
 
+如果 umount 提示 `target is busy.`，请依次尝试 [Lazy/Force unmount](https://stackoverflow.com/questions/7878707/how-to-unmount-a-busy-device).
+
+```bash
+# -l|--lazy: Lazy unmount
+$ sudo umount -l /media/WDHD/
+# -f|--force: Force an unmount
+$ sudo umount -f /media/WDHD/
+```
+
 重新执行 `mkdir /media/WDHD/test` 创建文件夹成功。
 
 如果之前有非正常操作，如暴力插拔或断电重启，系统检测到上一次磁盘没有正常卸载，也会挂载为只读。

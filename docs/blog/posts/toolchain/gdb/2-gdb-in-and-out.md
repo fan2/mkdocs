@@ -192,6 +192,40 @@ gdb program 1234
 
 [Attach (Debugging with GDB)](https://sourceware.org/gdb/current/onlinedocs/gdb.html/Attach.html#Attach)
 
+### Shell Commands
+
+[Shell Commands](https://sourceware.org/gdb/current/onlinedocs/gdb.html/Shell-Commands.html#Shell-Commands)
+
+If you need to execute occasional shell commands during your debugging session, there is no need to leave or suspend GDB; you can just use the shell command.
+
+```
+shell command-string
+!command-string
+```
+
+Invoke a shell to execute *command-string*. Note that no space is needed between `!` and `command-string`. On GNU and Unix systems, the environment variable `SHELL`, if it exists, determines which shell to run. Otherwise GDB uses the default shell (/bin/sh on GNU and Unix systems, cmd.exe on MS-Windows, COMMAND.COM on MS-DOS, etc.).
+
+You may also invoke shell commands from expressions, using the `$_shell` convenience function. See [$_shell convenience function](https://sourceware.org/gdb/current/onlinedocs/gdb.html/Convenience-Funs.html#g_t_0024_005fshell-convenience-function).
+
+!!! note "invoke make in GDB"
+
+    The utility `make` is often needed in development environments. You do not have to use the shell command for this purpose in GDB:
+
+    `make make-args`: Execute the make program with the specified arguments. This is equivalent to `shell make make-args`.
+
+```bash
+pipe [command] | shell_command
+| [command] | shell_command
+pipe -d delim command delim shell_command
+| -d delim command delim shell_command
+```
+
+Executes *command* and sends its output to *shell_command*. Note that no space is needed around `|`. If no *command* is provided, the *last* command executed is repeated.
+
+In case the *command* contains a `|`, the option `-d` delim can be used to specify an alternate delimiter string delim that separates the *command* from the *shell_command*.
+
+The convenience variables `$_shell_exitcode` and `$_shell_exitsignal` can be used to examine the exit status of the last shell command launched by *shell*, *make*, *pipe* and *|*. See [Convenience Variables](https://sourceware.org/gdb/current/onlinedocs/gdb.html/Convenience-Vars.html#Convenience-Vars).
+
 ## info && list
 
 ### info

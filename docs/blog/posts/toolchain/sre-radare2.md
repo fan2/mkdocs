@@ -15,7 +15,7 @@ The Radare2 project is a set of small command-line utilities that can be used to
 
 <!-- more -->
 
-- [Radare2 Book](https://book.rada.re/) - [intro](https://github.com/radareorg/radare2/blob/master/doc/intro.md#analyze) - [wiki](https://r2wiki.readthedocs.io/en/latest/)
+- [Radare2 Book](https://book.rada.re/) - [intro](https://github.com/radareorg/radare2/blob/master/doc/intro.md#analyze) - [wiki](https://r2wiki.readthedocs.io/en/latest/) - [zh-cn](https://heersin.gitbook.io/radare2)
 - [How-To: Radare2](https://r2.cole-ellis.com/)
 - [r2 cheatsheet.pdf](https://scoding.de/uploads/r2_cs.pdf)
 - [radare2-cheatsheet](https://github.com/historypeats/radare2-cheatsheet)
@@ -627,7 +627,7 @@ Usage: p[dD][ajbrfils] [[-]len]   # Print N bytes/instructions bw/forward
 | pdx [hex]        alias for pad or pix
 ```
 
-disassemble 10 instructions following pc:
+Disassemble 10 instructions following pc:
 
 ```bash
 [0x000000000000]> pd 10
@@ -651,7 +651,7 @@ Disassemble a symbol/function at a memory address:
 
 ```
 
-disassemble function at current pc:
+Disassemble function at current pc:
 
 ```bash
 [0x000000000000]> pdf
