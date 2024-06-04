@@ -168,10 +168,10 @@ Num     Type           Disp Enb Address            What
 
 在 main 函数、第 22 行、func 函数以及第 8 行下断点，其中第 8 行为条件断点。
 
-> 注意 `b *main` 和 `b main` 断点位置的区别。
+> 注意 `b *main` 和 `b main` 断点位置的区别。*help break*: Address locations begin with "`*`" and specify an exact address in the program. Example: To specify the fourth byte past the start function "main", use "`*main + 4`".
 
 ```Shell
-pwndbg> b *main
+(gdb) b *main
 Breakpoint 2 at 0x7a0: file test-gdb.c, line 14.
 (gdb) b main
 Breakpoint 1 at 0x7b0: file test-gdb.c, line 16.
@@ -281,6 +281,42 @@ Breakpoint 1, main (argc=1, argv=0xfffffffff248) at test-gdb.c:16
 `info watchpoints` 列出当前所设置了的所有观察点。
 
 > info watchpoints \[list…] : This command prints a list of watchpoints, using the same format as info break (see Set Breaks).
+
+### commands
+
+[5.1.7 Breakpoint Command Lists](https://sourceware.org/gdb/current/onlinedocs/gdb.html/Break-Commands.html)
+
+您可以为任何断点（或观察点或捕获点）提供一系列命令，以便在程序因该断点而停止时执行。例如，您可能想要打印某些表达式的值，或启用其他断点。
+
+参考 [puts@plt - pwndbg](../../elf/plt-puts-pwndbg.md) 中的使用案例：
+
+在 C 程序进入 CRT entry point 之前，在 GOT entry `reloc.puts` 处设置观察点。进入 entry 之前，ld 会动态加载 libc.so，解析动态符号并修正 `reloc.puts` 指向的函数指针。这个 resovle/fix dynamic symbol 过程会更新 `reloc.puts` 内容，故会触发观察点（hardware watchpoint）。同时，触发观察点时，希望打印出真实符号地址的十六进制格式，故为观察点添加 commands。
+
+You can use a watchpoint to add a sentry and stop execution whenever the value at 0xaaaaaaab0fc8 changes.
+
+```bash
+pwndbg> watch *(uintptr_t*)0xaaaaaaab0fc8
+Hardware watchpoint 1: *(uintptr_t*)0xaaaaaaab0fc8
+```
+
+Then specify a command for the given watchpoint. Here we just hexdump the giant word stored in the memory.
+
+```bash
+pwndbg> commands 1
+Type commands for breakpoint(s) 1, one per line.
+End with a line saying just "end".
+>x/xg 0xaaaaaaab0fc8
+>end
+```
+
+Exec `info breakpoints|watchpoints` to check the status of breakpoints/watchpoints.
+
+```bash
+pwndbg> i b
+Num     Type           Disp Enb Address            What
+1       hw watchpoint  keep y                      *(uintptr_t*)0xaaaaaaab0fc8
+        x/xg 0xaaaaaaab0fc8
+```
 
 ## Continuing and Stepping
 

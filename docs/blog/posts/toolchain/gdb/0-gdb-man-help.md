@@ -300,3 +300,5 @@ Command name abbreviations are allowed if unambiguous.
 用GDB调试程序：[（一）](https://haoel.blog.csdn.net/article/details/2879) ～ [（七）](https://haoel.blog.csdn.net/article/details/2885)
 
 [Arm Assembly Internals and Reverse Engineering](https://www.amazon.com/Blue-Fox-Assembly-Internals-Analysis/dp/1119745306) | Chapter 11 Dynamic Analysis - Command-Line Debugging
+
+[Advanced GDB Usage | Interrupt](https://interrupt.memfault.com/blog/advanced-gdb#conditional-breakpoints-and-watchpoints)

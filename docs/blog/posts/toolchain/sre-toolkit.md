@@ -75,7 +75,8 @@ Software Reverse Engineering(SRE) Toolkit:
 
 ### courses
 
-["Reverse Engineering for Beginners" book](https://beginners.re/)
+[Reverse Engineering for Beginners](https://beginners.re/)
+[Reverse Engineering For Everyone!](https://0xinfection.github.io/reversing/)
 
 [CSC 472/583 Software Security - 2021-Fall Course Website](https://www.cs.wcupa.edu/schen/ss2021/)
 [CSC 495/583 Topics of Software Security - 2023-Fall Course Website](https://www.cs.wcupa.edu/schen/ss2023/)

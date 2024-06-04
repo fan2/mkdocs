@@ -1,404 +1,23 @@
 ---
-title: SRE Toolkit - radare2
+title: SRE Toolkit - radare2 modes
 authors:
   - xman
 date:
-    created: 2023-10-02T09:00:00
+    created: 2023-10-02T16:00:00
 categories:
     - toolchain
 comments: true
 ---
 
-[radare](https://www.radare.org/n/): UNIX-like reverse engineering framework and command-line toolset.
+So far, we've combed through the basic usage of r2, see [previous post](./radare2-basics.md).
 
-The Radare2 project is a set of small command-line utilities that can be used together or independently.
+In this article, we'll focus on the different modes supported by r2.
 
 <!-- more -->
 
-- [Radare2 Book](https://book.rada.re/) - [intro](https://github.com/radareorg/radare2/blob/master/doc/intro.md#analyze) - [wiki](https://r2wiki.readthedocs.io/en/latest/) - [zh-cn](https://heersin.gitbook.io/radare2)
-- [How-To: Radare2](https://r2.cole-ellis.com/)
 - [r2 cheatsheet.pdf](https://scoding.de/uploads/r2_cs.pdf)
 - [radare2-cheatsheet](https://github.com/historypeats/radare2-cheatsheet)
 - [another radare2 cheatsheet](https://gist.github.com/williballenthin/6857590dab3e2a6559d7)
-
-## installation
-
-install radare2 on Ubuntu with [snap](https://ubuntu.com/core/services/guide/snaps-intro):
-
-- [Managing Ubuntu Snaps](https://hackernoon.com/managing-ubuntu-snaps-the-stuff-no-one-tells-you-625dfbe4b26c)
-- [snap install - Ubuntu snap 使用筆記](https://foreachsam.github.io/book-util-snap/book/content/command/snap-install/)
-
-- [Install radare2 on Ubuntu using the Snap Store](https://snapcraft.io/install/radare2/ubuntu)
-- [Installing and Managing Snap Packages on Ubuntu 22](https://reintech.io/blog/installing-managing-snap-packages-ubuntu-22)
-
-### snap install
-
-```bash
-$ sudo snap install radare2 --classic
-Download snap "core24" (410) from channel "stable"
-...
-radare2 5.9.2 from pancake installed
-```
-
-Display snap list:
-
-```bash
-# ls -1 /snap/
-$ ls /snap/
-bare  core22  firefox        gtk-common-themes  README  snapd-desktop-integration
-bin   core24  gnome-42-2204  radare2            snapd   snap-store
-
-$ snap list
-Name                       Version           Rev    Tracking         Publisher   Notes
-bare                       1.0               5      latest/stable    canonical✓  base
-core22                     20240408          1383   latest/stable    canonical✓  base
-core24                     20240426          410    latest/stable    canonical✓  base
-firefox                    126.0-2           4281   latest/stable/…  mozilla✓    -
-gnome-42-2204              0+git.510a601     178    latest/stable/…  canonical✓  -
-gtk-common-themes          0.1-81-g442e511   1535   latest/stable/…  canonical✓  -
-radare2                    5.9.2             2571   latest/stable    pancake     classic
-snap-store                 41.3-77-g7dc86c8  1114   latest/stable/…  canonical✓  -
-snapd                      2.63              21761  latest/stable    canonical✓  snapd
-snapd-desktop-integration  0.9               159    latest/stable/…  canonical✓  -
-```
-
-List /snap/bin:
-
-```bash
-$ echo $PATH
-/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
-
-$ ls -l /snap/bin
-
-$ tree -L 1 /snap/bin
-/snap/bin
-├── firefox -> /usr/bin/snap
-├── firefox.geckodriver -> /usr/bin/snap
-├── geckodriver -> firefox.geckodriver
-├── radare2 -> /usr/bin/snap
-├── radare2.r2 -> /usr/bin/snap
-├── radare2.r2agent -> /usr/bin/snap
-├── radare2.r2frida-compile -> /usr/bin/snap
-├── radare2.r2p -> /usr/bin/snap
-├── radare2.r2pm -> /usr/bin/snap
-├── radare2.r2r -> /usr/bin/snap
-├── radare2.rabin2 -> /usr/bin/snap
-├── radare2.radiff2 -> /usr/bin/snap
-├── radare2.rafind2 -> /usr/bin/snap
-├── radare2.ragg2 -> /usr/bin/snap
-├── radare2.rahash2 -> /usr/bin/snap
-├── radare2.rarun2 -> /usr/bin/snap
-├── radare2.rasign2 -> /usr/bin/snap
-├── radare2.rasm2 -> /usr/bin/snap
-├── radare2.ravc2 -> /usr/bin/snap
-├── radare2.rax2 -> /usr/bin/snap
-├── radare2.sleighc -> /usr/bin/snap
-├── radare2.yara -> /usr/bin/snap
-├── radare2.yarac -> /usr/bin/snap
-├── snap-store -> /usr/bin/snap
-├── snap-store.ubuntu-software -> /usr/bin/snap
-└── snap-store.ubuntu-software-local-file -> /usr/bin/snap
-
-0 directories, 26 files
-
-```
-
-Check radare2 version:
-
-```bash
-$ which radare2
-/snap/bin/radare2
-
-$ whereis radare2
-radare2: /snap/bin/radare2
-
-# radare2 -v
-$ radare2.r2 -v
-radare2 5.9.2 0 @ linux-arm-64
-birth: git.5.9.2 2024-05-27__15:16:35
-commit: 5.9.2
-options: gpl release -O1 cs:5 cl:0 make
-
-$ snap run radare2
-Usage: r2 [-ACdfjLMnNqStuvwzX] [-P patch] [-p prj] [-a arch] [-b bits] [-c cmd]
-          [-s addr] [-B baddr] [-m maddr] [-i script] [-e k=v] file|pid|-|--|=
-```
-
-Seek for usage help:
-
-```bash
-$ radare2 -h
-$ radare2.rabin2 -h
-```
-
-### snap alias r2
-
-[command line - What is the correct way to create alias to snap package in Ubuntu 16.04?](https://askubuntu.com/questions/915060/what-is-the-correct-way-to-create-alias-to-snap-package-in-ubuntu-16-04)
-
-```bash
-$ echo "alias r2='snap run radare2'" >> ~/.zshrc
-```
-
-[Commands and aliases | Snapcraft documentation](https://snapcraft.io/docs/commands-and-aliases)
-
-The following exposes a new command under /snap/bin to support calling the `radare2` application as `r2`:
-
-```bash
-$ sudo snap alias radare2 r2
-Added:
-  - radare2 as r2
-
-$ snap aliases radare2
-Command  Alias  Notes
-radare2  r2     manual
-
-$ snap aliases
-Command  Alias  Notes
-lxd.lxc  lxc    -
-radare2  r2     manual
-
-$ r2 -v
-radare2 5.9.2 0 @ linux-arm-64
-birth: git.5.9.2 2024-05-27__15:16:35
-commit: 5.9.2
-options: gpl release -O1 cs:5 cl:0 make
-```
-
-When a manual alias is set, the original application name will continue to function.
-Removing a manually created alias is also straightforward:
-
-```bash
-$ sudo snap unalias r2
-```
-
-## start
-
-```bash
-$ r2 -d test-gdb
-```
-
-`r2 -A`: run 'aaa' command to analyze all referenced code.
-
-```bash
-$ r2 -Ad test-gdb
-```
-
-Open file in write mode:
-
-```bash
-$ r2 -Adw test-gdb
-```
-
-whereis/which shell command:
-
-```bash
-[0x000000000000]> wh r2
-/snap/radare2/2571/bin/r2
-[0x000000000000]> wh rabin2
-/snap/radare2/2571/bin/rabin2
-```
-
-You can run radare2 toolset utilities such as `rabin2`, `rax2`, `ragg2`, `rafind2` directly from the r2 console.
-
-### reopen
-
-list opened files:
-
-```bash
-| o                         list opened files
-| ob[?] [lbdos] [...]       list opened binary files backed by fd
-| oo[?][+bcdnm]             reopen current file (see oo?) (reload in rw or debugger)
-```
-
-Check current opened/debugging file:
-
-```bash
-[0x000000000000]> i ~baddr
-baddr    0xaaaacb8f0000
-
-[0x000000000000]> i ~^file
-file     /home/pifan/Projects/cpp/test-gdb
-
-[0x000000000000]> ob
-* 0 3 arm-64 ba:0xaaaacb8f0000 sz:8361 /home/pifan/Projects/cpp/test-gdb
-```
-
-reopen current file:
-
-```bash
-[0x000000000000]> oo?
-Usage: oo [arg]  Map opened files
-| oo           reopen current file
-| oo+          reopen in read-write
-| oob [baddr]  reopen loading rbin info (change base address?)
-| ooc          reopen core with current file
-| ood[?]       reopen in debug mode
-| oom[?]       reopen in malloc://
-| oon          reopen without loading rbin info
-| oon+         reopen in read-write mode without loading rbin info
-| oonn         reopen without loading rbin info, but with header flags
-| oonn+        reopen in read-write mode without loading rbin info, but with
-```
-
-reload current file:
-
-```bash
-[0x000000000000]> do?
-Usage: do   # Debug (re)open commands
-| do            open process (reload, alias for 'oo')
-| doo [args]    Reopen in debug mode with args (alias for 'ood')
-| doof [args]   Reopen in debug mode from file (alias for 'oodf')
-```
-
-### shell
-
-The `!` prefix is used to execute a command in shell context.
-
-List the toolset utility binutils with the same directory:
-
-```bash
-[0x000000000000]> !ls -l /snap/radare2/2571/bin/
-```
-
-Execute external shell to read ELF headers:
-
-```bash
-[0x000000000000]> !readelf -h test-gdb
-[0x000000000000]> !objdump -f test-gdb
-```
-
-Execute radare2 internal command with external/internal mode:
-
-```bash
-[0x000000000000]> !radare2.rabin2 -I test-gdb
-[0x000000000000]> rabin2 -I test-gdb
-[0x000000000000]> iI
-
-[0x000000000000]> rabin2 -e test-gdb
-[0x000000000000]> ie
-```
-
-Read section headers from both external/internal mode:
-
-```bash
-[0x000000000000]> ! readelf -SW a.out
-[0x000000000000]> ! objdump -hw a.out
-[0x000000000000]> rabin2 -S test-gdb
-[0x000000000000]> iS
-```
-
-Read segments from internal mode:
-
-```bash
-[0x000000000000]> rabin2 -SSS test-gdb
-[0x000000000000]> rabin2 -SS test-gdb
-[0x000000000000]> iSS
-```
-
-The standard UNIX pipe `|` is also available in the radare2 shell. You can use it to filter the output of an r2 command with any shell program that reads from stdin, such as `grep`, `less`, `wc`. If you do not want to spawn anything, or you can’t, or the target system does not have the basic UNIX tools you need (Windows or embedded users), you can also use the built-in grep (`~`).
-
-```bash
-[0x000000000000]> # i ~baddr
-[0x000000000000]> i | grep baddr
-baddr    0xaaaacb8f0000
-
-[0x000000000000]> # i ~^file
-[0x000000000000]> i | grep ^file
-file     /home/pifan/Projects/cpp/test-gdb
-```
-
-Combining internal and external commands via pipe to extract the current filename for further use.
-
-```bash
-[0x000000000000]> ob | awk '{print $NF}'
-/home/pifan/Projects/cpp/test-gdb
-[0x000000000000]> i | awk '/^file/ {print $NF}'
-/home/pifan/Projects/cpp/test-gdb
-```
-
-## analysis
-
-[Radare2 Book: 8. Analysis](https://book.rada.re/analysis/intro.html)
-
-Code analysis is the process of finding patterns, combining information from different sources and process the disassembly of the program in multiple ways in order to understand and extract more details of the logic behind the code.
-
-Radare2 has many different code analysis techniques implemented under different commands and configuration options, and it's important to understand what they do and how that affects in the final results before going for the default-standard `aaaaa` way because on some cases this can be too slow or just produce false positive results.
-
-As long as the whole functionalities of `r2` are available with the API as well as using commands. This gives you the ability to implement your own analysis loops using any programming language, even with `r2` oneliners, shellscripts, or analysis or core native plugins.
-
-The analysis will show up the *internal* data structures to identify basic blocks, function trees and to extract opcode-level information.
-
-The most common radare2 analysis command sequence is `aa`, which stands for "*analyze all*". That all is referring to all symbols and entry-points. If your binary is stripped you will need to use other commands like `aaa`, `aab`, `aar`, `aac` or so.
-
-Take some time to understand what each command does and the results after running them to find the best one for your needs.
-
-```bash
-Usage: aa[0*?]   # see also 'af' and 'afna'
-| aa                     alias for 'af@@ sym.*;af@entry0;afva'
-| aaa[?]                 autoname functions after aa (see afna)
-| aab                    abb across bin.sections.rx
-| aac [len]              analyze function calls (af @@ `pi len~call[1]`)
-| aac* [len]             flag function calls without performing a complete analysis
-| aar[?] [len]           analyze len bytes of instructions for references
-```
-
-Begin with executing `aa` (analyse all) or `aaa` to make our life easier.
-
-```bash
-[0x000000000000]> aa
-INFO: Analyze all flags starting with sym. and entry0 (aa)
-INFO: Analyze imports (af@@@i)
-INFO: Analyze entrypoint (af@ entry0)
-INFO: Analyze symbols (af@@@s)
-INFO: Recovering variables
-INFO: Analyze all functions arguments/locals (afva@@@F)
-
-[0x000000000000]> aaa
-INFO: Analyze all flags starting with sym. and entry0 (aa)
-INFO: Analyze imports (af@@@i)
-INFO: Analyze entrypoint (af@ entry0)
-INFO: Analyze symbols (af@@@s)
-INFO: Recovering variables
-INFO: Analyze all functions arguments/locals (afva@@@F)
-INFO: Analyze function calls (aac)
-INFO: Analyze len bytes of instructions for references (aar)
-INFO: Finding and parsing C++ vtables (avrr)
-INFO: Analyzing methods
-INFO: Finding function preludes (aap)
-INFO: Finding xrefs in noncode sections (e anal.in=io.maps.x; aav)
-INFO: Skipping function emulation in debugger mode (aaef)
-INFO: Recovering local variables (afva)
-INFO: Skipping type matching analysis in debugger mode (aaft)
-INFO: Propagate noreturn information (aanr)
-INFO: Use -AA or aaaa to perform additional experimental analysis
-```
-
-After the analysis, radare2 associates names to interesting offsets in the file such as Sections, Function, Symbols, and Strings. Those names are called *`flags`*. Flags can be grouped into *`flag spaces`*. A flag space is a namespace for flags of similar characteristics or type. To list the flag spaces run `fs`.
-
-We can choose a flag space using `fs <flagspace>` and print the flags it contains using `f`.
-
-```bash
-[0xaaaae4870754]> fs
-    0 * classes
-    5 * format
-  678 * functions
-    5 * imports
-   67 * registers
-   28 * sections
-   10 * segments
-    2 * strings
-   34 * symbols
-[0xaaaae4870754]> fs strings; f
-0xaaaae4870838 21 str.result_1_100____ld_n
-0xaaaae4870850 20 str.result_1_250____d_n
-[0xaaaae4870754]> fs imports; f
-0xaaaae48705f0 16 sym.imp.__libc_start_main
-0xaaaae4870600 16 sym.imp.__cxa_finalize
-0xaaaae4870610 16 loc.imp.__gmon_start__
-0xaaaae4870620 16 sym.imp.abort
-0xaaaae4870630 16 sym.imp.printf
-[0xaaaae4870754]> fs symbols; f
-```
 
 ## i Mode
 
@@ -589,6 +208,112 @@ Usage: p[=68abcdDfiImrstuxz] [arg|len] [@addr]
 | popd[-a][-h]            pop dir off top of stack and cd to it
 ```
 
+### pf
+
+```bash
+[0xffffa4386c40]> pf?
+Usage: pf[.k[.f[=v]]|[v]]|[n]|[0|cnt][fmt] [a0 a1 ...]
+Commands:
+| pf fmt                     show data using the given format-string. See 'pf??' and 'pf???'.
+| pf?                        help on commands
+| pf??                       help on format characters
+| pf???                      show usage examples
+| pf* fmt_name|fmt           show data using (named) format as r2 flag create commands
+| pf.                        list all format definitions
+| pf.fmt_name                show data using named format
+| pf.fmt_name.field_name     show specific data field using named format
+| pf.fmt_name.field_name=33  set new value for the specified field in named format
+| pf.fmt_name.field_name[i]  show element i of array field_name
+| pf.fmt_name [0|cnt]fmt     define a new named format
+| pf?fmt_name                show the definition of a named format
+| pfb binfmt                 binary format
+| pfc fmt_name|fmt           show data using (named) format as C string
+| pfd.fmt_name               show data using named format as graphviz commands
+| pfj fmt_name|fmt           show data using (named) format in JSON
+| pfo fdf_name               load a Format Definition File (fdf)
+| pfo                        list all format definition files (fdf)
+| pfq fmt ...                quiet print format (do now show address)
+| pfs[.fmt_name|fmt]         print the size of (named) format in bytes
+| pfv.fmt_name[.field]       print value(s) only for named format. Useful for one-liners
+
+[0xffffa4386c40]> pf??
+Usage: pf[.k[.f[=v]]|[v]]|[n]|[0|cnt][fmt] [a0 a1 ...]
+Format:
+|  b       byte (unsigned)
+|  B       resolve enum bitfield (see t?)
+|  c       char (signed byte)
+|  C       byte in decimal
+|  d       dword (4 bytes in hex) (see 'i' and 'x')
+|  D       disassemble one opcode
+|  e       temporally swap endian
+|  E       resolve enum name (see t?)
+|  f       float value (4 bytes)
+|  F       double value (8 bytes)
+|  G       long double value (16 bytes (10 with padding))
+|  i       signed integer value (4 bytes) (see 'd' and 'x')
+|  n       next char specifies size of signed value (1, 2, 4 or 8 byte(s))
+|  N       next char specifies size of unsigned value (1, 2, 4 or 8 byte(s))
+|  o       octal value (4 byte)
+|  p       pointer reference (2, 4 or 8 bytes)
+|  q       quadword (8 bytes)
+|  Q       uint128_t (16 bytes)
+|  r       CPU register `pf r (eax)plop`
+|  s       32bit pointer to string (4 bytes)
+|  S       64bit pointer to string (8 bytes)
+|  t       UNIX timestamp (4 bytes)
+|  T       show Ten first bytes of buffer
+|  u       uleb128 (variable length)
+|  w       word (2 bytes unsigned short in hex)
+|  x       0xHEX value and flag (fd @ addr) (see 'd' and 'i')
+|  X       show formatted hexpairs
+|  z       null terminated string
+|  Z       null terminated wide string
+|  ?       data structure `pf ? (struct_name)example_name`
+|  *       next char is a pointer (honors asm.bits)
+|  +       toggle show flags for each offset
+|  :       skip 4 bytes
+|  .       skip 1 byte
+|  ;       rewind 4 bytes
+|  ,       rewind 1 byte
+```
+
+### px
+
+Show hexdump of N bytes.
+
+```bash
+[0xffffbdb54c40]> x?
+Usage: px[0afoswqWqQ][f]   # Print heXadecimal
+| px                show hexdump
+| px--[n]           context hexdump (the hexdump version of pd--3)
+| px/               same as x/ in gdb (help x)
+| px*               same as pc* or p8*, print r2 commands as in hexdump
+| px0               8bit hexpair list of bytes until zero byte
+| pxa               show annotated hexdump
+| pxA[?]            show op analysis color map
+| pxb               dump bits in hexdump form
+| pxB               dump bits in bitmap form
+| pxc               show hexdump with comments
+| pxd[?1248]        signed integer dump (1 byte, 2 and 4)
+| pxe               emoji hexdump! :)
+| pxf               show hexdump of current function
+| pxh               show hexadecimal half-words dump (16bit)
+| pxH               same as above, but one per line
+| pxi               HexII compact binary representation
+| pxl               display N lines (rows) of hexdump
+| pxo               show octal dump
+| pxq               show hexadecimal quad-words dump (64bit)
+| pxQ[q]            same as above, but one per line
+| pxr[1248][qj]     show hexword references (q=quiet, j=json)
+| pxs               show hexadecimal in sparse mode
+| pxt[*.] [origin]  show delta pointer table in r2 commands
+| pxu[?1248]        unsigned integer dump (1 byte, 2 and 4)
+| pxw               show hexadecimal words dump (32bit)
+| pxW[q]            same as above, but one per line (q=quiet)
+| pxx               show N bytes of hex-less hexdump
+| pxX               show N words of hex-less hexdump
+```
+
 ### pd
 
 ```bash
@@ -627,17 +352,49 @@ Usage: p[dD][ajbrfils] [[-]len]   # Print N bytes/instructions bw/forward
 | pdx [hex]        alias for pad or pix
 ```
 
-Disassemble 10 instructions following pc:
+Print/Disassemble 10 instructions following pc:
 
 ```bash
+[0x000000000000]> pi 10
+
 [0x000000000000]> pd 10
 
 ```
 
+1. print the instruction to be executed next with.
+
+> gdb: `x/i $pc`; `disassemble $pc, $pc+4`.
+> r2: `pd 1`
+
+2. disassemble 2 instructions above, exclude pc
+
+> gdb: `x/2i $pc-8`; `disassemble $pc-8, $pc`
+> r2: `pd -2`
+
+3. disassemble 2 instructions below, exclude pc
+
+> gdb: `x/2i $pc+4`; `disassemble $pc+4, $pc+12`
+> r2: `pd 2 @ +$l`
+
+4. disassemble 3 instructions backwards, include pc
+
+> gdb: `x/3i $pc-8`; `disassemble $pc-8, $pc+4`
+> r2: `pd 3 @ -2*$l`
+
+5. disassemble 3 instructions forwards, include pc
+
+> gdb: `x/3i $pc`; `disassemble $pc, $pc+12`
+> r2: `pd 3`
+
+6. context disassembly of 3 instructions
+
+> gdb: `x/7i $pc-12`; `disassemble $pc-12, $pc+16`
+> r2: `pd 7 @ -3*$l`. `pd-- 3` - three above, two below.
+
 Disassemble a symbol/function at a memory address:
 
 ```bash
-[0x000000000000]> is
+[0x000000000000]> is ~func
 79  0x00000754 0xaaaae7680754 GLOBAL FUNC   76       func
 
 [0x000000000000]> pd @0xaaaae7680754
@@ -668,6 +425,10 @@ After execute `aa` to analyze all, we can disassemble function by symbol name:
 [0x000000000000]> s sym.func; pdf
 [0x000000000000]> pdf @ sym.func
 ```
+
+For given address <addr\>, try `pdf @addr`/`pd 1 @addr` to detect the symbol/label name.
+
+> Equivalent to `info symbol ADDR` in GDB.
 
 ## d Mode
 
@@ -778,16 +539,26 @@ Finally, we can `pd` the address to see the corresponding instructions.
 [0x000000000000]> dr?
 Usage: dr  Registers commands
 | dr                   show 'gpr' registers
-
 | dr=                  show registers in columns
+
 | dr?<register>        show value of given register
 | dr??                 same as dr?`drp~=[0]+` # list all reg roles alias names and values
 
+| drl[j]               list all register names
+| dro                  show previous (old) values of registers
+| drp[?]               display current register profile
 | drr                  show registers references (telescoping)
 | drs[?]               stack register states
 | drt[?]               show all register types
 | drw <hexnum>         set contents of the register arena
 ```
+
+!!! example "dr - show registers"
+
+    [0xffffbdb54c40]> dr?pc
+    0xffffbdb54c40
+    [0xffffbdb54c40]> dr?sp
+    0xffffdf34f0b0
 
 ### breakpoints
 
@@ -807,15 +578,14 @@ Usage: db   # Breakpoints commands
 | dbC <addr> <cmd>          run command but continue until <cmd> returns zero
 | dbd <addr>                disable breakpoint
 | dbe <addr>                enable breakpoint
-| dbs <addr>                toggle breakpoint
-
-| dbi                       list breakpoint indexes
-| dbi <addr>                show breakpoint index in givengiven  offset
+| dbs <addr>                toggle breakpoin| dbi <addr>                show breakpoint index in givengiven  offset
 | dbi.                      show breakpoint index in current offset
-| dbi- <idx>                remove breakpoint by index
+| dbi- <idx>                remo by index
 
 | dbie <idx>                enable breakpoint by index
 | dbid <idx>                disable breakpoint by index
+
+| dbw <addr> <r/w/rw>       add watchpoint
 
 | dbt[?]                    show backtrace. See dbt? for more details
 ```
@@ -824,12 +594,15 @@ Add breakpoint at specified address:
 
 ```bash
 [0x000000000000]> db <addr>
+[0x000000000000]> db 0xaaaae48e0640
 ```
 
 After execute `aa` to analyze all, we can set breakpoints by symbol name:
 
 ```bash
 [0x000000000000]> db entry0
+[0x000000000000]> db entry0-$l
+[0x000000000000]> db entry0-2*$l
 [0x000000000000]> db main
 [0x000000000000]> db sym.main
 [0x000000000000]> db sym.func
@@ -935,6 +708,8 @@ Visual Debugger Help:
 ### v
 
 Type `!`(equivalent to `:v`) from Visual mode, or type `v` from r2 console to enter Visual Panels mode.
+
+> It's sort of GDB's TUI mode and the default context mode of gdb-pwndbg.
 
 ```bash
 [0x000000000000]> v?

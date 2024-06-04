@@ -194,6 +194,15 @@ If you use defaults for *nfu*, you need not type the slash ‘`/`’. Several co
 
 [10.12 Convenience Variables](https://sourceware.org/gdb/current/onlinedocs/gdb.html/Convenience-Vars.html)
 
+In GDB, the value of `$` is the value returned from the previous command.
+
+```bash
+pwndbg> p/x 1989+0604
+$2 = 0x949
+pwndbg> p $
+$3 = 2377
+```
+
 `$_`: The variable `$_` is automatically set by the `x` command to the last *address* examined (see Examining Memory). Other commands which provide a default address for `x` to examine also set `$_` to that address; these commands include info line and info breakpoint. The type of `$_` is void * except when set by the `x` command, in which case it is a pointer to the type of `$__`.
 
 `$__`: The variable `$__` is automatically set by the `x` command to the *value* found in the last address examined. Its type is chosen to match the format in which the data was printed.

@@ -131,6 +131,11 @@ gef➤  gef save
 
 `context` Print out the current register, instruction, and stack context.
 
+### help
+
+**gdb**: `help cmd`, e.g., `help starti`, refer to [GDB manual & help](./0-gdb-man-help.md).
+**pwndbg**: `cmd [-h|--help]`, e.g., `entry -h`, `sstart -h`.
+
 ### config
 
 - `config` Shows pwndbg-specific configuration.

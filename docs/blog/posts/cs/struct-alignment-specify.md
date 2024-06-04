@@ -361,6 +361,7 @@ MSVC 2022 设置 vcvars64.bat，编译 `cl /std:c11 struct-packed-aligned.c && s
     !!! info "gdb ptype /o "
 
         ```Shell
+        # pwndbg> dt struct\ Readout
         (gdb) ptype /o struct Readout
         /* offset      |    size */  type = struct Readout {
         /*      0      |       1 */    char hour;
@@ -371,6 +372,7 @@ MSVC 2022 设置 vcvars64.bat，编译 `cl /std:c11 struct-packed-aligned.c && s
 
                                     /* total size (bytes):   12 */
                                     }
+        # pwndbg> dt struct\ st_dci
         (gdb) ptype /o struct st_dci
         /* offset      |    size */  type = struct st_dci {
         /*      0      |       8 */    double d;
@@ -380,6 +382,7 @@ MSVC 2022 设置 vcvars64.bat，编译 `cl /std:c11 struct-packed-aligned.c && s
 
                                     /* total size (bytes):   16 */
                                     }
+        # pwndbg> dt struct\ st_cdi
         (gdb) ptype /o struct st_cdi
         /* offset      |    size */  type = struct st_cdi {
         /*      0      |       1 */    char c;

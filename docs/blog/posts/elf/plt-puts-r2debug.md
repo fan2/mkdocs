@@ -14,7 +14,7 @@ comments: true
 
 [Previously](./plt-puts-pwndbg.md), we've dynamically analysed how shared dynamic symbols such as `puts` are resolved and relocated at runtime using gdb-pwndbg.
 
-In this article, we'll do the same work, but change our dynamic analysis tool to the popular open-source SRE toolkit r2(aka [radare2](../toolchain/sre-radare2.md)).
+In this article, we'll do the same work, but change our dynamic analysis tool to the popular open-source SRE toolkit r2(aka [radare2](../toolchain/radare2-basics.md)).
 
 <!-- more -->
 
@@ -240,7 +240,8 @@ As `readelf -lW a.out` indicated, it should be aligned at 0x10000(64K), so the s
 
 Type `ii` to list the symbols imported from other libraries.
 
-> The vaddr of relocated symbol `rsym.puts` in PLT is 0xaaaadc760630.
+> The vaddr of relocated symbol `rsym.puts` in PLT can be calculated as follows.
+> VA = baddr+offset/RVA = 0xaaaadc760000 + 0x00000630 = 0xaaaadc760630.
 
 ```bash
 [0xffff98492c40]> ii
@@ -262,7 +263,8 @@ nth vaddr          bind   type   lib name
 
 Type `ir` to list the relocations.
 
-> The offset of the relocated symbol in GOT, `reloc.puts`, is 0x00000fc8.
+> The vaddr offset of the relocated symbol(`reloc.puts`) in GOT is 0x00010fc8.
+> VA = baddr+offset/RVA = 0xaaaadc760000 + 0x00010fc8 = 0xaaaadc770fc8.
 
 ```bash
 [0xffff98492c40]> ir
@@ -289,12 +291,18 @@ vaddr          paddr      type   ntype name
 13 relocations
 ```
 
-Let's try to disassemble the relocation of `__libc_start_main`.
-
-> Refer to the output of `ir` to see the vaddr.
+Try to show context disassembly of 15 instructions around puts.
 
 ```bash
-[0xffff98492c40]> pd @0xaaaadc770fa8
+[0xffff98492c40]> pd-- 15 @0xaaaadc770fc8
+            0xaaaadc770f8c      00000000       invalid
+            ;-- section..got:
+            0xaaaadc770f90      00000000       invalid                 ; [21] -rw- section size 112 named .got
+            0xaaaadc770f94      00000000       invalid
+            0xaaaadc770f98      00000000       invalid
+            0xaaaadc770f9c      00000000       invalid
+            0xaaaadc770fa0      00000000       invalid
+            0xaaaadc770fa4      00000000       invalid
             ;-- reloc.__libc_start_main:
             0xaaaadc770fa8      d0050000       invalid
             0xaaaadc770fac      00000000       invalid
@@ -330,14 +338,10 @@ Let's try to disassemble the relocation of `__libc_start_main`.
             ;-- __data_start:
             ; XREFS: DATA 0xaaaadc760690  DATA 0xaaaadc760698  DATA 0xaaaadc7606c0  DATA 0xaaaadc7606c8  DATA 0xaaaadc76070c
             ; XREFS: DATA 0xaaaadc760724
-            0xaaaadc771000      00000000       invalid                 ; [22] -rw- section size 16 named .data
-            0xaaaadc771004      00000000       invalid
-            ;-- __dso_handle:
-            0xaaaadc771008      08100100       invalid
-            0xaaaadc77100c      00000000       invalid
-            ;-- section..bss:
-            0xaaaadc771010      00000000       invalid                 ; [23] -rw- section size 8 named .bss
+            0xaaaae0071000      00000000       invalid                 ; [22] -rw- section size 16 named .data
 ```
+
+From the output above, GOT entry for `puts` is labelled as `reloc.puts` by r2.
 
 Get the value(address) of label `reloc.puts` by evaluation:
 
@@ -346,15 +350,24 @@ Get the value(address) of label `reloc.puts` by evaluation:
 0xaaaadc770fc8
 ```
 
-## entry0 -> main
+Use the `x` command to see what is stored at 0xaaaadc770fc8:
 
 ```bash
-[0xffffbb1c0c40]> rabin2 -l a.out
-[Linked libraries]
-libc.so.6
-
-1 library
+[0xffff98492c40]> pxq $w @ 0xaaaadc770fc8
+0xaaaadc770fc8  0x00000000000005d0
 ```
+
+According to the hexdump content of the `.got` section, it's originally filled with 0x00000000000005d0, which is the paddr of the `.plt` section. It's the original lineage of plt and got.
+
+- iS
+- !readelf -SW a.out
+- !readelf -R .rela.plt -R .plt -R .got a.out
+- !objdump -j .rela.plt -j .plt -j .got -s a.out
+- !rabin2 -S a.out
+
+Since *libc.so* is not loaded at the moment, the GOT relocs entry is not resolved. In other words, the dynamic symbol would only be resolved until its module is loaded.
+
+## entry0 -> main
 
 ### dcu entry0
 
@@ -393,6 +406,31 @@ Type `pdf` to disassemble function at current pc, that is `entry0`:
 │           0xaaaadc760664      030080d2       mov x3, 0
 │           0xaaaadc760668      040080d2       mov x4, 0
 └           0xaaaadc76066c      e1ffff97       bl sym.imp.__libc_start_main ; int __libc_start_main(func main, int argc, char **ubp_av, func init, func fini, func rtld_fini, void *stack_end)
+```
+
+Disassemble 8 instructions backwards.
+
+```bash
+[0xaaaadc760640]> pd -8
+            ;-- rsym.abort:
+┌ 16: void sym.imp.abort ();
+│ rg: 0 (vars 0, args 0)
+│ bp: 0 (vars 0, args 0)
+│ sp: 0 (vars 0, args 0)
+│           0xaaaadc760620      90000090       adrp x16, map._home_pifan_Projects_cpp_a.out.rw_ ; 0xaaaae6890000
+│           0xaaaadc760624      11e247f9       ldr x17, [x16, 0xfc0]
+│           0xaaaadc760628      10023f91       add x16, x16, 0xfc0
+└           0xaaaadc76062c      20021fd6       br x17
+            ;-- rsym.puts:
+            ; CALL XREF from main @ 0xaaaadc76076c(x)
+┌ 16: int sym.imp.puts (const char *s);
+│ rg: 0 (vars 0, args 0)
+│ bp: 0 (vars 0, args 0)
+│ sp: 0 (vars 0, args 0)
+│           0xaaaadc760630      90000090       adrp x16, map._home_pifan_Projects_cpp_a.out.rw_ ; 0xaaaae6890000
+│           0xaaaadc760634      11e647f9       ldr x17, [x16, 0xfc8]
+│           0xaaaadc760638      10223f91       add x16, x16, 0xfc8
+└           0xaaaadc76063c      20021fd6       br x17
 ```
 
 ### libc vmmap
@@ -525,17 +563,26 @@ Refer to the memory map dumped by `dm`, `map._home_pifan_Projects_cpp_a.out.rw_`
 
 `ADRP` will load its 4K page-boundary aligned address(`:pg_hi21:`) to x16. The result is the same as the start of the text segment LOAD0, which is already aligned at 0x10000(64K)(refer to the program headers dumped by `readelf -lW a.out`).
 
-After `ldr x17, [x16, 0xfc8]!`, x17 will load the *address* stored in 0x0000aaaadc770fc8.
+After `ldr x17, [x16, 0xfc8]!`, x17 will load the *address* stored in `reloc.puts`.
 
-1. segment_addr+paddr(offset) = 0x0000aaaadc770000+0xfc8 = 0x0000aaaadc770fc8
-2. baddr+vaddr = 0xaaaadc760000 + 0x00010fc8 = 0x0000aaaadc770fc8
+> seg_base+offset/paddr = 0x0000aaaadc770000+0xfc8 = 0x0000aaaadc770fc8
 
-Let's examine the memory:
+It matches the output of `ir`, take a look back at chapter *imports/relocations*.
+
+Let's examine the memory and try to dereference it as pointer:
 
 ```bash
-[0xaaaadc760630]> pxq 8 @ 0xaaaadc770000+0xfc8
+[0xaaaadc760630]> pxq $w @ 0xaaaadc770000+0xfc8
 0xaaaadc770fc8  0x0000ffff9832ae70                       p.2.....
+[0xaaaadc760630]> pfp @ 0xaaaadc770fc8
+0xaaaadc770fc8 = (qword)0x0000ffff9832ae70
+[0xaaaadc760630]> pfS @ 0xaaaadc770fc8
+0xaaaadc770fc8 = 0xaaaadc770fc8 -> 0xffff9832ae70 "{"
 ```
+
+Actually, when *libc.so* is loaded, the value of the pointer is immediately updated from 0x00000000000005d0.
+
+> The `dbw` command is provided to add watchpoints. However, it doesn't work as well as expected.
 
 The address `0x0000ffff9832ae70` resides in module `libc.so`. To be precise, it's located between the address range, 0x0000ffff982c0000 - 0x0000ffff98448000, of which is mapped from the text segment LOAD0.
 
@@ -581,7 +628,7 @@ nth paddr      vaddr          bind   type  size  lib name
 
 Look back in the *libc vmmap* section, the vaddr of puts/_IO_puts 0xffff9832ae70 is between 0x0000ffff982c0000 - 0x0000ffff98448000, that is the area of the LOAD0 text segment.
 
-Well, keep in mind `vaddr = baddr + paddr`.
+Well, keep in mind `VA = baddr+offset/RVA`.
 
 According to the latest `dm` output(linkmap), the *Load Bias* of libc.so is 0xffff982c0000. It's also the start address of text segment LOAD0 according to the latest `dmm` output(vmmap), 0x0000ffff982c0000.
 

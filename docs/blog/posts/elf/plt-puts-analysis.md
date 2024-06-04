@@ -20,6 +20,29 @@ In this article I'll have a look at how the shared dynamic symbol such as `puts`
 
 <!-- more -->
 
+## needed dependency
+
+As shown below, the DYN PIE ELF `a.out` has linked `libc.so`.
+This means that it needs `libc.so` as a dependency to run properly.
+
+```bash
+pwndbg> !readelf -d a.out | head -4
+
+Dynamic section at offset 0xda0 contains 27 entries:
+  Tag        Type                         Name/Value
+ 0x0000000000000001 (NEEDED)             Shared library: [libc.so.6]
+
+pwndbg> !objdump -x a.out | sed -n '/Dynamic Section/{N;p}'
+Dynamic Section:
+  NEEDED               libc.so.6
+
+pwndbg> !radare2.rabin2 -l a.out
+[Linked libraries]
+libc.so.6
+
+1 library
+```
+
 ## entry point paddr
 
 `file`: tests the file in an attempt to classify it.
@@ -303,8 +326,19 @@ vaddr      paddr      type   ntype name
 `readelf [-R <number or name>|--relocated-dump=<number or name>]`: dump the relocated contents of section.
 
 ```bash
-# readelf -x .plt -x .got a.out
-$ readelf -R .plt -R .got a.out
+# readelf -x .plt -x .got -x .rela.plt a.out
+$ readelf -R .plt -R .got -R .rela.plt a.out
+
+Hex dump of section '.rela.plt':
+  0x00000540 a80f0100 00000000 02040000 03000000 ................
+  0x00000550 00000000 00000000 b00f0100 00000000 ................
+  0x00000560 02040000 05000000 00000000 00000000 ................
+  0x00000570 b80f0100 00000000 02040000 06000000 ................
+  0x00000580 00000000 00000000 c00f0100 00000000 ................
+  0x00000590 02040000 07000000 00000000 00000000 ................
+  0x000005a0 c80f0100 00000000 02040000 08000000 ................
+  0x000005b0 00000000 00000000                   ........
+
 
 Hex dump of section '.plt':
   0x000005d0 f07bbfa9 90000090 11d247f9 10823e91 .{........G...>.
@@ -330,10 +364,19 @@ Hex dump of section '.got':
 `objdump [-j section|--section=section]`: display information for section name.
 
 ```bash
-$ objdump -j .plt -j .got -s a.out
+$ objdump -j .plt -j .got -j .rela.plt -s a.out
 
 a.out:     file format elf64-littleaarch64
 
+Contents of section .rela.plt:
+ 0540 a80f0100 00000000 02040000 03000000  ................
+ 0550 00000000 00000000 b00f0100 00000000  ................
+ 0560 02040000 05000000 00000000 00000000  ................
+ 0570 b80f0100 00000000 02040000 06000000  ................
+ 0580 00000000 00000000 c00f0100 00000000  ................
+ 0590 02040000 07000000 00000000 00000000  ................
+ 05a0 c80f0100 00000000 02040000 08000000  ................
+ 05b0 00000000 00000000                    ........
 Contents of section .plt:
  05d0 f07bbfa9 90000090 11d247f9 10823e91  .{........G...>.
  05e0 20021fd6 1f2003d5 1f2003d5 1f2003d5   .... ... ... ..

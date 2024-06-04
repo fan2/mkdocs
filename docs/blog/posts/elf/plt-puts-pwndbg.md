@@ -30,7 +30,27 @@ pwndbg: created $rebase, $base, $ida GDB functions (can be used with print/break
 pwndbg>
 ```
 
+The programme is not running and is currently inactive.
+The GDB console prompt is waiting for our command.
+So let's do some static analysis in preparation.
+
 ## static analysis
+
+### status info
+
+`info program` -- Execution status of the program.
+
+```bash
+pwndbg> info program
+The program being debugged is not being run.
+```
+
+`info sharedlibrary|dll` -- Status of loaded shared object libraries.
+
+```bash
+pwndbg> info sharedlibrary
+No shared libraries loaded at this time.
+```
 
 ### elfsections
 
@@ -155,6 +175,8 @@ End of assembler dump.
 
 ## ld - starti
 
+To run/start the debugging journey, refer to [GDB Invocation & Quitting](../toolchain/gdb/2-gdb-in-and-out.md) and [pwndbg - Start](https://pwndbg.re/pwndbg/commands/#start).
+
 `starti`: Start the debugged program stopping at the first instruction.
 
 ```bash
@@ -190,7 +212,7 @@ pwndbg> getfile
 '/home/pifan/Projects/cpp/a.out'
 ```
 
-`info program`: Execution status of the program.
+Get the execution status of the program.
 
 ```bash
 pwndbg> i prog
@@ -208,7 +230,7 @@ Calculated VA from /home/pifan/Projects/cpp/a.out = 0xaaaaaaaa0000
 
 ### modules
 
-`info sharedlibrary|dll`: Status of loaded shared object libraries.
+Check the status of the loaded shared object libraries.
 
 ```bash
 pwndbg> i share
@@ -237,6 +259,28 @@ LEGEND: STACK | HEAP | CODE | DATA | RWX | RODATA
     0xfffff7ffc000     0xfffff8000000 rw-p     4000  2a000 /usr/lib/aarch64-linux-gnu/ld-linux-aarch64.so.1
     0xfffffffdf000    0x1000000000000 rw-p    21000      0 [stack]
 ```
+
+`xinfo [$pc]` -- Shows offsets of the specified address from various useful locations.
+
+```bash
+pwndbg> xinfo
+Extended information for virtual address 0xfffff7fd9c40:
+
+  Containing mapping:
+    0xfffff7fc2000     0xfffff7fed000 r-xp    2b000      0 /usr/lib/aarch64-linux-gnu/ld-linux-aarch64.so.1
+
+  Offset information:
+         Mapped Area 0xfffff7fd9c40 = 0xfffff7fc2000 + 0x17c40
+         File (Base) 0xfffff7fd9c40 = 0xfffff7fc2000 + 0x17c40
+Exception occurred: xinfo: 'p_vaddr' (<class 'KeyError'>)
+For more info invoke `set exception-verbose on` and rerun the command
+or debug it by yourself with `set exception-debugger on`
+
+pwndbg> distance pc
+0xfffff7fc2000->0xfffff7fd9c40 is 0x17c40 bytes (0x2f88 words)
+```
+
+> According to the output of `vmmap`, the *Load Bias* of *ld.so* is 0xfffff7fc2000, which is also the start address of the text segment LOAD0(perm=r-xp). Thanks to `xinfo $pc` we know that we are currently running in *ld.so*.
 
 Check the target files being debugged, the addresses of the entry point and the sections have been adapted to the runtime vaddr.
 
@@ -349,17 +393,96 @@ GOT protection: Full RELRO | Found 9 GOT entries passing the filter
 [0xaaaaaaab0ff8] _ITM_registerTMCloneTable -> 0
 ```
 
+As shown above, the first five GOT slots, including 0xaaaaaaab0fc8, are all filled with 0x5d0.
+
+Dereference pointers starting at the address in GOT.
+
+```bash
+pwndbg> x/xg 0xaaaaaaab0fc8
+0xaaaaaaab0fc8 <puts@got.plt>:	0x00000000000005d0
+pwndbg> hexdump 0xaaaaaaab0fc8 8
++0000 0xaaaaaaab0fc8  d0 05 00 00 00 00 00 00                           │........│        │
+pwndbg> telescope 0xaaaaaaab0fc8 1
+00:0000│  0xaaaaaaab0fc8 (puts@got[plt]) ◂— 0x5d0
+```
+
+According to the hexdump content of the `.got` section, it's originally filled with 0x00000000000005d0, which is the paddr of the `.plt` section. It's the original lineage of plt and got.
+
+- !readelf -SW a.out
+- !readelf -R .rela.plt -R .plt -R .got a.out
+- !objdump -j .rela.plt -j .plt -j .got -s a.out
+- !rabin2 -S a.out
+
+Since *libc.so* is not loaded at the moment, the GOT relocs entry is not resolved. In other words, the dynamic symbol would only be resolved until its module is loaded.
+
+You can add a watchpoint as a sentry and stop execution whenever the value at 0xaaaaaaab0fc8 changes.
+
+```bash
+pwndbg> watch *(uintptr_t*)0xaaaaaaab0fc8
+Hardware watchpoint 1: *(uintptr_t*)0xaaaaaaab0fc8
+```
+
+Then specify a command for the given watchpoint. Here we just hexdump the giant word stored in the memory.
+
+```bash
+pwndbg> commands 1
+Type commands for breakpoint(s) 1, one per line.
+End with a line saying just "end".
+>x/xg 0xaaaaaaab0fc8
+>end
+```
+
+Exec `info breakpoints|watchpoints` to check the status of breakpoints/watchpoints.
+
+```bash
+pwndbg> i b
+Num     Type           Disp Enb Address            What
+1       hw watchpoint  keep y                      *(uintptr_t*)0xaaaaaaab0fc8
+        x/xg 0xaaaaaaab0fc8
+```
+
 ## libc - entry
 
 `entry` -- Start the debugged program stopping at its entrypoint address.
 
-```bash
+```bash hl_lines="6-7 10"
 pwndbg> entry
-Temporary breakpoint 1 at 0xaaaaaaaa0640
+Temporary breakpoint 2 at 0xaaaaaaaa0640
+
+Hardware watchpoint 1: *(uintptr_t*)0xaaaaaaab0fc8
+
+Old value = 1488
+New value = 281474840899184
+elf_dynamic_do_Rela (skip_ifunc=<optimized out>, lazy=<optimized out>, nrelative=<optimized out>, relsize=<optimized out>, reladdr=<optimized out>, scope=<optimized out>, map=0xfffff7fff370) at ../sysdeps/aarch64/dl-machine.h:295
+295	../sysdeps/aarch64/dl-machine.h: No such file or directory.
+0xaaaaaaab0fc8 <puts@got.plt>:	0x0000fffff7e7ae70
+
+────────────────────────────────────────────────[ BACKTRACE ]────────────────────────────────────────────────
+ ► 0   0xfffff7fd1258 _dl_relocate_object+2616
+   1   0xfffff7fd1258 _dl_relocate_object+2616
+   2   0xfffff7fdcdf4 dl_main+7796
+   3   0xfffff7fd9310 _dl_sysdep_start+896
+   4   0xfffff7fdacb8 _dl_start+1704
+   5   0xfffff7fdacb8 _dl_start+1704
+   6   0xfffff7fd9c4c _start+12
+─────────────────────────────────────────────────────────────────────────────────────────────────────────────
+```
+
+When entering `entry`, it's expected to drop into CRT(C Run Time) entry point(`_start` defined in crt1.o). The `ld.so`(linker & loader?) will load the needed *libc.so* into memory, meanwhile it invokes subsequent subroutines prefixed with`dl_`(dynamic linking?) to relocate the dynamic symbols imported by the main program.
+
+Specifically, the loader would fix the destination of the GOT entries such as `reloc.puts`. The function pointer of `puts` resides in the address space of libc.so, it's the embodiment of the dynamic symbol `puts@plt`.
+
+While the loader is doing the fix, it hits the watchpoint and throws an interrupt. As highlighted above, `reloc.puts` has been resolved to 0x0000fffff7e7ae70, updated from 1488/0x5d0. See the *plt & got* section for later details.
+
+Continue to run until next breakpoint. Finally, it arrives at the entry point of the CRT.
+
+```bash hl_lines="20"
+pwndbg> c
+Continuing.
 [Thread debugging using libthread_db enabled]
 Using host libthread_db library "/lib/aarch64-linux-gnu/libthread_db.so.1".
 
-Temporary breakpoint 1, 0x0000aaaaaaaa0640 in _start ()
+Temporary breakpoint 2, 0x0000aaaaaaaa0640 in _start ()
 
 ──────────────────────────────────────────────────[ DISASM / aarch64 / set emulate on ]───────────────────────────────────────────────────
  ► 0xaaaaaaaa0640 <_start>       nop
@@ -442,6 +565,26 @@ LEGEND: STACK | HEAP | CODE | DATA | RWX | RODATA
     0xfffff7ffc000     0xfffff7ffe000 r--p     2000  2a000 /usr/lib/aarch64-linux-gnu/ld-linux-aarch64.so.1
     0xfffff7ffe000     0xfffff8000000 rw-p     2000  2c000 /usr/lib/aarch64-linux-gnu/ld-linux-aarch64.so.1
     0xfffffffdf000    0x1000000000000 rw-p    21000      0 [stack]
+```
+
+Check `xinfo` against `vmmap` to see which module we're running now.
+
+```bash
+pwndbg> xinfo
+Extended information for virtual address 0xaaaaaaaa0640:
+
+  Containing mapping:
+    0xaaaaaaaa0000     0xaaaaaaaa1000 r-xp     1000      0 /home/pifan/Projects/cpp/a.out
+
+  Offset information:
+         Mapped Area 0xaaaaaaaa0640 = 0xaaaaaaaa0000 + 0x640
+         File (Base) 0xaaaaaaaa0640 = 0xaaaaaaaa0000 + 0x640
+Exception occurred: xinfo: 'p_vaddr' (<class 'KeyError'>)
+For more info invoke `set exception-verbose on` and rerun the command
+or debug it by yourself with `set exception-debugger on`
+
+pwndbg> distance pc
+0xaaaaaaaa0000->0xaaaaaaaa0640 is 0x640 bytes (0xc8 words)
 ```
 
 Check the target files being debugged, sections corresponding to `libc.so`'s segments have emerged from the water.
@@ -563,7 +706,8 @@ What remains to be seen is how the symbol `puts@plt` is connected with `libc/put
 
 That's exactly the GOT's mission! Let's delve deeper and lift the veil.
 
-> `got -r puts`: Filter by symbol name *puts*.
+> `got` support positional argument to filter results by symbol name.
+> `got -r puts`: filter GOT entries by fuzzy matching *puts*.
 
 ```bash linenums="1" hl_lines="13"
 pwndbg> got
@@ -592,8 +736,6 @@ Check the GOT entry above for `puts@plt`, it holds the address of `libc/puts`.
 Dereference pointers starting at the address in GOT.
 
 ```bash
-pwndbg> x/xg 0xaaaaaaab0fc8
-0xaaaaaaab0fc8 <puts@got.plt>:	0x0000fffff7e7ae70
 pwndbg> hexdump 0xaaaaaaab0fc8 8
 +0000 0xaaaaaaab0fc8  70 ae e7 f7 ff ff 00 00                           │p.......│        │
 pwndbg> telescope 0xaaaaaaab0fc8 1
@@ -630,7 +772,7 @@ Searching libc.so.6, `puts` is a weak symbol that shares the same address with a
 
 The value of symbol `puts` is `0x000000000006ae70`, which is the static absolute paddr and would be adjusted to vaddr when loaded into memory.
 
-According to the latest `linkmap` output, the *Load Bias* of libc.so is 0xfffff7e10000, which is also the start address of the text segment LOAD0(perm=r-xp) according to the latest `vmmap` output.
+According to the latest `linkmap` output, the *Load Bias* of *libc.so* is 0xfffff7e10000, which is also the start address of the text segment LOAD0(perm=r-xp) according to the latest `vmmap` output.
 
 Note that `vaddr = baddr + paddr`. Just add paddr/offset to the baddr/bias to check the correctness of the formula.
 
@@ -664,22 +806,18 @@ Set a breakpoint at `main`.
 pwndbg> i addr main
 Symbol "main" is at 0xaaaaaaaa0754 in a file compiled without debugging.
 pwndbg> b *main
-Breakpoint 2 at 0xaaaaaaaa0754
+Breakpoint 3 at 0xaaaaaaaa0754
 pwndbg> b main
-Breakpoint 3 at 0xaaaaaaaa076c
-pwndbg> i b
-Num     Type           Disp Enb Address            What
-2       breakpoint     keep y   0x0000aaaaaaaa0754 <main>
-3       breakpoint     keep y   0x0000aaaaaaaa076c <main+24>
+Breakpoint 4 at 0xaaaaaaaa076c
 ```
 
 Continue to resume program execution until <main\>.
 
-```bash
+```bash hl_lines="7"
 pwndbg> c
 Continuing.
 
-Breakpoint 2, 0x0000aaaaaaaa0754 in main ()
+Breakpoint 3, 0x0000aaaaaaaa0754 in main ()
 
 ──────────────────────────────────────────────────────[ DISASM / aarch64 / set emulate on ]───────────────────────────────────────────────────────
  ► 0xaaaaaaaa0754 <main>       stp    x29, x30, [sp, #-0x20]!
@@ -709,11 +847,11 @@ Breakpoint 2, 0x0000aaaaaaaa0754 in main ()
 
 Continue to run until <main+24\>.
 
-```bash
+```bash hl_lines="13"
 pwndbg> c
 Continuing.
 
-Breakpoint 3, 0x0000aaaaaaaa076c in main ()
+Breakpoint 4, 0x0000aaaaaaaa076c in main ()
 
 ──────────────────────────────────────────────────────[ DISASM / aarch64 / set emulate on ]───────────────────────────────────────────────────────
    0xaaaaaaaa0754 <main>       stp    x29, x30, [sp, #-0x20]!
@@ -756,26 +894,19 @@ pwndbg> dumpargs
 Set a breakpoint at `puts@plt`.
 
 ```bash
-pwndbg> info address puts@plt
+pwndbg> i addr puts@plt
 Symbol "puts@plt" is at 0xaaaaaaaa0630 in a file compiled without debugging.
 pwndbg> b *0xaaaaaaaa0630
-Breakpoint 4 at 0xaaaaaaaa0630
-pwndbg> i b
-Num     Type           Disp Enb Address            What
-2       breakpoint     keep y   0x0000aaaaaaaa0754 <main>
-	breakpoint already hit 1 time
-3       breakpoint     keep y   0x0000aaaaaaaa076c <main+24>
-	breakpoint already hit 1 time
-4       breakpoint     keep y   0x0000aaaaaaaa0630 <puts@plt>
+Breakpoint 5 at 0xaaaaaaaa0630
 ```
 
 Continue to run until <puts@plt\>.
 
-```bash
+```bash hl_lines="11 15"
 pwndbg> c
 Continuing.
 
-Breakpoint 4, 0x0000aaaaaaaa0630 in puts@plt ()
+Breakpoint 5, 0x0000aaaaaaaa0630 in puts@plt ()
 
 *X30  0xaaaaaaaa0770 (main+28) ◂— mov w0, #0                                SP   0xfffffffff160 —▸ 0xfffffffff180 —▸ 0xfffffffff290 ◂— 0
 *LR   0xaaaaaaaa0770 (main+28) ◂— mov w0, #0                               *PC   0xaaaaaaaa0630 (puts@plt) ◂— adrp x16, #0xaaaaaaab0000
@@ -808,13 +939,22 @@ Breakpoint 4, 0x0000aaaaaaaa0630 in puts@plt ()
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 ```
 
+Print out the stack addresses that contain return addresses.
+
+```bash
+pwndbg> retaddr
+0xfffffffff168 —▸ 0xfffff7e373fc (__libc_start_call_main+108) ◂— bl #0xfffff7e4cef0
+0xfffffffff188 —▸ 0xfffff7e374cc (__libc_start_main+152) ◂— adrp x22, #0xfffff7faa000
+0xfffffffff298 —▸ 0xaaaaaaaa0670 (_start+48) ◂— bl #0xaaaaaaaa0620
+```
+
 ### nextjmp
 
 Breaks at the next jump instruction `br x17`.
 
 A cross-reference watershed is indicated by a down arrow in the code context.
 
-```bash
+```bash hl_lines="12"
 pwndbg> nextjmp
 
 Temporary breakpoint -10, 0x0000aaaaaaaa063c in puts@plt ()
@@ -851,7 +991,7 @@ Temporary breakpoint -10, 0x0000aaaaaaaa063c in puts@plt ()
 
 Step further to cross the boudary. It jumps from main->`puts@plt` to `puts` in *libc.so*.
 
-```bash
+```bash hl_lines="10-11"
 pwndbg> s
 __GI__IO_puts (str=0xaaaaaaaa0798 "Hello, Linux!") at ./libio/ioputs.c:35
 35	./libio/ioputs.c: No such file or directory.
@@ -883,7 +1023,27 @@ __GI__IO_puts (str=0xaaaaaaaa0798 "Hello, Linux!") at ./libio/ioputs.c:35
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 ```
 
-Continue execution to the end. Hello, Linux! Hello, brave new world!
+Check `xinfo` again to confirm the cross-module jump.
+
+```bash
+pwndbg> xinfo
+Extended information for virtual address 0xfffff7e7ae70:
+
+  Containing mapping:
+    0xfffff7e10000     0xfffff7f98000 r-xp   188000      0 /usr/lib/aarch64-linux-gnu/libc.so.6
+
+  Offset information:
+         Mapped Area 0xfffff7e7ae70 = 0xfffff7e10000 + 0x6ae70
+         File (Base) 0xfffff7e7ae70 = 0xfffff7e10000 + 0x6ae70
+Exception occurred: xinfo: 'p_vaddr' (<class 'KeyError'>)
+For more info invoke `set exception-verbose on` and rerun the command
+or debug it by yourself with `set exception-debugger on`
+
+pwndbg> distance pc
+0xfffff7e10000->0xfffff7e7ae70 is 0x6ae70 bytes (0xd5ce words)
+```
+
+Continue execution to the end.
 
 ```bash
 pwndbg> c
@@ -893,6 +1053,8 @@ Hello, Linux!
 
 pwndbg> q
 ```
+
+Hello, Linux! Hello, brave new world!
 
 ## track-got
 
@@ -952,7 +1114,7 @@ Type `track-got info` to get an overview of the resolved GOT function entries.
 
 It shows very clearly the essence of the core of the GOT. It's nothing but an array of function pointers, providing reference resolution through indirect addressing.
 
-```bash
+```bash hl_lines="10"
 pwndbg> track-got info
 Showing all GOT function entries and how many times they were called.
 
@@ -1008,7 +1170,7 @@ pwndbg> vmmap
 
 Then check the GOT again, and you'll see that the mapping addresses have been changed to point to the new segment resolved as an `udf` instruction.
 
-```bash
+```bash hl_lines="8"
 pwndbg> got -r
 State of the GOT of /home/pifan/Projects/cpp/a.out:
 GOT protection: Full RELRO | Found 9 GOT entries passing the filter
