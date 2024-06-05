@@ -97,6 +97,16 @@ INFO: modules.get
 0xffff9847b000 0xffff984a6000  /usr/lib/aarch64-linux-gnu/ld-linux-aarch64.so.1
 ```
 
+At the moment, the dependent *libc.so* is not loaded.
+
+```bash
+[0xffff98492c40]> il
+[Linked libraries]
+libc.so.6
+
+1 library
+```
+
 ## memory maps
 
 Show map name of current address.
@@ -531,7 +541,28 @@ The output of `rabin2 -R a.out` maybe more clear: the vaddr=0x00010fc8 is relati
 
 ### disassemble
 
-Now, set a breakpoint at `rsym.puts` and continue. Then type `pdf` to see its dissembly.
+[Previously](./plt-puts-analysis.md), we've statically disassembled the `.plt` section using `objdump` command.
+
+```bash hl_lines="11"
+# objdump -j .plt -d a.out
+$ puts_plt=$(radare2.rabin2 -i a.out | awk '/puts/ {print $2}')
+$ objdump -d --start-address=$puts_plt --stop-address=$((puts_plt+16)) a.out
+
+a.out:     file format elf64-littleaarch64
+
+
+Disassembly of section .plt:
+
+0000000000000630 <puts@plt>:
+ 630:	90000090 	adrp	x16, 10000 <__FRAME_END__+0xf770>
+ 634:	f947e611 	ldr	x17, [x16, #4040]
+ 638:	913f2210 	add	x16, x16, #0xfc8
+ 63c:	d61f0220 	br	x17
+```
+
+> `ADRP Xd, label`: label is an offset from the page address of this instruction.
+
+Now, set a breakpoint at `rsym.puts` and continue. Then type `pdf` to see its disassembly in real time.
 
 ```bash
 [0xaaaadc760754]> db rsym.puts; dc
@@ -548,22 +579,47 @@ INFO: hit breakpoint at: 0xaaaadc760630
 └           0xaaaadc76063c      20021fd6       br x17
 ```
 
-View the instructions against puts@plt, it's easy to find that `10000 <__FRAME_END__+0xf770>` is replaced by `map._home_pifan_Projects_cpp_a.out.rw_`.
+View the disassembly against `puts@plt`, it's easy to find that `10000 <__FRAME_END__+0xf770>` is dynamically replaced by `map._home_pifan_Projects_cpp_a.out.rw_`.
 
-Refer to the memory map dumped by `dm`, `map._home_pifan_Projects_cpp_a.out.rw_` is the map name of `a.out`'s text segment LOAD0 which starts at 0x0000aaaadc770000.
+The `ADRP` instruction is used to form the PC relative address to the 4KB page. As the PC is 0xaaaadc760630, its 4K page boundary aligned address (`:pg_hi21:`) is `0xaaaadc760000`, calculated by masking out the lower 12 bits.
 
-`ADRP` will load its 4K page-boundary aligned address(`:pg_hi21:`) to x16. The result is the same as the start of the text segment LOAD0, which is already aligned at 0x10000(64K)(refer to the program headers dumped by `readelf -lW a.out`).
+> 0xaaaadc760000 is also the piebase and page address of the first text segment LOAD0. Look back to chapter *loaded modules* and *memory maps*.
 
-After `ldr x17, [x16, 0xfc8]!`, x17 will load the *address* stored in `reloc.puts`.
+If you add the coded PC literal 0x10000 to the page address 0xaaaadc760000, it becomes `0xaaaadc770000`. The following Python code snippet can be used to demonstrate the calculation.
 
-> seg_base+offset/paddr = 0x0000aaaadc770000+0xfc8 = 0x0000aaaadc770fc8
+```Python title="ADRP form PC-relative address"
+opcode=0x90000090
+#format(opcode, '032b')
+#f'{opcode=:#032b}'
 
-It matches the output of `ir`, take a look back at chapter *imports/relocations*.
+immlo_mask=(1<<30)|(1<<29)
+immhi_mask=(2**24-1)&(~(2**5-1))
+
+immlo=((opcode&immlo_mask)<<1)>>30
+immhi=(opcode&immhi_mask)>>5
+
+imm=(immhi<<2|immlo)<<12
+f'{imm=:#8x}'
+
+pc=0xaaaadc760630
+pg_hi21=pc&low12_mask
+f'{pg_hi21=:#16x}'
+x16=pg_hi21+imm
+f'{x16=:#8x}'
+```
+
+The above inference was based on baddr and the segment of the current `ADRP` instruction (LOAD0), it results in PC-relative calculation `x16=load0_baddr+offset`.
+
+On the other hand, as we've already mentioned, the offset 0x10000 is the increment of vaddr over paddr for the LOAD1 data segment where the `.got` section is located. Therefore, from the point of view of the LOAD1 segment, the page address of the `.got` entries already matches it.
+
+So it's not surprising that the ADRP literal is fixed by `map._home_pifan_Projects_cpp_a.out.rw_` (see `dm`) at runtime. It represents the LOAD1 segment starting at 0xaaaadc770000. That's `x16=load1_baddr` according to the results, which is not a coincidence.
+
+In the next instruction `ldr x17, [x16, 0xfc8]!`, `x16:0xfc8` is the address of GOT entry for `puts`(aka `reloc.puts`), 0xaaaadc770000+0xfc8=0xaaaadc770fc8. Then `x17` will load the value stored in pointer 0xaaaadc770fc8. It matches the output of `ir` in chapter *imports/relocations*.
 
 Let's examine the memory and try to dereference it as pointer:
 
 ```bash
-[0xaaaadc760630]> pxq $w @ 0xaaaadc770000+0xfc8
+[0xaaaadc760630]> pxq $w @ 0xaaaadc770fc8
 0xaaaadc770fc8  0x0000ffff9832ae70                       p.2.....
 [0xaaaadc760630]> pfp @ 0xaaaadc770fc8
 0xaaaadc770fc8 = (qword)0x0000ffff9832ae70

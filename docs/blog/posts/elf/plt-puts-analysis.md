@@ -274,7 +274,6 @@ $ nm -D a.out
                  U puts@GLIBC_2.17
 ```
 
-
 `rabin2 -i `: list symbols imported from libraries.
 
 ```bash
@@ -693,10 +692,39 @@ Disassembly of section .text:
  640:	d503201f 	nop
 ```
 
-Line 41\~42 is equivalent expansion of pre-indexing addressing instruction `ldr x17, [x16, #0xfc8]!`.
-
 As we can see, 0x10000+0xfc8 is the offset of `puts` in `.rela.plt` entries of `readelf -r a.out` and relocation records of `objdump -R a.out`.
 
 The output of `rabin2 -R a.out` maybe more clear: the vaddr=0x00010fc8 is relative to virtual baddr, while the paddr=0x00000fc8 is relative to physical segment.
+
+### ADRP/LDR
+
+Line 40 `adrp x16, 10000` is used to form PC-relative address to 4KB page.
+
+> PLS refer to [ARM ADRP and ADRL pseudo-instruction](../arm/arm-adrp-adrl.md) and [ARM ADR/ADRP demos](../arm/arm-adr-demo.md).
+
+According to the [A64 ADRP](https://developer.arm.com/documentation/ddi0602/2024-03/Base-Instructions/ADRP--Form-PC-relative-address-to-4KB-page-?lang=en) instruction specification, we can analyse the opcode using the following Python code snippets.
+
+```Python title="ADRP immediate analysis"
+opcode=0x90000090
+#format(opcode, '032b')
+#f'{opcode=:#032b}'
+
+immlo_mask=(1<<30)|(1<<29)
+# f'{immlo_mask=:032b}'
+immhi_mask=(2**24-1)&(~(2**5-1))
+# f'{immhi_mask=:032b}'
+
+immlo=((opcode&immlo_mask)<<1)>>30
+# f'immlo: {immlo=:02b}'
+immhi=(opcode&immhi_mask)>>5
+# f'immhi: {immhi=:019b}'
+
+imm=(immhi<<2|immlo)<<12
+f'{imm=:#8x}'
+```
+
+It outputs `'imm= 0x10000'`. That's the PC-relative literal that encoded in the ADRP instruction.
+
+Line 41\~42 is equivalent expansion of pre-indexing addressing instruction `ldr x17, [x16, #0xfc8]!`.
 
 In the following articles we'll see the crucial role of the offset in resolving `puts@plt` to real `puts` using `.rela.plt` and `.got`.

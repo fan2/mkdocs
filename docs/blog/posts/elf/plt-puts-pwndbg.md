@@ -118,6 +118,24 @@ Local exec file:
 
 ### puts@plt
 
+[Previously](./plt-puts-analysis.md), we've explored the dependent dynamic symbols defined in `.plt` section.
+
+`rabin2 -i `: list symbols imported from libraries.
+
+```bash
+$ radare2.rabin2 -i a.out
+[Imports]
+nth vaddr      bind   type   lib name
+―――――――――――――――――――――――――――――――――――――
+3   0x000005f0 GLOBAL FUNC       __libc_start_main
+4   ---------- WEAK   NOTYPE     _ITM_deregisterTMCloneTable
+5   0x00000600 WEAK   FUNC       __cxa_finalize
+6   0x00000610 WEAK   NOTYPE     __gmon_start__
+7   0x00000620 GLOBAL FUNC       abort
+8   0x00000630 GLOBAL FUNC       puts
+9   ---------- WEAK   NOTYPE     _ITM_registerTMCloneTable
+```
+
 `plt` -- Prints any symbols found in the `.plt` section if it exists.
 
 ```bash
@@ -130,34 +148,28 @@ Section .plt 0x5d0-0x640:
 0x630: puts@plt
 ```
 
-[Previously](./plt-puts-analysis.md), we've statically disassembled the `.plt` section using `objdump` command.
+And we've statically disassembled the `.plt` section using `objdump` command.
 
 ```bash
-pwndbg> !objdump -j .plt -d a.out
+# objdump -j .plt -d a.out
+$ puts_plt=$(radare2.rabin2 -i a.out | awk '/puts/ {print $2}')
+$ objdump -d --start-address=$puts_plt --stop-address=$((puts_plt+16)) a.out
+
+a.out:     file format elf64-littleaarch64
+
+
 Disassembly of section .plt:
 
-00000000000005d0 <.plt>:
- 5d0:    a9bf7bf0     stp    x16, x30, [sp, #-16]!
- 5d4:    90000090     adrp    x16, 10000 <__FRAME_END__+0xf770>
- 5d8:    f947d211     ldr    x17, [x16, #4000]
- 5dc:    913e8210     add    x16, x16, #0xfa0
- 5e0:    d61f0220     br    x17
- 5e4:    d503201f     nop
- 5e8:    d503201f     nop
- 5ec:    d503201f     nop
-
-[...snip...]
-
 0000000000000630 <puts@plt>:
- 630:    90000090     adrp    x16, 10000 <__FRAME_END__+0xf770>
- 634:    f947e611     ldr    x17, [x16, #4040]
- 638:    913f2210     add    x16, x16, #0xfc8
- 63c:    d61f0220     br    x17
+ 630:	90000090 	adrp	x16, 10000 <__FRAME_END__+0xf770>
+ 634:	f947e611 	ldr	x17, [x16, #4040]
+ 638:	913f2210 	add	x16, x16, #0xfc8
+ 63c:	d61f0220 	br	x17
 ```
 
 As we can see from the above assembly, `0xfc8` is the offset of `puts` in `.rela.plt` entries of `readelf -r a.out` and relocation records of `objdump -R a.out` / `rabin2 -R a.out`.
 
-BTW, before debugging, we can use `disassemble` or `x/i` to disassemble the instructions within the inactive ELF.
+BTW, we can use `disassemble` or `x/i` to disassemble `puts@plt` by address within gdb-pwndbg.
 
 ```bash
 # inspect the address of the symbol
@@ -470,7 +482,7 @@ elf_dynamic_do_Rela (skip_ifunc=<optimized out>, lazy=<optimized out>, nrelative
 
 When entering `entry`, it's expected to drop into CRT(C Run Time) entry point(`_start` defined in crt1.o). The `ld.so`(linker & loader?) will load the needed *libc.so* into memory, meanwhile it invokes subsequent subroutines prefixed with`dl_`(dynamic linking?) to relocate the dynamic symbols imported by the main program.
 
-Specifically, the loader would fix the destination of the GOT entries such as `reloc.puts`. The function pointer of `puts` resides in the address space of libc.so, it's the embodiment of the dynamic symbol `puts@plt`.
+Specifically, the loader would fix the destination of the GOT entries such as `reloc.puts`. The function pointer of `puts` resides in the address space of libc.so, it's the embodiment of the PLT stub `puts@plt`.
 
 While the loader is doing the fix, it hits the watchpoint and throws an interrupt. As highlighted above, `reloc.puts` has been resolved to 0x0000fffff7e7ae70, updated from 1488/0x5d0. See the *plt & got* section for later details.
 
@@ -702,7 +714,7 @@ pwndbg> i sym 0xfffff7e7ae70
 puts in section .text of /lib/aarch64-linux-gnu/libc.so.6
 ```
 
-What remains to be seen is how the symbol `puts@plt` is connected with `libc/puts` at run time.
+What remains to be seen is how the PLT stub `puts@plt` is connected with `libc/puts` at run time.
 
 That's exactly the GOT's mission! Let's delve deeper and lift the veil.
 
@@ -731,7 +743,7 @@ GOT protection: Full RELRO | Found 9 GOT entries passing the filter
 
 As is shown above, the dynamic symbol GOT entries have been resolved with the correct address.
 
-Check the GOT entry above for `puts@plt`, it holds the address of `libc/puts`.
+Check the GOT entry above for `reloc.puts`, it holds the address of `libc/puts`.
 
 Dereference pointers starting at the address in GOT.
 
@@ -743,6 +755,8 @@ pwndbg> telescope 0xaaaaaaab0fc8 1
 ```
 
 The facts behind the scenes have already been revealed under the telescope. Let's go one step further and complete the last piece of the puzzle.
+
+### libc/puts
 
 Searching libc.so.6, `puts` is a weak symbol that shares the same address with another global symbol named `_IO_puts`.
 
@@ -783,7 +797,7 @@ pwndbg> p/x $puts_addr
 $2 = 0xfffff7e7ae70
 ```
 
-Well, it's exactly the function address that the GOT entry slot `puts@plt`(0xaaaaaaab0fc8) holds.
+Well, it's exactly the function address that the GOT entry slot `reloc.puts`(0xaaaaaaab0fc8) holds.
 
 You can simply use `x/i` or `disassemble` to probe what is there.
 
@@ -939,13 +953,33 @@ Breakpoint 5, 0x0000aaaaaaaa0630 in puts@plt ()
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 ```
 
-Print out the stack addresses that contain return addresses.
+View the disassembly against PLT stub `puts@plt`, it's easy to find that `10000 <__FRAME_END__+0xf770>` is dynamically replaced by `#0xaaaaaaab0000`.
 
-```bash
-pwndbg> retaddr
-0xfffffffff168 —▸ 0xfffff7e373fc (__libc_start_call_main+108) ◂— bl #0xfffff7e4cef0
-0xfffffffff188 —▸ 0xfffff7e374cc (__libc_start_main+152) ◂— adrp x22, #0xfffff7faa000
-0xfffffffff298 —▸ 0xaaaaaaaa0670 (_start+48) ◂— bl #0xaaaaaaaa0620
+The `ADRP` instruction is used to form the PC relative address to the 4KB page. As the PC is 0xaaaaaaaa0630, its 4K page boundary aligned address (`:pg_hi21:`) is `0xaaaaaaaa0000`, calculated by masking out the lower 12 bits.
+
+> 0xaaaaaaaa0000 is also the piebase and page address of the first text segment LOAD0. Look back to chapter *loaded modules* and *memory maps*.
+
+If you add the coded PC literal 0x10000 to the page address 0xaaaaaaaa0000, it becomes `0xaaaaaaab0000`. The following Python code snippet can be used to demonstrate the calculation.
+
+```Python title="ADRP form PC-relative address"
+opcode=0x90000090
+#format(opcode, '032b')
+#f'{opcode=:#032b}'
+
+immlo_mask=(1<<30)|(1<<29)
+immhi_mask=(2**24-1)&(~(2**5-1))
+
+immlo=((opcode&immlo_mask)<<1)>>30
+immhi=(opcode&immhi_mask)>>5
+
+imm=(immhi<<2|immlo)<<12
+f'{imm=:#8x}'
+
+pc=0xaaaaaaaa0630
+pg_hi21=pc&low12_mask
+f'{pg_hi21=:#16x}'
+x16=pg_hi21+imm
+f'{x16=:#8x}'
 ```
 
 ### nextjmp
@@ -989,7 +1023,15 @@ Temporary breakpoint -10, 0x0000aaaaaaaa063c in puts@plt ()
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 ```
 
-Step further to cross the boudary. Finally, it jumps from a.out/`puts@plt` to libc.so/`puts` via a bridge ladder called `reloc.puts`.
+In the instruction `ldr x17, [x16, 0xfc8]!`, `x16:0xfc8` is the address of GOT entry for `puts`(aka `reloc.puts`), 0xaaaaaaab0000+0xfc8=0xaaaaaaab0fc8. Then `x17` will load the value stored in pointer 0xaaaaaaab0fc8.
+
+In the last chapter, we dumped the value stored in 0xaaaaaaab0fc8, it's 0xfffff7e7ae70 as commented in the DISASM context.
+
+```bash
+X17 => 0xfffff7e7ae70 (puts) ◂— stp x29, x30, [sp, #-0x40]!
+```
+
+Step further to cross the boundary. Finally, it jumps from the PLT stub `puts@plt` to libc.so/`puts` via the GOT entry `reloc.puts` as a bridge ladder.
 
 ```bash hl_lines="10-11"
 pwndbg> s

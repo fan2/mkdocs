@@ -478,6 +478,9 @@ Usage: $alias[=cmd] [args...]  Alias commands and data (See ?$? for help on $var
 
 [0x000000000000]> ?$?
 Usage: ?v [$.]
+| flag          offset of flag
+| ${ev}         get value of eval config variable
+| $$            here (current virtual seek)
 
 | $alias=value  alias commands (simple macros)
 | $B            base address (aligned lowest map address)
@@ -496,6 +499,9 @@ Usage: ?v [$.]
 Define simple macros.
 
 ```bash
+[0xaaaac30a07a0]> ?v $$
+0xaaaac30a07a0
+
 [0xaaaac30a07a0]> $rip=19890604
 [0xaaaac30a07a0]> $rip?
 19890604

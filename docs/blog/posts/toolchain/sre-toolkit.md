@@ -51,6 +51,7 @@ Software Reverse Engineering(SRE) Toolkit:
 - [IDA Pro](https://hex-rays.com/ida-pro/): A powerful disassembler and a versatile debugger.
 - [Binary Ninja](https://binary.ninja/): an interactive decompiler, disassembler, debugger, and binary analysis platform.
 
+- [Capstone](https://www.capstone-engine.org/): The Ultimate Disassembly Framework.
 - [rscloura/Doldrums](https://github.com/rscloura/Doldrums): A Flutter/Dart reverse engineering tool.
 
 ## references
@@ -109,6 +110,8 @@ Software Reverse Engineering(SRE) Toolkit:
 [ARM binary exploitation — Aaarchibald WriteUP](https://medium.com/@chackal/arm-binary-exploitation-aaarchibald-writeup-dd4ae9cd8370)
 
 [Introduction to Return-Oriented Exploitation on ARM64](https://www.slideshare.net/slideshow/introduction-to-returnoriented-exploitation-on-arm64-billy-ellis/110144234)
+
+ARM64 Reversing and Exploitation: [1](https://highaltitudehacks.com/2020/09/05/arm64-reversing-and-exploitation-part-1-arm-instruction-set-heap-overflow.html), [2](https://highaltitudehacks.com/2020/09/06/arm64-reversing-and-exploitation-part-2-use-after-free.html), [3](https://highaltitudehacks.com/2020/09/06/arm64-reversing-and-exploitation-part-3-a-simple-rop-chain.html)
 
 ARM64 Reversing And Exploitation: [1](https://8ksec.io/arm64-reversing-and-exploitation-part-1-arm-instruction-set-simple-heap-overflow/), [2](https://8ksec.io/arm64-reversing-and-exploitation-part-2-use-after-free/), [3](https://8ksec.io/arm64-reversing-and-exploitation-part-3-a-simple-rop-chain/), [4](https://8ksec.io/arm64-reversing-and-exploitation-part-4-using-mprotect-to-bypass-nx-protection-8ksec-blogs/), [5](https://8ksec.io/arm64-reversing-and-exploitation-part-5-writing-shellcode-8ksec-blogs/), [6](https://8ksec.io/arm64-reversing-and-exploitation-part-6-exploiting-an-uninitialized-stack-variable-vulnerability/), [7](https://8ksec.io/arm64-reversing-and-exploitation-part-7-bypassing-aslr-and-nx/), [8](https://8ksec.io/arm64-reversing-and-exploitation-part-8-exploiting-an-integer-overflow-vulnerability/), [9](https://8ksec.io/arm64-reversing-and-exploitation-part-9-exploiting-an-off-by-one-overflow-vulnerability/)
 

@@ -1451,6 +1451,21 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="disassemble .plt">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#adrpldr" class="md-nav__link">
+    <span class="md-ellipsis">
+      ADRP/LDR
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
     </ul>
@@ -2205,9 +2220,33 @@ The output indicates the executable file type and the interpreter.</p>
 </span><span id="__span-28-17"><a id="__codelineno-28-17" name="__codelineno-28-17" href="#__codelineno-28-17"></a><span class="m">0000000000000640</span><span class="w"> </span>&lt;_start&gt;:
 </span><span id="__span-28-18"><a id="__codelineno-28-18" name="__codelineno-28-18" href="#__codelineno-28-18"></a><span class="w"> </span><span class="m">640</span>:<span class="w">   </span>d503201f<span class="w">    </span>nop
 </span></code></pre></div>
-<p>Line 41~42 is equivalent expansion of pre-indexing addressing instruction <code>ldr x17, [x16, #0xfc8]!</code>.</p>
 <p>As we can see, 0x10000+0xfc8 is the offset of <code>puts</code> in <code>.rela.plt</code> entries of <code>readelf -r a.out</code> and relocation records of <code>objdump -R a.out</code>.</p>
 <p>The output of <code>rabin2 -R a.out</code> maybe more clear: the vaddr=0x00010fc8 is relative to virtual baddr, while the paddr=0x00000fc8 is relative to physical segment.</p>
+<h3 id="adrpldr">ADRP/LDR<a class="headerlink" href="#adrpldr" title="Permanent link">#</a></h3>
+<p>Line 40 <code>adrp x16, 10000</code> is used to form PC-relative address to 4KB page.</p>
+<blockquote>
+<p>PLS refer to <a href="../../20230608/arm-adrp-adrl/">ARM ADRP and ADRL pseudo-instruction</a> and <a href="../../20230609/arm-adr-demo/">ARM ADR/ADRP demos</a>.</p>
+</blockquote>
+<p>According to the <a href="https://developer.arm.com/documentation/ddi0602/2024-03/Base-Instructions/ADRP--Form-PC-relative-address-to-4KB-page-?lang=en">A64 ADRP</a> instruction specification, we can analyse the opcode using the following Python code snippets.</p>
+<div class="language-Python highlight"><span class="filename">ADRP immediate analysis</span><pre><span></span><code><span id="__span-29-1"><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a><span class="n">opcode</span><span class="o">=</span><span class="mh">0x90000090</span>
+</span><span id="__span-29-2"><a id="__codelineno-29-2" name="__codelineno-29-2" href="#__codelineno-29-2"></a><span class="c1">#format(opcode, &#39;032b&#39;)</span>
+</span><span id="__span-29-3"><a id="__codelineno-29-3" name="__codelineno-29-3" href="#__codelineno-29-3"></a><span class="c1">#f&#39;{opcode=:#032b}&#39;</span>
+</span><span id="__span-29-4"><a id="__codelineno-29-4" name="__codelineno-29-4" href="#__codelineno-29-4"></a>
+</span><span id="__span-29-5"><a id="__codelineno-29-5" name="__codelineno-29-5" href="#__codelineno-29-5"></a><span class="n">immlo_mask</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="o">&lt;&lt;</span><span class="mi">30</span><span class="p">)</span><span class="o">|</span><span class="p">(</span><span class="mi">1</span><span class="o">&lt;&lt;</span><span class="mi">29</span><span class="p">)</span>
+</span><span id="__span-29-6"><a id="__codelineno-29-6" name="__codelineno-29-6" href="#__codelineno-29-6"></a><span class="c1"># f&#39;{immlo_mask=:032b}&#39;</span>
+</span><span id="__span-29-7"><a id="__codelineno-29-7" name="__codelineno-29-7" href="#__codelineno-29-7"></a><span class="n">immhi_mask</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="mi">24</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">&amp;</span><span class="p">(</span><span class="o">~</span><span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="mi">5</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+</span><span id="__span-29-8"><a id="__codelineno-29-8" name="__codelineno-29-8" href="#__codelineno-29-8"></a><span class="c1"># f&#39;{immhi_mask=:032b}&#39;</span>
+</span><span id="__span-29-9"><a id="__codelineno-29-9" name="__codelineno-29-9" href="#__codelineno-29-9"></a>
+</span><span id="__span-29-10"><a id="__codelineno-29-10" name="__codelineno-29-10" href="#__codelineno-29-10"></a><span class="n">immlo</span><span class="o">=</span><span class="p">((</span><span class="n">opcode</span><span class="o">&amp;</span><span class="n">immlo_mask</span><span class="p">)</span><span class="o">&lt;&lt;</span><span class="mi">1</span><span class="p">)</span><span class="o">&gt;&gt;</span><span class="mi">30</span>
+</span><span id="__span-29-11"><a id="__codelineno-29-11" name="__codelineno-29-11" href="#__codelineno-29-11"></a><span class="c1"># f&#39;immlo: {immlo=:02b}&#39;</span>
+</span><span id="__span-29-12"><a id="__codelineno-29-12" name="__codelineno-29-12" href="#__codelineno-29-12"></a><span class="n">immhi</span><span class="o">=</span><span class="p">(</span><span class="n">opcode</span><span class="o">&amp;</span><span class="n">immhi_mask</span><span class="p">)</span><span class="o">&gt;&gt;</span><span class="mi">5</span>
+</span><span id="__span-29-13"><a id="__codelineno-29-13" name="__codelineno-29-13" href="#__codelineno-29-13"></a><span class="c1"># f&#39;immhi: {immhi=:019b}&#39;</span>
+</span><span id="__span-29-14"><a id="__codelineno-29-14" name="__codelineno-29-14" href="#__codelineno-29-14"></a>
+</span><span id="__span-29-15"><a id="__codelineno-29-15" name="__codelineno-29-15" href="#__codelineno-29-15"></a><span class="n">imm</span><span class="o">=</span><span class="p">(</span><span class="n">immhi</span><span class="o">&lt;&lt;</span><span class="mi">2</span><span class="o">|</span><span class="n">immlo</span><span class="p">)</span><span class="o">&lt;&lt;</span><span class="mi">12</span>
+</span><span id="__span-29-16"><a id="__codelineno-29-16" name="__codelineno-29-16" href="#__codelineno-29-16"></a><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">imm</span><span class="si">=:</span><span class="s1">#8x</span><span class="si">}</span><span class="s1">&#39;</span>
+</span></code></pre></div>
+<p>It outputs <code>'imm= 0x10000'</code>. That's the PC-relative literal that encoded in the ADRP instruction.</p>
+<p>Line 41~42 is equivalent expansion of pre-indexing addressing instruction <code>ldr x17, [x16, #0xfc8]!</code>.</p>
 <p>In the following articles we'll see the crucial role of the offset in resolving <code>puts@plt</code> to real <code>puts</code> using <code>.rela.plt</code> and <code>.got</code>.</p>
 
 
