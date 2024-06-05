@@ -97,16 +97,6 @@ vaddr=0xaaaae48e0640 paddr=0x00000640 haddr=0x00000018 hvaddr=0xaaaae48e0018 typ
 1 entrypoints
 ```
 
-[radare2 - What does paddr, baddr, laddr, haddr, and hvaddr refer to?](https://reverseengineering.stackexchange.com/questions/19782/what-does-paddr-baddr-laddr-haddr-and-hvaddr-refer-to)
-
-- `vaddr` - Virtual Address
-- `paddr` - Physical Address
-- `laddr` - Load Address
-- `baddr` - Base Address
-- `haddr` - e_entry/AddressOfEntryPoint in binary header
-- `hvaddr` - Header Physical Address
-- `hpaddr` - e_entry/AddressOfEntryPoint offset in binary header
-
 ### symbols
 
 Query for detailed usages of subcommands:
@@ -699,9 +689,25 @@ Visual Mode Help (short)
 | v  view management
 ```
 
+Type `v`, as a combination of `Vv`, will open *func/var analysis* panel.
+
+```bash
+.-- functions ----- pdr -------------------------------.
+| (a)nalyze (-)delete (x)xrefs (X)refs (j/k) next/prev |
+| (r)ename  (c)alls   (d)efine (Tab)disasm (_) hud     |
+| (d)efine  (v)ars    (?)help  (:)shell    (q) quit    |
+| (s)ignature edit                                     |
+'------------------------------------------------------'
+```
+
+Type `V`, as a combination of `VV`, will enter Visual Graph mode.
+
 > Use `:command` to execute r2 commands from inside Visual Mode. This is similar to VIM.
 
-Type `!`(equivalent to `:v`) to enter Visual Panels. To exit from it back to Visual mode, press `q`.
+Type `!`(equivalent to `:v`) to enter Visual Panels.
+
+In any of the `Vv` / `VV` / `:v` modes, press 'q' to exit and return to Visual mode.
+
 Type `c` to toggle the cursor mode, then type `hljk` to scroll the page like vim.
 
 Type `d` to view help of debugger / emulator.
@@ -734,6 +740,8 @@ Usage: v[*i]
 ```
 
 To open visual panels, use `v` command, press `q` to exit.
+
+Type `v` again to open *func/var analysis* panel.
 
 The useful Debugger view shows us the Disassembly, Stack and Registers. We can move around the binary via seeking and stepping.
 
@@ -772,13 +780,14 @@ Type `?` to open the help panel, press `X` to close the help panel.
 | z      swap current panel with the first one
 ```
 
-1. `Tab`: move the focus to the next panel without changing their position.
-2. `Enter`: maximize current panel in zoom mode. Press `Enter` or `q` to quit.
-3. `space`: toggle graph / panels.
-4. `m`: select the menu panel, use `hjkl` to navigate and `Enter` to choose.
-5. `.`: seek to PC or entrypoint.
-6. `g`: go/seek to given offset/address.
-7. `s`/`S`: step in / step over.
+1. `/`: highlight input keyword
+2. `Tab`: move the focus to the next panel without changing their position.
+3. `Enter`: maximize current panel in zoom mode. Press `Enter` or `q` to quit.
+4. `space`: toggle graph / panels.
+5. `m`: select the menu panel, use `hjkl` to navigate and `Enter` to choose.
+6. `.`: seek to PC or entrypoint.
+7. `g`: go/seek to given offset/address, e.g., `g main`, `g sym.func`.
+8. `s`/`S`: step in / step over.
 
 Type `:` to enter Bottom Command mode, run r2 commands in prompt, e.g., `db`, `dc`.
 Press `v`/`q` to exit and return back to Visual Panels mode.
@@ -796,11 +805,20 @@ Toggle between disasm and graph with the `space` key.
 Type `?` to list all the commands of Visual Graph mode.
 
 ```bash
+| +/-/0                zoom in/out/default
+| . (dot)              center graph to the current node
+| , (comma)            toggle graph.few
+| =                    toggle graph.layout
+| :cmd                 run radare command
+| /                    highlight text
+| |                    set cmd.gprompt
 | >                    show function callgraph (see graph.refs)
 | <                    show program callgraph (see graph.refs)
 | %                    find in disassembly (pdr~sentence) and navigate to it in graph
+| b                    visual browse things
 | c                    toggle graph cursor mode
 | D                    toggle the mixed graph+disasm mode
+| g                    go/seek to given offset
 | o([A-Za-z]*)         follow jmp/call identified by shortcut (like ;[oa])
 | O                    toggle asm.pseudo and asm.esil
 | q                    back to Visual mode
@@ -808,9 +826,17 @@ Type `?` to list all the commands of Visual Graph mode.
 | s/S                  step / step over
 | tab                  select next node
 | TAB                  select previous node
+| V                    toggle basicblock / call graphs
 ```
 
-Note the designations of each module node, such as `o[a-z]`, then type `oa` / `ob` / `oc` to change central focus.
+1. `R`: randomize colors.
+2. `,`: toggle graph.few/more
+3. `/`: highlight input keyword
+4. `D`: toggle/cancel the mixed graph+disasm mode
+5. `c`: toggle/cancel graph cursor mode, use `hjkl` to move focus node
+6. `g`: go/seek to given offset, e.g., `g main`, `g sym.func`.
+
+Note the label inside square brackets of each node, such as `o[a-z]`, then type `oa` / `ob` / `oc` or `tab` to change central focus.
 
 ## refs
 

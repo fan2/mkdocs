@@ -54,6 +54,26 @@ vaddr=0xaaaadc760640 paddr=0x00000640 haddr=0x00000018 hvaddr=0xaaaadc760018 typ
 1 entrypoints
 ```
 
+[radare2 - What does paddr, baddr, laddr, haddr, and hvaddr refer to?](https://reverseengineering.stackexchange.com/questions/19782/what-does-paddr-baddr-laddr-haddr-and-hvaddr-refer-to)
+
+- `vaddr` - Virtual Address
+- `paddr` - Physical Address
+- `laddr` - Load Address
+- `baddr` - Base Address
+- `haddr` - e_entry/AddressOfEntryPoint in binary header
+- `hvaddr` - Header Physical Address
+- `hpaddr` - e_entry/AddressOfEntryPoint offset in binary header
+
+[assembly - VA (Virtual Address) & RVA (Relative Virtual Address)](https://stackoverflow.com/questions/2170843/va-virtual-address-rva-relative-virtual-address)
+
+Usually the RVA in image files is relative to process base address when being loaded into memory, but some RVA may be relative to the "section" starting address in image or object files (you have to check the PE format spec for detail). No matter which, RVA is relative to "some" base VA.
+
+1. Physical Memory Address is what CPU sees
+2. Virtual Addreess (VA) is relative to Physical Address, per process (managed by OS)
+3. RVA is relative to VA (file base or section base), per file (managed by linker and loader)
+
+Most RVAs are given relative to the beginning of the file, but occasionally (especially when looking at object files instead of executables) you'll see an RVA based on the section.
+
 ## loaded modules
 
 First, list modules (libraries, binaries loaded in memory) to see where we are and what's been loaded.

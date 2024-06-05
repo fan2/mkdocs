@@ -128,6 +128,8 @@ $ objdump --help
   -j, --section=NAME       Only display information for section NAME
 
   -s, --full-contents      Display the full contents of all sections requested
+
+  --adjust-vma=OFFSET      Add OFFSET to all displayed section addresses
 ```
 
 Use `objdump -j` to display the contents of specified sections:
@@ -153,12 +155,17 @@ $ readelf --help
      --sym-base=[0|8|10|16]
                          Force base for symbol sizes.  The options are
                          mixed (the default), octal, decimal, hexadecimal.
+
+  -D --use-dynamic       Use the dynamic section info when displaying symbols
+
 ```
 
 !!! note "read -s Type & Bind"
 
     Refer to [Type (Using as)](https://sourceware.org/binutils/docs/as/Type.html) for a knowledge of the *Type* column, such as `STT_FUNC`,`STT_OBJECT`,`STT_NOTYPE`,etc.
     Refer to [objdump](https://man7.org/linux/man-pages/man1/objdump.1.html) for a knowledge of the *Bind* column, such as `l`(`LOCAL`),`g`(`GLOBAL`),`w`(`WEAK`),etc.
+
+> `readelf -sD` almost equivalent to `readelf --dyn-syms`, but it uses the symbol hash tables in the file's dynamic section, rather than the symbol table sections.
 
 The equivalent option for `objdump` is `-t`.
 
@@ -245,7 +252,12 @@ $ readelf --help
   -r --relocs            Display the relocations (if present)
   -u --unwind            Display the unwind info (if present)
   -d --dynamic           Display the dynamic section (if present)
+
+  -D --use-dynamic       Use the dynamic section info when displaying symbols
+
 ```
+
+> `readelf -rD`: display the dynamic relocations rather than the static relocations.
 
 `objdump [-r|--reloc]`: Print the relocation entries of the file.  If used with `-d` or `-D`, the relocations are printed interspersed with the disassembly.
 `objdump [-R|--dynamic-reloc]`: Print the dynamic relocation entries of the file. This is only meaningful for dynamic objects, such as certain types of shared libraries.

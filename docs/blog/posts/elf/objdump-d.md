@@ -29,6 +29,10 @@ $ objdump --help
 
   -l, --line-numbers             Include line numbers and filenames in output
   -F, --file-offsets             Include file offsets when displaying information
+
+      --no-addresses             Do not print address alongside disassembly
+      --prefix-addresses         Print complete address alongside disassembly
+      --[no-]show-raw-insn       Display hex alongside symbolic disassembly
 ```
 
 Option `--disassemble=<sym>` can be used to disassemble specified symbol(function).
