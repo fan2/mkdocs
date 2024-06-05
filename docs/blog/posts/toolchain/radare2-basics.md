@@ -526,13 +526,13 @@ begin/end of function:
 ```bash
 [0xaaaac30a0754]> ?v $r{x0}
 0xfa
-[0xaaaac30a0754]> ?v $r{A0}
+[0xaaaac30a0754]> ?v $r:A0
 0xfa
 [0xaaaac30a0754]> ?v $r{PC}
 0xaaaac30a0754
 [0xaaaac30a0754]> ?v $r{BP}
 0xffffdca194e0
-[0xaaaac30a0754]> ?v $r{SP}
+[0xaaaac30a0754]> ?v $r:SP
 0xffffdca194e0
 ```
 

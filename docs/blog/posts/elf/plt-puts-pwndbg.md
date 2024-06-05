@@ -989,7 +989,7 @@ Temporary breakpoint -10, 0x0000aaaaaaaa063c in puts@plt ()
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 ```
 
-Step further to cross the boudary. It jumps from main->`puts@plt` to `puts` in *libc.so*.
+Step further to cross the boudary. Finally, it jumps from a.out/`puts@plt` to libc.so/`puts` via a bridge ladder called `reloc.puts`.
 
 ```bash hl_lines="10-11"
 pwndbg> s

@@ -1496,7 +1496,7 @@
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7h1.5Z"/></svg>
                           <span class="md-ellipsis">
                             
-                              需要 3 分钟阅读时间
+                              需要 4 分钟阅读时间
                             
                           </span>
                         </div>
@@ -1731,10 +1731,31 @@ awk 程序会将每个格式化指定符作为占位符，供命令中的变量�
 </span><span id="__span-22-3"><a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a>Frank Williams   (317)555-9876
 </span><span id="__span-22-4"><a id="__codelineno-22-4" name="__codelineno-22-4" href="#__codelineno-22-4"></a>Haley Snell      (313)555-4938
 </span></code></pre></div>
+<p>关于 awk 中使用算术表达式，参考 <a href="https://www.gnu.org/software/gawk/manual/html_node/Arithmetic-Ops.html">Arithmetic Ops</a>, <a href="https://unix.stackexchange.com/questions/57006/awk-high-precision-arithmetic">awk high precision arithmetic</a>。</p>
+<p>参考 <a href="../../20230628/plt-puts-analysis/">puts@plt - static analysis</a> 中的 printf 和算术运算的综合示范样例：</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>$<span class="w"> </span><span class="nv">got_offset</span><span class="o">=</span><span class="k">$(</span>objdump<span class="w"> </span>-hw<span class="w"> </span>a.out<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;/.got/{print &quot;0x&quot;$6}&#39;</span><span class="k">)</span>
+</span><span id="__span-23-2"><a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a>$<span class="w"> </span><span class="nv">got_size</span><span class="o">=</span><span class="k">$(</span>objdump<span class="w"> </span>-hw<span class="w"> </span>a.out<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;/.got/{print &quot;0x&quot;$3}&#39;</span><span class="k">)</span>
+</span><span id="__span-23-3"><a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a>$<span class="w"> </span>hexdump<span class="w"> </span>-v<span class="w"> </span>-s<span class="w"> </span><span class="nv">$got_offset</span><span class="w"> </span>-n<span class="w"> </span><span class="nv">$got_size</span><span class="w"> </span>-e<span class="w"> </span><span class="s1">&#39;&quot;%_ad  &quot; /8 &quot;%016x &quot; &quot;\n&quot;&#39;</span><span class="w"> </span>a.out<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;BEGIN{print &quot;Offset    Address           Value&quot;} {printf(&quot;%08x  &quot;, $1); printf(&quot;%016x  &quot;, $1+0x10000); print $2}&#39;</span>
+</span><span id="__span-23-4"><a id="__codelineno-23-4" name="__codelineno-23-4" href="#__codelineno-23-4"></a>Offset<span class="w">    </span>Address<span class="w">           </span>Value
+</span><span id="__span-23-5"><a id="__codelineno-23-5" name="__codelineno-23-5" href="#__codelineno-23-5"></a>00000f90<span class="w">  </span>0000000000010f90<span class="w">  </span><span class="m">0000000000000000</span>
+</span><span id="__span-23-6"><a id="__codelineno-23-6" name="__codelineno-23-6" href="#__codelineno-23-6"></a>00000f98<span class="w">  </span>0000000000010f98<span class="w">  </span><span class="m">0000000000000000</span>
+</span><span id="__span-23-7"><a id="__codelineno-23-7" name="__codelineno-23-7" href="#__codelineno-23-7"></a>00000fa0<span class="w">  </span>0000000000010fa0<span class="w">  </span><span class="m">0000000000000000</span>
+</span><span id="__span-23-8"><a id="__codelineno-23-8" name="__codelineno-23-8" href="#__codelineno-23-8"></a>00000fa8<span class="w">  </span>0000000000010fa8<span class="w">  </span>00000000000005d0
+</span><span id="__span-23-9"><a id="__codelineno-23-9" name="__codelineno-23-9" href="#__codelineno-23-9"></a>00000fb0<span class="w">  </span>0000000000010fb0<span class="w">  </span>00000000000005d0
+</span><span id="__span-23-10"><a id="__codelineno-23-10" name="__codelineno-23-10" href="#__codelineno-23-10"></a>00000fb8<span class="w">  </span>0000000000010fb8<span class="w">  </span>00000000000005d0
+</span><span id="__span-23-11"><a id="__codelineno-23-11" name="__codelineno-23-11" href="#__codelineno-23-11"></a>00000fc0<span class="w">  </span>0000000000010fc0<span class="w">  </span>00000000000005d0
+</span><span id="__span-23-12"><a id="__codelineno-23-12" name="__codelineno-23-12" href="#__codelineno-23-12"></a>00000fc8<span class="w">  </span>0000000000010fc8<span class="w">  </span>00000000000005d0
+</span><span id="__span-23-13"><a id="__codelineno-23-13" name="__codelineno-23-13" href="#__codelineno-23-13"></a>00000fd0<span class="w">  </span>0000000000010fd0<span class="w">  </span>0000000000010da0
+</span><span id="__span-23-14"><a id="__codelineno-23-14" name="__codelineno-23-14" href="#__codelineno-23-14"></a>00000fd8<span class="w">  </span>0000000000010fd8<span class="w">  </span><span class="m">0000000000000000</span>
+</span><span id="__span-23-15"><a id="__codelineno-23-15" name="__codelineno-23-15" href="#__codelineno-23-15"></a>00000fe0<span class="w">  </span>0000000000010fe0<span class="w">  </span><span class="m">0000000000000000</span>
+</span><span id="__span-23-16"><a id="__codelineno-23-16" name="__codelineno-23-16" href="#__codelineno-23-16"></a>00000fe8<span class="w">  </span>0000000000010fe8<span class="w">  </span><span class="m">0000000000000000</span>
+</span><span id="__span-23-17"><a id="__codelineno-23-17" name="__codelineno-23-17" href="#__codelineno-23-17"></a>00000ff0<span class="w">  </span>0000000000010ff0<span class="w">  </span><span class="m">0000000000000754</span>
+</span><span id="__span-23-18"><a id="__codelineno-23-18" name="__codelineno-23-18" href="#__codelineno-23-18"></a>00000ff8<span class="w">  </span>0000000000010ff8<span class="w">  </span><span class="m">0000000000000000</span>
+</span></code></pre></div>
 <h3 id="格式化字符串sprintf">格式化字符串（sprintf）<a class="headerlink" href="#格式化字符串sprintf" title="Permanent link">#</a></h3>
 <p><code>sprintf</code> 函数用提供的 format 和 variables 返回一个类似于 printf 格式输出的字符串。</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>    sprintf(fmt, expr, ... )
-</span><span id="__span-23-2"><a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a>        the string resulting from formatting expr ...  according to the printf(3) format fmt
+<div class="language-text highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>    sprintf(fmt, expr, ... )
+</span><span id="__span-24-2"><a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a>        the string resulting from formatting expr ...  according to the printf(3) format fmt
 </span></code></pre></div>
 
 

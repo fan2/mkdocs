@@ -553,12 +553,23 @@ Usage: dr  Registers commands
 | drw <hexnum>         set contents of the register arena
 ```
 
-!!! example "dr - show registers"
+dr - show registers examples:
 
-    [0xffffbdb54c40]> dr?pc
-    0xffffbdb54c40
-    [0xffffbdb54c40]> dr?sp
-    0xffffdf34f0b0
+```bash
+[0xaaaadec30754]> dr?pc
+0xaaaadec30754
+[0xaaaadec30754]> dr?BP
+0xffffdd6b1210
+[0xaaaadec30754]> dr?sp
+0xffffdd6b1210
+
+[0xaaaadec30754]> ?v $r{PC}
+0xaaaadec30754
+[0xaaaadec30754]> ?v $r{BP}
+0xffffdd6b1210
+[0xaaaadec30754]> ?v $r:SP
+0xffffdd6b1210
+```
 
 ### breakpoints
 

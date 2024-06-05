@@ -290,6 +290,31 @@ Frank Williams   (317)555-9876
 Haley Snell      (313)555-4938
 ```
 
+关于 awk 中使用算术表达式，参考 [Arithmetic Ops](https://www.gnu.org/software/gawk/manual/html_node/Arithmetic-Ops.html), [awk high precision arithmetic](https://unix.stackexchange.com/questions/57006/awk-high-precision-arithmetic)。
+
+参考 [puts@plt - static analysis](../../../../elf/plt-puts-analysis.md) 中的 printf 和算术运算的综合示范样例：
+
+```bash
+$ got_offset=$(objdump -hw a.out | awk '/.got/{print "0x"$6}')
+$ got_size=$(objdump -hw a.out | awk '/.got/{print "0x"$3}')
+$ hexdump -v -s $got_offset -n $got_size -e '"%_ad  " /8 "%016x " "\n"' a.out | awk 'BEGIN{print "Offset    Address           Value"} {printf("%08x  ", $1); printf("%016x  ", $1+0x10000); print $2}'
+Offset    Address           Value
+00000f90  0000000000010f90  0000000000000000
+00000f98  0000000000010f98  0000000000000000
+00000fa0  0000000000010fa0  0000000000000000
+00000fa8  0000000000010fa8  00000000000005d0
+00000fb0  0000000000010fb0  00000000000005d0
+00000fb8  0000000000010fb8  00000000000005d0
+00000fc0  0000000000010fc0  00000000000005d0
+00000fc8  0000000000010fc8  00000000000005d0
+00000fd0  0000000000010fd0  0000000000010da0
+00000fd8  0000000000010fd8  0000000000000000
+00000fe0  0000000000010fe0  0000000000000000
+00000fe8  0000000000010fe8  0000000000000000
+00000ff0  0000000000010ff0  0000000000000754
+00000ff8  0000000000010ff8  0000000000000000
+```
+
 ### 格式化字符串（sprintf）
 
 `sprintf` 函数用提供的 format 和 variables 返回一个类似于 printf 格式输出的字符串。

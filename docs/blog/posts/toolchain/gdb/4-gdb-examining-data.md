@@ -60,6 +60,17 @@ $4 = 1100101
 
 ### expr
 
+```bash
+pwndbg> p sizeof(int)
+$1 = 4
+pwndbg> p sizeof(long)
+$2 = 8
+pwndbg> p sizeof(void*)
+$3 = 8
+pwndbg> p sizeof(uintptr_t)
+No symbol table is loaded.  Use the "file" command.
+```
+
 [17.1 Assignment to Variables](https://sourceware.org/gdb/current/onlinedocs/gdb.html/Assignment.html)
 [set variable (gdb mode only)](https://www.irya.unam.mx/computo/sites/manuales/fce12/debugger/cl/commandref/gdb_mode/cmd_set_variable.htm)
 

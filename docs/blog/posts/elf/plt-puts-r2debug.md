@@ -90,7 +90,8 @@ Show map name of current address.
 
 List memory maps of current/target process.
 
-> `r-x` marks LOAD0 segment; `rw-` designates LOAD1 segment.
+1. Two loadable segments exist per so, LOAD0 and LOAD1.
+2. `r-x` marks LOAD0 segment; `rw-` designates LOAD1 segment.
 
 ```bash
 [0xffff98492c40]> dm
@@ -105,45 +106,12 @@ List memory maps of current/target process.
 
 ## sections2segments
 
-Use `readelf -S`/`objdump -h` to display the sections' header.
+Use `readelf` or `objdump` to display the sections' header.
 
 - `readelf [-S|--section-headers]`: display the sections' header
 - `objdump [-h|--[section-]headers]`: display the contents of the section headers
 
 Use `readelf -lW` to display the program headers.
-
-```bash
-$ readelf -lW a.out
-
-Elf file type is DYN (Position-Independent Executable file)
-Entry point 0x640
-There are 9 program headers, starting at offset 64
-
-Program Headers:
-  Type           Offset   VirtAddr           PhysAddr           FileSiz  MemSiz   Flg Align
-  PHDR           0x000040 0x0000000000000040 0x0000000000000040 0x0001f8 0x0001f8 R   0x8
-  INTERP         0x000238 0x0000000000000238 0x0000000000000238 0x00001b 0x00001b R   0x1
-      [Requesting program interpreter: /lib/ld-linux-aarch64.so.1]
-  LOAD           0x000000 0x0000000000000000 0x0000000000000000 0x000894 0x000894 R E 0x10000
-  LOAD           0x000d90 0x0000000000010d90 0x0000000000010d90 0x000280 0x000288 RW  0x10000
-  DYNAMIC        0x000da0 0x0000000000010da0 0x0000000000010da0 0x0001f0 0x0001f0 RW  0x8
-  NOTE           0x000254 0x0000000000000254 0x0000000000000254 0x000044 0x000044 R   0x4
-  GNU_EH_FRAME   0x0007a8 0x00000000000007a8 0x00000000000007a8 0x00003c 0x00003c R   0x4
-  GNU_STACK      0x000000 0x0000000000000000 0x0000000000000000 0x000000 0x000000 RW  0x10
-  GNU_RELRO      0x000d90 0x0000000000010d90 0x0000000000010d90 0x000270 0x000270 R   0x1
-
- Section to Segment mapping:
-  Segment Sections...
-   00
-   01     .interp
-   02     .interp .note.gnu.build-id .note.ABI-tag .gnu.hash .dynsym .dynstr .gnu.version .gnu.version_r .rela.dyn .rela.plt .init .plt .text .fini .rodata .eh_frame_hdr .eh_frame
-   03     .init_array .fini_array .dynamic .got .data .bss
-   04     .dynamic
-   05     .note.gnu.build-id .note.ABI-tag
-   06     .eh_frame_hdr
-   07
-   08     .init_array .fini_array .dynamic .got
-```
 
 Also, `rabin2` supports options to list sections and segments and their mapping relationship.
 
@@ -232,7 +200,10 @@ nth paddr        size vaddr           vsize perm type name
 According to the mapping relationship, LOAD0's first section is `.interp`, of whose vaddr is 0xaaaadc760238.
 As `readelf -lW a.out` indicated, it should be aligned at 0x10000(64K), so the segment vaddr is 0xaaaadc760000.
 
-> Why is the vaddr of LOAD1 segment is 0xaaaadc770d90, not 0xaaaadc770000?
+!!! question "vaddr of LOAD1"
+
+    Why is the vaddr of the LOAD1 segment shown as 0xaaaadc770d90 and not 0xaaaadc770000?
+    It seems to be the vaddr of the first section `.init_array`.
 
 ## imports/relocations
 
