@@ -440,7 +440,30 @@ _start
 
 It turns out that symbol `_start` is at address 0x640, which is actually the entry point of the C program.
 
-As the collect2 options show, `_start` is defined in `/usr/lib/aarch64-linux-gnu/Scrt1.o`.
+```bash
+$ objdump --start-address=0x640 --stop-address=$((0x640+48)) -d a.out
+
+a.out:     file format elf64-littleaarch64
+
+
+Disassembly of section .text:
+
+0000000000000640 <_start>:
+ 640:	d503201f 	nop
+ 644:	d280001d 	mov	x29, #0x0                   	// #0
+ 648:	d280001e 	mov	x30, #0x0                   	// #0
+ 64c:	aa0003e5 	mov	x5, x0
+ 650:	f94003e1 	ldr	x1, [sp]
+ 654:	910023e2 	add	x2, sp, #0x8
+ 658:	910003e6 	mov	x6, sp
+ 65c:	90000080 	adrp	x0, 10000 <__FRAME_END__+0xf770>
+ 660:	f947f800 	ldr	x0, [x0, #4080]
+ 664:	d2800003 	mov	x3, #0x0                   	// #0
+ 668:	d2800004 	mov	x4, #0x0                   	// #0
+ 66c:	97ffffe1 	bl	5f0 <__libc_start_main@plt>
+```
+
+As the collect2 options show, `_start` is actually provided by `/usr/lib/aarch64-linux-gnu/Scrt1.o`.
 
 ```bash title="objdump -d Scrt1.o"
 $ objdump -d /usr/lib/aarch64-linux-gnu/Scrt1.o

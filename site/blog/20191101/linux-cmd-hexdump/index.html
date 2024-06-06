@@ -1341,9 +1341,36 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#options" class="md-nav__link">
+    <span class="md-ellipsis">
+      options
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#-e_format" class="md-nav__link">
     <span class="md-ellipsis">
       -e format
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo_-_elf_header" class="md-nav__link">
+    <span class="md-ellipsis">
+      demo - elf header
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo_-_relagot" class="md-nav__link">
+    <span class="md-ellipsis">
+      demo - rela/got
     </span>
   </a>
   
@@ -1440,7 +1467,7 @@
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7h1.5Z"/></svg>
                           <span class="md-ellipsis">
                             
-                              需要 6 分钟阅读时间
+                              需要 7 分钟阅读时间
                             
                           </span>
                         </div>
@@ -1653,7 +1680,7 @@
 </span><span id="__span-9-29"><a id="__codelineno-9-29" name="__codelineno-9-29" href="#__codelineno-9-29"></a>
 </span><span id="__span-9-30"><a id="__codelineno-9-30" name="__codelineno-9-30" href="#__codelineno-9-30"></a>For<span class="w"> </span>more<span class="w"> </span>details<span class="w"> </span>see<span class="w"> </span>hexdump<span class="o">(</span><span class="m">1</span><span class="o">)</span>.
 </span></code></pre></div>
-<p>常用选项：</p>
+<h3 id="options">options<a class="headerlink" href="#options" title="Permanent link">#</a></h3>
 <p><code>-x</code>：以两个十六进制字节为一个显示单位。默认一行显示16个十六进制，即8组two-bytes（8/2 %04x）。<br />
 <code>-n</code>：只 dump 指定长度的内容，以 byte 为单位。<br />
 <code>-s</code>：跳过开头指定长度的字节。<br />
@@ -1716,6 +1743,7 @@
 </span><span id="__span-16-4"><a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a><span class="m">00000000</span><span class="w">  </span>464c457f<span class="w"> </span><span class="m">03010101</span><span class="w"> </span><span class="m">00000000</span><span class="w"> </span><span class="m">00000000</span>
 </span><span id="__span-16-5"><a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a><span class="m">00000010</span>
 </span></code></pre></div>
+<h3 id="demo_-_elf_header">demo - elf header<a class="headerlink" href="#demo_-_elf_header" title="Permanent link">#</a></h3>
 <p>跳过头部 16 个字节的 e_ident，打印 half-word 类型的 e_type 和 e_machine：</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="c1"># ET_EXEC, EM_ARM</span>
 </span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>$<span class="w"> </span>hexdump<span class="w"> </span>-s<span class="w"> </span><span class="m">16</span><span class="w"> </span>-n<span class="w"> </span><span class="m">4</span><span class="w"> </span>swrite32
@@ -1747,6 +1775,50 @@
 </span><span id="__span-20-7"><a id="__codelineno-20-7" name="__codelineno-20-7" href="#__codelineno-20-7"></a><span class="m">0000018</span><span class="w">  </span><span class="m">640</span>
 </span><span id="__span-20-8"><a id="__codelineno-20-8" name="__codelineno-20-8" href="#__codelineno-20-8"></a>$<span class="w"> </span>readelf<span class="w"> </span>-h<span class="w"> </span>write64<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s2">&quot;Entry point address&quot;</span>
 </span><span id="__span-20-9"><a id="__codelineno-20-9" name="__codelineno-20-9" href="#__codelineno-20-9"></a><span class="w">  </span>Entry<span class="w"> </span>point<span class="w"> </span>address:<span class="w">               </span>0x640
+</span></code></pre></div>
+<h3 id="demo_-_relagot">demo - rela/got<a class="headerlink" href="#demo_-_relagot" title="Permanent link">#</a></h3>
+<p>参考 <a href="../../20230628/plt-puts-analysis/">puts@plt/rela/got - static analysis</a>。</p>
+<p>在 arm64/AArch64 等平台上，内存地址是 64 位的，要打印指针值需以 8-byte 的 double-word 或 giant-word 为一组。</p>
+<p>Hexdump contents of PROGBITS section <code>.got</code> grouped by giant-word array.</p>
+<blockquote>
+<p>原始 hexdump Offset 为不带 0x 前缀的十六进制，拼接 <code>"0x"</code> 编程字符串，无法直接参加计算，故转换为十进制。</p>
+</blockquote>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>$<span class="w"> </span><span class="nv">got_offset</span><span class="o">=</span><span class="k">$(</span>objdump<span class="w"> </span>-hw<span class="w"> </span>a.out<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;/.got/{print &quot;0x&quot;$6}&#39;</span><span class="k">)</span>
+</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>$<span class="w"> </span><span class="nv">got_size</span><span class="o">=</span><span class="k">$(</span>objdump<span class="w"> </span>-hw<span class="w"> </span>a.out<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;/.got/{print &quot;0x&quot;$3}&#39;</span><span class="k">)</span>
+</span><span id="__span-21-3"><a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a>$<span class="w"> </span>hexdump<span class="w"> </span>-v<span class="w"> </span>-s<span class="w"> </span><span class="nv">$got_offset</span><span class="w"> </span>-n<span class="w"> </span><span class="nv">$got_size</span><span class="w"> </span>-e<span class="w"> </span><span class="s1">&#39;&quot;%_ad\t&quot; /8 &quot;%016x\t&quot; &quot;\n&quot;&#39;</span><span class="w"> </span>a.out<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-21-4"><a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;BEGIN{print &quot;Offset\t\tAddress\t\t\t\tValue&quot;} \</span>
+</span><span id="__span-21-5"><a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a><span class="s1">{printf(&quot;%08x\t&quot;, $1); printf(&quot;%016x\t&quot;, $1+65536); print $2}&#39;</span>
+</span><span id="__span-21-6"><a id="__codelineno-21-6" name="__codelineno-21-6" href="#__codelineno-21-6"></a>Offset<span class="w">      </span>Address<span class="w">             </span>Value
+</span><span id="__span-21-7"><a id="__codelineno-21-7" name="__codelineno-21-7" href="#__codelineno-21-7"></a>00000f90<span class="w">    </span>0000000000010f90<span class="w">    </span><span class="m">0000000000000000</span>
+</span><span id="__span-21-8"><a id="__codelineno-21-8" name="__codelineno-21-8" href="#__codelineno-21-8"></a>00000f98<span class="w">    </span>0000000000010f98<span class="w">    </span><span class="m">0000000000000000</span>
+</span><span id="__span-21-9"><a id="__codelineno-21-9" name="__codelineno-21-9" href="#__codelineno-21-9"></a>00000fa0<span class="w">    </span>0000000000010fa0<span class="w">    </span><span class="m">0000000000000000</span>
+</span><span id="__span-21-10"><a id="__codelineno-21-10" name="__codelineno-21-10" href="#__codelineno-21-10"></a>00000fa8<span class="w">    </span>0000000000010fa8<span class="w">    </span>00000000000005d0
+</span><span id="__span-21-11"><a id="__codelineno-21-11" name="__codelineno-21-11" href="#__codelineno-21-11"></a>00000fb0<span class="w">    </span>0000000000010fb0<span class="w">    </span>00000000000005d0
+</span><span id="__span-21-12"><a id="__codelineno-21-12" name="__codelineno-21-12" href="#__codelineno-21-12"></a>00000fb8<span class="w">    </span>0000000000010fb8<span class="w">    </span>00000000000005d0
+</span><span id="__span-21-13"><a id="__codelineno-21-13" name="__codelineno-21-13" href="#__codelineno-21-13"></a>00000fc0<span class="w">    </span>0000000000010fc0<span class="w">    </span>00000000000005d0
+</span><span id="__span-21-14"><a id="__codelineno-21-14" name="__codelineno-21-14" href="#__codelineno-21-14"></a>00000fc8<span class="w">    </span>0000000000010fc8<span class="w">    </span>00000000000005d0
+</span><span id="__span-21-15"><a id="__codelineno-21-15" name="__codelineno-21-15" href="#__codelineno-21-15"></a>00000fd0<span class="w">    </span>0000000000010fd0<span class="w">    </span>0000000000010da0
+</span><span id="__span-21-16"><a id="__codelineno-21-16" name="__codelineno-21-16" href="#__codelineno-21-16"></a>00000fd8<span class="w">    </span>0000000000010fd8<span class="w">    </span><span class="m">0000000000000000</span>
+</span><span id="__span-21-17"><a id="__codelineno-21-17" name="__codelineno-21-17" href="#__codelineno-21-17"></a>00000fe0<span class="w">    </span>0000000000010fe0<span class="w">    </span><span class="m">0000000000000000</span>
+</span><span id="__span-21-18"><a id="__codelineno-21-18" name="__codelineno-21-18" href="#__codelineno-21-18"></a>00000fe8<span class="w">    </span>0000000000010fe8<span class="w">    </span><span class="m">0000000000000000</span>
+</span><span id="__span-21-19"><a id="__codelineno-21-19" name="__codelineno-21-19" href="#__codelineno-21-19"></a>00000ff0<span class="w">    </span>0000000000010ff0<span class="w">    </span><span class="m">0000000000000754</span>
+</span><span id="__span-21-20"><a id="__codelineno-21-20" name="__codelineno-21-20" href="#__codelineno-21-20"></a>00000ff8<span class="w">    </span>0000000000010ff8<span class="w">    </span><span class="m">0000000000000000</span>
+</span></code></pre></div>
+<p>As is shown in <code>readelf -d a.out</code>, <code>DT_RELAENT</code>=0x18, that means size of one RELA reloc is 24.</p>
+<p>Hexdump contents of RELA section <code>.rela.plt</code> grouped by unit of giant-word, 3 units per line.</p>
+<blockquote>
+<p>Pay attention to the first giant-word: it points to <code>.got</code> entry.</p>
+</blockquote>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a>$<span class="w"> </span><span class="nv">rp_offset</span><span class="o">=</span><span class="k">$(</span>objdump<span class="w"> </span>-hw<span class="w"> </span>a.out<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;/.rela.plt/{print &quot;0x&quot;$6}&#39;</span><span class="k">)</span>
+</span><span id="__span-22-2"><a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a>$<span class="w"> </span><span class="nv">rp_size</span><span class="o">=</span><span class="k">$(</span>objdump<span class="w"> </span>-hw<span class="w"> </span>a.out<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;/.rela.plt/{print &quot;0x&quot;$3}&#39;</span><span class="k">)</span>
+</span><span id="__span-22-3"><a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a>$<span class="w"> </span>hexdump<span class="w"> </span>-v<span class="w"> </span>-s<span class="w"> </span><span class="nv">$rp_offset</span><span class="w"> </span>-n<span class="w"> </span><span class="nv">$rp_size</span><span class="w"> </span>-e<span class="w"> </span><span class="s1">&#39;&quot;%016_ax  &quot; 3/8 &quot;%016x &quot; &quot;\n&quot;&#39;</span><span class="w"> </span>a.out<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-22-4"><a id="__codelineno-22-4" name="__codelineno-22-4" href="#__codelineno-22-4"></a><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;BEGIN{print &quot;address\t\t\t\toffset\t\t\tinfo\t\t\taddend&quot;} 1&#39;</span>
+</span><span id="__span-22-5"><a id="__codelineno-22-5" name="__codelineno-22-5" href="#__codelineno-22-5"></a>address<span class="w">             </span>offset<span class="w">          </span>info<span class="w">            </span>addend
+</span><span id="__span-22-6"><a id="__codelineno-22-6" name="__codelineno-22-6" href="#__codelineno-22-6"></a><span class="m">0000000000000540</span><span class="w">  </span>0000000000010fa8<span class="w"> </span><span class="m">0000000300000402</span><span class="w"> </span><span class="m">0000000000000000</span>
+</span><span id="__span-22-7"><a id="__codelineno-22-7" name="__codelineno-22-7" href="#__codelineno-22-7"></a><span class="m">0000000000000558</span><span class="w">  </span>0000000000010fb0<span class="w"> </span><span class="m">0000000500000402</span><span class="w"> </span><span class="m">0000000000000000</span>
+</span><span id="__span-22-8"><a id="__codelineno-22-8" name="__codelineno-22-8" href="#__codelineno-22-8"></a><span class="m">0000000000000570</span><span class="w">  </span>0000000000010fb8<span class="w"> </span><span class="m">0000000600000402</span><span class="w"> </span><span class="m">0000000000000000</span>
+</span><span id="__span-22-9"><a id="__codelineno-22-9" name="__codelineno-22-9" href="#__codelineno-22-9"></a><span class="m">0000000000000588</span><span class="w">  </span>0000000000010fc0<span class="w"> </span><span class="m">0000000700000402</span><span class="w"> </span><span class="m">0000000000000000</span>
+</span><span id="__span-22-10"><a id="__codelineno-22-10" name="__codelineno-22-10" href="#__codelineno-22-10"></a>00000000000005a0<span class="w">  </span>0000000000010fc8<span class="w"> </span><span class="m">0000000800000402</span><span class="w"> </span><span class="m">0000000000000000</span>
 </span></code></pre></div>
 
 

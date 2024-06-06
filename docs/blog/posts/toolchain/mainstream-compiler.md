@@ -794,7 +794,6 @@ clang 相比 gcc 多了以下命令，有些是针对 [Mach-O](https://en.wikipe
 - `cmpdylib` - compare two dynamic shared libraries for compatibility
 - `dsymutil` - manipulate archived DWARF debug symbol files
 - `dwarfdump` - dump and verify DWARF debug information
-- `indent` – indent and format C program source
 - `install_name_tool` - change dynamic shared library install names
 - `libtool` - create libraries
 - `lipo` - create or operate on universal files

@@ -1,5 +1,5 @@
 ---
-title: puts@plt - r2 debug
+title: reloc puts@plt via GOT - r2 debug
 authors:
     - xman
 date:
@@ -8,6 +8,7 @@ categories:
     - elf
 tags:
     - PLT
+    - RELA
     - GOT
 comments: true
 ---
@@ -15,6 +16,8 @@ comments: true
 [Previously](./plt-puts-pwndbg.md), we've dynamically analysed how shared dynamic symbols such as `puts` are resolved and relocated at runtime using gdb-pwndbg.
 
 In this article, we'll do the same work, but change our dynamic analysis tool to the popular open-source SRE toolkit r2(aka [radare2](../toolchain/radare2-basics.md)).
+
+It is also a thorough and comprehensive debugging exercise, demonstrating the power and versatility of the `r2` toolset.
 
 <!-- more -->
 
@@ -545,11 +548,12 @@ The output of `rabin2 -R a.out` maybe more clear: the vaddr=0x00010fc8 is relati
 
 ```bash hl_lines="11"
 # objdump -j .plt -d a.out
-$ puts_plt=$(radare2.rabin2 -i a.out | awk '/puts/ {print $2}')
-$ objdump -d --start-address=$puts_plt --stop-address=$((puts_plt+16)) a.out
+$ objdump --disassemble=puts@plt a.out
 
 a.out:     file format elf64-littleaarch64
 
+
+Disassembly of section .init:
 
 Disassembly of section .plt:
 
@@ -558,6 +562,12 @@ Disassembly of section .plt:
  634:	f947e611 	ldr	x17, [x16, #4040]
  638:	913f2210 	add	x16, x16, #0xfc8
  63c:	d61f0220 	br	x17
+ 640:	Address 0x0000000000000640 is out of bounds.
+
+
+Disassembly of section .text:
+
+Disassembly of section .fini:
 ```
 
 > `ADRP Xd, label`: label is an offset from the page address of this instruction.
@@ -581,32 +591,11 @@ INFO: hit breakpoint at: 0xaaaadc760630
 
 View the disassembly against `puts@plt`, it's easy to find that `10000 <__FRAME_END__+0xf770>` is dynamically replaced by `map._home_pifan_Projects_cpp_a.out.rw_`.
 
-The `ADRP` instruction is used to form the PC relative address to the 4KB page. As the PC is 0xaaaadc760630, its 4K page boundary aligned address (`:pg_hi21:`) is `0xaaaadc760000`, calculated by masking out the lower 12 bits.
+The [ADRP instruction](../arm/arm-adr-demo.md) is used to form the PC relative address to the 4KB page. As the PC is 0xaaaadc760630, its 4K page boundary aligned address (`:pg_hi21:`) is `0xaaaadc760000`, calculated by masking out the lower 12 bits.
 
 > 0xaaaadc760000 is also the piebase and page address of the first text segment LOAD0. Look back to chapter *loaded modules* and *memory maps*.
 
-If you add the coded PC literal 0x10000 to the page address 0xaaaadc760000, it becomes `0xaaaadc770000`. The following Python code snippet can be used to demonstrate the calculation.
-
-```Python title="ADRP form PC-relative address"
-opcode=0x90000090
-#format(opcode, '032b')
-#f'{opcode=:#032b}'
-
-immlo_mask=(1<<30)|(1<<29)
-immhi_mask=(2**24-1)&(~(2**5-1))
-
-immlo=((opcode&immlo_mask)<<1)>>30
-immhi=(opcode&immhi_mask)>>5
-
-imm=(immhi<<2|immlo)<<12
-f'{imm=:#8x}'
-
-pc=0xaaaadc760630
-pg_hi21=pc&low12_mask
-f'{pg_hi21=:#16x}'
-x16=pg_hi21+imm
-f'{x16=:#8x}'
-```
+If you add the coded PC literal 0x10000 to the page address 0xaaaadc760000, it becomes `0xaaaadc770000`.
 
 The above inference was based on baddr and the segment of the current `ADRP` instruction (LOAD0), it results in PC-relative calculation `x16=load0_baddr+offset`.
 

@@ -288,7 +288,7 @@ Breakpoint 1, main (argc=1, argv=0xfffffffff248) at test-gdb.c:16
 
 您可以为任何断点（或观察点或捕获点）提供一系列命令，以便在程序因该断点而停止时执行。例如，您可能想要打印某些表达式的值，或启用其他断点。
 
-参考 [puts@plt - pwndbg](../../elf/plt-puts-pwndbg.md) 中的使用案例：
+参考 [reloc puts@plt via GOT - pwndbg](../../elf/plt-puts-pwndbg.md) 中的使用案例：
 
 在 C 程序进入 CRT entry point 之前，在 GOT entry `reloc.puts` 处设置观察点。进入 entry 之前，ld 会动态加载 libc.so，解析动态符号并修正 `reloc.puts` 指向的函数指针。这个 resovle/fix dynamic symbol 过程会更新 `reloc.puts` 内容，故会触发观察点（hardware watchpoint）。同时，触发观察点时，希望打印出真实符号地址的十六进制格式，故为观察点添加 commands。
 

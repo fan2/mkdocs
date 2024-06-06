@@ -1878,7 +1878,7 @@
 <h3 id="commands">commands<a class="headerlink" href="#commands" title="Permanent link">#</a></h3>
 <p><a href="https://sourceware.org/gdb/current/onlinedocs/gdb.html/Break-Commands.html">5.1.7 Breakpoint Command Lists</a></p>
 <p>您可以为任何断点（或观察点或捕获点）提供一系列命令，以便在程序因该断点而停止时执行。例如，您可能想要打印某些表达式的值，或启用其他断点。</p>
-<p>参考 <a href="../../20230629/plt-puts-pwndbg/">puts@plt - pwndbg</a> 中的使用案例：</p>
+<p>参考 <a href="../../20230629/plt-puts-pwndbg/">reloc puts@plt via GOT - pwndbg</a> 中的使用案例：</p>
 <p>在 C 程序进入 CRT entry point 之前，在 GOT entry <code>reloc.puts</code> 处设置观察点。进入 entry 之前，ld 会动态加载 libc.so，解析动态符号并修正 <code>reloc.puts</code> 指向的函数指针。这个 resovle/fix dynamic symbol 过程会更新 <code>reloc.puts</code> 内容，故会触发观察点（hardware watchpoint）。同时，触发观察点时，希望打印出真实符号地址的十六进制格式，故为观察点添加 commands。</p>
 <p>You can use a watchpoint to add a sentry and stop execution whenever the value at 0xaaaaaaab0fc8 changes.</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>pwndbg&gt;<span class="w"> </span>watch<span class="w"> </span>*<span class="o">(</span>uintptr_t*<span class="o">)</span>0xaaaaaaab0fc8

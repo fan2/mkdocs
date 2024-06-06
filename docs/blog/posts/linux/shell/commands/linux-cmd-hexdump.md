@@ -224,7 +224,7 @@ Arguments:
 For more details see hexdump(1).
 ```
 
-常用选项：
+### options
 
 `-x`：以两个十六进制字节为一个显示单位。默认一行显示16个十六进制，即8组two-bytes（8/2 %04x）。
 `-n`：只 dump 指定长度的内容，以 byte 为单位。
@@ -310,6 +310,8 @@ $ hd -n 16 -e '"%08.8_ax  " 4/4 "%08x " "\n"' swrite32
 00000010
 ```
 
+### demo - elf header
+
 跳过头部 16 个字节的 e_ident，打印 half-word 类型的 e_type 和 e_machine：
 
 ```bash
@@ -352,4 +354,56 @@ $ hexdump -s 24 -n 8 -e '"%07.7_ax  " /8 "%16x " "\n"' write64
 0000018  640
 $ readelf -h write64 | grep "Entry point address"
   Entry point address:               0x640
+```
+
+### demo - rela/got
+
+参考 [puts@plt/rela/got - static analysis](../../../elf/plt-puts-analysis.md)。
+
+在 arm64/AArch64 等平台上，内存地址是 64 位的，要打印指针值需以 8-byte 的 double-word 或 giant-word 为一组。
+
+Hexdump contents of PROGBITS section `.got` grouped by giant-word array.
+
+> 原始 hexdump Offset 为不带 0x 前缀的十六进制，拼接 `"0x"` 编程字符串，无法直接参加计算，故转换为十进制。
+
+```bash
+$ got_offset=$(objdump -hw a.out | awk '/.got/{print "0x"$6}')
+$ got_size=$(objdump -hw a.out | awk '/.got/{print "0x"$3}')
+$ hexdump -v -s $got_offset -n $got_size -e '"%_ad\t" /8 "%016x\t" "\n"' a.out \
+| awk 'BEGIN{print "Offset\t\tAddress\t\t\t\tValue"} \
+{printf("%08x\t", $1); printf("%016x\t", $1+65536); print $2}'
+Offset		Address				Value
+00000f90	0000000000010f90	0000000000000000
+00000f98	0000000000010f98	0000000000000000
+00000fa0	0000000000010fa0	0000000000000000
+00000fa8	0000000000010fa8	00000000000005d0
+00000fb0	0000000000010fb0	00000000000005d0
+00000fb8	0000000000010fb8	00000000000005d0
+00000fc0	0000000000010fc0	00000000000005d0
+00000fc8	0000000000010fc8	00000000000005d0
+00000fd0	0000000000010fd0	0000000000010da0
+00000fd8	0000000000010fd8	0000000000000000
+00000fe0	0000000000010fe0	0000000000000000
+00000fe8	0000000000010fe8	0000000000000000
+00000ff0	0000000000010ff0	0000000000000754
+00000ff8	0000000000010ff8	0000000000000000
+```
+
+As is shown in `readelf -d a.out`, `DT_RELAENT`=0x18, that means size of one RELA reloc is 24.
+
+Hexdump contents of RELA section `.rela.plt` grouped by unit of giant-word, 3 units per line.
+
+> Pay attention to the first giant-word: it points to `.got` entry.
+
+```bash
+$ rp_offset=$(objdump -hw a.out | awk '/.rela.plt/{print "0x"$6}')
+$ rp_size=$(objdump -hw a.out | awk '/.rela.plt/{print "0x"$3}')
+$ hexdump -v -s $rp_offset -n $rp_size -e '"%016_ax  " 3/8 "%016x " "\n"' a.out \
+| awk 'BEGIN{print "address\t\t\t\toffset\t\t\tinfo\t\t\taddend"} 1'
+address				offset			info			addend
+0000000000000540  0000000000010fa8 0000000300000402 0000000000000000
+0000000000000558  0000000000010fb0 0000000500000402 0000000000000000
+0000000000000570  0000000000010fb8 0000000600000402 0000000000000000
+0000000000000588  0000000000010fc0 0000000700000402 0000000000000000
+00000000000005a0  0000000000010fc8 0000000800000402 0000000000000000
 ```

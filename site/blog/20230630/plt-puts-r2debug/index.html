@@ -26,7 +26,7 @@
     
     
       
-        <title>puts@plt - r2 debug - ElseWhere</title>
+        <title>reloc puts@plt via GOT - r2 debug - ElseWhere</title>
       
     
     
@@ -123,7 +123,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              puts@plt - r2 debug
+              reloc puts@plt via GOT - r2 debug
             
           </span>
         </div>
@@ -1542,6 +1542,12 @@
     
     
     
+      <span class="md-tag">RELA</span>
+    
+  
+    
+    
+    
       <span class="md-tag">GOT</span>
     
   
@@ -1549,10 +1555,11 @@
 
 
 
-  <h1>puts@plt - r2 debug</h1>
+  <h1>reloc puts@plt via GOT - r2 debug</h1>
 
 <p><a href="../../20230629/plt-puts-pwndbg/">Previously</a>, we've dynamically analysed how shared dynamic symbols such as <code>puts</code> are resolved and relocated at runtime using gdb-pwndbg.</p>
 <p>In this article, we'll do the same work, but change our dynamic analysis tool to the popular open-source SRE toolkit r2(aka <a href="../../20231002/radare2-basics/">radare2</a>).</p>
+<p>It is also a thorough and comprehensive debugging exercise, demonstrating the power and versatility of the <code>r2</code> toolset.</p>
 <!-- more -->
 
 <p>Run the DYN ELF <code>a.out</code> with the <code>-A</code> option using r2.</p>
@@ -2015,19 +2022,26 @@ VA = baddr+offset/RVA = 0xaaaadc760000 + 0x00010fc8 = 0xaaaadc770fc8.</p>
 <h3 id="disassemble">disassemble<a class="headerlink" href="#disassemble" title="Permanent link">#</a></h3>
 <p><a href="../../20230628/plt-puts-analysis/">Previously</a>, we've statically disassembled the <code>.plt</code> section using <code>objdump</code> command.</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="c1"># objdump -j .plt -d a.out</span>
-</span><span id="__span-23-2"><a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a>$<span class="w"> </span><span class="nv">puts_plt</span><span class="o">=</span><span class="k">$(</span>radare2.rabin2<span class="w"> </span>-i<span class="w"> </span>a.out<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;/puts/ {print $2}&#39;</span><span class="k">)</span>
-</span><span id="__span-23-3"><a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a>$<span class="w"> </span>objdump<span class="w"> </span>-d<span class="w"> </span>--start-address<span class="o">=</span><span class="nv">$puts_plt</span><span class="w"> </span>--stop-address<span class="o">=</span><span class="k">$((</span><span class="nv">puts_plt</span><span class="o">+</span><span class="m">16</span><span class="k">))</span><span class="w"> </span>a.out
-</span><span id="__span-23-4"><a id="__codelineno-23-4" name="__codelineno-23-4" href="#__codelineno-23-4"></a>
-</span><span id="__span-23-5"><a id="__codelineno-23-5" name="__codelineno-23-5" href="#__codelineno-23-5"></a>a.out:<span class="w">     </span>file<span class="w"> </span>format<span class="w"> </span>elf64-littleaarch64
+</span><span id="__span-23-2"><a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a>$<span class="w"> </span>objdump<span class="w"> </span>--disassemble<span class="o">=</span>puts@plt<span class="w"> </span>a.out
+</span><span id="__span-23-3"><a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a>
+</span><span id="__span-23-4"><a id="__codelineno-23-4" name="__codelineno-23-4" href="#__codelineno-23-4"></a>a.out:<span class="w">     </span>file<span class="w"> </span>format<span class="w"> </span>elf64-littleaarch64
+</span><span id="__span-23-5"><a id="__codelineno-23-5" name="__codelineno-23-5" href="#__codelineno-23-5"></a>
 </span><span id="__span-23-6"><a id="__codelineno-23-6" name="__codelineno-23-6" href="#__codelineno-23-6"></a>
-</span><span id="__span-23-7"><a id="__codelineno-23-7" name="__codelineno-23-7" href="#__codelineno-23-7"></a>
-</span><span id="__span-23-8"><a id="__codelineno-23-8" name="__codelineno-23-8" href="#__codelineno-23-8"></a>Disassembly<span class="w"> </span>of<span class="w"> </span>section<span class="w"> </span>.plt:
-</span><span id="__span-23-9"><a id="__codelineno-23-9" name="__codelineno-23-9" href="#__codelineno-23-9"></a>
-</span><span id="__span-23-10"><a id="__codelineno-23-10" name="__codelineno-23-10" href="#__codelineno-23-10"></a><span class="m">0000000000000630</span><span class="w"> </span>&lt;puts@plt&gt;:
-</span><span id="__span-23-11"><a id="__codelineno-23-11" name="__codelineno-23-11" href="#__codelineno-23-11"></a><span class="hll"><span class="w"> </span><span class="m">630</span>:<span class="w">   </span><span class="m">90000090</span><span class="w">    </span>adrp<span class="w">    </span>x16,<span class="w"> </span><span class="m">10000</span><span class="w"> </span>&lt;__FRAME_END__+0xf770&gt;
-</span></span><span id="__span-23-12"><a id="__codelineno-23-12" name="__codelineno-23-12" href="#__codelineno-23-12"></a><span class="w"> </span><span class="m">634</span>:<span class="w">   </span>f947e611<span class="w">    </span>ldr<span class="w"> </span>x17,<span class="w"> </span><span class="o">[</span>x16,<span class="w"> </span><span class="c1">#4040]</span>
-</span><span id="__span-23-13"><a id="__codelineno-23-13" name="__codelineno-23-13" href="#__codelineno-23-13"></a><span class="w"> </span><span class="m">638</span>:<span class="w">   </span>913f2210<span class="w">    </span>add<span class="w"> </span>x16,<span class="w"> </span>x16,<span class="w"> </span><span class="c1">#0xfc8</span>
-</span><span id="__span-23-14"><a id="__codelineno-23-14" name="__codelineno-23-14" href="#__codelineno-23-14"></a><span class="w"> </span>63c:<span class="w">   </span>d61f0220<span class="w">    </span>br<span class="w">  </span>x17
+</span><span id="__span-23-7"><a id="__codelineno-23-7" name="__codelineno-23-7" href="#__codelineno-23-7"></a>Disassembly<span class="w"> </span>of<span class="w"> </span>section<span class="w"> </span>.init:
+</span><span id="__span-23-8"><a id="__codelineno-23-8" name="__codelineno-23-8" href="#__codelineno-23-8"></a>
+</span><span id="__span-23-9"><a id="__codelineno-23-9" name="__codelineno-23-9" href="#__codelineno-23-9"></a>Disassembly<span class="w"> </span>of<span class="w"> </span>section<span class="w"> </span>.plt:
+</span><span id="__span-23-10"><a id="__codelineno-23-10" name="__codelineno-23-10" href="#__codelineno-23-10"></a>
+</span><span id="__span-23-11"><a id="__codelineno-23-11" name="__codelineno-23-11" href="#__codelineno-23-11"></a><span class="hll"><span class="m">0000000000000630</span><span class="w"> </span>&lt;puts@plt&gt;:
+</span></span><span id="__span-23-12"><a id="__codelineno-23-12" name="__codelineno-23-12" href="#__codelineno-23-12"></a><span class="w"> </span><span class="m">630</span>:<span class="w">   </span><span class="m">90000090</span><span class="w">    </span>adrp<span class="w">    </span>x16,<span class="w"> </span><span class="m">10000</span><span class="w"> </span>&lt;__FRAME_END__+0xf770&gt;
+</span><span id="__span-23-13"><a id="__codelineno-23-13" name="__codelineno-23-13" href="#__codelineno-23-13"></a><span class="w"> </span><span class="m">634</span>:<span class="w">   </span>f947e611<span class="w">    </span>ldr<span class="w"> </span>x17,<span class="w"> </span><span class="o">[</span>x16,<span class="w"> </span><span class="c1">#4040]</span>
+</span><span id="__span-23-14"><a id="__codelineno-23-14" name="__codelineno-23-14" href="#__codelineno-23-14"></a><span class="w"> </span><span class="m">638</span>:<span class="w">   </span>913f2210<span class="w">    </span>add<span class="w"> </span>x16,<span class="w"> </span>x16,<span class="w"> </span><span class="c1">#0xfc8</span>
+</span><span id="__span-23-15"><a id="__codelineno-23-15" name="__codelineno-23-15" href="#__codelineno-23-15"></a><span class="w"> </span>63c:<span class="w">   </span>d61f0220<span class="w">    </span>br<span class="w">  </span>x17
+</span><span id="__span-23-16"><a id="__codelineno-23-16" name="__codelineno-23-16" href="#__codelineno-23-16"></a><span class="w"> </span><span class="m">640</span>:<span class="w">   </span>Address<span class="w"> </span>0x0000000000000640<span class="w"> </span>is<span class="w"> </span>out<span class="w"> </span>of<span class="w"> </span>bounds.
+</span><span id="__span-23-17"><a id="__codelineno-23-17" name="__codelineno-23-17" href="#__codelineno-23-17"></a>
+</span><span id="__span-23-18"><a id="__codelineno-23-18" name="__codelineno-23-18" href="#__codelineno-23-18"></a>
+</span><span id="__span-23-19"><a id="__codelineno-23-19" name="__codelineno-23-19" href="#__codelineno-23-19"></a>Disassembly<span class="w"> </span>of<span class="w"> </span>section<span class="w"> </span>.text:
+</span><span id="__span-23-20"><a id="__codelineno-23-20" name="__codelineno-23-20" href="#__codelineno-23-20"></a>
+</span><span id="__span-23-21"><a id="__codelineno-23-21" name="__codelineno-23-21" href="#__codelineno-23-21"></a>Disassembly<span class="w"> </span>of<span class="w"> </span>section<span class="w"> </span>.fini:
 </span></code></pre></div>
 <blockquote>
 <p><code>ADRP Xd, label</code>: label is an offset from the page address of this instruction.</p>
@@ -2047,41 +2061,22 @@ VA = baddr+offset/RVA = 0xaaaadc760000 + 0x00010fc8 = 0xaaaadc770fc8.</p>
 </span><span id="__span-24-12"><a id="__codelineno-24-12" name="__codelineno-24-12" href="#__codelineno-24-12"></a>└<span class="w">           </span>0xaaaadc76063c<span class="w">      </span>20021fd6<span class="w">       </span>br<span class="w"> </span>x17
 </span></code></pre></div>
 <p>View the disassembly against <code>puts@plt</code>, it's easy to find that <code>10000 &lt;__FRAME_END__+0xf770&gt;</code> is dynamically replaced by <code>map._home_pifan_Projects_cpp_a.out.rw_</code>.</p>
-<p>The <code>ADRP</code> instruction is used to form the PC relative address to the 4KB page. As the PC is 0xaaaadc760630, its 4K page boundary aligned address (<code>:pg_hi21:</code>) is <code>0xaaaadc760000</code>, calculated by masking out the lower 12 bits.</p>
+<p>The <a href="../../20230609/arm-adr-demo/">ADRP instruction</a> is used to form the PC relative address to the 4KB page. As the PC is 0xaaaadc760630, its 4K page boundary aligned address (<code>:pg_hi21:</code>) is <code>0xaaaadc760000</code>, calculated by masking out the lower 12 bits.</p>
 <blockquote>
 <p>0xaaaadc760000 is also the piebase and page address of the first text segment LOAD0. Look back to chapter <em>loaded modules</em> and <em>memory maps</em>.</p>
 </blockquote>
-<p>If you add the coded PC literal 0x10000 to the page address 0xaaaadc760000, it becomes <code>0xaaaadc770000</code>. The following Python code snippet can be used to demonstrate the calculation.</p>
-<div class="language-Python highlight"><span class="filename">ADRP form PC-relative address</span><pre><span></span><code><span id="__span-25-1"><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a><span class="n">opcode</span><span class="o">=</span><span class="mh">0x90000090</span>
-</span><span id="__span-25-2"><a id="__codelineno-25-2" name="__codelineno-25-2" href="#__codelineno-25-2"></a><span class="c1">#format(opcode, &#39;032b&#39;)</span>
-</span><span id="__span-25-3"><a id="__codelineno-25-3" name="__codelineno-25-3" href="#__codelineno-25-3"></a><span class="c1">#f&#39;{opcode=:#032b}&#39;</span>
-</span><span id="__span-25-4"><a id="__codelineno-25-4" name="__codelineno-25-4" href="#__codelineno-25-4"></a>
-</span><span id="__span-25-5"><a id="__codelineno-25-5" name="__codelineno-25-5" href="#__codelineno-25-5"></a><span class="n">immlo_mask</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="o">&lt;&lt;</span><span class="mi">30</span><span class="p">)</span><span class="o">|</span><span class="p">(</span><span class="mi">1</span><span class="o">&lt;&lt;</span><span class="mi">29</span><span class="p">)</span>
-</span><span id="__span-25-6"><a id="__codelineno-25-6" name="__codelineno-25-6" href="#__codelineno-25-6"></a><span class="n">immhi_mask</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="mi">24</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">&amp;</span><span class="p">(</span><span class="o">~</span><span class="p">(</span><span class="mi">2</span><span class="o">**</span><span class="mi">5</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
-</span><span id="__span-25-7"><a id="__codelineno-25-7" name="__codelineno-25-7" href="#__codelineno-25-7"></a>
-</span><span id="__span-25-8"><a id="__codelineno-25-8" name="__codelineno-25-8" href="#__codelineno-25-8"></a><span class="n">immlo</span><span class="o">=</span><span class="p">((</span><span class="n">opcode</span><span class="o">&amp;</span><span class="n">immlo_mask</span><span class="p">)</span><span class="o">&lt;&lt;</span><span class="mi">1</span><span class="p">)</span><span class="o">&gt;&gt;</span><span class="mi">30</span>
-</span><span id="__span-25-9"><a id="__codelineno-25-9" name="__codelineno-25-9" href="#__codelineno-25-9"></a><span class="n">immhi</span><span class="o">=</span><span class="p">(</span><span class="n">opcode</span><span class="o">&amp;</span><span class="n">immhi_mask</span><span class="p">)</span><span class="o">&gt;&gt;</span><span class="mi">5</span>
-</span><span id="__span-25-10"><a id="__codelineno-25-10" name="__codelineno-25-10" href="#__codelineno-25-10"></a>
-</span><span id="__span-25-11"><a id="__codelineno-25-11" name="__codelineno-25-11" href="#__codelineno-25-11"></a><span class="n">imm</span><span class="o">=</span><span class="p">(</span><span class="n">immhi</span><span class="o">&lt;&lt;</span><span class="mi">2</span><span class="o">|</span><span class="n">immlo</span><span class="p">)</span><span class="o">&lt;&lt;</span><span class="mi">12</span>
-</span><span id="__span-25-12"><a id="__codelineno-25-12" name="__codelineno-25-12" href="#__codelineno-25-12"></a><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">imm</span><span class="si">=:</span><span class="s1">#8x</span><span class="si">}</span><span class="s1">&#39;</span>
-</span><span id="__span-25-13"><a id="__codelineno-25-13" name="__codelineno-25-13" href="#__codelineno-25-13"></a>
-</span><span id="__span-25-14"><a id="__codelineno-25-14" name="__codelineno-25-14" href="#__codelineno-25-14"></a><span class="n">pc</span><span class="o">=</span><span class="mh">0xaaaadc760630</span>
-</span><span id="__span-25-15"><a id="__codelineno-25-15" name="__codelineno-25-15" href="#__codelineno-25-15"></a><span class="n">pg_hi21</span><span class="o">=</span><span class="n">pc</span><span class="o">&amp;</span><span class="n">low12_mask</span>
-</span><span id="__span-25-16"><a id="__codelineno-25-16" name="__codelineno-25-16" href="#__codelineno-25-16"></a><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">pg_hi21</span><span class="si">=:</span><span class="s1">#16x</span><span class="si">}</span><span class="s1">&#39;</span>
-</span><span id="__span-25-17"><a id="__codelineno-25-17" name="__codelineno-25-17" href="#__codelineno-25-17"></a><span class="n">x16</span><span class="o">=</span><span class="n">pg_hi21</span><span class="o">+</span><span class="n">imm</span>
-</span><span id="__span-25-18"><a id="__codelineno-25-18" name="__codelineno-25-18" href="#__codelineno-25-18"></a><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">x16</span><span class="si">=:</span><span class="s1">#8x</span><span class="si">}</span><span class="s1">&#39;</span>
-</span></code></pre></div>
+<p>If you add the coded PC literal 0x10000 to the page address 0xaaaadc760000, it becomes <code>0xaaaadc770000</code>.</p>
 <p>The above inference was based on baddr and the segment of the current <code>ADRP</code> instruction (LOAD0), it results in PC-relative calculation <code>x16=load0_baddr+offset</code>.</p>
 <p>On the other hand, as we've already mentioned, the offset 0x10000 is the increment of vaddr over paddr for the LOAD1 data segment where the <code>.got</code> section is located. Therefore, from the point of view of the LOAD1 segment, the page address of the <code>.got</code> entries already matches it.</p>
 <p>So it's not surprising that the ADRP literal is fixed by <code>map._home_pifan_Projects_cpp_a.out.rw_</code> (see <code>dm</code>) at runtime. It represents the LOAD1 segment starting at 0xaaaadc770000. That's <code>x16=load1_baddr</code> according to the results, which is not a coincidence.</p>
 <p>In the next instruction <code>ldr x17, [x16, 0xfc8]!</code>, <code>x16:0xfc8</code> is the address of GOT entry for <code>puts</code>(aka <code>reloc.puts</code>), 0xaaaadc770000+0xfc8=0xaaaadc770fc8. Then <code>x17</code> will load the value stored in pointer 0xaaaadc770fc8. It matches the output of <code>ir</code> in chapter <em>imports/relocations</em>.</p>
 <p>Let's examine the memory and try to dereference it as pointer:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-26-1"><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a><span class="o">[</span>0xaaaadc760630<span class="o">]</span>&gt;<span class="w"> </span>pxq<span class="w"> </span><span class="nv">$w</span><span class="w"> </span>@<span class="w"> </span>0xaaaadc770fc8
-</span><span id="__span-26-2"><a id="__codelineno-26-2" name="__codelineno-26-2" href="#__codelineno-26-2"></a>0xaaaadc770fc8<span class="w">  </span>0x0000ffff9832ae70<span class="w">                       </span>p.2.....
-</span><span id="__span-26-3"><a id="__codelineno-26-3" name="__codelineno-26-3" href="#__codelineno-26-3"></a><span class="o">[</span>0xaaaadc760630<span class="o">]</span>&gt;<span class="w"> </span>pfp<span class="w"> </span>@<span class="w"> </span>0xaaaadc770fc8
-</span><span id="__span-26-4"><a id="__codelineno-26-4" name="__codelineno-26-4" href="#__codelineno-26-4"></a><span class="nv">0xaaaadc770fc8</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">(</span>qword<span class="o">)</span>0x0000ffff9832ae70
-</span><span id="__span-26-5"><a id="__codelineno-26-5" name="__codelineno-26-5" href="#__codelineno-26-5"></a><span class="o">[</span>0xaaaadc760630<span class="o">]</span>&gt;<span class="w"> </span>pfS<span class="w"> </span>@<span class="w"> </span>0xaaaadc770fc8
-</span><span id="__span-26-6"><a id="__codelineno-26-6" name="__codelineno-26-6" href="#__codelineno-26-6"></a><span class="nv">0xaaaadc770fc8</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>0xaaaadc770fc8<span class="w"> </span>-&gt;<span class="w"> </span>0xffff9832ae70<span class="w"> </span><span class="s2">&quot;{&quot;</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-25-1"><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a><span class="o">[</span>0xaaaadc760630<span class="o">]</span>&gt;<span class="w"> </span>pxq<span class="w"> </span><span class="nv">$w</span><span class="w"> </span>@<span class="w"> </span>0xaaaadc770fc8
+</span><span id="__span-25-2"><a id="__codelineno-25-2" name="__codelineno-25-2" href="#__codelineno-25-2"></a>0xaaaadc770fc8<span class="w">  </span>0x0000ffff9832ae70<span class="w">                       </span>p.2.....
+</span><span id="__span-25-3"><a id="__codelineno-25-3" name="__codelineno-25-3" href="#__codelineno-25-3"></a><span class="o">[</span>0xaaaadc760630<span class="o">]</span>&gt;<span class="w"> </span>pfp<span class="w"> </span>@<span class="w"> </span>0xaaaadc770fc8
+</span><span id="__span-25-4"><a id="__codelineno-25-4" name="__codelineno-25-4" href="#__codelineno-25-4"></a><span class="nv">0xaaaadc770fc8</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">(</span>qword<span class="o">)</span>0x0000ffff9832ae70
+</span><span id="__span-25-5"><a id="__codelineno-25-5" name="__codelineno-25-5" href="#__codelineno-25-5"></a><span class="o">[</span>0xaaaadc760630<span class="o">]</span>&gt;<span class="w"> </span>pfS<span class="w"> </span>@<span class="w"> </span>0xaaaadc770fc8
+</span><span id="__span-25-6"><a id="__codelineno-25-6" name="__codelineno-25-6" href="#__codelineno-25-6"></a><span class="nv">0xaaaadc770fc8</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>0xaaaadc770fc8<span class="w"> </span>-&gt;<span class="w"> </span>0xffff9832ae70<span class="w"> </span><span class="s2">&quot;{&quot;</span>
 </span></code></pre></div>
 <p>Actually, when <em>libc.so</em> is loaded, the value of the pointer is immediately updated from 0x00000000000005d0.</p>
 <blockquote>
@@ -2091,40 +2086,40 @@ VA = baddr+offset/RVA = 0xaaaadc760000 + 0x00010fc8 = 0xaaaadc770fc8.</p>
 <p>The following instruction <code>br x17</code> just jump to <code>0x0000ffff9832ae70</code>, which should be the real address(function pointer) of <code>puts</code> in libc.so.</p>
 <h3 id="paddr_-_vaddr">paddr -&gt; vaddr<a class="headerlink" href="#paddr_-_vaddr" title="Permanent link">#</a></h3>
 <p>Let's look up symbol <code>puts</code> in libc.so.6, the weak symbol <code>puts</code> will be overriden by the global symbol <code>_IO_puts</code>.</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-27-1"><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a><span class="o">[</span>0xaaaae5360630<span class="o">]</span>&gt;<span class="w"> </span>!nm<span class="w"> </span>-gD<span class="w"> </span>/usr/lib/aarch64-linux-gnu/libc.so.6<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>puts
-</span><span id="__span-27-2"><a id="__codelineno-27-2" name="__codelineno-27-2" href="#__codelineno-27-2"></a>
-</span><span id="__span-27-3"><a id="__codelineno-27-3" name="__codelineno-27-3" href="#__codelineno-27-3"></a>000000000006ae70<span class="w"> </span>T<span class="w"> </span>_IO_puts@@GLIBC_2.17
-</span><span id="__span-27-4"><a id="__codelineno-27-4" name="__codelineno-27-4" href="#__codelineno-27-4"></a>000000000006ae70<span class="w"> </span>W<span class="w"> </span>puts@@GLIBC_2.17
-</span><span id="__span-27-5"><a id="__codelineno-27-5" name="__codelineno-27-5" href="#__codelineno-27-5"></a>
-</span><span id="__span-27-6"><a id="__codelineno-27-6" name="__codelineno-27-6" href="#__codelineno-27-6"></a><span class="o">[</span>0xaaaae5360630<span class="o">]</span>&gt;<span class="w"> </span>!readelf<span class="w"> </span>-s<span class="w"> </span>/usr/lib/aarch64-linux-gnu/libc.so.6<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>puts
-</span><span id="__span-27-7"><a id="__codelineno-27-7" name="__codelineno-27-7" href="#__codelineno-27-7"></a>
-</span><span id="__span-27-8"><a id="__codelineno-27-8" name="__codelineno-27-8" href="#__codelineno-27-8"></a><span class="w">   </span>Num:<span class="w">    </span>Value<span class="w">          </span>Size<span class="w"> </span>Type<span class="w">    </span>Bind<span class="w">   </span>Vis<span class="w">      </span>Ndx<span class="w"> </span>Name
-</span><span id="__span-27-9"><a id="__codelineno-27-9" name="__codelineno-27-9" href="#__codelineno-27-9"></a>
-</span><span id="__span-27-10"><a id="__codelineno-27-10" name="__codelineno-27-10" href="#__codelineno-27-10"></a><span class="w">  </span><span class="m">1400</span>:<span class="w"> </span>000000000006ae70<span class="w">   </span><span class="m">492</span><span class="w"> </span>FUNC<span class="w">    </span>WEAK<span class="w">   </span>DEFAULT<span class="w">   </span><span class="m">12</span><span class="w"> </span>puts@@GLIBC_2.17
-</span><span id="__span-27-11"><a id="__codelineno-27-11" name="__codelineno-27-11" href="#__codelineno-27-11"></a><span class="w">  </span><span class="m">1409</span>:<span class="w"> </span>000000000006ae70<span class="w">   </span><span class="m">492</span><span class="w"> </span>FUNC<span class="w">    </span>GLOBAL<span class="w"> </span>DEFAULT<span class="w">   </span><span class="m">12</span><span class="w"> </span>_IO_puts@@GLIBC_2.17
-</span><span id="__span-27-12"><a id="__codelineno-27-12" name="__codelineno-27-12" href="#__codelineno-27-12"></a>
-</span><span id="__span-27-13"><a id="__codelineno-27-13" name="__codelineno-27-13" href="#__codelineno-27-13"></a><span class="o">[</span>0xaaaae5360630<span class="o">]</span>&gt;<span class="w"> </span>!objdump<span class="w"> </span>-t<span class="w"> </span>/usr/lib/aarch64-linux-gnu/libc.so.6<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>puts
-</span><span id="__span-27-14"><a id="__codelineno-27-14" name="__codelineno-27-14" href="#__codelineno-27-14"></a>
-</span><span id="__span-27-15"><a id="__codelineno-27-15" name="__codelineno-27-15" href="#__codelineno-27-15"></a>000000000006ae70<span class="w">  </span>w<span class="w">    </span>F<span class="w"> </span>.text<span class="w">  </span>00000000000001ec<span class="w"> </span>puts
-</span><span id="__span-27-16"><a id="__codelineno-27-16" name="__codelineno-27-16" href="#__codelineno-27-16"></a>000000000006ae70<span class="w"> </span>g<span class="w">     </span>F<span class="w"> </span>.text<span class="w">  </span>00000000000001ec<span class="w"> </span>_IO_puts
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-26-1"><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a><span class="o">[</span>0xaaaae5360630<span class="o">]</span>&gt;<span class="w"> </span>!nm<span class="w"> </span>-gD<span class="w"> </span>/usr/lib/aarch64-linux-gnu/libc.so.6<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>puts
+</span><span id="__span-26-2"><a id="__codelineno-26-2" name="__codelineno-26-2" href="#__codelineno-26-2"></a>
+</span><span id="__span-26-3"><a id="__codelineno-26-3" name="__codelineno-26-3" href="#__codelineno-26-3"></a>000000000006ae70<span class="w"> </span>T<span class="w"> </span>_IO_puts@@GLIBC_2.17
+</span><span id="__span-26-4"><a id="__codelineno-26-4" name="__codelineno-26-4" href="#__codelineno-26-4"></a>000000000006ae70<span class="w"> </span>W<span class="w"> </span>puts@@GLIBC_2.17
+</span><span id="__span-26-5"><a id="__codelineno-26-5" name="__codelineno-26-5" href="#__codelineno-26-5"></a>
+</span><span id="__span-26-6"><a id="__codelineno-26-6" name="__codelineno-26-6" href="#__codelineno-26-6"></a><span class="o">[</span>0xaaaae5360630<span class="o">]</span>&gt;<span class="w"> </span>!readelf<span class="w"> </span>-s<span class="w"> </span>/usr/lib/aarch64-linux-gnu/libc.so.6<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>puts
+</span><span id="__span-26-7"><a id="__codelineno-26-7" name="__codelineno-26-7" href="#__codelineno-26-7"></a>
+</span><span id="__span-26-8"><a id="__codelineno-26-8" name="__codelineno-26-8" href="#__codelineno-26-8"></a><span class="w">   </span>Num:<span class="w">    </span>Value<span class="w">          </span>Size<span class="w"> </span>Type<span class="w">    </span>Bind<span class="w">   </span>Vis<span class="w">      </span>Ndx<span class="w"> </span>Name
+</span><span id="__span-26-9"><a id="__codelineno-26-9" name="__codelineno-26-9" href="#__codelineno-26-9"></a>
+</span><span id="__span-26-10"><a id="__codelineno-26-10" name="__codelineno-26-10" href="#__codelineno-26-10"></a><span class="w">  </span><span class="m">1400</span>:<span class="w"> </span>000000000006ae70<span class="w">   </span><span class="m">492</span><span class="w"> </span>FUNC<span class="w">    </span>WEAK<span class="w">   </span>DEFAULT<span class="w">   </span><span class="m">12</span><span class="w"> </span>puts@@GLIBC_2.17
+</span><span id="__span-26-11"><a id="__codelineno-26-11" name="__codelineno-26-11" href="#__codelineno-26-11"></a><span class="w">  </span><span class="m">1409</span>:<span class="w"> </span>000000000006ae70<span class="w">   </span><span class="m">492</span><span class="w"> </span>FUNC<span class="w">    </span>GLOBAL<span class="w"> </span>DEFAULT<span class="w">   </span><span class="m">12</span><span class="w"> </span>_IO_puts@@GLIBC_2.17
+</span><span id="__span-26-12"><a id="__codelineno-26-12" name="__codelineno-26-12" href="#__codelineno-26-12"></a>
+</span><span id="__span-26-13"><a id="__codelineno-26-13" name="__codelineno-26-13" href="#__codelineno-26-13"></a><span class="o">[</span>0xaaaae5360630<span class="o">]</span>&gt;<span class="w"> </span>!objdump<span class="w"> </span>-t<span class="w"> </span>/usr/lib/aarch64-linux-gnu/libc.so.6<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>puts
+</span><span id="__span-26-14"><a id="__codelineno-26-14" name="__codelineno-26-14" href="#__codelineno-26-14"></a>
+</span><span id="__span-26-15"><a id="__codelineno-26-15" name="__codelineno-26-15" href="#__codelineno-26-15"></a>000000000006ae70<span class="w">  </span>w<span class="w">    </span>F<span class="w"> </span>.text<span class="w">  </span>00000000000001ec<span class="w"> </span>puts
+</span><span id="__span-26-16"><a id="__codelineno-26-16" name="__codelineno-26-16" href="#__codelineno-26-16"></a>000000000006ae70<span class="w"> </span>g<span class="w">     </span>F<span class="w"> </span>.text<span class="w">  </span>00000000000001ec<span class="w"> </span>_IO_puts
 </span></code></pre></div>
 <p>The value of the symbol <code>puts</code> is <code>000000000006ae70</code>, which is the static absolute paddr and will be adjusted to vaddr when loaded into memory.</p>
 <p>Type <code>dmi</code> to list symbols of <code>libc.so</code> and grep symbol <code>puts</code>:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-28-1"><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a><span class="o">[</span>0xaaaae5360630<span class="o">]</span>&gt;<span class="w"> </span>dmi<span class="w"> </span>libc.so<span class="w"> </span>~puts
-</span><span id="__span-28-2"><a id="__codelineno-28-2" name="__codelineno-28-2" href="#__codelineno-28-2"></a>
-</span><span id="__span-28-3"><a id="__codelineno-28-3" name="__codelineno-28-3" href="#__codelineno-28-3"></a><span class="o">[</span>Symbols<span class="o">]</span>
-</span><span id="__span-28-4"><a id="__codelineno-28-4" name="__codelineno-28-4" href="#__codelineno-28-4"></a>nth<span class="w"> </span>paddr<span class="w">      </span>vaddr<span class="w">          </span><span class="nb">bind</span><span class="w">   </span><span class="nb">type</span><span class="w">  </span>size<span class="w">  </span>lib<span class="w"> </span>name
-</span><span id="__span-28-5"><a id="__codelineno-28-5" name="__codelineno-28-5" href="#__codelineno-28-5"></a>――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-</span><span id="__span-28-6"><a id="__codelineno-28-6" name="__codelineno-28-6" href="#__codelineno-28-6"></a>
-</span><span id="__span-28-7"><a id="__codelineno-28-7" name="__codelineno-28-7" href="#__codelineno-28-7"></a><span class="m">1400</span><span class="w"> </span>0x0006ae70<span class="w"> </span>0xffff9832ae70<span class="w"> </span>WEAK<span class="w">   </span>FUNC<span class="w"> </span><span class="m">492</span><span class="w">       </span>puts
-</span><span id="__span-28-8"><a id="__codelineno-28-8" name="__codelineno-28-8" href="#__codelineno-28-8"></a><span class="m">1409</span><span class="w"> </span>0x0006ae70<span class="w"> </span>0xffff9832ae70<span class="w"> </span>GLOBAL<span class="w"> </span>FUNC<span class="w"> </span><span class="m">492</span><span class="w">       </span>_IO_puts
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-27-1"><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a><span class="o">[</span>0xaaaae5360630<span class="o">]</span>&gt;<span class="w"> </span>dmi<span class="w"> </span>libc.so<span class="w"> </span>~puts
+</span><span id="__span-27-2"><a id="__codelineno-27-2" name="__codelineno-27-2" href="#__codelineno-27-2"></a>
+</span><span id="__span-27-3"><a id="__codelineno-27-3" name="__codelineno-27-3" href="#__codelineno-27-3"></a><span class="o">[</span>Symbols<span class="o">]</span>
+</span><span id="__span-27-4"><a id="__codelineno-27-4" name="__codelineno-27-4" href="#__codelineno-27-4"></a>nth<span class="w"> </span>paddr<span class="w">      </span>vaddr<span class="w">          </span><span class="nb">bind</span><span class="w">   </span><span class="nb">type</span><span class="w">  </span>size<span class="w">  </span>lib<span class="w"> </span>name
+</span><span id="__span-27-5"><a id="__codelineno-27-5" name="__codelineno-27-5" href="#__codelineno-27-5"></a>――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+</span><span id="__span-27-6"><a id="__codelineno-27-6" name="__codelineno-27-6" href="#__codelineno-27-6"></a>
+</span><span id="__span-27-7"><a id="__codelineno-27-7" name="__codelineno-27-7" href="#__codelineno-27-7"></a><span class="m">1400</span><span class="w"> </span>0x0006ae70<span class="w"> </span>0xffff9832ae70<span class="w"> </span>WEAK<span class="w">   </span>FUNC<span class="w"> </span><span class="m">492</span><span class="w">       </span>puts
+</span><span id="__span-27-8"><a id="__codelineno-27-8" name="__codelineno-27-8" href="#__codelineno-27-8"></a><span class="m">1409</span><span class="w"> </span>0x0006ae70<span class="w"> </span>0xffff9832ae70<span class="w"> </span>GLOBAL<span class="w"> </span>FUNC<span class="w"> </span><span class="m">492</span><span class="w">       </span>_IO_puts
 </span></code></pre></div>
 <p>Look back in the <em>libc vmmap</em> section, the vaddr of puts/_IO_puts 0xffff9832ae70 is between 0x0000ffff982c0000 - 0x0000ffff98448000, that is the area of the LOAD0 text segment.</p>
 <p>Well, keep in mind <code>VA = baddr+offset/RVA</code>.</p>
 <p>According to the latest <code>dm</code> output(linkmap), the <em>Load Bias</em> of libc.so is 0xffff982c0000. It's also the start address of text segment LOAD0 according to the latest <code>dmm</code> output(vmmap), 0x0000ffff982c0000.</p>
 <p>Add the paddr/offset to the baddr/bias to check the correctness of the formula.</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-29-1"><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a><span class="o">[</span>0xaaaadc760630<span class="o">]</span>&gt;<span class="w"> </span>?v<span class="w"> </span>0xffff982c0000+0x6ae70
-</span><span id="__span-29-2"><a id="__codelineno-29-2" name="__codelineno-29-2" href="#__codelineno-29-2"></a>0xffff9832ae70
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-28-1"><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a><span class="o">[</span>0xaaaadc760630<span class="o">]</span>&gt;<span class="w"> </span>?v<span class="w"> </span>0xffff982c0000+0x6ae70
+</span><span id="__span-28-2"><a id="__codelineno-28-2" name="__codelineno-28-2" href="#__codelineno-28-2"></a>0xffff9832ae70
 </span></code></pre></div>
 <p>Nothing is out of the ordinary. So far, everything is working as expected.</p>
 
@@ -2226,7 +2221,7 @@ VA = baddr+offset/RVA = 0xaaaadc760000 + 0x00010fc8 = 0xaaaadc770fc8.</p>
       <nav class="md-footer__inner md-grid" aria-label="页脚" >
         
           
-          <a href="../../20230629/plt-puts-pwndbg/" class="md-footer__link md-footer__link--prev" aria-label="上一页: puts@plt - pwndbg">
+          <a href="../../20230629/plt-puts-pwndbg/" class="md-footer__link md-footer__link--prev" aria-label="上一页: reloc puts@plt via GOT - pwndbg">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
@@ -2236,7 +2231,7 @@ VA = baddr+offset/RVA = 0xaaaadc760000 + 0x00010fc8 = 0xaaaadc770fc8.</p>
                 上一页
               </span>
               <div class="md-ellipsis">
-                puts@plt - pwndbg
+                reloc puts@plt via GOT - pwndbg
               </div>
             </div>
           </a>

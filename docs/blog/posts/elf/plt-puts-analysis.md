@@ -1,5 +1,5 @@
 ---
-title: puts@plt - static analysis
+title: puts@plt/rela/got - static analysis
 authors:
     - xman
 date:
@@ -8,6 +8,7 @@ categories:
     - elf
 tags:
     - PLT
+    - RELA
     - GOT
 comments: true
 ---
@@ -274,22 +275,6 @@ $ nm -D a.out
                  U puts@GLIBC_2.17
 ```
 
-`rabin2 -i `: list symbols imported from libraries.
-
-```bash
-$ radare2.rabin2 -i a.out
-[Imports]
-nth vaddr      bind   type   lib name
-―――――――――――――――――――――――――――――――――――――
-3   0x000005f0 GLOBAL FUNC       __libc_start_main
-4   ---------- WEAK   NOTYPE     _ITM_deregisterTMCloneTable
-5   0x00000600 WEAK   FUNC       __cxa_finalize
-6   0x00000610 WEAK   NOTYPE     __gmon_start__
-7   0x00000620 GLOBAL FUNC       abort
-8   0x00000630 GLOBAL FUNC       puts
-9   ---------- WEAK   NOTYPE     _ITM_registerTMCloneTable
-```
-
 `readelf --dyn-syms`: display the dynamic symbol table.
 `objdump [-T|--dynamic-syms]`: display the contents of the dynamic symbol table.
 
@@ -333,6 +318,72 @@ nth vaddr      bind   type   lib name
 
 ## dynamic section
 
+Refer to [TIS - ELF v1.2](https://refspecs.linuxfoundation.org/elf/elf.pdf) | Book III: SYSV - 2. Program Loading and Dynamic Linking - Dynamic Linking - Dynamic Section.
+
+```c title="Dynamic section entry"
+// /usr/include/elf.h
+
+typedef struct
+{
+  Elf64_Sxword  d_tag;          /* Dynamic entry type */
+  union
+    {
+      Elf64_Xword d_val;        /* Integer value */
+      Elf64_Addr d_ptr;         /* Address value */
+    } d_un;
+} Elf64_Dyn;
+```
+
+Legal values for `d_tag` (dynamic entry type):
+
+```c title="elf.h - d_tag"
+#define DT_NULL     0       /* Marks end of dynamic section */
+#define DT_NEEDED   1       /* Name of needed library */
+#define DT_PLTRELSZ 2       /* Size in bytes of PLT relocs */
+#define DT_PLTGOT   3       /* Processor defined value */
+#define DT_HASH     4       /* Address of symbol hash table */
+#define DT_STRTAB   5       /* Address of string table */
+#define DT_SYMTAB   6       /* Address of symbol table */
+#define DT_RELA     7       /* Address of Rela relocs */
+#define DT_RELASZ   8       /* Total size of Rela relocs */
+#define DT_RELAENT  9       /* Size of one Rela reloc */
+#define DT_STRSZ    10      /* Size of string table */
+#define DT_SYMENT   11      /* Size of one symbol table entry */
+#define DT_INIT     12      /* Address of init function */
+#define DT_FINI     13      /* Address of termination function */
+#define DT_SONAME   14      /* Name of shared object */
+#define DT_RPATH    15      /* Library search path (deprecated) */
+#define DT_SYMBOLIC 16      /* Start symbol search here */
+#define DT_REL      17      /* Address of Rel relocs */
+#define DT_RELSZ    18      /* Total size of Rel relocs */
+#define DT_RELENT   19      /* Size of one Rel reloc */
+#define DT_PLTREL   20      /* Type of reloc in PLT */
+#define DT_DEBUG    21      /* For debugging; unspecified */
+#define DT_TEXTREL  22      /* Reloc might modify .text */
+#define DT_JMPREL   23      /* Address of PLT relocs */
+#define DT_BIND_NOW 24      /* Process relocations of object */
+#define DT_INIT_ARRAY   25      /* Array with addresses of init fct */
+#define DT_FINI_ARRAY   26      /* Array with addresses of fini fct */
+#define DT_INIT_ARRAYSZ 27      /* Size in bytes of DT_INIT_ARRAY */
+#define DT_FINI_ARRAYSZ 28      /* Size in bytes of DT_FINI_ARRAY */
+#define DT_RUNPATH  29      /* Library search path */
+#define DT_FLAGS    30      /* Flags for the object being loaded */
+
+/* The versioning entry types.  The next are defined as part of the
+   GNU extension.  */
+#define DT_VERSYM   0x6ffffff0
+
+#define DT_RELACOUNT    0x6ffffff9
+#define DT_RELCOUNT 0x6ffffffa
+
+/* These were chosen by Sun.  */
+#define DT_FLAGS_1  0x6ffffffb  /* State flags, see DF_1_* below.  */
+#define DT_VERDEF   0x6ffffffc  /* Address of version definition
+                       table */
+```
+
+---
+
 `readelf -x --hex-dump=<number|name>`: dump the contents of section <number|name\> as bytes.
 `readelf [-R <number or name>|--relocated-dump=<number or name>]`: dump the relocated contents of section.
 
@@ -347,57 +398,53 @@ __SIZEOF_POINTER__=8, __WORDSIZE=64
 __SIZEOF_LONG__=8, LONG_BIT=64
 ```
 
-Reorganize the hexdump format of the `.dynamic` section to display its giant- or double- word array.
+As we can see, the two fields of `Elf64_Dyn` are all 64-bit, so reorganize the hexdump format to display its giant- or double- word array accordingly.
 
 ```bash
 # readelf -R .dynamic a.out
 $ dy_offset=$(objdump -hw a.out | awk '/.dynamic/{print "0x"$6}')
 $ dy_size=$(objdump -hw a.out | awk '/.dynamic/{print "0x"$3}')
 # hexdump -s $dy_offset -n $dy_size -e '"%07.7_ax  " 2/8 "%016x " "\n"' a.out
-hexdump -s $dy_offset -n $dy_size -e '"%07.7_ax  " 2/8 "%016x " "\n"' a.out | awk 'BEGIN{print "Offset   GiantWord1       GiantWord2"} 1'
-Offset   GiantWord1       GiantWord2
-0000da0  0000000000000001 000000000000002d
-0000db0  000000000000000c 00000000000005b8
-0000dc0  000000000000000d 000000000000077c
-0000dd0  0000000000000019 0000000000010d90
-0000de0  000000000000001b 0000000000000008
-0000df0  000000000000001a 0000000000010d98
-0000e00  000000000000001c 0000000000000008
-0000e10  000000006ffffef5 0000000000000298
-0000e20  0000000000000005 00000000000003a8
-0000e30  0000000000000006 00000000000002b8
-0000e40  000000000000000a 0000000000000092
-0000e50  000000000000000b 0000000000000018
-0000e60  0000000000000015 0000000000000000
-0000e70  0000000000000003 0000000000010f90
-0000e80  0000000000000002 0000000000000078
-0000e90  0000000000000014 0000000000000007
-0000ea0  0000000000000017 0000000000000540
-0000eb0  0000000000000007 0000000000000480
-0000ec0  0000000000000008 00000000000000c0
-0000ed0  0000000000000009 0000000000000018
-0000ee0  000000000000001e 0000000000000008
-0000ef0  000000006ffffffb 0000000008000001
-0000f00  000000006ffffffe 0000000000000450
-0000f10  000000006fffffff 0000000000000001
-0000f20  000000006ffffff0 000000000000043a
-0000f30  000000006ffffff9 0000000000000004
-0000f40  0000000000000000 0000000000000000
-*
+$ hexdump -v -s $dy_offset -n $dy_size -e '"%_ad\t" 2/8 "%016x\t" "\n"' a.out \
+| awk 'BEGIN{print "offset\t\taddress\t\t\t\td_tag\t\t\t\td_un"} \
+{printf("%08x\t", $1); printf("%016x\t", $1+65536); printf("%s\t", $2); print $3}'
+offset		address				d_tag				d_un
+00000da0	0000000000010da0	0000000000000001	000000000000002d
+00000db0	0000000000010db0	000000000000000c	00000000000005b8
+00000dc0	0000000000010dc0	000000000000000d	000000000000077c
+00000dd0	0000000000010dd0	0000000000000019	0000000000010d90
+00000de0	0000000000010de0	000000000000001b	0000000000000008
+00000df0	0000000000010df0	000000000000001a	0000000000010d98
+00000e00	0000000000010e00	000000000000001c	0000000000000008
+00000e10	0000000000010e10	000000006ffffef5	0000000000000298
+00000e20	0000000000010e20	0000000000000005	00000000000003a8
+00000e30	0000000000010e30	0000000000000006	00000000000002b8
+00000e40	0000000000010e40	000000000000000a	0000000000000092
+00000e50	0000000000010e50	000000000000000b	0000000000000018
+00000e60	0000000000010e60	0000000000000015	0000000000000000
+00000e70	0000000000010e70	0000000000000003	0000000000010f90
+00000e80	0000000000010e80	0000000000000002	0000000000000078
+00000e90	0000000000010e90	0000000000000014	0000000000000007
+00000ea0	0000000000010ea0	0000000000000017	0000000000000540
+00000eb0	0000000000010eb0	0000000000000007	0000000000000480
+00000ec0	0000000000010ec0	0000000000000008	00000000000000c0
+00000ed0	0000000000010ed0	0000000000000009	0000000000000018
+00000ee0	0000000000010ee0	000000000000001e	0000000000000008
+00000ef0	0000000000010ef0	000000006ffffffb	0000000008000001
+00000f00	0000000000010f00	000000006ffffffe	0000000000000450
+00000f10	0000000000010f10	000000006fffffff	0000000000000001
+00000f20	0000000000010f20	000000006ffffff0	000000000000043a
+00000f30	0000000000010f30	000000006ffffff9	0000000000000004
+00000f40	0000000000010f40	0000000000000000	0000000000000000
+00000f50	0000000000010f50	0000000000000000	0000000000000000
+00000f60	0000000000010f60	0000000000000000	0000000000000000
+00000f70	0000000000010f70	0000000000000000	0000000000000000
+00000f80	0000000000010f80	0000000000000000	0000000000000000
 ```
 
 ### readelf
 
 `readelf [-d|--dynamic]`: display the dynamic section.
-
-- `PLTGOT`: Address of `.got` section
-- `JMPREL`: Address of `.rela.plt` section
-- `PLTRELSZ`: size of `.rela.plt` section
-- `RELA`: offset of `.rela.dyn` section
-- `RELASZ`: size of `.rela.dyn` section
-- `RELACOUNT`: count of sections mapped into GNU_RELRO segment
-
-Check readelf's analysis against the raw hexdump above.
 
 ```bash
 $ readelf -d a.out
@@ -433,7 +480,74 @@ Dynamic section at offset 0xda0 contains 27 entries:
  0x0000000000000000 (NULL)               0x0
 ```
 
+Check readelf's analysis against the raw hexdump above and the sections dumped by `radare2.rabin2 -S a.out`.
+
+1. `DT_NEEDED`(0x0000000000000001)=0x2d: offset in STRTAB `.dynstr`, points to `libc.so.6`.
+
+    ```bash hl_lines="8"
+    readelf -p .dynstr a.out
+
+    String dump of section '.dynstr':
+    [     1]  __cxa_finalize
+    [    10]  __libc_start_main
+    [    22]  puts
+    [    27]  abort
+    [    2d]  libc.so.6
+    [    37]  GLIBC_2.17
+    [    42]  GLIBC_2.34
+    [    4d]  _ITM_deregisterTMCloneTable
+    [    69]  __gmon_start__
+    [    78]  _ITM_registerTMCloneTable
+    ```
+
+2. `DT_STRTAB`(0000000000000005)=0x3a8: address of section `.dynstr`.
+3. `DT_SYMTAB`(0000000000000006)=0x2b8: address of section `.dynsym`.
+4. `DT_STRSZ`(000000000000000a)=0x92/146 - size of section `.dynstr`.
+5. `DT_SYMENT`(000000000000000b)=0x18/24 - size of one symbol table entry (of `.dynsym`)
+5. `DT_PLTGOT`(0000000000000003)=0x10f90: address of section `.got`
+6. `DT_PLTRELSZ`(0000000000000002)=0x78/120 - size of section `.rela.plt`
+7. `DT_PLTREL`(0000000000000014)=0x7/`DT_RELA`: Type of reloc in PLT, `DT_REL` as alternate.
+8. `DT_JMPREL`(0000000000000017)=0x540: address of section `.rela.plt`.
+9. `DT_RELA`(0000000000000007)=0x480: address of section `.rela.dyn`.
+10. `DT_RELASZ`(0000000000000008)=0xc0/192 - size of section `.rela.dyn`.
+11. `DT_RELAENT`(0000000000000009)=0x18/24 - size of one relocation entry of `DT_RELA`.
+12. `DT_RELACOUNT`(000000006ffffff9)=0x4: count of sections mapped into `GNU_RELRO` segment?
+13. `DT_FLAGS`(000000000000001e)=0x8/`DF_BIND_NOW`: No lazy binding for this object.
+14. `DT_FLAGS_1`(000000006ffffffb)=0x1/`DF_1_NOW`: Set RTLD_NOW for this object.
+
 ## relocation entries
+
+```c title="Relocation table entry"
+// /usr/include/elf.h
+
+/* Relocation table entry with addend (in section of type SHT_RELA).  */
+
+typedef struct
+{
+  Elf64_Addr    r_offset;       /* Address */
+  Elf64_Xword   r_info;         /* Relocation type and symbol index */
+  Elf64_Sxword  r_addend;       /* Addend */
+} Elf64_Rela;
+
+/* How to extract and insert information held in the r_info field.  */
+
+#define ELF64_R_SYM(i)          ((i) >> 32)
+#define ELF64_R_TYPE(i)         ((i) & 0xffffffff)
+#define ELF64_R_INFO(sym,type)      ((((Elf64_Xword) (sym)) << 32) + (type))
+
+/* LP64 AArch64 relocs.  */
+
+#define R_AARCH64_GLOB_DAT     1025 /* 0x401: Create GOT entry.  */
+#define R_AARCH64_JUMP_SLOT    1026 /* 0x402: Create PLT entry.  */
+#define R_AARCH64_RELATIVE     1027 /* 0x403: Adjust by program base.  */
+
+```
+
+We know the following points from the previous analysis of the dynamic section.
+
+1. `DT_PLTREL`=0x7=`DT_RELA`: Type of reloc in PLT.
+2. `DT_RELA`=0x480: address of section `.rela.dyn`.
+3. `DT_JMPREL`=0x540: address of section `.rela.plt`.
 
 Use `readelf` or `objdump` to dump related sections.
 
@@ -444,89 +558,70 @@ objdump -j .got -j .rela.dyn -j .rela.plt -j .plt -s a.out
 
 ### hexdump sections
 
-Hexdump contents of RELA section `.got` grouped by giant-word array.
+As is shown in `readelf -d a.out`, `DT_RELAENT`=0x18, that means size of one RELA reloc is 24.
 
-1. 0x10000 is the increment of vaddr over paddr for the LOAD1 segment where the `.got` section is located.
-2. 0x5d0 is the address/offset of the `.plt` section located in the LOAD0 segment.
+Hexdump contents of section `.rela.dyn`(DT_RELA) grouped by unit of giant-word, 3 units per line.
 
-```bash
-$ got_offset=$(objdump -hw a.out | awk '/.got/{print "0x"$6}')
-$ got_size=$(objdump -hw a.out | awk '/.got/{print "0x"$3}')
-$ hexdump -v -s $got_offset -n $got_size -e '"%_ad  " /8 "%016x " "\n"' a.out | awk 'BEGIN{print "Offset    Address           Value"} {printf("%08x  ", $1); printf("%016x  ", $1+0x10000); print $2}'
-Offset    Address           Value
-00000f90  0000000000010f90  0000000000000000
-00000f98  0000000000010f98  0000000000000000
-00000fa0  0000000000010fa0  0000000000000000
-00000fa8  0000000000010fa8  00000000000005d0
-00000fb0  0000000000010fb0  00000000000005d0
-00000fb8  0000000000010fb8  00000000000005d0
-00000fc0  0000000000010fc0  00000000000005d0
-00000fc8  0000000000010fc8  00000000000005d0
-00000fd0  0000000000010fd0  0000000000010da0
-00000fd8  0000000000010fd8  0000000000000000
-00000fe0  0000000000010fe0  0000000000000000
-00000fe8  0000000000010fe8  0000000000000000
-00000ff0  0000000000010ff0  0000000000000754
-00000ff8  0000000000010ff8  0000000000000000
-```
-
-Hexdump contents of RELA section `.rela.plt` grouped by giant-word array.
-
-> Pay attention to the first giant-word: it points to `.got` entry.
-
-```bash
-$ rp_offset=$(objdump -hw a.out | awk '/.rela.plt/{print "0x"$6}')
-$ rp_size=$(objdump -hw a.out | awk '/.rela.plt/{print "0x"$3}')
-$ hexdump -v -s $rp_offset -n $rp_size -e '"%07.7_ax  " 3/8 "%016x " "\n"' a.out
-0000540  0000000000010fa8 0000000300000402 0000000000000000
-0000558  0000000000010fb0 0000000500000402 0000000000000000
-0000570  0000000000010fb8 0000000600000402 0000000000000000
-0000588  0000000000010fc0 0000000700000402 0000000000000000
-00005a0  0000000000010fc8 0000000800000402 0000000000000000
-```
-
-Hexdump contents of RELA section `.rela.dyn` grouped by giant-word array:
-
-> Pay attention to the first giant-word: it points to `.got` entry.
+> Pay attention to the offset, it points to a `.got` entry.
 
 ```bash
 $ rd_offset=$(objdump -hw a.out | awk '/.rela.dyn/{print "0x"$6}')
 $ rd_size=$(objdump -hw a.out | awk '/.rela.dyn/{print "0x"$3}')
-$ hexdump -v -s $rd_offset -n $rd_size -e '"%07.7_ax  " 3/8 "%016x " "\n"' a.out
-0000480  0000000000010d90 0000000000000403 0000000000000750 # .init_array
-0000498  0000000000010d98 0000000000000403 0000000000000700 # .fini_array
-00004b0  0000000000010ff0 0000000000000403 0000000000000754 # GOT 
-00004c8  0000000000011008 0000000000000403 0000000000011008 # .data[1]
-00004e0  0000000000010fd8 0000000400000401 0000000000000000 # GOT 
-00004f8  0000000000010fe0 0000000500000401 0000000000000000 # GOT 
-0000510  0000000000010fe8 0000000600000401 0000000000000000 # GOT 
-0000528  0000000000010ff8 0000000900000401 0000000000000000 # GOT 
+$ hhexdump -v -s $rd_offset -n $rd_size -e '"%016_ax  " 3/8 "%016x " "\n"' a.out \
+| awk 'BEGIN{print "address\t\t\t\toffset\t\t\tinfo\t\t\taddend"} 1'
+address				offset			info			addend
+0000000000000480  0000000000010d90 0000000000000403 0000000000000750 # .init_array
+0000000000000498  0000000000010d98 0000000000000403 0000000000000700 # .fini_array
+00000000000004b0  0000000000010ff0 0000000000000403 0000000000000754 # GOT
+00000000000004c8  0000000000011008 0000000000000403 0000000000011008 # .data[1]
+00000000000004e0  0000000000010fd8 0000000400000401 0000000000000000 # GOT
+00000000000004f8  0000000000010fe0 0000000500000401 0000000000000000 # GOT
+0000000000000510  0000000000010fe8 0000000600000401 0000000000000000 # GOT
+0000000000000528  0000000000010ff8 0000000900000401 0000000000000000 # GOT
 ```
 
-00004c8 - 0000000000011008: the second giant word of `.data`(Offset=0x001000, Address=0x0011000 Size=0x000010), can be denoted as .data[1] under AArch64.
+00004c8 - 0000000000011008: the second giant word of `.dynsym` - `.data`(Offset=0x001000, Address=0x0011000 Size=0x000010), can be denoted as .data[1] under AArch64.
+
+Adapt the hexdump format to make it more readable in the unit of the giant-word.
 
 ```bash
-$ readelf -x .data a.out
-
-Hex dump of section '.data':
-  0x00011000 00000000 00000000 08100100 00000000 ................
-
-$ objdump -j .data -s a.out
-
-a.out:     file format elf64-littleaarch64
-
-Contents of section .data:
- 11000 00000000 00000000 08100100 00000000  ................
-```
-
-Customise the hexdump format to be more readable.
-
-```bash
+# readelf -x .data a.out
+# objdump -j .data -s a.out
 $ d_offset=$(objdump -hw a.out | awk '/\.data/ && !/\.nodata/ {print "0x"$6}')
 $ d_size=$(objdump -hw a.out | awk '/\.data/ && !/\.nodata/ {print "0x"$3}')
 $ hexdump -v -s $d_offset -n $d_size -e '"%07.7_ax  " 2/8 "%016x " "\n"' a.out
 0001000  0000000000000000 0000000000011008
 ```
+
+---
+
+Hexdump contents of section `.rela.plt`(DT_JMPREL) grouped by unit of giant-word, 3 units per line.
+
+> Pay attention to the offset, it points to a `.got` entry.
+
+```bash
+$ rp_offset=$(objdump -hw a.out | awk '/.rela.plt/{print "0x"$6}')
+$ rp_size=$(objdump -hw a.out | awk '/.rela.plt/{print "0x"$3}')
+$ hexdump -v -s $rp_offset -n $rp_size -e '"%016_ax  " 3/8 "%016x " "\n"' a.out \
+| awk 'BEGIN{print "address\t\t\t\toffset\t\t\tinfo\t\t\taddend"} 1'
+address				offset			info			addend
+0000000000000540  0000000000010fa8 0000000300000402 0000000000000000
+0000000000000558  0000000000010fb0 0000000500000402 0000000000000000
+0000000000000570  0000000000010fb8 0000000600000402 0000000000000000
+0000000000000588  0000000000010fc0 0000000700000402 0000000000000000
+00000000000005a0  0000000000010fc8 0000000800000402 0000000000000000
+```
+
+The macros `ELF64_R_SYM` and `ELF64_R_TYPE` demonstrate how to extract information from the `r_info` field of `Elf64_Rela`.
+
+Take the last entry as an example:
+
+1. `ELF64_R_TYPE(0x0000000800000402)` = 0x00000402, aka `R_AARCH64_JUMP_SLOT`.
+2. `ELF64_R_SYM(0x0000000800000402)` = 0x00000008, symbol index.
+
+Cast a glance at section *dynamic symbol*, index 8 corresponds to `puts@GLIBC_2.17` in symbol table `.dynsym`.
+
+Next, let's use professional ELF binutils like readelf/objdump/rabin2 to see what they come up with.
 
 ### readelf/objdump
 
@@ -554,6 +649,10 @@ Relocation section '.rela.plt' at offset 0x540 contains 5 entries:
 000000010fc0  000700000402 R_AARCH64_JUMP_SL 0000000000000000 abort@GLIBC_2.17 + 0
 000000010fc8  000800000402 R_AARCH64_JUMP_SL 0000000000000000 puts@GLIBC_2.17 + 0
 ```
+
+!!! note "Dual Symbols"
+
+    No. 5 `__cxa_finalize` and No. 6 `__gmon_start__` appear in both `.rela.dyn` and `.rela.plt` sections.
 
 `objdump [-r|--reloc]`: display the relocation entries in the file.
 
@@ -614,9 +713,108 @@ vaddr      paddr      type   ntype name
 0x00011008 0x00001008 ADD_64 1027   0x00011008
 ```
 
-## disassemble .plt
+## global offset table
 
-Statically disassemble the `.plt` section:
+According to sysvabi64 - [System V ABI for the Arm® 64-bit Architecture (AArch64)](https://github.com/ARM-software/abi-aa/blob/844a79fd4c77252a11342709e3b27b2c9f590cf1/sysvabi64/sysvabi64.rst) - 9.2 Global Offset Table (GOT)
+
+Position-independent code cannot, in general, contain absolute (fixed) virtual addresses. Global offset tables hold absolute addresses in private data, thus making the addresses available without compromising the position-independence and shareability of a program's text segment. A program references its global offset table using position-independent addressing and extracts the absolute values from it, thereby **redirecting** position-independent references to their actual locations.
+
+The global offset table (*`GOT`*) is created by the static linker in response to GOT generating relocations. See [AAELF64](https://github.com/ARM-software/abi-aa/blob/main/aaelf64/aaelf64.rst) Relocation operations for more information.
+
+AArch64 splits the global offset table (GOT) into two sections:
+
+- `.got.plt` for code addresses accessed only from the Procedure Linkage Table (PLT).
+- `.got` all other addresses and offsets.
+
+### hexdump .got
+
+Hexdump contents of PROGBITS section `.got` grouped by giant-word array.
+
+> 0x10000/65536 is the increment of vaddr over paddr for the LOAD1 segment where the `.got` section is located.
+
+```bash
+$ got_offset=$(objdump -hw a.out | awk '/.got/{print "0x"$6}')
+$ got_size=$(objdump -hw a.out | awk '/.got/{print "0x"$3}')
+$ hexdump -v -s $got_offset -n $got_size -e '"%_ad\t" /8 "%016x\t" "\n"' a.out \
+| awk 'BEGIN{print "Offset\t\tAddress\t\t\t\tValue"} \
+{printf("%08x\t", $1); printf("%016x\t", $1+65536); print $2}'
+Offset		Address				Value
+00000f90	0000000000010f90	0000000000000000
+00000f98	0000000000010f98	0000000000000000
+00000fa0	0000000000010fa0	0000000000000000
+00000fa8	0000000000010fa8	00000000000005d0
+00000fb0	0000000000010fb0	00000000000005d0
+00000fb8	0000000000010fb8	00000000000005d0
+00000fc0	0000000000010fc0	00000000000005d0
+00000fc8	0000000000010fc8	00000000000005d0
+00000fd0	0000000000010fd0	0000000000010da0
+00000fd8	0000000000010fd8	0000000000000000
+00000fe0	0000000000010fe0	0000000000000000
+00000fe8	0000000000010fe8	0000000000000000
+00000ff0	0000000000010ff0	0000000000000754
+00000ff8	0000000000010ff8	0000000000000000
+```
+
+As we have discussed, the last entry in the `.rela.plt` (DT_JMPREL) section describes the `R_AARCH64_JUMP_SLOT` / GOT entry with address `0000000000010fc8`(offset 0xfc8 within LOAD1) and symbol index 8, corresponding to `puts@GLIBC_2.17` in symbol table `.dynsym`.
+
+The `puts@GLIBC_2.17` is currently labelled as `UND`EFINED, the corresponding GOT entry is filled with `00000000000005d0`, which represents the `.plt` section in the LOAD0 segment.
+
+When the required(DT_NEEDED) *libc.so* is loaded, the value would be resolved to be the actual address of symbol `puts@GLIBC_2.17` during process initialization.
+
+### \_GLOBAL_OFFSET_TABLE\_
+
+For AArch64 the linker defined `_GLOBAL_OFFSET_TABLE_` symbol should be the address of the first global offset table entry in the `.got` section.
+
+```bash
+$ readelf -s a.out
+
+    Symbol table '.symtab' contains 88 entries:
+    Num:    Value          Size Type    Bind   Vis      Ndx Name
+
+    63: 0000000000010fd0     0  OBJECT  LOCAL  DEFAULT  ABS _GLOBAL_OFFSET_TABLE_
+
+$ objdump -t a.out
+
+    0000000000010fd0 l     O *ABS*	0000000000000000              _GLOBAL_OFFSET_TABLE_
+
+$ nm a.out
+
+    0000000000010fd0 a _GLOBAL_OFFSET_TABLE_
+```
+
+The value of `_GLOBAL_OFFSET_TABLE_`(0x0000000000010fd0) is 0x0000000000010da0, it's the address of the `.dynamic` section.
+
+## puts@plt
+
+The *`GOT`*(Global Offset Table) is something like a socket, it connects the internal host and the external required.
+
+Similar to how the global offset table redirects position-independent address calculations to absolute locations, the procedure linkage table(*`PLT`*) redirects position-independent function calls to absolute locations. The link editor cannot resolve execution transfers, such as function calls, from one executable or shared object to another. Consequently, the link editor arranges to have the program transfer control to entries in the procedure linkage table.
+
+The dynamic section `DT_PLTREL`(0000000000000014)=0x7 shows its type of reloc in PLT is `DT_RELA`.
+
+Relocation section `.rela.plt` defines five `R_AARCH64_JUMP_SLOT`s pointing to GOT entries with offest. The indexes of the dynamic symbols are 3,5,6,7,8.
+
+`rabin2 -i` puts things on the stage, e.g. No.8 0x00000630 points to the PLT stub <puts@plt\> for the dynamic symbol `puts@GLIBC_2.17`.
+
+```bash
+$ radare2.rabin2 -i a.out
+[Imports]
+nth vaddr      bind   type   lib name
+―――――――――――――――――――――――――――――――――――――
+3   0x000005f0 GLOBAL FUNC       __libc_start_main
+4   ---------- WEAK   NOTYPE     _ITM_deregisterTMCloneTable
+5   0x00000600 WEAK   FUNC       __cxa_finalize
+6   0x00000610 WEAK   NOTYPE     __gmon_start__
+7   0x00000620 GLOBAL FUNC       abort
+8   0x00000630 GLOBAL FUNC       puts
+9   ---------- WEAK   NOTYPE     _ITM_registerTMCloneTable
+```
+
+The PLT is acting as a go-between, and it's time to lift the veil.
+
+### disassemble
+
+Statically disassemble the `.plt` section using `objdump -d` command.
 
 ```bash linenums="1" hl_lines="39-43"
 # objdump -Rd a.out : disassemble all
@@ -667,64 +865,20 @@ $ radare2.rax2 4040
 0xfc8
 ```
 
-If you only want to disassemble the `puts@plt` symbol, not the whole section, you should specify an address range for objdump.
-
-As a immature semi-solution, try the following commands.
+If you only want to disassemble the `puts@plt` symbol, not the whole section, you could specify the symbol or an address range for objdump.
 
 ```bash
-$ puts_plt=$(radare2.rabin2 -i a.out | awk '/puts/ {print $2}')
-$ objdump -d --start-address=$puts_plt --stop-address=$((puts_plt+20)) a.out
-
-a.out:     file format elf64-littleaarch64
-
-
-Disassembly of section .plt:
-
-0000000000000630 <puts@plt>:
- 630:	90000090 	adrp	x16, 10000 <__FRAME_END__+0xf770>
- 634:	f947e611 	ldr	x17, [x16, #4040]
- 638:	913f2210 	add	x16, x16, #0xfc8
- 63c:	d61f0220 	br	x17
-
-Disassembly of section .text:
-
-0000000000000640 <_start>:
- 640:	d503201f 	nop
+# puts_plt=$(radare2.rabin2 -i a.out | awk '/puts/ {print $2}')
+# objdump -d --start-address=$puts_plt --stop-address=$((puts_plt+16)) a.out
+$ objdump --disassemble=puts@plt a.out
 ```
 
-As we can see, 0x10000+0xfc8 is the offset of `puts` in `.rela.plt` entries of `readelf -r a.out` and relocation records of `objdump -R a.out`.
+### resolution
 
-The output of `rabin2 -R a.out` maybe more clear: the vaddr=0x00010fc8 is relative to virtual baddr, while the paddr=0x00000fc8 is relative to physical segment.
+As we can see, 0x10000+0xfc8 is the offset of `.rela.plt` relocation entry. The output of `rabin2 -R a.out` maybe more clear: the vaddr=0x00010fc8 is relative to virtual baddr, while the paddr=0x00000fc8 is relative to memory segment.
 
-### ADRP/LDR
+Line 40 `adrp x16, 10000` is used to form PC-relative address to 4KB page. `IMM = 0x10000` is the PC-relative literal that encoded in the [ADRP instruction](../arm/arm-adr-demo.md).
 
-Line 40 `adrp x16, 10000` is used to form PC-relative address to 4KB page.
+Lines 41\~42 are the equivalent expansion of the pre-indexing addressing instruction `ldr x17, [x16, #0xfc8]!`. Reg `x17` will load the value stored in GOT entry 0x10fc8 (PC relative). It is currently 0x5d0 and will be adjusted during dynamic linking. This is usually called "lazy symbol binding/loading".
 
-> PLS refer to [ARM ADRP and ADRL pseudo-instruction](../arm/arm-adrp-adrl.md) and [ARM ADR/ADRP demos](../arm/arm-adr-demo.md).
-
-According to the [A64 ADRP](https://developer.arm.com/documentation/ddi0602/2024-03/Base-Instructions/ADRP--Form-PC-relative-address-to-4KB-page-?lang=en) instruction specification, we can analyse the opcode using the following Python code snippets.
-
-```Python title="ADRP immediate analysis"
-opcode=0x90000090
-#format(opcode, '032b')
-#f'{opcode=:#032b}'
-
-immlo_mask=(1<<30)|(1<<29)
-# f'{immlo_mask=:032b}'
-immhi_mask=(2**24-1)&(~(2**5-1))
-# f'{immhi_mask=:032b}'
-
-immlo=((opcode&immlo_mask)<<1)>>30
-# f'immlo: {immlo=:02b}'
-immhi=(opcode&immhi_mask)>>5
-# f'immhi: {immhi=:019b}'
-
-imm=(immhi<<2|immlo)<<12
-f'{imm=:#8x}'
-```
-
-It outputs `'imm= 0x10000'`. That's the PC-relative literal that encoded in the ADRP instruction.
-
-Line 41\~42 is equivalent expansion of pre-indexing addressing instruction `ldr x17, [x16, #0xfc8]!`.
-
-In the following articles we'll see the crucial role of the offset in resolving `puts@plt` to real `puts` using `.rela.plt` and `.got`.
+In the following articles, we'll explore how PLT/RELA/GOT work together to resolve lazy symbol binding/loading in dynamic linking.

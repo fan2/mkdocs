@@ -51,7 +51,7 @@ Software Reverse Engineering(SRE) Toolkit:
 - [IDA Pro](https://hex-rays.com/ida-pro/): A powerful disassembler and a versatile debugger.
 - [Binary Ninja](https://binary.ninja/): an interactive decompiler, disassembler, debugger, and binary analysis platform.
 
-- [Capstone](https://www.capstone-engine.org/): The Ultimate Disassembly Framework.
+- [Capstone](https://www.capstone-engine.org/): The Ultimate Disassembly Framework - [introduction](https://www.blackhat.com/docs/us-14/materials/us-14-NguyenAnh-Capstone-Next-Generation-Disassembly-Framework.pdf)
 - [rscloura/Doldrums](https://github.com/rscloura/Doldrums): A Flutter/Dart reverse engineering tool.
 
 ## references
