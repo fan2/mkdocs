@@ -21,6 +21,44 @@ In this article I'll have a look at how the shared dynamic symbol such as `puts`
 
 <!-- more -->
 
+## dependency
+
+`file`: tests the file in an attempt to classify it.
+
+```bash
+$ file a.out
+a.out: ELF 64-bit LSB pie executable, ARM aarch64, version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux-aarch64.so.1, BuildID[sha1]=429e4cbff3d62b27c644cef2b8aaf62d380b9690, for GNU/Linux 3.7.0, not stripped
+```
+The output indicates the executable file type and the interpreter.
+
+```bash
+$ readelf -p .interp a.out
+
+String dump of section '.interp':
+  [     0]  /lib/ld-linux-aarch64.so.1
+
+```
+
+On the other hand, the program has called dynamic symbols such as `printf` (fallback to `puts`) which are exported by the dynamic shared library `libc.so`. This means that the DYN PIE ELF depends on `libc.so` to implement its functionality. In other words, there is a dependency that has to be resolved at run time.
+
+```bash
+pwndbg> !readelf -d a.out | head -4
+
+Dynamic section at offset 0xda0 contains 27 entries:
+  Tag        Type                         Name/Value
+ 0x0000000000000001 (NEEDED)             Shared library: [libc.so.6]
+
+pwndbg> !objdump -x a.out | sed -n '/Dynamic Section/{N;p}'
+Dynamic Section:
+  NEEDED               libc.so.6
+
+pwndbg> !radare2.rabin2 -l a.out
+[Linked libraries]
+libc.so.6
+
+1 library
+```
+
 ## entry point
 
 `objdump [-f|--file-headers]`: display the contents of the overall file header.
@@ -230,98 +268,16 @@ As `readelf -lW a.out` indicated, both *LOAD0* and *LOAD1* should be aligned at 
 1. *LOAD0* is placed at the beginning of the ELF, the zero address is aligned naturally.
 2. *LOAD1* contains the sections 18\~23. To satisfy the alignment, vaddr is adjusted with an increment of 0x10000 against paddr.
 
-## dependency
-
-`file`: tests the file in an attempt to classify it.
-The output indicates the executable file type and the interpreter.
-
-```bash
-$ file a.out
-a.out: ELF 64-bit LSB pie executable, ARM aarch64, version 1 (SYSV), dynamically linked, interpreter /lib/ld-linux-aarch64.so.1, BuildID[sha1]=429e4cbff3d62b27c644cef2b8aaf62d380b9690, for GNU/Linux 3.7.0, not stripped
-```
-
-On the other hand, the program has called dynamic symbols such as `printf` (fallback to `puts`) which are exported by the dynamic shared library `libc.so`. This means that the DYN PIE ELF depends on `libc.so` to implement its functionality. In other words, there is a dependency that has to be resolved at run time.
-
-```bash
-pwndbg> !readelf -d a.out | head -4
-
-Dynamic section at offset 0xda0 contains 27 entries:
-  Tag        Type                         Name/Value
- 0x0000000000000001 (NEEDED)             Shared library: [libc.so.6]
-
-pwndbg> !objdump -x a.out | sed -n '/Dynamic Section/{N;p}'
-Dynamic Section:
-  NEEDED               libc.so.6
-
-pwndbg> !radare2.rabin2 -l a.out
-[Linked libraries]
-libc.so.6
-
-1 library
-```
-
-### dynamic symbol
-
-`nm -D|--dynamic`: display dynamic symbols instead of normal symbols.
-
-```bash
-$ nm -D a.out
-                 U abort@GLIBC_2.17
-                 w __cxa_finalize@GLIBC_2.17
-                 w __gmon_start__
-                 w _ITM_deregisterTMCloneTable
-                 w _ITM_registerTMCloneTable
-                 U __libc_start_main@GLIBC_2.34
-                 U puts@GLIBC_2.17
-```
-
-`readelf --dyn-syms`: display the dynamic symbol table.
-`objdump [-T|--dynamic-syms]`: display the contents of the dynamic symbol table.
-
-=== "readelf --dyn-syms"
-
-    ```bash
-    $ readelf --dyn-syms a.out
-
-    Symbol table '.dynsym' contains 10 entries:
-      Num:    Value          Size Type    Bind   Vis      Ndx Name
-        0: 0000000000000000     0 NOTYPE  LOCAL  DEFAULT  UND
-        1: 00000000000005b8     0 SECTION LOCAL  DEFAULT   11 .init
-        2: 0000000000011000     0 SECTION LOCAL  DEFAULT   22 .data
-        3: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND _[...]@GLIBC_2.34 (2)
-        4: 0000000000000000     0 NOTYPE  WEAK   DEFAULT  UND _ITM_deregisterT[...]
-        5: 0000000000000000     0 FUNC    WEAK   DEFAULT  UND _[...]@GLIBC_2.17 (3)
-        6: 0000000000000000     0 NOTYPE  WEAK   DEFAULT  UND __gmon_start__
-        7: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND abort@GLIBC_2.17 (3)
-        8: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND puts@GLIBC_2.17 (3)
-        9: 0000000000000000     0 NOTYPE  WEAK   DEFAULT  UND _ITM_registerTMC[...]
-    ```
-
-=== "objdump -T"
-
-    ```bash
-    $ objdump -T a.out
-
-    a.out:     file format elf64-littleaarch64
-
-    DYNAMIC SYMBOL TABLE:
-    00000000000005b8 l    d  .init	0000000000000000              .init
-    0000000000011000 l    d  .data	0000000000000000              .data
-    0000000000000000      DF *UND*	0000000000000000 (GLIBC_2.34) __libc_start_main
-    0000000000000000  w   D  *UND*	0000000000000000  Base        _ITM_deregisterTMCloneTable
-    0000000000000000  w   DF *UND*	0000000000000000 (GLIBC_2.17) __cxa_finalize
-    0000000000000000  w   D  *UND*	0000000000000000  Base        __gmon_start__
-    0000000000000000      DF *UND*	0000000000000000 (GLIBC_2.17) abort
-    0000000000000000      DF *UND*	0000000000000000 (GLIBC_2.17) puts
-    0000000000000000  w   D  *UND*	0000000000000000  Base        _ITM_registerTMCloneTable
-    ```
-
 ## dynamic section
 
 Refer to [TIS - ELF v1.2](https://refspecs.linuxfoundation.org/elf/elf.pdf) | Book III: SYSV - 2. Program Loading and Dynamic Linking - Dynamic Linking - Dynamic Section.
 
 ```c title="Dynamic section entry"
 // /usr/include/elf.h
+
+typedef uint64_t Elf64_Xword;
+typedef int64_t  Elf64_Sxword;
+typedef uint64_t Elf64_Addr;
 
 typedef struct
 {
@@ -450,7 +406,7 @@ offset		address				d_tag				d_un
 $ readelf -d a.out
 
 Dynamic section at offset 0xda0 contains 27 entries:
-  Tag        Type                         Name/Value
+ Tag                Type                 Name/Value
  0x0000000000000001 (NEEDED)             Shared library: [libc.so.6]
  0x000000000000000c (INIT)               0x5b8
  0x000000000000000d (FINI)               0x77c
@@ -483,23 +439,6 @@ Dynamic section at offset 0xda0 contains 27 entries:
 Check readelf's analysis against the raw hexdump above and the sections dumped by `radare2.rabin2 -S a.out`.
 
 1. `DT_NEEDED`(0x0000000000000001)=0x2d: offset in STRTAB `.dynstr`, points to `libc.so.6`.
-
-    ```bash hl_lines="8"
-    readelf -p .dynstr a.out
-
-    String dump of section '.dynstr':
-    [     1]  __cxa_finalize
-    [    10]  __libc_start_main
-    [    22]  puts
-    [    27]  abort
-    [    2d]  libc.so.6
-    [    37]  GLIBC_2.17
-    [    42]  GLIBC_2.34
-    [    4d]  _ITM_deregisterTMCloneTable
-    [    69]  __gmon_start__
-    [    78]  _ITM_registerTMCloneTable
-    ```
-
 2. `DT_STRTAB`(0000000000000005)=0x3a8: address of section `.dynstr`.
 3. `DT_SYMTAB`(0000000000000006)=0x2b8: address of section `.dynsym`.
 4. `DT_STRSZ`(000000000000000a)=0x92/146 - size of section `.dynstr`.
@@ -514,6 +453,158 @@ Check readelf's analysis against the raw hexdump above and the sections dumped b
 12. `DT_RELACOUNT`(000000006ffffff9)=0x4: count of sections mapped into `GNU_RELRO` segment?
 13. `DT_FLAGS`(000000000000001e)=0x8/`DF_BIND_NOW`: No lazy binding for this object.
 14. `DT_FLAGS_1`(000000006ffffffb)=0x1/`DF_1_NOW`: Set RTLD_NOW for this object.
+
+## dynamic symbol
+
+```c title="Symbol table entry"
+// /usr/include/elf.h
+
+typedef uint32_t Elf64_Word;
+typedef uint16_t Elf64_Section;
+
+typedef struct
+{
+  Elf64_Word    st_name;        /* Symbol name (string tbl index) */
+  unsigned char st_info;        /* Symbol type and binding */
+  unsigned char st_other;       /* Symbol visibility */
+  Elf64_Section st_shndx;       /* Section index */
+  Elf64_Addr    st_value;       /* Symbol value */
+  Elf64_Xword   st_size;        /* Symbol size */
+} Elf64_Sym;
+
+typedef struct
+{
+  Elf64_Half si_boundto;        /* Direct bindings, symbol bound to */
+  Elf64_Half si_flags;          /* Per symbol flags */
+} Elf64_Syminfo;
+
+/* How to extract and insert information held in the st_info field.  */
+
+#define ELF32_ST_BIND(val)      (((unsigned char) (val)) >> 4)
+#define ELF32_ST_TYPE(val)      ((val) & 0xf)
+#define ELF32_ST_INFO(bind, type)   (((bind) << 4) + ((type) & 0xf))
+
+/* Both Elf32_Sym and Elf64_Sym use the same one-byte st_info field.  */
+#define ELF64_ST_BIND(val)      ELF32_ST_BIND (val)
+#define ELF64_ST_TYPE(val)      ELF32_ST_TYPE (val)
+#define ELF64_ST_INFO(bind, type)   ELF32_ST_INFO ((bind), (type))
+```
+
+### .dynstr
+
+This `.dynstr` section holds strings needed for dynamic linking, most commonly the strings that represent the names associated with symbol table entries.
+
+```bash
+$ readelf -p .dynstr a.out
+
+String dump of section '.dynstr':
+[     1]  __cxa_finalize
+[    10]  __libc_start_main
+[    22]  puts
+[    27]  abort
+[    2d]  libc.so.6
+[    37]  GLIBC_2.17
+[    42]  GLIBC_2.34
+[    4d]  _ITM_deregisterTMCloneTable
+[    69]  __gmon_start__
+[    78]  _ITM_registerTMCloneTable
+```
+
+### hexdump .dynsym
+
+As is shown in `readelf -d a.out`, `DT_SYMENT`=0x18, that means size of one symbol table entry (of `.dynsym`) is 24.
+
+Hexdump contents of section `.dynsym`(DT_SYMTAB) grouped by unit of giant-word, 3 units per line.
+
+```bash
+$ ds_offset=$(objdump -hw a.out | awk '/.dynsym/{print "0x"$6}')
+$ ds_size=$(objdump -hw a.out | awk '/.dynsym/{print "0x"$3}')
+$ hexdump -v -s $ds_offset -n $ds_size -e '"%016_ax " /4 "%08x\t" /1 "%02x\t\t" /1 "%02x\t\t" /2 "%04x\t" 2/8 "%016x " "\n"' a.out \
+| awk 'BEGIN{print "offset\t\t\tname\t\tinfo\tother\tshndx\tvalue\t\t\t\tsize"} 1'
+offset			name		info	other	shndx	value				size
+00000000000002b8 00000000	00		00		0000	0000000000000000 0000000000000000
+00000000000002d0 00000000	03		00		000b	00000000000005b8 0000000000000000
+00000000000002e8 00000000	03		00		0016	0000000000011000 0000000000000000
+0000000000000300 00000010	12		00		0000	0000000000000000 0000000000000000
+0000000000000318 0000004d	20		00		0000	0000000000000000 0000000000000000
+0000000000000330 00000001	22		00		0000	0000000000000000 0000000000000000
+0000000000000348 00000069	20		00		0000	0000000000000000 0000000000000000
+0000000000000360 00000027	12		00		0000	0000000000000000 0000000000000000
+0000000000000378 00000022	12		00		0000	0000000000000000 0000000000000000
+0000000000000390 00000078	20		00		0000	0000000000000000 0000000000000000
+
+```
+
+The macro `ELF32_ST_BIND`(:hi:4) and `ELF32_ST_TYPE`(:lo:4) defines how to extract information(ST_BIND, ST_TYPE) held in the `st_info` field of `Elf64_Sym`.
+
+offset | name index | symbol name                 | info | type        | bind
+-------|------------|-----------------------------|------|-------------|-----------
+0x2b8  | 0x00000000 | N/A                         | 0x00 | STT_NOTYPE  | ST_LOCAL
+0x2d0  | 0x00000000 | N/A                         | 0x03 | STT_SECTION | ST_LOCAL
+0x2e8  | 0x00000000 | N/A                         | 0x03 | STT_SECTION | ST_LOCAL
+0x300  | 0x00000010 | \_\_libc_start_main         | 0x12 | STT_FUNC    | STB_GLOBAL
+0x318  | 0x0000004d | _ITM_deregisterTMCloneTable | 0x20 | STT_NOTYPE  | STB_WEAK
+0x330  | 0x00000001 | \_\_cxa_finalize            | 0x22 | STT_FUNC    | STB_WEAK
+0x348  | 0x00000069 | \_\_gmon_start\_\_          | 0x20 | STT_NOTYPE  | STB_WEAK
+0x360  | 0x00000027 | abort                       | 0x12 | STT_FUNC    | STB_GLOBAL
+0x378  | 0x00000022 | puts                        | 0x12 | STT_FUNC    | STB_GLOBAL
+0x390  | 0x00000078 | \_ITM\_registerTMCloneTable | 0x20 | STT_NOTYPE  | STB_WEAK
+
+### readelf/objdump
+
+`nm -D|--dynamic`: display dynamic symbols instead of normal symbols.
+
+```bash
+$ nm -D a.out
+                 U abort@GLIBC_2.17
+                 w __cxa_finalize@GLIBC_2.17
+                 w __gmon_start__
+                 w _ITM_deregisterTMCloneTable
+                 w _ITM_registerTMCloneTable
+                 U __libc_start_main@GLIBC_2.34
+                 U puts@GLIBC_2.17
+```
+
+`readelf --dyn-syms`: display the dynamic symbol table.
+`objdump [-T|--dynamic-syms]`: display the contents of the dynamic symbol table.
+
+=== "readelf --dyn-syms"
+
+    ```bash
+    $ readelf --dyn-syms a.out
+
+    Symbol table '.dynsym' contains 10 entries:
+      Num:    Value          Size Type    Bind   Vis      Ndx Name
+        0: 0000000000000000     0 NOTYPE  LOCAL  DEFAULT  UND
+        1: 00000000000005b8     0 SECTION LOCAL  DEFAULT   11 .init
+        2: 0000000000011000     0 SECTION LOCAL  DEFAULT   22 .data
+        3: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND _[...]@GLIBC_2.34 (2)
+        4: 0000000000000000     0 NOTYPE  WEAK   DEFAULT  UND _ITM_deregisterT[...]
+        5: 0000000000000000     0 FUNC    WEAK   DEFAULT  UND _[...]@GLIBC_2.17 (3)
+        6: 0000000000000000     0 NOTYPE  WEAK   DEFAULT  UND __gmon_start__
+        7: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND abort@GLIBC_2.17 (3)
+        8: 0000000000000000     0 FUNC    GLOBAL DEFAULT  UND puts@GLIBC_2.17 (3)
+        9: 0000000000000000     0 NOTYPE  WEAK   DEFAULT  UND _ITM_registerTMC[...]
+    ```
+
+=== "objdump -T"
+
+    ```bash
+    $ objdump -T a.out
+
+    a.out:     file format elf64-littleaarch64
+
+    DYNAMIC SYMBOL TABLE:
+    00000000000005b8 l    d  .init	0000000000000000              .init
+    0000000000011000 l    d  .data	0000000000000000              .data
+    0000000000000000      DF *UND*	0000000000000000 (GLIBC_2.34) __libc_start_main
+    0000000000000000  w   D  *UND*	0000000000000000  Base        _ITM_deregisterTMCloneTable
+    0000000000000000  w   DF *UND*	0000000000000000 (GLIBC_2.17) __cxa_finalize
+    0000000000000000  w   D  *UND*	0000000000000000  Base        __gmon_start__
+    0000000000000000      DF *UND*	0000000000000000 (GLIBC_2.17) abort
+    0000000000000000      DF *UND*	0000000000000000 (GLIBC_2.17) puts
+    0000000000000000  w   D  *UND*	0000000000000000  Base        _ITM_registerTMCloneTable
+    ```
 
 ## relocation entries
 
@@ -567,7 +658,7 @@ Hexdump contents of section `.rela.dyn`(DT_RELA) grouped by unit of giant-word, 
 ```bash
 $ rd_offset=$(objdump -hw a.out | awk '/.rela.dyn/{print "0x"$6}')
 $ rd_size=$(objdump -hw a.out | awk '/.rela.dyn/{print "0x"$3}')
-$ hhexdump -v -s $rd_offset -n $rd_size -e '"%016_ax  " 3/8 "%016x " "\n"' a.out \
+$ hexdump -v -s $rd_offset -n $rd_size -e '"%016_ax  " 3/8 "%016x " "\n"' a.out \
 | awk 'BEGIN{print "address\t\t\t\toffset\t\t\tinfo\t\t\taddend"} 1'
 address				offset			info			addend
 0000000000000480  0000000000010d90 0000000000000403 0000000000000750 # .init_array
