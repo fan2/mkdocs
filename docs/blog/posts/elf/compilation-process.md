@@ -59,6 +59,16 @@ In C and C++ programming language terminology, a [translation unit](https://en.w
 
 《C语言标准与实现(姚新颜,2004)》07 C 源文件的编译和链接
 
+```c title="0701.c"
+/* Code 07-01, file name: 0701.c */
+#include <stdio.h>
+int main(int argc, char* argv[])
+{
+    printf("Hello, Linux!\n");
+    return 0;
+}
+```
+
 我们用 `-v` 选项编译07-01（下面的输出信息有省略）：
 
 ```Shell

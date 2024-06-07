@@ -272,7 +272,36 @@ for (( a = 1; a < 10; a++ ))
 - 条件中的变量不以美元符开头  
 - 迭代过程的算式未用expr命令格式。  
 
-### $(())
+在 [Linux Command - awk control](../sed-awk/awk/awk-control.md) 中的格式化输出（printf）
+
+使用 awk 对 hexdump 第一列 offset 值添加地址偏移量（baddr）以便得到 address。
+
+对于无前缀的十六进制格式化字符串 `"%08_ax\t"`，需先添加 `0x` 前缀，并使用`(("0x"$1))`对字符串进行数值化。
+
+```bash
+$ got_offset=$(objdump -hw a.out | awk '/.got/{print "0x"$6}')
+$ got_size=$(objdump -hw a.out | awk '/.got/{print "0x"$3}')
+$ hexdump -v -s $got_offset -n $got_size -e '"%08_ax\t" /8 "%016x\t" "\n"' a.out \
+| awk 'BEGIN{print "Offset\t\tAddress\t\t\t\tValue"} \
+{printf("%s\t", $1); printf("%016x\t", (("0x"$1))+65536); print $2}'
+Offset		Address				Value
+00000f90	0000000000010f90	0000000000000000
+00000f98	0000000000010f98	0000000000000000
+00000fa0	0000000000010fa0	0000000000000000
+00000fa8	0000000000010fa8	00000000000005d0
+00000fb0	0000000000010fb0	00000000000005d0
+00000fb8	0000000000010fb8	00000000000005d0
+00000fc0	0000000000010fc0	00000000000005d0
+00000fc8	0000000000010fc8	00000000000005d0
+00000fd0	0000000000010fd0	0000000000010da0
+00000fd8	0000000000010fd8	0000000000000000
+00000fe0	0000000000010fe0	0000000000000000
+00000fe8	0000000000010fe8	0000000000000000
+00000ff0	0000000000010ff0	0000000000000754
+00000ff8	0000000000010ff8	0000000000000000
+```
+
+## $(())
 
 [Arithmetic Expansion](https://www.tldp.org/LDP/abs/html/arithexp.html)
 

@@ -61,6 +61,7 @@ The output of `objdump -f` shows that the BFD format specific flags are `HAS_SYM
 
 1. `readelf [-S|--section-headers|--sections]`: Display the sections' header.
 2. `objdump [-h|--section-headers|--headers]`: Display the contents of the section headers.
+3. `size`: Displays the sizes of sections inside binary files.
 
 === "readelf -SW a.out"
 
@@ -140,11 +141,50 @@ The output of `objdump -f` shows that the BFD format specific flags are `HAS_SYM
     23 .comment           0000002b  0000000000000000  0000000000000000  00001010  2**0  CONTENTS, READONLY
     ```
 
+=== "size -Ax a.out"
+
+    ```bash
+    $ size -Ax a.out
+    a.out  :
+    section               size      addr
+    .interp               0x1b     0x238
+    .note.gnu.build-id    0x24     0x254
+    .note.ABI-tag         0x20     0x278
+    .gnu.hash             0x1c     0x298
+    .dynsym               0xf0     0x2b8
+    .dynstr               0x92     0x3a8
+    .gnu.version          0x14     0x43a
+    .gnu.version_r        0x30     0x450
+    .rela.dyn             0xc0     0x480
+    .rela.plt             0x78     0x540
+    .init                 0x18     0x5b8
+    .plt                  0x70     0x5d0
+    .text                0x13c     0x640
+    .fini                 0x14     0x77c
+    .rodata               0x16     0x790
+    .eh_frame_hdr         0x3c     0x7a8
+    .eh_frame             0xac     0x7e8
+    .init_array            0x8   0x10d90
+    .fini_array            0x8   0x10d98
+    .dynamic             0x1f0   0x10da0
+    .got                  0x70   0x10f90
+    .data                 0x10   0x11000
+    .bss                   0x8   0x11010
+    .comment              0x2b       0x0
+    Total                0x902
+    ```
+
 ## symbol table
 
 1. `readelf [-s|--syms|--symbols]`: Displays the entries in symbol table section of the file, if it has one. If a symbol has version information associated with it then this is displayed as well.
 2. `objdump [-t|--syms]`: Print the symbol table entries of the file. This is similar to the information provided by the `nm` program, although the display format is different.
 3. `nm` - list symbols from object files.
+
+The only thing 0701.c does is call `printf("Hello, Linux!\n");` to print a string to the stdout device.
+As we can see below, the compiler introspects that we just want to print a plain string without format specifier and va_list, so it optimises the `printf` to equivalent `puts`.
+
+- [c - Compiler changes printf to puts - Stack Overflow](https://stackoverflow.com/questions/60080021/compiler-changes-printf-to-puts)
+- [Patch to add __builtin_printf("string\n") -> puts("string")](https://gcc.gnu.org/legacy-ml/gcc-patches/2000-09/msg00921.html)
 
 === "readelf -s a.out"
 

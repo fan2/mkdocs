@@ -333,6 +333,30 @@ objdump -hw a.out | awk 'FNR>5 && /ALLOC/ && /READONLY/ {total+="0x"$3} END{prin
 objdump -hw a.out | awk 'FNR>5 && /ALLOC/ && !/READONLY/ {total+="0x"$3} END{print total}'
 ```
 
+[size](https://man7.org/linux/man-pages/man1/size.1.html) - list section sizes and total size of binary files.
+
+The default Berkeley style(`-B`) output counts read only data in the "text" column, not in the "data" column.
+
+```bash
+$ size a.out
+   text	   data	    bss	    dec	    hex	filename
+   1615	    640	      8	   2263	    8d7	a.out
+```
+
+It can be calculated by `objdump` and `awk` via pipe.
+
+```bash
+# objdump -hw a.out | awk 'FNR>5 && /ALLOC/ && /READONLY/ {total+="0x"$3} END{printf("%#x\n", total)}'
+$ objdump -hw a.out | awk 'FNR>5 && /ALLOC/ && /READONLY/ {total+="0x"$3} END{print total}'
+1615
+# exclude empty .bss
+$ objdump -hw a.out | awk 'FNR>5 && /ALLOC/ && !/READONLY/ && /DATA/ {total+="0x"$3} END{print total}'
+640
+# .bss: ALLOC only, no CONTENTS
+$ objdump -hw a.out | awk '/.bss/{print (("0x"$3))+0}'
+8
+```
+
 ## CSV 匹配示例
 
 假设代码扫描分析平台导出的 LineTooLong 警告问题清单为 issue_data-LineTooLong.csv。

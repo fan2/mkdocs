@@ -148,8 +148,8 @@ Contents of section .interp:
 section="\.shstrtab"
 pattern=".*$section\s.*"
 secitem=$(readelf -SW test-gdb | grep -E $pattern)
-off="0x"`echo $secitem | awk '{print $5}'`
-sz="0x"`echo $secitem | awk '{print $6}'`
+off="0x"$(echo $secitem | awk '{print $5}')
+sz=`echo $secitem | awk '{print "0x"$6}'`
 head -c $((off+sz)) test-gdb | tail -c $((sz)) | strings
 ```
 

@@ -111,6 +111,18 @@ GCC [Link Options](https://gcc.gnu.org/onlinedocs/gcc/Link-Options.html) provide
 - -static-libgcc
 - -static-libstdc++
 
+The demo program is as follows.
+
+```c title="0701.c"
+/* Code 07-01, file name: 0701.c */
+#include <stdio.h>
+int main(int argc, char* argv[])
+{
+    printf("Hello, Linux!\n");
+    return 0;
+}
+```
+
 Add option `-static` to `gcc` to create a static executable:
 
 ```bash

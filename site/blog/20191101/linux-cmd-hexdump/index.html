@@ -1368,9 +1368,9 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#demo_-_relagot" class="md-nav__link">
+  <a href="#demo_-_pltrelagot" class="md-nav__link">
     <span class="md-ellipsis">
-      demo - rela/got
+      demo - plt/rela/got
     </span>
   </a>
   
@@ -1725,6 +1725,10 @@
 </span></code></pre></div>
 <h3 id="-e_format">-e format<a class="headerlink" href="#-e_format" title="Permanent link">#</a></h3>
 <p>可借助 <code>-e format</code> 选项指定打印格式。</p>
+<p><strong>Conversion strings</strong>: The hexdump utility also supports the following additional conversion strings.</p>
+<ul>
+<li><code>_a[d|o|x]</code>: Display the input offset, cumulative across input files, of the next byte to be displayed. The appended characters <code>d</code>, <code>o</code>, and <code>x</code> specify the display base as decimal, octal or hexadecimal respectively.</li>
+</ul>
 <blockquote>
 <p><code>-x</code> 的等效格式是 <code>-e '"%07.7_ax  " 8/2 "%04x " "\n"'</code></p>
 </blockquote>
@@ -1776,33 +1780,38 @@
 </span><span id="__span-20-8"><a id="__codelineno-20-8" name="__codelineno-20-8" href="#__codelineno-20-8"></a>$<span class="w"> </span>readelf<span class="w"> </span>-h<span class="w"> </span>write64<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span><span class="s2">&quot;Entry point address&quot;</span>
 </span><span id="__span-20-9"><a id="__codelineno-20-9" name="__codelineno-20-9" href="#__codelineno-20-9"></a><span class="w">  </span>Entry<span class="w"> </span>point<span class="w"> </span>address:<span class="w">               </span>0x640
 </span></code></pre></div>
-<h3 id="demo_-_relagot">demo - rela/got<a class="headerlink" href="#demo_-_relagot" title="Permanent link">#</a></h3>
+<h3 id="demo_-_pltrelagot">demo - plt/rela/got<a class="headerlink" href="#demo_-_pltrelagot" title="Permanent link">#</a></h3>
 <p>参考 <a href="../../20230628/plt-puts-analysis/">puts@plt/rela/got - static analysis</a>。</p>
 <p>在 arm64/AArch64 等平台上，内存地址是 64 位的，要打印指针值需以 8-byte 的 double-word 或 giant-word 为一组。</p>
 <p>Hexdump contents of PROGBITS section <code>.got</code> grouped by giant-word array.</p>
 <blockquote>
-<p>原始 hexdump Offset 为不带 0x 前缀的十六进制，拼接 <code>"0x"</code> 编程字符串，无法直接参加计算，故转换为十进制。</p>
+<p>原始 hexdump Offset 为不带 0x 前缀的十六进制，拼接 <code>"0x"</code> 变成字符串，无法直接参加计算，故转换为十进制。</p>
 </blockquote>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>$<span class="w"> </span><span class="nv">got_offset</span><span class="o">=</span><span class="k">$(</span>objdump<span class="w"> </span>-hw<span class="w"> </span>a.out<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;/.got/{print &quot;0x&quot;$6}&#39;</span><span class="k">)</span>
 </span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>$<span class="w"> </span><span class="nv">got_size</span><span class="o">=</span><span class="k">$(</span>objdump<span class="w"> </span>-hw<span class="w"> </span>a.out<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;/.got/{print &quot;0x&quot;$3}&#39;</span><span class="k">)</span>
-</span><span id="__span-21-3"><a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a>$<span class="w"> </span>hexdump<span class="w"> </span>-v<span class="w"> </span>-s<span class="w"> </span><span class="nv">$got_offset</span><span class="w"> </span>-n<span class="w"> </span><span class="nv">$got_size</span><span class="w"> </span>-e<span class="w"> </span><span class="s1">&#39;&quot;%_ad\t&quot; /8 &quot;%016x\t&quot; &quot;\n&quot;&#39;</span><span class="w"> </span>a.out<span class="w"> </span><span class="se">\</span>
-</span><span id="__span-21-4"><a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;BEGIN{print &quot;Offset\t\tAddress\t\t\t\tValue&quot;} \</span>
-</span><span id="__span-21-5"><a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a><span class="s1">{printf(&quot;%08x\t&quot;, $1); printf(&quot;%016x\t&quot;, $1+65536); print $2}&#39;</span>
-</span><span id="__span-21-6"><a id="__codelineno-21-6" name="__codelineno-21-6" href="#__codelineno-21-6"></a>Offset<span class="w">      </span>Address<span class="w">             </span>Value
-</span><span id="__span-21-7"><a id="__codelineno-21-7" name="__codelineno-21-7" href="#__codelineno-21-7"></a>00000f90<span class="w">    </span>0000000000010f90<span class="w">    </span><span class="m">0000000000000000</span>
-</span><span id="__span-21-8"><a id="__codelineno-21-8" name="__codelineno-21-8" href="#__codelineno-21-8"></a>00000f98<span class="w">    </span>0000000000010f98<span class="w">    </span><span class="m">0000000000000000</span>
-</span><span id="__span-21-9"><a id="__codelineno-21-9" name="__codelineno-21-9" href="#__codelineno-21-9"></a>00000fa0<span class="w">    </span>0000000000010fa0<span class="w">    </span><span class="m">0000000000000000</span>
-</span><span id="__span-21-10"><a id="__codelineno-21-10" name="__codelineno-21-10" href="#__codelineno-21-10"></a>00000fa8<span class="w">    </span>0000000000010fa8<span class="w">    </span>00000000000005d0
-</span><span id="__span-21-11"><a id="__codelineno-21-11" name="__codelineno-21-11" href="#__codelineno-21-11"></a>00000fb0<span class="w">    </span>0000000000010fb0<span class="w">    </span>00000000000005d0
-</span><span id="__span-21-12"><a id="__codelineno-21-12" name="__codelineno-21-12" href="#__codelineno-21-12"></a>00000fb8<span class="w">    </span>0000000000010fb8<span class="w">    </span>00000000000005d0
-</span><span id="__span-21-13"><a id="__codelineno-21-13" name="__codelineno-21-13" href="#__codelineno-21-13"></a>00000fc0<span class="w">    </span>0000000000010fc0<span class="w">    </span>00000000000005d0
-</span><span id="__span-21-14"><a id="__codelineno-21-14" name="__codelineno-21-14" href="#__codelineno-21-14"></a>00000fc8<span class="w">    </span>0000000000010fc8<span class="w">    </span>00000000000005d0
-</span><span id="__span-21-15"><a id="__codelineno-21-15" name="__codelineno-21-15" href="#__codelineno-21-15"></a>00000fd0<span class="w">    </span>0000000000010fd0<span class="w">    </span>0000000000010da0
-</span><span id="__span-21-16"><a id="__codelineno-21-16" name="__codelineno-21-16" href="#__codelineno-21-16"></a>00000fd8<span class="w">    </span>0000000000010fd8<span class="w">    </span><span class="m">0000000000000000</span>
-</span><span id="__span-21-17"><a id="__codelineno-21-17" name="__codelineno-21-17" href="#__codelineno-21-17"></a>00000fe0<span class="w">    </span>0000000000010fe0<span class="w">    </span><span class="m">0000000000000000</span>
-</span><span id="__span-21-18"><a id="__codelineno-21-18" name="__codelineno-21-18" href="#__codelineno-21-18"></a>00000fe8<span class="w">    </span>0000000000010fe8<span class="w">    </span><span class="m">0000000000000000</span>
-</span><span id="__span-21-19"><a id="__codelineno-21-19" name="__codelineno-21-19" href="#__codelineno-21-19"></a>00000ff0<span class="w">    </span>0000000000010ff0<span class="w">    </span><span class="m">0000000000000754</span>
-</span><span id="__span-21-20"><a id="__codelineno-21-20" name="__codelineno-21-20" href="#__codelineno-21-20"></a>00000ff8<span class="w">    </span>0000000000010ff8<span class="w">    </span><span class="m">0000000000000000</span>
+</span><span id="__span-21-3"><a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a>
+</span><span id="__span-21-4"><a id="__codelineno-21-4" name="__codelineno-21-4" href="#__codelineno-21-4"></a><span class="c1"># hexdump -v -s $got_offset -n $got_size -e &#39;&quot;0x%08_ax\t&quot; /8 &quot;%016x\t&quot; &quot;\n&quot;&#39; a.out \</span>
+</span><span id="__span-21-5"><a id="__codelineno-21-5" name="__codelineno-21-5" href="#__codelineno-21-5"></a><span class="c1"># | awk &#39;BEGIN{print &quot;Offset\t\tAddress\t\t\t\tValue&quot;} \</span>
+</span><span id="__span-21-6"><a id="__codelineno-21-6" name="__codelineno-21-6" href="#__codelineno-21-6"></a><span class="c1"># {printf(&quot;%s\t&quot;, $1); printf(&quot;%016x\t&quot;, $1+65536); print $2}&#39;</span>
+</span><span id="__span-21-7"><a id="__codelineno-21-7" name="__codelineno-21-7" href="#__codelineno-21-7"></a>
+</span><span id="__span-21-8"><a id="__codelineno-21-8" name="__codelineno-21-8" href="#__codelineno-21-8"></a>$<span class="w"> </span>hexdump<span class="w"> </span>-v<span class="w"> </span>-s<span class="w"> </span><span class="nv">$got_offset</span><span class="w"> </span>-n<span class="w"> </span><span class="nv">$got_size</span><span class="w"> </span>-e<span class="w"> </span><span class="s1">&#39;&quot;%_ad\t&quot; /8 &quot;%016x\t&quot; &quot;\n&quot;&#39;</span><span class="w"> </span>a.out<span class="w"> </span><span class="se">\</span>
+</span><span id="__span-21-9"><a id="__codelineno-21-9" name="__codelineno-21-9" href="#__codelineno-21-9"></a><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;BEGIN{print &quot;Offset\t\tAddress\t\t\t\tValue&quot;} \</span>
+</span><span id="__span-21-10"><a id="__codelineno-21-10" name="__codelineno-21-10" href="#__codelineno-21-10"></a><span class="s1">{printf(&quot;%08x\t&quot;, $1); printf(&quot;%016x\t&quot;, $1+65536); print $2}&#39;</span>
+</span><span id="__span-21-11"><a id="__codelineno-21-11" name="__codelineno-21-11" href="#__codelineno-21-11"></a>Offset<span class="w">      </span>Address<span class="w">             </span>Value
+</span><span id="__span-21-12"><a id="__codelineno-21-12" name="__codelineno-21-12" href="#__codelineno-21-12"></a>00000f90<span class="w">    </span>0000000000010f90<span class="w">    </span><span class="m">0000000000000000</span>
+</span><span id="__span-21-13"><a id="__codelineno-21-13" name="__codelineno-21-13" href="#__codelineno-21-13"></a>00000f98<span class="w">    </span>0000000000010f98<span class="w">    </span><span class="m">0000000000000000</span>
+</span><span id="__span-21-14"><a id="__codelineno-21-14" name="__codelineno-21-14" href="#__codelineno-21-14"></a>00000fa0<span class="w">    </span>0000000000010fa0<span class="w">    </span><span class="m">0000000000000000</span>
+</span><span id="__span-21-15"><a id="__codelineno-21-15" name="__codelineno-21-15" href="#__codelineno-21-15"></a>00000fa8<span class="w">    </span>0000000000010fa8<span class="w">    </span>00000000000005d0
+</span><span id="__span-21-16"><a id="__codelineno-21-16" name="__codelineno-21-16" href="#__codelineno-21-16"></a>00000fb0<span class="w">    </span>0000000000010fb0<span class="w">    </span>00000000000005d0
+</span><span id="__span-21-17"><a id="__codelineno-21-17" name="__codelineno-21-17" href="#__codelineno-21-17"></a>00000fb8<span class="w">    </span>0000000000010fb8<span class="w">    </span>00000000000005d0
+</span><span id="__span-21-18"><a id="__codelineno-21-18" name="__codelineno-21-18" href="#__codelineno-21-18"></a>00000fc0<span class="w">    </span>0000000000010fc0<span class="w">    </span>00000000000005d0
+</span><span id="__span-21-19"><a id="__codelineno-21-19" name="__codelineno-21-19" href="#__codelineno-21-19"></a>00000fc8<span class="w">    </span>0000000000010fc8<span class="w">    </span>00000000000005d0
+</span><span id="__span-21-20"><a id="__codelineno-21-20" name="__codelineno-21-20" href="#__codelineno-21-20"></a>00000fd0<span class="w">    </span>0000000000010fd0<span class="w">    </span>0000000000010da0
+</span><span id="__span-21-21"><a id="__codelineno-21-21" name="__codelineno-21-21" href="#__codelineno-21-21"></a>00000fd8<span class="w">    </span>0000000000010fd8<span class="w">    </span><span class="m">0000000000000000</span>
+</span><span id="__span-21-22"><a id="__codelineno-21-22" name="__codelineno-21-22" href="#__codelineno-21-22"></a>00000fe0<span class="w">    </span>0000000000010fe0<span class="w">    </span><span class="m">0000000000000000</span>
+</span><span id="__span-21-23"><a id="__codelineno-21-23" name="__codelineno-21-23" href="#__codelineno-21-23"></a>00000fe8<span class="w">    </span>0000000000010fe8<span class="w">    </span><span class="m">0000000000000000</span>
+</span><span id="__span-21-24"><a id="__codelineno-21-24" name="__codelineno-21-24" href="#__codelineno-21-24"></a>00000ff0<span class="w">    </span>0000000000010ff0<span class="w">    </span><span class="m">0000000000000754</span>
+</span><span id="__span-21-25"><a id="__codelineno-21-25" name="__codelineno-21-25" href="#__codelineno-21-25"></a>00000ff8<span class="w">    </span>0000000000010ff8<span class="w">    </span><span class="m">0000000000000000</span>
 </span></code></pre></div>
 <p>As is shown in <code>readelf -d a.out</code>, <code>DT_RELAENT</code>=0x18, that means size of one RELA reloc is 24.</p>
 <p>Hexdump contents of RELA section <code>.rela.plt</code> grouped by unit of giant-word, 3 units per line.</p>

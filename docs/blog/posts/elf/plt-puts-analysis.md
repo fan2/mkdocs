@@ -39,20 +39,20 @@ String dump of section '.interp':
 
 ```
 
-On the other hand, the program has called dynamic symbols such as `printf` (fallback to `puts`) which are exported by the dynamic shared library `libc.so`. This means that the DYN PIE ELF depends on `libc.so` to implement its functionality. In other words, there is a dependency that has to be resolved at run time.
+On the other hand, the program has called dynamic symbols such as `printf` (optimized out va_list without format specifier, fallback to `puts`) which are exported by the dynamic shared library `libc.so`. This means that the DYN PIE ELF depends on `libc.so` to implement its functionality. In other words, there is a dependency that has to be resolved at run time.
 
 ```bash
-pwndbg> !readelf -d a.out | head -4
+$ readelf -d a.out | head -4
 
 Dynamic section at offset 0xda0 contains 27 entries:
   Tag        Type                         Name/Value
  0x0000000000000001 (NEEDED)             Shared library: [libc.so.6]
 
-pwndbg> !objdump -x a.out | sed -n '/Dynamic Section/{N;p}'
+$ objdump -x a.out | sed -n '/Dynamic Section/{N;p}'
 Dynamic Section:
   NEEDED               libc.so.6
 
-pwndbg> !radare2.rabin2 -l a.out
+$ radare2.rabin2 -l a.out
 [Linked libraries]
 libc.so.6
 
@@ -259,9 +259,11 @@ GNU_RELRO    .init_array .fini_array .dynamic .got
 ehdr         .comment
 ```
 
-From the above output of the section to segment mapping we can see that the sections `.rela.dyn`, `.rela.plt` and `.plt` along with the `.text` have been classified into the first loadable text segment *`LOAD0`*.
+From the above output of the section to segment mapping we can see that the ALLOC|LOAD|READONLY CONTENTS(CODE or DATA) sections `.rela.dyn`, `.rela.plt` and `.plt` along with the `.text` have been classified into the first loadable text segment *`LOAD0`*.
 
-Meanwhile, the `.dynamic` and `.got` sections along with the `.data`, `.bss` secitons have been categorized into the second loadable data segment *`LOAD1`*.
+> The `.comment`, `.symtab`, `.strtab`, `.shstrtab` sections are counted in the LOAD0 segment?
+
+Otherwise, the ALLOC but not READONLY sections `.dynamic` and `.got` along with the `.data` and `.bss` secitons have been categorized into the second loadable data segment *`LOAD1`*.
 
 As `readelf -lW a.out` indicated, both *LOAD0* and *LOAD1* should be aligned at 0x10000(64K).
 
@@ -356,14 +358,18 @@ __SIZEOF_LONG__=8, LONG_BIT=64
 
 As we can see, the two fields of `Elf64_Dyn` are all 64-bit, so reorganize the hexdump format to display its giant- or double- word array accordingly.
 
+> 65536/0x10000 is the increment of vaddr over paddr for the LOAD1 segment where the `.dynamic` section is located.
+
 ```bash
 # readelf -R .dynamic a.out
+# dy_offset=$(radare2.rabin2 -S a.out | awk '/.dynamic/{print $2}')
+# dy_offset=$(radare2.rabin2 -S a.out | awk '/.dynamic/{print $3}')
 $ dy_offset=$(objdump -hw a.out | awk '/.dynamic/{print "0x"$6}')
 $ dy_size=$(objdump -hw a.out | awk '/.dynamic/{print "0x"$3}')
 # hexdump -s $dy_offset -n $dy_size -e '"%07.7_ax  " 2/8 "%016x " "\n"' a.out
-$ hexdump -v -s $dy_offset -n $dy_size -e '"%_ad\t" 2/8 "%016x\t" "\n"' a.out \
+$ hexdump -v -s $dy_offset -n $dy_size -e '"%08_ax\t" 2/8 "%016x\t" "\n"' a.out \
 | awk 'BEGIN{print "offset\t\taddress\t\t\t\td_tag\t\t\t\td_un"} \
-{printf("%08x\t", $1); printf("%016x\t", $1+65536); printf("%s\t", $2); print $3}'
+{printf("%s\t", $1); printf("%016x\t", (("0x"$1))+65536); printf("%s\t", $2); print $3}'
 offset		address				d_tag				d_un
 00000da0	0000000000010da0	0000000000000001	000000000000002d
 00000db0	0000000000010db0	000000000000000c	00000000000005b8
@@ -494,7 +500,7 @@ typedef struct
 
 This `.dynstr` section holds strings needed for dynamic linking, most commonly the strings that represent the names associated with symbol table entries.
 
-```bash
+```bash hl_lines="6"
 $ readelf -p .dynstr a.out
 
 String dump of section '.dynstr':
@@ -516,23 +522,22 @@ As is shown in `readelf -d a.out`, `DT_SYMENT`=0x18, that means size of one symb
 
 Hexdump contents of section `.dynsym`(DT_SYMTAB) grouped by unit of giant-word, 3 units per line.
 
-```bash
+```bash hl_lines="14"
 $ ds_offset=$(objdump -hw a.out | awk '/.dynsym/{print "0x"$6}')
 $ ds_size=$(objdump -hw a.out | awk '/.dynsym/{print "0x"$3}')
-$ hexdump -v -s $ds_offset -n $ds_size -e '"%016_ax " /4 "%08x\t" /1 "%02x\t\t" /1 "%02x\t\t" /2 "%04x\t" 2/8 "%016x " "\n"' a.out \
-| awk 'BEGIN{print "offset\t\t\tname\t\tinfo\tother\tshndx\tvalue\t\t\t\tsize"} 1'
-offset			name		info	other	shndx	value				size
-00000000000002b8 00000000	00		00		0000	0000000000000000 0000000000000000
-00000000000002d0 00000000	03		00		000b	00000000000005b8 0000000000000000
-00000000000002e8 00000000	03		00		0016	0000000000011000 0000000000000000
-0000000000000300 00000010	12		00		0000	0000000000000000 0000000000000000
-0000000000000318 0000004d	20		00		0000	0000000000000000 0000000000000000
-0000000000000330 00000001	22		00		0000	0000000000000000 0000000000000000
-0000000000000348 00000069	20		00		0000	0000000000000000 0000000000000000
-0000000000000360 00000027	12		00		0000	0000000000000000 0000000000000000
-0000000000000378 00000022	12		00		0000	0000000000000000 0000000000000000
-0000000000000390 00000078	20		00		0000	0000000000000000 0000000000000000
-
+$ hexdump -v -s $ds_offset -n $ds_size -e '"%016_ax " /4 "%08x\t" 2/1 "%02x\t\t\t" /2 "%04x\t" 2/8 "%016x\t" "\n"' a.out \
+| awk 'BEGIN{print "offset\t\t\t\tname\tinfo\t\tother\tshndx\tvalue\t\t\t\tsize"} 1'
+offset				name	info		other	shndx	value				size
+00000000000002b8 00000000	00			00		0000	0000000000000000	0000000000000000
+00000000000002d0 00000000	03			00		000b	00000000000005b8	0000000000000000
+00000000000002e8 00000000	03			00		0016	0000000000011000	0000000000000000
+0000000000000300 00000010	12			00		0000	0000000000000000	0000000000000000
+0000000000000318 0000004d	20			00		0000	0000000000000000	0000000000000000
+0000000000000330 00000001	22			00		0000	0000000000000000	0000000000000000
+0000000000000348 00000069	20			00		0000	0000000000000000	0000000000000000
+0000000000000360 00000027	12			00		0000	0000000000000000	0000000000000000
+0000000000000378 00000022	12			00		0000	0000000000000000	0000000000000000
+0000000000000390 00000078	20			00		0000	0000000000000000	0000000000000000
 ```
 
 The macro `ELF32_ST_BIND`(:hi:4) and `ELF32_ST_TYPE`(:lo:4) defines how to extract information(ST_BIND, ST_TYPE) held in the `st_info` field of `Elf64_Sym`.
@@ -547,14 +552,14 @@ offset | name index | symbol name                 | info | type        | bind
 0x330  | 0x00000001 | \_\_cxa_finalize            | 0x22 | STT_FUNC    | STB_WEAK
 0x348  | 0x00000069 | \_\_gmon_start\_\_          | 0x20 | STT_NOTYPE  | STB_WEAK
 0x360  | 0x00000027 | abort                       | 0x12 | STT_FUNC    | STB_GLOBAL
-0x378  | 0x00000022 | puts                        | 0x12 | STT_FUNC    | STB_GLOBAL
+0x378  | 0x00000022 | **puts**                    | 0x12 | STT_FUNC    | STB_GLOBAL
 0x390  | 0x00000078 | \_ITM\_registerTMCloneTable | 0x20 | STT_NOTYPE  | STB_WEAK
 
 ### readelf/objdump
 
 `nm -D|--dynamic`: display dynamic symbols instead of normal symbols.
 
-```bash
+```bash hl_lines="8"
 $ nm -D a.out
                  U abort@GLIBC_2.17
                  w __cxa_finalize@GLIBC_2.17
@@ -570,7 +575,7 @@ $ nm -D a.out
 
 === "readelf --dyn-syms"
 
-    ```bash
+    ```bash hl_lines="13"
     $ readelf --dyn-syms a.out
 
     Symbol table '.dynsym' contains 10 entries:
@@ -589,7 +594,7 @@ $ nm -D a.out
 
 === "objdump -T"
 
-    ```bash
+    ```bash hl_lines="13"
     $ objdump -T a.out
 
     a.out:     file format elf64-littleaarch64
@@ -718,7 +723,7 @@ Next, let's use professional ELF binutils like readelf/objdump/rabin2 to see wha
 
 `readelf [-r|--relocs]`: display the relocations.
 
-```bash
+```bash hl_lines="20"
 $ readelf -r a.out
 
 Relocation section '.rela.dyn' at offset 0x480 contains 8 entries:
@@ -758,8 +763,8 @@ a.out:     file format elf64-littleaarch64
 
 > Almost the same as `readelf -r a.out`, but the full TYPE name is visible.
 
-```bash
-[0xffff880e5c40]> !objdump -R a.out
+```bash hl_lines="19"
+$ objdump -R a.out
 
 a.out:     file format elf64-littleaarch64
 
@@ -780,30 +785,6 @@ OFFSET           TYPE              VALUE
 0000000000010fc8 R_AARCH64_JUMP_SLOT  puts@GLIBC_2.17
 ```
 
-`rabin2 -R`: list the relocations.
-
-```bash
-$ radare2.rabin2 -R a.out
-
-[Relocations]
-
-vaddr      paddr      type   ntype name
-―――――――――――――――――――――――――――――――――――――――
-0x00010d90 0x00000d90 ADD_64 1027   0x00000750
-0x00010d98 0x00000d98 ADD_64 1027   0x00000700
-0x00010fa8 0x00000fa8 SET_64 1026  __libc_start_main
-0x00010fb0 0x00000fb0 SET_64 1026  __cxa_finalize
-0x00010fb8 0x00000fb8 SET_64 1026  __gmon_start__
-0x00010fc0 0x00000fc0 SET_64 1026  abort
-0x00010fc8 0x00000fc8 SET_64 1026  puts
-0x00010fd8 0x00000fd8 SET_64 1025  _ITM_deregisterTMCloneTable
-0x00010fe0 0x00000fe0 SET_64 1025  __cxa_finalize
-0x00010fe8 0x00000fe8 SET_64 1025  __gmon_start__
-0x00010ff0 0x00000ff0 ADD_64 1027   0x00000754
-0x00010ff8 0x00000ff8 SET_64 1025  _ITM_registerTMCloneTable
-0x00011008 0x00001008 ADD_64 1027   0x00011008
-```
-
 ## global offset table
 
 According to sysvabi64 - [System V ABI for the Arm® 64-bit Architecture (AArch64)](https://github.com/ARM-software/abi-aa/blob/844a79fd4c77252a11342709e3b27b2c9f590cf1/sysvabi64/sysvabi64.rst) - 9.2 Global Offset Table (GOT)
@@ -821,9 +802,9 @@ AArch64 splits the global offset table (GOT) into two sections:
 
 Hexdump contents of PROGBITS section `.got` grouped by giant-word array.
 
-> 0x10000/65536 is the increment of vaddr over paddr for the LOAD1 segment where the `.got` section is located.
+> 65536/0x10000 is the increment of vaddr over paddr for the LOAD1 segment where the `.got` section is located.
 
-```bash
+```bash hl_lines="14"
 $ got_offset=$(objdump -hw a.out | awk '/.got/{print "0x"$6}')
 $ got_size=$(objdump -hw a.out | awk '/.got/{print "0x"$3}')
 $ hexdump -v -s $got_offset -n $got_size -e '"%_ad\t" /8 "%016x\t" "\n"' a.out \
@@ -885,9 +866,9 @@ The dynamic section `DT_PLTREL`(0000000000000014)=0x7 shows its type of reloc in
 
 Relocation section `.rela.plt` defines five `R_AARCH64_JUMP_SLOT`s pointing to GOT entries with offest. The indexes of the dynamic symbols are 3,5,6,7,8.
 
-`rabin2 -i` puts things on the stage, e.g. No.8 0x00000630 points to the PLT stub <puts@plt\> for the dynamic symbol `puts@GLIBC_2.17`.
+`rabin2 -i` puts things on the stage, e.g. No.8 0x00000630 points to the PLT stub routine <puts@plt\>.
 
-```bash
+```bash hl_lines="10"
 $ radare2.rabin2 -i a.out
 [Imports]
 nth vaddr      bind   type   lib name
@@ -901,7 +882,33 @@ nth vaddr      bind   type   lib name
 9   ---------- WEAK   NOTYPE     _ITM_registerTMCloneTable
 ```
 
-The PLT is acting as a go-between, and it's time to lift the veil.
+<puts@plt\> uses *ADRP*/*LDR* to load the reloc address stored in `R_AARCH64_JUMP_SLOT` / GOT entry for `puts@GLIBC_2.17`, then calls *BR* to jump to the target.
+
+`rabin2 -R` lists the RELA relocations whose `vaddr` points to the GOT entry that stores the adjusted address. The highlighted line's vaddr=0x00010fc8 is the GOT slot address for `reloc.puts`.
+
+```bash hl_lines="13"
+$ radare2.rabin2 -R a.out
+
+[Relocations]
+
+vaddr      paddr      type   ntype name
+―――――――――――――――――――――――――――――――――――――――
+0x00010d90 0x00000d90 ADD_64 1027   0x00000750
+0x00010d98 0x00000d98 ADD_64 1027   0x00000700
+0x00010fa8 0x00000fa8 SET_64 1026  __libc_start_main
+0x00010fb0 0x00000fb0 SET_64 1026  __cxa_finalize
+0x00010fb8 0x00000fb8 SET_64 1026  __gmon_start__
+0x00010fc0 0x00000fc0 SET_64 1026  abort
+0x00010fc8 0x00000fc8 SET_64 1026  puts
+0x00010fd8 0x00000fd8 SET_64 1025  _ITM_deregisterTMCloneTable
+0x00010fe0 0x00000fe0 SET_64 1025  __cxa_finalize
+0x00010fe8 0x00000fe8 SET_64 1025  __gmon_start__
+0x00010ff0 0x00000ff0 ADD_64 1027   0x00000754
+0x00010ff8 0x00000ff8 SET_64 1025  _ITM_registerTMCloneTable
+0x00011008 0x00001008 ADD_64 1027   0x00011008
+```
+
+The `PLT` is acting as a go-between, and it's time to lift the veil.
 
 ### disassemble
 

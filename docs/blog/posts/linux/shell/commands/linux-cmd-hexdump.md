@@ -284,6 +284,10 @@ $ hd -x -n 16 swrite32
 
 可借助 `-e format` 选项指定打印格式。
 
+**Conversion strings**: The hexdump utility also supports the following additional conversion strings.
+
+- `_a[d|o|x]`: Display the input offset, cumulative across input files, of the next byte to be displayed. The appended characters `d`, `o`, and `x` specify the display base as decimal, octal or hexadecimal respectively.
+
 > `-x` 的等效格式是 `-e '"%07.7_ax  " 8/2 "%04x " "\n"'`
 
 每行打印 16 个 byte（1-%02x）：
@@ -356,7 +360,7 @@ $ readelf -h write64 | grep "Entry point address"
   Entry point address:               0x640
 ```
 
-### demo - rela/got
+### demo - plt/rela/got
 
 参考 [puts@plt/rela/got - static analysis](../../../elf/plt-puts-analysis.md)。
 
@@ -364,11 +368,16 @@ $ readelf -h write64 | grep "Entry point address"
 
 Hexdump contents of PROGBITS section `.got` grouped by giant-word array.
 
-> 原始 hexdump Offset 为不带 0x 前缀的十六进制，拼接 `"0x"` 编程字符串，无法直接参加计算，故转换为十进制。
+> 原始 hexdump Offset 为不带 0x 前缀的十六进制，拼接 `"0x"` 变成字符串，无法直接参加计算，故转换为十进制。
 
 ```bash
 $ got_offset=$(objdump -hw a.out | awk '/.got/{print "0x"$6}')
 $ got_size=$(objdump -hw a.out | awk '/.got/{print "0x"$3}')
+
+# hexdump -v -s $got_offset -n $got_size -e '"0x%08_ax\t" /8 "%016x\t" "\n"' a.out \
+# | awk 'BEGIN{print "Offset\t\tAddress\t\t\t\tValue"} \
+# {printf("%s\t", $1); printf("%016x\t", $1+65536); print $2}'
+
 $ hexdump -v -s $got_offset -n $got_size -e '"%_ad\t" /8 "%016x\t" "\n"' a.out \
 | awk 'BEGIN{print "Offset\t\tAddress\t\t\t\tValue"} \
 {printf("%08x\t", $1); printf("%016x\t", $1+65536); print $2}'

@@ -108,6 +108,18 @@ Print (on standard error output) the commands executed to run the stages of comp
 Like -v except the commands are not executed and arguments are quoted unless they contain only alphanumeric characters or ./-_. This is useful for shell scripts to capture the driver-generated command lines.
 ```
 
+The demo program is as follows.
+
+```c title="0701.c"
+/* Code 07-01, file name: 0701.c */
+#include <stdio.h>
+int main(int argc, char* argv[])
+{
+    printf("Hello, Linux!\n");
+    return 0;
+}
+```
+
 Do a trial run with `-###`: `gcc -## 0701.c`. Use this to see what gcc would do without actually doing it.
 
 Do compile `0701.c` with verbose logging by `gcc -v 0701.c`:

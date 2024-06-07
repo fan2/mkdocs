@@ -154,7 +154,7 @@ $ cc test-gdb.c -o test-gdb -gdwarf-5
       Section header string table index: 33
     ```
 
-## disassemble
+## disassemble executable
 
 The option `-d|--disassemble` only disassembles those sections which are expected to contain instructions(executable sections).
 
@@ -665,8 +665,8 @@ A semi-automatic script that extracts the Offset/Size of the section specified b
 section="\.init"
 pattern=".*$section\s.*"
 secitem=$(readelf -SW test-gdb | grep -E $pattern)
-off="0x"`echo $secitem | awk '{print $5}'`
-sz="0x"`echo $secitem | awk '{print $6}'`
+off="0x"$(echo $secitem | awk '{print $5}')
+sz=`echo $secitem | awk '{print "0x"$6}'`
 objdump -d --start-address=$off --stop-address=$((off+sz)) test-gdb
 ```
 

@@ -63,6 +63,7 @@ The output of `objdump -f` shows that the BFD format specific flags are `EXEC_P,
 
 1. `readelf [-S|--section-headers|--sections]`: Display the sections' header.
 2. `objdump [-h|--section-headers|--headers]`: Display the contents of the section headers.
+3. `size`: Displays the sizes of sections inside binary files.
 
 === "readelf -SW b.out"
 
@@ -146,6 +147,42 @@ The output of `objdump -f` shows that the BFD format specific flags are `EXEC_P,
     24 __libc_freeres_ptrs 00000020  00000000004996a8  00000000004996a8  00084028  2**3  ALLOC
     25 .comment            0000002b  0000000000000000  0000000000000000  00084028  2**0  CONTENTS, READONLY
     26 .note.stapsdt       000013a4  0000000000000000  0000000000000000  00084054  2**2  CONTENTS, READONLY
+    ```
+
+=== "size -Ax b.out"
+
+    ```bash
+    $ size -Ax b.out
+    b.out  :
+    section                  size       addr
+    .note.gnu.build-id       0x24   0x400190
+    .note.ABI-tag            0x20   0x4001b4
+    .rela.plt                0xa8   0x4001d8
+    .init                    0x18   0x400280
+    .plt                     0x70   0x4002a0
+    .text                 0x56fb4   0x400340
+    __libc_freeres_fn       0xb24   0x457300
+    .fini                    0x14   0x457e24
+    .rodata               0x1a0d8   0x457e40
+    .stapsdt.base             0x1   0x471f18
+    .eh_frame              0xb984   0x471f20
+    .gcc_except_table       0x108   0x47d8a4
+    .tdata                   0x20   0x48e830
+    .tbss                    0x48   0x48e850
+    .init_array              0x10   0x48e850
+    .fini_array               0x8   0x48e860
+    .data.rel.ro           0x3348   0x48e868
+    .got                    0x438   0x491bb0
+    .got.plt                 0x50   0x491fe8
+    .data                  0x1910   0x492038
+    __libc_subfreeres        0x48   0x493948
+    __libc_IO_vtables       0x690   0x493990
+    __libc_atexit             0x8   0x494020
+    .bss                   0x5680   0x494028
+    __libc_freeres_ptrs      0x20   0x4996a8
+    .comment                 0x2b        0x0
+    .note.stapsdt          0x13a4        0x0
+    Total                 0x89a74
     ```
 
 ## symbol table

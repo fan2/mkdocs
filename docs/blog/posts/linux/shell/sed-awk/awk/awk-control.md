@@ -292,12 +292,42 @@ Haley Snell      (313)555-4938
 
 关于 awk 中使用算术表达式，参考 [Arithmetic Ops](https://www.gnu.org/software/gawk/manual/html_node/Arithmetic-Ops.html), [awk high precision arithmetic](https://unix.stackexchange.com/questions/57006/awk-high-precision-arithmetic)。
 
-参考 [puts@plt - static analysis](../../../../elf/plt-puts-analysis.md) 中的 printf 和算术运算的综合示范样例：
+> **注意**：awk 中的 print(f) 中算术运算操作数只支持十进制。
+
+参考 [puts@plt - static analysis](../../../../elf/plt-puts-analysis.md) 中的 printf 和算术运算的综合示范样例。
+
+`objdump -hw` 输出的 section 的 Offset/Size 均为无 `0x` 前缀的十六进制。可使用 awk 提取列值进行十进制算术运算统计或插入新列。
+为方便参加后续计算，使用 awk 提取列值进行输出时，可冠上十六进制前缀字符串 `"0x"`，它将与`$NF`引用自动进行字符串拼接。
 
 ```bash
+$ objdump -hw a.out | awk '/.bss/{print $3}'
+00000008
+$ objdump -hw a.out | awk '/.bss/{print "0x"$3}'
+0x00000008
+$ objdump -hw a.out | awk '/.bss/{print (("0x"$3))+0}'
+8
+
 $ got_offset=$(objdump -hw a.out | awk '/.got/{print "0x"$6}')
 $ got_size=$(objdump -hw a.out | awk '/.got/{print "0x"$3}')
-$ hexdump -v -s $got_offset -n $got_size -e '"%_ad  " /8 "%016x " "\n"' a.out | awk 'BEGIN{print "Offset    Address           Value"} {printf("%08x  ", $1); printf("%016x  ", $1+0x10000); print $2}'
+```
+
+使用 awk 对 hexdump 第一列 offset 值添加地址偏移量（baddr）以便得到 address。
+
+1. 对于无前缀的十六进制格式化字符串 `"%08_ax\t"`，需先添加 `0x` 前缀，并使用`(("0x"$1))`对字符串进行数值化。
+2. 或将格式化字符串改写为十进制 `"%_ad\t"` 或加前缀的的十六进制 `"0x%08_ax\t"`，这样可直接引用参加十进制运算。
+
+```bash
+# hexdump -v -s $got_offset -n $got_size -e '"%08_ax\t" /8 "%016x\t" "\n"' a.out \
+# | awk 'BEGIN{print "Offset\t\tAddress\t\t\t\tValue"} \
+# {printf("%s\t", $1); printf("%016x\t", (("0x"$1))+65536); print $2}'
+
+# hexdump -v -s $got_offset -n $got_size -e '"%_ad\t" /8 "%016x\t" "\n"' a.out \
+# | awk 'BEGIN{print "Offset\t\tAddress\t\t\t\tValue"} \
+# {printf("%08x\t", $1); printf("%016x\t", $1+65536); print $2}'
+
+$ hexdump -v -s $got_offset -n $got_size -e '"0x%08_ax\t" /8 "%016x\t" "\n"' a.out \
+| awk 'BEGIN{print "Offset\t\tAddress\t\t\t\tValue"} \
+{printf("%s\t", $1); printf("%016x\t", $1+65536); print $2}'
 Offset    Address           Value
 00000f90  0000000000010f90  0000000000000000
 00000f98  0000000000010f98  0000000000000000
@@ -314,6 +344,8 @@ Offset    Address           Value
 00000ff0  0000000000010ff0  0000000000000754
 00000ff8  0000000000010ff8  0000000000000000
 ```
+
+**注意**：第一列 Offset 的十六进制串的 printf 格式化控制符为 `%s`，不要错误写成 `%08x`！
 
 ### 格式化字符串（sprintf）
 
