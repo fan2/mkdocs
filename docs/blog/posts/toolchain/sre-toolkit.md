@@ -60,6 +60,8 @@ Software Reverse Engineering(SRE) Toolkit:
 
 - Run compilers interactively from your web browser and interact with the assembly
 
+[An Empirical Study on ARM Disassembly Tools](https://www4.comp.polyu.edu.hk/~csxluo/ARM.pdf)
+
 ### forums
 
 [web forums focusing on reverse engineering](https://www.quora.com/What-are-some-popular-web-forums-focusing-on-reverse-engineering)

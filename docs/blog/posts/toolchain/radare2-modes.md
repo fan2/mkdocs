@@ -843,14 +843,16 @@ Note the label inside square brackets of each node, such as `o[a-z]`, then type 
 [gdb list command ?](https://github.com/radareorg/radare2/issues/1783)
 [Radare2 "pd" command](https://stackoverflow.com/questions/62319299/radare2-pd-command)
 [How to dump function's disassembly using r2pipe](https://stackoverflow.com/questions/55402547/how-to-dump-functions-disassembly-using-r2pipe)
-[How to make radare2 work for a large binary?](https://reverseengineering.stackexchange.com/questions/16112/how-to-make-radare2-work-for-a-large-binary/16115#16115)
+[How to make radare2 work for a large binary?](https://reverseengineering.stackexchange.com/questions/16112/how-to-make-radare2-work-for-a-large-binary/16115)
 
 [Disassembling with radare2](https://www.linuxdays.cz/2017/video/Tomas_Antecky-Disassembling_with_radare2.pdf)
 A journey into Radare 2: [Part 1](https://www.megabeets.net/a-journey-into-radare-2-part-1/), [Part 2](https://www.megabeets.net/a-journey-into-radare-2-part-2/)
 
+[Reverse engineering with radare2](https://artik.blue/reversing)
 [Reverse Engineering With Radare2](https://samsymons.com/blog/reverse-engineering-with-radare2-part-1/)
 [Radare2 for reverse engineering](https://itnext.io/radare2-for-reverse-engineering-part1-eedf0a47b5cc)
 
+Reverse Engineering With Radare2: [Part 1](https://insinuator.net/2016/08/reverse-engineering-with-radare2-intro/), [Part 2](https://insinuator.net/2016/08/reverse-engineering-with-radare2-part-2/)
 Reverse Engineering Using Radare2: [Part 1](https://goggleheadedhacker.com/blog/post/1), [Part 2](https://goggleheadedhacker.com/blog/post/2)
 Reverse engineering using Radare2: [Part 1](https://hackyourmom.com/en/servisy/zvorotnij-inzhyniryng-iz-vykorystannyam-radare2/), [Part 2](https://hackyourmom.com/en/servisy/revers-inzhyniryng-ta-skrypty/zvorotnij-inzhyniryng-iz-vykorystannyam-radare2-chastyna-2/)
 

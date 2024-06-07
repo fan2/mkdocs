@@ -18,6 +18,8 @@ The Radare2 project is a set of small command-line utilities that can be used to
 - [Radare2 Book](https://book.rada.re/) - [intro](https://github.com/radareorg/radare2/blob/master/doc/intro.md#analyze) - [zh-cn](https://heersin.gitbook.io/radare2)
 - [r2wiki](https://r2wiki.readthedocs.io/en/latest/) - [Tips](https://r2wiki.readthedocs.io/en/latest/home/tips/)
 - [How-To: Radare2](https://r2.cole-ellis.com/)
+- [awesome-radare2](https://github.com/radareorg/awesome-radare2/blob/master/README.md)
+- [Radare2 vs. GDB](https://hurricanelabs.com/blog/learning-binary-reversing-radare2-vs-gdb/)
 - [Radare2 Explorations](https://monosource.gitbooks.io/radare2-explorations/)
 - [Radare2 — Keep It Or Leave It?](https://medium.com/@sagidana/radare2-keep-it-or-leave-it-3d45059ec0d1)
 
@@ -191,6 +193,8 @@ Open file in write mode:
 $ r2 -Adw test-gdb
 ```
 
+`-B [baddr]`: set base address for PIE binaries, [not working](https://github.com/radareorg/radare2/issues/9051).
+
 whereis/which shell command:
 
 ```bash
@@ -309,7 +313,7 @@ Usage: do   # Debug (re)open commands
 | doof [args]   Reopen in debug mode from file (alias for 'oodf')
 ```
 
-### shell
+## shell
 
 The `!` prefix is used to execute a command in shell context.
 
@@ -318,11 +322,7 @@ The `!` prefix is used to execute a command in shell context.
 Usage: !<cmd>    Run given command as in system(3)
 ```
 
-List the toolset utility binutils with the same directory:
-
-```bash
-[0x000000000000]> !ls -l /snap/radare2/2571/bin/
-```
+### toolset
 
 Execute external shell to read ELF headers:
 
@@ -345,8 +345,8 @@ Execute radare2 internal command with external/internal mode:
 Read section headers from both external/internal mode:
 
 ```bash
-[0x000000000000]> ! readelf -SW a.out
-[0x000000000000]> ! objdump -hw a.out
+[0x000000000000]> !readelf -SW a.out
+[0x000000000000]> !objdump -hw a.out
 [0x000000000000]> rabin2 -S test-gdb
 [0x000000000000]> iS
 ```
@@ -358,6 +358,34 @@ Read segments from internal mode:
 [0x000000000000]> rabin2 -SS test-gdb
 [0x000000000000]> iSS
 ```
+
+### list
+
+r2 built-in listing commands:
+
+```bash
+[0x000000000000]> l?
+Usage: l[erls] [arg]  Internal less (~..) and file listing (!ls)
+| lu [path]                same as #!lua
+| ll [path]                same as ls -l
+| lr [path]                same as ls -r
+| li                       list source of current function (like gdb's 'list' command)
+| ls [-e,-l,-j,-q] [path]  list files in current or given directory
+| ls -e [path]             list files using emojis
+| ls -l [path]             same as ll (list files with details)
+| ls -j [path]             list files in json format
+| ls -q [path]             quiet output (one file per line)
+| le[ss] [path]            same as cat file~.. (or less)
+```
+
+List the toolset utility binutils with the same directory:
+
+```bash
+[0x000000000000]> ll /snap/radare2/2571/bin/
+[0x000000000000]> !ls -l /snap/radare2/2571/bin/
+```
+
+### pipe
 
 The standard UNIX pipe `|` is also available in the radare2 shell. You can use it to filter the output of an r2 command with any shell program that reads from stdin, such as `grep`, `less`, `wc`. If you do not want to spawn anything, or you can’t, or the target system does not have the basic UNIX tools you need (Windows or embedded users), you can also use the built-in grep (`~`).
 
@@ -449,6 +477,18 @@ Usage: e [var[=value]]  Evaluable vars
 | evj [key]          list config vars in verbose format in JSON
 ```
 
+[Radare2 can't set breakpoint?](https://reverseengineering.stackexchange.com/questions/13689/radare2-noob-question-cant-set-breakpoint)
+
+Set `e dbg.bpinmaps=false` so Radare2 allows you to set breakpoint without that restriction.
+
+```bash
+[0xffffbc84ae70]> e dbg.bpinmaps
+true
+[0xffffbc84ae70]> e dbg.bpinmaps=false
+[0xffffbc84ae70]> e dbg.bpinmaps
+false
+```
+
 ## expr
 
 ### evaluation
@@ -466,6 +506,17 @@ Usage: ?[?[?]] expression
 | ?v num|expr                      show hex value of math expr (no expr prints $?)
 | ?vi[1248] num|expr               show decimal value of math expr [n bytes]
 
+```
+
+`?v <symbol>` acts as `afo <symbol>`, it will show the address for the symbol, equivalent to `info address SYM` in GDB.
+
+```bash
+[0xffff99b209d0]> # afo sym.main
+[0xffff99b209d0]> ?v sym.main
+0xaaaae16307a0
+[0xffff99b209d0]> # afo sym.func
+[0xffff99b209d0]> ?v sym.func
+0xaaaae1630754
 ```
 
 ### variables
@@ -496,12 +547,18 @@ Usage: ?v [$.]
 | $w            get word size, 4 if asm.bits=32, 8 if 64, ...
 ```
 
+Seek here/print current address.
+
+```bash
+# equivalent to s : print current address
+# $$: here (current virtual seek)
+[0xaaaac30a07a0]> ?v $$
+0xaaaac30a07a0
+```
+
 Define simple macros.
 
 ```bash
-[0xaaaac30a07a0]> ?v $$
-0xaaaac30a07a0
-
 [0xaaaac30a07a0]> $rip=19890604
 [0xaaaac30a07a0]> $rip?
 19890604
@@ -540,17 +597,6 @@ begin/end of function:
 0xffffdca194e0
 [0xaaaac30a0754]> ?v $r:SP
 0xffffdca194e0
-```
-
-`?v <symbol>` acts as `afo <symbol>`, it will show the address for the symbol, equivalent to `info address SYM` in GDB.
-
-```bash
-[0xffff99b209d0]> # afo sym.main
-[0xffff99b209d0]> ?v sym.main
-0xaaaae16307a0
-[0xffff99b209d0]> # afo sym.func
-[0xffff99b209d0]> ?v sym.func
-0xaaaae1630754
 ```
 
 ### grep

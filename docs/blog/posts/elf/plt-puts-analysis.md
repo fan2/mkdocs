@@ -7,9 +7,12 @@ date:
 categories:
     - elf
 tags:
-    - PLT
-    - RELA
-    - GOT
+    - .dynamic
+    - .dynstr
+    - .dynsym
+    - .rela.plt
+    - .got
+    - .plt
 comments: true
 ---
 
@@ -557,9 +560,11 @@ offset | name index | symbol name                 | info | type        | bind
 
 ### readelf/objdump
 
+`nm -u|--undefined-only`: display only undefined symbols.
 `nm -D|--dynamic`: display dynamic symbols instead of normal symbols.
 
 ```bash hl_lines="8"
+# nm -u a.out
 $ nm -D a.out
                  U abort@GLIBC_2.17
                  w __cxa_finalize@GLIBC_2.17

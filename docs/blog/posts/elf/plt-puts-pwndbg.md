@@ -7,9 +7,10 @@ date:
 categories:
     - elf
 tags:
-    - PLT
-    - RELA
-    - GOT
+    - .rela.plt
+    - .got
+    - .plt
+    - puts@got.plt
 comments: true
 ---
 
@@ -119,13 +120,52 @@ Local exec file:
     0x0000000000011010 - 0x0000000000011018 is .bss
 ```
 
+### functions
+
+`nm -u|-D`: display only undefined/dynamic symbols.
+
+```bash hl_lines="8"
+# nm -D a.out
+$ nm -u a.out
+                 U abort@GLIBC_2.17
+                 w __cxa_finalize@GLIBC_2.17
+                 w __gmon_start__
+                 w _ITM_deregisterTMCloneTable
+                 w _ITM_registerTMCloneTable
+                 U __libc_start_main@GLIBC_2.34
+                 U puts@GLIBC_2.17
+```
+
+`info functions`: Print the names and data types of all defined functions.
+
+```bash hl_lines="10"
+pwndbg> info functions
+All defined functions:
+
+Non-debugging symbols:
+0x00000000000005b8  _init
+0x00000000000005f0  __libc_start_main@plt
+0x0000000000000600  __cxa_finalize@plt
+0x0000000000000610  __gmon_start__@plt
+0x0000000000000620  abort@plt
+0x0000000000000630  puts@plt
+0x0000000000000640  _start
+0x0000000000000674  call_weak_fn
+0x0000000000000690  deregister_tm_clones
+0x00000000000006c0  register_tm_clones
+0x0000000000000700  __do_global_dtors_aux
+0x0000000000000750  frame_dummy
+0x0000000000000754  main
+0x000000000000077c  _fini
+```
+
 ### puts@plt
 
 [Previously](./plt-puts-analysis.md), we've explored the dependent dynamic symbols defined in `.plt` section.
 
 `rabin2 -i `: list symbols imported from libraries.
 
-```bash
+```bash hl_lines="10"
 $ radare2.rabin2 -i a.out
 [Imports]
 nth vaddr      bind   type   lib name
@@ -141,7 +181,7 @@ nth vaddr      bind   type   lib name
 
 `plt` -- Prints any symbols found in the `.plt` section if it exists.
 
-```bash
+```bash hl_lines="7"
 pwndbg> plt
 Section .plt 0x5d0-0x640:
 0x5f0: __libc_start_main@plt
@@ -428,6 +468,8 @@ pwndbg> telescope 0xaaaaaaab0fc8 1
 00:0000│  0xaaaaaaab0fc8 (puts@got[plt]) ◂— 0x5d0
 ```
 
+> The GOT entry for `puts@plt` is labelled as `puts@got.plt`, equivalent to `reloc.puts` in r2.
+
 According to the hexdump content of the `.got` section, it's originally filled with 0x00000000000005d0, which is the paddr of the `.plt` section. It's the original lineage of plt and got.
 
 - !readelf -SW a.out
@@ -492,9 +534,9 @@ elf_dynamic_do_Rela (skip_ifunc=<optimized out>, lazy=<optimized out>, nrelative
 
 When entering `entry`, it's expected to drop into CRT(C Run Time) entry point(`_start` defined in crt1.o). The `ld.so`(linker & loader?) will load the needed *libc.so* into memory, meanwhile it invokes subsequent subroutines prefixed with`dl_`(dynamic linking?) to relocate the dynamic symbols imported by the main program.
 
-Specifically, the loader would fix the destination of the GOT entries such as `reloc.puts`. The function pointer of `puts` resides in the address space of libc.so, it's the embodiment of the PLT stub `puts@plt`.
+Specifically, the loader would fix the destination of the GOT entries such as `puts@got.plt`. The function pointer of `puts` resides in the address space of libc.so, it's the embodiment of the PLT stub `puts@plt`.
 
-While the loader is doing the fix, it hits the watchpoint and throws an interrupt. As highlighted above, `reloc.puts` has been resolved to 0x0000fffff7e7ae70, updated from 1488/0x5d0. See the *plt & got* section for later details.
+While the loader is doing the fix, it hits the watchpoint and throws an interrupt. As highlighted above, `puts@got.plt` has been resolved to 0x0000fffff7e7ae70, updated from 1488/0x5d0. See the *plt & got* section for later details.
 
 Continue to run until next breakpoint. Finally, it arrives at the entry point of the CRT.
 
@@ -715,7 +757,7 @@ Check the target files being debugged, sections corresponding to `libc.so`'s seg
 
 The `plt` output keeps the status quo.
 
-Let's see where the symbol `libc/puts` is located at the moment.
+Let's see where the symbol `puts@GLIBC_2.17` is located at the moment.
 
 ```bash
 pwndbg> i addr puts
@@ -724,7 +766,7 @@ pwndbg> i sym 0xfffff7e7ae70
 puts in section .text of /lib/aarch64-linux-gnu/libc.so.6
 ```
 
-What remains to be seen is how the PLT stub `puts@plt` is connected with `libc/puts` at run time.
+What remains to be seen is how the PLT stub `puts@plt` is connected with `puts@GLIBC_2.17` at run time.
 
 That's exactly the GOT's mission! Let's delve deeper and lift the veil.
 
@@ -753,7 +795,7 @@ GOT protection: Full RELRO | Found 9 GOT entries passing the filter
 
 As is shown above, the dynamic symbol GOT entries have been resolved with the correct address.
 
-Check the GOT entry above for `reloc.puts`, it holds the address of `libc/puts`.
+Check the GOT entry above for `puts@got.plt`, it holds the address of `puts@GLIBC_2.17`.
 
 Dereference pointers starting at the address in GOT.
 
@@ -805,15 +847,22 @@ Note that `vaddr = baddr + paddr`. Just add paddr/offset to the baddr/bias to ch
 pwndbg> set var $puts_addr=0xfffff7e10000+0x6ae70
 pwndbg> p/x $puts_addr
 $2 = 0xfffff7e7ae70
+pwndbg> i sym $puts_addr
+puts in section .text of /lib/aarch64-linux-gnu/libc.so.6
 ```
 
-Well, it's exactly the function address that the GOT entry slot `reloc.puts`(0xaaaaaaab0fc8) holds.
+Well, it's exactly the function address that the GOT entry slot `puts@got.plt`(0xaaaaaaab0fc8) holds.
 
 You can simply use `x/i` or `disassemble` to probe what is there.
 
 ```bash
 pwndbg> x/i $puts_addr
+   0xfffff7e6ae70 <__GI__IO_puts>:	stp	x29, x30, [sp, #-64]!
+pwndbg> # disassemble *puts,*puts+4
 pwndbg> disassemble $puts_addr,$puts_addr+4
+Dump of assembler code from 0xfffff7e6ae70 to 0xfffff7e6ae74:
+   0x0000fffff7e6ae70 <__GI__IO_puts+0>:	stp	x29, x30, [sp, #-64]!
+End of assembler dump.
 ```
 
 But I don't want to get ahead of the story. Let the story speak for itself.
@@ -1012,7 +1061,7 @@ Temporary breakpoint -10, 0x0000aaaaaaaa063c in puts@plt ()
 ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
 ```
 
-In the instruction `ldr x17, [x16, 0xfc8]!`, `x16:0xfc8` is the address of GOT entry for `puts`(aka `reloc.puts`), 0xaaaaaaab0000+0xfc8=0xaaaaaaab0fc8. Then `x17` will load the value stored in pointer 0xaaaaaaab0fc8.
+In the instruction `ldr x17, [x16, 0xfc8]!`, `x16:0xfc8` is the address of GOT entry for `puts@got.plt`, 0xaaaaaaab0000+0xfc8=0xaaaaaaab0fc8. Then `x17` will load the value stored in pointer 0xaaaaaaab0fc8.
 
 In the last chapter, we dumped the value stored in 0xaaaaaaab0fc8, it's 0xfffff7e7ae70 as commented in the DISASM context.
 
@@ -1020,7 +1069,7 @@ In the last chapter, we dumped the value stored in 0xaaaaaaab0fc8, it's 0xfffff7
 X17 => 0xfffff7e7ae70 (puts) ◂— stp x29, x30, [sp, #-0x40]!
 ```
 
-Step further to cross the boundary. Finally, it jumps from the PLT stub `puts@plt` to libc.so/`puts` via the GOT entry `reloc.puts` as a bridge ladder.
+Step further to cross the boundary. Finally, it jumps from the PLT stub `puts@plt` to `puts@GLIBC_2.17` via the GOT entry `puts@got.plt` as a bridge ladder.
 
 ```bash hl_lines="10-11"
 pwndbg> s

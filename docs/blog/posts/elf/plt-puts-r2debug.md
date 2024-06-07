@@ -7,9 +7,10 @@ date:
 categories:
     - elf
 tags:
-    - PLT
-    - RELA
-    - GOT
+    - .rela.plt
+    - .got
+    - .plt
+    - reloc.puts
 comments: true
 ---
 
@@ -21,13 +22,14 @@ It is also a thorough and comprehensive debugging exercise, demonstrating the po
 
 <!-- more -->
 
-Run the DYN ELF `a.out` with the `-A` option using r2.
-
-> `-A` will run `aaa` command BTS to analyze all referenced code.
+Run the DYN ELF `a.out` with the `-d` and `-A` options using r2.
 
 ```bash
 $ r2 -dA a.out
 ```
+
+1. `-d`: debug the executable, behaved as `gdb -> starti`.
+2. `-A` will run `aaa` command to analyze all referenced code.
 
 ## entry point vaddr
 
@@ -55,6 +57,10 @@ vaddr=0xaaaadc760700 paddr=0x00000700 hvaddr=0xaaaadc770d98 hpaddr=0x00000d98 ty
 vaddr=0xaaaadc760640 paddr=0x00000640 haddr=0x00000018 hvaddr=0xaaaadc760018 type=program
 
 1 entrypoints
+
+[0xffff98492c40]> iM
+[Main]
+vaddr=0xaaaadc760754 paddr=0x00000754
 ```
 
 [radare2 - What does paddr, baddr, laddr, haddr, and hvaddr refer to?](https://reverseengineering.stackexchange.com/questions/19782/what-does-paddr-baddr-laddr-haddr-and-hvaddr-refer-to)
@@ -114,7 +120,7 @@ libc.so.6
 
 Show map name of current address.
 
-> We're staying in the LOAD0 segment of the interpreter `ld-linux-aarch64.so`.
+> We're staying in the *LOAD0* segment of the interpreter `ld-linux-aarch64.so`.
 
 ```bash
 [0xffff98492c40]> dm.
@@ -123,8 +129,8 @@ Show map name of current address.
 
 List memory maps of current/target process.
 
-1. Two loadable segments exist per so, LOAD0 and LOAD1.
-2. `r-x` marks LOAD0 segment; `rw-` designates LOAD1 segment.
+1. Two loadable segments exist per so, *LOAD0* and *LOAD1*.
+2. `r-x` marks *LOAD0* segment; `rw-` designates *LOAD1* segment.
 
 ```bash
 [0xffff98492c40]> dm
@@ -230,24 +236,38 @@ nth paddr        size vaddr           vsize perm type name
 
 ```
 
-According to the mapping relationship, LOAD0's first section is `.interp`, of whose vaddr is 0xaaaadc760238.
+According to the mapping relationship, *LOAD0*'s first section is `.interp`, of whose vaddr is 0xaaaadc760238.
 As `readelf -lW a.out` indicated, it should be aligned at 0x10000(64K), so the segment vaddr is 0xaaaadc760000.
 
 !!! question "vaddr of LOAD1"
 
-    Why is the vaddr of the LOAD1 segment shown as 0xaaaadc770d90 and not 0xaaaadc770000?
+    Why is the vaddr of the *LOAD1* segment shown as 0xaaaadc770d90 and not 0xaaaadc770000?
     It seems to be the vaddr of the first section `.init_array`.
 
 ## imports/relocations
 
-> `puts@plt` is labelled as `sym.imp.puts`/`rsym.puts` by r2 after loading.
+`nm -u|-D`: display only undefined/dynamic symbols.
+
+```bash hl_lines="8"
+# nm -D a.out
+$ nm -u a.out
+                 U abort@GLIBC_2.17
+                 w __cxa_finalize@GLIBC_2.17
+                 w __gmon_start__
+                 w _ITM_deregisterTMCloneTable
+                 w _ITM_registerTMCloneTable
+                 U __libc_start_main@GLIBC_2.34
+                 U puts@GLIBC_2.17
+```
+
+The PLT stub `puts@plt` for `puts@GLIBC_2.17` is labelled as `sym.imp.puts`/`rsym.puts` by r2 after loading.
 
 Type `ii` to list the symbols imported from other libraries.
 
 > The vaddr of relocated symbol `rsym.puts` in PLT can be calculated as follows.
 > VA = baddr+offset/RVA = 0xaaaadc760000 + 0x00000630 = 0xaaaadc760630.
 
-```bash
+```bash hl_lines="10"
 [0xffff98492c40]> ii
 [Imports]
 nth vaddr          bind   type   lib name
@@ -270,7 +290,7 @@ Type `ir` to list the relocations.
 > The vaddr offset of the relocated symbol(`reloc.puts`) in GOT is 0x00010fc8.
 > VA = baddr+offset/RVA = 0xaaaadc760000 + 0x00010fc8 = 0xaaaadc770fc8.
 
-```bash
+```bash hl_lines="13"
 [0xffff98492c40]> ir
 WARN: Relocs has not been applied. Please use `-e bin.relocs.apply=true` or `-e bin.cache=true` next time
 [Relocations]
@@ -295,9 +315,11 @@ vaddr          paddr      type   ntype name
 13 relocations
 ```
 
-Try to show context disassembly of 15 instructions around puts.
+Try to show context disassembly of 15 instructions around `puts`.
 
-```bash
+> The GOT entry for `puts@plt` is labelled as `reloc.puts` by r2, equivalent to `puts@got.plt` in pwndbg.
+
+```bash hl_lines="20"
 [0xffff98492c40]> pd-- 15 @0xaaaadc770fc8
             0xaaaadc770f8c      00000000       invalid
             ;-- section..got:
@@ -344,8 +366,6 @@ Try to show context disassembly of 15 instructions around puts.
             ; XREFS: DATA 0xaaaadc760724
             0xaaaae0071000      00000000       invalid                 ; [22] -rw- section size 16 named .data
 ```
-
-From the output above, GOT entry for `puts` is labelled as `reloc.puts` by r2.
 
 Get the value(address) of label `reloc.puts` by evaluation:
 
@@ -412,7 +432,7 @@ Type `pdf` to disassemble function at current pc, that is `entry0`:
 └           0xaaaadc76066c      e1ffff97       bl sym.imp.__libc_start_main ; int __libc_start_main(func main, int argc, char **ubp_av, func init, func fini, func rtld_fini, void *stack_end)
 ```
 
-Disassemble 8 instructions backwards.
+Disassemble 8 instructions backwards. The PLT stubs of the `.plt` section happen to be above *entry0*.
 
 ```bash
 [0xaaaadc760640]> pd -8
@@ -441,13 +461,14 @@ Disassemble 8 instructions backwards.
 
 Type `dmm` to check the latest modules.
 
-1. We're now running in the text segment of a.out.
+1. We're now in the text segment of *a.out* - our main routine.
 2. Dynamic library `libc.so` have been loaded at the moment.
 
-```bash
+```bash hl_lines="8"
 [0xaaaadc760640]> dmm.
 INFO: modules.get
 0xaaaadc760000 0xaaaadc761000  /home/pifan/Projects/cpp/a.out
+
 [0xaaaadc760640]> dmm
 INFO: modules.get
 0xaaaadc760000 0xaaaadc761000  /home/pifan/Projects/cpp/a.out
@@ -511,42 +532,11 @@ INFO: hit breakpoint at: 0xaaaadc760754
 └           0xaaaadc760778      c0035fd6       ret
 ```
 
-## rsym.puts
+## puts@plt
 
 [Previously](./plt-puts-analysis.md), we've statically disassembled the `.plt` section using `objdump` command.
 
 ```bash
-$ objdump -j .plt -d a.out
-Disassembly of section .plt:
-
-00000000000005d0 <.plt>:
- 5d0:	a9bf7bf0 	stp	x16, x30, [sp, #-16]!
- 5d4:	90000090 	adrp	x16, 10000 <__FRAME_END__+0xf770>
- 5d8:	f947d211 	ldr	x17, [x16, #4000]
- 5dc:	913e8210 	add	x16, x16, #0xfa0
- 5e0:	d61f0220 	br	x17
- 5e4:	d503201f 	nop
- 5e8:	d503201f 	nop
- 5ec:	d503201f 	nop
-
-[...snip...]
-
-0000000000000630 <puts@plt>:
- 630:	90000090 	adrp	x16, 10000 <__FRAME_END__+0xf770>
- 634:	f947e611 	ldr	x17, [x16, #4040]
- 638:	913f2210 	add	x16, x16, #0xfc8
- 63c:	d61f0220 	br	x17
-```
-
-As we can see, 0x10000+0xfc8 is the offset of `puts` in `.rela.plt` entries of `readelf -r a.out` and relocation records of `objdump -R a.out`.
-
-The output of `rabin2 -R a.out` maybe more clear: the vaddr=0x00010fc8 is relative to virtual baddr, while the paddr=0x00000fc8 is relative to physical segment.
-
-### disassemble
-
-[Previously](./plt-puts-analysis.md), we've statically disassembled the `.plt` section using `objdump` command.
-
-```bash hl_lines="11"
 # objdump -j .plt -d a.out
 $ objdump --disassemble=puts@plt a.out
 
@@ -570,12 +560,19 @@ Disassembly of section .text:
 Disassembly of section .fini:
 ```
 
+As we can see, 0x10000+0xfc8 is the offset of `puts` in `.rela.plt` entries of `readelf -r a.out` and relocation records of `objdump -R a.out`.
+
+The output of `rabin2 -R a.out` maybe more clear: the vaddr=0x00010fc8 is relative to virtual baddr, while the paddr=0x00000fc8 is relative to physical segment.
+
 > `ADRP Xd, label`: label is an offset from the page address of this instruction.
 
-Now, set a breakpoint at `rsym.puts` and continue. Then type `pdf` to see its disassembly in real time.
+### stub plug
+
+Now, continue run until `rsym.puts`/`sym.imp.puts`. Then type `pdf` to see its disassembly in real time.
 
 ```bash
-[0xaaaadc760754]> db rsym.puts; dc
+[0xaaaadc760754]> dcu sym.imp.puts
+INFO: Continue until 0xaaaadc760630 using 4 bpsize
 INFO: hit breakpoint at: 0xaaaadc760758
 INFO: hit breakpoint at: 0xaaaadc760630
 [0xaaaadc760630]> pdf
@@ -583,7 +580,7 @@ INFO: hit breakpoint at: 0xaaaadc760630
             ;-- pc:
             ; CALL XREF from main @ 0xaaaadc76076c(x)
 ┌ 16: int sym.imp.puts (const char *s);
-│           0xaaaadc760630 b    90000090       adrp x16, map._home_pifan_Projects_cpp_a.out.rw_ ; 0xaaaadc770000
+│           0xaaaadc760630      90000090       adrp x16, map._home_pifan_Projects_cpp_a.out.rw_ ; 0xaaaadc770000
 │           0xaaaadc760634      11e647f9       ldr x17, [x16, 0xfc8]
 │           0xaaaadc760638      10223f91       add x16, x16, 0xfc8
 └           0xaaaadc76063c      20021fd6       br x17
@@ -593,19 +590,43 @@ View the disassembly against `puts@plt`, it's easy to find that `10000 <__FRAME_
 
 The [ADRP instruction](../arm/arm-adr-demo.md) is used to form the PC relative address to the 4KB page. As the PC is 0xaaaadc760630, its 4K page boundary aligned address (`:pg_hi21:`) is `0xaaaadc760000`, calculated by masking out the lower 12 bits.
 
-> 0xaaaadc760000 is also the piebase and page address of the first text segment LOAD0. Look back to chapter *loaded modules* and *memory maps*.
+> 0xaaaadc760000 is also the piebase and page address of the first text segment *LOAD0*. Look back to chapter *loaded modules* and *memory maps*.
 
 If you add the coded PC literal 0x10000 to the page address 0xaaaadc760000, it becomes `0xaaaadc770000`.
 
-The above inference was based on baddr and the segment of the current `ADRP` instruction (LOAD0), it results in PC-relative calculation `x16=load0_baddr+offset`.
+The above inference was based on baddr and the segment of the current `ADRP` instruction (*LOAD0*), it results in PC-relative calculation `x16=load0_baddr+offset`.
 
-On the other hand, as we've already mentioned, the offset 0x10000 is the increment of vaddr over paddr for the LOAD1 data segment where the `.got` section is located. Therefore, from the point of view of the LOAD1 segment, the page address of the `.got` entries already matches it.
+On the other hand, as we've already mentioned, the offset 0x10000 is the increment of vaddr over paddr for the *LOAD1* data segment where the `.got` section is located. Therefore, from the point of view of the *LOAD1* segment, the page address of the `.got` entries already matches it.
 
-So it's not surprising that the ADRP literal is fixed by `map._home_pifan_Projects_cpp_a.out.rw_` (see `dm`) at runtime. It represents the LOAD1 segment starting at 0xaaaadc770000. That's `x16=load1_baddr` according to the results, which is not a coincidence.
+So it's not surprising that the `ADRP` literal is fixed as `map._home_pifan_Projects_cpp_a.out.rw_` (see `dm`) at runtime. It represents the *LOAD1* segment starting at 0xaaaadc770000. That's `x16=load1_baddr` according to the results, which is not a coincidence.
 
-In the next instruction `ldr x17, [x16, 0xfc8]!`, `x16:0xfc8` is the address of GOT entry for `puts`(aka `reloc.puts`), 0xaaaadc770000+0xfc8=0xaaaadc770fc8. Then `x17` will load the value stored in pointer 0xaaaadc770fc8. It matches the output of `ir` in chapter *imports/relocations*.
+Look at the next instruction `ldr x17, [x16, 0xfc8]!`, `x16:0xfc8` is the address of GOT entry for `puts`(aka `reloc.puts`). `x16`=0xaaaadc770000+0xfc8=0xaaaadc770fc8. Then `x17` will load the value stored in pointer `x16`(0xaaaadc770fc8). It matches the output of `ir` in chapter *imports/relocations*.
 
-Let's examine the memory and try to dereference it as pointer:
+Step 3 instructions and it comes to the last instruction `br x17`.
+
+```bash
+[0xaaaadc760630]> ds 3
+[0xaaaadc760630]> pdf
+            ;-- rsym.puts:
+            ; CALL XREF from main @ 0xaaaadc76076c(x)
+┌ 16: int sym.imp.puts (const char *s);
+│           0xaaaadc760630      90000090       adrp x16, map._home_pifan_Projects_cpp_a.out.rw_ ; 0xaaaadc770000
+│           0xaaaadc760634      11e647f9       ldr x17, [x16, 0xfc8]
+│           0xaaaadc760638      10223f91       add x16, x16, 0xfc8
+│           ;-- pc:
+└           0xaaaadc76063c      20021fd6       br x17
+```
+
+Check register `x16` and `x17`:
+
+```bash
+[0xaaaadc760630]> dr?x16
+0xaaaadc770fc8
+[0xaaaadc760630]> ?v $r:x17
+0xffff9832ae70
+```
+
+Try to dereference `x16` as pointer:
 
 ```bash
 [0xaaaadc760630]> pxq $w @ 0xaaaadc770fc8
@@ -616,15 +637,82 @@ Let's examine the memory and try to dereference it as pointer:
 0xaaaadc770fc8 = 0xaaaadc770fc8 -> 0xffff9832ae70 "{"
 ```
 
-Actually, when *libc.so* is loaded, the value of the pointer is immediately updated from 0x00000000000005d0.
+Actually, when *libc.so* is loaded, the value of the pointer is immediately updated from `0x00000000000005d0` to `0x0000ffff9832ae70`.
 
 > The `dbw` command is provided to add watchpoints. However, it doesn't work as well as expected.
 
-The address `0x0000ffff9832ae70` resides in module `libc.so`. To be precise, it's located between the address range, 0x0000ffff982c0000 - 0x0000ffff98448000, of which is mapped from the text segment LOAD0.
+Type `dmi` to list symbols of `libc.so` and grep symbol `puts`:
 
-The following instruction `br x17` just jump to `0x0000ffff9832ae70`, which should be the real address(function pointer) of `puts` in libc.so.
+```bash
+[0xaaaae5360630]> # dmi libc.so ~..
+[0xaaaae5360630]> dmi libc.so ~puts
 
-### paddr -> vaddr
+[Symbols]
+nth paddr      vaddr          bind   type  size  lib name
+――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+
+1400 0x0006ae70 0xffff9832ae70 WEAK   FUNC 492       puts
+1409 0x0006ae70 0xffff9832ae70 GLOBAL FUNC 492       _IO_puts
+```
+
+The symbol `puts`(@GLIBC_2.17) is located exactly at `0xffff9832ae70`! Moreover, it's located between 0x0000ffff982c0000` - `0x0000ffff98448000, to which the text segment *LOAD0* is mapped.
+
+Set a breakpoint at puts/0xffff9832ae70 and continue.
+
+- [Cannot set breakpoints · Issue #12811](https://github.com/radareorg/radare2/issues/12811)
+- [Radare2 can't set breakpoint?](https://reverseengineering.stackexchange.com/questions/13689/radare2-noob-question-cant-set-breakpoint)
+
+```bash
+[0xaaaadc760630]> db puts
+WARN: base addr should not be larger than the breakpoint address
+WARN: Cannot set breakpoint outside maps. Use dbg.bpinmaps to false
+[0xaaaadc760630]> e dbg.bpinmaps
+true
+[0xaaaadc760630]> db 0xffff9832ae70; dc
+INFO: hit breakpoint at: 0xffff9832ae70
+```
+
+The last instruction `br x17` jumps to `0xffff9832ae70`, which slides into `puts` in *libc.so*.
+
+```bash
+[0xffff9832ae70]> dm.
+0x0000ffff982c0000 - 0x0000ffff98448000 - usr   1.5M s r-x /usr/lib/aarch64-linux-gnu/libc.so.6 /usr/lib/aarch64-linux-gnu/libc.so.6
+
+[0xffff9832ae70]> pdf
+ERROR: Cannot find function at 0xffff9832ae70
+# analyze function at current address($$)
+[0xffff9832ae70]> af; pdf
+            ;-- x17:
+            ;-- d17:
+            ;-- pc:
+┌ 424: fcn.ffff9799ae70 (int64_t arg1);
+│           ; arg int64_t arg1 @ x0
+│           ; var int64_t var_10h @ sp+0x10
+│           ; var int64_t var_20h @ sp+0x20
+│           ; var int64_t var_30h @ sp+0x30
+│           0xffff9832ae70 b    fd7bbca9       stp x29, x30, [sp, -0x40]!
+│           0xffff9832ae74      fd030091       mov x29, sp
+│           0xffff9832ae78      f35301a9       stp x19, x20, [sp, 0x10]
+│           0xffff9832ae7c      94090090       adrp x20, 0xffff9845a000 ; d24
+│           0xffff9832ae80      f55b02a9       stp x21, x22, [sp, 0x20]
+│           0xffff9832ae84      f60300aa       mov x22, x0
+│           0xffff9832ae88      f76303a9       stp x23, x24, [sp, 0x30]
+│           0xffff9832ae8c      8dba0094       bl 0xffff983598c0
+
+            [...snip...]
+```
+
+Type `dc` to continue to the end.
+
+```bash
+[0xffff9832ae70]> dc
+Hello, Linux!
+(69048) Process exited with status=0x0
+```
+
+### libc/puts
+
+Although everything is clear, we can do some confirmation from the shared library perspective.
 
 Let's look up symbol `puts` in libc.so.6, the weak symbol `puts` will be overriden by the global symbol `_IO_puts`.
 
@@ -649,24 +737,9 @@ Let's look up symbol `puts` in libc.so.6, the weak symbol `puts` will be overrid
 
 The value of the symbol `puts` is `000000000006ae70`, which is the static absolute paddr and will be adjusted to vaddr when loaded into memory.
 
-Type `dmi` to list symbols of `libc.so` and grep symbol `puts`:
+Keep in mind the principle `VA = baddr+offset/RVA`.
 
-```bash
-[0xaaaae5360630]> dmi libc.so ~puts
-
-[Symbols]
-nth paddr      vaddr          bind   type  size  lib name
-――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
-
-1400 0x0006ae70 0xffff9832ae70 WEAK   FUNC 492       puts
-1409 0x0006ae70 0xffff9832ae70 GLOBAL FUNC 492       _IO_puts
-```
-
-Look back in the *libc vmmap* section, the vaddr of puts/_IO_puts 0xffff9832ae70 is between 0x0000ffff982c0000 - 0x0000ffff98448000, that is the area of the LOAD0 text segment.
-
-Well, keep in mind `VA = baddr+offset/RVA`.
-
-According to the latest `dm` output(linkmap), the *Load Bias* of libc.so is 0xffff982c0000. It's also the start address of text segment LOAD0 according to the latest `dmm` output(vmmap), 0x0000ffff982c0000.
+According to the latest `dm` output(linkmap), the *Load Bias* of libc.so is 0xffff982c0000. It's also the start address of text segment *LOAD0* according to the latest `dmm` output(vmmap).
 
 Add the paddr/offset to the baddr/bias to check the correctness of the formula.
 
@@ -675,4 +748,6 @@ Add the paddr/offset to the baddr/bias to check the correctness of the formula.
 0xffff9832ae70
 ```
 
-Nothing is out of the ordinary. So far, everything is working as expected.
+The result is entirely consistent with our earlier research.
+
+Nothing is out of the ordinary. Everything is working out as expected.
