@@ -22,6 +22,7 @@ The Radare2 project is a set of small command-line utilities that can be used to
 - [Radare2 vs. GDB](https://hurricanelabs.com/blog/learning-binary-reversing-radare2-vs-gdb/)
 - [Radare2 Explorations](https://monosource.gitbooks.io/radare2-explorations/)
 - [Radare2 — Keep It Or Leave It?](https://medium.com/@sagidana/radare2-keep-it-or-leave-it-3d45059ec0d1)
+- [Learning Radare In Practice.pdf](https://www.radare.org/get/THC2018.pdf)
 
 ## installation
 
@@ -194,6 +195,18 @@ $ r2 -Adw test-gdb
 ```
 
 `-B [baddr]`: set base address for PIE binaries, [not working](https://github.com/radareorg/radare2/issues/9051).
+
+[Debug mode not working in radare2](https://www.reddit.com/r/LiveOverflow/comments/9f8fws/debug_mode_not_working_in_radare2_bin_0x07/)
+
+```bash
+$ r2 -d a.out
+ERROR: unknown error in debug_attach
+ERROR: unknown error in debug_attach
+ERROR: unknown error in debug_attach
+ERROR: Cannot open 'dbg://./a.out' for writing
+```
+
+---
 
 whereis/which shell command:
 
@@ -500,12 +513,41 @@ false
 Usage: ?[?[?]] expression
 
 | ?$                               show value all the variables ($)
+| ?b [num]                         show binary value of number
 | ?P paddr                         get virtual address for given physical one
 | ?p vaddr                         get physical address for given virtual address
 | ?q num|expr                      compute expression like ? or ?v but in quiet mode
 | ?v num|expr                      show hex value of math expr (no expr prints $?)
 | ?vi[1248] num|expr               show decimal value of math expr [n bytes]
+| ?vx num|expr                     show 8 digit padding in hex
+| ?w addr                          show what's in this address (like pxr/pxq does)
+| ?X num|expr                      returns the hexadecimal value numeric expr
+```
 
+Do some simple calculation in place:
+
+```bash
+[0x000000000000]> # rax2 -k 1989+64
+[0x000000000000]> ?vi 1989+64
+2053
+[0x000000000000]> # rax2 b16
+[0x000000000000]> # rax2 Bx10
+[0x000000000000]> ?b 16
+10000b
+[0x000000000000]> # rax2 1989+64
+[0x000000000000]> ?v 1989+64
+0x805
+[0x000000000000]> ?X 1989+64
+805
+[0x000000000000]> ?vx 1989+64
+0x00000805
+```
+
+`?w <address>` will show what's in this address, equivalent to `info symbol ADDR` in GDB.
+
+```bash
+[0xffffb6d45c40]> ?w 0xaaaad2f50640
+/home/pifan/Projects/cpp/a.out .text entry0,section..text,_start entry0 program R X 'nop' 'a.out'
 ```
 
 `?v <symbol>` acts as `afo <symbol>`, it will show the address for the symbol, equivalent to `info address SYM` in GDB.
@@ -571,6 +613,8 @@ Get map/word/opcode size.
 0x7fffffffffffffff
 [0x000000000000]> ?v $w
 0x8
+[0x000000000000]> e asm.bits
+64
 [0xaaaac30a0754]> ?v $l
 0x4
 ```

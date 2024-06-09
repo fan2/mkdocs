@@ -48,6 +48,8 @@ Software Reverse Engineering(SRE) Toolkit:
 - [radare](https://www.radare.org/n/): UNIX-like reverse engineering framework and command-line toolset
 - [Ghidra](https://ghidra-sre.org/): SRE framework developed by NSA's Research Directorate in support of the Cybersecurity mission
 
+    - [Ghidra Software Reverse Engineering for Beginners](https://www.amazon.com/Ghidra-Software-Reverse-Engineering-Beginners/dp/1800207972)
+
 - [IDA Pro](https://hex-rays.com/ida-pro/): A powerful disassembler and a versatile debugger.
 - [Binary Ninja](https://binary.ninja/): an interactive decompiler, disassembler, debugger, and binary analysis platform.
 

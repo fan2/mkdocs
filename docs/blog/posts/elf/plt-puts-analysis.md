@@ -792,10 +792,6 @@ OFFSET           TYPE              VALUE
 
 ## global offset table
 
-According to sysvabi64 - [System V ABI for the Arm® 64-bit Architecture (AArch64)](https://github.com/ARM-software/abi-aa/blob/844a79fd4c77252a11342709e3b27b2c9f590cf1/sysvabi64/sysvabi64.rst) - 9.2 Global Offset Table (GOT)
-
-Position-independent code cannot, in general, contain absolute (fixed) virtual addresses. Global offset tables hold absolute addresses in private data, thus making the addresses available without compromising the position-independence and shareability of a program's text segment. A program references its global offset table using position-independent addressing and extracts the absolute values from it, thereby **redirecting** position-independent references to their actual locations.
-
 The global offset table (*`GOT`*) is created by the static linker in response to GOT generating relocations. See [AAELF64](https://github.com/ARM-software/abi-aa/blob/main/aaelf64/aaelf64.rst) Relocation operations for more information.
 
 AArch64 splits the global offset table (GOT) into two sections:
@@ -865,7 +861,7 @@ The value of `_GLOBAL_OFFSET_TABLE_`(0x0000000000010fd0) is 0x0000000000010da0, 
 
 The *`GOT`*(Global Offset Table) is something like a socket, it connects the internal host and the external required.
 
-Similar to how the global offset table redirects position-independent address calculations to absolute locations, the procedure linkage table(*`PLT`*) redirects position-independent function calls to absolute locations. The link editor cannot resolve execution transfers, such as function calls, from one executable or shared object to another. Consequently, the link editor arranges to have the program transfer control to entries in the procedure linkage table.
+Similar to how the global offset table redirects position-independent address calculations to absolute locations, the procedure linkage table(*`PLT`*) redirects position-independent function calls to absolute locations.
 
 The dynamic section `DT_PLTREL`(0000000000000014)=0x7 shows its type of reloc in PLT is `DT_RELA`.
 

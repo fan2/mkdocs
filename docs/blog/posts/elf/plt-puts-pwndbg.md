@@ -222,8 +222,8 @@ As we can see from the above assembly, `0xfc8` is the offset of `puts` in `.rela
 BTW, we can use `disassemble` or `x/i` to disassemble `puts@plt` by address within gdb-pwndbg.
 
 ```bash
-# inspect the address of the symbol
-pwndbg> info addr puts@plt
+# Describe where the symbol is stored.
+pwndbg> info address puts@plt
 Symbol "puts@plt" is at 0x630 in a file compiled without debugging.
 # disassemble specified location within ELF image.
 pwndbg> disassemble 0x630
@@ -436,8 +436,6 @@ Section .plt 0xaaaaaaaa05d0-0xaaaaaaaa0640:
 
 vaddr(puts@got) += piebase = 0xaaaaaaaa0000 + 0x00010fc8 = 0xaaaaaaab0fc8.
 
-> 0x5d0 is the start of section `.plt`.
-
 ```bash linenums="1" hl_lines="10"
 pwndbg> got
 Filtering out read-only entries (display them with -r or --show-readonly)
@@ -455,7 +453,7 @@ GOT protection: Full RELRO | Found 9 GOT entries passing the filter
 [0xaaaaaaab0ff8] _ITM_registerTMCloneTable -> 0
 ```
 
-As shown above, the first five GOT slots, including 0xaaaaaaab0fc8, are all filled with 0x5d0.
+As shown above, the first five GOT slots, including 0xaaaaaaab0fc8, are all filled with 0x5d0, which is the address of the `.plt` section. It's the original lineage of plt and got.
 
 Dereference pointers starting at the address in GOT.
 
@@ -762,7 +760,9 @@ Let's see where the symbol `puts@GLIBC_2.17` is located at the moment.
 ```bash
 pwndbg> i addr puts
 Symbol "puts" is at 0xfffff7e7ae70 in a file compiled without debugging.
-pwndbg> i sym 0xfffff7e7ae70
+
+# Inspect what symbol is at the location.
+pwndbg> info symbol 0xfffff7e7ae70
 puts in section .text of /lib/aarch64-linux-gnu/libc.so.6
 ```
 

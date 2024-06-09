@@ -146,8 +146,8 @@ positional arguments:
 
 执行 `conda activate -h` 查看 activate 子命令的帮助：
 
-```
-$ conda activate -h
+```bash
+$ ./conda activate -h
 usage: conda activate [-h] [--[no-]stack] [env_name_or_prefix]
 
 Activate a conda environment.

@@ -111,6 +111,8 @@ ls -d usr/include/*/
 # 匹配 usr/include 下的所有子目录（递归）
 ls -d usr/include/**/
 
+# 通配一级子目录
+file /Applications/*/Contents/MacOS/*
 # 匹配 /etc/ 下一级子目录下的 conf 配置文件（不递归）
 ls -l /etc/*/*.conf
 # 匹配 /etc/ 下所有子目录下的 conf 配置文件（递归）

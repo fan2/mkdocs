@@ -305,10 +305,16 @@ Disassembly of section .fini:
 We can analyse the instructions using [capstone-tool](https://www.capstone-engine.org/).
 
 ```bash title="cstool arm64 0x90000090"
-$ cstool arm64 0x90000090
+# opcode fetched as LE, happens to be palindromic bytes
+$ rax2 Bx90000090
+10010000000000000000000010010000b
+
+$ rasm2 -de -a arm 0x90000090
+adrp x16, 0x10000
+$ cstool arm64be 0x90000090
 0  90 00 00 90  adrp	x16, #0x10000
 
-$ cstool -d arm64 0x90000090
+$ cstool -d arm64be 0x90000090
 0  90 00 00 90  adrp	x16, #0x10000
 	ID: 20 (adrp)
 	op_count: 2
@@ -317,12 +323,32 @@ $ cstool -d arm64 0x90000090
 		operands[1].type: IMM = 0x10000
 		operands[1].access: READ
 	Registers modified: x16
+```
 
-$ cstool arm64 0x11e647f9
-0  11 e6 47 f9  ldr	x17, [x16, #0xfc8]
+In the AArch64 execution state, data accesses can be `LE` or `BE`, while instruction fetches are always `LE`.
 
-$ cstool -d arm64 0x11e647f9
-0  11 e6 47 f9  ldr	x17, [x16, #0xfc8]
+```bash
+# opcode fetched as LE, endianness swapped
+# Rn=0b100000=16; Rt=0b10001=17
+$ rax2 Bxf947e611
+11111001010001111110011000010001b
+
+# memory storage perspective:
+# $ cstool arm64 $(rax2 -ke 0xf947e611)
+#  0  11 e6 47 f9  ldr	x17, [x16, #0xfc8]
+
+# endianness already swapped, just decode it as BE.
+$ rasm2 -de -a arm 0xf947e611
+ldr x17, [x16, 0xfc8]
+$ cstool arm64be 0xf947e611
+ 0  f9 47 e6 11  ldr	x17, [x16, #0xfc8]
+
+# memory storage perspective:
+# cstool -d arm64 $(rax2 -ke 0xf947e611)
+
+# opcode decode/bitset perspective:
+$ cstool -d arm64be 0xf947e611
+ 0  f9 47 e6 11  ldr	x17, [x16, #0xfc8]
 	ID: 162 (ldr)
 	op_count: 2
 		operands[0].type: REG = x17
@@ -337,26 +363,24 @@ $ cstool -d arm64 0x11e647f9
 
 Or write a short Python snippet to make analysing intuitive.
 
-=== "ADRP analysis.py"
+```Python title="ADRP analysis.py"
+opcode=0x90000090
+#format(opcode, '032b')
+#f'{opcode=:#032b}'
 
-    ```Python
-    opcode=0x90000090
-    #format(opcode, '032b')
-    #f'{opcode=:#032b}'
+immlo_mask=(1<<30)|(1<<29)
+# f'{immlo_mask=:032b}'
+immhi_mask=(2**24-1)&(~(2**5-1))
+# f'{immhi_mask=:032b}'
 
-    immlo_mask=(1<<30)|(1<<29)
-    # f'{immlo_mask=:032b}'
-    immhi_mask=(2**24-1)&(~(2**5-1))
-    # f'{immhi_mask=:032b}'
+immlo=((opcode&immlo_mask)<<1)>>30
+# f'immlo: {immlo=:02b}'
+immhi=(opcode&immhi_mask)>>5
+# f'immhi: {immhi=:019b}'
 
-    immlo=((opcode&immlo_mask)<<1)>>30
-    # f'immlo: {immlo=:02b}'
-    immhi=(opcode&immhi_mask)>>5
-    # f'immhi: {immhi=:019b}'
-
-    imm=(immhi<<2|immlo)<<12
-    f'{imm=:#8x}'
-    ```
+imm=(immhi<<2|immlo)<<12
+f'{imm=:#8x}'
+```
 
 `imm= 0x10000` is the PC-relative literal that encoded in the ADRP instruction.
 

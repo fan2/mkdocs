@@ -69,10 +69,10 @@ Usage: i  Get info from opened file (see rabin2's manpage)
 
 `i` / `iI`: show binary info, inclue `baddr`(base address).
 
-### entrypoint
+### ie - info entrypoint
 
 - `ie`: entrypoint
-- `iee`: list constructors and destructors, 
+- `iee`: list constructors and destructors
 - `ieee`: entries+constructors
 
 ```bash
@@ -97,7 +97,15 @@ vaddr=0xaaaae48e0640 paddr=0x00000640 haddr=0x00000018 hvaddr=0xaaaae48e0018 typ
 1 entrypoints
 ```
 
-### symbols
+- `iM`: show main address
+
+```bash
+[0xffffaa6d6c40]> iM
+[Main]
+vaddr=0xaaaae48e0754 paddr=0x00000754
+```
+
+### is - info symbols
 
 Query for detailed usages of subcommands:
 
@@ -113,7 +121,7 @@ Usage: is [*hjq]  List symbols from current selected binary
 | isj               in json format
 ```
 
-### sections & segments
+### iS/iSS - sections & segments
 
 ```bash
 [0x000000000000]> iS?
@@ -198,7 +206,7 @@ Usage: p[=68abcdDfiImrstuxz] [arg|len] [@addr]
 | popd[-a][-h]            pop dir off top of stack and cd to it
 ```
 
-### pf
+### pf - print format
 
 ```bash
 [0xffffa4386c40]> pf?
@@ -267,7 +275,57 @@ Format:
 |  ,       rewind 1 byte
 ```
 
-### px
+1. `pfD` is simple version of `pd 1` without context;
+2. `pfp`: pointer reference, analogous to `pxr`.
+3. `pfS`: 64bit pointer to string.
+
+Hexdump 4 raw bytes from pc.
+
+```bash
+# memory storage/bytearry perspective
+[0xaaaab3ce0630]> pf4b @ pc
+0xaaaab3ce0634 [0] {
+  0xaaaab3ce0634 = 0x11
+}
+0xaaaab3ce0635 [1] {
+  0xaaaab3ce0635 = 0xe6
+}
+0xaaaab3ce0636 [2] {
+  0xaaaab3ce0636 = 0x47
+}
+0xaaaab3ce0637 [3] {
+  0xaaaab3ce0637 = 0xf9
+}
+```
+
+Hexdump one `d` dword(4 bytes) in hex, print with optional given labels.
+
+```bash
+# opcode fetched as LE, endianness swapped
+[0xaaaab3ce0634]> pf1d opcode
+ opcode : 0xaaaab3ce0634 = 0xf947e611
+
+# endianness already swapped, just decode it as BE.
+$ rasm2 -de -a arm 0xf947e611
+$ cstool arm64be 0xf947e611
+$ cstool -d arm64be 0xf947e611
+```
+
+`e` temporally swap endian:
+
+```bash
+[0xaaaab3ce0634]> pfed opcode
+ opcode : 0xaaaab3ce0634 = 0x11e647f9
+
+[0xaaaab3ce0634]> pd 1
+│           ;-- pc:
+│           0xaaaab3ce0634      11e647f9       ldr x17, [x16, 0xfc8]
+```
+
+`pfedd`: dump two dword in big-endian.
+`pfeded`: dump one dword in big-endian, the next in default little-endian.
+
+### px - hexdump
 
 Show hexdump of N bytes.
 
@@ -304,7 +362,31 @@ Usage: px[0afoswqWqQ][f]   # Print heXadecimal
 | pxX               show N words of hex-less hexdump
 ```
 
-### pd
+`pxw` hexdump current word(A32/A64 instruction opcode length `$l=4`).
+
+`pxw $l`(`pxw $l @ pc`): hexdump instruction opcode in pc, but default in little-endian.
+
+```bash
+[0xaaaab3ce0634]> pxw 4
+0xaaaab3ce0634  0xf947e611                                   ..G.
+```
+
+Config `cfg.bigendian=false` and then reset, equivalent implementation of `pfed`
+
+```bash
+# temporally swap endian
+[0xaaaab3ce0634]> e cfg.bigendian
+false
+[0xaaaab3ce0634]> e cfg.bigendian=true
+
+[0xaaaab3ce0634]> pxw 4 @ pc
+0xaaaab3ce0634  0x11e647f9                                   ..G.
+
+# reset endianness
+[0xaaaab3ce0634]> e cfg.bigendian=true
+```
+
+### pd - disassemble
 
 ```bash
 [0xffff87d76c40]> pd?
@@ -456,7 +538,7 @@ Usage: d   # Debug commands
 
 - `dbt`[?]: display backtrace based on dbg.btdepth and dbg.btalgo
 
-### memory
+### dm - dump memory
 
 ```bash
 [0x000000000000]> dm?
@@ -523,7 +605,7 @@ Finally, we can `pd` the address to see the corresponding instructions.
 [0xffffab36cc28]> pd @0xffffab36cba0
 ```
 
-### registers
+### dr - dump registers
 
 ```bash
 [0x000000000000]> dr?
@@ -561,7 +643,7 @@ dr - show registers examples:
 0xffffdd6b1210
 ```
 
-### breakpoints
+### db - debug breakpoints
 
 ```bash
 [0x000000000000]> db?
@@ -609,7 +691,7 @@ After execute `aa` to analyze all, we can set breakpoints by symbol name:
 [0x000000000000]> db sym.func
 ```
 
-### continuation
+### dc - debug continuation
 
 ```bash
 [0x000000000000]> dc?
@@ -642,9 +724,11 @@ dcu entry0
 dcu main
 dcu sym.main
 dcu sym.func
+dcu <address> : continue until address
+dcu pc+12
 ```
 
-### Step
+### ds - debug step
 
 ```bash
 [0x000000000000]> ds?
@@ -662,11 +746,18 @@ Usage: ds  Step commands
 | dsu[?] <address>  step until <address>. See 'dsu?' for other step until cmds.
 ```
 
+`dss <num>`: skip <num\> step instructions, waive execution.
+`dsu <address>`: almost equivalent to `dcu <address>`.
+`ds 3`: equivalent to `dsu pc+12` / `dcu pc+12`.
+`dsb`: step back, see [Reverse Debugging](https://book.rada.re/debugger/revdebug.html).
+
 ## v Mode
 
 [Radare2 Book: 5. Visual mode](https://book.rada.re/visual_mode/intro.html)
 
-### V
+### V - visual mode
+
+Enter visual mode, convenient for disassembly view, based on current address (PC).
 
 ```bash
 [0x000000000000]> V?
@@ -689,6 +780,8 @@ Visual Mode Help (short)
 | v  view management
 ```
 
+`.`: seek to PC or entrypoint.
+
 Type `v`, as a combination of `Vv`, will open *func/var analysis* panel.
 
 ```bash
@@ -704,7 +797,7 @@ Type `V`, as a combination of `VV`, will enter Visual Graph mode.
 
 > Use `:command` to execute r2 commands from inside Visual Mode. This is similar to VIM.
 
-Type `!`(equivalent to `:v`) to enter Visual Panels.
+Type `!`(equivalent to `:v`) to enter *Visual Panels*.
 
 In any of the `Vv` / `VV` / `:v` modes, press 'q' to exit and return to Visual mode.
 
@@ -722,11 +815,11 @@ Visual Debugger Help:
  :dc -> continue
 ```
 
-### v
+### v - visual panels
 
 Type `!`(equivalent to `:v`) from Visual mode, or type `v` from r2 console to enter Visual Panels mode.
 
-> It's sort of GDB's TUI mode and the default context mode of gdb-pwndbg.
+> It's sort of GDB's [TUI display mode](../toolchain/gdb/6-gdb-debug-assembly.md) and context mode of gdb-pwndbg.
 
 ```bash
 [0x000000000000]> v?
@@ -792,7 +885,7 @@ Type `?` to open the help panel, press `X` to close the help panel.
 Type `:` to enter Bottom Command mode, run r2 commands in prompt, e.g., `db`, `dc`.
 Press `v`/`q` to exit and return back to Visual Panels mode.
 
-### VV
+### VV - graph mode
 
 Show call graph of function:
 
@@ -821,6 +914,7 @@ Type `?` to list all the commands of Visual Graph mode.
 | g                    go/seek to given offset
 | o([A-Za-z]*)         follow jmp/call identified by shortcut (like ;[oa])
 | O                    toggle asm.pseudo and asm.esil
+| p/P                  rotate graph modes (normal, display offsets, minigraph, summary)
 | q                    back to Visual mode
 | R                    randomize colors
 | s/S                  step / step over
@@ -829,12 +923,14 @@ Type `?` to list all the commands of Visual Graph mode.
 | V                    toggle basicblock / call graphs
 ```
 
-1. `R`: randomize colors.
-2. `,`: toggle graph.few/more
-3. `/`: highlight input keyword
-4. `D`: toggle/cancel the mixed graph+disasm mode
-5. `c`: toggle/cancel graph cursor mode, use `hjkl` to move focus node
-6. `g`: go/seek to given offset, e.g., `g main`, `g sym.func`.
+1. `R`: randomize colors
+2. `=q`: clear registers above
+3. `,`: toggle graph.few/more
+4. `p/P`: toggle between four graph modes
+4. `/`: highlight input keyword
+5. `D`: toggle/cancel the mixed graph+disasm mode
+6. `c`: toggle/cancel graph cursor mode, use `hjkl` to move focus node
+7. `g`: go/seek to given offset, e.g., `g main`, `g sym.func`.
 
 Note the label inside square brackets of each node, such as `o[a-z]`, then type `oa` / `ob` / `oc` or `tab` to change central focus.
 
@@ -852,8 +948,11 @@ A journey into Radare 2: [Part 1](https://www.megabeets.net/a-journey-into-radar
 [Reverse Engineering With Radare2](https://samsymons.com/blog/reverse-engineering-with-radare2-part-1/)
 [Radare2 for reverse engineering](https://itnext.io/radare2-for-reverse-engineering-part1-eedf0a47b5cc)
 
-Reverse Engineering With Radare2: [Part 1](https://insinuator.net/2016/08/reverse-engineering-with-radare2-intro/), [Part 2](https://insinuator.net/2016/08/reverse-engineering-with-radare2-part-2/)
+Reverse Engineering With Radare2: [Part 1](https://insinuator.net/2016/08/reverse-engineering-with-radare2-intro/), [Part 2](https://insinuator.net/2016/08/reverse-engineering-with-radare2-part-2/), [Part 3](https://insinuator.net/2016/10/reverse-engineering-with-radare2-part-3/)
+
 Reverse Engineering Using Radare2: [Part 1](https://goggleheadedhacker.com/blog/post/1), [Part 2](https://goggleheadedhacker.com/blog/post/2)
 Reverse engineering using Radare2: [Part 1](https://hackyourmom.com/en/servisy/zvorotnij-inzhyniryng-iz-vykorystannyam-radare2/), [Part 2](https://hackyourmom.com/en/servisy/revers-inzhyniryng-ta-skrypty/zvorotnij-inzhyniryng-iz-vykorystannyam-radare2-chastyna-2/)
 
+[Learning AArch64 Exploit Development on iOS with Radare2](https://codemuch.net/posts/armlab-ios-i/)
+[Defeating macOS Malware Anti-Analysis Tricks with Radare2](https://www.sentinelone.com/labs/defeating-macos-malware-anti-analysis-tricks-with-radare2/)
 [Exploring ELF Binary Dynamics: Relocations and Sections in Depth](https://www.kayssel.com/post/binary-4/#navigating-the-world-of-lazy-binding-plt-and-got-in-elf-binaries)

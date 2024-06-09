@@ -63,7 +63,7 @@ The `segments` contain information that is needed for run time execution of the 
     <figcaption>A 64-bit ELF binary at a glance</figcaption>
 </figure>
 
-## header
+## ELF header
 
 ```bash
 $ vim -M /usr/include/elf.h
@@ -197,7 +197,7 @@ EM_RISCV       | 243   | RISC-V
 
 To view, dump, analyse or manipulate the object file and ELF file, you need [GNU binutils](./gnu-binutils.md) such as `readelf`, `objdump`, `strip`, `objcopy`, `libbfd`, etc.
 
-## sections
+## section header
 
 [TIS - ELF v1.2](https://refspecs.linuxfoundation.org/elf/elf.pdf) | Book I: ELF - 1. Object Files - Sections
 
@@ -224,53 +224,9 @@ Please refer to the following materials for further details.
 - [Arm Assembly Internals and Reverse Engineering](https://www.amazon.com/Blue-Fox-Assembly-Internals-Analysis/dp/1119745306) | Chapter 2 ELF File Format Internals - ELF Section Headers
 - [Computer Systems - A Programmer’s Perspective](https://www.amazon.com/Computer-Systems-OHallaron-Randal-Bryant/dp/1292101768/) | Chapter 7: Linking - 7.3: Object Files ; 7.8: Executable Object Files
 
-## symbols
+## program header
 
-Symbols are a symbolic reference to some type of data or code such as a global variable or function.
-
-[TIS - ELF v1.2](https://refspecs.linuxfoundation.org/elf/elf.pdf) | Book I: ELF - 1. Object Files - Symbol Table
-
-An object file's symbol table holds information needed to locate and relocate a program's symbolic definitions and references.
-
-> refer to struct `Elf32_Sym`/`Elf64_Sym` and `st_info`(ST_BIND: Symbol bindings, ST_TYPE: Symbol types) defined in /usr/include/elf.h.
-
-A symbol table index is a subscript into this array. Index 0 both designates the first entry in the table and serves as the undefined symbol index.
-
-In each symbol table, all symbols with STB_LOCAL binding precede the weak and global symbols. A symbol's type provides a general classification for the associated entity.
-
-**Symbol Values**: Symbol table entries for different object file types have slightly different interpretations for the `st_value` member.
-
-- In relocatable files, `st_value` holds alignment constraints for a symbol whose section index is `SHN_COMMON`.
-- In relocatable files, `st_value` holds a section offset for a defined symbol. That is, `st_value` is an offset from the beginning of the section that `st_shndx` identifies.
-- In executable and shared object files, `st_value` holds a *virtual address*. To make these files' symbols more useful for the dynamic linker, the section offset (file interpretation) gives way to a virtual address (memory interpretation) for which the section number is irrelevant.
-
----
-
-Please refer to the following materials for further details.
-
-[TIS - ELF v1.2](https://refspecs.linuxfoundation.org/elf/elf.pdf) | Book I: ELF
-
-- 1\. Object Files - Symbol Table; Relocation
-- 2\. Program Loading and Dynamic Linking
-
-ARM Specifications @[github](https://github.com/ARM-software/abi-aa/releases)
-
-- [sysvabi64](https://github.com/ARM-software/abi-aa/blob/844a79fd4c77252a11342709e3b27b2c9f590cf1/sysvabi64/sysvabi64.rst) | 9 Program Loading and Dynamic Linking
-- [aaelf64](https://github.com/ARM-software/abi-aa/blob/main/aaelf64/aaelf64.rst) | 5 Object Files - 5.7   Relocation
-- [aaelf64](https://github.com/ARM-software/abi-aa/blob/main/aaelf64/aaelf64.rst) | 6 Program Loading and Dynamic Linking
-
-[ELF Format Cheatsheet](https://gist.github.com/x0nu11byt3/bcb35c3de461e5fb66173071a2379779) | Symbols; Dynamic Linking; Relocation; loading
-
-[《ARM64体系结构编程与实践》](https://item.jd.com/13119117.html) | 第 9 章 链接器与链接脚本 - 9.3 重定位
-
-[Learning Linux Binary Analysis](https://www.amazon.com/Learning-Binary-Analysis-elfmaster-ONeill/dp/1782167102) | Chapter 2: The ELF Binary Format - ELF symbols; ELF relocations; ELF dynamic linking
-
-[Arm Assembly Internals and Reverse Engineering](https://www.amazon.com/Blue-Fox-Assembly-Internals-Analysis/dp/1119745306) | Chapter 2 ELF File Format Internals
-
-- ELF Section Headers - Symbols
-- The Dynamic Section and Dynamic Loading
-
-[Computer Systems - A Programmer’s Perspective](https://www.amazon.com/Computer-Systems-OHallaron-Randal-Bryant/dp/1292101768/) | Chapter 7: Linking - 7.4 ~ 7.13
+TODO: TBD with elf-specs.
 
 ## references
 
@@ -282,7 +238,3 @@ MIPS - [64-bit ELF Object File Spec v2.5](https://irix7.com/techpubs/007-4658-00
 [The ELF format](https://www.caichinger.com/elf.html)
 [ELF 文件 - CTF Wiki](https://ctf-wiki.org/executable/elf/structure/basic-info/)
 [ELF Format Cheatsheet](https://gist.github.com/x0nu11byt3/bcb35c3de461e5fb66173071a2379779)
-[Binary analysis - ELF’s Story](https://aleeamini.com/category/binary-analysis/)
-[Exploring object file formats](https://maskray.me/blog/2024-01-14-exploring-object-file-formats)
-[Evolution of the ELF object file format](https://maskray.me/blog/2024-05-26-evolution-of-elf-object-file-format)
-[Linux Reverse Engineering CTFs for Beginners](https://osandamalith.com/2019/02/11/linux-reverse-engineering-ctfs-for-beginners/)

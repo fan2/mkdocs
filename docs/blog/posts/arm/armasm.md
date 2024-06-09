@@ -80,6 +80,10 @@ TI - [ARM Assembly Language Tools v18.1.0.LTS User's Guide](https://downloads.ti
 [ARM Assembly | Azeria Labs](https://azeria-labs.com/writing-arm-assembly-part-1/)
 [ARM Assembly By Example](https://armasm.com/)
 
+[ARM64 assembly hello world](http://main.lv/writeup/arm64_assembly_hello_world.md)
+[Apple M1 Assembly Language Hello World](https://smist08.wordpress.com/2021/01/08/apple-m1-assembly-language-hello-world/)
+[An introduction to ARM64 assembly on Apple Silicon Macs](https://github.com/below/HelloSilicon)
+
 ## as & ld
 
 [ARM Compiler toolchain Assembler Reference](https://developer.arm.com/documentation/dui0489/latest)

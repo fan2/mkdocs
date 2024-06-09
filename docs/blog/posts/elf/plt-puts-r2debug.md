@@ -95,6 +95,13 @@ INFO: modules.get
 0xffff9847b000 0xffff984a6000  /usr/lib/aarch64-linux-gnu/ld-linux-aarch64.so.1
 ```
 
+Type `?w $$` or `?w pc` to show what's in current address.
+
+```bash
+[0xffff9fc44c40]> ?w pc
+/usr/lib/aarch64-linux-gnu/ld-linux-aarch64.so.1 pc library R X 'bti c' 'ld-linux-aarch64.so.1'
+```
+
 List modules of target process.
 
 > There are only two modules loaded at the moment, the interpreter and our demo.
@@ -279,7 +286,28 @@ nth vaddr          bind   type   lib name
 7   0xaaaadc760620 GLOBAL FUNC       abort
 8   0xaaaadc760630 GLOBAL FUNC       puts
 9   ----------     WEAK   NOTYPE     _ITM_registerTMCloneTable
+```
 
+Press ++tab++ after the dot to view automatic IntelliSense options.
+
+```bash
+[0xffff98492c40]> ?v sym.
+sym._init                   sym.imp.__libc_start_main
+sym.imp.__cxa_finalize      sym.imp.abort
+sym.imp.puts                sym._start
+sym.call_weak_fn            sym.deregister_tm_clones
+sym.register_tm_clones      sym.__do_global_dtors_aux
+sym.frame_dummy             sym.main
+sym._fini
+
+[0xffff98492c40]> ?v rsym.
+rsym.__libc_start_main   rsym.__cxa_finalize      rsym.__gmon_start__
+rsym.abort               rsym.puts
+```
+
+Inspect the address of the symbol.
+
+```bash
 [0xffff98492c40]> # ?v sym.imp.puts
 [0xffff98492c40]> ?v rsym.puts
 0xaaaadc760630
@@ -381,7 +409,7 @@ Use the `x` command to see what is stored at 0xaaaadc770fc8:
 0xaaaadc770fc8  0x00000000000005d0
 ```
 
-According to the hexdump content of the `.got` section, it's originally filled with 0x00000000000005d0, which is the paddr of the `.plt` section. It's the original lineage of plt and got.
+According to the hexdump content of the `.got` section, it's originally filled with 0x00000000000005d0, which is the address of the `.plt` section. It's the original lineage of plt and got.
 
 - iS
 - !readelf -SW a.out
@@ -401,6 +429,13 @@ Continue until `entry0`(aka `_start`), refer to `entry point vaddr` and check:
 [0xffff98492c40]> dcu entry0
 INFO: Continue until 0xaaaadc760640 using 4 bpsize
 INFO: hit breakpoint at: 0xaaaadc760640
+```
+
+Type `?w $$` or `?w pc` to confirm what's in current address.
+
+```bash
+[0xffff98492c40]> ?w pc
+/home/pifan/Projects/cpp/a.out .text entry0,section..text,_start,x16,x21,pc,d16,d21 entry0 program R X 'nop' 'a.out'
 ```
 
 Type `pdf` to disassemble function at current pc, that is `entry0`:
@@ -510,6 +545,14 @@ Set a breakpoint at `main` and continue.
 [+] SIGNAL 28 errno=0 addr=0x00000000 code=128 si_pid=0 ret=0
 INFO: hit breakpoint at: 0xaaaadc760754
 [+] signal 28 aka SIGWINCH received 0 (Window Changed Size)
+```
+
+Confirm what's up and disassemble function.
+
+```bash
+[0xaaaadc760754]> ?w pc
+/home/pifan/Projects/cpp/a.out .text main,main,x3,x23,pc,d3,d23 main program R X 'stp x29, x30, [sp, -0x20]!' 'a.out'
+
 [0xaaaadc760754]> pdf
             ;-- x3:
             ;-- x23:
@@ -566,7 +609,13 @@ The output of `rabin2 -R a.out` maybe more clear: the vaddr=0x00010fc8 is relati
 
 > `ADRP Xd, label`: label is an offset from the page address of this instruction.
 
-### stub plug
+!!! note "Intra-Procedure call scratch registers"
+
+    Refer to [Register file of ARM64](../arm/a64-regs.md), [ABI & Calling conventions](../cs/calling-convention.md) - PCS, [ARM Cortex-A Series Programmer's Guide for ARMv8-A](https://developer.arm.com/documentation/den0024/latest) - 9.1 Register use in the AArch64 Procedure Call Standard.
+
+    `X16` and `X17` are registers with a special purpose, predeclared as `IP0` and `IP1`. `IP` is abbrev for Intra-Procedure-Call.
+    These can be used by call veneers and similar code, or as temporary registers for intermediate values between subroutine calls. They are corruptible by a function.
+    **Veneers** are small pieces of code which are automatically inserted by the linker, for example when the branch target is out of range of the branch instruction. The PLT stub `puts@plt` is just such a vivid type of veneer.
 
 Now, continue run until `rsym.puts`/`sym.imp.puts`. Then type `pdf` to see its disassembly in real time.
 
@@ -588,6 +637,8 @@ INFO: hit breakpoint at: 0xaaaadc760630
 
 View the disassembly against `puts@plt`, it's easy to find that `10000 <__FRAME_END__+0xf770>` is dynamically replaced by `map._home_pifan_Projects_cpp_a.out.rw_`.
 
+### reloc fixup
+
 The [ADRP instruction](../arm/arm-adr-demo.md) is used to form the PC relative address to the 4KB page. As the PC is 0xaaaadc760630, its 4K page boundary aligned address (`:pg_hi21:`) is `0xaaaadc760000`, calculated by masking out the lower 12 bits.
 
 > 0xaaaadc760000 is also the piebase and page address of the first text segment *LOAD0*. Look back to chapter *loaded modules* and *memory maps*.
@@ -600,13 +651,21 @@ On the other hand, as we've already mentioned, the offset 0x10000 is the increme
 
 So it's not surprising that the `ADRP` literal is fixed as `map._home_pifan_Projects_cpp_a.out.rw_` (see `dm`) at runtime. It represents the *LOAD1* segment starting at 0xaaaadc770000. That's `x16=load1_baddr` according to the results, which is not a coincidence.
 
+```bash
+[0xaaaadc760630]> ?w pc
+/home/pifan/Projects/cpp/a.out .plt rsym.puts,puts,pc sym.imp.puts program R X 'adrp x16, 0xaaaadc770000' 'a.out'
+```
+
 Look at the next instruction `ldr x17, [x16, 0xfc8]!`, `x16:0xfc8` is the address of GOT entry for `puts`(aka `reloc.puts`). `x16`=0xaaaadc770000+0xfc8=0xaaaadc770fc8. Then `x17` will load the value stored in pointer `x16`(0xaaaadc770fc8). It matches the output of `ir` in chapter *imports/relocations*.
+
+### ADRP+LDR
 
 Step 3 instructions and it comes to the last instruction `br x17`.
 
 ```bash
 [0xaaaadc760630]> ds 3
-[0xaaaadc760630]> pdf
+[0xaaaadc760630]> s pc
+[0xaaaadc76063c]> pdf
             ;-- rsym.puts:
             ; CALL XREF from main @ 0xaaaadc76076c(x)
 ┌ 16: int sym.imp.puts (const char *s);
@@ -620,32 +679,37 @@ Step 3 instructions and it comes to the last instruction `br x17`.
 Check register `x16` and `x17`:
 
 ```bash
-[0xaaaadc760630]> dr?x16
+[0xaaaadc76063c]> dr?x16
 0xaaaadc770fc8
-[0xaaaadc760630]> ?v $r:x17
+[0xaaaadc76063c]> ?v $r:x17
 0xffff9832ae70
 ```
 
 Try to dereference `x16` as pointer:
 
 ```bash
-[0xaaaadc760630]> pxq $w @ 0xaaaadc770fc8
+# show hexadecimal quad-words dump (64bit)
+[0xaaaadc76063c]> pxq $w @ 0xaaaadc770fc8
 0xaaaadc770fc8  0x0000ffff9832ae70                       p.2.....
-[0xaaaadc760630]> pfp @ 0xaaaadc770fc8
+# pointer reference (2, 4 or 8 bytes)
+[0xaaaadc76063c]> pfp @ 0xaaaadc770fc8
 0xaaaadc770fc8 = (qword)0x0000ffff9832ae70
-[0xaaaadc760630]> pfS @ 0xaaaadc770fc8
+# 64bit pointer to string (8 bytes)
+[0xaaaadc76063c]> pfS @ 0xaaaadc770fc8
 0xaaaadc770fc8 = 0xaaaadc770fc8 -> 0xffff9832ae70 "{"
 ```
 
+> Try `pxa` for annotated hexdump, and `pxr[1248][qj]` to show hexword references.
+
 Actually, when *libc.so* is loaded, the value of the pointer is immediately updated from `0x00000000000005d0` to `0x0000ffff9832ae70`.
 
-> The `dbw` command is provided to add watchpoints. However, it doesn't work as well as expected.
+> The `dbw` command is provided to add watchpoints. However, it doesn't work as well as expected, see related [issue](https://github.com/radareorg/radare2/issues/11029).
 
 Type `dmi` to list symbols of `libc.so` and grep symbol `puts`:
 
 ```bash
-[0xaaaae5360630]> # dmi libc.so ~..
-[0xaaaae5360630]> dmi libc.so ~puts
+[0xaaaadc76063c]> # dmi libc.so ~..
+[0xaaaadc76063c]> dmi libc.so ~puts
 
 [Symbols]
 nth paddr      vaddr          bind   type  size  lib name
@@ -657,18 +721,20 @@ nth paddr      vaddr          bind   type  size  lib name
 
 The symbol `puts`(@GLIBC_2.17) is located exactly at `0xffff9832ae70`! Moreover, it's located between 0x0000ffff982c0000` - `0x0000ffff98448000, to which the text segment *LOAD0* is mapped.
 
+### br x17
+
 Set a breakpoint at puts/0xffff9832ae70 and continue.
 
 - [Cannot set breakpoints · Issue #12811](https://github.com/radareorg/radare2/issues/12811)
 - [Radare2 can't set breakpoint?](https://reverseengineering.stackexchange.com/questions/13689/radare2-noob-question-cant-set-breakpoint)
 
 ```bash
-[0xaaaadc760630]> db puts
+[0xaaaadc76063c]> db puts
 WARN: base addr should not be larger than the breakpoint address
 WARN: Cannot set breakpoint outside maps. Use dbg.bpinmaps to false
-[0xaaaadc760630]> e dbg.bpinmaps
+[0xaaaadc76063c]> e dbg.bpinmaps
 true
-[0xaaaadc760630]> db 0xffff9832ae70; dc
+[0xaaaadc76063c]> db x17; dc
 INFO: hit breakpoint at: 0xffff9832ae70
 ```
 
@@ -710,26 +776,26 @@ Hello, Linux!
 (69048) Process exited with status=0x0
 ```
 
-### libc/puts
+## puts@libc
 
 Although everything is clear, we can do some confirmation from the shared library perspective.
 
 Let's look up symbol `puts` in libc.so.6, the weak symbol `puts` will be overriden by the global symbol `_IO_puts`.
 
 ```bash
-[0xaaaae5360630]> !nm -gD /usr/lib/aarch64-linux-gnu/libc.so.6 | grep puts
+[0xaaaadc76063c]> !nm -gD /usr/lib/aarch64-linux-gnu/libc.so.6 | grep puts
 
 000000000006ae70 T _IO_puts@@GLIBC_2.17
 000000000006ae70 W puts@@GLIBC_2.17
 
-[0xaaaae5360630]> !readelf -s /usr/lib/aarch64-linux-gnu/libc.so.6 | grep puts
+[0xaaaadc76063c]> !readelf -s /usr/lib/aarch64-linux-gnu/libc.so.6 | grep puts
 
    Num:    Value          Size Type    Bind   Vis      Ndx Name
 
   1400: 000000000006ae70   492 FUNC    WEAK   DEFAULT   12 puts@@GLIBC_2.17
   1409: 000000000006ae70   492 FUNC    GLOBAL DEFAULT   12 _IO_puts@@GLIBC_2.17
 
-[0xaaaae5360630]> !objdump -t /usr/lib/aarch64-linux-gnu/libc.so.6 | grep puts
+[0xaaaadc76063c]> !objdump -t /usr/lib/aarch64-linux-gnu/libc.so.6 | grep puts
 
 000000000006ae70  w    F .text	00000000000001ec puts
 000000000006ae70 g     F .text	00000000000001ec _IO_puts
@@ -744,7 +810,8 @@ According to the latest `dm` output(linkmap), the *Load Bias* of libc.so is 0xff
 Add the paddr/offset to the baddr/bias to check the correctness of the formula.
 
 ```bash
-[0xaaaadc760630]> ?v 0xffff982c0000+0x6ae70
+[0xaaaadc76063c]> rax2 -k 0xffff982c0000+0x6ae70
+[0xaaaadc76063c]> ?v 0xffff982c0000+0x6ae70
 0xffff9832ae70
 ```
 

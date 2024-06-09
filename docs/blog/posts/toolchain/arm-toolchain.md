@@ -147,8 +147,10 @@ We can type `brew info formula` to show summary of information about the formula
 
 - `gcc`: for x86-64/mach-o
 - `x86_64-elf-gcc`: for x86_64-elf
-- `aarch64-elf-gcc`: for aarch64-elf
+- `aarch64-elf-gcc`: for aarch64-elf, with incidental binutils
 - `arm-none-eabi-gcc`: for arm-none-eabi(aarch32-elf?)
+
+Both `gcc-aarch64-embedded` and `gcc-arm-embedded` are published by developer.arm.com, named as *GCC ARM Embedded*, described as *Pre-built GNU bare-metal toolchain for 32/64-bit Arm processors*.
 
 !!! info "GCC for macOS/arm64"
 
