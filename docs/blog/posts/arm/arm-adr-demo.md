@@ -302,6 +302,16 @@ Disassembly of section .text:
 Disassembly of section .fini:
 ```
 
+In r2, use `pxb` to dump bits in hexdump form after `dcu rsym.puts`.
+
+```bash
+[0xaaaadfbc0630]> pxb 16
+0xaaaadfbc0630 1001_0000  0000_0000  0000_0000  1001_0000  0x90000090  ....
+0xaaaadfbc0634 0001_0001  1110_0110  0100_0111  1111_1001  0x11e647f9  ..G.
+0xaaaadfbc0638 0001_0000  0010_0010  0011_1111  1001_0001  0x10223f91  ."?.
+0xaaaadfbc063c 0010_0000  0000_0010  0001_1111  1101_0110  0x20021fd6   ...
+```
+
 We can analyse the instructions using [capstone-tool](https://www.capstone-engine.org/).
 
 ```bash title="cstool arm64 0x90000090"

@@ -1337,6 +1337,21 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="program header">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#segment_contents" class="md-nav__link">
+    <span class="md-ellipsis">
+      Segment Contents
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1426,7 +1441,7 @@
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7h1.5Z"/></svg>
                           <span class="md-ellipsis">
                             
-                              需要 6 分钟阅读时间
+                              需要 8 分钟阅读时间
                             
                           </span>
                         </div>
@@ -1843,7 +1858,33 @@ It markes the file as an object file and provide machine-independent data with w
 <li><a href="https://www.amazon.com/Computer-Systems-OHallaron-Randal-Bryant/dp/1292101768/">Computer Systems - A Programmer’s Perspective</a> | Chapter 7: Linking - 7.3: Object Files ; 7.8: Executable Object Files</li>
 </ul>
 <h2 id="program_header">program header<a class="headerlink" href="#program_header" title="Permanent link">#</a></h2>
-<p>TODO: TBD with elf-specs.</p>
+<p><a href="https://refspecs.linuxfoundation.org/elf/elf.pdf">TIS - ELF v1.2</a> | Book I: ELF - 2. Program Loading and Dynamic Linking - 2.2 Program Header</p>
+<p>An executable or shared object file's program header table is an array of structures, each describing a <em><code>segment</code></em> or other information the system needs to <em>prepare</em> the program for execution. An object file segment <em>contains</em> one or more sections. Program headers are meaningful only for executable and shared object files. A file specifies its own program header size with the ELF header's <code>e_phentsize</code> and <code>e_phnum</code> members.</p>
+<p><a href="https://www.amazon.com/Blue-Fox-Assembly-Internals-Analysis/dp/1119745306">Arm Assembly Internals and Reverse Engineering</a> | Chapter 2 ELF File Format Internals - ELF Program Headers</p>
+<p>The program headers table describes to the loader, in effect, how to <em>bring</em> the ELF binary into memory efficiently.</p>
+<p>Program headers <em>differ</em> from section headers in that, although they both describe the program’s layout, the program headers do so in a <em>mapping-centric</em> way, whereas the section headers do so in more <em>fine-grained</em> logical units. The program headers define a series of <em><code>segments</code></em>, each telling the kernel how to get the program off the ground in the first place. These segments specify how and where to load the ELF file’s data into <em>memory</em>, whether the program needs a runtime loader to bootstrap it, what the initial layout of the primary thread’s thread-localstorage should look like, and other kernel-relevant metadata such as whether the program should be given executable thread stacks.</p>
+<h3 id="segment_contents">Segment Contents<a class="headerlink" href="#segment_contents" title="Permanent link">#</a></h3>
+<p><a href="https://refspecs.linuxfoundation.org/elf/elf.pdf">TIS - ELF v1.2</a> | Book III: SYSV - 2. Program Loading and Dynamic Linking - 2.1 Program Header - Segment Contents</p>
+<p>An object file segment comprises one or more sections, though this fact is transparent to the program header. Whether the file segment holds one or many sections also is immaterial to program loading. Nonetheless, various data must be present for program execution, dynamic linking, and so on. The diagrams below illustrate segment contents in general terms. The order and membership of sections within a segment may vary; moreover, processor-specific constraints may alter the examples below.</p>
+<p><code>Text segments</code> contain <em>read-only</em> instructions and data, typically including the following sections. Other sections may also reside in loadable segments; these examples are not meant to give complete and exclusive segment contents.</p>
+<ul>
+<li>.text</li>
+<li>.rodata</li>
+<li>.hash</li>
+<li>.dynsym</li>
+<li>.dynstr</li>
+<li>.plt</li>
+<li>.rel.got</li>
+</ul>
+<p><code>Data segments</code> contain <em>writable</em> data and instructions, typically including the following sections.</p>
+<ul>
+<li>.data</li>
+<li>.dynamic</li>
+<li>.got</li>
+<li>.bss</li>
+</ul>
+<p>A <code>PT_DYNAMIC</code> program header element points at the <code>.dynamic</code> section, explained in "Dynamic Section" below. The <code>.got</code> and <code>.plt</code> sections also hold information related to position-independent code and dynamic linking. Although the <code>.plt</code> appears in a text segment above, it may reside in a text or a data segment, depending on the processor.</p>
+<p>As "Sections" describes, the <code>.bss</code> section has the type <code>SHT_NOBITS</code>. Although it occupies no space in the file, it contributes to the segment's memory image. Normally, these <em>uninitialized</em> data reside at the end of the segment, thereby making <code>p_memsz</code> larger than <code>p_filesz</code>.</p>
 <h2 id="references">references<a class="headerlink" href="#references" title="Permanent link">#</a></h2>
 <p><a href="https://interrupt.memfault.com/blog/elf-format-differences">ELF-32 vs. ELF-64</a><br />
 HP - <a href="http://www.staroceans.org/e-book/elf-64-hp.pdf">ELF-64 Object File Format v1.4</a><br />

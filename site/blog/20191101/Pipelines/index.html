@@ -1592,7 +1592,7 @@
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7h1.5Z"/></svg>
                           <span class="md-ellipsis">
                             
-                              需要 11 分钟阅读时间
+                              需要 12 分钟阅读时间
                             
                           </span>
                         </div>
@@ -2205,20 +2205,27 @@ lol<br />
 <div class="language-text highlight"><pre><span></span><code><span id="__span-50-1"><a id="__codelineno-50-1" name="__codelineno-50-1" href="#__codelineno-50-1"></a>$ echo 1 | xargs -I {} expr 2 \* {}
 </span></code></pre></div>
 <hr />
-<p>默认情况下，xargs 每次只能传递一条分割的数据到命令行中作为参数。但有时候想要让 xargs 一次传递2个或2个以上参数到命令行中。如何实现呢？</p>
+<p>默认情况下，xargs 每次只能传递一条分割的数据到命令行中作为参数。</p>
+<p><a href="https://stackoverflow.com/questions/2720014/how-to-upgrade-all-python-packages-with-pip">How to upgrade all Python packages with pip</a></p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-51-1"><a id="__codelineno-51-1" name="__codelineno-51-1" href="#__codelineno-51-1"></a>$<span class="w"> </span>pip3<span class="w"> </span>list<span class="w"> </span>--outdated<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;NR&gt;2 {print $1}&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>xargs<span class="w"> </span>-n1<span class="w"> </span>pip3<span class="w"> </span>install<span class="w"> </span>-U
+</span></code></pre></div>
+<blockquote>
+<p><code>xargs -n1</code> limits the number of arguments passed to each command <code>pip install -U</code> to be 1, prevents stopping and keeps going if an error occurs.</p>
+</blockquote>
+<p>但有时候想要让 xargs 一次传递2个或2个以上参数到命令行中。如何实现呢？</p>
 <p>例如有一个文件保存了 wget 想要下载的大量链接和对应要保存的文件名，一行链接一行文件名。格式如下：</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-51-1"><a id="__codelineno-51-1" name="__codelineno-51-1" href="#__codelineno-51-1"></a>https://www.xxx.yyy/a1
-</span><span id="__span-51-2"><a id="__codelineno-51-2" name="__codelineno-51-2" href="#__codelineno-51-2"></a>filename1
-</span><span id="__span-51-3"><a id="__codelineno-51-3" name="__codelineno-51-3" href="#__codelineno-51-3"></a>https://www.xxx.yyy/a2
-</span><span id="__span-51-4"><a id="__codelineno-51-4" name="__codelineno-51-4" href="#__codelineno-51-4"></a>filename2
-</span><span id="__span-51-5"><a id="__codelineno-51-5" name="__codelineno-51-5" href="#__codelineno-51-5"></a>https://www.xxx.yyy/a3
-</span><span id="__span-51-6"><a id="__codelineno-51-6" name="__codelineno-51-6" href="#__codelineno-51-6"></a>filename3
+<div class="language-text highlight"><pre><span></span><code><span id="__span-52-1"><a id="__codelineno-52-1" name="__codelineno-52-1" href="#__codelineno-52-1"></a>https://www.xxx.yyy/a1
+</span><span id="__span-52-2"><a id="__codelineno-52-2" name="__codelineno-52-2" href="#__codelineno-52-2"></a>filename1
+</span><span id="__span-52-3"><a id="__codelineno-52-3" name="__codelineno-52-3" href="#__codelineno-52-3"></a>https://www.xxx.yyy/a2
+</span><span id="__span-52-4"><a id="__codelineno-52-4" name="__codelineno-52-4" href="#__codelineno-52-4"></a>filename2
+</span><span id="__span-52-5"><a id="__codelineno-52-5" name="__codelineno-52-5" href="#__codelineno-52-5"></a>https://www.xxx.yyy/a3
+</span><span id="__span-52-6"><a id="__codelineno-52-6" name="__codelineno-52-6" href="#__codelineno-52-6"></a>filename3
 </span></code></pre></div>
 <p>现在想要通过读取这个文件，将每一个URL和对应的文件名传递给wget去下载：</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-52-1"><a id="__codelineno-52-1" name="__codelineno-52-1" href="#__codelineno-52-1"></a>$ wget &#39;{URL}&#39; -O &#39;{FILENAME}&#39;
+<div class="language-text highlight"><pre><span></span><code><span id="__span-53-1"><a id="__codelineno-53-1" name="__codelineno-53-1" href="#__codelineno-53-1"></a>$ wget &#39;{URL}&#39; -O &#39;{FILENAME}&#39;
 </span></code></pre></div>
 <p>xargs 自身的功能无法一次性传递多个参数（parallel命令可以，而且方式多种），只能寻求一些技巧来实现。</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-53-1"><a id="__codelineno-53-1" name="__codelineno-53-1" href="#__codelineno-53-1"></a>cat url.txt | xargs -n 2 bash -c &#39;wget &quot;$1&quot; -O &quot;$2&quot;&#39;
+<div class="language-text highlight"><pre><span></span><code><span id="__span-54-1"><a id="__codelineno-54-1" name="__codelineno-54-1" href="#__codelineno-54-1"></a>cat url.txt | xargs -n 2 bash -c &#39;wget &quot;$1&quot; -O &quot;$2&quot;&#39;
 </span></code></pre></div>
 <h3 id="refs">refs<a class="headerlink" href="#refs" title="Permanent link">#</a></h3>
 <p>关于 xargs 的用法，可以参考 《Linux Shell 脚本攻略》中的 <code>2.5 玩转 xargs</code> 相关章节。</p>

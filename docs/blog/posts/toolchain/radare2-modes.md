@@ -206,7 +206,7 @@ Usage: p[=68abcdDfiImrstuxz] [arg|len] [@addr]
 | popd[-a][-h]            pop dir off top of stack and cd to it
 ```
 
-### pf - print format
+### pf - printf
 
 ```bash
 [0xffffa4386c40]> pf?
@@ -482,7 +482,10 @@ Disassemble a symbol/function at a memory address:
 
 Disassemble function at current pc:
 
+> Unlike `pdf`, `pif` does not display contexts such as address and opcode.
+
 ```bash
+[0x000000000000]> pif
 [0x000000000000]> pdf
 ```
 
@@ -537,6 +540,12 @@ Usage: d   # Debug commands
 ```
 
 - `dbt`[?]: display backtrace based on dbg.btdepth and dbg.btalgo
+
+### dp - dump process
+
+`dp`: list current pid and children
+`dpq`: same as `dp`. just show the current process id
+`dpe`: show path to executable
 
 ### dm - dump memory
 
@@ -764,6 +773,10 @@ Enter visual mode, convenient for disassembly view, based on current address (PC
 | V  visual mode (Vv = func/var anal, VV = graph mode, ...)
 ```
 
+- `Ve`: Configure radare the visual way
+- `Vp`: Open disassembly in visual mode
+- `Vpp`: Enter visual debugger mode
+
 Type `?` to list help menu of Visual mode, press `q` to quit the menu.
 
 ```bash
@@ -921,6 +934,8 @@ Type `?` to list all the commands of Visual Graph mode.
 | tab                  select next node
 | TAB                  select previous node
 | V                    toggle basicblock / call graphs
+| y                    toggle self-adaptive
+| Y                    fold current node
 ```
 
 1. `R`: randomize colors
@@ -936,20 +951,24 @@ Note the label inside square brackets of each node, such as `o[a-z]`, then type 
 
 ## refs
 
-[gdb list command ?](https://github.com/radareorg/radare2/issues/1783)
-[Radare2 "pd" command](https://stackoverflow.com/questions/62319299/radare2-pd-command)
+[Newest 'radare2' Questions](https://stackoverflow.com/questions/tagged/radare2)
+
+[gdb list command? #1783](https://github.com/radareorg/radare2/issues/1783)
+[Radare2 "pd" command](https://stackoverflow.com/questions/62319299/radare2-pd-command) - disassembly or opcodes
 [How to dump function's disassembly using r2pipe](https://stackoverflow.com/questions/55402547/how-to-dump-functions-disassembly-using-r2pipe)
 [How to make radare2 work for a large binary?](https://reverseengineering.stackexchange.com/questions/16112/how-to-make-radare2-work-for-a-large-binary/16115)
 
-[Disassembling with radare2](https://www.linuxdays.cz/2017/video/Tomas_Antecky-Disassembling_with_radare2.pdf)
 A journey into Radare 2: [Part 1](https://www.megabeets.net/a-journey-into-radare-2-part-1/), [Part 2](https://www.megabeets.net/a-journey-into-radare-2-part-2/)
+
+[radare2逆向笔记](https://www.cnblogs.com/pannengzhi/p/play-with-radare2.html) - crackme0x00
+[Using Radare2 to patch a binary](https://rderik.com/blog/using-radare2-to-patch-a-binary/)
+[Understanding buffer overflows using Radare2](https://rderik.com/blog/understanding-buffer-overflows-using-radare2/)
 
 [Reverse engineering with radare2](https://artik.blue/reversing)
 [Reverse Engineering With Radare2](https://samsymons.com/blog/reverse-engineering-with-radare2-part-1/)
 [Radare2 for reverse engineering](https://itnext.io/radare2-for-reverse-engineering-part1-eedf0a47b5cc)
 
 Reverse Engineering With Radare2: [Part 1](https://insinuator.net/2016/08/reverse-engineering-with-radare2-intro/), [Part 2](https://insinuator.net/2016/08/reverse-engineering-with-radare2-part-2/), [Part 3](https://insinuator.net/2016/10/reverse-engineering-with-radare2-part-3/)
-
 Reverse Engineering Using Radare2: [Part 1](https://goggleheadedhacker.com/blog/post/1), [Part 2](https://goggleheadedhacker.com/blog/post/2)
 Reverse engineering using Radare2: [Part 1](https://hackyourmom.com/en/servisy/zvorotnij-inzhyniryng-iz-vykorystannyam-radare2/), [Part 2](https://hackyourmom.com/en/servisy/revers-inzhyniryng-ta-skrypty/zvorotnij-inzhyniryng-iz-vykorystannyam-radare2-chastyna-2/)
 

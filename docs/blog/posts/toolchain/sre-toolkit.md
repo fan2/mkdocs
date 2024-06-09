@@ -89,7 +89,8 @@ Software Reverse Engineering(SRE) Toolkit:
 ### CTF Notes
 
 [CTF Handbook](https://ctf101.org/)
-[Introduction | Note: CTF](https://fareedfauzi.gitbook.io/ctf-playbook)
+[Note: CTF](https://fareedfauzi.gitbook.io/ctf-playbook)
+[CTF All In One](https://firmianay.gitbooks.io/ctf-all-in-one/)
 [Advanced Binary Exploitation CTF](https://reverseengineering.stackexchange.com/questions/26764/advanced-binary-exploitation-ctf)
 [Linux Reverse Engineering CTFs for Beginners](https://osandamalith.com/2019/02/11/linux-reverse-engineering-ctfs-for-beginners/)
 
@@ -100,7 +101,7 @@ Software Reverse Engineering(SRE) Toolkit:
 [nnamon/linux-exploitation-course](https://github.com/nnamon/linux-exploitation-course)
 [Exploit Education :: Andrew Griffiths' Exploit Education](https://exploit.education/)
 
-[Binary Exploitation Notes | Binary Exploitation](https://ir0nstone.gitbook.io/notes)
+[Binary Exploitation Notes](https://ir0nstone.gitbook.io/notes)
 [TryHackMe: Reversing ELF. tryhackme Reversing ELF write-up](https://medium.com/@xiosec/tryhackme-reversing-elf-60ab96969e41)
 
 [exploit-exercises](https://exploit-exercises.com/)

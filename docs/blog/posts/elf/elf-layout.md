@@ -226,7 +226,42 @@ Please refer to the following materials for further details.
 
 ## program header
 
-TODO: TBD with elf-specs.
+[TIS - ELF v1.2](https://refspecs.linuxfoundation.org/elf/elf.pdf) | Book I: ELF - 2. Program Loading and Dynamic Linking - 2.2 Program Header
+
+An executable or shared object file's program header table is an array of structures, each describing a *`segment`* or other information the system needs to *prepare* the program for execution. An object file segment *contains* one or more sections. Program headers are meaningful only for executable and shared object files. A file specifies its own program header size with the ELF header's `e_phentsize` and `e_phnum` members.
+
+[Arm Assembly Internals and Reverse Engineering](https://www.amazon.com/Blue-Fox-Assembly-Internals-Analysis/dp/1119745306) | Chapter 2 ELF File Format Internals - ELF Program Headers
+
+The program headers table describes to the loader, in effect, how to *bring* the ELF binary into memory efficiently.
+
+Program headers *differ* from section headers in that, although they both describe the program’s layout, the program headers do so in a *mapping-centric* way, whereas the section headers do so in more *fine-grained* logical units. The program headers define a series of *`segments`*, each telling the kernel how to get the program off the ground in the first place. These segments specify how and where to load the ELF file’s data into *memory*, whether the program needs a runtime loader to bootstrap it, what the initial layout of the primary thread’s thread-localstorage should look like, and other kernel-relevant metadata such as whether the program should be given executable thread stacks.
+
+### Segment Contents
+
+[TIS - ELF v1.2](https://refspecs.linuxfoundation.org/elf/elf.pdf) | Book III: SYSV - 2. Program Loading and Dynamic Linking - 2.1 Program Header - Segment Contents
+
+An object file segment comprises one or more sections, though this fact is transparent to the program header. Whether the file segment holds one or many sections also is immaterial to program loading. Nonetheless, various data must be present for program execution, dynamic linking, and so on. The diagrams below illustrate segment contents in general terms. The order and membership of sections within a segment may vary; moreover, processor-specific constraints may alter the examples below.
+
+`Text segments` contain *read-only* instructions and data, typically including the following sections. Other sections may also reside in loadable segments; these examples are not meant to give complete and exclusive segment contents.
+
+- .text
+- .rodata
+- .hash
+- .dynsym
+- .dynstr
+- .plt
+- .rel.got
+
+`Data segments` contain *writable* data and instructions, typically including the following sections.
+
+- .data
+- .dynamic
+- .got
+- .bss
+
+A `PT_DYNAMIC` program header element points at the `.dynamic` section, explained in "Dynamic Section" below. The `.got` and `.plt` sections also hold information related to position-independent code and dynamic linking. Although the `.plt` appears in a text segment above, it may reside in a text or a data segment, depending on the processor.
+
+As "Sections" describes, the `.bss` section has the type `SHT_NOBITS`. Although it occupies no space in the file, it contributes to the segment's memory image. Normally, these *uninitialized* data reside at the end of the segment, thereby making `p_memsz` larger than `p_filesz`.
 
 ## references
 

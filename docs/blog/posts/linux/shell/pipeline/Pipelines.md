@@ -777,7 +777,17 @@ $ echo 1 | xargs -I {} expr 2 \* {}
 
 ---
 
-默认情况下，xargs 每次只能传递一条分割的数据到命令行中作为参数。但有时候想要让 xargs 一次传递2个或2个以上参数到命令行中。如何实现呢？
+默认情况下，xargs 每次只能传递一条分割的数据到命令行中作为参数。
+
+[How to upgrade all Python packages with pip](https://stackoverflow.com/questions/2720014/how-to-upgrade-all-python-packages-with-pip)
+
+```bash
+$ pip3 list --outdated | awk 'NR>2 {print $1}' | xargs -n1 pip3 install -U
+```
+
+> `xargs -n1` limits the number of arguments passed to each command `pip install -U` to be 1, prevents stopping and keeps going if an error occurs.
+
+但有时候想要让 xargs 一次传递2个或2个以上参数到命令行中。如何实现呢？
 
 例如有一个文件保存了 wget 想要下载的大量链接和对应要保存的文件名，一行链接一行文件名。格式如下：
 

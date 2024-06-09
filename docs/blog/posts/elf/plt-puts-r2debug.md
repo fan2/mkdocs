@@ -300,6 +300,10 @@ sym.register_tm_clones      sym.__do_global_dtors_aux
 sym.frame_dummy             sym.main
 sym._fini
 
+[0xffff98492c40]> ?v sym.imp.
+sym.imp.__libc_start_main   sym.imp.__cxa_finalize      sym.imp.abort
+sym.imp.puts
+
 [0xffff98492c40]> ?v rsym.
 rsym.__libc_start_main   rsym.__cxa_finalize      rsym.__gmon_start__
 rsym.abort               rsym.puts
@@ -309,6 +313,7 @@ Inspect the address of the symbol.
 
 ```bash
 [0xffff98492c40]> # ?v sym.imp.puts
+[0xffff98492c40]> # afo rsym.puts
 [0xffff98492c40]> ?v rsym.puts
 0xaaaadc760630
 ```
@@ -393,6 +398,16 @@ Try to show context disassembly of 15 instructions around `puts`.
             ; XREFS: DATA 0xaaaadc760690  DATA 0xaaaadc760698  DATA 0xaaaadc7606c0  DATA 0xaaaadc7606c8  DATA 0xaaaadc76070c
             ; XREFS: DATA 0xaaaadc760724
             0xaaaae0071000      00000000       invalid                 ; [22] -rw- section size 16 named .data
+```
+
+Press ++tab++ after the dot to view automatic IntelliSense options.
+
+```bash
+[0xffff98492c40]> ?v reloc.
+reloc.__libc_start_main             reloc.abort
+reloc.puts                          reloc._ITM_deregisterTMCloneTable
+reloc.__cxa_finalize                reloc.__gmon_start__
+reloc._ITM_registerTMCloneTable
 ```
 
 Get the value(address) of label `reloc.puts` by evaluation:
@@ -678,25 +693,43 @@ Step 3 instructions and it comes to the last instruction `br x17`.
 
 Check register `x16` and `x17`:
 
+> `ai @addr`: show address information
+
 ```bash
+[0xaaaadc76063c]> ai @ x16
+program
+read
+flag
+reg
 [0xaaaadc76063c]> dr?x16
 0xaaaadc770fc8
+
+[0xaaaadc76063c]> aij @ x17
+{"library":"true","exec":"true","read":"true","flag":"true","reg":"true"}
 [0xaaaadc76063c]> ?v $r:x17
 0xffff9832ae70
 ```
 
-Try to dereference `x16` as pointer:
+Hexdump and dereference `x16` as pointer:
 
 ```bash
 # show hexadecimal quad-words dump (64bit)
+[0xaaaadc76063c]> # pxq $w @ x16
 [0xaaaadc76063c]> pxq $w @ 0xaaaadc770fc8
 0xaaaadc770fc8  0x0000ffff9832ae70                       p.2.....
-# pointer reference (2, 4 or 8 bytes)
-[0xaaaadc76063c]> pfp @ 0xaaaadc770fc8
+
+# printf quadword
+[0xaaaadc76063c]> pf1q @ x16
 0xaaaadc770fc8 = (qword)0x0000ffff9832ae70
+# pointer reference (2, 4 or 8 bytes)
+[0xaaaadc76063c]> pfp puts_addr @ x16
+ puts_addr : 0xaaaadc770fc8 = (qword)0x0000ffff9832ae70
 # 64bit pointer to string (8 bytes)
-[0xaaaadc76063c]> pfS @ 0xaaaadc770fc8
+[0xaaaadc76063c]> pfS @ x16
 0xaaaadc770fc8 = 0xaaaadc770fc8 -> 0xffff9832ae70 "{"
+
+[0xaaaadc76063c]> ?w x16
+/home/pifan/Projects/cpp/a.out .got reloc.puts,x16,d16 program R 0xffff9832ae70
 ```
 
 > Try `pxa` for annotated hexdump, and `pxr[1248][qj]` to show hexword references.
@@ -704,6 +737,23 @@ Try to dereference `x16` as pointer:
 Actually, when *libc.so* is loaded, the value of the pointer is immediately updated from `0x00000000000005d0` to `0x0000ffff9832ae70`.
 
 > The `dbw` command is provided to add watchpoints. However, it doesn't work as well as expected, see related [issue](https://github.com/radareorg/radare2/issues/11029).
+
+Attempt to analyze instruction resides in `x17`.
+
+```bash
+[0xaaaadc76063c]> ?w x17
+/usr/lib/aarch64-linux-gnu/libc.so.6 x17,d17 library R X 'stp x29, x30, [sp, -0x40]!' 'libc.so.6'
+
+[0xaaaadc76063c]> pfD @ x17
+stp x29, x30, [sp, -0x40]!
+
+[0xaaaadc76063c]> pd 1 @ x17
+            ;-- x17:
+            ;-- d17:
+            0xffffa5e1ae70      fd7bbca9       stp x29, x30, [sp, -0x40]!
+```
+
+### br x17
 
 Type `dmi` to list symbols of `libc.so` and grep symbol `puts`:
 
@@ -720,8 +770,6 @@ nth paddr      vaddr          bind   type  size  lib name
 ```
 
 The symbol `puts`(@GLIBC_2.17) is located exactly at `0xffff9832ae70`! Moreover, it's located between 0x0000ffff982c0000` - `0x0000ffff98448000, to which the text segment *LOAD0* is mapped.
-
-### br x17
 
 Set a breakpoint at puts/0xffff9832ae70 and continue.
 
@@ -811,6 +859,7 @@ Add the paddr/offset to the baddr/bias to check the correctness of the formula.
 
 ```bash
 [0xaaaadc76063c]> rax2 -k 0xffff982c0000+0x6ae70
+[0xaaaadc76063c]> # ?v x17
 [0xaaaadc76063c]> ?v 0xffff982c0000+0x6ae70
 0xffff9832ae70
 ```

@@ -22,7 +22,10 @@ The Radare2 project is a set of small command-line utilities that can be used to
 - [Radare2 vs. GDB](https://hurricanelabs.com/blog/learning-binary-reversing-radare2-vs-gdb/)
 - [Radare2 Explorations](https://monosource.gitbooks.io/radare2-explorations/)
 - [Radare2 — Keep It Or Leave It?](https://medium.com/@sagidana/radare2-keep-it-or-leave-it-3d45059ec0d1)
-- [Learning Radare In Practice.pdf](https://www.radare.org/get/THC2018.pdf)
+
+- [Disassembling with radare2.pdf](https://www.linuxdays.cz/2017/video/Tomas_Antecky-Disassembling_with_radare2.pdf)
+- pancake - [Learning Radare In Practice.pdf](https://www.radare.org/get/THC2018.pdf)
+- [Overcoming fear: reversing with radare2.pdf](https://conference.hitb.org/hitbsecconf2019ams/materials/D1T3%20-%20Reversing%20with%20Radare2%20-%20Arnau%20Gamez%20Montolio.pdf)
 
 ## installation
 
@@ -276,7 +279,9 @@ Prefix with number to repeat command N times (f.ex: 3x)
 | ?|?                     help for '|' (pipe)
 ```
 
-### reopen
+[Building 'apropos' command for radare2](https://medium.com/@longledinh/building-apropos-command-for-radare2-3b9d15a2325a) with [longld/r2apropos.py-v1.6.0](https://gist.github.com/longld/3bcdc28535237fd359be6407f1df03b2)
+
+### status
 
 list opened files:
 
@@ -299,6 +304,24 @@ file     /home/pifan/Projects/cpp/test-gdb
 * 0 3 arm-64 ba:0xaaaacb8f0000 sz:8361 /home/pifan/Projects/cpp/test-gdb
 ```
 
+`dpe`: show path to executable
+`dp`: list current pid and children
+`dpq`: same as dp. just show the current process id
+
+```bash
+[0x000000000000]> dpe
+/home/pifan/Projects/cpp/test-gdb
+
+[0x000000000000]> dp
+INFO: Selected: 9250 9250
+ * 9250 ppid:9227 uid:1000 s ./test-gdb
+
+[0x000000000000]> dpq
+9250
+```
+
+### reopen
+
 reopen current file:
 
 ```bash
@@ -315,6 +338,9 @@ Usage: oo [arg]  Map opened files
 | oonn         reopen without loading rbin info, but with header flags
 | oonn+        reopen in read-write mode without loading rbin info, but with
 ```
+
+`ood[?]`: reopen in debug mode
+`oodf [file]`: reopen in debug mode using the given file
 
 reload current file:
 
@@ -502,6 +528,15 @@ true
 false
 ```
 
+View more options with question mark.
+
+```bash
+[0xffffbc84ae70]> e asm.arch=?
+[0xffffbc84ae70]> e search.in=?
+```
+
+To configure radare the visual way, use `Ve`.
+
 ## expr
 
 ### evaluation
@@ -615,6 +650,8 @@ Get map/word/opcode size.
 0x8
 [0x000000000000]> e asm.bits
 64
+[0xaaaac30a0754]> aos 1
+4
 [0xaaaac30a0754]> ?v $l
 0x4
 ```
@@ -668,6 +705,14 @@ Usage: [.:"][#]<cmd>[*] [`cmd`] [@ addr] [~grep] [|syscmd] [>[>]file]
 [0x000000000000]> ~??
 Usage: [command]~[modifier][word,word][endmodifier][[column]][:line]
 modifier:
+```
+
+```bash
+[0xaaaae7580754]> i~pic
+pic      true
+
+[0xaaaae7580754]> i~baddr
+baddr    0xaaaae7580000
 ```
 
 ## analysis
@@ -752,4 +797,61 @@ We can choose a flag space using `fs <flagspace>` and print the flags it contain
 0xaaaae4870620 16 sym.imp.abort
 0xaaaae4870630 16 sym.imp.printf
 [0xaaaae4870754]> fs symbols; f
+```
+
+### af
+
+analyze functions.
+
+```bash
+[0x000000000000]> af?
+Usage: af
+| af ([name]) ([addr])                     analyze functions (start at addr or $$)
+| af+ addr name [type] [diff]              hand craft a function (requires afb+)
+| af- [addr]                               clean all function analysis data (or function at addr)
+| afa                                      analyze function arguments in a call (afal honors dbg.funcarg)
+| afB 16                                   set current function as thumb (change asm.bits)
+| afb[?] [addr]                            List basic blocks of given function
+| afb+ fcnA bbA sz [j] [f] ([t]( [d]))     add bb to function @ fcnaddr
+| afbF([0|1])                              Toggle the basic-block 'folded' attribute
+| afc[?] type @[addr]                      set calling convention for function
+| afC[lc] ([addr])@[addr]                  calculate the Cycles (afC) or Cyclomatic Complexity (afCc)
+| afd[addr]                                show function + delta for given offset
+| afF[1|0|]                                fold/unfold/toggle
+| afi [addr|fcn.name]                      show function(s) information (verbose afl)
+| afj [tableaddr] [elem_sz] [count] [seg]  analyze function jumptable (adding seg to each elem)
+| afl[?] [ls*] [fcn name]                  list functions (addr, size, bbs, name) (see afll)
+| afm name                                 merge two functions
+| afM name                                 print functions map
+| afn[?] name [addr]                       rename name for function at address (change flag too)
+| afna                                     suggest automatic name for current offset
+| afo[?j] [fcn.name]                       show address for the function name or current offset
+| afr ([name]) ([addr])                    analyze functions recursively
+| afs[?] ([fcnsign])                       get/set function signature at current address (afs! uses cfg.editor)
+| afS[stack_size]                          set stack frame size for function at current address
+| aft[?]                                   type matching, type propagation
+| afu addr                                 resize and analyze function from current address until addr
+| afv[absrx]?                              manipulate args, registers and variables in function
+| afx[m]                                   list function references, see pifc
+```
+
+Function variables manipulation.
+
+```bash
+[0x004008e0]> afv?
+Usage: afv[rbs]   Function variables manipulation
+| afv*                          output r2 command to add args/locals to flagspace
+| afv-([name])                  remove all or given var
+| afv=                          list function variables and arguments with disasm refs
+| afva                          analyze function arguments/locals
+| afvb[?]                       manipulate bp based arguments/locals
+| afvd name                     output r2 command for displaying the value of args/locals in the debugger
+| afvf                          show BP relative stackframe variables
+| afvn [new_name] ([old_name])  rename argument/local
+| afvr[?]                       manipulate register based arguments
+| afvR [varname]                list addresses where vars are accessed (READ)
+| afvs[?]                       manipulate sp based arguments/locals
+| afvt [name] [new_type]        change type for given argument/local
+| afvW [varname]                list addresses where vars are accessed (WRITE)
+| afvx                          show function variable xrefs (same as afvR+afvW)
 ```
