@@ -31,20 +31,45 @@ $ r2 -dA a.out
 1. `-d`: debug the executable, behaved as `gdb -> starti`.
 2. `-A` will run `aaa` command to analyze all referenced code.
 
+Check program/process status info:
+
+```bash
+# list opened binary files and objid
+[0xffff98492c40]> ob
+* 0 3 arm-64 ba:0xaaaadc760640 sz:7078 /home/pifan/Projects/cpp/a.out
+
+# show path to executable
+[0xffff98492c40]> dpe
+/home/pifan/Projects/cpp/a.out
+
+# list current pid and children
+[0xffff98492c40]> dp
+INFO: Selected: 501878 501878
+ * 501878 ppid:501854 uid:1000 s ./a.out
+
+# show the current process id
+[0xffff98492c40]> dpq
+501878
+```
+
 ## entry point vaddr
 
 Check base address(`baddr`) and `paddr`/`vaddr` of entry point.
 
 ```bash
+# see ba in `ob`
 [0xffff98492c40]> i ~baddr
 baddr    0xaaaadc760000
+# same as dbg.baddr, progam base address
+[0xffff98492c40]> ?v $DB
+0xaaaadc760000
 [0xffff98492c40]> rabin2 -eq a.out
 0x00000640
 [0xffff98492c40]> ieq
 0xaaaadc760640
 ```
 
-List entries+constructors:
+List CRT entries+constructors:
 
 ```bash
 [0xffff98492c40]> ieee
@@ -57,7 +82,11 @@ vaddr=0xaaaadc760700 paddr=0x00000700 hvaddr=0xaaaadc770d98 hpaddr=0x00000d98 ty
 vaddr=0xaaaadc760640 paddr=0x00000640 haddr=0x00000018 hvaddr=0xaaaadc760018 type=program
 
 1 entrypoints
+```
 
+Show main function address.
+
+```bash
 [0xffff98492c40]> iM
 [Main]
 vaddr=0xaaaadc760754 paddr=0x00000754
@@ -148,6 +177,17 @@ List memory maps of current/target process.
 0x0000ffff984b4000 - 0x0000ffff984b5000 - usr     4K s r-x [vdso] [vdso] ; map._vdso_.r_x
 0x0000ffff984b5000 - 0x0000ffff984b9000 - usr    16K s rw- /usr/lib/aarch64-linux-gnu/ld-linux-aarch64.so.1 /usr/lib/aarch64-linux-gnu/ld-linux-aarch64.so.1 ; map._usr_lib_aarch64_linux_gnu_ld_linux_aarch64.so.1.rw_
 0x0000ffffc7fcd000 - 0x0000ffffc7fee000 - usr   132K s rw- [stack] [stack] ; map._stack_.rw_
+```
+
+Evaluate `$D` and `$DD` to confirm current debug map info.
+
+```bash
+# current debug map base address
+[0xffff98492c40]> ?v $D # @pc
+0xffff9847b000
+# current debug map size
+[0xffff98492c40]> ?v $DD
+0x2b000
 ```
 
 ## sections2segments
@@ -312,9 +352,7 @@ rsym.abort               rsym.puts
 Inspect the address of the symbol.
 
 ```bash
-[0xffff98492c40]> # ?v sym.imp.puts
-[0xffff98492c40]> # afo rsym.puts
-[0xffff98492c40]> ?v rsym.puts
+[0xffff98492c40]> ?v rsym.puts # ?v sym.imp.puts # afo rsym.puts
 0xaaaadc760630
 ```
 
@@ -413,7 +451,7 @@ reloc._ITM_registerTMCloneTable
 Get the value(address) of label `reloc.puts` by evaluation:
 
 ```bash
-[0xffff98492c40]> ?v reloc.puts
+[0xffff98492c40]> ?v reloc.puts # dumb afo mutes
 0xaaaadc770fc8
 ```
 
@@ -526,6 +564,15 @@ INFO: modules.get
 0xffff9847b000 0xffff984a6000  /usr/lib/aarch64-linux-gnu/ld-linux-aarch64.so.1
 ```
 
+Evaluate `$D` and `$DD` to confirm current debug map base address and size.
+
+```bash
+[0xaaaadc760640]> ?v $D
+0xaaaadc760000
+[0xaaaadc760640]> ?v $DD
+0x1000
+```
+
 Type `dm` to check the latest memory map:
 
 > `libc.so` is loaded into memory with four segments as highlighted.
@@ -589,6 +636,8 @@ Confirm what's up and disassemble function.
 │           0xaaaadc760774      fd7bc2a8       ldp x29, x30, [sp], 0x20
 └           0xaaaadc760778      c0035fd6       ret
 ```
+
+Type `dcc` to continue until call `bl sym.imp.puts`.
 
 ## puts@plt
 
@@ -678,7 +727,7 @@ Look at the next instruction `ldr x17, [x16, 0xfc8]!`, `x16:0xfc8` is the addres
 Step 3 instructions and it comes to the last instruction `br x17`.
 
 ```bash
-[0xaaaadc760630]> ds 3
+[0xaaaadc760630]> ds 3 # 3ds
 [0xaaaadc760630]> s pc
 [0xaaaadc76063c]> pdf
             ;-- rsym.puts:
@@ -701,12 +750,20 @@ program
 read
 flag
 reg
-[0xaaaadc76063c]> dr?x16
+[0xaaaadc76063c]> aij~{} @ x16
+{
+  "program": "true",
+  "exec": "true",
+  "read": "true",
+  "flag": "true",
+  "func": "true"
+}
+[0xaaaadc76063c]> dr?x16 # ?v $r{x16}
 0xaaaadc770fc8
 
 [0xaaaadc76063c]> aij @ x17
 {"library":"true","exec":"true","read":"true","flag":"true","reg":"true"}
-[0xaaaadc76063c]> ?v $r:x17
+[0xaaaadc76063c]> dr x17 # ?v $r:x17
 0xffff9832ae70
 ```
 
@@ -714,8 +771,7 @@ Hexdump and dereference `x16` as pointer:
 
 ```bash
 # show hexadecimal quad-words dump (64bit)
-[0xaaaadc76063c]> # pxq $w @ x16
-[0xaaaadc76063c]> pxq $w @ 0xaaaadc770fc8
+[0xaaaadc76063c]> pxq $w @ x16 # pxq $w @ 0xaaaadc770fc8
 0xaaaadc770fc8  0x0000ffff9832ae70                       p.2.....
 
 # printf quadword
@@ -759,7 +815,7 @@ Type `dmi` to list symbols of `libc.so` and grep symbol `puts`:
 
 ```bash
 [0xaaaadc76063c]> # dmi libc.so ~..
-[0xaaaadc76063c]> dmi libc.so ~puts
+[0xaaaadc76063c]> dmi libc.so ~puts # dmi libc.so puts~ puts$
 
 [Symbols]
 nth paddr      vaddr          bind   type  size  lib name
@@ -821,7 +877,7 @@ Type `dc` to continue to the end.
 ```bash
 [0xffff9832ae70]> dc
 Hello, Linux!
-(69048) Process exited with status=0x0
+(501878) Process exited with status=0x0
 ```
 
 ## puts@libc
@@ -859,8 +915,7 @@ Add the paddr/offset to the baddr/bias to check the correctness of the formula.
 
 ```bash
 [0xaaaadc76063c]> rax2 -k 0xffff982c0000+0x6ae70
-[0xaaaadc76063c]> # ?v x17
-[0xaaaadc76063c]> ?v 0xffff982c0000+0x6ae70
+[0xaaaadc76063c]> ?v 0xffff982c0000+0x6ae70 # ?v x17
 0xffff9832ae70
 ```
 

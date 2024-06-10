@@ -302,10 +302,17 @@ Disassembly of section .text:
 Disassembly of section .fini:
 ```
 
-In r2, use `pxb` to dump bits in hexdump form after `dcu rsym.puts`.
+In r2, use `pxb` to hexdump 4 instructions in bytes/bits form after `dcu rsym.puts`.
 
 ```bash
-[0xaaaadfbc0630]> pxb 16
+# pf4d / pfedddd
+[0xaaaadfbc0630]> pxW $l*4
+0xaaaadfbc0630 0x90000090
+0xaaaadfbc0634 0xf947e611
+0xaaaadfbc0638 0x913f2210
+0xaaaadfbc063c 0xd61f0220
+
+[0xaaaadfbc0630]> pxb $l*4
 0xaaaadfbc0630 1001_0000  0000_0000  0000_0000  1001_0000  0x90000090  ....
 0xaaaadfbc0634 0001_0001  1110_0110  0100_0111  1111_1001  0x11e647f9  ..G.
 0xaaaadfbc0638 0001_0000  0010_0010  0011_1111  1001_0001  0x10223f91  ."?.

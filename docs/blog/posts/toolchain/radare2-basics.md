@@ -15,18 +15,6 @@ The Radare2 project is a set of small command-line utilities that can be used to
 
 <!-- more -->
 
-- [Radare2 Book](https://book.rada.re/) - [intro](https://github.com/radareorg/radare2/blob/master/doc/intro.md#analyze) - [zh-cn](https://heersin.gitbook.io/radare2)
-- [r2wiki](https://r2wiki.readthedocs.io/en/latest/) - [Tips](https://r2wiki.readthedocs.io/en/latest/home/tips/)
-- [How-To: Radare2](https://r2.cole-ellis.com/)
-- [awesome-radare2](https://github.com/radareorg/awesome-radare2/blob/master/README.md)
-- [Radare2 vs. GDB](https://hurricanelabs.com/blog/learning-binary-reversing-radare2-vs-gdb/)
-- [Radare2 Explorations](https://monosource.gitbooks.io/radare2-explorations/)
-- [Radare2 — Keep It Or Leave It?](https://medium.com/@sagidana/radare2-keep-it-or-leave-it-3d45059ec0d1)
-
-- [Disassembling with radare2.pdf](https://www.linuxdays.cz/2017/video/Tomas_Antecky-Disassembling_with_radare2.pdf)
-- pancake - [Learning Radare In Practice.pdf](https://www.radare.org/get/THC2018.pdf)
-- [Overcoming fear: reversing with radare2.pdf](https://conference.hitb.org/hitbsecconf2019ams/materials/D1T3%20-%20Reversing%20with%20Radare2%20-%20Arnau%20Gamez%20Montolio.pdf)
-
 ## installation
 
 install radare2 on Ubuntu with [snap](https://ubuntu.com/core/services/guide/snaps-intro):
@@ -447,6 +435,24 @@ Combining internal and external commands via pipe to extract the current filenam
 /home/pifan/Projects/cpp/test-gdb
 ```
 
+Take the internal evaluation as a parameter for a shell command.
+
+```bash
+[0x41764141754141]> rax2 -r `dr pc`
+int64   18425896129347905
+uint64  18425896129347905
+hex     0x41764141754141
+octal   01013544050135240501
+unit    16.4P
+segment 14175000:0141
+string  "AAuAAvA"
+float   15.328431f
+double  0.000000
+binary  0b01000001011101100100000101000001011101010100000101000001
+base36  0_51ffntovght
+ternary 0t10022111022200110121022011120022202
+```
+
 ## env
 
 ```bash
@@ -471,15 +477,11 @@ Prefix with number to repeat command N times (f.ex: 3x)
 Examples:
 
 ```bash
-[0x000000000000]> env _
+[0x000000000000]> env _ # %_
 /snap/bin/r2
-[0x000000000000]> env SHELL
+[0x000000000000]> env SHELL # %SHELL
 /usr/bin/zsh
-[0x000000000000]> %_
-/snap/bin/r2
-[0x000000000000]> %SHELL
-/usr/bin/zsh
-[0x000000000000]> _
+[0x000000000000]> _ # same as python REPL
 /usr/bin/zsh
 ```
 
@@ -562,19 +564,15 @@ Usage: ?[?[?]] expression
 Do some simple calculation in place:
 
 ```bash
-[0x000000000000]> # rax2 -k 1989+64
-[0x000000000000]> ?vi 1989+64
+[0x000000000000]> ?vi 1989+64 # rax2 -k 1989+64
 2053
-[0x000000000000]> # rax2 b16
-[0x000000000000]> # rax2 Bx10
-[0x000000000000]> ?b 16
+[0x000000000000]> ?b 16 # rax2 b16 # rax2 Bx10
 10000b
-[0x000000000000]> # rax2 1989+64
-[0x000000000000]> ?v 1989+64
+[0x000000000000]> ?v 1989+64 # rax2 1989+64
 0x805
 [0x000000000000]> ?X 1989+64
 805
-[0x000000000000]> ?vx 1989+64
+[0x000000000000]> ?vx 1989+64 # 8 digit padding
 0x00000805
 ```
 
@@ -588,11 +586,9 @@ Do some simple calculation in place:
 `?v <symbol>` acts as `afo <symbol>`, it will show the address for the symbol, equivalent to `info address SYM` in GDB.
 
 ```bash
-[0xffff99b209d0]> # afo sym.main
-[0xffff99b209d0]> ?v sym.main
+[0xffff99b209d0]> ?v sym.main # afo sym.main
 0xaaaae16307a0
-[0xffff99b209d0]> # afo sym.func
-[0xffff99b209d0]> ?v sym.func
+[0xffff99b209d0]> ?v sym.func # afo sym.func
 0xaaaae1630754
 ```
 
@@ -612,6 +608,10 @@ Usage: ?v [$.]
 
 | $alias=value  alias commands (simple macros)
 | $B            base address (aligned lowest map address)
+| $D            current debug map base address ?v $D @ rsp
+| $DB           same as dbg.baddr, progam base address
+| $DD           current debug map size
+| $F            same as $FB
 | $FB           begin of function
 | $FE           end of function
 | $l            opcode length
@@ -629,7 +629,7 @@ Seek here/print current address.
 ```bash
 # equivalent to s : print current address
 # $$: here (current virtual seek)
-[0xaaaac30a07a0]> ?v $$
+[0xaaaac30a07a0]> ?v pc # ?v $$
 0xaaaac30a07a0
 ```
 
@@ -641,25 +641,27 @@ Define simple macros.
 19890604
 ```
 
-Get map/word/opcode size.
+Get map/opcode/word size.
 
 ```bash
 [0xaaaac30a0754]> ?v $MM
 0x7fffffffffffffff
-[0x000000000000]> ?v $w
-0x8
-[0x000000000000]> e asm.bits
-64
+
 [0xaaaac30a0754]> aos 1
 4
 [0xaaaac30a0754]> ?v $l
 0x4
+
+[0x000000000000]> ?v $w
+0x8
+[0x000000000000]> e asm.bits
+64
 ```
 
 begin/end of function:
 
 ```bash
-[0xaaaac30a0754]> ?v $FB
+[0xaaaac30a0754]> ?v $F # same as $FB
 0xaaaac30a0754
 [0xaaaac30a0754]> ?v $FE
 0xaaaac30a07a0
@@ -668,15 +670,13 @@ begin/end of function:
 `$r{reg}` is equivalent to `dr?<register>`, see `drl`, `dr??` and `dr=`.
 
 ```bash
-[0xaaaac30a0754]> ?v $r{x0}
+[0xaaaac30a0754]> ?v $r{x0} # ?v $r:A0
 0xfa
-[0xaaaac30a0754]> ?v $r:A0
-0xfa
-[0xaaaac30a0754]> ?v $r{PC}
+[0xaaaac30a0754]> ?v $r{PC} # dr?pc
 0xaaaac30a0754
-[0xaaaac30a0754]> ?v $r{BP}
+[0xaaaac30a0754]> ?v $r{BP} # dr bp
 0xffffdca194e0
-[0xaaaac30a0754]> ?v $r:SP
+[0xaaaac30a0754]> ?v $r:SP # dr sp
 0xffffdca194e0
 ```
 
@@ -715,143 +715,21 @@ pic      true
 baddr    0xaaaae7580000
 ```
 
-## analysis
+## refs
 
-[Radare2 Book: 8. Analysis](https://book.rada.re/analysis/intro.html)
+[Radare2 Book](https://book.rada.re/) - [intro](https://github.com/radareorg/radare2/blob/master/doc/intro.md#analyze) - [zh-cn](https://heersin.gitbook.io/radare2)
+[r2wiki](https://r2wiki.readthedocs.io/en/latest/) - [Tips](https://r2wiki.readthedocs.io/en/latest/home/tips/)
 
-Code analysis is the process of finding patterns, combining information from different sources and process the disassembly of the program in multiple ways in order to understand and extract more details of the logic behind the code.
+[r2 cheatsheet.pdf](https://scoding.de/uploads/r2_cs.pdf)
+[radare2-cheatsheet](https://github.com/historypeats/radare2-cheatsheet)
+[another radare2 cheatsheet](https://gist.github.com/williballenthin/6857590dab3e2a6559d7)
 
-Radare2 has many different code analysis techniques implemented under different commands and configuration options, and it's important to understand what they do and how that affects in the final results before going for the default-standard `aaaaa` way because on some cases this can be too slow or just produce false positive results.
+[How-To: Radare2](https://r2.cole-ellis.com/)
+[awesome-radare2](https://github.com/radareorg/awesome-radare2/blob/master/README.md)
+[Radare2 vs. GDB](https://hurricanelabs.com/blog/learning-binary-reversing-radare2-vs-gdb/)
+[Radare2 Explorations](https://monosource.gitbooks.io/radare2-explorations/)
+[Radare2 — Keep It Or Leave It?](https://medium.com/@sagidana/radare2-keep-it-or-leave-it-3d45059ec0d1)
 
-As long as the whole functionalities of `r2` are available with the API as well as using commands. This gives you the ability to implement your own analysis loops using any programming language, even with `r2` oneliners, shellscripts, or analysis or core native plugins.
-
-The analysis will show up the *internal* data structures to identify basic blocks, function trees and to extract opcode-level information.
-
-The most common radare2 analysis command sequence is `aa`, which stands for "*analyze all*". That all is referring to all symbols and entry-points. If your binary is stripped you will need to use other commands like `aaa`, `aab`, `aar`, `aac` or so.
-
-Take some time to understand what each command does and the results after running them to find the best one for your needs.
-
-```bash
-Usage: aa[0*?]   # see also 'af' and 'afna'
-| aa                     alias for 'af@@ sym.*;af@entry0;afva'
-| aaa[?]                 autoname functions after aa (see afna)
-| aab                    abb across bin.sections.rx
-| aac [len]              analyze function calls (af @@ `pi len~call[1]`)
-| aac* [len]             flag function calls without performing a complete analysis
-| aar[?] [len]           analyze len bytes of instructions for references
-```
-
-Begin with executing `aa` (analyse all) or `aaa` to make our life easier.
-
-```bash
-[0x000000000000]> aa
-INFO: Analyze all flags starting with sym. and entry0 (aa)
-INFO: Analyze imports (af@@@i)
-INFO: Analyze entrypoint (af@ entry0)
-INFO: Analyze symbols (af@@@s)
-INFO: Recovering variables
-INFO: Analyze all functions arguments/locals (afva@@@F)
-
-[0x000000000000]> aaa
-INFO: Analyze all flags starting with sym. and entry0 (aa)
-INFO: Analyze imports (af@@@i)
-INFO: Analyze entrypoint (af@ entry0)
-INFO: Analyze symbols (af@@@s)
-INFO: Recovering variables
-INFO: Analyze all functions arguments/locals (afva@@@F)
-INFO: Analyze function calls (aac)
-INFO: Analyze len bytes of instructions for references (aar)
-INFO: Finding and parsing C++ vtables (avrr)
-INFO: Analyzing methods
-INFO: Finding function preludes (aap)
-INFO: Finding xrefs in noncode sections (e anal.in=io.maps.x; aav)
-INFO: Skipping function emulation in debugger mode (aaef)
-INFO: Recovering local variables (afva)
-INFO: Skipping type matching analysis in debugger mode (aaft)
-INFO: Propagate noreturn information (aanr)
-INFO: Use -AA or aaaa to perform additional experimental analysis
-```
-
-After the analysis, radare2 associates names to interesting offsets in the file such as Sections, Function, Symbols, and Strings. Those names are called *`flags`*. Flags can be grouped into *`flag spaces`*. A flag space is a namespace for flags of similar characteristics or type. To list the flag spaces run `fs`.
-
-We can choose a flag space using `fs <flagspace>` and print the flags it contains using `f`.
-
-```bash
-[0xaaaae4870754]> fs
-    0 * classes
-    5 * format
-  678 * functions
-    5 * imports
-   67 * registers
-   28 * sections
-   10 * segments
-    2 * strings
-   34 * symbols
-[0xaaaae4870754]> fs strings; f
-0xaaaae4870838 21 str.result_1_100____ld_n
-0xaaaae4870850 20 str.result_1_250____d_n
-[0xaaaae4870754]> fs imports; f
-0xaaaae48705f0 16 sym.imp.__libc_start_main
-0xaaaae4870600 16 sym.imp.__cxa_finalize
-0xaaaae4870610 16 loc.imp.__gmon_start__
-0xaaaae4870620 16 sym.imp.abort
-0xaaaae4870630 16 sym.imp.printf
-[0xaaaae4870754]> fs symbols; f
-```
-
-### af
-
-analyze functions.
-
-```bash
-[0x000000000000]> af?
-Usage: af
-| af ([name]) ([addr])                     analyze functions (start at addr or $$)
-| af+ addr name [type] [diff]              hand craft a function (requires afb+)
-| af- [addr]                               clean all function analysis data (or function at addr)
-| afa                                      analyze function arguments in a call (afal honors dbg.funcarg)
-| afB 16                                   set current function as thumb (change asm.bits)
-| afb[?] [addr]                            List basic blocks of given function
-| afb+ fcnA bbA sz [j] [f] ([t]( [d]))     add bb to function @ fcnaddr
-| afbF([0|1])                              Toggle the basic-block 'folded' attribute
-| afc[?] type @[addr]                      set calling convention for function
-| afC[lc] ([addr])@[addr]                  calculate the Cycles (afC) or Cyclomatic Complexity (afCc)
-| afd[addr]                                show function + delta for given offset
-| afF[1|0|]                                fold/unfold/toggle
-| afi [addr|fcn.name]                      show function(s) information (verbose afl)
-| afj [tableaddr] [elem_sz] [count] [seg]  analyze function jumptable (adding seg to each elem)
-| afl[?] [ls*] [fcn name]                  list functions (addr, size, bbs, name) (see afll)
-| afm name                                 merge two functions
-| afM name                                 print functions map
-| afn[?] name [addr]                       rename name for function at address (change flag too)
-| afna                                     suggest automatic name for current offset
-| afo[?j] [fcn.name]                       show address for the function name or current offset
-| afr ([name]) ([addr])                    analyze functions recursively
-| afs[?] ([fcnsign])                       get/set function signature at current address (afs! uses cfg.editor)
-| afS[stack_size]                          set stack frame size for function at current address
-| aft[?]                                   type matching, type propagation
-| afu addr                                 resize and analyze function from current address until addr
-| afv[absrx]?                              manipulate args, registers and variables in function
-| afx[m]                                   list function references, see pifc
-```
-
-Function variables manipulation.
-
-```bash
-[0x004008e0]> afv?
-Usage: afv[rbs]   Function variables manipulation
-| afv*                          output r2 command to add args/locals to flagspace
-| afv-([name])                  remove all or given var
-| afv=                          list function variables and arguments with disasm refs
-| afva                          analyze function arguments/locals
-| afvb[?]                       manipulate bp based arguments/locals
-| afvd name                     output r2 command for displaying the value of args/locals in the debugger
-| afvf                          show BP relative stackframe variables
-| afvn [new_name] ([old_name])  rename argument/local
-| afvr[?]                       manipulate register based arguments
-| afvR [varname]                list addresses where vars are accessed (READ)
-| afvs[?]                       manipulate sp based arguments/locals
-| afvt [name] [new_type]        change type for given argument/local
-| afvW [varname]                list addresses where vars are accessed (WRITE)
-| afvx                          show function variable xrefs (same as afvR+afvW)
-```
+[Disassembling with radare2.pdf](https://www.linuxdays.cz/2017/video/Tomas_Antecky-Disassembling_with_radare2.pdf)
+pancake - [Learning Radare In Practice.pdf](https://www.radare.org/get/THC2018.pdf)
+[Overcoming fear: reversing with radare2.pdf](https://conference.hitb.org/hitbsecconf2019ams/materials/D1T3%20-%20Reversing%20with%20Radare2%20-%20Arnau%20Gamez%20Montolio.pdf)

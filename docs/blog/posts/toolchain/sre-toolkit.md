@@ -122,6 +122,8 @@ ARM64 Reversing And Exploitation: [1](https://8ksec.io/arm64-reversing-and-explo
 
 ---
 
+[Initiating Linux Binary Exploitation: A Beginner's Expedition into Code Manipulation](https://www.kayssel.com/series/binary-exploitation/)
+
 [ARM64 Reverse Engineering and Exploitation Training (November 2018)](http://antid0te-sg.com/blog/18-11-12-arm64-reverse-engineering-exploitation-singapore.html)
 
 Introduction to x64 Linux Binary Exploitation: [1](https://valsamaras.medium.com/introduction-to-x64-linux-binary-exploitation-part-1-14ad4a27aeef), [2](https://valsamaras.medium.com/introduction-to-x64-binary-exploitation-part-2-return-into-libc-c325017f465), [3](https://valsamaras.medium.com/introduction-to-x64-linux-binary-exploitation-part-3-rop-chains-3cdcf17e8826), [4](https://valsamaras.medium.com/introduction-to-x64-linux-binary-exploitation-part-4-stack-canaries-e9b6dd2c3127), [5](https://valsamaras.medium.com/introduction-to-x64-linux-binary-exploitation-part-5-aslr-394d0dc8e4fb)
