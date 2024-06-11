@@ -144,7 +144,31 @@ vim 粘贴自动缩进导致格式混乱问题解决方案：
 
 [configuration - Turning off auto indent when pasting text into vim - Stack Overflow](https://stackoverflow.com/questions/2514445/turning-off-auto-indent-when-pasting-text-into-vim)
 
-在 ~/.vimrc 中添加以下行:
+https://stackoverflow.com/a/2514520
+
+To turn off autoindent when you paste code, there's a special "paste" mode.
+
+1. Type `:set paste`, then paste your code. Note that the text in the tooltip now says `-- INSERT (paste) --`.
+2. Type `:set nopaste` to turn off the paste-mode, so that auto-indenting when you type works correctly again.
+
+https://stackoverflow.com/a/8018865
+
+If you are working remotely, e.g. console over *SSH*
+
+1. Type `:set noai` to temporarily disable autoindent.
+2. Type `:set ai` to re-enable autoindent after insert.
+
+https://stackoverflow.com/a/62982306
+
+I am a Python user who sometimes copy and paste into Vim.
+This won't happen if you don't tell it is a Python script.
+
+1. `set paste`: works perfect.
+2. `set noai`: still introduced extra whitespace.
+
+https://stackoverflow.com/a/38258720
+
+在 `~/.vimrc` 中添加以下行:
 
 ```vim
 let &t_SI .= "\<Esc>[?2004h"

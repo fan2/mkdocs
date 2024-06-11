@@ -335,7 +335,41 @@ End of assembler dump.
 
 Instructions are still 4-byte(32 bits) long and mostly the same as A32.
 
-## auto display
+## next-line
+
+Turn on `disassemble-next-line` switch.
+
+```bash
+(gdb) show disassemble-next-line
+Debugger's willingness to use disassemble-next-line is off.
+(gdb) set disassemble-next-line on
+(gdb) show disassemble-next-line
+Debugger's willingness to use disassemble-next-line is on.
+```
+
+It will then display the next disassembly/instruction when stopped.
+
+```bash
+(gdb) starti
+Starting program: /home/pifan/Projects/cpp/test-gdb
+
+Program stopped.
+0x0000fffff7fd9c40 in _start () from /lib/ld-linux-aarch64.so.1
+=> 0x0000fffff7fd9c40 <_start+0>:	5f 24 03 d5	bti	c
+
+(gdb) b main
+Breakpoint 1 at 0xaaaaaaaa07b0: file test-gdb.c, line 16.
+(gdb) c
+Continuing.
+[Thread debugging using libthread_db enabled]
+Using host libthread_db library "/lib/aarch64-linux-gnu/libthread_db.so.1".
+
+Breakpoint 1, main (argc=1, argv=0xfffffffff2f8) at test-gdb.c:16
+16	    long result = 0;
+=> 0x0000aaaaaaaa07b0 <main+16>:	ff 17 00 f9	str	xzr, [sp, #40]
+```
+
+### auto display
 
 [10 Examining Data](https://sourceware.org/gdb/current/onlinedocs/gdb.html/Data.html#Data) - [10.8 Automatic Display](https://sourceware.org/gdb/current/onlinedocs/gdb.html/Auto-Display.html#Auto-Display)
 
@@ -445,8 +479,6 @@ si 单步跟踪 C 语句 `sum += i`，每次自动打印该步运行的机器指
 
 [gdb调试的layout使用](https://blog.csdn.net/zhangjs0322/article/details/10152279)
 
-`show tui` 可以查看 TUI 配置变量（configuration variables）。
-
 `tui enable` / `tui disable`: 开启进入 / 禁用退出 TUI 模式。
 
 ```bash
@@ -466,6 +498,8 @@ Type "apropos -v word" for full documentation of commands related to "word".
 Command name abbreviations are allowed if unambiguous.
 ```
 
+### enable
+
 执行 `tui enable` 进入 TUI 模式，该模式主要涉及到 src（源码）、asm（汇编）、status（状态条） 和 cmd（命令）四个窗口（win）。
 
 执行 `info win` 可以列举当前显示的窗口（win），默认打开 src 源码窗口，中间是 status 状态栏，底下是 cmd 窗口部分。
@@ -477,6 +511,8 @@ src    34    100     (has focus)
 status 1     100
 cmd    18    100
 ```
+
+### layout
 
 执行 `layout` 命令可以切换窗口布局：
 
@@ -513,10 +549,35 @@ Command name abbreviations are allowed if unambiguous.
 
 > Changes which TUI window is currently active for scrolling.
 
-此外，还可通过 `winheight` 命令调整窗口高度：
+### set
+
+`show tui` 可以查看 TUI 配置变量（configuration variables）：
+
+```bash
+(gdb) show tui
+tui active-border-mode:  The attribute mode to use for the active TUI window border is "bold-standout".
+tui border-kind:  The kind of border for TUI windows is "acs".
+tui border-mode:  The attribute mode to use for the TUI window borders is "normal".
+tui compact-source:  TUI source window compactness is off.
+tui tab-width:  TUI tab width is 8 spaces.
+```
+
+将 tui tab-width 从 8 调整为 4：
+
+```bash
+(gdb) show tui tab-width
+TUI tab width is 8 spaces.
+(gdb) set tui tab-width 4
+(gdb) show tui tab-width
+TUI tab width is 4 spaces.
+```
+
+此外，在 TUI 模式下，可通过 `winheight` 命令调整窗口高度：
 
 - `winheight name +count`: winheight src -5，将源码窗口降低 5 行。
 - `winheight name -count`: winheight asm +10，将汇编窗口增高 10 行。
+
+### disable
 
 执行 `tui disable` 退出 TUI 模式，返回 GDB 控制台（console interpreter）。
 
@@ -525,4 +586,4 @@ Command name abbreviations are allowed if unambiguous.
 *   ctrl + x，再按2：双窗口模式
 *   ctrl + x，再按a：退出 TUI 模式
 
-当然，我们也可以安装 GDB 增强扩展插件 `GEF` 或 `pwndbg`，参考下篇《[GDB Enhanced Extensions](./7-gdb-enhanced.md)》。
+当然，也可以安装 GDB 增强扩展插件 `GEF`,`pwndbg` 或 `gdb-dashboard`，参考下篇《[GDB Enhanced Extensions](./7-gdb-enhanced.md)》。

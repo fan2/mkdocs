@@ -16,7 +16,7 @@ comments: true
 
 [Previously](./plt-puts-pwndbg.md), we've dynamically analysed how shared dynamic symbols such as `puts` are resolved and relocated at runtime using gdb-pwndbg.
 
-In this article, we'll do the same work, but change our dynamic analysis tool to the popular open-source SRE toolkit r2(aka [radare2](../toolchain/radare2-basics.md)).
+On this post, we'll do much the same work, but change our dynamic analysis tool to the popular open-source SRE toolkit r2(aka [radare2](../toolchain/radare2-basics.md)).
 
 It is also a thorough and comprehensive debugging exercise, demonstrating the power and versatility of the `r2` toolset.
 
@@ -169,6 +169,7 @@ List memory maps of current/target process.
 2. `r-x` marks *LOAD0* segment; `rw-` designates *LOAD1* segment.
 
 ```bash
+# dpq get pid then !cat /proc/pid/maps
 [0xffff98492c40]> dm
 0x0000aaaadc760000 - 0x0000aaaadc761000 - usr     4K s r-x /home/pifan/Projects/cpp/a.out /home/pifan/Projects/cpp/a.out ; map._home_pifan_Projects_cpp_a.out.r_x
 0x0000aaaadc770000 - 0x0000aaaadc772000 - usr     8K s rw- /home/pifan/Projects/cpp/a.out /home/pifan/Projects/cpp/a.out ; map._home_pifan_Projects_cpp_a.out.rw_
@@ -309,6 +310,10 @@ $ nm -u a.out
 
 The PLT stub `puts@plt` for `puts@GLIBC_2.17` is labelled as `sym.imp.puts`/`rsym.puts` by r2 after loading.
 
+> `sym.` stands for *sym*bol, e.g., sym.main, sym.func.
+> `imp.` stands for *imp*orted symbols like puts/scanf, to be relocated.
+> `rsym.` stands for has-been-*r*elocated symbols like puts/scanf in libc.so.
+
 Type `ii` to list the symbols imported from other libraries.
 
 > The vaddr of relocated symbol `rsym.puts` in PLT can be calculated as follows.
@@ -391,7 +396,7 @@ Try to show context disassembly of 15 instructions around `puts`.
 > The GOT entry for `puts@plt` is labelled as `reloc.puts` by r2, equivalent to `puts@got.plt` in pwndbg.
 
 ```bash hl_lines="20"
-[0xffff98492c40]> pd-- 15 @0xaaaadc770fc8
+[0xffff98492c40]> pd-- 15 @ reloc.puts # @ 0xaaaadc770fc8
             0xaaaadc770f8c      00000000       invalid
             ;-- section..got:
             0xaaaadc770f90      00000000       invalid                 ; [21] -rw- section size 112 named .got
@@ -814,8 +819,8 @@ stp x29, x30, [sp, -0x40]!
 Type `dmi` to list symbols of `libc.so` and grep symbol `puts`:
 
 ```bash
-[0xaaaadc76063c]> # dmi libc.so ~..
-[0xaaaadc76063c]> dmi libc.so ~puts # dmi libc.so puts~ puts$
+[0xaaaadc76063c]> # dmi libc ~..
+[0xaaaadc76063c]> dmi libc ~puts # dmi libc puts ~ puts$
 
 [Symbols]
 nth paddr      vaddr          bind   type  size  lib name
@@ -880,7 +885,7 @@ Hello, Linux!
 (501878) Process exited with status=0x0
 ```
 
-## puts@libc
+## puts@GLIBC
 
 Although everything is clear, we can do some confirmation from the shared library perspective.
 

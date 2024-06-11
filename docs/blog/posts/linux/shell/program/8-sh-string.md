@@ -316,6 +316,8 @@ $ echo $index
 5
 ```
 
+**注意**：返回的索引从 1 开始。
+
 ## [字符串拼接](https://www.cnblogs.com/wuac/p/11121709.html)
 
 字符串五种拼接模式：

@@ -412,6 +412,24 @@ List the toolset utility binutils with the same directory:
 [0x000000000000]> !ls -l /snap/radare2/2571/bin/
 ```
 
+Take the internal evaluation as a parameter for a shell command.
+
+```bash
+[0x41764141754141]> rax2 -r `dr pc`
+int64   18425896129347905
+uint64  18425896129347905
+hex     0x41764141754141
+octal   01013544050135240501
+unit    16.4P
+segment 14175000:0141
+string  "AAuAAvA"
+float   15.328431f
+double  0.000000
+binary  0b01000001011101100100000101000001011101010100000101000001
+base36  0_51ffntovght
+ternary 0t10022111022200110121022011120022202
+```
+
 ### pipe
 
 The standard UNIX pipe `|` is also available in the radare2 shell. You can use it to filter the output of an r2 command with any shell program that reads from stdin, such as `grep`, `less`, `wc`. If you do not want to spawn anything, or you can’t, or the target system does not have the basic UNIX tools you need (Windows or embedded users), you can also use the built-in grep (`~`).
@@ -435,22 +453,26 @@ Combining internal and external commands via pipe to extract the current filenam
 /home/pifan/Projects/cpp/test-gdb
 ```
 
-Take the internal evaluation as a parameter for a shell command.
+Redirection without output, following covers front:
 
 ```bash
-[0x41764141754141]> rax2 -r `dr pc`
-int64   18425896129347905
-uint64  18425896129347905
-hex     0x41764141754141
-octal   01013544050135240501
-unit    16.4P
-segment 14175000:0141
-string  "AAuAAvA"
-float   15.328431f
-double  0.000000
-binary  0b01000001011101100100000101000001011101010100000101000001
-base36  0_51ffntovght
-ternary 0t10022111022200110121022011120022202
+[0x000000000000]> ?v sym.imp.puts > sym_addr.txt
+[0x000000000000]> ?v reloc.puts > sym_addr.txt
+```
+
+Use `tee` to write to both stdout and file:
+
+```bash
+[0x000000000000]> ?v sym.imp.puts | tee sym_addr.txt
+[0x000000000000]> ?v reloc.puts | tee sym_addr.txt
+```
+
+Append to the given FILE, do not overwrite:
+
+```bash
+[0x000000000000]> ?v sym.imp.puts | tee -a sym_addr.txt
+[0x000000000000]> ?v reloc.puts | tee -a sym_addr.txt
+[0x000000000000]> ieq | tee -a sym_addr.txt
 ```
 
 ## env
@@ -518,6 +540,24 @@ Usage: e [var[=value]]  Evaluable vars
 | evj [key]          list config vars in verbose format in JSON
 ```
 
+Config `bin.relocs.apply`:
+
+```bash
+[0xaaaadc6e0640]> e bin.relocs.apply
+false
+[0xaaaadc6e0640]> e bin.relocs.apply=true; e bin.relocs.apply
+true
+```
+
+Config `search.in` to search in all memory maps:
+
+```bash
+[0x004005c0]> e search.in
+dbg.map
+[0x004005c0]> e search.in = dbg.maps; e search.in
+dbg.maps
+```
+
 [Radare2 can't set breakpoint?](https://reverseengineering.stackexchange.com/questions/13689/radare2-noob-question-cant-set-breakpoint)
 
 Set `e dbg.bpinmaps=false` so Radare2 allows you to set breakpoint without that restriction.
@@ -525,8 +565,7 @@ Set `e dbg.bpinmaps=false` so Radare2 allows you to set breakpoint without that 
 ```bash
 [0xffffbc84ae70]> e dbg.bpinmaps
 true
-[0xffffbc84ae70]> e dbg.bpinmaps=false
-[0xffffbc84ae70]> e dbg.bpinmaps
+[0xffffbc84ae70]> e dbg.bpinmaps=false; e dbg.bpinmaps
 false
 ```
 
@@ -534,7 +573,9 @@ View more options with question mark.
 
 ```bash
 [0xffffbc84ae70]> e asm.arch=?
+[0xffffbc84ae70]> e bin.relocs.apply=?
 [0xffffbc84ae70]> e search.in=?
+[0xffffbc84ae70]> e dbg.bpinmap=?
 ```
 
 To configure radare the visual way, use `Ve`.
@@ -682,6 +723,10 @@ begin/end of function:
 
 ### grep
 
+[2. First Steps - 2.2. Command Format](https://book.rada.re/first_steps/command_format.html)
+
+The standard UNIX pipe `|` is also available in the *radare2* shell. You can use it to filter the output of an `r2` command with any shell program that reads from stdin, such as `grep`, `less`, `wc`. If you do not want to spawn anything, or you can’t, or the target system does not have the basic UNIX tools you need (Windows or embedded users), you can also use the built-in grep (`~`).
+
 ```bash
 [0x000000000000]> @?
 [0x000000000000]> ?@?
@@ -707,12 +752,37 @@ Usage: [command]~[modifier][word,word][endmodifier][[column]][:line]
 modifier:
 ```
 
+The `~` character enables internal grep-like function used to filter output of any command:
+
+```bash
+pd 20~call            ; disassemble 20 instructions and grep output for 'call'
+```
+
+Additionally, you can grep either for columns or for rows:
+
+```bash
+pd 20~call:0          ; get first row
+pd 20~call:1          ; get second row
+pd 20~call[0]         ; get first column
+pd 20~call[1]         ; get second column
+```
+
+Or even combine them:
+
+```bash
+pd 20~call:0[0]       ; grep the first column of the first row matching 'call'
+```
+
 ```bash
 [0xaaaae7580754]> i~pic
 pic      true
 
 [0xaaaae7580754]> i~baddr
 baddr    0xaaaae7580000
+
+# show only column 1
+[0xaaaae7580754]> i~baddr[1]
+0xaaaae7580000
 ```
 
 ## refs

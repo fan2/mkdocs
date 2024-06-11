@@ -436,33 +436,33 @@ Print/Disassemble 10 instructions following pc:
 
 1. print the instruction to be executed next with.
 
-> gdb: `x/i $pc`; `disassemble $pc, $pc+4`.
-> r2: `pd 1`
+    > gdb: `x/i $pc`; `disassemble $pc, $pc+4`.
+    > r2: `pd 1`
 
 2. disassemble 2 instructions above, exclude pc
 
-> gdb: `x/2i $pc-8`; `disassemble $pc-8, $pc`
-> r2: `pd -2`
+    > gdb: `x/2i $pc-8`; `disassemble $pc-8, $pc`
+    > r2: `pd -2`
 
 3. disassemble 2 instructions below, exclude pc
 
-> gdb: `x/2i $pc+4`; `disassemble $pc+4, $pc+12`
-> r2: `pd 2 @ +$l`
+    > gdb: `x/2i $pc+4`; `disassemble $pc+4, $pc+12`
+    > r2: `pd 2 @ +$l`
 
 4. disassemble 3 instructions backwards, include pc
 
-> gdb: `x/3i $pc-8`; `disassemble $pc-8, $pc+4`
-> r2: `pd 3 @ -2*$l`
+    > gdb: `x/3i $pc-8`; `disassemble $pc-8, $pc+4`
+    > r2: `pd 3 @ -2*$l`
 
 5. disassemble 3 instructions forwards, include pc
 
-> gdb: `x/3i $pc`; `disassemble $pc, $pc+12`
-> r2: `pd 3`
+    > gdb: `x/3i $pc`; `disassemble $pc, $pc+12`
+    > r2: `pd 3`
 
 6. context disassembly of 3 instructions
 
-> gdb: `x/7i $pc-12`; `disassemble $pc-12, $pc+16`
-> r2: `pd 7 @ -3*$l`. `pd-- 3` - three above, two below.
+    > gdb: `x/7i $pc-12`; `disassemble $pc-12, $pc+16`
+    > r2: `pd 7 @ -3*$l`. `pd-- 3` - three above, two below.
 
 Disassemble a symbol/function at a memory address:
 
@@ -481,6 +481,13 @@ Disassemble a symbol/function at a memory address:
 
 ```
 
+Seek to somewhere, then try to disassemble:
+
+```bash
+[0x000000000000]> s main; pd 5 # s sym.main; pd 5
+[0x000000000000]> s sym.func; pd 5
+```
+
 Disassemble function at current pc:
 
 > Unlike `pdf`, `pif` does not display contexts such as address and opcode.
@@ -493,13 +500,16 @@ Disassemble function at current pc:
 After execute `aa` to analyze all, we can disassemble function by symbol name:
 
 ```bash
-[0x000000000000]> s main; pdf
-[0x000000000000]> s sym.main; pdf
-[0x000000000000]> pdf @ main
-[0x000000000000]> pdf @ sym.main
-
-[0x000000000000]> s sym.func; pdf
+[0x000000000000]> pdf @ entry0
+[0x000000000000]> pdf @ main # pdf @ sym.main
 [0x000000000000]> pdf @ sym.func
+```
+
+Seek to somewhere, then try to disassemble as function:
+
+```bash
+[0x000000000000]> s main; pdf # s sym.main; pdf
+[0x000000000000]> s sym.func; pdf
 ```
 
 For given address <addr\>, try `pdf @addr`/`pd 1 @addr` to detect the symbol/label name.

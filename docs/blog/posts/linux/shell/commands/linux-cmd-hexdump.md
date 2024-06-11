@@ -174,6 +174,19 @@ sed -E 's/(..)/\1 /g' | \
 tr -d '\n'
 ```
 
+[Using Radare2 to patch a binary](https://rderik.com/blog/using-radare2-to-patch-a-binary/)
+
+`xxd`: generating a hex dump for edit.
+
+> `-r`: reverse operation: convert (or patch) hexdump into binary.
+
+```bash
+$ xxd a.out > a.hex
+$ vim a.hex
+$ xxd -r a.hex > a-patched.out
+$ chmod +x a-patched.out
+```
+
 ## hd
 
 Linux/Unix（macOS）下的命令行工具 `hexdump` 可按指定进制格式查看文档：
@@ -360,7 +373,7 @@ $ readelf -h write64 | grep "Entry point address"
   Entry point address:               0x640
 ```
 
-### demo - plt/rela/got
+### demo - plt/got
 
 参考 [puts@plt/rela/got - static analysis](../../../elf/plt-puts-analysis.md)。
 
@@ -400,7 +413,19 @@ Offset		Address				Value
 
 As is shown in `readelf -d a.out`, `DT_RELAENT`=0x18, that means size of one RELA reloc is 24.
 
-Hexdump contents of RELA section `.rela.plt` grouped by unit of giant-word, 3 units per line.
+The prototype of relocation table entry(SHT_RELA) is declared in `elf.h` as follows.
+
+```c
+// /usr/include/elf.h
+typedef struct
+{
+  Elf64_Addr    r_offset;       /* Address */
+  Elf64_Xword   r_info;         /* Relocation type and symbol index */
+  Elf64_Sxword  r_addend;       /* Addend */
+} Elf64_Rela;
+```
+
+Hexdump contents of the `.rela.plt`(DT_RELA) section, grouped by unit of giant-word, 3 units per line.
 
 > Pay attention to the first giant-word: it points to `.got` entry.
 
@@ -415,4 +440,41 @@ address				offset			info			addend
 0000000000000570  0000000000010fb8 0000000600000402 0000000000000000
 0000000000000588  0000000000010fc0 0000000700000402 0000000000000000
 00000000000005a0  0000000000010fc8 0000000800000402 0000000000000000
+```
+
+As is shown in `readelf -d a.out`, `DT_SYMENT`=0x18, that means size of one symbol table entry (of `.dynsym`) is 24.
+
+The prototype of symbol table entry is declared in `elf.h` as follows.
+
+```c
+// /usr/include/elf.h
+typedef struct
+{
+  Elf64_Word    st_name;        /* Symbol name (string tbl index) */
+  unsigned char st_info;        /* Symbol type and binding */
+  unsigned char st_other;       /* Symbol visibility */
+  Elf64_Section st_shndx;       /* Section index */
+  Elf64_Addr    st_value;       /* Symbol value */
+  Elf64_Xword   st_size;        /* Symbol size */
+} Elf64_Sym;
+```
+
+Hexdump contents of the `.dynsym`(DT_SYMTAB) section according to its prototyped TLV(*T*ype-*L*ength-*V*alue).
+
+```bash hl_lines="14"
+$ ds_offset=$(objdump -hw a.out | awk '/.dynsym/{print "0x"$6}')
+$ ds_size=$(objdump -hw a.out | awk '/.dynsym/{print "0x"$3}')
+$ hexdump -v -s $ds_offset -n $ds_size -e '"%016_ax " /4 "%08x\t" 2/1 "%02x\t\t\t" /2 "%04x\t" 2/8 "%016x\t" "\n"' a.out \
+| awk 'BEGIN{print "offset\t\t\t\tname\tinfo\t\tother\tshndx\tvalue\t\t\t\tsize"} 1'
+offset				name	info		other	shndx	value				size
+00000000000002b8 00000000	00			00		0000	0000000000000000	0000000000000000
+00000000000002d0 00000000	03			00		000b	00000000000005b8	0000000000000000
+00000000000002e8 00000000	03			00		0016	0000000000011000	0000000000000000
+0000000000000300 00000010	12			00		0000	0000000000000000	0000000000000000
+0000000000000318 0000004d	20			00		0000	0000000000000000	0000000000000000
+0000000000000330 00000001	22			00		0000	0000000000000000	0000000000000000
+0000000000000348 00000069	20			00		0000	0000000000000000	0000000000000000
+0000000000000360 00000027	12			00		0000	0000000000000000	0000000000000000
+0000000000000378 00000022	12			00		0000	0000000000000000	0000000000000000
+0000000000000390 00000078	20			00		0000	0000000000000000	0000000000000000
 ```

@@ -523,7 +523,7 @@ String dump of section '.dynstr':
 
 As is shown in `readelf -d a.out`, `DT_SYMENT`=0x18, that means size of one symbol table entry (of `.dynsym`) is 24.
 
-Hexdump contents of section `.dynsym`(DT_SYMTAB) grouped by unit of giant-word, 3 units per line.
+Hexdump contents of the `.dynsym`(DT_SYMTAB) section according to its prototyped TLV(*T*ype-*L*ength-*V*alue).
 
 ```bash hl_lines="14"
 $ ds_offset=$(objdump -hw a.out | awk '/.dynsym/{print "0x"$6}')
@@ -661,7 +661,7 @@ objdump -j .got -j .rela.dyn -j .rela.plt -j .plt -s a.out
 
 As is shown in `readelf -d a.out`, `DT_RELAENT`=0x18, that means size of one RELA reloc is 24.
 
-Hexdump contents of section `.rela.dyn`(DT_RELA) grouped by unit of giant-word, 3 units per line.
+Hexdump contents of the `.rela.plt`(DT_RELA) section, grouped by unit of giant-word, 3 units per line.
 
 > Pay attention to the offset, it points to a `.got` entry.
 

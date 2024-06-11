@@ -16,7 +16,7 @@ comments: true
 
 [Previously](./plt-puts-analysis.md) we've statically analysed the layout and ingredients of the DYN PIE ELF `a.out`. In particular, we've focused on dynamic sections/symbols and relocation entries.
 
-In this article, we'll take a closer look at how shared dynamic symbols such as `puts` are resolved and relocated at runtime.
+In this article, we'll do some dynamic analysis, taking a closer look at how shared dynamic symbols such as `puts` are resolved and relocated at runtime.
 
 It is also a thorough and comprehensive `pwndbg` debugging exercise, showcasing the use of the advanced features of GDB.
 

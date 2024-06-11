@@ -18,11 +18,16 @@ To make debugging easier and more productive, there are extensions for GDB such 
 
 ## GDB Enhanced
 
+[Show current assembly instruction in GDB](https://stackoverflow.com/questions/1902901/show-current-assembly-instruction-in-gdb)
+
 [Arm Assembly Internals and Reverse Engineering](https://www.amazon.com/Blue-Fox-Assembly-Internals-Analysis/dp/1119745306) | Chapter 11 Dynamic Analysis - Command-Line Debugging
 
 1. [pwndbg](https://github.com/pwndbg/pwndbg): Exploit Development and Reverse Engineering with GDB Made Easy
 2. [GEF](https://github.com/hugsy/gef) (GDB Enhanced Features): a modern experience for GDB with advanced debugging capabilities for exploit devs & reverse engineers on Linux
 3. [PEDA](https://github.com/longld/peda) - Python Exploit Development Assistance for GDB
+4. [gdb-dashboard](https://github.com/cyrus-and/gdb-dashboard): Modular visual interface for GDB in Python
+
+### all in one
 
 [Pwndbg + GEF + Peda — One for all, and all for one](https://infosecwriteups.com/pwndbg-gef-peda-one-for-all-and-all-for-one-714d71bf36b8)
 
@@ -34,28 +39,41 @@ $ cd ~ && mkdir gdbe
 $ cd ~/gdbe
 $ git clone https://github.com/pwndbg/pwndbg
 $ cd pwndbg && ./setup.sh
-$ echo "source ~/gdbe/pwndbg/gdbinit.py" > ~/.gdbinit_pwndbg
+$ echo "source ~/gdbe/pwndbg/gdbinit.py" > ~/.gdbinit-pwndbg
 
 $ cd ~/gdbe
 $ git clone https://github.com/hugsy/gef.git
-$ cd gef && cp gef.py ~/.gdbinit-gef.py
+# cp ~/gdbe/gef/gef.py ~/.gdbinit-gef.py
+# ln -sf ~/gdbe/gef/gef.py ~/.gdbinit-gef.py
+$ echo "source ~/gdbe/gef/gef.py" > ~/.gdbinit-gef
+
+$ cd ~/gdbe
+$ git clone https://github.com/cyrus-and/gdb-dashboard.git
+$ ln -sf ~/gdbe/gdb-dashboard/.gdbinit ~/.gdbinit-dashboard
 ```
 
 Step 2 - config `.gitinit`:
 
 ```bash title=".gdbinit"
 define init-pwndbg
-source ~/.gdbinit_pwndbg
+source ~/.gdbinit-pwndbg
 end
 document init-pwndbg
 Initializes PwnDBG
 end
 
 define init-gef
-source ~/.gdbinit-gef.py
+source ~/.gdbinit-gef
 end
 document init-gef
 Initializes GEF (GDB Enhanced Features)
+end
+
+define init-dashboard
+source ~/.gdbinit-dashboard
+end
+document init-dashboard
+Initializes GDB Dashboard
 end
 ```
 
@@ -70,18 +88,48 @@ $ sudo vim /usr/local/bin/gdb-gef
 #!/bin/sh
 exec gdb -q -ex init-gef "$@"
 
+$ sudo vim /usr/local/bin/gdb-dashboard
+#!/bin/sh
+exec gdb -q -ex init-dashboard "$@"
+
 $ sudo chmod +x /usr/local/bin/gdb-*
 ```
 
+### instant help
+
 Now you can test it by running either one of the three commands:
 
-- `gdb` - native
-- `gdb-pwndbg`
-- `gdb-gef`
+**`gdb`**:
+
+- (gdb) help starti
+- (gdb) help info
+- (gdb) help breakpoints
+- (gdb) help step
+- (gdb) help x
+
+**`gdb-pwndbg`**:
+
+- pwndbg> pwndbg
+- pwndbg> help pwndbg
+- pwndbg> pwndbg -c start
+- pwndbg> entry -h
+- pwndbg> sstart -h
+
+**`gdb-gef`**:
+
+- gef➤  help gef
+- gef➤  gef help
+
+**`gdb-dashboard`**:
+
+- \>\>\> help dashboard
+- \>\>\> dashboard -layout source assembly registers stack
 
 ## usage of gef
 
 <https://hugsy.github.io/gef/>
+
+[Showroom](https://hugsy.github.io/gef/screenshots/)
 
 `GEF` is a set of commands for x86/64, ARM, MIPS, PowerPC and SPARC to assist exploit developers and reverse-engineers when using old school GDB.
 
@@ -123,6 +171,8 @@ gef➤  gef save
 ## usage of pwndbg
 
 <https://pwndbg.re/>
+
+[FEATURES](https://github.com/pwndbg/pwndbg/blob/dev/FEATURES.md)
 
 `pwndbg` is a GDB plug-in that makes debugging with GDB suck less, with a focus on features needed by low-level software developers, hardware hackers, reverse-engineers and exploit developers.
 
