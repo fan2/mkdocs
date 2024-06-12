@@ -147,7 +147,16 @@ Usage: dr  Registers commands
 | drw <hexnum>         set contents of the register arena
 ```
 
-dr - show registers examples:
+Overview register file:
+
+`drt[?]`: show all register types, e.g., `drt gpr 64`
+`drp[?]`: display current register profile
+`drl[j]`: list all register names, one per line
+`dr`: show 'gpr' registers, one per line
+`dr=` : show registers in columns, same as `show-compact-regs` in pwndbg
+`drr`: show registers references (telescoping)
+
+Show content of specified register:
 
 ```bash
 [0xaaaadec30754]> dr?pc # ?v $r{PC}
@@ -156,6 +165,18 @@ dr - show registers examples:
 0xffffdd6b1210
 [0xaaaadec30754]> dr sp # ?v $r:SP
 0xffffdd6b1210
+[0xaaaab3d30640]> dr x16; dr x17
+0xaaaab3d30640
+0xffffae99b010
+```
+
+View content of register in different modes(64-bit *X* / 32-bit *W*):
+
+```bash
+[0xaaaab3d30640]> dr x0
+0xffffae9c6180
+[0xaaaab3d30640]> dr w0
+0xae9c6180
 ```
 
 ### db - debug breakpoints
@@ -357,8 +378,6 @@ Type `v` again to open *func/var analysis* panel.
 
 The useful Debugger view shows us the Disassembly, Stack and Registers. We can move around the binary via seeking and stepping.
 
-Use the `p`/`P` command to swap current panel with the first/last one.
-
 Type `?` to open the help panel, press `X` to close the help panel.
 
 ```bash
@@ -394,12 +413,13 @@ Type `?` to open the help panel, press `X` to close the help panel.
 
 1. `/`: highlight input keyword
 2. `Tab`: move the focus to the next panel without changing their position.
-3. `Enter`: maximize current panel in zoom mode. Press `Enter` or `q` to quit.
-4. `space`: toggle graph / panels.
-5. `m`: select the menu panel, use `hjkl` to navigate and `Enter` to choose.
-6. `.`: seek to PC or entrypoint.
-7. `g`: go/seek to given offset/address, e.g., `g main`, `g sym.func`.
-8. `s`/`S`: step in / step over.
+3. `p`/`P`: swap current/focus panel with the next/previous one. Something like a first-person view.
+4. `Enter`: maximize current panel in zoom mode. Press `Enter` or `q` to quit.
+5. `space`: toggle graph / panels.
+6. `m`: select the menu panel, use `hjkl` to navigate and `Enter` to choose.
+7. `.`: seek to PC or entrypoint.
+8. `g`: go/seek to given offset/address, e.g., `g main`, `g sym.func`.
+9. `s`/`S`: step in / step over.
 
 Type `:` to enter Bottom Command mode, run r2 commands in prompt, e.g., `db`, `dc`.
 Press `v`/`q` to exit and return back to Visual Panels mode.
@@ -456,6 +476,8 @@ Type `?` to list all the commands of Visual Graph mode.
 Note the label inside square brackets of each node, such as `o[a-z]`, then type `oa` / `ob` / `oc` or `tab` to change central focus.
 
 ## refs
+
+[Defeating ioli with radare2](https://dustri.org/b/defeating-ioli-with-radare2.html) - [IOLI-crackme.tar.gz](https://github.com/radareorg/radare2-book/raw/master/src/crackmes/ioli/IOLI-crackme.tar.gz)
 
 [Reverse engineering with radare2](https://artik.blue/reversing)
 [Reverse Engineering With Radare2](https://samsymons.com/blog/reverse-engineering-with-radare2-part-1/)

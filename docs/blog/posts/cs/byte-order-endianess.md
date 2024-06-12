@@ -90,6 +90,16 @@ The mapping of a word-sized data object to memory is shown in the following figu
 
 [Overview of ARM64 ABI conventions](https://learn.microsoft.com/en-us/cpp/build/arm64-windows-abi-conventions) - [Endianness](https://learn.microsoft.com/en-us/cpp/build/arm64-windows-abi-conventions#endianness)
 
+[GCC | IA-64 Options](https://gcc.gnu.org/onlinedocs/gcc/IA-64-Options.html)
+
+> `-mbig-endian`: Generate code for a big-endian target. This is the *default* for HP-UX.
+> `-mlittle-endian`: Generate code for a little-endian target. This is the *default* for AIX5 and GNU/Linux.
+
+[GCC | AArch64 Options](https://gcc.gnu.org/onlinedocs/gcc/AArch64-Options.html)
+
+> `-mbig-endian`: Generate big-endian code. This is the *default* when GCC is configured for an ‘`aarch64_be-*-*`’ target.
+> `-mlittle-endian`: Generate little-endian code. This is the *default* when GCC is configured for an ‘`aarch64-*-*`’ but not an ‘`aarch64_be-*-*`’ target.
+
 ## Pros of Little Endian
 
 [Programming with 64-Bit ARM Assembly Language: Single Board Computer Development for Raspberry Pi and Mobile Devices](https://www.amazon.com/Programming-64-Bit-ARM-Assembly-Language/dp/1484258800/) | Chapter 2: Loading and Adding - Big vs. Little Endian

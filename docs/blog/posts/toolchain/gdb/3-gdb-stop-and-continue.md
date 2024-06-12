@@ -57,7 +57,7 @@ comments: true
 
 gcc 编译命令：`cc test-gdb.c -o test-gdb -g`
 
-```Shell title="test-gdb file format"
+```bash title="test-gdb file format"
 $ objdump -f test-gdb
 
 test-gdb:     file format elf64-littleaarch64
@@ -73,7 +73,7 @@ test-gdb: ELF 64-bit LSB pie executable, ARM aarch64, version 1 (SYSV), dynamica
 
 在 gdb 中输入 `list` 查看源代码，确认行号以便下断点。
 
-```Shell
+```bash
 (gdb) l 0
 1	#include <stdio.h>
 2	
@@ -170,9 +170,14 @@ Num     Type           Disp Enb Address            What
 
 > 注意 `b *main` 和 `b main` 断点位置的区别。*help break*: Address locations begin with "`*`" and specify an exact address in the program. Example: To specify the fourth byte past the start function "main", use "`*main + 4`".
 
-```Shell
+```bash
 (gdb) b *main
-Breakpoint 2 at 0x7a0: file test-gdb.c, line 14.
+Breakpoint 1 at 0x7a0: file test-gdb.c, line 14.
+(gdb) b *main+16
+Breakpoint 2 at 0x7b0: file test-gdb.c, line 16.
+```
+
+```bash
 (gdb) b main
 Breakpoint 1 at 0x7b0: file test-gdb.c, line 16.
 (gdb) b 22
@@ -185,7 +190,7 @@ Breakpoint 4 at 0x768: file test-gdb.c, line 8.
 
 还可以通过指定地址 [break *addr](https://stackoverflow.com/questions/5459581/how-to-break-on-assembly-instruction-at-a-given-address-in-gdb) 的方式下断点：
 
-```Shell
+```bash
 (gdb) starti
 Starting program: /home/pifan/Projects/cpp/test-gdb
 
@@ -225,7 +230,7 @@ Num     Type           Disp Enb Address            What
 
 执行 `i b` 查看所有断点：
 
-```Shell
+```bash
 (gdb) i b
 Num     Type           Disp Enb Address            What
 1       breakpoint     keep y   0x00000000000007b0 in main at test-gdb.c:16
@@ -237,7 +242,7 @@ Num     Type           Disp Enb Address            What
 
 执行 `i b 1 3` 查看 1 号和 3 号断点：
 
-```Shell
+```bash
 (gdb) i b 1 3
 Num     Type           Disp Enb Address            What
 1       breakpoint     keep y   0x00000000000007b0 in main at test-gdb.c:16
@@ -250,7 +255,7 @@ Num     Type           Disp Enb Address            What
 
 > 注意：int i 为暂时定义（tentative definition），实为声明，无指令。
 
-```Shell
+```bash
 (gdb) r
 Starting program: /home/pifan/Projects/cpp/test-gdb
 [Thread debugging using libthread_db enabled]
@@ -301,6 +306,8 @@ Hardware watchpoint 1: *(uintptr_t*)0xaaaaaaab0fc8
 
 Then specify a command for the given watchpoint. Here we just hexdump the giant word stored in the memory.
 
+> Retype `commands 1` to end with a line saying just `end`.
+
 ```bash
 pwndbg> commands 1
 Type commands for breakpoint(s) 1, one per line.
@@ -328,14 +335,14 @@ Num     Type           Disp Enb Address            What
 
 在 1 号断点 main 函数处停下后，输入 `n`（next）执行下一条语句：
 
-```Shell
+```bash
 (gdb) n
 17	    for(i=1; i<=100; i++)
 ```
 
 不断输入 `n`，在 for 控制语句和循环体语句之间循环，直到循环结束（i=101）。
 
-```Shell
+```bash
 (gdb) n
 19	        result += i;
 (gdb) n
@@ -346,14 +353,14 @@ Num     Type           Disp Enb Address            What
 
 > [10 Examining Data](https://sourceware.org/gdb/current/onlinedocs/gdb.html/Data.html#Data): The usual way to examine data in your program is with the `print` command (abbreviated `p`), or its synonym `inspect`. It evaluates and prints the value of an expression of the language your program is written.
 
-```Shell
+```bash
 (gdb) p i
 $6 = 1
 ```
 
 执行 `n 6`，进行三轮循环后，i=4。
 
-```Shell
+```bash
 (gdb) n 6
 17	    for(i=1; i<=100; i++)
 (gdb) p i
@@ -370,7 +377,7 @@ $7 = 4
 
 在执行 nexti 之前，先执行 `disassemble` 命令反汇编 C 代码（函数），看看一行 C [源码背后对应的机器指令](https://sourceware.org/gdb/current/onlinedocs/gdb.html/Machine-Code.html#Machine-Code)。
 
-```Shell
+```bash
 (gdb) help disassemble
 Disassemble a specified section of memory.
 Usage: disassemble[/m|/r|/s] START [, END]
@@ -378,7 +385,7 @@ Usage: disassemble[/m|/r|/s] START [, END]
 
 执行 `disas /m main` 反汇编 main 函数，可以看到循环控制条件语句在 AARCH64 上对应 9 条机器指令，循环体语句 `result += i` 则对应 4 条机器指令。箭头指向当前 pc：
 
-```Shell
+```bash
 (gdb) disas /m main
 Dump of assembler code for function main:
 
@@ -405,7 +412,7 @@ Dump of assembler code for function main:
 
 执行 `nexti` 执行下一条指令，pc 箭头下移动：
 
-```Shell
+```bash
 (gdb) ni
 0x0000aaaaaaaa07c4	19	        result += i;
 
@@ -424,7 +431,7 @@ Dump of assembler code for function main:
 
 执行 `info frame` 可查看当前栈帧信息（[Frame Info](https://sourceware.org/gdb/current/onlinedocs/gdb.html/Frame-Info.html#Frame-Info)）: prints a verbose description of the selected stack frame.
 
-```Shell
+```bash
 (gdb) i f
 Stack level 0, frame at 0xfffffffff0d0:
  pc = 0xaaaaaaaa07c4 in main (test-gdb.c:19); saved pc = 0xfffff7e373fc
@@ -446,7 +453,7 @@ The optional argument `ignore-count` allows you to specify a further number of t
 
 输入 `c`（continue），继续执行到下一个断点或结尾。这里命中第 22 行的 2 号断点。
 
-```Shell
+```bash
 (gdb) c
 Continuing.
 
@@ -456,7 +463,7 @@ Breakpoint 2, main (argc=1, argv=0xfffffffff248) at test-gdb.c:22
 
 继续执行到 3 号断点，命中 func 函数的第一条指令。
 
-```Shell
+```bash
 (gdb) c
 Continuing.
 result[1-100] = 5050
@@ -467,7 +474,7 @@ Breakpoint 3, func (n=250) at test-gdb.c:5
 
 继续执行第 8 行的 4 号条件断点：
 
-```Shell
+```bash
 (gdb) c
 Continuing.
 
@@ -485,7 +492,7 @@ $1 = 50
 
 执行 [frame](https://sourceware.org/gdb/current/onlinedocs/gdb.html/Frame-Info.html#Frame-Info) 命令 prints a brief description of the currently selected stack frame，确认当前运行到了哪里（暂停的位置）。
 
-```Shell
+```bash
 (gdb) f
 #0  main (argc=1, argv=0xfffffffff248) at test-gdb.c:17
 17	    for(i=1; i<=100; i++)
@@ -510,7 +517,7 @@ $1 = 50
 
 输入 `u`（或 `u 22`），跳出第 17-20 行的 for 循环，运行到第 22 行暂停。
 
-```Shell
+```bash
 (gdb) u
 main (argc=1, argv=0xfffffffff248) at test-gdb.c:22
 22	    printf("result[1-100] = %ld\n", result );
@@ -543,7 +550,7 @@ stepi n | si       | Next [n] instruction[s] (stepping into function calls)
 
 执行 `step` 跟踪进入 func 函数体第 5 行代码。
 
-```Shell
+```bash
 (gdb) s
 func (n=250) at test-gdb.c:5
 5	    int sum=0,i;
@@ -553,7 +560,7 @@ func (n=250) at test-gdb.c:5
 
 > `finish`: Continue running until just after function in the selected stack frame returns. Print the returned value (if any). This command can be abbreviated as `fin`.
 
-```Shell
+```bash
 (gdb) fin
 Run till exit from #0  func (n=250) at test-gdb.c:5
 0x0000aaaaaaaa0800 in main (argc=1, argv=0xfffffffff248) at test-gdb.c:23
@@ -564,7 +571,7 @@ Value returned is $10 = 31125
 从 func 返回到第 23 行的 printf 语句，如果继续 `step` 将深入 printf 函数内部，提示找不到源代码。
 执行 finish 退出 printf 函数体，返回到第 25 行的 return 语句。
 
-```Shell
+```bash
 (gdb) s
 __printf (format=0xaaaaaaaa0850 "result[1-250] = %d\n") at ./stdio-common/printf.c:28
 28	./stdio-common/printf.c: No such file or directory.
@@ -618,7 +625,7 @@ A more flexible solution is to execute `skip boring`. This instructs GDB never t
 
 You can use the following commands to enable or disable breakpoints, watchpoints, tracepoints, and catchpoints:
 
-```Shell
+```bash
 disable [breakpoints] [list…]
 Disable the specified breakpoints—or all breakpoints, if none are listed. A disabled breakpoint has no effect but is not forgotten. All options such as ignore-counts, conditions and commands are remembered in case the breakpoint is enabled again later. You may abbreviate disable as dis.
 
@@ -660,7 +667,7 @@ Delete the breakpoints, watchpoints, tracepoints, or catchpoints of the breakpoi
 
 删除指定的断点，breakpoints为断点号。如果不指定断点号，则表示删除所有的断点。
 
-```Shell
+```bash
 (gdb) i b
 Num     Type           Disp Enb Address            What
 1       breakpoint     keep y   0x0000aaaaaaaa07b0 in main at test-gdb.c:16

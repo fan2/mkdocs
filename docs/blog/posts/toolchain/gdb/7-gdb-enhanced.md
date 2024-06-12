@@ -265,7 +265,7 @@ pwndbg> set show-retaddr-reg on
 Set whether to show return address register to 'on'.
 ```
 
-Increase number of DISASM/SOURCE code lines to print:
+Increase number of DISASM/SOURCE/STACK lines to print:
 
 ```bash
 pwndbg> set context-code-lines 12
@@ -273,6 +273,11 @@ Set number of additional lines to print in the code context to 12.
 
 pwndbg> set context-source-code-lines 12
 Set number of source code lines to print by the context command to 12.
+
+# View sp[00:1f], 32 machine words, 256 bytes in AArch64.
+# refer to stack [-h] [-f] [-i] [count] [offset]
+pwndbg> set context-stack-lines 32
+Set number of lines to print in the stack context to 32.
 ```
 
 Increase number of code lines for `nearpc` command output:

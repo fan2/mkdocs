@@ -615,6 +615,21 @@ Do some simple calculation in place:
 805
 [0x000000000000]> ?vx 1989+64 # 8 digit padding
 0x00000805
+
+[0xffffbc190c40]> ? 1989+64
+int32   2053
+uint32  2053
+hex     0x805
+octal   04005
+unit    2.0K
+segment 0000:0805
+string  "\x05\b"
+fvalue  2053.0
+float   0.000000f
+double  0.000000
+binary  0b0000100000000101
+base36  0_1l1
+ternary 0t2211001
 ```
 
 `?w <address>` will show what's in this address, equivalent to `info symbol ADDR` in GDB.

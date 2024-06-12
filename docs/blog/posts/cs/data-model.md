@@ -28,7 +28,7 @@ In 32-bit programs, pointers and data types such as integers generally have the 
 
 可执行 `cpp -dM` /`gcc -E -dM` 预处理命令 dump Macros：
 
-```Shell title="dump prededined macros"
+```bash title="dump prededined macros"
 $ echo | cpp -dM
 $ echo | gcc -x c -E -dM -
 $ echo | g++ -x c++ -E -dM -
@@ -48,7 +48,7 @@ $ llvm-gcc -x c -E -dM -arch arm64 /dev/null
 
 在 macOS 和 rpi4b-ubuntu 下执行预处理命令，grep 过滤打印出 `__CHAR_BIT__`（其值均为 8）。
 
-```Shell
+```bash
 # macOS
 llvm-gcc -x c -E -dM -arch i386 /dev/null | grep "__CHAR_BIT__"
 llvm-gcc -x c -E -dM -arch x86_64 /dev/null | grep "__CHAR_BIT__"
@@ -81,7 +81,7 @@ gcc -x c -E -dM /dev/null | grep "__CHAR_BIT__"
 
 ??? info "macros varying by data model"
 
-    ```Shell
+    ```bash
     $ llvm-gcc -x c -E -dM -arch i386 /dev/null | grep -E "LP32|LP64|__SIZEOF_LONG__|__SIZEOF_POINTER__|__WCHAR_TYPE__|__SIZE_TYPE__|__INTPTR_TYPE__|__UINTPTR_TYPE__|__PTRDIFF_TYPE__"
     #define _ILP32 1
     #define __ILP32__ 1
@@ -186,7 +186,6 @@ The choices made by each *implementation* about the sizes of the fundamental typ
 
 > refer to the table corresponding to the width in bits by data model.
 
-
 ## Convention
 
 ARM/Keil : [Basic data types in ARM C and C++](https://developer.arm.com/documentation/dui0375/g/C-and-C---Implementation-Details/Basic-data-types-in-ARM-C-and-C--)
@@ -217,12 +216,15 @@ z/OS - [LP64 | ILP32](https://www.ibm.com/docs/en/zos/3.1.0?topic=options-lp64-i
 > In the 32-bit programming model (known as the **ILP32** model), integer, long, and pointer data types are 32 bits in length.
 > In the **LLP64** data model, only pointers expand to 64 bits; all other basic data types (integer and long) remain 32 bits in length.
 
-GCC [IA-64 Options](https://gcc.gnu.org/onlinedocs/gcc/IA-64-Options.html)
+[GCC | IA-64 Options](https://gcc.gnu.org/onlinedocs/gcc/IA-64-Options.html)
 
-```Shell
--milp32 / -mlp64
-Generate code for a 32-bit or 64-bit environment. The 32-bit environment sets int, long and pointer to 32 bits. The 64-bit environment sets int to 32 bits and long and pointer to 64 bits. These are HP-UX specific flags.
-```
+> `-milp32` | `-mlp64`: Generate code for a 32-bit or 64-bit environment. The 32-bit environment sets int, long and pointer to 32 bits. The 64-bit environment sets int to 32 bits and long and pointer to 64 bits. These are HP-UX specific flags.
+
+[GCC | AArch64 Options](https://gcc.gnu.org/onlinedocs/gcc/AArch64-Options.html)
+
+> `-mabi=name`: Generate code for the specified data model. Permissible values are ‘`ilp32`’ for SysV-like data model where int, long int and pointers are 32 bits, and ‘`lp64`’ for SysV-like data model where int is 32 bits, but long int and pointers are 64 bits.
+
+> The default depends on the specific target configuration. Note that the `LP64` and `ILP32` ABIs are *not* link-compatible; you must compile your entire program with the *same* ABI, and link with a compatible set of libraries.
 
 [数据模型](https://blog.csdn.net/wyywatdl/article/details/4683762)，[資料模型](https://ryan0988.pixnet.net/blog/post/194111613)，[64-bit data models](https://en.wikipedia.org/wiki/64-bit_computing#64-bit_data_models)
 

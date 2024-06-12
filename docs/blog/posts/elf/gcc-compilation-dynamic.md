@@ -194,6 +194,7 @@ Please refer to the following links to get a knowledge of `libexecdir` and `libd
 
 - [Directory Variables (GNU Coding Standards)](https://www.gnu.org/prep/standards/html_node/Directory-Variables.html)
 - [Installation Directory Variables (Autoconf)](https://www.gnu.org/savannah-checkouts/gnu/autoconf/manual/autoconf-2.72/html_node/Installation-Directory-Variables.html)
+- [Installing GCC: Configuration - GNU Project](https://gcc.gnu.org/install/configure.html)
 
 In the future, when the time is right, we will carry out further exploration.
 

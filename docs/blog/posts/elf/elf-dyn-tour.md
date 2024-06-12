@@ -57,6 +57,27 @@ ELF Header:
 
 The output of `objdump -f` shows that the BFD format specific flags are `HAS_SYMS, DYNAMIC, D_PAGED`.
 
+## GCC pie/pic
+
+[GCC - Code Gen Options](https://gcc.gnu.org/onlinedocs/gcc/Code-Gen-Options.html):
+
+- `-fpic` / `-fPIC`
+- `-fpie|-fPIE`
+- `-fno-plt`
+
+[GCC - Link Options](https://gcc.gnu.org/onlinedocs/gcc/Link-Options.html): 
+
+- `-flinker-output`=*type* = {exec, dyn, pie, rel, nolto-rel}
+- `-pie` / `-no-pie` / `-static-pie`
+
+[GCC Compilation Quick Tour - dynamic](../elf/gcc-compilation-dynamic.md): [collect2](https://gcc.gnu.org/onlinedocs/gccint/Collect2.html)/[LD](https://sourceware.org/binutils/docs/ld/Options.html) `-pie`
+
+`-no-pie`: Create a position dependent executable. This is the *default*.
+
+`-pie|--pic-executable`: Create a [position independent](https://en.wikipedia.org/wiki/Position-independent_code) executable. This is currently only supported on ELF platforms. Position independent executables are similar to shared libraries in that they are *relocated* by the dynamic linker to the virtual address the OS chooses for them (which can vary between invocations). Like normal dynamically linked executables they can be executed and symbols defined in the executable cannot be overridden by shared libraries.
+
+[ARM (LD)](https://sourceware.org/binutils/docs/ld/ARM.html) - The `--pic-veneer` switch makes the linker use PIC sequences for ARM/Thumb interworking veneers, even if the rest of the binary is not PIC. This avoids problems on uClinux targets where `--emit-relocs` is used to generate relocatable binaries.
+
 ## section header
 
 1. `readelf [-S|--section-headers|--sections]`: Display the sections' header.

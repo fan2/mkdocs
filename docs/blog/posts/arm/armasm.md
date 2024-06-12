@@ -90,7 +90,10 @@ TI - [ARM Assembly Language Tools v18.1.0.LTS User's Guide](https://downloads.ti
 ARM Compiler armlink User Guide: [1](https://developer.arm.com/documentation/dui0474/latest), [2](https://developer.arm.com/documentation/dui0803/latest)
 
 GCC - [Link Options](https://gcc.gnu.org/onlinedocs/gcc/Link-Options.html), [Code Gen Options](https://gcc.gnu.org/onlinedocs/gcc/Code-Gen-Options.html)
-[GNU as](https://sourceware.org/binutils/docs/as/index.html) - [Index](https://sourceware.org/binutils/docs/as/AS-Index.html) - [Machine Dependencies](https://sourceware.org/binutils/docs/as/Machine-Dependencies.html)
-[GNU LD](https://sourceware.org/binutils/docs/ld/index.html) - [3 Linker Scripts](https://sourceware.org/binutils/docs/ld/Scripts.html), [6 Machine Dependent Features](https://sourceware.org/binutils/docs/ld/Machine-Dependent.html)
+
+[GNU Binutils](https://www.gnu.org/software/binutils/) - [Documentation](https://sourceware.org/binutils/docs/)
+
+- [GNU as](https://sourceware.org/binutils/docs/as/index.html) - [Index](https://sourceware.org/binutils/docs/as/AS-Index.html) - [Machine Dependencies](https://sourceware.org/binutils/docs/as/Machine-Dependencies.html)
+- [GNU LD](https://sourceware.org/binutils/docs/ld/index.html) - [3 Linker Scripts](https://sourceware.org/binutils/docs/ld/Scripts.html), [6 Machine Dependent Features](https://sourceware.org/binutils/docs/ld/Machine-Dependent.html)
 
 [ARM Assembler reference | Microsoft Learn](https://learn.microsoft.com/en-us/cpp/assembler/arm/arm-assembler-reference?view=msvc-170)

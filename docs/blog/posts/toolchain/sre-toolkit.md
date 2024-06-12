@@ -106,7 +106,6 @@ Software Reverse Engineering(SRE) Toolkit:
 
 [exploit-exercises](https://exploit-exercises.com/)
 [bkerler/exploit_me](https://github.com/bkerler/exploit_me)
-[Defeating ioli with radare2](https://dustri.org/b/defeating-ioli-with-radare2.html)
 
 ### series
 
@@ -123,6 +122,9 @@ ARM64 Reversing And Exploitation: [1](https://8ksec.io/arm64-reversing-and-explo
 ---
 
 [Initiating Linux Binary Exploitation: A Beginner's Expedition into Code Manipulation](https://www.kayssel.com/series/binary-exploitation/)
+
+[Reverse Engineering Malware | hackers-arise](https://www.hackers-arise.com/reverse-engineering-malware)
+Malware Reverse Engineering for Beginners: [Part 1](https://intezer.com/blog/malware-analysis/malware-reverse-engineering-beginners/), [Part 2](https://intezer.com/blog/incident-response/malware-reverse-engineering-for-beginners-part-2/)
 
 [ARM64 Reverse Engineering and Exploitation Training (November 2018)](http://antid0te-sg.com/blog/18-11-12-arm64-reverse-engineering-exploitation-singapore.html)
 

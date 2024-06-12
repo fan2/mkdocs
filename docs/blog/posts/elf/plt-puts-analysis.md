@@ -199,6 +199,12 @@ nth paddr        size vaddr       vsize perm type name
 
 ```
 
+!!! note "ld -z relro"
+
+    GCC Compilation Quick Tour - [dynamic](../elf/gcc-compilation-dynamic.md)/[static](../elf/gcc-compilation-static.md): [collect2](https://gcc.gnu.org/onlinedocs/gccint/Collect2.html)/[LD](https://sourceware.org/binutils/docs/ld/Options.html) `-z relro`
+
+    Create an ELF `PT_GNU_RELRO` segment header in the object. This specifies a memory segment that should be made read-only after relocation, if supported.
+
 ### mapping
 
 Use `readelf -S`/`objdump -h` to display the sections' header.
@@ -462,6 +468,12 @@ Check readelf's analysis against the raw hexdump above and the sections dumped b
 12. `DT_RELACOUNT`(000000006ffffff9)=0x4: count of sections mapped into `GNU_RELRO` segment?
 13. `DT_FLAGS`(000000000000001e)=0x8/`DF_BIND_NOW`: No lazy binding for this object.
 14. `DT_FLAGS_1`(000000006ffffffb)=0x1/`DF_1_NOW`: Set RTLD_NOW for this object.
+
+!!! note "ld -z now"
+
+    [GCC Compilation Quick Tour - dynamic](../elf/gcc-compilation-dynamic.md): [collect2](https://gcc.gnu.org/onlinedocs/gccint/Collect2.html)/[LD](https://sourceware.org/binutils/docs/ld/Options.html) `-z now`
+
+    When generating an executable or shared library, mark it to tell the dynamic linker to *resolve* all symbols when the program is started, or when the shared library is loaded by [dlopen](https://www.gnu.org/savannah-checkouts/gnu/gnulib/manual/html_node/dlopen.html), instead of deferring function call resolution to the point when the function is first called.
 
 ## dynamic symbol
 

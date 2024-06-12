@@ -290,6 +290,45 @@ pwndbg> piebase
 Calculated VA from /home/pifan/Projects/cpp/a.out = 0xaaaaaaaa0000
 ```
 
+Show additional information about a process with `info proc` subcommands.
+
+```bash
+(gdb) help info proc
+Show additional information about a process.
+Specify any process id, or use the program being debugged by default.
+
+List of info proc subcommands:
+
+info proc all -- List all available info about the specified process.
+info proc cmdline -- List command line arguments of the specified process.
+info proc cwd -- List current working directory of the specified process.
+info proc exe -- List absolute filename for executable of the specified process.
+info proc files -- List files opened by the specified process.
+info proc mappings -- List memory regions mapped by the specified process.
+info proc stat -- List process info from /proc/PID/stat.
+info proc status -- List process info from /proc/PID/status.
+
+Type "help info proc" followed by info proc subcommand name for full documentation.
+Type "apropos word" to search for commands related to "word".
+Type "apropos -v word" for full documentation of commands related to "word".
+Command name abbreviations are allowed if unambiguous.
+```
+
+`i proc` = `i proc cmdline` + `i proc cwd` + `i proc exe`.
+
+```bash
+pwndbg> i proc
+process 210924
+cmdline = '/home/pifan/Projects/cpp/a.out'
+cwd = '/home/pifan/Projects/cpp'
+exe = '/home/pifan/Projects/cpp/a.out'
+
+pwndbg> i proc files
+process 593795
+```
+
+For more details, see results of `info proc stat` and `info proc all`.
+
 ### modules
 
 Check the status of the loaded shared object libraries.
@@ -310,6 +349,7 @@ Node Objfile Load Bias Dynamic Segment
 `vmmap` -- Print virtual memory map pages.
 
 ```bash
+pwndbg> # info proc mappings
 pwndbg> vmmap
 LEGEND: STACK | HEAP | CODE | DATA | RWX | RODATA
              Start                End Perm     Size Offset File
@@ -468,6 +508,8 @@ pwndbg> telescope 0xaaaaaaab0fc8 1
 
 > The GOT entry for `puts@plt` is labelled as `puts@got.plt`, equivalent to `reloc.puts` in r2.
 
+### watchpoint
+
 According to the hexdump content of the `.got` section, it's originally filled with 0x00000000000005d0, which is the paddr of the `.plt` section. It's the original lineage of plt and got.
 
 - !readelf -SW a.out
@@ -485,6 +527,9 @@ Hardware watchpoint 1: *(uintptr_t*)0xaaaaaaab0fc8
 ```
 
 Then specify a command for the given watchpoint. Here we just hexdump the giant word stored in the memory.
+
+1. Support input of multiple lines of commands, one per line.
+2. The e`x`amine command can be replaced with `telescope`.
 
 ```bash
 pwndbg> commands 1
@@ -608,7 +653,8 @@ Node           Objfile                                          Load Bias      D
 
 Check `vmmap` again, there are four new segments of *libc.so* loaded into memory.
 
-```bash linenums="1" hl_lines="7-10"
+```bash linenums="1" hl_lines="8-11"
+pwndbg> # info proc mappings
 pwndbg> vmmap
 LEGEND: STACK | HEAP | CODE | DATA | RWX | RODATA
              Start                End Perm     Size Offset File

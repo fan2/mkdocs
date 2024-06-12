@@ -205,6 +205,17 @@ Usage: p[=68abcdDfiImrstuxz] [arg|len] [@addr]
 | popd[-a][-h]            pop dir off top of stack and cd to it
 ```
 
+Print string at `x0`(the first parameter for next call):
+
+```bash
+# with newline
+ps @ x0 # psz @ x0
+# without newline
+psz 48 @ x0 # specify estimated length
+# explore what is there
+?w x0
+```
+
 ### pf - printf
 
 ```bash
@@ -368,7 +379,7 @@ Usage: px[0afoswqWqQ][f]   # Print heXadecimal
 `pxw $l`(`pxw $l @ pc`): hexdump instruction opcode in pc, but default in little-endian.
 
 ```bash
-[0xaaaab3ce0634]> pxw 4
+[0xaaaab3ce0634]> pxw $l
 0xaaaab3ce0634  0xf947e611                                   ..G.
 ```
 
@@ -380,11 +391,20 @@ Config `cfg.bigendian=false` and then reset, equivalent implementation of `pfed`
 false
 [0xaaaab3ce0634]> e cfg.bigendian=true
 
-[0xaaaab3ce0634]> pxw 4 @ pc
+[0xaaaab3ce0634]> pxw $l @ pc
 0xaaaab3ce0634  0x11e647f9                                   ..G.
 
 # reset endianness
 [0xaaaab3ce0634]> e cfg.bigendian=true
+```
+
+View 32 items (\_\_WORDSIZE=`$w`) of the current stack, following the current sp:
+
+```bash
+# two machine word per line, equivalent to x/32xg $sp in GDB
+pxq $w*32 @ sp
+# one machine word per line
+pxQ $w*32 @ sp
 ```
 
 ### pd - disassemble

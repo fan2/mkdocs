@@ -47,7 +47,7 @@ format | description
 
 简单使用示例：
 
-```Shell
+```bash
 (gdb) p i
 $1 = 101
 (gdb) p/x i
@@ -117,7 +117,7 @@ printf("Calling assembly function kinetic_energy with x0=%d and x1=%d results in
 
 printf 总共有 4 个参数，第 1 个参数为 `const char *format` 是一个字符指针，指向格式字符串，存放在 x0 寄存器，后面 3 个参数依次存放在 x1\~x3 寄存器：
 
-```Shell
+```bash
 # i r x0
 (gdb) p/a $x0
 $12 = 0xaaaaaaaa07d8
@@ -127,6 +127,20 @@ $8 = 4
 $9 = 5
 (gdb) p $x3
 $10 = 50
+```
+
+### symbol
+
+Print/Inspect symbol information such as prototype of function.
+
+```bash
+(gdb) inspect main
+$8 = (int (*)(int, char **, char **)) 0xaaaaaaaa07a0 <main>
+(gdb) inspect *main
+$9 = {int (int, char **, char **)} 0xaaaaaaaa07a0 <main>
+(gdb) inspect __libc_start_main
+$10 = {int (int (*)(int, char **, char **), int, char **, int (*)(int, char **, char **),
+    void (*)(void), void (*)(void), void *)} 0xfffff7e27434 <__libc_start_main_impl>
 ```
 
 ### array
@@ -143,7 +157,7 @@ int *array = (int *) malloc (len * sizeof (int));
 
 于是，在GDB调试过程中，可以以如下命令显示出这个动态数组的取值：
 
-```Shell
+```bash
 p *array@len
 ```
 
@@ -151,7 +165,7 @@ p *array@len
 
 其输出结果，大约是下面这个样子的：
 
-```Shell
+```bash
 (gdb) p *array@len
 $1 = {2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40}
 ```
@@ -162,7 +176,7 @@ $1 = {2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34, 36, 38, 40
 
 可以使用 `examine` 命令（简写是 `x`）来查看内存地址中的值，语法如下：
 
-```Shell
+```bash
 x/nfu <addr>
 ```
 
@@ -200,6 +214,15 @@ If you use defaults for *nfu*, you need not type the slash ‘`/`’. Several co
 
     4. `x/i $pc`: print the instruction to be executed next with, equivalent to `disassemble $pc,$pc+4`.
     5. `x/10i main` prints ten instructions of `disassemble main`.
+
+View 32 items of the current stack, following the current sp:
+
+```bash
+# two machine word per line
+x/32xg $sp
+# pwndbg equivalent: stack 32
+# r2 equivalent: pxq $w*32 @ sp
+```
 
 ### Convenience Vars
 
@@ -270,10 +293,10 @@ Since A64 instructions are still 32 bits long as A32(except for T32 mode), we ca
 
 在调试 [Getting Started with Arm Assembly Language](https://developer.arm.com/documentation/107829/0200) - 9. Example: equation calculation 中，汇编函数 kinetic_energy 调用返回 main 中的 printf 函数，其第 1 个参数为 `const char *format`，存放在 x0 寄存器，可以进一步使用 `examine` 命令检查指针指向的内存中的格式字符串。
 
-```Shell
+```bash
 (gdb) p/a $x0
 $12 = 0xaaaaaaaa07d8
-(gdb) x /s $x0
+(gdb) x/s $x0
 0xaaaaaaaa07d8:	"Calling assembly function kinetic_energy with x0=%d and x1=%d results in %d\n"
 ```
 
