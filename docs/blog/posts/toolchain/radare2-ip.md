@@ -111,7 +111,7 @@ Query for detailed usages of subcommands:
 ```bash
 [0x000000000000]> !readelf -s test-gdb
 [0x000000000000]> !objdump -t test-gdb
-[0x000000000000]> !radare2.rabin2 -s test-gdb
+[0x000000000000]> !rabin2 -s test-gdb
 [0x000000000000]> is?
 Usage: is [*hjq]  List symbols from current selected binary
 | is,[table-query]  list symbols in table using given expression
@@ -639,18 +639,57 @@ Disassemble a symbol/function at a memory address:
 [0x000000000000]> is ~func
 79  0x00000754 0xaaaae7680754 GLOBAL FUNC   76       func
 
-[0x000000000000]> pd @0xaaaae7680754
+[0x000000000000]> pd @0xaaaae7680754 # pdf @ sym.func
             ;-- func:
             0xaaaae7680754      ff8300d1       sub sp, sp, 0x20
             0xaaaae7680758      e00f00b9       str w0, [sp, 0xc]
             0xaaaae768075c      ff1b00b9       str wzr, [sp, 0x18]
             0xaaaae7680760      ff1f00b9       str wzr, [sp, 0x1c]
+            0xaaaae7680764      08000014       b 0xaaaae7680784
 
             [...snip...]
-
 ```
 
-Seek to somewhere, then try to disassemble:
+`pdc`: pseudo disassembler output in C-like syntax.
+
+```bash
+[0x000000000000]> pdc @ sym.func
+WARN: When cfg.debug is set, I refuse to create a fake stack
+int sym.func (int x0, int x1) {
+    loc_0xaaaae7680754:
+        // CALL XREF from main @ 0xaaaacad607fc(x)
+        sp = sp - 0x20 // stdio.h:4
+        [sp + 0xc] = w0 // arg1
+        [sp + 0x18] = 0 // stdio.h:5   The GNU C Library is free software// you can redistribute it and/or // arg1
+        [sp + 0x1c] = 0 // stdio.h:6   modify it under the terms of the GNU Lesser General Public // arg1
+        goto 0xaaaae7680784
+
+        [...snip...]
+```
+
+Or enable config `asm.pseudo` to show pseudo instead of disassembly.
+
+```bash
+[0xaaaacad607a0]> e asm.pseudo=true
+[0xaaaacad607a0]> pdf @ sym.func
+            ; CALL XREF from main @ 0xaaaacad607fc(x)
+┌ 76: sym.func (int64_t arg1, int64_t arg_20h);
+│           ; arg int64_t arg1 @ x0
+│           ; arg int64_t arg_20h @ sp+0x40
+│           ; var int64_t var_ch @ sp+0xc
+│           ; var int64_t var_18h @ sp+0x18
+│           ; var int64_t var_1ch @ sp+0x1c
+│           0xaaaacad60754      ff8300d1       sp = sp - 0x20          ; stdio.h:4
+│           0xaaaacad60758      e00f00b9       [sp + 0xc] = w0         ; arg1
+│           0xaaaacad6075c      ff1b00b9       [sp + 0x18] = 0         ; stdio.h:5   The GNU C Library is free software; you can redistribute it and/or ; arg1
+│           0xaaaacad60760      ff1f00b9       [sp + 0x1c] = 0         ; stdio.h:6   modify it under the terms of the GNU Lesser General Public ; arg1
+│       ┌─< 0xaaaacad60764      08000014       goto 0xaaaacad60784
+
+        [...snip...]
+[0xaaaacad607a0]> e asm.pseudo=false # reset to default
+```
+
+Seek to somewhere, then try to disassemble current address:
 
 ```bash
 [0x000000000000]> s main; pd 5 # s sym.main; pd 5

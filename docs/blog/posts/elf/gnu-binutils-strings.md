@@ -164,13 +164,13 @@ head -c $((off+sz)) test-gdb | tail -c $((sz)) | strings
 Simply, we can use the `-zz` flag to get the strings from the whole binary file:
 
 ```bash
-$ radare2.rabin2 -zz test-gdb
+$ rabin2 -zz test-gdb
 ```
 
 The `-z` option is used to list readable strings found in the `.rodata` section of ELF binaries, or the `.text` section of PE files.
 
 ```bash
-$ radare2.rabin2 -z test-gdb
+$ rabin2 -z test-gdb
 ```
 
 ## refs

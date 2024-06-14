@@ -138,6 +138,7 @@ Usage: dr  Registers commands
 | dr?<register>        show value of given register
 | dr??                 same as dr?`drp~=[0]+`
 
+| dri                  show inverse registers dump (sorted by value)
 | drl[j]               list all register names
 | dro                  show previous (old) values of registers
 | drp[?]               display current register profile
@@ -153,7 +154,8 @@ Overview register file:
 `drp[?]`: display current register profile
 `drl[j]`: list all register names, one per line
 `dr`: show 'gpr' registers, one per line
-`dr=` : show registers in columns, same as `show-compact-regs` in pwndbg
+`dr=`: show registers in columns, same as `show-compact-regs` in pwndbg
+`dri`: show inverse registers dump (sorted by value)
 `dr??`: list all reg roles alias names and values
 `drr`: show registers references (telescoping)
 
@@ -512,3 +514,4 @@ Reverse engineering using Radare2: [Part 1](https://hackyourmom.com/en/servisy/z
 
 [Learning AArch64 Exploit Development on iOS with Radare2](https://codemuch.net/posts/armlab-ios-i/)
 [Defeating macOS Malware Anti-Analysis Tricks with Radare2](https://www.sentinelone.com/labs/defeating-macos-malware-anti-analysis-tricks-with-radare2/)
+[Reverse Engineering Go binaries Using Radare 2 and Python](https://research.ivision.com/reverse-engineering-go-binaries-using-radare-2-and-python.html)

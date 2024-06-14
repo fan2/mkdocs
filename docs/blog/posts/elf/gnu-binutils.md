@@ -71,7 +71,7 @@ $ readelf -lW a.out
 Using `rabin2` to view segments and section2segment mapping separately:
 
 ```bash
-$ radare2.rabin2 -h
+$ rabin2 -h
 
  -SS             segments
  -SSS            sections mapping to segments
@@ -83,7 +83,7 @@ $ radare2.rabin2 -h
 ```bash
 $ readelf -SW a.out
 $ objdump -hw a.out
-$ radare2.rabin2 -S a.out
+$ rabin2 -S a.out
 ```
 
 ## sections
@@ -221,7 +221,7 @@ Display the symbol table:
 ```bash
 $ readelf -s a.out
 $ objdump -t a.out
-$ radare2.rabin2 -s a.out
+$ rabin2 -s a.out
 ```
 
 Display the dynamic symbol table:
@@ -234,7 +234,7 @@ readelf --dyn-syms a.out
 # Display dynamic symbols instead of normal symbols
 nm -D a.out
 # find imported objects by an executable, as well as their offsets in its PLT.
-radare2.rabin2 -i a.out
+rabin2 -i a.out
 ```
 
 ## reloc
@@ -282,7 +282,7 @@ $ objdump -R a.out
 # interspersed with the disassembly
 $ objdump -Rd a.out
 # display relocations
-$ radare2.rabin2 -R a.out
+$ rabin2 -R a.out
 ```
 
 ## DWARF

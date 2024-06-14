@@ -166,7 +166,7 @@ Non-debugging symbols:
 `rabin2 -i `: list symbols imported from libraries.
 
 ```bash hl_lines="10"
-$ radare2.rabin2 -i a.out
+$ rabin2 -i a.out
 [Imports]
 nth vaddr      bind   type   lib name
 ―――――――――――――――――――――――――――――――――――――

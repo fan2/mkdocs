@@ -17,15 +17,96 @@ The Radare2 project is a set of small command-line utilities that can be used to
 
 ## installation
 
-install radare2 on Ubuntu with [snap](https://ubuntu.com/core/services/guide/snaps-intro):
+### thru git
+
+The recommended way to install radare2 is via Git using acr/make or meson:
+
+```bash
+git clone https://github.com/radareorg/radare2
+radare2/sys/install.sh
+```
+
+Run `sys/install.sh` for the default acr+make+symlink installation.
+
+```bash
+$ radare2/sys/install.sh
+/home/pifan/Projects/radare2
+WARNING: Updating from remote repository
+From https://github.com/radareorg/radare2
+ * branch                  master     -> FETCH_HEAD
+Already up to date.
+Warning: Cannot find system wide capstone
+[*] Finding gmake is a tracked alias for /usr/bin/gmake OK
+[*] Configuring the build system ... OK
+[*] Checking out capstone... OK
+[*] Checking out vector35-arm64... OK
+[*] Checking out vector35-armv7... OK
+[*] Running configure... OK
+[*] Ready. You can now run 'make'.
+
+[...snip...]
+
+mkdir -p "/usr/local/bin" && \
+for BINARY in r2r r2pm ravc2 rax2 rasm2 rabin2 rahash2 radiff2 radare2 rafind2 rarun2 ragg2 r2agent rasign2 ; do ln -fs "/home/pifan/Projects/radare2/binr/$BINARY/$BINARY" "/usr/local/bin/$BINARY" ; done
+cd .. && ln -fs "/home/pifan/Projects/radare2/binr/r2pm/r2pm" "/usr/local/bin/r2pm"
+cd .. && rm -rf "/usr/local/share/radare2/5.9.3/r2pm"
+cd .. && mkdir -p "/usr/local/share/radare2/5.9.3/"
+rm -f "/usr/local/bin/r2"
+cd .. && ln -fs "/home/pifan/Projects/radare2/binr/radare2/radare2" "/usr/local/bin/r2"
+cd .. && ln -fs "/usr/local/bin/radare2" "/usr/local/bin/r2p"
+```
+
+The radare2 toolset binaries are symbolically linked to /usr/local/bin.
+
+```bash
+$ ls -l /usr/local/bin
+total 12
+lrwxrwxrwx 1 root root 20 May 17 17:50 cloudflared -> /usr/bin/cloudflared
+-rwxr-xr-x 1 root root 46 Jun 11 08:23 gdb-dashboard
+-rwxr-xr-x 1 root root 40 May 22 11:32 gdb-gef
+-rwxr-xr-x 1 root root 43 May 22 11:32 gdb-pwndbg
+lrwxrwxrwx 1 root root 49 Jun 14 18:28 r2 -> /home/pifan/Projects/radare2/binr/radare2/radare2
+lrwxrwxrwx 1 root root 49 Jun 14 18:28 r2agent -> /home/pifan/Projects/radare2/binr/r2agent/r2agent
+lrwxrwxrwx 1 root root 42 Jun 14 18:28 r2-indent -> /home/pifan/Projects/radare2/sys/indent.sh
+lrwxrwxrwx 1 root root 22 Jun 14 18:28 r2p -> /usr/local/bin/radare2
+lrwxrwxrwx 1 root root 43 Jun 14 18:28 r2pm -> /home/pifan/Projects/radare2/binr/r2pm/r2pm
+lrwxrwxrwx 1 root root 41 Jun 14 18:28 r2r -> /home/pifan/Projects/radare2/binr/r2r/r2r
+lrwxrwxrwx 1 root root 47 Jun 14 18:28 rabin2 -> /home/pifan/Projects/radare2/binr/rabin2/rabin2
+lrwxrwxrwx 1 root root 49 Jun 14 18:28 radare2 -> /home/pifan/Projects/radare2/binr/radare2/radare2
+lrwxrwxrwx 1 root root 49 Jun 14 18:28 radiff2 -> /home/pifan/Projects/radare2/binr/radiff2/radiff2
+lrwxrwxrwx 1 root root 49 Jun 14 18:28 rafind2 -> /home/pifan/Projects/radare2/binr/rafind2/rafind2
+lrwxrwxrwx 1 root root 45 Jun 14 18:28 ragg2 -> /home/pifan/Projects/radare2/binr/ragg2/ragg2
+lrwxrwxrwx 1 root root 49 Jun 14 18:28 rahash2 -> /home/pifan/Projects/radare2/binr/rahash2/rahash2
+lrwxrwxrwx 1 root root 47 Jun 14 18:28 rarun2 -> /home/pifan/Projects/radare2/binr/rarun2/rarun2
+lrwxrwxrwx 1 root root 49 Jun 14 18:28 rasign2 -> /home/pifan/Projects/radare2/binr/rasign2/rasign2
+lrwxrwxrwx 1 root root 45 Jun 14 18:28 rasm2 -> /home/pifan/Projects/radare2/binr/rasm2/rasm2
+lrwxrwxrwx 1 root root 45 Jun 14 18:28 ravc2 -> /home/pifan/Projects/radare2/binr/ravc2/ravc2
+lrwxrwxrwx 1 root root 43 Jun 14 18:28 rax2 -> /home/pifan/Projects/radare2/binr/rax2/rax2
+```
+
+Check r2 version:
+
+```bash
+$ r2 -v
+radare2 5.9.3 32233 @ linux-arm-64
+birth: git.5.9.2-104-g0da877ec63 2024-06-14__18:14:28
+commit: 0da877ec63433aa342179bb4fe095f3e73d98d4d
+options: gpl -O? cs:5 cl:2 make
+$ which r2
+/usr/local/bin/r2
+$ readlink `which r2`
+/home/pifan/Projects/radare2/binr/radare2/radare2
+```
+
+### snap install
+
+Or install radare2 on Ubuntu with [snap](https://ubuntu.com/core/services/guide/snaps-intro):
 
 - [Managing Ubuntu Snaps](https://hackernoon.com/managing-ubuntu-snaps-the-stuff-no-one-tells-you-625dfbe4b26c)
 - [snap install - Ubuntu snap 使用筆記](https://foreachsam.github.io/book-util-snap/book/content/command/snap-install/)
 
 - [Install radare2 on Ubuntu using the Snap Store](https://snapcraft.io/install/radare2/ubuntu)
 - [Installing and Managing Snap Packages on Ubuntu 22](https://reintech.io/blog/installing-managing-snap-packages-ubuntu-22)
-
-### snap install
 
 ```bash
 $ sudo snap install radare2 --classic
@@ -39,21 +120,7 @@ Display snap list:
 ```bash
 # ls -1 /snap/
 $ ls /snap/
-bare  core22  firefox        gtk-common-themes  README  snapd-desktop-integration
-bin   core24  gnome-42-2204  radare2            snapd   snap-store
 
-$ snap list
-Name                       Version           Rev    Tracking         Publisher   Notes
-bare                       1.0               5      latest/stable    canonical✓  base
-core22                     20240408          1383   latest/stable    canonical✓  base
-core24                     20240426          410    latest/stable    canonical✓  base
-firefox                    126.0-2           4281   latest/stable/…  mozilla✓    -
-gnome-42-2204              0+git.510a601     178    latest/stable/…  canonical✓  -
-gtk-common-themes          0.1-81-g442e511   1535   latest/stable/…  canonical✓  -
-radare2                    5.9.2             2571   latest/stable    pancake     classic
-snap-store                 41.3-77-g7dc86c8  1114   latest/stable/…  canonical✓  -
-snapd                      2.63              21761  latest/stable    canonical✓  snapd
-snapd-desktop-integration  0.9               159    latest/stable/…  canonical✓  -
 ```
 
 List /snap/bin:
@@ -65,36 +132,6 @@ $ echo $PATH
 $ ls -l /snap/bin
 
 $ tree -L 1 /snap/bin
-/snap/bin
-├── firefox -> /usr/bin/snap
-├── firefox.geckodriver -> /usr/bin/snap
-├── geckodriver -> firefox.geckodriver
-├── radare2 -> /usr/bin/snap
-├── radare2.r2 -> /usr/bin/snap
-├── radare2.r2agent -> /usr/bin/snap
-├── radare2.r2frida-compile -> /usr/bin/snap
-├── radare2.r2p -> /usr/bin/snap
-├── radare2.r2pm -> /usr/bin/snap
-├── radare2.r2r -> /usr/bin/snap
-├── radare2.rabin2 -> /usr/bin/snap
-├── radare2.radiff2 -> /usr/bin/snap
-├── radare2.rafind2 -> /usr/bin/snap
-├── radare2.ragg2 -> /usr/bin/snap
-├── radare2.rahash2 -> /usr/bin/snap
-├── radare2.rarun2 -> /usr/bin/snap
-├── radare2.rasign2 -> /usr/bin/snap
-├── radare2.rasm2 -> /usr/bin/snap
-├── radare2.ravc2 -> /usr/bin/snap
-├── radare2.rax2 -> /usr/bin/snap
-├── radare2.sleighc -> /usr/bin/snap
-├── radare2.yara -> /usr/bin/snap
-├── radare2.yarac -> /usr/bin/snap
-├── snap-store -> /usr/bin/snap
-├── snap-store.ubuntu-software -> /usr/bin/snap
-└── snap-store.ubuntu-software-local-file -> /usr/bin/snap
-
-0 directories, 26 files
-
 ```
 
 Check radare2 version:
@@ -108,14 +145,8 @@ radare2: /snap/bin/radare2
 
 # radare2 -v
 $ radare2.r2 -v
-radare2 5.9.2 0 @ linux-arm-64
-birth: git.5.9.2 2024-05-27__15:16:35
-commit: 5.9.2
-options: gpl release -O1 cs:5 cl:0 make
 
 $ snap run radare2
-Usage: r2 [-ACdfjLMnNqStuvwzX] [-P patch] [-p prj] [-a arch] [-b bits] [-c cmd]
-          [-s addr] [-B baddr] [-m maddr] [-i script] [-e k=v] file|pid|-|--|=
 ```
 
 Seek for usage help:
@@ -152,10 +183,7 @@ lxd.lxc  lxc    -
 radare2  r2     manual
 
 $ r2 -v
-radare2 5.9.2 0 @ linux-arm-64
-birth: git.5.9.2 2024-05-27__15:16:35
-commit: 5.9.2
-options: gpl release -O1 cs:5 cl:0 make
+
 ```
 
 When a manual alias is set, the original application name will continue to function.
@@ -164,6 +192,12 @@ Removing a manually created alias is also straightforward:
 ```bash
 $ sudo snap unalias r2
 ```
+
+Maintenance commands:
+
+- Update package: `snap refresh radare2`
+- Enable or disable radare2: `snap enable|disable radare2`
+- Uninstall radare2: `snap remove radare2`
 
 ## start
 
@@ -379,7 +413,7 @@ Execute external shell to read ELF headers:
 Execute radare2 internal command with external/internal mode:
 
 ```bash
-[0x000000000000]> !radare2.rabin2 -I test-gdb
+[0x000000000000]> !rabin2 -I test-gdb
 [0x000000000000]> rabin2 -I test-gdb
 [0x000000000000]> iI
 
@@ -453,6 +487,19 @@ ternary 0t10022111022200110121022011120022202
 The standard UNIX pipe `|` is also available in the radare2 shell. You can use it to filter the output of an r2 command with any shell program that reads from stdin, such as `grep`, `less`, `wc`. If you do not want to spawn anything, or you can’t, or the target system does not have the basic UNIX tools you need (Windows or embedded users), you can also use the built-in grep (`~`).
 
 ```bash
+[0xaaaacad607a0]> @?
+
+| >file               pipe output of command to file
+| >>file              append to file
+| H>file              pipe output of command to file in HTML
+| H>>file             append to file with the output of command in HTML
+| `pdi~push:0[0]`     replace output of command inside the line
+| |cmd                pipe output to command (pd|less) (.dr*)
+```
+
+Typical example of filter binary file info:
+
+```bash
 [0x000000000000]> # i ~baddr
 [0x000000000000]> i | grep baddr
 baddr    0xaaaacb8f0000
@@ -471,7 +518,7 @@ Combining internal and external commands via pipe to extract the current filenam
 /home/pifan/Projects/cpp/test-gdb
 ```
 
-Redirection without output, following covers front:
+Redirection without output, following covers front(see `wt?`):
 
 ```bash
 [0x000000000000]> ?v sym.imp.puts > sym_addr.txt
@@ -593,7 +640,7 @@ Usage: e [var[=value]]  Evaluable vars
 Show description:
 
 ```bash
-[0x004005c8]> e?asm.pseudo
+[0x004005c8]> e?asm.pseudo # see pdc
 enable pseudo syntax
 [0x004005c8]> e?asm.describe
 show opcode description
@@ -736,7 +783,7 @@ Telescope/dereference overflowed pc as prepended debruijn pattern string.
 $ echo 0x4141764141754141 | xxd -rp | rev
 AAuAAvAA%
 
-$ echo -e `radare2.rax2 -c 0x4141764141754141`
+$ echo -e `rax2 -c 0x4141764141754141`
 AAuAAvAA
 
 # ? pc ~string or ? $$ ~string
@@ -996,6 +1043,7 @@ begin/end of function:
 
 [Radare2 Book](https://book.rada.re/) - [intro](https://github.com/radareorg/radare2/blob/master/doc/intro.md#analyze) - [zh-cn](https://heersin.gitbook.io/radare2)
 [r2wiki](https://r2wiki.readthedocs.io/en/latest/) - [Tips](https://r2wiki.readthedocs.io/en/latest/home/tips/)
+[macho - r2wiki](https://r2wiki.readthedocs.io/en/latest/analysis/macho/#osx-code-signing)
 [The Rizin Handbook](https://book.rizin.re/)
 
 [r2 cheatsheet.pdf](https://scoding.de/uploads/r2_cs.pdf)

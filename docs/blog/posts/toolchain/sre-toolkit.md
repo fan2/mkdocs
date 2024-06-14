@@ -113,6 +113,9 @@ Software Reverse Engineering(SRE) Toolkit:
 
 ### series
 
+[Reverse Engineering on macOS](https://gist.github.com/0xdevalias/256a8018473839695e8684e37da92c25)
+[How To Reverse Malware on macOS](https://go.sentinelone.com/rs/327-MNM-087/images/reverse_mw_final_9.pdf)
+
 [A Noob's Guide To ARM Exploitation](https://ad2001.gitbook.io/a-noobs-guide-to-arm-exploitation)
 
 [ARM binary exploitation — Aaarchibald WriteUP](https://medium.com/@chackal/arm-binary-exploitation-aaarchibald-writeup-dd4ae9cd8370)

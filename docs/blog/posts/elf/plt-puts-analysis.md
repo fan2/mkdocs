@@ -55,7 +55,7 @@ $ objdump -x a.out | sed -n '/Dynamic Section/{N;p}'
 Dynamic Section:
   NEEDED               libc.so.6
 
-$ radare2.rabin2 -l a.out
+$ rabin2 -l a.out
 [Linked libraries]
 libc.so.6
 
@@ -109,7 +109,7 @@ rabin2's `-e` option can be used to list entrypoints:
 `-ee`: constructor/destructor entrypoints
 
 ```bash
-$ radare2.rabin2 -eee a.out
+$ rabin2 -eee a.out
 [Entrypoints]
 vaddr=0x00000640 paddr=0x00000640 haddr=0x00000018 hvaddr=0x00000018 type=program
 
@@ -124,7 +124,7 @@ vaddr=0x00000700 paddr=0x00000700 hvaddr=0x00010d98 hpaddr=0x00000d98 type=fini
 You can extract the address of the entry point by means of one of the following commands.
 
 ```bash
-radare2.rabin2 -eq a.out
+rabin2 -eq a.out
 objdump -f a.out | sed -n 's/^start address //p'
 objdump -f a.out | awk '/start address/ {print $NF}'
 readelf -h a.out | sed -n 's/.*Entry point address:\s*//p'
@@ -141,7 +141,7 @@ readelf -h a.out | awk '/Entry point address/ {print $NF}'
 - `objdump [-h|--section-headers|--headers]`: Display the contents of the section headers.
 
 ```bash
-$ radare2.rabin2 -S a.out
+$ rabin2 -S a.out
 [Sections]
 
 nth paddr        size vaddr       vsize perm type        name
@@ -181,7 +181,7 @@ nth paddr        size vaddr       vsize perm type        name
 `rabin2 -SS` / `r2 > iSS`: segments
 
 ```bash
-radare2.rabin2 -SS a.out
+rabin2 -SS a.out
 [Segments]
 
 nth paddr        size vaddr       vsize perm type name
@@ -252,7 +252,7 @@ Also, `rabin2` supports options to list sections and segments and their mapping 
 `rabin2 -SSS`: sections mapping to segments.
 
 ```bash
-$ radare2.rabin2 -SSS a.out
+$ rabin2 -SSS a.out
 Section to Segment mapping:
 Segment      Section
 --------------------
@@ -371,8 +371,8 @@ As we can see, the two fields of `Elf64_Dyn` are all 64-bit, so reorganize the h
 
 ```bash
 # readelf -R .dynamic a.out
-# dy_offset=$(radare2.rabin2 -S a.out | awk '/.dynamic/{print $2}')
-# dy_offset=$(radare2.rabin2 -S a.out | awk '/.dynamic/{print $3}')
+# dy_offset=$(rabin2 -S a.out | awk '/.dynamic/{print $2}')
+# dy_offset=$(rabin2 -S a.out | awk '/.dynamic/{print $3}')
 $ dy_offset=$(objdump -hw a.out | awk '/.dynamic/{print "0x"$6}')
 $ dy_size=$(objdump -hw a.out | awk '/.dynamic/{print "0x"$3}')
 # hexdump -s $dy_offset -n $dy_size -e '"%07.7_ax  " 2/8 "%016x " "\n"' a.out
@@ -451,7 +451,7 @@ Dynamic section at offset 0xda0 contains 27 entries:
  0x0000000000000000 (NULL)               0x0
 ```
 
-Check readelf's analysis against the raw hexdump above and the sections dumped by `radare2.rabin2 -S a.out`.
+Check readelf's analysis against the raw hexdump above and the sections dumped by `rabin2 -S a.out`.
 
 1. `DT_NEEDED`(0x0000000000000001)=0x2d: offset in STRTAB `.dynstr`, points to `libc.so.6`.
 2. `DT_STRTAB`(0000000000000005)=0x3a8: address of section `.dynstr`.
@@ -882,7 +882,7 @@ Relocation section `.rela.plt` defines five `R_AARCH64_JUMP_SLOT`s pointing to G
 `rabin2 -i` puts things on the stage, e.g. No.8 0x00000630 points to the PLT stub routine <puts@plt\>.
 
 ```bash hl_lines="10"
-$ radare2.rabin2 -i a.out
+$ rabin2 -i a.out
 [Imports]
 nth vaddr      bind   type   lib name
 ―――――――――――――――――――――――――――――――――――――
@@ -900,7 +900,7 @@ nth vaddr      bind   type   lib name
 `rabin2 -R` lists the RELA relocations whose `vaddr` points to the GOT entry that stores the adjusted address. The highlighted line's vaddr=0x00010fc8 is the GOT slot address for `reloc.puts`.
 
 ```bash hl_lines="13"
-$ radare2.rabin2 -R a.out
+$ rabin2 -R a.out
 
 [Relocations]
 
@@ -972,14 +972,14 @@ Disassembly of section .plt:
  638:	913f2210 	add	x16, x16, #0xfc8
  63c:	d61f0220 	br	x17
 
-$ radare2.rax2 4040
+$ rax2 4040
 0xfc8
 ```
 
 If you only want to disassemble the `puts@plt` symbol, not the whole section, you could specify the symbol or an address range for objdump.
 
 ```bash
-# puts_plt=$(radare2.rabin2 -i a.out | awk '/puts/ {print $2}')
+# puts_plt=$(rabin2 -i a.out | awk '/puts/ {print $2}')
 # objdump -d --start-address=$puts_plt --stop-address=$((puts_plt+16)) a.out
 $ objdump --disassemble=puts@plt a.out
 ```

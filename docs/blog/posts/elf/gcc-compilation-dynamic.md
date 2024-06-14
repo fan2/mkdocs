@@ -382,7 +382,7 @@ $ find /usr/lib/ -not \( -path "*/python3" -prune \) -type f -regextype egrep -i
 The `ldd` command can print out shared object dependencies, adding `-v` for verbose details.
 
 ```bash
-$ radare2.rabin2 -l a.out
+$ rabin2 -l a.out
 [Linked libraries]
 libc.so.6
 
