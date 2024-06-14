@@ -120,6 +120,8 @@ Usage: is [*hjq]  List symbols from current selected binary
 | isj               in json format
 ```
 
+List (libc) imports: `is~imp`
+
 ### iS/iSS - sections & segments
 
 ```bash
@@ -216,7 +218,56 @@ psz 48 @ x0 # specify estimated length
 ?w x0
 ```
 
-### pf - printf
+### pv - print value
+
+```bash
+[0xaaaab3ce0634]> pv?
+Usage: pv[1248z][udj]  Print value(s) given size and endian (u for unsigned, d for signed decimal, j for json)
+| pv                    print bytes based on asm.bits
+| pv1[udj]              print 1 byte in memory
+| pv2[udj]              print 2 bytes in memory
+| pv4[udj]              print 4 bytes in memory
+| pv8[udj]              print 8 bytes in memory
+| pvp[udj]              print 4 or 8 bytes depending on asm.bits
+| pve [1234] ([bsize])  print value with any endian (reorder bytes with the 1234 order)
+| pvz                   print value as string (alias for ps)
+```
+
+Print 4*1 bytes in memory.
+
+```bash
+[0xaaaab3ce0634]> pv1 4
+0x11
+0xe6
+0x47
+0xf9
+
+# 8bit hexpair list of 4 bytes
+[0xaaaab3ce0634]> p8 4
+11e647f9
+```
+
+Print 1*4 bytes in memory, interpreted according to endianess.
+
+```bash
+[0xaaaab3ce0634]> pv4
+0xf947e611
+```
+
+Run `!echo $R2_ENDIAN`, `e arch.endian` or `e cfg.bigendian` to get the current endianess.
+
+Specify endianess(byte-order) to change the interpretation/representation:
+
+```bash
+# interpret dword(4 bytes) as BE, see pfed below
+[0xaaaab3ce0634]> pve 1234 4
+0xaaaab3ce0634  300304377 (0x11e647f9)
+# interpret dword(4 bytes) as LE(default endianess)
+[0xaaaab3ce0634]> pve 4321 4
+0xaaaab3ce0634  -112728559 (0xf947e611)
+```
+
+### pf - print format
 
 ```bash
 [0xffffa4386c40]> pf?
@@ -315,21 +366,36 @@ Hexdump one `d` dword(4 bytes) in hex, print with optional given labels.
 [0xaaaab3ce0634]> pf1d opcode
  opcode : 0xaaaab3ce0634 = 0xf947e611
 
+# pf4d @ pc-4 will display in array format, see pf4b above
+
+# quiet mode: pv4 4 @ pc-4 or pfq dddd @ pc-4
+[0xaaaab3ce0634]> pf dddd @ pc-4
+0xaaaab3ce0630 = 0x90000090
+0xaaaab3ce0634 = 0xf947e611
+0xaaaab3ce0638 = 0x913f2210
+0xaaaab3ce063c = 0xd61f0220
+
 # endianness already swapped, just decode it as BE.
 $ rasm2 -de -a arm 0xf947e611
 $ cstool arm64be 0xf947e611
 $ cstool -d arm64be 0xf947e611
 ```
 
-`e` temporally swap endian:
+Add `e` option to swap endian temporally(see rax2 -ke):
 
 ```bash
-[0xaaaab3ce0634]> pfed opcode
- opcode : 0xaaaab3ce0634 = 0x11e647f9
-
 [0xaaaab3ce0634]> pd 1
 │           ;-- pc:
 │           0xaaaab3ce0634      11e647f9       ldr x17, [x16, 0xfc8]
+
+[0xaaaab3ce0634]> pfed opcode
+ opcode : 0xaaaab3ce0634 = 0x11e647f9
+
+[0xaaaab3ce0634]> pf edddd @pc-4
+0xaaaab3ce0630 = 0x90000090
+0xaaaab3ce0634 = 0x11e647f9
+0xaaaab3ce0638 = 0x10223f91
+0xaaaab3ce063c = 0x20021fd6
 ```
 
 `pfedd`: dump two dword in big-endian.
@@ -379,32 +445,115 @@ Usage: px[0afoswqWqQ][f]   # Print heXadecimal
 `pxw $l`(`pxw $l @ pc`): hexdump instruction opcode in pc, but default in little-endian.
 
 ```bash
-[0xaaaab3ce0634]> pxw $l
+[0xaaaab3ce0634]> pxw $l # @ pc
 0xaaaab3ce0634  0xf947e611                                   ..G.
+[0xaaaab3ce0634]> pxW $l # @ pc
+0xaaaab3ce0634 0xf947e611
+[0xaaaab3ce0634]> pxW $l*4 # @ pc
+0xaaaab3ce0634 0xf947e611
+0xaaaac6e50638 0x913f2210
+0xaaaac6e5063c 0xd61f0220
+0xaaaac6e50640 0xd503201f
 ```
 
-Config `cfg.bigendian=false` and then reset, equivalent implementation of `pfed`
+Dump bitstream to check against instruction opcode specs.
 
 ```bash
-# temporally swap endian
-[0xaaaab3ce0634]> e cfg.bigendian
-false
-[0xaaaab3ce0634]> e cfg.bigendian=true
+# bitstream of 32 bits / 4 bytes
+[0xaaaab3ce0634]> pb $l*8 # pB $l
+00010001111001100100011111111001
 
-[0xaaaab3ce0634]> pxw $l @ pc
-0xaaaab3ce0634  0x11e647f9                                   ..G.
+# bitstream of next instruction
+[0xaaaab3ce0634]> pB $l @ pc+4
+00010000001000100011111110010001
 
-# reset endianness
-[0xaaaab3ce0634]> e cfg.bigendian=true
+# dump bits in hexdump form
+[0xaaaab3ce0634]> pxb $l*4 # @ pc
+0xaaaab3ce0634 0001_0001  1110_0110  0100_0111  1111_1001  0x11e647f9  ..G.
+0xaaaac6e50638 0001_0000  0010_0010  0011_1111  1001_0001  0x10223f91  ."?.
+0xaaaac6e5063c 0010_0000  0000_0010  0001_1111  1101_0110  0x20021fd6   ...
+0xaaaac6e50640 0001_1111  0010_0000  0000_0011  1101_0101  0x1f2003d5  . ..
 ```
 
-View 32 items (\_\_WORDSIZE=`$w`) of the current stack, following the current sp:
+Suppose old FP = 0xffffdf541530 before main, and `pdf` of main is as follows.
+
+```asm
+[0x004008e0]> pdf
+            ;-- pc:
+┌ 116: int main (int argc, char **argv);
+│           ; arg int argc @ x0
+│           ; arg char **argv @ x1
+│           ; var int64_t var_28h @ sp+0x28
+│           0x004008e0 b    fd7bbda9       stp x29, x30, [sp, -0x30]!
+│           0x004008e4      fd030091       mov x29, sp
+│           0x004008e8      e01f00b9       str w0, [sp, 0x1c]          ; argc
+│           0x004008ec      e10b00f9       str x1, [sp, 0x10]          ; argv
+```
+
+After the prolog, we can check latest sp/SP and BP/FP:
+
+```bash
+# Filter register telescoping: drr ~SP
+[0x004008e0]> dr sp # dr?rp # ?v $r:sp # ?v $r{sp}
+0xffffdf541500
+
+# Filter register telescoping: drr ~BP
+[0x004008e0]> dr x29 # dr BP
+0xffffdf541500
+
+# last BP/FP
+[0x004008e0]> xQq $w @ sp # pv @ sp
+0x0000ffffdf541530
+
+# Calculate the newly opened stack size
+[0x004008e0]> ?v `xQq $w @ sp`-`dr sp`
+0x30
+# Save stack size for future reference
+[0x004008e0]> %SIZE=`_` ; %SIZE
+0x30
+
+# last X30/LR
+[0x004008e0]> xQq $w @ sp+8 # pv @ sp+8
+0x0000ffffb7b073fc
+
+# overwrite X30/LR: wv8 0x400550 @ sp+8
+# overwrite stack: wv8 0x004005c0 @ sp+16
+
+# Filter register telescoping: drr ~x30
+# has not been changed since last call
+[0x004008e0]> dr x30
+0xffffb7b073fc
+```
+
+In the above case, $w*6 = 8\*6 = %SIZE = 0x30/48.
+
+[View elements of the current stack](https://reverseengineering.stackexchange.com/questions/16844/how-to-get-a-nice-stack-view-in-radare2), following the current sp with 8 bytes(quad-words) as step unit.
 
 ```bash
 # two machine word per line, equivalent to x/32xg $sp in GDB
-pxq $w*32 @ sp
+[0x004008e0]> xq $w*6 @ sp # xq `%SIZE` @ sp
+0xffffc8e74ac0  0x0000ffffc8e74af0  0x0000ffff981473fc   .J.......s......
+0xffffc8e74ad0  0x0000ffffc8e74c68  0x00000001981473c0   hL.......s......
+0xffffc8e74ae0  0x0000ffffc8e74c68  0x000000001819bac0   hL..............
+
 # one machine word per line
-pxQ $w*32 @ sp
+# quiet mode: xQq $w*6 @ sp => pv 6 @ sp
+[0x004008e0]> xQ $w*6 @ sp # xQ `%SIZE` @ sp
+0xffffc8e74ac0 0x0000ffffc8e74af0 x29+48
+0xffffc8e74ac8 0x0000ffff981473fc
+0xffffc8e74ad0 0x0000ffffc8e74c68 x19
+0xffffc8e74ad8 0x00000001981473c0
+0xffffc8e74ae0 0x0000ffffc8e74c68 x19
+0xffffc8e74ae8 0x000000001819bac0 x0
+
+# show hexword references(Stack Telescoping)
+[0x004008e0]> xr $w*6 @ sp # xr `%SIZE` @ sp
+0xffffc8e74ac0 0x0000ffffc8e74af0   .J...... @ dsp [stack] stack R W 0xffffc8e74c00
+0xffffc8e74ac8 0x0000ffff981473fc   .s...... /usr/lib/aarch64-linux-gnu/libc.so.6 library R X 'bl 0xffff9815cef0' 'libc.so.6'
+0xffffc8e74ad0 0x0000ffffc8e74c68   hL...... [stack] x19,d19 stack R W 0xffffc8e751a5
+0xffffc8e74ad8 0x00000001981473c0   .s...... 6846444480
+0xffffc8e74ae0 0x0000ffffc8e74c68   hL...... [stack] x19,d19 stack R W 0xffffc8e751a5
+0xffffc8e74ae8 0x000000001819bac0   ........ 404339392 x0,d0 aaaaaaaaaaa
 ```
 
 ### pd - disassemble
@@ -537,13 +686,6 @@ For given address <addr\>, try `pdf @addr`/`pd 1 @addr` to detect the symbol/lab
 > Equivalent to `info symbol ADDR` in GDB.
 
 ## refs
-
-[Newest 'radare2' Questions](https://stackoverflow.com/questions/tagged/radare2)
-
-[gdb list command? #1783](https://github.com/radareorg/radare2/issues/1783)
-[Radare2 "pd" command](https://stackoverflow.com/questions/62319299/radare2-pd-command) - disassembly or opcodes
-[How to dump function's disassembly using r2pipe](https://stackoverflow.com/questions/55402547/how-to-dump-functions-disassembly-using-r2pipe)
-[How to make radare2 work for a large binary?](https://reverseengineering.stackexchange.com/questions/16112/how-to-make-radare2-work-for-a-large-binary/16115)
 
 A journey into Radare 2: [Part 1](https://www.megabeets.net/a-journey-into-radare-2-part-1/), [Part 2](https://www.megabeets.net/a-journey-into-radare-2-part-2/)
 

@@ -357,6 +357,7 @@ rsym.abort               rsym.puts
 Inspect the address of the symbol.
 
 ```bash
+# ii ~puts
 [0xffff98492c40]> ?v rsym.puts # ?v sym.imp.puts # afo rsym.puts
 0xaaaadc760630
 ```
@@ -456,6 +457,7 @@ reloc._ITM_registerTMCloneTable
 Get the value(address) of label `reloc.puts` by evaluation:
 
 ```bash
+# ir ~puts
 [0xffff98492c40]> ?v reloc.puts # dumb afo mutes
 0xaaaadc770fc8
 ```
@@ -494,6 +496,15 @@ Type `?w $$` or `?w pc` to confirm what's in current address.
 ```bash
 [0xffff98492c40]> ?w pc
 /home/pifan/Projects/cpp/a.out .text entry0,section..text,_start,x16,x21,pc,d16,d21 entry0 program R X 'nop' 'a.out'
+```
+
+Seek to pc and list current symbol:
+
+```bash
+[0xffff98492c40] s pc; is.
+nth paddr      vaddr          bind  type size lib name  demangled
+―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+13  0x00000640 0xaaaadc760640 LOCAL SECT 0        .text
 ```
 
 Type `pdf` to disassemble function at current pc, that is `entry0`:
@@ -772,40 +783,51 @@ reg
 0xffff9832ae70
 ```
 
-Hexdump and dereference `x16` as pointer:
+Show whatis and telescope of `x16`:
 
 ```bash
-# show hexadecimal quad-words dump (64bit)
-[0xaaaadc76063c]> pxq $w @ x16 # pxq $w @ 0xaaaadc770fc8
-0xaaaadc770fc8  0x0000ffff9832ae70                       p.2.....
-
-# printf quadword
-[0xaaaadc76063c]> pf1q @ x16
-0xaaaadc770fc8 = (qword)0x0000ffff9832ae70
-# pointer reference (2, 4 or 8 bytes)
-[0xaaaadc76063c]> pfp puts_addr @ x16
- puts_addr : 0xaaaadc770fc8 = (qword)0x0000ffff9832ae70
-# 64bit pointer to string (8 bytes)
-[0xaaaadc76063c]> pfS @ x16
-0xaaaadc770fc8 = 0xaaaadc770fc8 -> 0xffff9832ae70 "{"
-
 [0xaaaadc76063c]> ?w x16
 /home/pifan/Projects/cpp/a.out .got reloc.puts,x16,d16 program R 0xffff9832ae70
+[0xaaaadc76063c]> drr~x16
+     x16    0xaaaadc770fc8     /home/pifan/Projects/cpp/a.out .got reloc.puts,x16,d16 program R 0xffff9832ae70
 ```
 
-> Try `pxa` for annotated hexdump, and `pxr[1248][qj]` to show hexword references.
+Hexdump and try to dereference `x16`:
+
+```bash
+# pvp @ x16 # pv8 @ x16
+[0xaaaadc76063c]> pv @ x16 # pv @ 0xaaaadc770fc8
+0x0000ffff9cbbae70
+
+# printf quadword: pf1q @ x16
+# pointer reference with label: pfp puts_addr @ x16
+# 64bit pointer to string: pfS @ x16
+# show hexadecimal quad-words dump: pxq $w @ x16
+
+[0xaaaadc76063c]> xQ $w @ x16
+0xaaaadc770fc8  0x0000ffff9832ae70 x17
+
+[0xaaaadc76063c]> xr $w @ x16
+0xaaaadc770fc8  0x0000ffff9832ae70   p....... @ d16 /usr/lib/aarch64-linux-gnu/libc.so.6 x17,d17 library R X 'stp x29, x30, [sp, -0x40]!' 'libc.so.6'
+```
 
 Actually, when *libc.so* is loaded, the value of the pointer is immediately updated from `0x00000000000005d0` to `0x0000ffff9832ae70`.
 
 > The `dbw` command is provided to add watchpoints. However, it doesn't work as well as expected, see related [issue](https://github.com/radareorg/radare2/issues/11029).
 
-Attempt to analyze instruction resides in `x17`.
+Show whatis and telescope of `x17`:
 
 ```bash
 [0xaaaadc76063c]> ?w x17
 /usr/lib/aarch64-linux-gnu/libc.so.6 x17,d17 library R X 'stp x29, x30, [sp, -0x40]!' 'libc.so.6'
+[0xaaaadc76063c]> drr~x17
+     x17    0xffff9832ae70     /usr/lib/aarch64-linux-gnu/libc.so.6 x17,d17 library R X 'stp x29, x30, [sp, -0x40]!' 'libc.so.6'
+```
 
-[0xaaaadc76063c]> pfD @ x17
+Attempt to analyze instruction resides in `x17`.
+
+```bash
+[0xaaaadc76063c]> pfD @ x17 # pi 1 @ x17
 stp x29, x30, [sp, -0x40]!
 
 [0xaaaadc76063c]> pd 1 @ x17

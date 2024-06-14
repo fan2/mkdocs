@@ -52,7 +52,7 @@ VisualGDB - [GDB Command Reference](https://visualgdb.com/gdbreference/commands/
 
 ## man gdb
 
-本机执行 `gdb --help` 可以查看 gdb 的 usage 帮助概要：
+本机执行 `gdb --help` / `gdbserver --help` 可以查看 gdb/gdbserver 的 usage 帮助概要：
 
 ```Shell
 $ gdb --help
@@ -63,6 +63,17 @@ This is the GNU debugger.  Usage:
 
 For more information, type "help" from within GDB, or consult the
 GDB manual (available as on-line info or a printed manual).
+
+$ gdbserver --help
+Usage:	gdbserver [OPTIONS] COMM PROG [ARGS ...]
+	gdbserver [OPTIONS] --attach COMM PID
+	gdbserver [OPTIONS] --multi COMM
+
+COMM may either be a tty device (for serial debugging),
+HOST:PORT to listen for a TCP connection, or '-' or 'stdio' to use
+stdin/stdout of gdbserver.
+PROG is the executable program.  ARGS are arguments passed to inferior.
+PID is the process ID to attach to, when --attach is specified.
 ```
 
 本机执行 `man gdb` 或 `info gdb` 可查看 gdb 调试器的详细参考手册。
@@ -295,10 +306,39 @@ Command name abbreviations are allowed if unambiguous.
 `apropos compile`: 查看 compile 相关的话题。
 `apropos file`: 查看 file 相关的话题。
 
+## gdb-multiarch
+
+[What is multi-arch?](https://sourceware.org/gdb/papers/multi-arch/whatis.html)
+
+```bash
+$ apt search -n gdb-multiarch
+Sorting... Done
+Full Text Search... Done
+gdb-multiarch/jammy-updates,now 12.1-0ubuntu1~22.04 arm64 [installed]
+  GNU Debugger (with support for multiple architectures)
+```
+
+```bash
+$ apt show gdb-multiarch
+Package: gdb-multiarch
+Version: 12.1-0ubuntu1~22.04
+
+Description: GNU Debugger (with support for multiple architectures)
+    This package contains a version of GDB which supports multiple target architectures.
+```
+
+执行 `sudo apt-get install gdb-multiarch`  即可安装 gdb-multiarch。
+
+[c - Specifying an architecture in gdb-multiarch](https://stackoverflow.com/questions/55684272/specifying-an-architecture-in-gdb-multiarch)
+[gdb调试arm：gdb-multiarch gdbserver coredump](https://blog.csdn.net/weixin_49867936/article/details/109719019)
+[ARM pwn 环境搭建和使用](https://blog.csdn.net/qq_60209620/article/details/137163917?depth_1-utm_source=distribute.pc_relevant.none-task-blog-2~default~YuanLiJiHua~Position-2-137163917-blog-109719019.235%5Ev43%5Epc_blog_bottom_relevance_base4): qemu+gdb-multiarch
+
 ## references
 
 用GDB调试程序：[（一）](https://haoel.blog.csdn.net/article/details/2879) ～ [（七）](https://haoel.blog.csdn.net/article/details/2885)
+[GDB之(8)GDB-Server远程调试](https://onceday.blog.csdn.net/article/details/136335177)
 
 [Arm Assembly Internals and Reverse Engineering](https://www.amazon.com/Blue-Fox-Assembly-Internals-Analysis/dp/1119745306) | Chapter 11 Dynamic Analysis - Command-Line Debugging
 
 [Advanced GDB Usage | Interrupt](https://interrupt.memfault.com/blog/advanced-gdb#conditional-breakpoints-and-watchpoints)
+[Tools we use: installing GDB for ARM | Interrupt](https://interrupt.memfault.com/blog/installing-gdb)

@@ -136,7 +136,7 @@ Usage: dr  Registers commands
 | dr=                  show registers in columns
 
 | dr?<register>        show value of given register
-| dr??                 same as dr?`drp~=[0]+` # list all reg roles alias names and values
+| dr??                 same as dr?`drp~=[0]+`
 
 | drl[j]               list all register names
 | dro                  show previous (old) values of registers
@@ -154,6 +154,7 @@ Overview register file:
 `drl[j]`: list all register names, one per line
 `dr`: show 'gpr' registers, one per line
 `dr=` : show registers in columns, same as `show-compact-regs` in pwndbg
+`dr??`: list all reg roles alias names and values
 `drr`: show registers references (telescoping)
 
 Show content of specified register:
@@ -177,6 +178,16 @@ View content of register in different modes(64-bit *X* / 32-bit *W*):
 0xffffae9c6180
 [0xaaaab3d30640]> dr w0
 0xae9c6180
+```
+
+Filter register telescoping:
+
+```bash
+[0x004008e0]> drr ~BP
+BP   x29    0xffffdf541500     [stack] sp,dsp,x29,d29 stack R W 0xffffdf541530
+[0x004008e0]> drr ~SP
+SP   sp     0xffffdf541500     [stack] sp,dsp,x29,d29 stack R W 0xffffdf541530
+[0x004008e0]> drr ~x30
 ```
 
 ### db - debug breakpoints
@@ -302,6 +313,7 @@ Enter visual mode, convenient for disassembly view, based on current address (PC
 
 - `Ve`: Configure radare the visual way
 - `Vp`: Open disassembly in visual mode
+- `V!`: Access visual panels
 - `Vpp`: Enter visual debugger mode
 
 Type `?` to list help menu of Visual mode, press `q` to quit the menu.
@@ -319,6 +331,8 @@ Visual Mode Help (short)
 | p  print commands and modes
 | v  view management
 ```
+
+`p`: Rotate/Traverse print mode.
 
 `.`: seek to PC or entrypoint.
 
@@ -406,6 +420,7 @@ Type `?` to open the help panel, press `X` to close the help panel.
 | s/S    step in / step over
 | t/T    tab prompt / close a tab
 | V      go to the graph mode
+| w      shuffle panels around in window mode
 | x      show xrefs/refs of current function from/to data/
 | X      close current panel
 | z      swap current panel with the first one
@@ -420,9 +435,17 @@ Type `?` to open the help panel, press `X` to close the help panel.
 7. `.`: seek to PC or entrypoint.
 8. `g`: go/seek to given offset/address, e.g., `g main`, `g sym.func`.
 9. `s`/`S`: step in / step over.
+10. `c` Cursor is not available for the current(stack) panel?
 
 Type `:` to enter Bottom Command mode, run r2 commands in prompt, e.g., `db`, `dc`.
 Press `v`/`q` to exit and return back to Visual Panels mode.
+
+[Radare2 - How to scale panel height in visual panels mode?](https://reverseengineering.stackexchange.com/questions/18846/radare2-how-to-scale-panel-height-in-visual-panels-mode)
+
+Press `w` to enter Window mode:
+
+- `hjkl` to move around (left-down-up-right)
+- `HJKL` to resize panels vertically/horizontally
 
 ### VV - graph mode
 

@@ -305,6 +305,32 @@ Does not include preprocessor macro info.
 
 > run/start 运行起来后，info sources 列表会多出很多运行时依赖文件和 libc.so.6。
 
+#### info proc
+
+使用 `info proc` 子命令可以显示进程相关的附加信息。
+
+```bash
+(gdb) help info proc
+Show additional information about a process.
+Specify any process id, or use the program being debugged by default.
+
+List of info proc subcommands:
+
+info proc all -- List all available info about the specified process.
+info proc cmdline -- List command line arguments of the specified process.
+info proc cwd -- List current working directory of the specified process.
+info proc exe -- List absolute filename for executable of the specified process.
+info proc files -- List files opened by the specified process.
+info proc mappings -- List memory regions mapped by the specified process.
+info proc stat -- List process info from /proc/PID/stat.
+info proc status -- List process info from /proc/PID/status.
+
+Type "help info proc" followed by info proc subcommand name for full documentation.
+Type "apropos word" to search for commands related to "word".
+Type "apropos -v word" for full documentation of commands related to "word".
+Command name abbreviations are allowed if unambiguous.
+```
+
 ### list
 
 [Source (Debugging with GDB)](https://sourceware.org/gdb/current/onlinedocs/gdb.html/Source.html#Source)

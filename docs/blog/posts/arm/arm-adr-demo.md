@@ -317,6 +317,14 @@ In r2, use `pxb` to hexdump 4 instructions in bytes/bits form after `dcu rsym.pu
 0xaaaadfbc0634 0001_0001  1110_0110  0100_0111  1111_1001  0x11e647f9  ..G.
 0xaaaadfbc0638 0001_0000  0010_0010  0011_1111  1001_0001  0x10223f91  ."?.
 0xaaaadfbc063c 0010_0000  0000_0010  0001_1111  1101_0110  0x20021fd6   ...
+
+# bitstream of 32 bits
+[0xaaaadfbc0630]> pb $l*8
+10010000000000000000000010010000
+
+# bitstream of 4 bytes for next inst
+[0xaaaadfbc0630]> pB $l @ pc+4
+00010001111001100100011111111001
 ```
 
 We can analyse the instructions using [capstone-tool](https://www.capstone-engine.org/).

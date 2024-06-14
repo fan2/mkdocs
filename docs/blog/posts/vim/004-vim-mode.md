@@ -335,8 +335,8 @@ $ fg
 
 If you want to split the window vertically, use: `:vertical terminal`, Or short: `:vert ter`.
 
-1. `ter`: create a terminal horizonally, top of current focus window.
-2. `vert ter`: create a terminal vertically, left to current focus window.
+1. `:ter`: create a terminal horizonally, top of current focus window.
+2. `:vert ter`: create a terminal vertically, left to current focus window.
 3. `:bel ter`: create a terminal horizonally, below of current focus window.
 4. `:bel vert ter`: create a terminal vertically, right to current focus window.
 

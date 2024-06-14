@@ -290,29 +290,7 @@ pwndbg> piebase
 Calculated VA from /home/pifan/Projects/cpp/a.out = 0xaaaaaaaa0000
 ```
 
-Show additional information about a process with `info proc` subcommands.
-
-```bash
-(gdb) help info proc
-Show additional information about a process.
-Specify any process id, or use the program being debugged by default.
-
-List of info proc subcommands:
-
-info proc all -- List all available info about the specified process.
-info proc cmdline -- List command line arguments of the specified process.
-info proc cwd -- List current working directory of the specified process.
-info proc exe -- List absolute filename for executable of the specified process.
-info proc files -- List files opened by the specified process.
-info proc mappings -- List memory regions mapped by the specified process.
-info proc stat -- List process info from /proc/PID/stat.
-info proc status -- List process info from /proc/PID/status.
-
-Type "help info proc" followed by info proc subcommand name for full documentation.
-Type "apropos word" to search for commands related to "word".
-Type "apropos -v word" for full documentation of commands related to "word".
-Command name abbreviations are allowed if unambiguous.
-```
+GDB natively provides `info proc` subcommands to show additional information about a process.
 
 `i proc` = `i proc cmdline` + `i proc cwd` + `i proc exe`.
 
@@ -328,6 +306,25 @@ process 593795
 ```
 
 For more details, see results of `info proc stat` and `info proc all`.
+
+The pwndbg extension provides two auxiliary commands, `pid` and `procinfo`.
+
+```bash
+pwndbg> pid -h
+usage: pid [-h]
+
+Gets the pid.
+
+options:
+  -h, --help  show this help message and exit
+pwndbg> procinfo -h
+usage: procinfo [-h]
+
+Display information about the running process.
+
+options:
+  -h, --help  show this help message and exit
+```
 
 ### modules
 

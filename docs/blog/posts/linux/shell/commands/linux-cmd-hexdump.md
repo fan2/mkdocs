@@ -174,6 +174,22 @@ sed -E 's/(..)/\1 /g' | \
 tr -d '\n'
 ```
 
+[Convert Hex to ASCII Characters in the Linux Shell | Baeldung on Linux](https://www.baeldung.com/linux/character-hex-to-ascii)
+[Conversion hex string into ascii in bash command line - Stack Overflow](https://stackoverflow.com/questions/13160309/conversion-hex-string-into-ascii-in-bash-command-line)
+
+```bash
+# -e(little-endian) incompatible with -r
+$ echo 0x4141764141754141 | xxd -rp
+AAvAAuAA%
+
+# use rev to reverse lines characterwise
+$ echo 0x4141764141754141 | xxd -rp | rev
+AAuAAvAA%
+
+$ echo -n "AAuAAvAA" | xxd -g 1
+00000000: 41 41 75 41 41 76 41 41                          AAuAAvAA
+```
+
 [Using Radare2 to patch a binary](https://rderik.com/blog/using-radare2-to-patch-a-binary/)
 
 `xxd`: generating a hex dump for edit.

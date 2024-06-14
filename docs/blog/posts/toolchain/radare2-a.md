@@ -199,3 +199,13 @@ We can choose a flag space using `fs <flagspace>` and print the flags it contain
 0xaaaae4870630 16 sym.imp.printf
 [0xaaaae4870754]> fs symbols; f
 ```
+
+## refs
+
+[Newest 'radare2' Questions](https://stackoverflow.com/questions/tagged/radare2)
+
+[gdb list command? #1783](https://github.com/radareorg/radare2/issues/1783)
+[Radare2 "pd" command](https://stackoverflow.com/questions/62319299/radare2-pd-command) - disassembly or opcodes
+[How to dump function's disassembly using r2pipe](https://stackoverflow.com/questions/55402547/how-to-dump-functions-disassembly-using-r2pipe)
+[How to make radare2 work for a large binary?](https://reverseengineering.stackexchange.com/questions/16112/how-to-make-radare2-work-for-a-large-binary/16115)
+[how to give a name to global varrible in radare2?](https://stackoverflow.com/questions/54950056/how-to-give-a-name-to-global-varrible-in-radare2)
