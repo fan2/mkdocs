@@ -9,7 +9,7 @@ categories:
 comments: true
 ---
 
-So far, we've combed through the basic usage of r2, see [previous post](./radare2-basics.md).
+So far, we've combed through the basic usage of r2, see [basics](./radare2-basics.md) and [expr](./radare2-expr.md).
 
 In this article, I'll give an overview of the `a` module that supports analysis.
 

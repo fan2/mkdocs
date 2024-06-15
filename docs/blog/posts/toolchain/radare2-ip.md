@@ -9,7 +9,7 @@ categories:
 comments: true
 ---
 
-So far, we've combed through the [radare2 basics](./radare2-basics.md) and [radare2 a module - analysis](./radare2-a.md).
+So far, we've combed through the [basics - expr](./radare2-expr.md) and [a module - analysis](./radare2-a.md).
 
 In this article, I'll give an overview of the `i` and `p` modules:
 
@@ -210,10 +210,9 @@ Usage: p[=68abcdDfiImrstuxz] [arg|len] [@addr]
 Print string at `x0`(the first parameter for next call):
 
 ```bash
-# with newline
-ps @ x0 # psz @ x0
-# without newline
-psz 48 @ x0 # specify estimated length
+ps @ x0 # psz @ x0 # pfz @ x0
+# specify estimated length
+psz 48 @ x0
 # explore what is there
 ?w x0
 ```

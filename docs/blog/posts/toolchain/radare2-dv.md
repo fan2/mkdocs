@@ -9,7 +9,7 @@ categories:
 comments: true
 ---
 
-So far, we've combed through the [radare2 basics](./radare2-basics.md), [radare2 a module - analysis](./radare2-a.md) and [radare2 i/p modules - info/print](./radare2-ip.md).
+So far, we've combed through the [basics - expr](./radare2-expr.md), [a module - analysis](./radare2-a.md) and [i/p modules - info/print](./radare2-ip.md).
 
 In this article, I'll give an overview of the `d` and `v` modules:
 
@@ -210,9 +210,10 @@ Usage: db   # Breakpoints commands
 | dbC <addr> <cmd>          run command but continue until <cmd> returns zero
 | dbd <addr>                disable breakpoint
 | dbe <addr>                enable breakpoint
-| dbs <addr>                toggle breakpoin| dbi <addr>                show breakpoint index in givengiven  offset
+| dbs <addr>                toggle breakpoin
+| dbi <addr>                show breakpoint index in given offset
 | dbi.                      show breakpoint index in current offset
-| dbi- <idx>                remo by index
+| dbi- <idx>                remove by index
 
 | dbie <idx>                enable breakpoint by index
 | dbid <idx>                disable breakpoint by index
@@ -222,21 +223,21 @@ Usage: db   # Breakpoints commands
 | dbt[?]                    show backtrace. See dbt? for more details
 ```
 
-Add breakpoint at specified address:
+Add/Disable/Enable breakpoint at specified address:
 
 ```bash
-[0x000000000000]> db <addr>
 [0x000000000000]> db 0xaaaae48e0640
+[0x000000000000]> dbd 0xaaaae48e0640
+[0x000000000000]> dbe 0xaaaae48e0640
 ```
 
 After execute `aa` to analyze all, we can set breakpoints by symbol name:
 
 ```bash
 [0x000000000000]> db entry0
-[0x000000000000]> db entry0-$l
-[0x000000000000]> db entry0-2*$l
-[0x000000000000]> db main
-[0x000000000000]> db sym.main
+[0x000000000000]> db entry0-$l # above
+[0x000000000000]> db main # db sym.main
+[0x000000000000]> db sym.main+64 # offset
 [0x000000000000]> db sym.func
 ```
 
@@ -269,12 +270,11 @@ Usage: dc  Execution continuation commands
 continue until address/symbol/function:
 
 ```bash
-dcu entry0
-dcu main
-dcu sym.main
-dcu sym.func
-dcu <address> : continue until address
-dcu pc+12
+> dcu 0x00400920
+> dcu entry0
+> dcu main # dcu sym.main
+> dcu sym.func
+> dcu pc+12 # offset
 ```
 
 ### ds - debug step
