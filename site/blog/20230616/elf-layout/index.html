@@ -1836,9 +1836,29 @@ It markes the file as an object file and provide machine-independent data with w
 <h2 id="section_header">section header<a class="headerlink" href="#section_header" title="Permanent link">#</a></h2>
 <p><a href="https://refspecs.linuxfoundation.org/elf/elf.pdf">TIS - ELF v1.2</a> | Book I: ELF - 1. Object Files - Sections</p>
 <p>An object file's <strong><code>section header table</code></strong> lets one locate all the file's sections.</p>
+<p>The <code>e_shoff</code> member of <code>Elf32_Ehdr</code>/<code>Elf64_Ehdr</code> holds the offset to the section header table.</p>
 <blockquote>
 <p>refer to struct <code>Elf32_Shdr</code>/<code>Elf64_Shdr</code> and <code>sh_type</code>(Section Types) defined in /usr/include/elf.h.</p>
 </blockquote>
+<p>The <code>sh_offset</code> member holds the address to the section's first byte.</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>            +-------------------+
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>            | ELF header        |---+
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>+---------&gt; +-------------------+   | e_shoff
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>|           |                   |&lt;--+
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>| Section   | Section header 0  |
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>|           |                   |---+ sh_offset
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>| Header    +-------------------+   |
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>|           | Section header 1  |---|--+ sh_offset
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>| Table     +-------------------+   |  |
+</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>|           | Section header 2  |---|--|--+
+</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>+---------&gt; +-------------------+   |  |  |
+</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>            | Section 0         |&lt;--+  |  |
+</span><span id="__span-3-13"><a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>            +-------------------+      |  | sh_offset
+</span><span id="__span-3-14"><a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a>            | Section 1         |&lt;-----+  |
+</span><span id="__span-3-15"><a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a>            +-------------------+         |
+</span><span id="__span-3-16"><a id="__codelineno-3-16" name="__codelineno-3-16" href="#__codelineno-3-16"></a>            | Section 2         |&lt;--------+
+</span><span id="__span-3-17"><a id="__codelineno-3-17" name="__codelineno-3-17" href="#__codelineno-3-17"></a>            +-------------------+
+</span></code></pre></div>
 <p><strong><code>Sections</code></strong> contain all information in an object file, <em>except</em> the ELF header, the program header table, and the section header table. Moreover, object files' sections satisfy several conditions.</p>
 <ul>
 <li>Every section in an object file has exactly one section header describing it. Section headers may exist that do not have a section.</li>
@@ -1892,7 +1912,8 @@ uClibc - <a href="https://uclibc.org/docs/elf-64-gen.pdf">ELF-64 Object File For
 MIPS - <a href="https://irix7.com/techpubs/007-4658-001.pdf">64-bit ELF Object File Spec v2.5</a></p>
 <p><a href="https://www.caichinger.com/elf.html">The ELF format</a><br />
 <a href="https://ctf-wiki.org/executable/elf/structure/basic-info/">ELF 文件 - CTF Wiki</a><br />
-<a href="https://gist.github.com/x0nu11byt3/bcb35c3de461e5fb66173071a2379779">ELF Format Cheatsheet</a></p>
+<a href="https://gist.github.com/x0nu11byt3/bcb35c3de461e5fb66173071a2379779">ELF Format Cheatsheet</a><br />
+<a href="https://linux-audit.com/elf-binaries-on-linux-understanding-and-analysis/">The 101 of ELF files on Linux: Understanding and Analysis</a></p>
 
 
 

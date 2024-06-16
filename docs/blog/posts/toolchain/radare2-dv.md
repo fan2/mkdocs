@@ -127,7 +127,18 @@ Finally, we can `pd` the address to see the corresponding instructions.
 [0xffffab36cc28]> pd @0xffffab36cba0
 ```
 
+Speaking of *libc*, a popular task for binary exploitation is to find the address of a specific symbol in a library. With this information in hand, you can build, for example, an exploit which uses ROP. This can be achieved using the `dmi` command. So if we want, for example, to find the address of [system](https://github.com/lattera/glibc/blob/master/sysdeps/posix/system.c) in the loaded *libc*, we can simply execute the following command:
+
+```bash
+[0x00400898]> dmi libc system ~system
+385  0x00046dc4 0xffff9c326dc4 GLOBAL FUNC 40        __libc_system
+1445 0x00046dc4 0xffff9c326dc4 WEAK   FUNC 40        system
+2686 0x00122b10 0xffff9c402b10 GLOBAL FUNC 120       svcerr_systemerr
+```
+
 ### dr - dump registers
+
+See `ar` - Analysis Registers.
 
 ```bash
 [0x000000000000]> dr?
@@ -334,7 +345,15 @@ Visual Mode Help (short)
 | v  view management
 ```
 
-`p`: Rotate/Traverse print mode.
+`p`: Cycle/Rotate/Traverse through visual modes.
+
+!!! note "visual modes"
+
+    The Visual mode uses "print modes" which are basically different panels that you can rotate. By default those are:
+
+    > Hexdump panel -> Disassembly panel -> Debugger panel -> Hexadecimal words dump panel -> Hex-less hexdump panel -> Op analysis color map panel -> Annotated hexdump panel -> Hexdump panel -> [...]
+
+    Notice that the top of the panel contains the command which is used.
 
 `.`: seek to PC or entrypoint.
 
@@ -498,6 +517,7 @@ Type `?` to list all the commands of Visual Graph mode.
 6. `c`: toggle/cancel graph cursor mode, use `hjkl` to move focus node
 7. `g`: go/seek to given offset, e.g., `g main`, `g sym.func`.
 
+`p/P`: Cycle/Rotate/Traverse through graph modes.
 Note the label inside square brackets of each node, such as `o[a-z]`, then type `oa` / `ob` / `oc` or `tab` to change central focus.
 
 ## refs

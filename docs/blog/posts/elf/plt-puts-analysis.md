@@ -205,6 +205,8 @@ nth paddr        size vaddr       vsize perm type name
 
     Create an ELF `PT_GNU_RELRO` segment header in the object. This specifies a memory segment that should be made read-only after relocation, if supported.
 
+    Relocation Read-Only (or `RELRO`) is a security measure which makes some binary sections read-only.
+
 ### mapping
 
 Use `readelf -S`/`objdump -h` to display the sections' header.

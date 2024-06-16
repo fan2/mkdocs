@@ -293,7 +293,11 @@ Commands:
 | pfq fmt ...                quiet print format (do now show address)
 | pfs[.fmt_name|fmt]         print the size of (named) format in bytes
 | pfv.fmt_name[.field]       print value(s) only for named format. Useful for one-liners
+```
 
+Defining primitive [types](https://book.rada.re/analysis/types.html) requires an understanding of basic `pf` formats, you can find the whole list of format specifier in `pf??`:
+
+```bash
 [0xffffa4386c40]> pf??
 Usage: pf[.k[.f[=v]]|[v]]|[n]|[0|cnt][fmt] [a0 a1 ...]
 Format:

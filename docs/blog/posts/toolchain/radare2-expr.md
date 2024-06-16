@@ -170,7 +170,7 @@ List possible values/view more options with question mark like `e conf.var = ?`.
 [0xffffbc84ae70]> e dbg.bpinmap=?
 
 # show offset relative instead of absolute address
-[0xffffbc84ae70]> =?
+[0xffffbc84ae70]> e asm.offset.relto=?
 func
 flag
 maps
@@ -270,7 +270,7 @@ Usage: ?[?[?]] expression
 Show all representation result for expr with single question mark.
 
 ```bash
-[0xffffbc190c40]> ? 1989+64
+[0xffffbc190c40]> ? 1989+64 # rax2 -r 1989+64
 int32   2053
 uint32  2053
 hex     0x805
@@ -297,7 +297,7 @@ AAuAAvAA%
 $ echo -e `rax2 -c 0x4141764141754141`
 AAuAAvAA
 
-# ? pc ~string or ? $$ ~string
+# ? pc ~string or ? $$ ~string or rax2 -r `dr pc`
 [0x4141764141754141]> ? 0x4141764141754141 ~string
 string  "AAuAAvAA"
 
@@ -413,7 +413,7 @@ TERM_PROGRAM=WarpTerminal
 [0x000000000000]> !echo $R2_BITS # %~R2_BITS
 ```
 
-Define a temporary environment variable at session level.
+Define temporary environment variables at session level for later computation.
 
 > To avoid overwriting, run `%~ENVVAR` to see if it's already there.
 
@@ -436,6 +436,7 @@ SP=0xffffdf541500
 Then you can refer to the vars in subsequent math expr or any r2 command.
 
 ```bash
+# equivalent to ?v `xQq $w @ sp`-`dr sp`
 [0x004008e0]> ?v `env FP`-`env SP` # ?v `%FP`-`%SP`
 0x30
 # save result(last output) in another var
@@ -558,8 +559,10 @@ Detect begin/end of current function:
 [awesome-radare2](https://github.com/radareorg/awesome-radare2/blob/master/README.md)
 [Radare2 vs. GDB](https://hurricanelabs.com/blog/learning-binary-reversing-radare2-vs-gdb/)
 [Radare2 Explorations](https://monosource.gitbooks.io/radare2-explorations/)
+[Binary Exploitation Notes](https://ir0nstone.gitbook.io/notes)
 [Radare2 — Keep It Or Leave It?](https://medium.com/@sagidana/radare2-keep-it-or-leave-it-3d45059ec0d1)
 
 [Disassembling with radare2.pdf](https://www.linuxdays.cz/2017/video/Tomas_Antecky-Disassembling_with_radare2.pdf)
-pancake - [Learning Radare In Practice.pdf](https://www.radare.org/get/THC2018.pdf)
 [Overcoming fear: reversing with radare2.pdf](https://conference.hitb.org/hitbsecconf2019ams/materials/D1T3%20-%20Reversing%20with%20Radare2%20-%20Arnau%20Gamez%20Montolio.pdf)
+pancake - [Learning Radare In Practice.pdf](https://www.radare.org/get/THC2018.pdf)
+[BinaryAdventure - Radare2 Tutorial](https://www.youtube.com/playlist?list=PLg_QXA4bGHpvsW-qeoi3_yhiZg8zBzNwQ)

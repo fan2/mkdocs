@@ -63,10 +63,10 @@ Software Reverse Engineering(SRE) Toolkit:
 ## references
 
 [Compiler Explorer](https://gcc.godbolt.org/) @[github](https://github.com/compiler-explorer/compiler-explorer)
-
-- Run compilers interactively from your web browser and interact with the assembly
-
 [An Empirical Study on ARM Disassembly Tools](https://www4.comp.polyu.edu.hk/~csxluo/ARM.pdf)
+
+[CSC 472/583 Software Security - 2021-Fall Course Website](https://www.cs.wcupa.edu/schen/ss2021/)
+[CSC 495/583 Topics of Software Security - 2023-Fall Course Website](https://www.cs.wcupa.edu/schen/ss2023/)
 
 ### forums
 
@@ -76,65 +76,57 @@ Software Reverse Engineering(SRE) Toolkit:
 [Reverse Engineering Stack Exchange](https://reverseengineering.stackexchange.com/)
 
 [Red Team Notes](https://www.ired.team/) / [BlackHatWorld](https://www.blackhatworld.com/tags/reverse-engineering/)
-[Crackmes](https://crackmes.one/) / [Root Me](https://www.root-me.org/?lang=en)
-[Reversing.Kr](http://reversing.kr/) / [Exploit Database](https://www.exploit-db.com/)
 [HackTricks](https://book.hacktricks.xyz/) / [Phrack Magazine](http://phrack.org/issues/1/1.html)
 
 [看雪学苑](https://www.kanxue.com/), [飘云阁](https://www.chinapyg.com/), [吾爱破解](https://www.52pojie.cn/)
 
-### courses
+### collections
+
+[Advanced Binary Exploitation CTF](https://reverseengineering.stackexchange.com/questions/26764/advanced-binary-exploitation-ctf)
+[easy-linux-pwn](https://github.com/xairy/easy-linux-pwn), [linux-kernel-exploitation](https://github.com/xairy/linux-kernel-exploitation)
+
+[Crackmes](https://crackmes.one/) / [Root Me](https://www.root-me.org/?lang=en)
+[Reversing.Kr](http://reversing.kr/) / [Exploit Database](https://www.exploit-db.com/)
+[exploit-exercises](https://exploit-exercises.com/), [Exploit Education](https://exploit.education/)
+
+### CTF Notes
+
+[Note: CTF](https://fareedfauzi.gitbook.io/ctf-playbook)
+[CTF101 - CTF Handbook](https://ctf101.org/)
+[Binary Exploitation Notes](https://ir0nstone.gitbook.io/notes)
+[nnamon/linux-exploitation-course](https://github.com/nnamon/linux-exploitation-course)
+[CTF-All-In-One 《CTF 竞赛入门指南》](https://firmianay.gitbooks.io/ctf-all-in-one/)
+
+### Reverse Engineering
+
+[Linux Reverse Engineering CTFs for Beginners](https://osandamalith.com/2019/02/11/linux-reverse-engineering-ctfs-for-beginners/)
+[TryHackMe: Reversing ELF.](https://medium.com/@xiosec/tryhackme-reversing-elf-60ab96969e41) - [reverselfiles](https://tryhackme.com/r/room/reverselfiles)
 
 [Reverse Engineering for Beginners](https://beginners.re/)
 [Reverse Engineering For Everyone!](https://0xinfection.github.io/reversing/)
 
-[CSC 472/583 Software Security - 2021-Fall Course Website](https://www.cs.wcupa.edu/schen/ss2021/)
-[CSC 495/583 Topics of Software Security - 2023-Fall Course Website](https://www.cs.wcupa.edu/schen/ss2023/)
-
-### CTF Notes
-
-[CTF Handbook](https://ctf101.org/)
-[Note: CTF](https://fareedfauzi.gitbook.io/ctf-playbook)
-[CTF All In One](https://firmianay.gitbooks.io/ctf-all-in-one/)
-[Advanced Binary Exploitation CTF](https://reverseengineering.stackexchange.com/questions/26764/advanced-binary-exploitation-ctf)
-[Linux Reverse Engineering CTFs for Beginners](https://osandamalith.com/2019/02/11/linux-reverse-engineering-ctfs-for-beginners/)
-
-### doorstep
-
-[xairy/easy-linux-pwn](https://github.com/xairy/easy-linux-pwn)
-[xairy/linux-kernel-exploitation](https://github.com/xairy/linux-kernel-exploitation)
-[nnamon/linux-exploitation-course](https://github.com/nnamon/linux-exploitation-course)
-[Exploit Education :: Andrew Griffiths' Exploit Education](https://exploit.education/)
-
-[Binary Exploitation Notes](https://ir0nstone.gitbook.io/notes)
-[TryHackMe: Reversing ELF. tryhackme Reversing ELF write-up](https://medium.com/@xiosec/tryhackme-reversing-elf-60ab96969e41)
-
-[exploit-exercises](https://exploit-exercises.com/)
-[bkerler/exploit_me](https://github.com/bkerler/exploit_me)
-
-### series
-
 [Reverse Engineering on macOS](https://gist.github.com/0xdevalias/256a8018473839695e8684e37da92c25)
 [How To Reverse Malware on macOS](https://go.sentinelone.com/rs/327-MNM-087/images/reverse_mw_final_9.pdf)
 
+### Binary Exploitation
+
 [A Noob's Guide To ARM Exploitation](https://ad2001.gitbook.io/a-noobs-guide-to-arm-exploitation)
+[bkerler/exploit_me](https://github.com/bkerler/exploit_me) - ARM/AARCH64
 
-[ARM binary exploitation — Aaarchibald WriteUP](https://medium.com/@chackal/arm-binary-exploitation-aaarchibald-writeup-dd4ae9cd8370)
-
+ARM binary exploitation: [Aaarchibald](https://medium.com/@chackal/arm-binary-exploitation-aaarchibald-writeup-dd4ae9cd8370), [Armory](https://medium.com/@chackal/arm-binary-exploitation-armory-writeup-e6468b18b068), [RET2ZP](https://medium.com/@chackal/ret2zp-arm-binary-exploitation-hola-armigo-writeup-77c4a673dd0b)
 [Introduction to Return-Oriented Exploitation on ARM64](https://www.slideshare.net/slideshow/introduction-to-returnoriented-exploitation-on-arm64-billy-ellis/110144234)
 
 ARM64 Reversing and Exploitation: [1](https://highaltitudehacks.com/2020/09/05/arm64-reversing-and-exploitation-part-1-arm-instruction-set-heap-overflow.html), [2](https://highaltitudehacks.com/2020/09/06/arm64-reversing-and-exploitation-part-2-use-after-free.html), [3](https://highaltitudehacks.com/2020/09/06/arm64-reversing-and-exploitation-part-3-a-simple-rop-chain.html)
-
 ARM64 Reversing And Exploitation: [1](https://8ksec.io/arm64-reversing-and-exploitation-part-1-arm-instruction-set-simple-heap-overflow/), [2](https://8ksec.io/arm64-reversing-and-exploitation-part-2-use-after-free/), [3](https://8ksec.io/arm64-reversing-and-exploitation-part-3-a-simple-rop-chain/), [4](https://8ksec.io/arm64-reversing-and-exploitation-part-4-using-mprotect-to-bypass-nx-protection-8ksec-blogs/), [5](https://8ksec.io/arm64-reversing-and-exploitation-part-5-writing-shellcode-8ksec-blogs/), [6](https://8ksec.io/arm64-reversing-and-exploitation-part-6-exploiting-an-uninitialized-stack-variable-vulnerability/), [7](https://8ksec.io/arm64-reversing-and-exploitation-part-7-bypassing-aslr-and-nx/), [8](https://8ksec.io/arm64-reversing-and-exploitation-part-8-exploiting-an-integer-overflow-vulnerability/), [9](https://8ksec.io/arm64-reversing-and-exploitation-part-9-exploiting-an-off-by-one-overflow-vulnerability/)
+
+[ARM64 Reverse Engineering and Exploitation Training (November 2018)](http://antid0te-sg.com/blog/18-11-12-arm64-reverse-engineering-exploitation-singapore.html)
 
 ---
 
 [Initiating Linux Binary Exploitation: A Beginner's Expedition into Code Manipulation](https://www.kayssel.com/series/binary-exploitation/)
 
-[Reverse Engineering Malware | hackers-arise](https://www.hackers-arise.com/reverse-engineering-malware)
 Malware Reverse Engineering for Beginners: [Part 1](https://intezer.com/blog/malware-analysis/malware-reverse-engineering-beginners/), [Part 2](https://intezer.com/blog/incident-response/malware-reverse-engineering-for-beginners-part-2/)
-
-[ARM64 Reverse Engineering and Exploitation Training (November 2018)](http://antid0te-sg.com/blog/18-11-12-arm64-reverse-engineering-exploitation-singapore.html)
-
 Introduction to x64 Linux Binary Exploitation: [1](https://valsamaras.medium.com/introduction-to-x64-linux-binary-exploitation-part-1-14ad4a27aeef), [2](https://valsamaras.medium.com/introduction-to-x64-binary-exploitation-part-2-return-into-libc-c325017f465), [3](https://valsamaras.medium.com/introduction-to-x64-linux-binary-exploitation-part-3-rop-chains-3cdcf17e8826), [4](https://valsamaras.medium.com/introduction-to-x64-linux-binary-exploitation-part-4-stack-canaries-e9b6dd2c3127), [5](https://valsamaras.medium.com/introduction-to-x64-linux-binary-exploitation-part-5-aslr-394d0dc8e4fb)
 
+[Reverse Engineering Malware | hackers-arise](https://www.hackers-arise.com/reverse-engineering-malware)
 [The Offensive Labs](https://www.theoffensivelabs.com/) - [Exploit Development for Linux (x86_64)](https://www.theoffensivelabs.com/courses/1189391/lectures/25930693)

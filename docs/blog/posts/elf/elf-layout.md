@@ -203,7 +203,31 @@ To view, dump, analyse or manipulate the object file and ELF file, you need [GNU
 
 An object file's **`section header table`** lets one locate all the file's sections.
 
+The `e_shoff` member of `Elf32_Ehdr`/`Elf64_Ehdr` holds the offset to the section header table.
+
 > refer to struct `Elf32_Shdr`/`Elf64_Shdr` and `sh_type`(Section Types) defined in /usr/include/elf.h.
+
+The `sh_offset` member holds the address to the section's first byte.
+
+```text
+            +-------------------+
+            | ELF header        |---+
++---------> +-------------------+   | e_shoff
+|           |                   |<--+
+| Section   | Section header 0  |
+|           |                   |---+ sh_offset
+| Header    +-------------------+   |
+|           | Section header 1  |---|--+ sh_offset
+| Table     +-------------------+   |  |
+|           | Section header 2  |---|--|--+
++---------> +-------------------+   |  |  |
+            | Section 0         |<--+  |  |
+            +-------------------+      |  | sh_offset
+            | Section 1         |<-----+  |
+            +-------------------+         |
+            | Section 2         |<--------+
+            +-------------------+
+```
 
 **`Sections`** contain all information in an object file, *except* the ELF header, the program header table, and the section header table. Moreover, object files' sections satisfy several conditions.
 
@@ -273,3 +297,4 @@ MIPS - [64-bit ELF Object File Spec v2.5](https://irix7.com/techpubs/007-4658-00
 [The ELF format](https://www.caichinger.com/elf.html)
 [ELF 文件 - CTF Wiki](https://ctf-wiki.org/executable/elf/structure/basic-info/)
 [ELF Format Cheatsheet](https://gist.github.com/x0nu11byt3/bcb35c3de461e5fb66173071a2379779)
+[The 101 of ELF files on Linux: Understanding and Analysis](https://linux-audit.com/elf-binaries-on-linux-understanding-and-analysis/)

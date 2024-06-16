@@ -458,7 +458,7 @@ Get the value(address) of label `reloc.puts` by evaluation:
 
 ```bash
 # ir ~puts
-[0xffff98492c40]> ?v reloc.puts # dumb afo mutes
+[0xffff98492c40]> ?v reloc.puts # dumb afo still mutes
 0xaaaadc770fc8
 ```
 
