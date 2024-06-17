@@ -17,7 +17,7 @@ Instructions and pseudo-instructions make up the code a processor uses to perfor
 
 <!-- more -->
 
-## A32/T32 Pseudo-instructions
+## Pseudo-instructions
 
 [ARM Compiler toolchain Assembler Reference](https://developer.arm.com/documentation/dui0489/latest) | ARM and Thumb Instructions - Pseudo-instructions
 [ARM Compiler armasm Reference Guide](https://developer.arm.com/documentation/dui0802/latest) | 3: A32 and T32 Instructions - 3.16 Pseudo-instructions
@@ -34,6 +34,8 @@ LDR   | Load a register with a 32-bit immediate value or an address <br/>(unlimi
 MOV32 | Load a register with a 32-bit immediate value or an address <br/>(unlimited range, but not position independent).
 NEG   | Negate a value in a register.
 UND   | Generate an architecturally undefined instruction.
+
+[Arm A-profile A64 ISA - Shared Pseudocode](https://developer.arm.com/documentation/ddi0602/2024-03/Shared-Pseudocode)
 
 ## gas ARM Opcodes
 

@@ -22,7 +22,7 @@
       
       
       <link rel="icon" href="../../../assets/hold_yourself.jpg">
-      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.26">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.27">
     
     
       
@@ -1571,6 +1571,17 @@
 </span></code></pre></div>
 <p>The <code>-z</code> option is used to list readable strings found in the <code>.rodata</code> section of ELF binaries, or the <code>.text</code> section of PE files.</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>$<span class="w"> </span>rabin2<span class="w"> </span>-z<span class="w"> </span>test-gdb
+</span></code></pre></div>
+<p>A <a href="https://ir0nstone.gitbook.io/notes/types/stack/return-oriented-programming/ret2libc">ret2libc</a> is based off the <code>system</code> function found within the C library. This function executes anything passed to it making it the best target. Another thing found within <em>libc</em> is the string <code>/bin/sh</code>; if you pass this string to system, it will pop a shell. And that is the entire basis of it - passing <code>/bin/sh</code> as a parameter to <code>system</code>.</p>
+<p>So, first of all, we should try to inspect the libc's base and the offset of <code>system</code>, then get the location of <code>/bin/sh</code>.</p>
+<p>We can use <code>strings</code> or <code>rabin2 -z</code> to search <code>/bin/sh</code> in libc.so:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="c1"># -a: Scan the whole file</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>$<span class="w"> </span>strings<span class="w"> </span>-d<span class="w"> </span>-t<span class="w"> </span>x<span class="w"> </span>/usr/lib/aarch64-linux-gnu/libc.so.6<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>/bin/sh
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="w"> </span>14cd10<span class="w"> </span>/bin/sh
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="c1"># -zz: strings (from raw bins [e bin.str.raw=1])</span>
+</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>$<span class="w"> </span>rabin2<span class="w"> </span>-z<span class="w"> </span>/usr/lib/aarch64-linux-gnu/libc.so.6<span class="w"> </span><span class="p">|</span><span class="w"> </span>grep<span class="w"> </span>/bin/sh
+</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="m">993</span><span class="w">  </span>0x0014cd10<span class="w"> </span>0x0014cd10<span class="w"> </span><span class="m">7</span><span class="w">   </span><span class="m">8</span><span class="w">    </span>.rodata<span class="w"> </span>ascii<span class="w">   </span>/bin/sh
 </span></code></pre></div>
 <h2 id="refs">refs<a class="headerlink" href="#refs" title="Permanent link">#</a></h2>
 <ul>

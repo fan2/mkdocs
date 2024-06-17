@@ -137,7 +137,11 @@ faner@MBP-FAN:~/Downloads|⇒  od -N 64 -A x -t x1a tuple.h
 
 ## xxd
 
-还有一个od类似的命令行工具是xxd。
+还有一个非常实用的类似od的命令行工具是xxd。
+
+它是Linux系统中的一个十六进制查看和编辑工具，支持将文件或标准输入的二进制数据以十六进制和ASCII码的形式进行显示，并且可以通过逆向操作将十六进制代码转换回二进制文件。
+
+老牌文本编辑器 [UltraEdit](https://www.ultraedit.com) 提供了类似的 Hex editing feature，[Sublime Text](https://www.sublimetext.com) 也提供了 hexadecimal option 支持（也可以安装 [Hex​Viewer](https://packagecontrol.io/packages/HexViewer) 插件），后起之秀 [Visual Studio Code](https://code.visualstudio.com) 可以安装插件 [Hex Editor](https://marketplace.visualstudio.com/items?itemName=ms-vscode.hexeditor) 扩展支持十六进制编辑。
 
 ```bash
 XXD(1)                                                                                                XXD(1)

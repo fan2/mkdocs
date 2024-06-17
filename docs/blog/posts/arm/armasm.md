@@ -77,9 +77,11 @@ comments: true
 tiarmclang - [GNU-Syntax Arm Assembly Language Reference Guide](https://software-dl.ti.com/codegen/docs/tiarmclang/compiler_tools_user_guide/gnu_syntax_arm_asm_language/index.html)
 TI - [ARM Assembly Language Tools v18.1.0.LTS User's Guide](https://downloads.ti.com/docs/esd/SPNU118U/)
 
-[ARM Assembly | Azeria Labs](https://azeria-labs.com/writing-arm-assembly-part-1/)
 [ARM Assembly By Example](https://armasm.com/)
+[ARM Assembly | Azeria Labs](https://azeria-labs.com/writing-arm-assembly-part-1/)
+[Exploring AArch64 assembler](https://thinkingeek.com/categories/aarch64/)
 
+[Exploring ARM Assembly](https://medium.com/@mbugraavci38/exploring-arm-assembly-harnessing-the-power-of-hardware-interactions-210b270b21c0)
 [ARM64 assembly hello world](http://main.lv/writeup/arm64_assembly_hello_world.md)
 [Apple M1 Assembly Language Hello World](https://smist08.wordpress.com/2021/01/08/apple-m1-assembly-language-hello-world/)
 [An introduction to ARM64 assembly on Apple Silicon Macs](https://github.com/below/HelloSilicon)

@@ -139,6 +139,7 @@ A-Profile Architecture:
 - [Arm A-profile Architecture Registers](https://developer.arm.com/documentation/ddi0601/latest)
 - [Arm A-profile A32/T32 Instruction Set Architecture](https://developer.arm.com/documentation/ddi0597/latest)
 - [Arm A-profile A64 Instruction Set Architecture](https://developer.arm.com/documentation/ddi0602/latest)
+- [ARM Architecture Reference Manual ARMv7-A/R edition.pdf](https://developer.arm.com/documentation/ddi0406/latest)
 - [Arm Architecture Reference Manual for A-profile architecture.pdf](https://developer.arm.com/documentation/ddi0487/latest) - overlength
 - [ARM Cortex-A Series Programmer's Guide for ARMv8-A](https://developer.arm.com/documentation/den0024/latest)
 

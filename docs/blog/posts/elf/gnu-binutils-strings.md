@@ -173,6 +173,22 @@ The `-z` option is used to list readable strings found in the `.rodata` section 
 $ rabin2 -z test-gdb
 ```
 
+A [ret2libc](https://ir0nstone.gitbook.io/notes/types/stack/return-oriented-programming/ret2libc) is based off the `system` function found within the C library. This function executes anything passed to it making it the best target. Another thing found within *libc* is the string `/bin/sh`; if you pass this string to system, it will pop a shell. And that is the entire basis of it - passing `/bin/sh` as a parameter to `system`.
+
+So, first of all, we should try to inspect the libc's base and the offset of `system`, then get the location of `/bin/sh`.
+
+We can use `strings` or `rabin2 -z` to search `/bin/sh` in libc.so:
+
+```bash
+# -a: Scan the whole file
+$ strings -d -t x /usr/lib/aarch64-linux-gnu/libc.so.6 | grep /bin/sh
+ 14cd10 /bin/sh
+
+# -zz: strings (from raw bins [e bin.str.raw=1])
+$ rabin2 -z /usr/lib/aarch64-linux-gnu/libc.so.6 | grep /bin/sh
+993  0x0014cd10 0x0014cd10 7   8    .rodata ascii   /bin/sh
+```
+
 ## refs
 
 - [Linux command to retrieve a byte range from a file - Server Fault](https://serverfault.com/questions/406791/linux-command-to-retrieve-a-byte-range-from-a-file)
