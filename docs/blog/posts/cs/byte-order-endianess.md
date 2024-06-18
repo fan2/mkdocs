@@ -46,6 +46,7 @@ comments: true
 There are two basic ways of viewing bytes in memory, either as *Little-Endian* (LE) or *Big-Endian* (BE). On big-endian machines, the most significant byte of an object in memory is stored at the lowest address, that is the address closest to zero. On little-endian machines, the least significant byte is stored at the lowest address. The term byte-ordering can also be used rather than endianness.
 
 <figure markdown="span">
+    <!-- https://documentation-service.arm.com/static/5fbd26f271eff94ef49c704c -->
     ![ARM-CortexA-endianess](./images/ARM-CortexA-endianess.svg)
 </figure>
 

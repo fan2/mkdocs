@@ -73,12 +73,6 @@ Here are some other registers in the A64 that you should know about:
 
 - The Program Counter (`PC`) is not a general-purpose register in A64, and it cannot be used with data processing instructions. The PC can be read using:
 
-<figure markdown="span">
-    [ARM Cortex-A Series Programmer's Guide for ARMv8-A](https://developer.arm.com/documentation/den0024/latest) | 4: ARMv8 Registers
-    ![Special-registers-in-AArch64](./images/Special-registers-in-AArch64.png){: style="width:75%;height:75%"}
-    <figcaption>Table 4-1 Special registers in AArch64</figcaption>
-</figure>
-
 ```asm
 ADR Xd, .
 ```
@@ -88,6 +82,58 @@ The `ADR` instruction returns the address of a label, calculated based on the cu
 !!! note "PC/SP distinction between A32 & A64"
 
     In the A32 and T32 instruction sets, the `PC` and `SP` are general purpose registers. This is not the case in A64 instruction set.
+
+## Programmer's Guide - ARMv8 Registers
+
+[ARM Cortex-A Series Programmer's Guide for ARMv8-A](https://developer.arm.com/documentation/den0024/latest) | 4: ARMv8 Registers
+
+The AArch64 execution state provides 31 × 64-bit general-purpose registers accessible at all times and in all Exception levels.
+
+Each register is 64 bits wide and they are generally referred to as registers `X0`-`X30`.
+
+<figure markdown="span">
+    ![Figure 4.1. AArch64 general-purpose registers](https://documentation-service.arm.com/static/5fbd26f271eff94ef49c7032)
+    <figcaption>Figure 4.1. AArch64 general-purpose registers</figcaption>
+</figure>
+
+Each AArch64 64-bit general-purpose register (`X0`-`X30`) also has a 32-bit (`W0`-`W30`) form.
+
+<figure markdown="span">
+    ![Figure 4.2. 64-bit register with W and X access](https://documentation-service.arm.com/static/5fbd26f271eff94ef49c700c)
+    <figcaption>Figure 4.2. 64-bit register with W and X access</figcaption>
+</figure>
+
+The 32-bit `W` register forms the lower half of the corresponding 64-bit `X` register. That is, `W0` maps onto the lower word of `X0`, and `W1` maps onto the lower word of `X1`.
+
+> Suppose X0=0xDEADBEEFFACEFEED, W0=0xFACEFEED in LE(Litte-Endian).
+
+Reads from `W` registers disregard the higher 32 bits of the corresponding X register and leave them unchanged. Writes to W registers set the higher 32 bits of the X register to zero. That is, writing 0xFFFFFFFF into `W0` sets `X0` to 0x00000000FFFFFFFF.
+
+### AArch64 special registers
+
+In addition to the 31 core registers, there are also several special registers.
+
+<figure markdown="span">
+    <!-- ![AArch64-special-registers](./images/AArch64-special-registers.png){: style="width:80%;height:80%"} -->
+    ![Figure 4.3. AArch64 special registers](https://documentation-service.arm.com/static/5fbd26f271eff94ef49c7033)
+    <figcaption>Figure 4.3. AArch64 special registers</figcaption>
+</figure>
+
+!!! note "X31? ZR or SP?"
+
+    There is no register called `X31` or `W31`. Many instructions are encoded such that the number 31 represents the zero register, `ZR` (WZR/XZR). There is also a restricted group of instructions where one or more of the arguments are encoded such that number 31 represents the *Stack Pointer* (`SP`).
+
+When accessing the zero register, all writes are ignored and all reads return 0. Note that the 64-bit form of the `SP` register does not use an `X` prefix.
+
+Table 4.1. Special registers in AArch64
+
+| Name | Size    | Description           |
+|------|---------|-----------------------|
+| WZR  | 32 bits | Zero register         |
+| XZR  | 64 bits | Zero register         |
+| WSP  | 32 bits | Current stack pointer |
+| SP   | 64 bits | Current stack pointer |
+| PC   | 64 bits | Program counter       |
 
 ## armasm guide - Registers in AArch64 state
 
@@ -119,15 +165,24 @@ Most A64 integer instructions can operate on either 32-bit or 64-bit registers. 
 
 There is no register named `W31` or `X31`. Depending on the instruction, register 31 is either the stack pointer or the zero register. When used as the stack pointer, you refer to it as `SP`. When used as the zero register, you refer to it as `WZR` in a 32-bit context or `XZR` in a 64-bit context.
 
-<figure markdown="span">
-    [ARM Cortex-A Series Programmer's Guide for ARMv8-A](https://developer.arm.com/documentation/den0024/latest) | 4: ARMv8 Registers:
+[ARM Cortex-A Series Programmer's Guide for ARMv8-A](https://developer.arm.com/documentation/den0024/latest) | 4: ARMv8 Registers - 4.1 AArch64 special registers
 
-    ![AArch64-special-registers](./images/AArch64-special-registers.png){: style="width:80%;height:80%"}
-    <figcaption>Figure 4-3 AArch64 special registers</figcaption>
+In the ARMv8 architecture, when executing in AArch64, the exception return state is held in the following dedicated registers for each Exception level:
 
-    ![Special-registers-by-Exception-level](./images/Special-registers-by-Exception-level.png){: style="width:80%;height:80%"}
-    <figcaption>Table 4-2 Special registers by Exception level</figcaption>
-</figure>
+- _Exception Link Register_ (`ELR`).
+- _Saved Processor State Register_ (`SPSR`).
+
+There is a dedicated SP per Exception level, but it is not used to hold return state.
+
+Table 4.2. Special registers by Exception level
+
+<!-- ![Special-registers-by-Exception-level](./images/Special-registers-by-Exception-level.png){: style="width:80%;height:80%"} -->
+
+|                                        | EL0     | EL1       | EL2       | EL3       |
+|----------------------------------------|---------|-----------|-----------|-----------|
+| _Stack Pointer_ (SP)                   | SP\_EL0 | SP\_EL1   | SP\_EL2   | SP\_EL3   |
+| _Exception Link Register_ (ELR)        |         | ELR\_EL1  | ELR\_EL2  | ELR\_EL3  |
+| _Saved Process Status Register_ (SPSR) |         | SPSR\_EL1 | SPSR\_EL2 | SPSR\_EL3 |
 
 ## ARM 64-Bit Assembly Language
 

@@ -133,7 +133,7 @@ The stack is defined in terms of three values:
 
 - a base (Lbound?)
 - a limit (Ubound?)
-- the *current* stack extent, stored in the special-purpose register `SP`
+- the *current* stack extent, stored in the special-purpose register `SP` ([armasm-ref-guide](https://developer.arm.com/documentation/dui0801/l/Overview-of-AArch64-state/Stack-Pointer-register), [Programmer's Guide](https://developer.arm.com/documentation/den0024/a/ARMv8-Registers/AArch64-special-registers/Stack-pointer))
 
 <figure markdown="span">
     ![Shared Stack-Usage Rules](https://community.arm.com/cfs-file/__key/communityserver-blogs-components-weblogfiles/00-00-00-21-42/5808.memory_2D00_layout.png)

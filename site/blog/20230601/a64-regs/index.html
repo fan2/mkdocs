@@ -1337,6 +1337,30 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#programmers_guide_-_armv8_registers" class="md-nav__link">
+    <span class="md-ellipsis">
+      Programmer's Guide - ARMv8 Registers
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Programmer's Guide - ARMv8 Registers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#aarch64_special_registers" class="md-nav__link">
+    <span class="md-ellipsis">
+      AArch64 special registers
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#armasm_guide_-_registers_in_aarch64_state" class="md-nav__link">
     <span class="md-ellipsis">
       armasm guide - Registers in AArch64 state
@@ -1456,7 +1480,7 @@
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7h1.5Z"/></svg>
                           <span class="md-ellipsis">
                             
-                              需要 7 分钟阅读时间
+                              需要 8 分钟阅读时间
                             
                           </span>
                         </div>
@@ -1559,11 +1583,6 @@
 <p>The Program Counter (<code>PC</code>) is not a general-purpose register in A64, and it cannot be used with data processing instructions. The PC can be read using:</p>
 </li>
 </ul>
-<figure><br />
-<a href="https://developer.arm.com/documentation/den0024/latest">ARM Cortex-A Series Programmer's Guide for ARMv8-A</a> | 4: ARMv8 Registers<br />
-<img alt="Special-registers-in-AArch64" src="../../arm/images/Special-registers-in-AArch64.png" style="width:75%;height:75%" /><br />
-    <figcaption>Table 4-1 Special registers in AArch64</figcaption><br />
-</figure>
 <div class="language-asm highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nf">ADR</span><span class="w"> </span><span class="no">Xd</span><span class="p">,</span><span class="w"> </span><span class="p">.</span>
 </span></code></pre></div>
 <p>The <code>ADR</code> instruction returns the address of a label, calculated based on the current location. Dot (<code>.</code>) means ‘here’, so the shown instruction is returning the address of itself. This is equivalent to reading the <code>PC</code>. Some branch instructions, and some load/store operations, implicitly use the value of the <code>PC</code>.</p>
@@ -1571,6 +1590,73 @@
 <p class="admonition-title">PC/SP distinction between A32 &amp; A64</p>
 <p>In the A32 and T32 instruction sets, the <code>PC</code> and <code>SP</code> are general purpose registers. This is not the case in A64 instruction set.</p>
 </div>
+<h2 id="programmers_guide_-_armv8_registers">Programmer's Guide - ARMv8 Registers<a class="headerlink" href="#programmers_guide_-_armv8_registers" title="Permanent link">#</a></h2>
+<p><a href="https://developer.arm.com/documentation/den0024/latest">ARM Cortex-A Series Programmer's Guide for ARMv8-A</a> | 4: ARMv8 Registers</p>
+<p>The AArch64 execution state provides 31 × 64-bit general-purpose registers accessible at all times and in all Exception levels.</p>
+<p>Each register is 64 bits wide and they are generally referred to as registers <code>X0</code>-<code>X30</code>.</p>
+<figure><br />
+<img alt="Figure 4.1. AArch64 general-purpose registers" src="https://documentation-service.arm.com/static/5fbd26f271eff94ef49c7032" /><br />
+    <figcaption>Figure 4.1. AArch64 general-purpose registers</figcaption><br />
+</figure>
+<p>Each AArch64 64-bit general-purpose register (<code>X0</code>-<code>X30</code>) also has a 32-bit (<code>W0</code>-<code>W30</code>) form.</p>
+<figure><br />
+<img alt="Figure 4.2. 64-bit register with W and X access" src="https://documentation-service.arm.com/static/5fbd26f271eff94ef49c700c" /><br />
+    <figcaption>Figure 4.2. 64-bit register with W and X access</figcaption><br />
+</figure>
+<p>The 32-bit <code>W</code> register forms the lower half of the corresponding 64-bit <code>X</code> register. That is, <code>W0</code> maps onto the lower word of <code>X0</code>, and <code>W1</code> maps onto the lower word of <code>X1</code>.</p>
+<blockquote>
+<p>Suppose X0=0xDEADBEEFFACEFEED, W0=0xFACEFEED in LE(Litte-Endian).</p>
+</blockquote>
+<p>Reads from <code>W</code> registers disregard the higher 32 bits of the corresponding X register and leave them unchanged. Writes to W registers set the higher 32 bits of the X register to zero. That is, writing 0xFFFFFFFF into <code>W0</code> sets <code>X0</code> to 0x00000000FFFFFFFF.</p>
+<h3 id="aarch64_special_registers">AArch64 special registers<a class="headerlink" href="#aarch64_special_registers" title="Permanent link">#</a></h3>
+<p>In addition to the 31 core registers, there are also several special registers.</p>
+<figure><br />
+    <!-- ![AArch64-special-registers](./images/AArch64-special-registers.png){: style="width:80%;height:80%"} --><br />
+<img alt="Figure 4.3. AArch64 special registers" src="https://documentation-service.arm.com/static/5fbd26f271eff94ef49c7033" /><br />
+    <figcaption>Figure 4.3. AArch64 special registers</figcaption><br />
+</figure>
+<div class="admonition note">
+<p class="admonition-title">X31? ZR or SP?</p>
+<p>There is no register called <code>X31</code> or <code>W31</code>. Many instructions are encoded such that the number 31 represents the zero register, <code>ZR</code> (WZR/XZR). There is also a restricted group of instructions where one or more of the arguments are encoded such that number 31 represents the <em>Stack Pointer</em> (<code>SP</code>).</p>
+</div>
+<p>When accessing the zero register, all writes are ignored and all reads return 0. Note that the 64-bit form of the <code>SP</code> register does not use an <code>X</code> prefix.</p>
+<p>Table 4.1. Special registers in AArch64</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Size</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>WZR</td>
+<td>32 bits</td>
+<td>Zero register</td>
+</tr>
+<tr>
+<td>XZR</td>
+<td>64 bits</td>
+<td>Zero register</td>
+</tr>
+<tr>
+<td>WSP</td>
+<td>32 bits</td>
+<td>Current stack pointer</td>
+</tr>
+<tr>
+<td>SP</td>
+<td>64 bits</td>
+<td>Current stack pointer</td>
+</tr>
+<tr>
+<td>PC</td>
+<td>64 bits</td>
+<td>Program counter</td>
+</tr>
+</tbody>
+</table>
 <h2 id="armasm_guide_-_registers_in_aarch64_state">armasm guide - Registers in AArch64 state<a class="headerlink" href="#armasm_guide_-_registers_in_aarch64_state" title="Permanent link">#</a></h2>
 <p><a href="https://developer.arm.com/documentation/dui0801/latest">Arm Compiler armasm User Guide</a> | 5. Overview of AArch64 state</p>
 <ul>
@@ -1596,15 +1682,50 @@ The <code>PSTATE</code> register contains bits that indicate the status of the c
 <p>All these registers are 64 bits wide except <code>SPSR_EL1</code>, <code>SPSR_EL2</code>, and <code>SPSR_EL3</code>, which are 32 bits wide.</p>
 <p>Most A64 integer instructions can operate on either 32-bit or 64-bit registers. The register width is determined by the register identiﬁer, where <code>W</code> means 32-bit and <code>X</code> means 64-bit. The names <code>Wn</code> and <code>Xn</code>, where <em>n</em> is in the range 0-30, refer to the same register. When you use the 32-bit form of an instruction, the upper 32 bits of the source registers are ignored and the upper 32 bits of the destination register are set to zero.</p>
 <p>There is no register named <code>W31</code> or <code>X31</code>. Depending on the instruction, register 31 is either the stack pointer or the zero register. When used as the stack pointer, you refer to it as <code>SP</code>. When used as the zero register, you refer to it as <code>WZR</code> in a 32-bit context or <code>XZR</code> in a 64-bit context.</p>
-<figure><br />
-<a href="https://developer.arm.com/documentation/den0024/latest">ARM Cortex-A Series Programmer's Guide for ARMv8-A</a> | 4: ARMv8 Registers:<br />
-<br />
-<img alt="AArch64-special-registers" src="../../arm/images/AArch64-special-registers.png" style="width:80%;height:80%" /><br />
-    <figcaption>Figure 4-3 AArch64 special registers</figcaption><br />
-<br />
-<img alt="Special-registers-by-Exception-level" src="../../arm/images/Special-registers-by-Exception-level.png" style="width:80%;height:80%" /><br />
-    <figcaption>Table 4-2 Special registers by Exception level</figcaption><br />
-</figure>
+<p><a href="https://developer.arm.com/documentation/den0024/latest">ARM Cortex-A Series Programmer's Guide for ARMv8-A</a> | 4: ARMv8 Registers - 4.1 AArch64 special registers</p>
+<p>In the ARMv8 architecture, when executing in AArch64, the exception return state is held in the following dedicated registers for each Exception level:</p>
+<ul>
+<li><em>Exception Link Register</em> (<code>ELR</code>).</li>
+<li><em>Saved Processor State Register</em> (<code>SPSR</code>).</li>
+</ul>
+<p>There is a dedicated SP per Exception level, but it is not used to hold return state.</p>
+<p>Table 4.2. Special registers by Exception level</p>
+<!-- ![Special-registers-by-Exception-level](./images/Special-registers-by-Exception-level.png){: style="width:80%;height:80%"} -->
+
+<table>
+<thead>
+<tr>
+<th></th>
+<th>EL0</th>
+<th>EL1</th>
+<th>EL2</th>
+<th>EL3</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><em>Stack Pointer</em> (SP)</td>
+<td>SP_EL0</td>
+<td>SP_EL1</td>
+<td>SP_EL2</td>
+<td>SP_EL3</td>
+</tr>
+<tr>
+<td><em>Exception Link Register</em> (ELR)</td>
+<td></td>
+<td>ELR_EL1</td>
+<td>ELR_EL2</td>
+<td>ELR_EL3</td>
+</tr>
+<tr>
+<td><em>Saved Process Status Register</em> (SPSR)</td>
+<td></td>
+<td>SPSR_EL1</td>
+<td>SPSR_EL2</td>
+<td>SPSR_EL3</td>
+</tr>
+</tbody>
+</table>
 <h2 id="arm_64-bit_assembly_language">ARM 64-Bit Assembly Language<a class="headerlink" href="#arm_64-bit_assembly_language" title="Permanent link">#</a></h2>
 <p><a href="https://www.amazon.com/64-Bit-Assembly-Language-Larry-Pyeatt/dp/0128192216/">ARM 64-Bit Assembly Language</a>, Larry D Pyeatt &amp; William Ughetta, 2019</p>
 <h3 id="user_program_registers">User Program Registers<a class="headerlink" href="#user_program_registers" title="Permanent link">#</a></h3>
