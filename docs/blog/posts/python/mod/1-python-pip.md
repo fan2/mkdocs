@@ -396,3 +396,105 @@ pip 9.0.3 from /usr/local/lib/python3.6/site-packages (python 3.6)
 `setuptools` has absorbed `distribute` as opposed to the other way around, as some thought. `setuptools` is up-to-date with the latest `distutils` changes and the wheel format.  
 Hence, `easy_install` and `pip` are more or less on equal footing now.  
 
+## install/upgrade issues
+
+[pip/python: normal site-packages is not writeable - Stack Overflow](https://stackoverflow.com/questions/59997065/pip-python-normal-site-packages-is-not-writeable)
+
+> Defaulting to user installation because normal site-packages is not writeable
+
+Python 2/3:
+
+```bash
+# python -m pip install [package_name]
+python3 -m pip install [package_name]
+```
+
+Specify the version that you use:
+
+```bash
+python3.7 -m pip install [package_name]
+```
+
+[How to upgrade all Python packages with pip - Stack Overflow](https://stackoverflow.com/questions/2720014/how-to-upgrade-all-python-packages-with-pip)
+
+macOS issues the following warnings when install or upgrade through pip3:
+
+- error: externally-managed-environment
+- hint: See PEP 668 for the detailed specification.
+
+As the caveat suggests, we have two solutions to the problem.
+
+1. use a virtual environment to install and upgrade pip packages, such as [pipx](https://pipx.pypa.io/stable/)
+2. passing `--break-system-packages` to install and upgrade commands
+
+### 33667992
+
+https://stackoverflow.com/a/33667992
+
+Do
+
+```bash
+$ pip freeze > requirements.txt
+```
+
+Open the text file, replace the == with >=, or have sed do it for you:
+
+```bash
+$ sed -i 's/==/>=/g' requirements.txt
+```
+
+and execute:
+
+```bash
+$ pip install -r requirements.txt --upgrade
+```
+
+### 3452888
+
+https://stackoverflow.com/a/3452888
+
+There isn't a built-in flag yet. Starting with pip version 22.3, the --outdated and --format=freeze have become mutually exclusive. Use Python, to parse the JSON output:
+
+```bash
+pip3 --disable-pip-version-check list --outdated --format=json | python3 -c "import json, sys; print('\n'.join([x['name'] for x in json.load(sys.stdin)]))" | xargs -n1 pip3 install -U
+```
+
+If you are using pip<22.3 you can use:
+
+```bash
+pip3 list --outdated --format=freeze | grep -v '^\-e' | cut -d = -f 1 | xargs -n1 pip3 install -U
+```
+
+### 54209210
+
+https://stackoverflow.com/a/54209210
+
+[achillesrasquinha/pipupgrade](https://github.com/achillesrasquinha/pipupgrade)
+
+Like yarn outdated/upgrade, but for pip. Upgrade all your pip packages and automate your Python Dependency Management.
+
+To upgrade all local packages, you can install [pip-review](https://github.com/jgonggrijp/pip-review).
+
+### 22260015
+
+https://stackoverflow.com/a/22260015
+
+```bash
+# https://stackoverflow.com/a/27071962
+pip3 install -U `pip3 list --outdated | awk 'NR>2 {print $1}'`
+
+# https://stackoverflow.com/a/3452888
+pip3 --disable-pip-version-check list --outdated --format=json | python3 -c "import json, sys; print('\n'.join([x['name'] for x in json.load(sys.stdin)]))" | xargs -n1 pip3 install -U
+
+# synthetical answer
+pip3 list --outdated | awk 'NR>2 {print $1}' | xargs -n1 pip3 install -U
+```
+
+> The `-n1` flag for `xargs` prevents stopping everything if updating one package fails.
+> xargs -n1 keeps going if an error occurs.
+
+Although not recommended, you can use the brutal solution if you have to.
+
+```bash
+pip3 list --outdated | awk 'NR>2 {print $1}' | xargs -n1 pip3 install -U --break-system-packages
+```

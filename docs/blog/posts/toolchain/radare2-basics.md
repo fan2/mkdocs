@@ -102,6 +102,8 @@ $ readlink `which r2`
 /home/pifan/Projects/radare2/binr/radare2/radare2
 ```
 
+To update/upgrade r2, git pull the last version and run `install.sh` again.
+
 ### snap install
 
 Or install radare2 on Ubuntu with [snap](https://ubuntu.com/core/services/guide/snaps-intro):

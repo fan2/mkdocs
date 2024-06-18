@@ -18,6 +18,85 @@ pyenv，virtualenv，pyenv-virtualenv 简介。
 
 [What is the difference between venv, pyvenv, pyenv, virtualenv, virtualenvwrapper, pipenv, etc?](https://stackoverflow.com/questions/41573587/what-is-the-difference-between-venv-pyvenv-pyenv-virtualenv-virtualenvwrappe)  
 
+[ohmyzsh / plugins / python](https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/python)
+
+## PEP 668 - externally-managed-environment
+
+[pip - Upgraded Python; Do I have to reinstall all site-packages manually? - Stack Overflow](https://stackoverflow.com/questions/45563909/upgraded-python-do-i-have-to-reinstall-all-site-packages-manually)
+
+```bash
+pip freeze > ~/Downloads/output/reqs.txt
+pip3 freeze --path /usr/local/lib/python3.10/site-packages > ~/Downloads/pip-list.txt
+
+pip3 install -r ~/Downloads/output/reqs.txt
+pip3 install --user -r pip-list.txt
+
+error: externally-managed-environment
+
+× This environment is externally managed
+╰─> To install Python packages system-wide, try brew install
+    xyz, where xyz is the package you are trying to
+    install.
+
+    If you wish to install a Python library that isn't in Homebrew,
+    use a virtual environment:
+
+    python3 -m venv path/to/venv
+    source path/to/venv/bin/activate
+    python3 -m pip install xyz
+
+    If you wish to install a Python application that isn't in Homebrew,
+    it may be easiest to use 'pipx install xyz', which will manage a
+    virtual environment for you. You can install pipx with
+
+    brew install pipx
+
+    You may restore the old behavior of pip by passing
+    the '--break-system-packages' flag to pip, or by adding
+    'break-system-packages = true' to your pip.conf file. The latter
+    will permanently disable this error.
+
+    If you disable this error, we STRONGLY recommend that you additionally
+    pass the '--user' flag to pip, or set 'user = true' in your pip.conf
+    file. Failure to do this can result in a broken Homebrew installation.
+
+    Read more about this behavior here: <https://peps.python.org/pep-0668/>
+
+note: If you believe this is a mistake, please contact your Python installation or OS distribution provider. You can override this, at the risk of breaking your Python installation or OS, by passing --break-system-packages.
+hint: See PEP 668 for the detailed specification.
+```
+
+As the caveat suggests, we have two solutions to the problem.
+
+1. use a virtual environment to install and upgrade pip packages, such as [pipx](https://pipx.pypa.io/stable/)
+2. passing `--break-system-packages` to install and upgrade commands
+
+## venv
+
+[venv — Creation of virtual environments](https://docs.python.org/3/library/venv.html)
+
+> Source code: Lib/venv/, since Python 3.3
+
+The `venv` module supports creating lightweight “virtual environments”, each with their own independent set of Python packages installed in their [`site`](https://docs.python.org/3/library/site.html#module-site) directories. A virtual environment is created on top of an existing Python installation, known as the virtual environment's “*base*” Python, and may optionally be isolated from the packages in the base environment, so *only* those explicitly installed in the virtual environment are available.
+
+When used from within a virtual environment, common installation tools such as [pip](https://pypi.org/project/pip/) will install Python packages into a virtual environment without needing to be told to do so explicitly.
+
+A virtual environment is (amongst other things):
+
+- Used to contain a specific Python interpreter and software libraries and binaries which are needed to support a project (library or application). These are by default isolated from software in other virtual environments and Python interpreters and libraries installed in the operating system.
+
+- Contained in a directory, conventionally either named `venv` or `.venv` in the project directory, or under a container directory for lots of virtual environments, such as `~/.virtualenvs`.
+
+- Not checked into source control systems such as Git.
+
+- Considered as disposable – it should be simple to delete and recreate it from scratch. You don’t place any project code in the environment
+
+- Not considered as movable or copyable – you just recreate the same environment in the target location.
+
+See [**PEP 405**](https://peps.python.org/pep-0405/) for more background on Python virtual environments.
+
+[Availability](https://docs.python.org/3/library/intro.html#availability): not Emscripten, not WASI.
+
 ## pyenv
 
 github: [pyenv](https://github.com/pyenv) / [pyenv](https://github.com/pyenv/pyenv)

@@ -203,6 +203,8 @@ SP   sp     0xffffdf541500     [stack] sp,dsp,x29,d29 stack R W 0xffffdf541530
 [0x004008e0]> drr ~x30
 ```
 
+Refer to [ARM Push/Pop Stack Modes](../arm/arm-stack-modes.md) to see the r2 expr of armasm subroutine prologue/epilogue.
+
 ### db - debug breakpoints
 
 ```bash

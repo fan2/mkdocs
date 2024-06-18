@@ -12,13 +12,13 @@
         <meta name="author" content="Cliff Fan">
       
       
-        <link rel="canonical" href="https://duetorun.com/blog/20191201/4-pyenv-virtualenv/">
+        <link rel="canonical" href="https://duetorun.com/blog/20230614/arm-stack-modes/">
       
       
-        <link rel="prev" href="../3-python-help/">
+        <link rel="prev" href="../../20230613/arm-addressing-modes/">
       
       
-        <link rel="next" href="../5-Anaconda/">
+        <link rel="next" href="../../20230615/gas-directives/">
       
       
       <link rel="icon" href="../../../assets/hold_yourself.jpg">
@@ -26,7 +26,7 @@
     
     
       
-        <title>pyenv & virtualenv - ElseWhere</title>
+        <title>ARM Push/Pop Stack Modes - ElseWhere</title>
       
     
     
@@ -90,7 +90,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#pep_668_-_externally-managed-environment" class="md-skip">
+        <a href="#stack_modes" class="md-skip">
           跳转至
         </a>
       
@@ -123,7 +123,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              pyenv & virtualenv
+              ARM Push/Pop Stack Modes
             
           </span>
         </div>
@@ -1304,37 +1304,37 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#pep_668_-_externally-managed-environment" class="md-nav__link">
+  <a href="#stack_modes" class="md-nav__link">
     <span class="md-ellipsis">
-      PEP 668 - externally-managed-environment
+      stack modes
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#venv" class="md-nav__link">
-    <span class="md-ellipsis">
-      venv
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#pyenv" class="md-nav__link">
-    <span class="md-ellipsis">
-      pyenv
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="pyenv">
+    <nav class="md-nav" aria-label="stack modes">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#command_reference" class="md-nav__link">
+  <a href="#suffixes" class="md-nav__link">
     <span class="md-ellipsis">
-      Command Reference
+      suffixes
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#defaultfd" class="md-nav__link">
+    <span class="md-ellipsis">
+      default(FD)
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pushpop" class="md-nav__link">
+    <span class="md-ellipsis">
+      PUSH/POP
     </span>
   </a>
   
@@ -1346,27 +1346,84 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#virtualenv" class="md-nav__link">
+  <a href="#aapcs64_stack" class="md-nav__link">
     <span class="md-ellipsis">
-      virtualenv
+      aapcs64 stack
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="aapcs64 stack">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#activity" class="md-nav__link">
+    <span class="md-ellipsis">
+      activity
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#pyenv-virtualenv" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#constraints" class="md-nav__link">
     <span class="md-ellipsis">
-      pyenv-virtualenv
+      constraints
     </span>
   </a>
   
 </li>
+        
+          <li class="md-nav__item">
+  <a href="#frame_pointer" class="md-nav__link">
+    <span class="md-ellipsis">
+      Frame Pointer
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
       
         <li class="md-nav__item">
-  <a href="#references" class="md-nav__link">
+  <a href="#stack_equiv" class="md-nav__link">
     <span class="md-ellipsis">
-      references
+      stack equiv
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="stack equiv">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#implementation" class="md-nav__link">
+    <span class="md-ellipsis">
+      implementation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#prologepilog" class="md-nav__link">
+    <span class="md-ellipsis">
+      prolog/epilog
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#refs" class="md-nav__link">
+    <span class="md-ellipsis">
+      refs
     </span>
   </a>
   
@@ -1428,7 +1485,7 @@
                     <li class="md-nav__item">
                       <div class="md-nav__link">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 19H5V8h14m-3-7v2H8V1H6v2H5c-1.11 0-2 .89-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-1V1m-1 11h-5v5h5v-5Z"/></svg>
-                        <time datetime="2019-12-01 10:30:00" class="md-ellipsis">2019年12月1日</time>
+                        <time datetime="2023-06-14 10:00:00" class="md-ellipsis">2023年6月14日</time>
                       </div>
                     </li>
                     
@@ -1439,7 +1496,7 @@
                           <span class="md-ellipsis">
                             分类于
                             
-                              <a href="../../category/python/">python</a></span>
+                              <a href="../../category/arm/">arm</a></span>
                         </div>
                       </li>
                     
@@ -1450,7 +1507,7 @@
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7h1.5Z"/></svg>
                           <span class="md-ellipsis">
                             
-                              需要 4 分钟阅读时间
+                              需要 11 分钟阅读时间
                             
                           </span>
                         </div>
@@ -1477,182 +1534,308 @@
     <article class="md-content__inner md-typeset">
       
         
-  
-  
-
-<nav class="md-tags" >
-  
-    
-    
-    
-      <span class="md-tag">pyenv</span>
-    
-  
-    
-    
-    
-      <span class="md-tag">virtualenv</span>
-    
-  
-</nav>
 
 
+  <h1>ARM Push/Pop Stack Modes</h1>
 
-  <h1>pyenv & virtualenv</h1>
-
-<p>pyenv，virtualenv，pyenv-virtualenv 简介。</p>
+<p>In this article, we'll explore the stack modes, activities and accesses in ARM(A32/A64).</p>
 <!-- more -->
 
-<p><a href="https://stackoverflow.com/questions/41573587/what-is-the-difference-between-venv-pyvenv-pyenv-virtualenv-virtualenvwrappe">What is the difference between venv, pyvenv, pyenv, virtualenv, virtualenvwrapper, pipenv, etc?</a>  </p>
-<p><a href="https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/python">ohmyzsh / plugins / python</a></p>
-<h2 id="pep_668_-_externally-managed-environment">PEP 668 - externally-managed-environment<a class="headerlink" href="#pep_668_-_externally-managed-environment" title="Permanent link">#</a></h2>
-<p><a href="https://stackoverflow.com/questions/45563909/upgraded-python-do-i-have-to-reinstall-all-site-packages-manually">pip - Upgraded Python; Do I have to reinstall all site-packages manually? - Stack Overflow</a></p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>pip<span class="w"> </span>freeze<span class="w"> </span>&gt;<span class="w"> </span>~/Downloads/output/reqs.txt
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>pip3<span class="w"> </span>freeze<span class="w"> </span>--path<span class="w"> </span>/usr/local/lib/python3.10/site-packages<span class="w"> </span>&gt;<span class="w"> </span>~/Downloads/pip-list.txt
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>pip3<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>~/Downloads/output/reqs.txt
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>pip3<span class="w"> </span>install<span class="w"> </span>--user<span class="w"> </span>-r<span class="w"> </span>pip-list.txt
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>
-</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>error:<span class="w"> </span>externally-managed-environment
-</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>
-</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>×<span class="w"> </span>This<span class="w"> </span>environment<span class="w"> </span>is<span class="w"> </span>externally<span class="w"> </span>managed
-</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>╰─&gt;<span class="w"> </span>To<span class="w"> </span>install<span class="w"> </span>Python<span class="w"> </span>packages<span class="w"> </span>system-wide,<span class="w"> </span>try<span class="w"> </span>brew<span class="w"> </span>install
-</span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="w">    </span>xyz,<span class="w"> </span>where<span class="w"> </span>xyz<span class="w"> </span>is<span class="w"> </span>the<span class="w"> </span>package<span class="w"> </span>you<span class="w"> </span>are<span class="w"> </span>trying<span class="w"> </span>to
-</span><span id="__span-0-12"><a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a><span class="w">    </span>install.
-</span><span id="__span-0-13"><a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>
-</span><span id="__span-0-14"><a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="w">    </span>If<span class="w"> </span>you<span class="w"> </span>wish<span class="w"> </span>to<span class="w"> </span>install<span class="w"> </span>a<span class="w"> </span>Python<span class="w"> </span>library<span class="w"> </span>that<span class="w"> </span>isn<span class="s1">&#39;t in Homebrew,</span>
-</span><span id="__span-0-15"><a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a><span class="s1">    use a virtual environment:</span>
-</span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>
-</span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a><span class="s1">    python3 -m venv path/to/venv</span>
-</span><span id="__span-0-18"><a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a><span class="s1">    source path/to/venv/bin/activate</span>
-</span><span id="__span-0-19"><a id="__codelineno-0-19" name="__codelineno-0-19" href="#__codelineno-0-19"></a><span class="s1">    python3 -m pip install xyz</span>
-</span><span id="__span-0-20"><a id="__codelineno-0-20" name="__codelineno-0-20" href="#__codelineno-0-20"></a>
-</span><span id="__span-0-21"><a id="__codelineno-0-21" name="__codelineno-0-21" href="#__codelineno-0-21"></a><span class="s1">    If you wish to install a Python application that isn&#39;</span>t<span class="w"> </span><span class="k">in</span><span class="w"> </span>Homebrew,
-</span><span id="__span-0-22"><a id="__codelineno-0-22" name="__codelineno-0-22" href="#__codelineno-0-22"></a><span class="w">    </span>it<span class="w"> </span>may<span class="w"> </span>be<span class="w"> </span>easiest<span class="w"> </span>to<span class="w"> </span>use<span class="w"> </span><span class="s1">&#39;pipx install xyz&#39;</span>,<span class="w"> </span>which<span class="w"> </span>will<span class="w"> </span>manage<span class="w"> </span>a
-</span><span id="__span-0-23"><a id="__codelineno-0-23" name="__codelineno-0-23" href="#__codelineno-0-23"></a><span class="w">    </span>virtual<span class="w"> </span>environment<span class="w"> </span><span class="k">for</span><span class="w"> </span>you.<span class="w"> </span>You<span class="w"> </span>can<span class="w"> </span>install<span class="w"> </span>pipx<span class="w"> </span>with
-</span><span id="__span-0-24"><a id="__codelineno-0-24" name="__codelineno-0-24" href="#__codelineno-0-24"></a>
-</span><span id="__span-0-25"><a id="__codelineno-0-25" name="__codelineno-0-25" href="#__codelineno-0-25"></a><span class="w">    </span>brew<span class="w"> </span>install<span class="w"> </span>pipx
-</span><span id="__span-0-26"><a id="__codelineno-0-26" name="__codelineno-0-26" href="#__codelineno-0-26"></a>
-</span><span id="__span-0-27"><a id="__codelineno-0-27" name="__codelineno-0-27" href="#__codelineno-0-27"></a><span class="w">    </span>You<span class="w"> </span>may<span class="w"> </span>restore<span class="w"> </span>the<span class="w"> </span>old<span class="w"> </span>behavior<span class="w"> </span>of<span class="w"> </span>pip<span class="w"> </span>by<span class="w"> </span>passing
-</span><span id="__span-0-28"><a id="__codelineno-0-28" name="__codelineno-0-28" href="#__codelineno-0-28"></a><span class="w">    </span>the<span class="w"> </span><span class="s1">&#39;--break-system-packages&#39;</span><span class="w"> </span>flag<span class="w"> </span>to<span class="w"> </span>pip,<span class="w"> </span>or<span class="w"> </span>by<span class="w"> </span>adding
-</span><span id="__span-0-29"><a id="__codelineno-0-29" name="__codelineno-0-29" href="#__codelineno-0-29"></a><span class="w">    </span><span class="s1">&#39;break-system-packages = true&#39;</span><span class="w"> </span>to<span class="w"> </span>your<span class="w"> </span>pip.conf<span class="w"> </span>file.<span class="w"> </span>The<span class="w"> </span>latter
-</span><span id="__span-0-30"><a id="__codelineno-0-30" name="__codelineno-0-30" href="#__codelineno-0-30"></a><span class="w">    </span>will<span class="w"> </span>permanently<span class="w"> </span>disable<span class="w"> </span>this<span class="w"> </span>error.
-</span><span id="__span-0-31"><a id="__codelineno-0-31" name="__codelineno-0-31" href="#__codelineno-0-31"></a>
-</span><span id="__span-0-32"><a id="__codelineno-0-32" name="__codelineno-0-32" href="#__codelineno-0-32"></a><span class="w">    </span>If<span class="w"> </span>you<span class="w"> </span>disable<span class="w"> </span>this<span class="w"> </span>error,<span class="w"> </span>we<span class="w"> </span>STRONGLY<span class="w"> </span>recommend<span class="w"> </span>that<span class="w"> </span>you<span class="w"> </span>additionally
-</span><span id="__span-0-33"><a id="__codelineno-0-33" name="__codelineno-0-33" href="#__codelineno-0-33"></a><span class="w">    </span>pass<span class="w"> </span>the<span class="w"> </span><span class="s1">&#39;--user&#39;</span><span class="w"> </span>flag<span class="w"> </span>to<span class="w"> </span>pip,<span class="w"> </span>or<span class="w"> </span><span class="nb">set</span><span class="w"> </span><span class="s1">&#39;user = true&#39;</span><span class="w"> </span><span class="k">in</span><span class="w"> </span>your<span class="w"> </span>pip.conf
-</span><span id="__span-0-34"><a id="__codelineno-0-34" name="__codelineno-0-34" href="#__codelineno-0-34"></a><span class="w">    </span>file.<span class="w"> </span>Failure<span class="w"> </span>to<span class="w"> </span><span class="k">do</span><span class="w"> </span>this<span class="w"> </span>can<span class="w"> </span>result<span class="w"> </span><span class="k">in</span><span class="w"> </span>a<span class="w"> </span>broken<span class="w"> </span>Homebrew<span class="w"> </span>installation.
-</span><span id="__span-0-35"><a id="__codelineno-0-35" name="__codelineno-0-35" href="#__codelineno-0-35"></a>
-</span><span id="__span-0-36"><a id="__codelineno-0-36" name="__codelineno-0-36" href="#__codelineno-0-36"></a><span class="w">    </span>Read<span class="w"> </span>more<span class="w"> </span>about<span class="w"> </span>this<span class="w"> </span>behavior<span class="w"> </span>here:<span class="w"> </span>&lt;https://peps.python.org/pep-0668/&gt;
-</span><span id="__span-0-37"><a id="__codelineno-0-37" name="__codelineno-0-37" href="#__codelineno-0-37"></a>
-</span><span id="__span-0-38"><a id="__codelineno-0-38" name="__codelineno-0-38" href="#__codelineno-0-38"></a>note:<span class="w"> </span>If<span class="w"> </span>you<span class="w"> </span>believe<span class="w"> </span>this<span class="w"> </span>is<span class="w"> </span>a<span class="w"> </span>mistake,<span class="w"> </span>please<span class="w"> </span>contact<span class="w"> </span>your<span class="w"> </span>Python<span class="w"> </span>installation<span class="w"> </span>or<span class="w"> </span>OS<span class="w"> </span>distribution<span class="w"> </span>provider.<span class="w"> </span>You<span class="w"> </span>can<span class="w"> </span>override<span class="w"> </span>this,<span class="w"> </span>at<span class="w"> </span>the<span class="w"> </span>risk<span class="w"> </span>of<span class="w"> </span>breaking<span class="w"> </span>your<span class="w"> </span>Python<span class="w"> </span>installation<span class="w"> </span>or<span class="w"> </span>OS,<span class="w"> </span>by<span class="w"> </span>passing<span class="w"> </span>--break-system-packages.
-</span><span id="__span-0-39"><a id="__codelineno-0-39" name="__codelineno-0-39" href="#__codelineno-0-39"></a>hint:<span class="w"> </span>See<span class="w"> </span>PEP<span class="w"> </span><span class="m">668</span><span class="w"> </span><span class="k">for</span><span class="w"> </span>the<span class="w"> </span>detailed<span class="w"> </span>specification.
+<h2 id="stack_modes">stack modes<a class="headerlink" href="#stack_modes" title="Permanent link">#</a></h2>
+<p><a href="https://developer.arm.com/documentation/dui0801/latest">Arm Compiler armasm User Guide</a> | 7. Writing A32/T32 Assembly Language - 7.16 Stack implementation using LDM and STM</p>
+<p>You can use the <code>LDM</code> and <code>STM</code> instructions to implement pop and push operations respectively. You use a suffix to indicate the stack type.</p>
+<p>The load and store multiple instructions can update the base register. For stack operations, the base register is usually the stack pointer, SP. This means that you can use these instructions to implement push and pop operations for any number of registers in a single instruction.</p>
+<p>The load and store multiple instructions can be used with several types of stack:</p>
+<p><strong>Descending or ascending</strong></p>
+<p>The stack grows downwards, starting with a high address and progressing to a lower one (a <code>descending</code> stack), or upwards, starting from a low address and progressing to a higher address (an <code>ascending</code> stack).</p>
+<p><strong>Full or empty</strong></p>
+<p>The stack pointer can either point to the last item in the stack (a <code>full</code> stack), or the next free space on the stack (an <code>empty</code> stack).</p>
+<h3 id="suffixes">suffixes<a class="headerlink" href="#suffixes" title="Permanent link">#</a></h3>
+<p>To make it easier for the programmer, stack-oriented suffixes can be used instead of the increment or decrement, and before or after suffixes. The following table shows the stack-oriented suffixes and their equivalent addressing mode suffixes for load and store instructions:</p>
+<p>Table 1. Stack-oriented suffixes and equivalent addressing mode suffixes</p>
+<table>
+<thead>
+<tr>
+<th>Stack-oriented suffix</th>
+<th>For store or push instructions</th>
+<th>For load or pop instructions</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FD (Full Descending stack)</td>
+<td>DB (Decrement Before)</td>
+<td>IA (Increment After)</td>
+</tr>
+<tr>
+<td>FA (Full Ascending stack)</td>
+<td>IB (Increment Before)</td>
+<td>DA (Decrement After)</td>
+</tr>
+<tr>
+<td>ED (Empty Descending stack)</td>
+<td>DA (Decrement After)</td>
+<td>IB (Increment Before)</td>
+</tr>
+<tr>
+<td>EA (Empty Ascending stack)</td>
+<td>IA (Increment After)</td>
+<td>DB (Decrement Before)</td>
+</tr>
+</tbody>
+</table>
+<p>The following table shows the load and store <em>multiple</em> instructions with the stack-oriented suffixes for the various stack types:</p>
+<p>Table 2. Suffixes for load and store multiple instructions</p>
+<table>
+<thead>
+<tr>
+<th>Stack type</th>
+<th>Store</th>
+<th>Load</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Full descending</td>
+<td><code>STMFD</code> (<code>STMDB</code>, Decrement Before)</td>
+<td><code>LDMFD</code> (<code>LDM</code>, increment after)</td>
+</tr>
+<tr>
+<td>Full ascending</td>
+<td><code>STMFA</code> (<code>STMIB</code>, Increment Before)</td>
+<td><code>LDMFA</code> (<code>LDMDA</code>, Decrement After)</td>
+</tr>
+<tr>
+<td>Empty descending</td>
+<td><code>STMED</code> (<code>STMDA</code>, Decrement After)</td>
+<td><code>LDMED</code> (<code>LDMIB</code>, Increment Before)</td>
+</tr>
+<tr>
+<td>Empty ascending</td>
+<td><code>STMEA</code> (<code>STM</code>, increment after)</td>
+<td><code>LDMEA</code> (<code>LDMDB</code>, Decrement Before)</td>
+</tr>
+</tbody>
+</table>
+<p>Full Ascending:</p>
+<ul>
+<li><a href="https://developer.arm.com/documentation/ddi0597/2024-03/Base-Instructions/STMIB--STMFA--Store-Multiple-Increment-Before--Full-Ascending--">STMIB, STMFA: Store Multiple Increment Before (Full Ascending)</a></li>
+<li><a href="https://developer.arm.com/documentation/ddi0597/2024-03/Base-Instructions/LDMDA--LDMFA--Load-Multiple-Decrement-After--Full-Ascending--">LDMDA, LDMFA: Load Multiple Decrement After (Full Ascending)</a></li>
+</ul>
+<p>Empty Descending:</p>
+<ul>
+<li><a href="https://developer.arm.com/documentation/ddi0597/2024-03/Base-Instructions/STMDA--STMED--Store-Multiple-Decrement-After--Empty-Descending--">STMDA, STMED: Store Multiple Decrement After (Empty Descending)</a></li>
+<li><a href="https://developer.arm.com/documentation/ddi0597/2024-03/Base-Instructions/LDMIB--LDMED--Load-Multiple-Increment-Before--Empty-Descending--">LDMIB, LDMED: Load Multiple Increment Before (Empty Descending)</a></li>
+</ul>
+<p>Empty Ascending:</p>
+<ul>
+<li><a href="https://developer.arm.com/documentation/ddi0597/2024-03/Base-Instructions/STM--STMIA--STMEA--Store-Multiple--Increment-After--Empty-Ascending--">STM, STMIA, STMEA: Store Multiple (Increment After, Empty Ascending)</a></li>
+<li><a href="https://developer.arm.com/documentation/ddi0597/2024-03/Base-Instructions/LDMDB--LDMEA--Load-Multiple-Decrement-Before--Empty-Ascending--">LDMDB, LDMEA: Load Multiple Decrement Before (Empty Ascending)</a></li>
+</ul>
+<h3 id="defaultfd">default(FD)<a class="headerlink" href="#defaultfd" title="Permanent link">#</a></h3>
+<p>The Procedure Call Standard for the Arm Architecture (AAPCS), and <code>armclang</code> always use a <em><code>full descending</code></em> stack.</p>
+<p>The <code>PUSH</code> and <code>POP</code> instructions assume a <em><code>full descending</code></em> stack. They are the preferred synonyms for <code>STMDB</code> and <code>LDM</code> with writeback.</p>
+<p><strong>Push</strong>: decrement <code>sp</code> then put item on stack – pre-decrement, e.g. <em>stmfd</em>. <a href="https://developer.arm.com/documentation/ddi0597/2024-03/Base-Instructions/STMDB--STMFD--Store-Multiple-Decrement-Before--Full-Descending--">STMDB, STMFD: Store Multiple Decrement Before (Full Descending)</a>.</p>
+<p>Store Multiple Decrement Before (Full Descending) stores multiple registers to consecutive memory locations using an address from a base register. The consecutive memory locations end just below this address, and the address of the first of those locations can optionally be written back to the base register.</p>
+<p><strong>Pop</strong>: copy item from stack then increment <code>sp</code> – post-increment, e.g. <em>ldmfd</em>. <a href="https://developer.arm.com/documentation/ddi0597/2024-03/Base-Instructions/LDM--LDMIA--LDMFD--Load-Multiple--Increment-After--Full-Descending--">LDM, LDMIA, LDMFD: Load Multiple (Increment After, Full Descending)</a>.</p>
+<p>Load Multiple (Increment After, Full Descending) loads multiple registers from consecutive memory locations using an address from a base register. The consecutive memory locations start at this address, and the address just above the highest of those locations can optionally be written back to the base register.</p>
+<p>For example:</p>
+<div class="language-asm highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="w">    </span><span class="nf">STMFD</span><span class="w">    </span><span class="no">sp</span><span class="p">!,</span><span class="w"> </span><span class="p">{</span><span class="no">r0-r5</span><span class="p">}</span><span class="w">  </span><span class="c1">; Push onto a Full Descending Stack</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">    </span><span class="nf">LDMFD</span><span class="w">    </span><span class="no">sp</span><span class="p">!,</span><span class="w"> </span><span class="p">{</span><span class="no">r0-r5</span><span class="p">}</span><span class="w">  </span><span class="c1">; Pop from a Full Descending Stack</span>
 </span></code></pre></div>
-<p>As the caveat suggests, we have two solutions to the problem.</p>
-<ol>
-<li>use a virtual environment to install and upgrade pip packages, such as <a href="https://pipx.pypa.io/stable/">pipx</a></li>
-<li>passing <code>--break-system-packages</code> to install and upgrade commands</li>
-</ol>
-<h2 id="venv">venv<a class="headerlink" href="#venv" title="Permanent link">#</a></h2>
-<p><a href="https://docs.python.org/3/library/venv.html">venv — Creation of virtual environments</a></p>
+<h3 id="pushpop">PUSH/POP<a class="headerlink" href="#pushpop" title="Permanent link">#</a></h3>
+<p><a href="https://developer.arm.com/documentation/ddi0597/2024-03/Base-Instructions/PUSH--single-register---Push-Single-Register-to-Stack--an-alias-of-STR--immediate--">PUSH (single register): an alias of STR (immediate)</a></p>
+<p>It's equivalent to <code>STR{&lt;c&gt;}{&lt;q&gt;} &lt;Rt&gt;, [SP, #-4]!</code>and is always the preferred disassembly.</p>
+<p><a href="https://developer.arm.com/documentation/ddi0597/2024-03/Base-Instructions/PUSH--Push-Multiple-Registers-to-Stack-">PUSH: Push Multiple Registers to Stack</a> - <a href="https://developer.arm.com/documentation/ddi0597/2024-03/Base-Instructions/PUSH--multiple-registers---Push-multiple-registers-to-Stack--an-alias-of-STMDB--STMFD-">PUSH (multiple registers): an alias of STMDB, STMFD</a></p>
+<p>Push Multiple Registers to Stack stores multiple general-purpose registers to the stack, storing to consecutive memory locations ending just below the address in SP, and updates SP to point to the start of the stored data.</p>
+<p>The lowest-numbered register is stored to the lowest memory address, through to the highest-numbered register to the highest memory address. See also <a href="https://developer.arm.com/documentation/ddi0487/latest">Encoding of lists of general-purpose registers and the PC</a>.</p>
+<hr />
+<p><a href="https://developer.arm.com/documentation/ddi0597/2024-03/Base-Instructions/POP--single-register---Pop-Single-Register-from-Stack--an-alias-of-LDR--immediate--">POP (single register): an alias of LDR (immediate)</a></p>
+<p>It's equivalent to <code>LDR{&lt;c&gt;}{&lt;q&gt;} &lt;Rt&gt;, [SP], #4</code> and is always the preferred disassembly.</p>
+<p><a href="https://developer.arm.com/documentation/ddi0597/2024-03/Base-Instructions/POP--Pop-Multiple-Registers-from-Stack-">POP: Pop Multiple Registers from Stack</a> - <a href="https://developer.arm.com/documentation/ddi0597/2024-03/Base-Instructions/POP--multiple-registers---Pop-Multiple-Registers-from-Stack--an-alias-of-LDM--LDMIA--LDMFD-">POP (multiple registers): an alias of LDM, LDMIA, LDMFD</a></p>
+<p>Pop Multiple Registers from Stack loads multiple general-purpose registers from the stack, loading from consecutive memory locations starting at the address in SP, and updates SP to point just above the loaded data.</p>
+<p>The lowest-numbered register is loaded from the lowest memory address, through to the highest-numbered register from the highest memory address. See also <a href="https://developer.arm.com/documentation/ddi0487/latest">Encoding of lists of general-purpose registers and the PC</a>.</p>
+<hr />
+<p>The push and pop operations are store many and load many op codes, the assumption being that a function will need to <em>save</em> and <em>restore</em> the contents of several registers that it is likely to corrupt (of course it is possible to deal with just one register!). </p>
+<p>When a list of registers is given the <em>lowest</em> numbered register uses the <em>lowest</em> stack memory location and the <em>highest</em> numbered register uses the <em>highest</em> stack memory location. This is true no matter what order we specify the registers!</p>
+<p>The important thing is to remember whether the stack pointer is altered <code>pre</code>- or <code>post</code>- before the multiple registers are dealt with!</p>
+<h2 id="aapcs64_stack">aapcs64 stack<a class="headerlink" href="#aapcs64_stack" title="Permanent link">#</a></h2>
+<p><a href="https://github.com/ARM-software/abi-aa/blob/2a70c42d62e9c3eb5887fa50b71257f20daca6f9/aapcs64/aapcs64.rst">aapcs64</a> | 6 The Base Procedure Call Standard - 6.4 Memory and the Stack - 6.4.5 The Stack</p>
+<p>Each thread has a stack. This stack is a contiguous area of memory that the thread may use for storage of local variables and for passing additional arguments to subroutines when there are insufficient argument registers available.</p>
+<p>The stack is defined in terms of three values:</p>
+<ul>
+<li>a base (Lbound?)</li>
+<li>a limit (Ubound?)</li>
+<li>the <em>current</em> stack extent, stored in the special-purpose register <code>SP</code></li>
+</ul>
+<figure><br />
+<img alt="Shared Stack-Usage Rules" src="https://community.arm.com/cfs-file/__key/communityserver-blogs-components-weblogfiles/00-00-00-21-42/5808.memory_2D00_layout.png" /><br />
+    <figcaption>Shared Stack-Usage Rules</figcaption><br />
+</figure>
+<h3 id="activity">activity<a class="headerlink" href="#activity" title="Permanent link">#</a></h3>
+<p>The SP moves from the base to the limit as the stack <em>grows</em>, and from the limit to the base as the stack <em>shrinks</em>. In practice, an application might not be able to determine the value of either the base or the limit.</p>
+<p>In the description below, the base, limit, and current stack extent for a thread T are denoted <code>T.base</code>, <code>T.limit</code>, and <code>T.SP</code> respectively.</p>
+<p>The stack implementation is <strong>full-descending</strong>(<code>FD</code>), so that for each thread T:</p>
+<ul>
+<li><span class="arithmatex">\(T.limit &lt; T.base\)</span> and the stack occupies the area of memory delimited by the half-open internal <span class="arithmatex">\([T.limit, T.base)\)</span>.</li>
+<li>The <em>active</em> region of T's stack is the area of memory delimited by the half-open interval <span class="arithmatex">\([T.SP, T.base)\)</span>. The active region is (initial) empty when T.SP is <em>equal</em> to T.base.</li>
+<li>The <em>inactive</em> region of T's stack is the area of memory denoted by the half-open interval <span class="arithmatex">\([T.limit, T.SP)\)</span>. The inactive region is empty when T.SP is <em>equal</em> to T.limit.</li>
+</ul>
+<p>The stack may have a fixed size or be dynamically <em>extendable</em> (by adjusting the stack-limit <em>downwards</em>, towards lower addresses).</p>
+<p>The rules for maintenance of the stack are divided into two parts: a set of constraints that must be observed at all times, and an additional constraint that must be observed at a public interface.</p>
+<h3 id="constraints">constraints<a class="headerlink" href="#constraints" title="Permanent link">#</a></h3>
+<p>At public interfaces, the alignment of stack-pointer(sp) must be two times the pointer size.</p>
 <blockquote>
-<p>Source code: Lib/venv/, since Python 3.3</p>
+<p>For AArch32 that's <em>8</em> bytes, and for AArch64 it's <em>16</em> bytes.</p>
 </blockquote>
-<p>The <code>venv</code> module supports creating lightweight “virtual environments”, each with their own independent set of Python packages installed in their <a href="https://docs.python.org/3/library/site.html#module-site"><code>site</code></a> directories. A virtual environment is created on top of an existing Python installation, known as the virtual environment's “<em>base</em>” Python, and may optionally be isolated from the packages in the base environment, so <em>only</em> those explicitly installed in the virtual environment are available.</p>
-<p>When used from within a virtual environment, common installation tools such as <a href="https://pypi.org/project/pip/">pip</a> will install Python packages into a virtual environment without needing to be told to do so explicitly.</p>
-<p>A virtual environment is (amongst other things):</p>
+<p>For AArch32 (ARM or Thumb), sp must be at least 4-byte aligned at all times.<br />
+For AArch64, sp must be 16-byte aligned whenever it is used to access memory.</p>
+<p>6.4.5.1 <strong>Universal stack constraints</strong></p>
+<p>At all times during the execution of a thread T, the following basic constraints must hold for its stack <em>S</em>:</p>
 <ul>
 <li>
-<p>Used to contain a specific Python interpreter and software libraries and binaries which are needed to support a project (library or application). These are by default isolated from software in other virtual environments and Python interpreters and libraries installed in the operating system.</p>
+<p><span class="arithmatex">\(T.limit ≤ T.SP ≤ T.base\)</span>. T's stack pointer must lie within the extent of the memory occupied by <em>S</em>.</p>
 </li>
 <li>
-<p>Contained in a directory, conventionally either named <code>venv</code> or <code>.venv</code> in the project directory, or under a container directory for lots of virtual environments, such as <code>~/.virtualenvs</code>.</p>
+<p>No thread is permitted to access (for reading or for writing) the inactive region of <em>S</em>.</p>
 </li>
 <li>
-<p>Not checked into source control systems such as Git.</p>
-</li>
-<li>
-<p>Considered as disposable – it should be simple to delete and recreate it from scratch. You don’t place any project code in the environment</p>
-</li>
-<li>
-<p>Not considered as movable or copyable – you just recreate the same environment in the target location.</p>
+<p>If MTE is enabled, then the tag stored in <code>T.SP</code> must match the tag set on the inactive region of <em>S</em>.</p>
 </li>
 </ul>
-<p>See <a href="https://peps.python.org/pep-0405/"><strong>PEP 405</strong></a> for more background on Python virtual environments.</p>
-<p><a href="https://docs.python.org/3/library/intro.html#availability">Availability</a>: not Emscripten, not WASI.</p>
-<h2 id="pyenv">pyenv<a class="headerlink" href="#pyenv" title="Permanent link">#</a></h2>
-<p>github: <a href="https://github.com/pyenv">pyenv</a> / <a href="https://github.com/pyenv/pyenv">pyenv</a></p>
-<p>Simple Python Version Management: pyenv</p>
-<p>pyenv lets you easily switch between multiple versions of Python.<br />
-It's simple, unobtrusive, and follows the UNIX tradition of single-purpose tools that do one thing well.  </p>
-<blockquote>
-<p><a href="https://github.com/pyenv/pyenv#homebrew-on-mac-os-x">intallation by Homebrew on macOS</a><br />
-<a href="https://gist.github.com/Bouke/11261620">Multiple Python installations on OS X</a><br />
-<a href="http://blog.csdn.net/sentimental_dog/article/details/52718398">python 环境管理器pyenv 命令</a><br />
-<a href="http://blog.csdn.net/gzlaiyonghao/article/details/46343913">在 Mac OS X 10.10 安装 pyenv 的一个小坑</a><br />
-<a href="http://www.jianshu.com/p/a23448208d9a">CentOS 使用 pyenv</a>, <a href="http://blog.csdn.net/magedu_linux/article/details/48528257">CentOS 6.4 下安装配置 pip 和 pyenv</a>  </p>
-</blockquote>
-<hr />
-<p>pyenv 的美好之处在于它并没有使用将不同的 $PATH 植入不同的 shell 这种高耦合的工作方式，而是简单地在 $PATH 最前面插入了一个垫片路径（shims）：</p>
-<blockquote>
-<p><code>~/.pyenv/shims:/usr/local/bin:/usr/bin:/bin</code></p>
-</blockquote>
-<p>所有对 Python 可执行文件的查找都会首先被这个 shims 路径截获，从而架空了后面的系统路径。</p>
-<h3 id="command_reference">Command Reference<a class="headerlink" href="#command_reference" title="Permanent link">#</a></h3>
-<p><a href="https://github.com/pyenv/pyenv/blob/master/COMMANDS.md">pyenv Command Reference</a></p>
-<p>To list the all available versions of Python, including Anaconda, Jython, pypy, and stackless use: </p>
-<p>列出所有可安装的 python 版本：</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>faner@MBP-FAN:~<span class="p">|</span>⇒<span class="w">  </span>pyenv<span class="w"> </span>install<span class="w"> </span>--list
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>Available<span class="w"> </span>versions:
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">  </span><span class="m">2</span>.1.3
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">  </span><span class="m">2</span>.2.3
+<p>Additionally, at any point at which memory is accessed via <code>SP</code>, the hardware requires that</p>
+<ul>
+<li><span class="arithmatex">\(SP\ mod\ 16 = 0\)</span>. The stack must be quad-word aligned.</li>
+</ul>
+<p>6.4.5.2 <strong>Stack constraints at a public interface</strong></p>
+<p>The stack must also conform to the following constraint at a public interface:</p>
+<ul>
+<li><span class="arithmatex">\(SP\ mod\ 16 = 0\)</span>. The stack must be quad-word aligned.</li>
+</ul>
+<h3 id="frame_pointer">Frame Pointer<a class="headerlink" href="#frame_pointer" title="Permanent link">#</a></h3>
+<p>6.4.6 <strong>The Frame Pointer</strong></p>
+<p>Conforming code shall construct a <em>linked</em> list of <code>stack-frames</code>. Each frame shall <strong>link</strong> to the frame of its caller by means of a frame record of <em>two</em> 64-bit values on the stack (independent of the data model). The frame record for the innermost frame (belonging to the most recent routine invocation) shall be pointed to by the frame pointer register (<code>FP</code>, X29 in AArch64). The lowest addressed double-word shall point to the <em>previous</em> frame record and the highest(next to FP?) addressed double-word shall contain the value passed in <code>LR</code>(X30 in AArch64) on entry to the current function. If code uses the pointer signing extension to sign return addresses, the value in <code>LR</code> must be signed before storing it in the frame record. The end of the frame record <em>chain</em> is indicated by the address zero in the address for the previous frame. The location of the frame record within a stack frame is not specified.</p>
+<div class="admonition note">
+<p class="admonition-title">sp sem break moment</p>
+<p>There will always be a short period during construction or destruction of each frame record during which the frame pointer will point to the caller’s record.</p>
+</div>
+<p>A platform shall mandate the minimum level of conformance with respect to the maintenance of frame records. The options are, in decreasing level of functionality:</p>
+<ul>
+<li>
+<p>It may require the frame pointer to address a valid frame record at all times, except that small subroutines which do not modify the link register may elect not to create a frame record</p>
+</li>
+<li>
+<p>It may require the frame pointer to address a valid frame record at all times, except that any subroutine may elect not to create a frame record</p>
+</li>
+<li>
+<p>It may permit the frame pointer register to be used as a general-purpose callee-saved register, but provide a platform-specific mechanism for external agents to reliably detect this condition</p>
+</li>
+<li>
+<p>It may elect not to maintain a frame chain and to use the frame pointer register as a general-purpose callee-saved register.</p>
+</li>
+</ul>
+<h2 id="stack_equiv">stack equiv<a class="headerlink" href="#stack_equiv" title="Permanent link">#</a></h2>
+<h3 id="implementation">implementation<a class="headerlink" href="#implementation" title="Permanent link">#</a></h3>
+<p>For AArch64, sp must be 16-byte aligned whenever it is used to access memory. This is enforced by AArch64 hardware.</p>
+<ul>
+<li>This means that it is difficult to implement a generic <code>push</code> or <code>pop</code> operation for AArch64. There are no <code>push</code> or <code>pop</code> aliases like there are for ARM and Thumb.</li>
+<li>The hardware checks can be disabled by privileged code, but they're enabled in at least Linux and Android.</li>
+</ul>
+<p>The alignment-check-on-memory-access means that AArch64 <strong>cannot</strong> have general-purpose push- or pop-like operations.</p>
+<p>If you're dealing with hand-written AArch64 assembly code, you'll have to be aware of these limitation. Whenever the stack pointer is used as the base register in an address operand, it must have 16-byte alignment.</p>
+<p>For example:</p>
+<div class="language-asm highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1">// Broken AArch64 implementation of `push {x1}; push {x0};`.</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">    </span><span class="nf">x1</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">sp</span><span class="p">,</span><span class="w"> </span><span class="mi">#-8</span><span class="p">]!</span><span class="w"> </span><span class="c1">// This works, but leaves `sp` with 8-byte alignment ...</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">    </span><span class="nf">x0</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">sp</span><span class="p">,</span><span class="w"> </span><span class="mi">#-8</span><span class="p">]!</span><span class="w"> </span><span class="c1">// ... so the second `str` will fail.</span>
 </span></code></pre></div>
-<p>Then install the desired versions:</p>
-<p>安装特定的 python 版本：</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>$<span class="w"> </span>pyenv<span class="w"> </span>install<span class="w"> </span><span class="m">2</span>.7.6
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>$<span class="w"> </span>pyenv<span class="w"> </span>install<span class="w"> </span><span class="m">2</span>.6.8
+<p>In this particular case, the stores could be combined:</p>
+<div class="language-asm highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1">// AArch64 implementation of `push {x0, x1}`.</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">    </span><span class="nf">x0</span><span class="p">,</span><span class="w"> </span><span class="no">x1</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">sp</span><span class="p">,</span><span class="w"> </span><span class="mi">#-16</span><span class="p">]!</span>
 </span></code></pre></div>
-<p>Lists all Python versions known to pyenv, and shows an asterisk next to the currently active version.</p>
-<p>列出已经安装的 python 版本：</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>faner@MBP-FAN:~<span class="p">|</span>⇒<span class="w">  </span>pyenv<span class="w"> </span>versions
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>*<span class="w"> </span>system<span class="w"> </span><span class="o">(</span><span class="nb">set</span><span class="w"> </span>by<span class="w"> </span>/Users/faner/.pyenv/version<span class="o">)</span>
-</span></code></pre></div>
-<p>查看当前正在使用的 python 版本：</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>faner@MBP-FAN:~<span class="p">|</span>⇒<span class="w">  </span>pyenv<span class="w"> </span>version
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>system<span class="w"> </span><span class="o">(</span><span class="nb">set</span><span class="w"> </span>by<span class="w"> </span>/Users/faner/.pyenv/version<span class="o">)</span>
-</span></code></pre></div>
-<p>Uninstall a specific Python version.</p>
-<p>卸载指定版本的 python：</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>Usage:<span class="w"> </span>pyenv<span class="w"> </span>uninstall<span class="w"> </span><span class="o">[</span>-f<span class="p">|</span>--force<span class="o">]</span><span class="w"> </span>&lt;version&gt;
-</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>
-</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">   </span>-f<span class="w">  </span>Attempt<span class="w"> </span>to<span class="w"> </span>remove<span class="w"> </span>the<span class="w"> </span>specified<span class="w"> </span>version<span class="w"> </span>without<span class="w"> </span>prompting
-</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">       </span><span class="k">for</span><span class="w"> </span>confirmation.<span class="w"> </span>If<span class="w"> </span>the<span class="w"> </span>version<span class="w"> </span>does<span class="w"> </span>not<span class="w"> </span>exist,<span class="w"> </span><span class="k">do</span><span class="w"> </span>not
-</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="w">       </span>display<span class="w"> </span>an<span class="w"> </span>error<span class="w"> </span>message.
-</span></code></pre></div>
-<p>Displays the full path to the executable that pyenv will invoke when you run the given command.</p>
-<p>列出指定版本 python 的实际路径：</p>
-<div class="language-shell highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>$<span class="w"> </span>pyenv<span class="w"> </span>which<span class="w"> </span>python3.3
-</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>/home/yyuu/.pyenv/versions/3.3.3/bin/python3.3
-</span></code></pre></div>
-<h2 id="virtualenv">virtualenv<a class="headerlink" href="#virtualenv" title="Permanent link">#</a></h2>
-<p><a href="https://pypi.python.org/pypi/virtualenv">virtualenv</a> is a tool to create isolated Python environments.</p>
-<p><a href="https://virtualenv.pypa.io/en/stable/#">Docs</a> » <a href="https://virtualenv.pypa.io/en/stable/">Virtualenv</a>  </p>
-<blockquote>
-<p><a href="http://www.cnblogs.com/npumenglei/p/3719412.html">ubuntu 使用 pyenv 和 virtualenv 搭建多版本虚拟开发环境</a><br />
-<a href="http://python.jobbole.com/85587/">CentOS 6.8 使用 pyenv + virtualenv 打造多版本 Python 开发环境</a>  </p>
-</blockquote>
-<h2 id="pyenv-virtualenv">pyenv-virtualenv<a class="headerlink" href="#pyenv-virtualenv" title="Permanent link">#</a></h2>
-<p>github: <a href="https://github.com/pyenv">pyenv</a> / <a href="https://github.com/pyenv/pyenv-virtualenv">pyenv-virtualenv</a></p>
-<p>pyenv 是一个 Python 多版本环境管理工具，这个是和我们常用的 virtualenv 有所不同。  </p>
+<p>However, in a simple compiler, it is not always easy to combine instructions in that way.</p>
+<p>The alignment checks can be very inconvenient in code generators where it is not feasible to determine how much stack space a function will require. Many JIT compilers fall into this category; they tend to rely on being able to push individual values to the stack.</p>
 <ol>
-<li>前者是对 Python 的版本进行管理，实现不同版本的切换和使用；  </li>
-<li>后者测试创建一个虚拟环境，与系统环境以及其他 Python 环境隔离，避免干扰。  </li>
+<li>Calculate stack sizes in advance</li>
+<li>Use 16-byte stack slots</li>
+<li>
+<p>Use a register other than <code>sp</code> as the stack pointer</p>
+<ul>
+<li>Separate stack area</li>
+<li>Reserve stack space in advance</li>
+<li>Shadow <code>sp</code></li>
+</ul>
+</li>
 </ol>
-<p><strong>pyenv-virtualenv</strong> is a <a href="https://github.com/pyenv/pyenv">pyenv</a> <em>plugin</em> that provides features to manage virtualenvs and conda environments for Python on UNIX-like systems.</p>
-<h2 id="references">references<a class="headerlink" href="#references" title="Permanent link">#</a></h2>
-<p><a href="http://www.malike.net.cn/blog/2016/05/21/pyenv-tutorial/">pyenv简介——Debian/Ubuntu中管理多版本Python</a> - git clone  </p>
-<p><a href="http://blog.csdn.net/angel22xu/article/details/45443019">mac下使用pyenv,pyenv-virtualenv管理python的多个版本</a> - homebrew - 图文详细<br />
-<a href="http://blog.csdn.net/liuchunming033/article/details/78345286">Mac OS 上用pyenv和pyenv-virtualenv管理多个Python多版本及虚拟环境</a> - homebrew<br />
-<a href="http://www.jianshu.com/p/60f361822a7e">Python版本管理：pyenv和pyenv-virtualenv(MAC、Linux)、virtualenv和virtualenvwrapper(windows)</a> - git clone  </p>
+<h3 id="prologepilog">prolog/epilog<a class="headerlink" href="#prologepilog" title="Permanent link">#</a></h3>
+<p><a href="https://developer.arm.com/documentation/dui0801/latest">Arm Compiler armasm User Guide</a> | 7. Writing A32/T32 Assembly Language - 7.17 Stack operations for nested subroutines</p>
+<p>Stack operations can be very useful at subroutine entry and exit to avoid losing register contents if other subroutines are called.</p>
+<p>At the <em>start</em> of a subroutine, any working registers required can be stored on the stack, and at <em>exit</em> they can be popped off again.</p>
+<p>In addition, if the link register is pushed onto the stack at entry, additional subroutine calls can be made safely without causing the return address to be lost. If you do this, you can also return from a subroutine by popping the <code>PC</code> off the stack at exit, instead of popping the <code>LR</code> and then moving that value into the <code>PC</code>. For example:</p>
+<div class="language-asm highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nf">subroutine</span><span class="w">  </span><span class="no">PUSH</span><span class="w">    </span><span class="p">{</span><span class="no">r5-r7</span><span class="p">,</span><span class="no">lr</span><span class="p">}</span><span class="w"> </span><span class="c1">; Push work registers and lr</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">            </span><span class="c1">; code</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">            </span><span class="nf">BL</span><span class="w">      </span><span class="no">somewhere_else</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">            </span><span class="c1">; code</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">            </span><span class="nf">POP</span><span class="w">     </span><span class="p">{</span><span class="no">r5-r7</span><span class="p">,</span><span class="no">pc</span><span class="p">}</span><span class="w"> </span><span class="c1">; Pop work registers and pc</span>
+</span></code></pre></div>
+<p>The following snippet is a typical prolog/prelude and epilog/postlude of a subroutine disassembly.</p>
+<div class="language-asm highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1">// pwndbg&gt; disassemble main</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="c1">// prolog/prelude</span>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">    </span><span class="err">0</span><span class="nf">x00000000004008e0</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">0</span><span class="err">&gt;</span><span class="p">:</span><span class="w">    </span><span class="no">stp</span><span class="w"> </span><span class="no">x29</span><span class="p">,</span><span class="w"> </span><span class="no">x30</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">sp</span><span class="p">,</span><span class="w"> </span><span class="mi">#-48</span><span class="p">]!</span>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="w">    </span><span class="err">0</span><span class="nf">x00000000004008e4</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">4</span><span class="err">&gt;</span><span class="p">:</span><span class="w">    </span><span class="no">mov</span><span class="w"> </span><span class="no">x29</span><span class="p">,</span><span class="w"> </span><span class="no">sp</span>
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="w">    </span><span class="err">[</span><span class="na">...armasm...</span><span class="p">]</span>
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>
+</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="c1">// epilog/postlude</span>
+</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="w">    </span><span class="err">0</span><span class="nf">x000000000040094c</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">108</span><span class="err">&gt;</span><span class="p">:</span><span class="w">  </span><span class="no">ldp</span><span class="w"> </span><span class="no">x29</span><span class="p">,</span><span class="w"> </span><span class="no">x30</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">sp</span><span class="p">],</span><span class="w"> </span><span class="mi">#48</span>
+</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="w">    </span><span class="err">0</span><span class="nf">x0000000000400950</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">112</span><span class="err">&gt;</span><span class="p">:</span><span class="w">  </span><span class="no">ret</span>
+</span></code></pre></div>
+<p><code>stp x29, x30, [sp, #-48]!</code>:</p>
+<ul>
+<li><span class="arithmatex">\(sp \mathrel{-}= 48\)</span>: stack grows downwards with size=0x30, 16-byte aligned.</li>
+<li>
+<p>push FP &amp; LR to stack [sp], [sp+8]</p>
+<div class="admonition note">
+<p class="admonition-title">r2 expr of prolog</p>
+<p>dr sp=`dr sp`-0x30<br />
+wvp `dr x29` @ sp; wvp `dr x30` @ sp+8</p>
+</div>
+</li>
+</ul>
+<p><strong>Note</strong>: The <code>SP</code> remains the same as the <code>X29</code>/<code>FP</code> throughout the subroutine. The <code>FP</code> is not used and the <code>SP</code> is only used as a base register.</p>
+<div class="admonition tip">
+<p class="admonition-title">gcc -fomit-frame-poiter</p>
+<p>If we explicitly indicate that we do not need <code>BP</code>/<code>FP</code> to provide stack frame information, the compiler can <em>omit</em> the actions of saving <code>BP</code>/<code>FP</code> after entering the procedure and restoring <code>BP</code>/<code>FP</code> before exiting the procedure, and use <code>SP</code> directly to address the parameters and internal variables of the procedure.</p>
+<p>For the sake of pursuing higher performance, for example, when compiling the Linux kernel, you will find that the internal function is indeed addressed directly by <code>SP</code>.</p>
+<p>For gcc and g++, you can use the <a href="https://gcc.gnu.org/onlinedocs/gcc/Optimize-Options.html">-fomit-frame-poiter</a> compilation option to instruct gcc to use <code>SP</code> addressing directly.</p>
+<blockquote>
+<p>Omit the frame pointer in functions that don't need one. This avoids the instructions to save, set up and restore the frame pointer; on many targets it also makes an extra register available.</p>
+<p>On some targets this flag has no effect because the standard calling sequence always uses a frame pointer, so it cannot be omitted.</p>
+</blockquote>
+</div>
+<p><code>ldp x29, x30, [sp], #48</code>:</p>
+<ul>
+<li>pop FP &amp; LR from stack [sp], [sp+8]</li>
+<li>
+<p><span class="arithmatex">\(sp \mathrel{+}= 48\)</span>: stack shrinks backward</p>
+<div class="admonition note">
+<p class="admonition-title">r2 expr of epilog</p>
+<p>dr x29=pv@sp; dr x30=pv@sp+8<br />
+dr sp=`dr sp`+0x30</p>
+</div>
+</li>
+</ul>
+<p><code>ret</code>(<code>RET {Xn}</code>): Return from subroutine</p>
+<ul>
+<li>Branches unconditionally to an address in a register.</li>
+<li>Defaults to <code>X30</code>(LR) if absent.</li>
+</ul>
+<h2 id="refs">refs<a class="headerlink" href="#refs" title="Permanent link">#</a></h2>
+<p><a href="../../20230314/calling-convention/">ABI &amp; Calling conventions</a><br />
+<a href="../../20230601/a64-regs/">Register file of ARM64</a></p>
+<p><a href="http://www.cems.uwe.ac.uk/~cduffy/es/ARMstacks.doc">Stacks on ARM processors</a><br />
+<a href="https://community.arm.com/arm-community-blogs/b/architectures-and-processors-blog/posts/using-the-stack-in-aarch32-and-aarch64">Using the Stack in AArch32 and AArch64</a><br />
+<a href="https://community.arm.com/arm-community-blogs/b/architectures-and-processors-blog/posts/using-the-stack-in-aarch64-implementing-push-and-pop">Using the Stack in AArch64: Implementing Push and Pop</a></p>
 
 
 
@@ -1752,7 +1935,7 @@ It's simple, unobtrusive, and follows the UNIX tradition of single-purpose tools
       <nav class="md-footer__inner md-grid" aria-label="页脚" >
         
           
-          <a href="../3-python-help/" class="md-footer__link md-footer__link--prev" aria-label="上一页: python帮助指南">
+          <a href="../../20230613/arm-addressing-modes/" class="md-footer__link md-footer__link--prev" aria-label="上一页: ARM Load/Store Addressing Modes">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
@@ -1762,20 +1945,20 @@ It's simple, unobtrusive, and follows the UNIX tradition of single-purpose tools
                 上一页
               </span>
               <div class="md-ellipsis">
-                python帮助指南
+                ARM Load/Store Addressing Modes
               </div>
             </div>
           </a>
         
         
           
-          <a href="../5-Anaconda/" class="md-footer__link md-footer__link--next" aria-label="下一页: Anaconda IDE 介绍">
+          <a href="../../20230615/gas-directives/" class="md-footer__link md-footer__link--next" aria-label="下一页: GNU Assembler Directives">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 下一页
               </span>
               <div class="md-ellipsis">
-                Anaconda IDE 介绍
+                GNU Assembler Directives
               </div>
             </div>
             <div class="md-footer__button md-icon">
