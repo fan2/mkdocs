@@ -465,13 +465,13 @@ $ man bash
 
        ${parameter#word}
        ${parameter##word}
-              The word is expanded to produce a pattern just as  in  pathname  expansion.   If  the  pattern
-              matches  the  beginning  of  the  value  of parameter, then the result of the expansion is the
-              expanded value of parameter with the shortest matching pattern (the ``#'' case) or the longest
-              matching pattern (the ``##'' case) deleted.  If parameter is @ or *, the pattern removal oper-
-              ation is applied to each positional parameter in turn, and  the  expansion  is  the  resultant
-              list.   If  parameter is an array variable subscripted with @ or *, the pattern removal opera-
-              tion is applied to each member of the array in turn, and the expansion is the resultant  list.
+              The word is expanded to produce a pattern just as in pathname expansion. If the pattern 
+              matches the beginning of the value of parameter, then the result of the expansion is the 
+              expanded value of parameter with the shortest matching pattern (the ``#'' case) or the longest 
+              matching pattern (the ``##'' case) deleted. If parameter is @ or *, the pattern removal oper-
+              ation is applied to each positional parameter in turn, and the expansion is the resultant 
+              list. If parameter is an array variable subscripted with @ or *, the pattern removal opera-
+              tion is applied to each member of the array in turn, and the expansion is the resultant list.
 
 ```
 
@@ -498,13 +498,13 @@ $ man bash
 
        ${parameter%word}
        ${parameter%%word}
-              The  word  is  expanded  to  produce  a pattern just as in pathname expansion.  If the pattern
-              matches a trailing portion of the expanded value of parameter, then the result of  the  expan-
-              sion is the expanded value of parameter with the shortest matching pattern (the ``%'' case) or
-              the longest matching pattern (the ``%%'' case) deleted.  If parameter is @ or *,  the  pattern
-              removal  operation  is  applied to each positional parameter in turn, and the expansion is the
-              resultant list.  If parameter is an array variable  subscripted  with  @  or  *,  the  pattern
-              removal  operation  is  applied  to each member of the array in turn, and the expansion is the
+              The word is expanded to produce a pattern just as in pathname expansion. If the pattern 
+              matches a trailing portion of the expanded value of parameter, then the result of the expan-
+              sion is the expanded value of parameter with the shortest matching pattern (the ``%'' case) or 
+              the longest matching pattern (the ``%%'' case) deleted. If parameter is @ or *, the pattern 
+              removal operation is applied to each positional parameter in turn, and the expansion is the 
+              resultant list. If parameter is an array variable subscripted with @ or *, the pattern 
+              removal operation is applied to each member of the array in turn, and the expansion is the 
               resultant list.
 
 ```
@@ -648,6 +648,32 @@ doc_subdir 字符串值为 "2015952713/FileRecv" 或 "/2015952713/FileRecv/"，�
 [How to trim whitespace from a Bash variable?](https://stackoverflow.com/questions/369758/how-to-trim-whitespace-from-a-bash-variable)  
 [How do I trim leading and trailing whitespace from each line of some output?](https://unix.stackexchange.com/questions/102008/how-do-i-trim-leading-and-trailing-whitespace-from-each-line-of-some-output)  
 
+参考 [Linux Pipeline（管道）](../pipeline/Pipelines.md) 中的 `tr` 命令，可采用 `| tr -s '[:space:]'` 或 `| tr -d '[:space:]'` 压缩/移除所有的空格。
+
+```Shell
+$ echo "  0xDEADBEEF" | tr -d ' '
+0xDEADBEEF
+$ echo "0xFEEDBABE    " | tr -d '[:space:]'
+0xFEEDBABE%
+$ echo "  0xDEADBEEF   0xFEEDBABE    " | tr -d '[:space:]'
+0xDEADBEEF0xFEEDBABE%
+$ echo "  0xDEADBEEF   0xFEEDBABE    " | tr -s '[:space:]'
+ 0xDEADBEEF 0xFEEDBABE
+```
+
+无论是 `tr -d` 还是 `tr -s`，对于只想移除首尾空格的处理都不够理想，此时可以改用 `xargs` 命令。
+
+默认情况下，`xargs` 将其标准输入中的内容以空白(包括空格、tab、回车换行等)分割成多个 arguments 之后当作命令行参数传递给其后面的命令。基于这一原理，可以采用 ` | xargs` 移除首尾和中间的无效空格。
+
+```Shell
+$ echo "  0xDEADBEEF" | xargs
+0xDEADBEEF
+$ echo "0xFEEDBABE    " | xargs
+0xFEEDBABE
+$ echo "  0xDEADBEEF   0xFEEDBABE    " | xargs
+0xDEADBEEF 0xFEEDBABE
+```
+
 ### 字符串截取
 
 可以基于bash内置提供的变量替换之字符串截取，来实现移除字符串首尾空格。
@@ -670,23 +696,14 @@ trim()
 }
 ```
 
-### xargs
-
-默认情况下 xargs 将其标准输入中的内容以空白(包括空格、tab、回车换行等)分割成多个 arguments 之后当作命令行参数传递给其后面的命令。
-基于这一原理，可以采用 ` | xargs` 移除首尾空格。
-
-```Shell
-echo "  Bash Scripting Language   " | xargs
-```
-
 ### sed
 
 sed 的强项就文本行替换移除，基于sed可很直观地实现这一目标。
 
 ```Shell
-echo "  Bash Scripting Language   " | sed 's/^[ \t]*//g' | sed 's/[ \t]*$//g'
-echo "  Bash Scripting Language   " | sed -e 's/^[[:blank:]]*//' -e 's/[[:blank:]]*$//'
-echo "  Bash Scripting Language   " | sed 's/^[[:blank:]]*//;s/[[:blank:]]*$//'
+echo "  BAADDAAD   FEEDBABE    DEADBEEF     " | sed 's/^[ \t]*//g' | sed 's/[ \t]*$//g'
+echo "  BAADDAAD   FEEDBABE    DEADBEEF     " | sed -e 's/^[[:blank:]]*//' -e 's/[[:blank:]]*$//'
+echo "  BAADDAAD   FEEDBABE    DEADBEEF     " | sed 's/^[[:blank:]]*//;s/[[:blank:]]*$//'
 ```
 
 ```Shell
@@ -711,9 +728,9 @@ function trim ()
 另外，基于 awk 提供的 sub（gsub）替换函数也可实现这一目标。
 
 ```Shell
-echo "  Bash Scripting Language   " | awk '{gsub(/^[ \t]+/,""); gsub(/[ \t]+$/,""); print $0 }'
-echo "  Bash Scripting Language   " | awk '{gsub(/^[[:blank:]]+|[[:blank:]]+$/,""); print $0 }'
-echo "  Bash Scripting Language   " | awk '{gsub(/^[[:blank:]]+|[[:blank:]]+$/,"")}1'
+echo "  BAADDAAD   FEEDBABE    DEADBEEF     " | awk '{gsub(/^[ \t]+/,""); gsub(/[ \t]+$/,""); print $0 }'
+echo "  BAADDAAD   FEEDBABE    DEADBEEF     " | awk '{gsub(/^[[:blank:]]+|[[:blank:]]+$/,""); print $0 }'
+echo "  BAADDAAD   FEEDBABE    DEADBEEF     " | awk '{gsub(/^[[:blank:]]+|[[:blank:]]+$/,"")}1'
 ```
 
 参考 awk [trim](https://gist.github.com/andrewrcollins/1592991) 函数。
@@ -721,7 +738,7 @@ echo "  Bash Scripting Language   " | awk '{gsub(/^[[:blank:]]+|[[:blank:]]+$/,"
 [注意以下脚本会把中间的空格压缩](https://unix.stackexchange.com/a/205854)：
 
 ```Shell
-echo "  Bash   Scripting  Language   " | awk '{$1=$1};1'
+echo "  BAADDAAD   FEEDBABE    DEADBEEF     " | awk '{$1=$1};1'
 ```
 
 > when you assign something to one of the fields, awk rebuilds the whole record (as printed by print) by joining all fields (`$1`, ..., `$NF`) with `OFS` (space by default).

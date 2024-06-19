@@ -104,7 +104,7 @@ Copyright (C) 2007 Free Software Foundation, Inc.
 
 关于 #!/bin/bash 和 #!/usr/bin/env bash 这两种 shebang 的区别，可以参考以下话题：
 
-- #!/usr/bin/python 与 #!/usr/bin/env python 的区别：[1](https://www.jianshu.com/p/96d02f07423d)，[2](https://blog.csdn.net/abcdefg90876/article/details/105445579)，[3](https://www.cnblogs.com/gne-hwz/p/8547173.html)。  
+- `#!/usr/bin/python` 与 `#!/usr/bin/env python` 的区别：[1](https://www.jianshu.com/p/96d02f07423d)，[2](https://blog.csdn.net/abcdefg90876/article/details/105445579)，[3](https://www.cnblogs.com/gne-hwz/p/8547173.html)。  
 - [#!/bin/bash 和 #!/usr/bin/env bash 的区别](https://blog.csdn.net/qq_37164975/article/details/106181500)  
 - [What is the difference between "#!/usr/bin/env bash" and "#!/usr/bin/bash"?](https://stackoverflow.com/questions/16365130/what-is-the-difference-between-usr-bin-env-bash-and-usr-bin-bash)  
 - [Why is it better to use "#!/usr/bin/env NAME" instead of "#!/path/to/NAME" as my shebang?](https://unix.stackexchange.com/questions/29608/why-is-it-better-to-use-usr-bin-env-name-instead-of-path-to-name-as-my)  

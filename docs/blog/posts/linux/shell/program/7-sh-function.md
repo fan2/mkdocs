@@ -156,10 +156,18 @@ dbl 函数会用 echo 语句来显示计算的结果。
 
 ## 命令中定义函数
 
-[Define function in unix/linux command line (e.g. BASH) - Stack Overflow](https://stackoverflow.com/questions/35465851/define-function-in-unix-linux-command-line-e-g-bash)
+在 [Linux Shell Program - control](./6-sh-control.md) 中，提到可以将整个 `if ... then ... [else] ... fi` 控制结构写到一行内，方便在命令行中单行快捷测试。
+
+```bash
+backups=$(rclone lsf $dstpath)
+if [ "$backups" ]; then backupscount=$(echo $backups | wc -l | tr -d '[:space:]') ; fi
+if [ "$backupscount" -gt 0 ] ; then echo "backupscount>0" ; else echo "backupscount=0" ; fi
+```
 
 在终端中，如果想多个命令一起运行，可以把它们放在同一行中，彼此间用分号（`;`）隔开。
 可以在命令行中定义包含多条命令的一行函数，但每条命令的结尾必须包含分号，这样shell才知道命令在哪分开。
+
+- [Define function in unix/linux command line (e.g. BASH) - Stack Overflow](https://stackoverflow.com/questions/35465851/define-function-in-unix-linux-command-line-e-g-bash)
 
 此外，也可以在命令中输入函数，按照提示符输入即可。
 

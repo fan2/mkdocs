@@ -451,12 +451,12 @@ cron 执行出错时默认会通过 MTA 服务给系统管理员发邮件，执�
     3. date 命令的 owner 为 root，其安装路径在 macOS 为 `/bin/date`，在 ubuntu 为 `/usr/bin/date`，均在 root shell PATH 中。
     4. ubuntu 下执行 `sudo apt install rclone` 以 root 身份安装的 rclone，其 path 为 /usr/bin/rclone，亦在 root shell PATH 中。
 
-在 macOS 下执行 `ls -l $(which rclone)` 或 `stat $(which rclone)` 可以看到当前用户通过 brew 安装的 rclone 路径为 `/usr/local/bin/rclone`，不在 root shell PATH 中，故 root 执行 cron 时找不到 rclone 命令。
+在 macOS arm64 下执行 `ls -l $(which rclone)` 或 `stat $(which rclone)` 可以看到当前用户通过 brew 安装的 rclone 路径为 `/opt/homebrew/bin/rclone`(旧 x86_64 下为 `/usr/local/bin/rclone`)，不在 root shell PATH 中，故 root 执行 cron 时找不到 rclone 命令。
 
-将 rclone 命令改为绝对路径 `/usr/local/bin/rclone`，cron 任务调度正常。
+将 rclone 命令改为绝对路径 `/opt/homebrew/bin/rclone`，cron 任务调度正常。
 
 ```Shell title="crontab -e"
-*/1 * * * * /usr/local/bin/rclone version >> /Users/faner/Downloads/output/crontab.log
+*/1 * * * * /opt/homebrew/bin/rclone version >> /Users/faner/Downloads/output/crontab.log
 ```
 
 ### cron rclone sync
@@ -531,9 +531,10 @@ cron 执行出错时默认会通过 MTA 服务给系统管理员发邮件，执�
     # predefined variables
     logfile="/Users/faner/.config/rclone/rclone-$(date +%Y%m).log"
     filename="恋词考研英语-全真题源报刊7000词-索引红版"
-    srcfile="/Users/faner/Documents/English/LINKIN-WORDS-7000/$filename.pdf"
+    fileext="pdf"
+    srcfile="/Users/faner/Documents/English/LINKIN-WORDS-7000/$filename.$fileext"
     dstpath="smbhd@rpi4b:WDHD/backups/English"
-    dstfile="$dstpath/$filename-$(date +%Y%m%d%H).pdf"
+    dstfile="$dstpath/$filename-$(date +%Y%m%d%H).$fileext"
 
     # curdate=$(date +%Y/%m/%d\ %H:%M:%S)
     curdate_sec="$(date +%s)"
@@ -547,7 +548,7 @@ cron 执行出错时默认会通过 MTA 服务给系统管理员发邮件，执�
     elapsed_min=0
     elapsed_hour=0
     elapsed_day=0
-    
+
     # calculate datediff
     if [ $elapsed_sec -ge 60 ]; then
       elapsed_min=$((elapsed_sec / 60))
@@ -561,25 +562,37 @@ cron 执行出错时默认会通过 MTA 服务给系统管理员发邮件，执�
         fi
       fi
     fi
-    
-    # format datediff
+
+    # format datediff, linux: date -d @$passed_sec -u +%d-%H-%M-%S
     elapsed_time=$(printf '%sd-%sh-%sm-%ss' "$elapsed_day" "$elapsed_hour" "$elapsed_min" "$elapsed_sec")
-    echo "$(date +%Y/%m/%d\ %H:%M:%S) DEBUG : $filename.pdf, modification: $filedate, $elapsed_time ago." >> "$logfile"
-    
+    echo "$(date +%Y/%m/%d\ %H:%M:%S) INFO: $filename.$fileext, modification: $filedate, $elapsed_time ago." >> "$logfile"
+
+    # current backups count
+    backups=$(/opt/homebrew/bin/rclone lsf $dstpath)
+    if [ "$backups" ]; then
+      backupscount=$(echo "$backups" | wc -l | tr -d '[:space:]')
+    fi
+
     # check copy during modification
     checkpoint=$((passed_sec + 5)) # rewind for seconds
-    lastcopy=$(/usr/local/bin/rclone lsf --max-age=$checkpoint $dstpath)
-    # backupcount=$(/usr/local/bin/rclone lsf --max-age=$checkpoint $dstpath | wc -l)
-    
+    lastcopy=$(/opt/homebrew/bin/rclone lsf --max-age=$checkpoint $dstpath)
+    if [ "$lastcopy" ]; then
+      lastcopycnt=$(echo "$lastcopy" | wc -l | tr -d '[:space:]')
+    fi
+
+    echo -e "$(date +%Y/%m/%d\ %H:%M:%S) DEBUG : backupscount=${backupscount:=0}, lastcopycnt=${lastcopycnt:=0}." >> "$logfile"
+
     # check modification since last backup
-    if [ ${#lastcopy} -ne 0 ]; then # remain unchanged
-      echo -e "$(date +%Y/%m/%d\ %H:%M:%S) DEBUG : retain latest backup: $lastcopy\n" >> "$logfile"
+    if [ "$lastcopycnt" -gt 0 ]; then # remain unchanged
+      echo -e "$(date +%Y/%m/%d\ %H:%M:%S) NOTICE : retain latest backup: $lastcopy\n" >> "$logfile"
     else # spotted gap
-      echo -e "$(date +%Y/%m/%d\ %H:%M:%S) DEBUG : execute backup to fill the gap." >> "$logfile"
-      if /usr/local/bin/rclone copyto -v "$srcfile" "$dstfile" --log-file="$logfile"; then
-        /usr/local/bin/rclone delete -v "$dstpath" --min-age 24h --log-file="$logfile"
+      echo -e "$(date +%Y/%m/%d\ %H:%M:%S) NOTICE: execute backup to fill the gap." >> "$logfile"
+      if /opt/homebrew/bin/rclone copyto -v "$srcfile" "$dstfile" --log-file="$logfile"; then
+        if [ "$backupscount" -gt 0 ] ; then # else keep first backup
+          /opt/homebrew/bin/rclone delete -v "$dstpath" --min-age 24h --log-file="$logfile"
+        fi
       else
-        echo -e "$(date +%Y/%m/%d\ %H:%M:%S) DEBUG : backup failed, keep old backups.\n" >> "$logfile"
+        echo -e "$(date +%Y/%m/%d\ %H:%M:%S) ERROR : backup failed, keep old backups/English.\n" >> "$logfile"
       fi
     fi
     ```
@@ -627,7 +640,7 @@ cron 调度任务调试验证 OK 后，再修改调度频率：
       # overwriting existing file, skipping identical files
       # -u: Skip files that are newer on the destination
       echo -e "$(date +%Y/%m/%d\ %H:%M:%S) DEBUG : execute backup $filename." >> "$logfile"
-      if /usr/local/bin/rclone copyto -v -u "$config" "$dstfile" --log-file="$logfile"; then
+      if /opt/homebrew/bin/rclone copyto -v -u "$config" "$dstfile" --log-file="$logfile"; then
         echo -e "$(date +%Y/%m/%d\ %H:%M:%S) DEBUG : backup success.\n" >> "$logfile"
       else
         echo -e "$(date +%Y/%m/%d\ %H:%M:%S) DEBUG : backup failed, keep old backups/config.\n" >> "$logfile"
@@ -650,7 +663,7 @@ cron 调度任务调试验证 OK 后，再修改调度频率：
     # echo "params = $@"
 
     # predefined variables
-    logfile="/Users/cliff/.config/rclone/rclone-$(date +%Y%m).log"
+    logfile="/Users/faner/.config/rclone/rclone-$(date +%Y%m).log"
     dstpath="smbhd@rpi4b:WDHD/backups/config"
 
     # extract hostname, ignore domain

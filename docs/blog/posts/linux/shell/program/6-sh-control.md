@@ -25,7 +25,7 @@ Linux 下的 Shell 编程之条件判断（conditions）和循环控制（loops�
 
 `if-then` 语句格式如下:
 
-```Shell
+```bash
 if command
 then
     commands
@@ -41,7 +41,7 @@ fi
 
 你可能看到过 if-then 语句的另一种形式：
 
-```Shell
+```bash
 if command; then
     commands
 fi
@@ -49,9 +49,9 @@ fi
 
 通过把分号放在待求值的命令尾部，就可以将 then 语句写在同一行中了，这样看起来更像其他编程语言中的 if-then 语句。
 
-也可以将整个 `if ... them ... fi` 写到一行内，方便在命令行中单行快捷测试：
+也可以将整个 `if ... then ... fi` 写到一行内，方便在命令行中单行快捷测试：
 
-```Shell
+```bash
 if [ -n "$HOME" ]; then echo "HOME is defined"; fi
 if [ -z "$ZDOTDIR" ]; then echo "ZDOTDIR not defined"; fi
 ```
@@ -68,6 +68,13 @@ then
 else
     commands
 fi
+```
+
+也可以将整个 `if ... then ... else ... fi` 写到一行内，方便在命令行中单行快捷测试：
+
+```bash
+if [ "$lastcopy" ]; then lastcopycnt=$(echo "$lastcopy" | wc -l | tr -d '[:space:]') ; fi
+if [ "$lastcopycnt" -gt 0 ] ; then echo "lastcopycnt>0" ; else echo "lastcopycnt=0" ; fi
 ```
 
 ### elif
@@ -93,7 +100,7 @@ elif 语句行提供了另一个要测试的命令，这类似于原始的 if �
 
 ??? info "test-if.sh"
 
-    ```Shell
+    ```bash
     #!/bin/bash
     
     test_if_1()
@@ -149,7 +156,7 @@ elif 语句继续 if-then 检查，为比较变量寻找特定的值。
 有了 case 命令，就不需要再写出所有的 elif 语句来不停地检查同一个变量的值了。
 **case** 命令会采用列表格式来检查单个变量的多个可能取值，类似枚举命中测试。
 
-```Shell
+```bash
 case variable in
     pattern1 | pattern2) commands1;;
     pattern3) commands2;;
@@ -165,7 +172,7 @@ case 命令会将指定的变量与不同模式进行比较，可以通过竖线
 
 1. 以下为 ubuntu 的 bash 配置文件 `~/.bashrc` 中的内容：
 
-```Shell
+```bash
 # set a fancy prompt (non-color, unless we know we "want" color)
 case "$TERM" in
     xterm-color|*-256color) color_prompt=yes;;
@@ -178,7 +185,7 @@ esac
 
 ??? info "test-case.sh"
 
-    ```Shell
+    ```bash
     #!/bin/bash
 
     test_case_1()
@@ -268,7 +275,7 @@ for params in "$*"
 
 ??? info "test-for.sh"
 
-    ```Shell
+    ```bash
     #!/bin/bash
 
     test_for_1()
@@ -362,7 +369,7 @@ done
 
 ??? info "test-while.sh"
 
-    ```Shell
+    ```bash
     #!/bin/bash
     
     test_while_1()
@@ -441,7 +448,7 @@ done
 
 ??? info "test-until.sh"
 
-    ```Shell
+    ```bash
     #!/bin/bash
     
     test_until_1()

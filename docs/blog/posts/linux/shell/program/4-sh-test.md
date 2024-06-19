@@ -90,8 +90,10 @@ test 命令可以判断三类条件：
 2. 变量 unset 为空，则返回 FALSE；  
 
 ```Shell
+# equiv: if [ ${#isAtHome} -ne 0 ]
 Ξ ~ → if [ $isAtHome ] ; then echo "isAtHome" ; fi
 isAtHome
+# equiv: if [ ${#isAtOffice} -ne 0 ]
 Ξ ~ → if [ $isAtOffice ] ; then echo "isAtOffice" ; fi
 Ξ ~ →
 ```
