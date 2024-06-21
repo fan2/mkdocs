@@ -89,6 +89,8 @@ Software Reverse Engineering(SRE) Toolkit:
 [Reversing.Kr](http://reversing.kr/) / [Exploit Database](https://www.exploit-db.com/)
 [exploit-exercises](https://exploit-exercises.com/), [Exploit Education](https://exploit.education/)
 
+[ROPgadget](https://github.com/JonathanSalwan/ROPgadget), [Ropper](https://github.com/sashs/Ropper), [ropshell](http://ropshell.com), [ROP Emporium](https://ropemporium.com/)
+
 ### CTF Notes
 
 [Note: CTF](https://fareedfauzi.gitbook.io/ctf-playbook)
@@ -112,9 +114,12 @@ Software Reverse Engineering(SRE) Toolkit:
 
 [A Noob's Guide To ARM Exploitation](https://ad2001.gitbook.io/a-noobs-guide-to-arm-exploitation)
 [bkerler/exploit_me](https://github.com/bkerler/exploit_me) - ARM/AARCH64
+[awesome-arm-exploitation](https://github.com/HenryHoggard/awesome-arm-exploitation)
 
+[ARM Exploit Development | Azeria Labs](https://azeria-labs.com/writing-arm-shellcode/)
 ARM binary exploitation: [Aaarchibald](https://medium.com/@chackal/arm-binary-exploitation-aaarchibald-writeup-dd4ae9cd8370), [Armory](https://medium.com/@chackal/arm-binary-exploitation-armory-writeup-e6468b18b068), [RET2ZP](https://medium.com/@chackal/ret2zp-arm-binary-exploitation-hola-armigo-writeup-77c4a673dd0b)
-[Introduction to Return-Oriented Exploitation on ARM64](https://www.slideshare.net/slideshow/introduction-to-returnoriented-exploitation-on-arm64-billy-ellis/110144234)
+
+[Introduction to ROP Exploitation on ARM64](https://www.youtube.com/watch?v=xVyH68HFsQU): @[slideshare](https://www.slideshare.net/slideshow/introduction-to-returnoriented-exploitation-on-arm64-billy-ellis/110144234), [Exploit-Challenges](https://github.com/Billy-Ellis/Exploit-Challenges)
 
 ARM64 Reversing and Exploitation: [1](https://highaltitudehacks.com/2020/09/05/arm64-reversing-and-exploitation-part-1-arm-instruction-set-heap-overflow.html), [2](https://highaltitudehacks.com/2020/09/06/arm64-reversing-and-exploitation-part-2-use-after-free.html), [3](https://highaltitudehacks.com/2020/09/06/arm64-reversing-and-exploitation-part-3-a-simple-rop-chain.html)
 ARM64 Reversing And Exploitation: [1](https://8ksec.io/arm64-reversing-and-exploitation-part-1-arm-instruction-set-simple-heap-overflow/), [2](https://8ksec.io/arm64-reversing-and-exploitation-part-2-use-after-free/), [3](https://8ksec.io/arm64-reversing-and-exploitation-part-3-a-simple-rop-chain/), [4](https://8ksec.io/arm64-reversing-and-exploitation-part-4-using-mprotect-to-bypass-nx-protection-8ksec-blogs/), [5](https://8ksec.io/arm64-reversing-and-exploitation-part-5-writing-shellcode-8ksec-blogs/), [6](https://8ksec.io/arm64-reversing-and-exploitation-part-6-exploiting-an-uninitialized-stack-variable-vulnerability/), [7](https://8ksec.io/arm64-reversing-and-exploitation-part-7-bypassing-aslr-and-nx/), [8](https://8ksec.io/arm64-reversing-and-exploitation-part-8-exploiting-an-integer-overflow-vulnerability/), [9](https://8ksec.io/arm64-reversing-and-exploitation-part-9-exploiting-an-off-by-one-overflow-vulnerability/)
@@ -123,6 +128,7 @@ ARM64 Reversing And Exploitation: [1](https://8ksec.io/arm64-reversing-and-explo
 
 ---
 
+[An introduction to the Return Oriented Programming and ROP chain generation.pdf](https://shell-storm.org/talks/ROP_course_lecture_jonathan_salwan_2014.pdf)
 [Initiating Linux Binary Exploitation: A Beginner's Expedition into Code Manipulation](https://www.kayssel.com/series/binary-exploitation/)
 
 Malware Reverse Engineering for Beginners: [Part 1](https://intezer.com/blog/malware-analysis/malware-reverse-engineering-beginners/), [Part 2](https://intezer.com/blog/incident-response/malware-reverse-engineering-for-beginners-part-2/)
