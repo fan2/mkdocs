@@ -88,7 +88,7 @@ credentials-file: /home/pifan/.cloudflared/79983784-9f0c-4fd7-b28c-cbdfc066f584.
 url: http://localhost:81
 ```
 
-To expose the SSH service, we should extend the ingress rules in `config.yml`.
+To expose the SSH service, we need to reorganize the `config.yml` and configure ingress rules for traffic routing.
 
 ```yaml
 $ sudo vim /etc/ssh/sshd_config
@@ -139,9 +139,11 @@ $ sudo systemctl restart cloudflared
 
 Open [Cloudflare Dashboard](https://dash.cloudflare.com/), Click Zero Trust to enter [Cloudflare One](https://one.dash.cloudflare.com/) page, select an account to log in.
 
-Click `Access - Applications` in the left panel, find the `+ Add an Application` button on the right and click. You should choose a *plan* the first time you use it.
+Click `Access - Applications` in the left panel, find the `+ Add an Application` button on the right and click. On your first attempt, you'll have to choose a *plan* before proceeding.
 
 **Steps**: Select type > Configure application > Add policies > Setup.
+
+To grant a user access to an application, simply add their email address to an Access policy.
 
 1. Select application type: `Self-hosted`
 
@@ -192,9 +194,9 @@ Then restart SSH service: `sudo systemctl restart ssh`.
 
 ## Configure SSH client
 
-End users can connect to the SSH session without any configuration by using Cloudflare’s browser-based terminal. Users visit the URL of the application and Cloudflare’s terminal handles the short-lived certificate flow. To enable, refer to [Enable browser rendering](https://developers.cloudflare.com/cloudflare-one/applications/non-http/#enable-browser-rendering).
+End users can connect to the SSH session without any configuration by using Cloudflare’s browser-based terminal. Users visit the URL of the application and Cloudflare’s terminal handles the short-lived certificate flow.
 
-On SSH client(macOS, linux,...), run the `cloudflared access ssh-config` command:
+On an SSH client platform such as macOS, run `cloudflared access ssh-config` to print the required configuration command:
 
 ```bash hl_lines="4-7"
 $ cloudflared access ssh-config --hostname ssh.dummy.com --short-lived-cert
@@ -206,11 +208,9 @@ Match host ssh.dummy.com exec "/opt/homebrew/bin/cloudflared access ssh-gen --ho
   CertificateFile ~/.cloudflared/%h-cf_key-cert.pub
 ```
 
-Copy the above output to `~/.ssh/config`.
+Copy the SSH configuration generated above to `~/.ssh/config` and try `ssh` to initiate a [One-time PIN login](https://developers.cloudflare.com/cloudflare-one/identity/one-time-pin/).
 
-Finally, try `ssh` to initiate a [One-time PIN login](https://developers.cloudflare.com/cloudflare-one/identity/one-time-pin/)
-
-> Add the `-v` option to enable verbose mode on the first attempt, printing more detailed debugging messages.
+> Add the `-v` option to enable verbose mode, printing more detailed debugging messages.
 
 ```bash
 $ ssh -v pifan@ssh.dummy.com

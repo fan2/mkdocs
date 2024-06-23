@@ -183,7 +183,7 @@ copy it to the following path:
 
 ```
 
-Click and open the login URL in browser, following the tips to choose an *active* domain for cloudflare tunnel.
+If you're on a host machine that's not SSHing, the cloudflared terminal will pull up the default browser and open the URL automatically. Otherwise, you should manually click and open the login URL in a browser, following the tips for choosing an *active* domain for your new cloudflare tunnel.
 
 Click Next. If nothing is wrong, the web page will congratulate you on your success.
 
@@ -435,6 +435,7 @@ You can stop/disable or uninstall cloudflared.service when not needed.
 ```bash
 $ sudo systemctl stop cloudflared
 $ sudo systemctl disable cloudflared
+
 $ sudo cloudflared service uninstall
 2024-03-24T18:28:09Z INF Using Systemd
 2024-03-24T18:28:14Z INF Linux service for cloudflared uninstalled successfully

@@ -298,3 +298,8 @@ MIPS - [64-bit ELF Object File Spec v2.5](https://irix7.com/techpubs/007-4658-00
 [ELF 文件 - CTF Wiki](https://ctf-wiki.org/executable/elf/structure/basic-info/)
 [ELF Format Cheatsheet](https://gist.github.com/x0nu11byt3/bcb35c3de461e5fb66173071a2379779)
 [The 101 of ELF files on Linux: Understanding and Analysis](https://linux-audit.com/elf-binaries-on-linux-understanding-and-analysis/)
+
+[BINARY ANALYSIS(PART 1): BINARY CREATION](https://www.linuxbaya.com/2021/05/binary-analysispart-1-binary-creation.html)
+[BINARY ANALYSIS(PART 2): INSIDE A BINARY](https://www.linuxbaya.com/2021/05/binary-analysispart-2-inside-binary.html)
+[BINARY ANALYSIS(PART 3): INSIDE A BINARY](https://www.linuxbaya.com/2021/05/binary-analysispart-3-inside-binary.html)
+[BINARY ANALYSIS(PART 4): BINARY HACKING](https://www.linuxbaya.com/2021/08/binary-analysispart-4-binary-hacking.html)

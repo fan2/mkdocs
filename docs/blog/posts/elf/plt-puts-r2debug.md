@@ -225,7 +225,7 @@ From the above output of the section to segment mapping we can see that the sect
 
 Meanwhile, the `.dynamic` and `.got` sections along with the `.data` seciton have been categorized into the second loadable data segment *LOAD1*.
 
-`rabin2 -S` / `iS`: sections
+Use `rabin2 -S` or `iS` to list sections.
 
 ```bash
 [0xffff98492c40]> iS
@@ -263,7 +263,12 @@ nth paddr        size vaddr           vsize perm type        name
 27  0x00001aac   0xfa 0x00000000       0xfa ---- STRTAB      .shstrtab
 ```
 
-`rabin2 -SS` / `iSS`: segments
+Filter specified sections:
+
+- !readelf -R .rela.plt -R .plt -R .got a.out
+- !objdump -j .rela.plt -j .plt -j .got -s a.out
+
+Use `rabin2 -SS` or `iSS` to view segments.
 
 ```bash
 [0xffff98492c40]> iSS
@@ -296,7 +301,7 @@ As `readelf -lW a.out` indicated, it should be aligned at 0x10000(64K), so the s
 
 `nm -u|-D`: display only undefined/dynamic symbols.
 
-```bash hl_lines="8"
+```bash hl_lines="9"
 # nm -D a.out
 $ nm -u a.out
                  U abort@GLIBC_2.17
@@ -362,6 +367,90 @@ Inspect the address of the symbol.
 0xaaaadc760630
 ```
 
+### disassemble PLT
+
+Using `iS` command to list sections and filter by name `.plt` :
+
+```bash
+[0xffff98492c40]> iS,name/eq/.plt
+[Sections]
+
+nth paddr       size vaddr           vsize perm type     name
+―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+12  0x000005d0  0x70 0xaaaadc7605d0   0x70 -r-x PROGBITS .plt
+
+[0xffff98492c40]> # iS,name/eq/.plt,c/cols/size
+[0xffff98492c40]> # iS,name/eq/.plt,c/cols/size,:noheader
+[0xffff98492c40]> iS,name/eq/.plt ~.plt[2] # grep size
+0x70
+[0xffff98492c40]> iS,name/eq/.plt ~.plt[3] # grep vaddr
+0xaaaadc7605d0
+```
+
+Query the vaddr to inspect what's on it:
+
+```bash
+[0xffff98492c40]> # ?w 0xaaaadc7605d0
+[0xffff98492c40]> ?w `iS,name/eq/.plt ~.plt[3]`
+/home/pifan/Projects/cpp/a.out .plt section..plt program R X 'stp x16, x30, [sp, -0x10]!' 'a.out'
+```
+
+As shown above, the `.plt` section is labelled as `section..plt` by r2. Try to evaluate it:
+
+```bash
+[0xffff98492c40]> # ?w section..plt
+[0xffff98492c40]> ?v section..plt
+0xaaaadc7605d0
+```
+
+Disassemble the `.plt` section using `pd` command.
+
+```bash hl_lines="37-41"
+[0xffff98492c40]> # pd 0x70/$l @ section..plt
+[0xffff98492c40]> pd `iS,name/eq/.plt ~.plt[2]`/$l @ `iS,name/eq/.plt ~.plt[3]`
+   section..plt + 0              ;-- section..plt:
+   section..plt + 0              0xaaaadc7605d0      f07bbfa9       stp x16, x30, [sp, -0x10]!
+   section..plt + 4              0xaaaadc7605d4      90000090       adrp x16, map._home_pifan_Projects_cpp_a.out.rw_
+   section..plt + 8              0xaaaadc7605d8      11d247f9       ldr x17, [x16, 0xfa0]
+   section..plt + 12             0xaaaadc7605dc      10823e91       add x16, x16, 0xfa0
+   section..plt + 16             0xaaaadc7605e0      20021fd6       br x17
+   section..plt + 20             0xaaaadc7605e4      1f2003d5       nop
+   section..plt + 24             0xaaaadc7605e8      1f2003d5       nop
+   section..plt + 28             0xaaaadc7605ec      1f2003d5       nop
+   sym.imp.__libc_start_main + 0              ;-- rsym.__libc_start_main:
+┌ 16: int sym.imp.__libc_start_main (func main, int argc, char **ubp_av, func init, func fini, func rtld_fini, void *stack_end); // noreturn
+│  sym.imp.__libc_start_main + 0              0xaaaadc7605f0      90000090       adrp x16, map._home_pifan_Projects_cpp_a.out.rw_
+│  sym.imp.__libc_start_main + 4              0xaaaadc7605f4      11d647f9       ldr x17, [x16, 0xfa8]
+│  sym.imp.__libc_start_main + 8              0xaaaadc7605f8      10a23e91       add x16, x16, 0xfa8
+└  sym.imp.__libc_start_main + 12             0xaaaadc7605fc      20021fd6       br x17
+   sym.imp.__cxa_finalize + 0              ;-- rsym.__cxa_finalize:
+┌ 16: sym.imp.__cxa_finalize ();
+│  sym.imp.__cxa_finalize + 0              0xaaaadc760600      90000090       adrp x16, map._home_pifan_Projects_cpp_a.out.rw_
+│  sym.imp.__cxa_finalize + 4              0xaaaadc760604      11da47f9       ldr x17, [x16, 0xfb0]
+│  sym.imp.__cxa_finalize + 8              0xaaaadc760608      10c23e91       add x16, x16, 0xfb0
+└  sym.imp.__cxa_finalize + 12             0xaaaadc76060c      20021fd6       br x17
+   rsym.__gmon_start__ + 0              ;-- rsym.__gmon_start__:
+   rsym.__gmon_start__ + 0              ;-- __gmon_start__:
+   rsym.__gmon_start__ + 0              0xaaaadc760610      90000090       adrp x16, map._home_pifan_Projects_cpp_a.out.rw_
+   rsym.__gmon_start__ + 4              0xaaaadc760614      11de47f9       ldr x17, [x16, 0xfb8]
+   rsym.__gmon_start__ + 8              0xaaaadc760618      10e23e91       add x16, x16, 0xfb8
+   rsym.__gmon_start__ + 12             0xaaaadc76061c      20021fd6       br x17
+   sym.imp.abort + 0              ;-- rsym.abort:
+┌ 16: void sym.imp.abort ();
+│  sym.imp.abort + 0              0xaaaadc760620      90000090       adrp x16, map._home_pifan_Projects_cpp_a.out.rw_
+│  sym.imp.abort + 4              0xaaaadc760624      11e247f9       ldr x17, [x16, 0xfc0]
+│  sym.imp.abort + 8              0xaaaadc760628      10023f91       add x16, x16, 0xfc0
+└  sym.imp.abort + 12             0xaaaadc76062c      20021fd6       br x17
+   sym.imp.puts + 0              ;-- rsym.puts:
+┌ 16: int sym.imp.puts (const char *s);
+│  sym.imp.puts + 0              0xaaaadc760630      90000090       adrp x16, map._home_pifan_Projects_cpp_a.out.rw_
+│  sym.imp.puts + 4              0xaaaadc760634      11e647f9       ldr x17, [x16, 0xfc8]
+│  sym.imp.puts + 8              0xaaaadc760638      10223f91       add x16, x16, 0xfc8
+└  sym.imp.puts + 12             0xaaaadc76063c      20021fd6       br x17
+```
+
+### telescope GOT
+
 Type `ir` to list the relocations.
 
 > The vaddr offset of the relocated symbol(`reloc.puts`) in GOT is 0x00010fc8.
@@ -392,57 +481,60 @@ vaddr          paddr      type   ntype name
 13 relocations
 ```
 
-Try to show context disassembly of 15 instructions around `puts`.
+Pay attention to the *paddr* column, it's the offset of `.got` entry.
 
-> The GOT entry for `puts@plt` is labelled as `reloc.puts` by r2, equivalent to `puts@got.plt` in pwndbg.
+Using `iS` command to list sections and filter by name `.got` :
 
-```bash hl_lines="20"
-[0xffff98492c40]> pd-- 15 @ reloc.puts # @ 0xaaaadc770fc8
-            0xaaaadc770f8c      00000000       invalid
-            ;-- section..got:
-            0xaaaadc770f90      00000000       invalid                 ; [21] -rw- section size 112 named .got
-            0xaaaadc770f94      00000000       invalid
-            0xaaaadc770f98      00000000       invalid
-            0xaaaadc770f9c      00000000       invalid
-            0xaaaadc770fa0      00000000       invalid
-            0xaaaadc770fa4      00000000       invalid
-            ;-- reloc.__libc_start_main:
-            0xaaaadc770fa8      d0050000       invalid
-            0xaaaadc770fac      00000000       invalid
-            0xaaaadc770fb0      d0050000       invalid
-            0xaaaadc770fb4      00000000       invalid
-            0xaaaadc770fb8      d0050000       invalid
-            0xaaaadc770fbc      00000000       invalid
-            ;-- reloc.abort:
-            0xaaaadc770fc0      d0050000       invalid
-            0xaaaadc770fc4      00000000       invalid
-            ;-- reloc.puts:
-            0xaaaadc770fc8      d0050000       invalid
-            0xaaaadc770fcc      00000000       invalid
-            ;-- _GLOBAL_OFFSET_TABLE_:
-            0xaaaadc770fd0      a00d0100       invalid
-            0xaaaadc770fd4      00000000       invalid
-            ;-- reloc._ITM_deregisterTMCloneTable:
-            0xaaaadc770fd8      00000000       invalid
-            0xaaaadc770fdc      00000000       invalid
-            ;-- reloc.__cxa_finalize:
-            0xaaaadc770fe0      00000000       invalid
-            0xaaaadc770fe4      00000000       invalid
-            ;-- reloc.__gmon_start__:
-            0xaaaadc770fe8      00000000       invalid
-            0xaaaadc770fec      00000000       invalid
-            0xaaaadc770ff0      54070000       invalid
-            0xaaaadc770ff4      00000000       invalid
-            ;-- reloc._ITM_registerTMCloneTable:
-            0xaaaadc770ff8      00000000       invalid
-            0xaaaadc770ffc      00000000       invalid
-            ;-- section..data:
-            ;-- data_start:
-            ;-- __data_start:
-            ; XREFS: DATA 0xaaaadc760690  DATA 0xaaaadc760698  DATA 0xaaaadc7606c0  DATA 0xaaaadc7606c8  DATA 0xaaaadc76070c
-            ; XREFS: DATA 0xaaaadc760724
-            0xaaaae0071000      00000000       invalid                 ; [22] -rw- section size 16 named .data
+```bash
+[0xffff98492c40]> iS,name/eq/.got
+[Sections]
+
+nth paddr       size vaddr           vsize perm type     name
+―――――――――――――――――――――――――――――――――――――――――――――――――――――――――――――
+21  0x00000f90  0x70 0xaaaad8d40f90   0x70 -rw- PROGBITS .got
+
+[0xffff98492c40]> # iS,name/eq/.got,c/cols/size
+[0xffff98492c40]> # iS,name/eq/.got,c/cols/size,:noheader
+[0xffff98492c40]> iS,name/eq/.got ~.got[2] # grep size
+0x70
+[0xffff98492c40]> iS,name/eq/.got ~.got[3] # grep vaddr
+0xaaaadc770f90
 ```
+
+Query the vaddr to inspect what's on it:
+
+```bash
+[0xffff98492c40]> # ?w 0xaaaadc770f90
+[0xffff98492c40]> ?w `iS,name/eq/.got ~.got[3]`
+/home/pifan/Projects/cpp/a.out .got section..got program R W 0x0
+```
+
+As shown above, the `.got` section is labelled as `section..got` by r2. Try to evaluate it:
+
+```bash
+[0xffff98492c40]> # ?w section..got
+[0xffff98492c40]> ?v section..got
+0xaaaadc770f90
+```
+
+Show hexword references of `.got` section for telescoping:
+
+```bash hl_lines="8"
+[0xffff98492c40]> # xr $w*(0x70/8) @ section..got
+[0xffff98492c40]> xr $w*(`iS,name/eq/.got ~.got[2]`/8) @ `iS,name/eq/.got ~.got[3]`
+0xaaaadc770f90 ..[ null bytes ]..   00000000 section..got
+0xaaaadc770fa8 0x00000000000005d0   ........ @ reloc.__libc_start_main 1488
+0xaaaadc770fb0 0x00000000000005d0   ........ 1488
+0xaaaadc770fb8 0x00000000000005d0   ........ 1488
+0xaaaadc770fc0 0x00000000000005d0   ........ @ reloc.abort 1488
+0xaaaadc770fc8 0x00000000000005d0   ........ @ reloc.puts 1488
+0xaaaadc770fd0 0x0000000000010da0   ........ @ obj._GLOBAL_OFFSET_TABLE_ 69024
+0xaaaadc770fd8 ..[ null bytes ]..   00000000 reloc._ITM_deregisterTMCloneTable
+0xaaaadc770ff0 0x0000000000000754   T....... 1876
+0xaaaadc770ff8 ..[ null bytes ]..   00000000 reloc._ITM_registerTMCloneTable
+```
+
+As we can see, the GOT entry for `puts@plt` is labelled as `reloc.puts` by r2, equivalent to `puts@got.plt` in pwndbg.
 
 Press ++tab++ after the dot to view automatic IntelliSense options.
 
@@ -462,20 +554,16 @@ Get the value(address) of label `reloc.puts` by evaluation:
 0xaaaadc770fc8
 ```
 
-Use the `x` command to see what is stored at 0xaaaadc770fc8:
+Use the `x` command to see what is stored at `reloc.puts`:
 
 ```bash
-[0xffff98492c40]> pxq $w @ 0xaaaadc770fc8
+[0xffff98492c40]> pxq $w @ reloc.puts
 0xaaaadc770fc8  0x00000000000005d0
 ```
 
-According to the hexdump content of the `.got` section, it's originally filled with 0x00000000000005d0, which is the address of the `.plt` section. It's the original lineage of plt and got.
+According to the hexdump content of the `.got` section, it's originally filled with 0x00000000000005d0, which represents the *first* PLT stub(PLT[0], PLT header) of the `.plt` section in segment.LOAD0. It's the original lineage of plt and got.
 
-- iS
-- !readelf -SW a.out
-- !readelf -R .rela.plt -R .plt -R .got a.out
-- !objdump -j .rela.plt -j .plt -j .got -s a.out
-- !rabin2 -S a.out
+> The offset to page `map._home_pifan_Projects_cpp_a.out.rw_`(segment.LOAD1) is `0xfa0`, corresponding to `GOT[2]`, which is reserved by `ld.so`.
 
 Since *libc.so* is not loaded at the moment, the GOT relocs entry is not resolved. In other words, the dynamic symbol would only be resolved until its module is loaded.
 
@@ -545,7 +633,7 @@ Disassemble 8 instructions backwards. The PLT stubs of the `.plt` section happen
 │ rg: 0 (vars 0, args 0)
 │ bp: 0 (vars 0, args 0)
 │ sp: 0 (vars 0, args 0)
-│           0xaaaadc760620      90000090       adrp x16, map._home_pifan_Projects_cpp_a.out.rw_ ; 0xaaaae6890000
+│           0xaaaadc760620      90000090       adrp x16, map._home_pifan_Projects_cpp_a.out.rw_ ; 0xaaaadc770000
 │           0xaaaadc760624      11e247f9       ldr x17, [x16, 0xfc0]
 │           0xaaaadc760628      10023f91       add x16, x16, 0xfc0
 └           0xaaaadc76062c      20021fd6       br x17
@@ -555,7 +643,7 @@ Disassemble 8 instructions backwards. The PLT stubs of the `.plt` section happen
 │ rg: 0 (vars 0, args 0)
 │ bp: 0 (vars 0, args 0)
 │ sp: 0 (vars 0, args 0)
-│           0xaaaadc760630      90000090       adrp x16, map._home_pifan_Projects_cpp_a.out.rw_ ; 0xaaaae6890000
+│           0xaaaadc760630      90000090       adrp x16, map._home_pifan_Projects_cpp_a.out.rw_ ; 0xaaaadc770000
 │           0xaaaadc760634      11e647f9       ldr x17, [x16, 0xfc8]
 │           0xaaaadc760638      10223f91       add x16, x16, 0xfc8
 └           0xaaaadc76063c      20021fd6       br x17
@@ -613,6 +701,29 @@ Type `dm` to check the latest memory map:
 0x0000ffff984b7000 - 0x0000ffff984b9000 - usr     8K s rw- /usr/lib/aarch64-linux-gnu/ld-linux-aarch64.so.1 /usr/lib/aarch64-linux-gnu/ld-linux-aarch64.so.1
 0x0000ffffc7fcd000 - 0x0000ffffc7fee000 - usr   132K s rw- [stack] [stack] ; map._stack_.rw_
 ```
+
+### reloc GOT
+
+Telescope `.got` section after dynamic linking:
+
+```bash hl_lines="8"
+# use xQ to see the whole section including empty slots(placeholders)
+[0xaaaadc760640]> xr $w*(`iS,name/eq/.got ~.got[2]`/8) @ `iS,name/eq/.got ~.got[3]`
+0xaaaadc770f90 ..[ null bytes ]..   00000000 section..got
+0xaaaadc770fa8 0x0000ffff982e7434    4t[..... @ reloc.__libc_start_main
+0xaaaadc770fb0 0x0000ffff982fd220    .\.....
+0xaaaadc770fb8 ..[ null bytes ]..   00000000
+0xaaaadc770fc0 0x0000ffff982e704c   Lp[..... @ reloc.abort
+0xaaaadc770fc8 0x0000ffff9832ae70   p._..... @ reloc.puts
+0xaaaadc770fd0 0x0000000000010da0   ........ @ obj._GLOBAL_OFFSET_TABLE_ 69024
+0xaaaadc770fd8 ..[ null bytes ]..   00000000 reloc._ITM_deregisterTMCloneTable
+0xaaaadc770fe0 0x0000ffff982fd220    .\..... @ reloc.__cxa_finalize
+0xaaaadc770fe8 ..[ null bytes ]..   00000000 reloc.__gmon_start__
+0xaaaadc770ff0 0x0000aaaadc760754   T....... /home/pifan/Projects/cpp/a.out .text main,main main program R X 'stp x29, x30, [sp, -0x20]!' 'a.out'
+0xaaaadc770ff8 ..[ null bytes ]..   00000000 reloc._ITM_registerTMCloneTable
+```
+
+As the *libc.so* is loaded, the value of `reloc.puts`(offset=0xfc8) is immediately updated from `0x00000000000005d0` to `0x0000ffff9832ae70`(&puts@GLIBC).
 
 ### dcu main
 
@@ -715,28 +826,30 @@ INFO: hit breakpoint at: 0xaaaadc760630
 └           0xaaaadc76063c      20021fd6       br x17
 ```
 
-View the disassembly against `puts@plt`, it's easy to find that `10000 <__FRAME_END__+0xf770>` is dynamically replaced by `map._home_pifan_Projects_cpp_a.out.rw_`.
+View the disassembly against `puts@plt`, it's easy to find that the PC-relative literal 0x`10000 <__FRAME_END__+0xf770>` is dynamically replaced by `map._home_pifan_Projects_cpp_a.out.rw_`.
 
 ### reloc fixup
 
-The [ADRP instruction](../arm/arm-adr-demo.md) is used to form the PC relative address to the 4KB page. As the PC is 0xaaaadc760630, its 4K page boundary aligned address (`:pg_hi21:`) is `0xaaaadc760000`, calculated by masking out the lower 12 bits.
+The [ADRP instruction](../arm/arm-adr-demo.md) is used to form the PC relative address to the 4KB page. As the PC is 0xaaaadc760630, its 4K page boundary aligned address (`:pg_hi21:`/`R_AARCH64_ADR_PREL_PG_HI21`) is `0xaaaadc760000`, calculated by masking out the lower 12 bits.
 
 > 0xaaaadc760000 is also the piebase and page address of the first text segment *LOAD0*. Look back to chapter *loaded modules* and *memory maps*.
 
-If you add the coded PC literal 0x10000 to the page address 0xaaaadc760000, it becomes `0xaaaadc770000`.
+The above inference was based on baddr and the segment of the current `ADRP` instruction (*LOAD0*), it results in PC-relative calculation `x16=load0_baddr+offset`. On the other hand, as we've already mentioned, the offset `0x10000` is the increment of vaddr over paddr for the *LOAD1* data segment where the `.got` section is located.
 
-The above inference was based on baddr and the segment of the current `ADRP` instruction (*LOAD0*), it results in PC-relative calculation `x16=load0_baddr+offset`.
+So it's not surprising that the `ADRP` literal is fixed as `map._home_pifan_Projects_cpp_a.out.rw_` (see `dm`) at runtime. It represents segment.LOAD1 starting at 0xaaaadc770000(`R_AARCH64_ADR_GOT_PAGE`). That's `x16=load1_baddr` according to the results, which is not a coincidence.
 
-On the other hand, as we've already mentioned, the offset 0x10000 is the increment of vaddr over paddr for the *LOAD1* data segment where the `.got` section is located. Therefore, from the point of view of the *LOAD1* segment, the page address of the `.got` entries already matches it.
+!!! info "ADRP PC-relative literal equiv eval"
 
-So it's not surprising that the `ADRP` literal is fixed as `map._home_pifan_Projects_cpp_a.out.rw_` (see `dm`) at runtime. It represents the *LOAD1* segment starting at 0xaaaadc770000. That's `x16=load1_baddr` according to the results, which is not a coincidence.
+    1. `map._home_pifan_Projects_cpp_a.out.r_x`(segment.LOAD0) = 0xaaaadc760000, PC's seg page addr
+    2. `map._home_pifan_Projects_cpp_a.out.rw_`(segment.LOAD1) = 0xaaaadc770000, GOT's seg page addr
+    3. `segment.LOAD1` = `segment.LOAD0` + *0x10000*
 
-```bash
-[0xaaaadc760630]> ?w pc
-/home/pifan/Projects/cpp/a.out .plt rsym.puts,puts,pc sym.imp.puts program R X 'adrp x16, 0xaaaadc770000' 'a.out'
-```
+    ```bash
+    [0xaaaadc760630]> ?w pc
+    /home/pifan/Projects/cpp/a.out .plt rsym.puts,puts,pc sym.imp.puts program R X 'adrp x16, 0xaaaadc770000' 'a.out'
+    ```
 
-Look at the next instruction `ldr x17, [x16, 0xfc8]!`, `x16:0xfc8` is the address of GOT entry for `puts`(aka `reloc.puts`). `x16`=0xaaaadc770000+0xfc8=0xaaaadc770fc8. Then `x17` will load the value stored in pointer `x16`(0xaaaadc770fc8). It matches the output of `ir` in chapter *imports/relocations*.
+Look at the next instruction `ldr x17, [x16, 0xfc8]!`, `0xfc8` is the offset of GOT entry for `puts`(aka `reloc.puts`). `x16`=0xaaaadc770000+0xfc8=0xaaaadc770fc8. Then `x17` will load the value(address) stored in pointer `x16`(0xaaaadc770fc8). It matches the output of `ir` in chapter *imports/relocations*.
 
 ### ADRP+LDR
 
@@ -761,12 +874,7 @@ Check register `x16` and `x17`:
 > `ai @addr`: show address information
 
 ```bash
-[0xaaaadc76063c]> ai @ x16
-program
-read
-flag
-reg
-[0xaaaadc76063c]> aij~{} @ x16
+[0xaaaadc76063c]> aij~{} @ x16 # ai @ x16
 {
   "program": "true",
   "exec": "true",
@@ -774,25 +882,16 @@ reg
   "flag": "true",
   "func": "true"
 }
-[0xaaaadc76063c]> dr?x16 # ?v $r{x16}
+[0xaaaadc76063c]> dr?x16
 0xaaaadc770fc8
 
 [0xaaaadc76063c]> aij @ x17
 {"library":"true","exec":"true","read":"true","flag":"true","reg":"true"}
-[0xaaaadc76063c]> dr x17 # ?v $r:x17
+[0xaaaadc76063c]> dr x17
 0xffff9832ae70
 ```
 
-Show whatis and telescope of `x16`:
-
-```bash
-[0xaaaadc76063c]> ?w x16
-/home/pifan/Projects/cpp/a.out .got reloc.puts,x16,d16 program R 0xffff9832ae70
-[0xaaaadc76063c]> drr~x16
-     x16    0xaaaadc770fc8     /home/pifan/Projects/cpp/a.out .got reloc.puts,x16,d16 program R 0xffff9832ae70
-```
-
-Hexdump and try to dereference `x16`:
+Hexdump and dereference `x16`:
 
 ```bash
 # pvp @ x16 # pv8 @ x16
@@ -806,21 +905,29 @@ Hexdump and try to dereference `x16`:
 
 [0xaaaadc76063c]> xQ $w @ x16
 0xaaaadc770fc8  0x0000ffff9832ae70 x17
-
-[0xaaaadc76063c]> xr $w @ x16
-0xaaaadc770fc8  0x0000ffff9832ae70   p....... @ d16 /usr/lib/aarch64-linux-gnu/libc.so.6 x17,d17 library R X 'stp x29, x30, [sp, -0x40]!' 'libc.so.6'
 ```
 
-Actually, when *libc.so* is loaded, the value of the pointer is immediately updated from `0x00000000000005d0` to `0x0000ffff9832ae70`.
+Inspect and telescope `x16`:
 
-> The `dbw` command is provided to add watchpoints. However, it doesn't work as well as expected, see related [issue](https://github.com/radareorg/radare2/issues/11029).
+```bash
+[0xaaaadc76063c]> ?w x16
+/home/pifan/Projects/cpp/a.out .got reloc.puts,x16,d16 program R 0xffff9832ae70
+[0xaaaadc76063c]> xr $w @ x16
+0xaaaadc770fc8  0x0000ffff9832ae70   p....... @ d16 /usr/lib/aarch64-linux-gnu/libc.so.6 x17,d17 library R X 'stp x29, x30, [sp, -0x40]!' 'libc.so.6'
+[0xaaaadc76063c]> drr~x16
+     x16    0xaaaadc770fc8     /home/pifan/Projects/cpp/a.out .got reloc.puts,x16,d16 program R 0xffff9832ae70
+```
 
-Show whatis and telescope of `x17`:
+!!! warning "r2 watchpoints"
+
+    The `dbw` command is provided to add watchpoints. However, it doesn't work as well as expected, see related [issue](https://github.com/radareorg/radare2/issues/11029).
+
+Inspect and telescope `x17`:
 
 ```bash
 [0xaaaadc76063c]> ?w x17
 /usr/lib/aarch64-linux-gnu/libc.so.6 x17,d17 library R X 'stp x29, x30, [sp, -0x40]!' 'libc.so.6'
-[0xaaaadc76063c]> drr~x17
+[0xaaaadc76063c]> drr~x17 # xr $w @ x17
      x17    0xffff9832ae70     /usr/lib/aarch64-linux-gnu/libc.so.6 x17,d17 library R X 'stp x29, x30, [sp, -0x40]!' 'libc.so.6'
 ```
 
@@ -899,6 +1006,43 @@ ERROR: Cannot find function at 0xffff9832ae70
             [...snip...]
 ```
 
+List function variables and arguments with disasm refs:
+
+```bash
+[0xffff9799ae70]> afv=
+* arg1
+R 0xffff9799ae84  mov x22, x0
+* var_10h
+R 0xffff9799afa8  ldp x19, x20, [var_10h]
+* var_20h
+R 0xffff9799afac  ldp x21, x22, [var_20h]
+* var_30h
+R 0xffff9799afb0  ldp x23, x24, [var_30h]
+
+[0xffff9799ae70]> afvf # BP relative stackframe variables
+0x00000030  var_10h:   int64_t
+0x00000020  var_20h:   int64_t
+0x00000010  var_30h:   int64_t
+0xffffffffffffff9a  arg1:      int64_t
+
+[0xffff9799ae70]> afvr # register based arguments
+arg int64_t arg1 @ x0
+
+[0xffff9799ae70]> afvs # sp based arguments/locals
+var int64_t var_10h @ sp+0x10
+var int64_t var_20h @ sp+0x20
+var int64_t var_30h @ sp+0x30
+```
+
+Inspect register based argument `X0`(stuff to *puts*):
+
+```bash
+[0xffff9799ae70]> ?w x0
+/home/pifan/Projects/cpp/a.out .rodata str.Hello__Linux_,x0,d0 program R X 'ldnp d8, d25, [x10, -0x140]' 'a.out' Hello, Linux!
+[0xffff9799ae70]> ps @ x0
+Hello, Linux!
+```
+
 Type `dc` to continue to the end.
 
 ```bash
@@ -909,7 +1053,7 @@ Hello, Linux!
 
 ## puts@GLIBC
 
-Although everything is clear, we can do some confirmation from the shared library perspective.
+Although everything is clear, we can do some confirmation from the so(*s*hared *o*bject) perspective.
 
 Let's look up symbol `puts` in libc.so.6, the weak symbol `puts` will be overriden by the global symbol `_IO_puts`.
 
@@ -936,16 +1080,16 @@ The value of the symbol `puts` is `000000000006ae70`, which is the static absolu
 
 Keep in mind the principle `VA = baddr+offset/RVA`.
 
-According to the latest `dm` output(linkmap), the *Load Bias* of libc.so is 0xffff982c0000. It's also the start address of text segment *LOAD0* according to the latest `dmm` output(vmmap).
+According to the latest `dm` output(linkmap), the *Load Bias* of libc.so is 0xffff982c0000. It's also the start address of segment.LOAD0 according to the latest `dmm` output(vmmap).
 
 Add the paddr/offset to the baddr/bias to check the correctness of the formula.
 
 ```bash
 [0xaaaadc76063c]> rax2 -k 0xffff982c0000+0x6ae70
-[0xaaaadc76063c]> ?v 0xffff982c0000+0x6ae70 # ?v x17
+[0xaaaadc76063c]> ?v 0xffff982c0000+0x6ae70
 0xffff9832ae70
 ```
 
-The result is entirely consistent with our earlier research.
+The result is entirely consistent with our earlier research. It's exactly the final jump target of `puts@plt`!
 
 Nothing is out of the ordinary. Everything is working out as expected.

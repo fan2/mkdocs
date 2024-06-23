@@ -173,7 +173,7 @@ Overview register file:
 Show content of specified register:
 
 ```bash
-[0xaaaadec30754]> dr?pc # ?v $r{PC}
+[0xaaaadec30754]> dr?pc # ?v PC
 0xaaaadec30754
 [0xaaaadec30754]> dr?BP # ?v $r{BP}
 0xffffdd6b1210

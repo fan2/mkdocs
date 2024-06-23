@@ -543,7 +543,7 @@ Detect begin/end of current function:
 `$r{reg}` is equivalent to `dr?<register>`, see `drl`, `dr??` and `dr=`.
 
 ```bash
-[0x000000000000]> ?v $r{x0} # ?v $r:A0
+[0x000000000000]> ?v x0 # ?v $r{x0} # ?v $r:A0
 0xfa
 [0x000000000000]> ?v $r{PC} # dr?pc
 0x000000000000

@@ -135,6 +135,10 @@ readelf -h a.out | awk '/Entry point address/ {print $NF}'
 
 ### sections
 
+`readelf [-p|--string-dump] .shstrtab a.out`: Dump the contents of section `.shstrtab` as strings.
+
+Elf[32|64]_Shdr.`sh_name` is the index of section header string table(`.shstrtab`).
+
 `rabin2 -S` / `r2 > iS`: sections
 
 - `readelf [-S|--section-headers|--sections]`: Display the sections' header.
@@ -577,7 +581,7 @@ offset | name index | symbol name                 | info | type        | bind
 `nm -u|--undefined-only`: display only undefined symbols.
 `nm -D|--dynamic`: display dynamic symbols instead of normal symbols.
 
-```bash hl_lines="8"
+```bash hl_lines="9"
 # nm -u a.out
 $ nm -D a.out
                  U abort@GLIBC_2.17
@@ -844,7 +848,14 @@ Offset		Address				Value
 
 As we have discussed, the last entry in the `.rela.plt` (DT_JMPREL) section describes the `R_AARCH64_JUMP_SLOT` / GOT entry with address `0000000000010fc8`(offset 0xfc8 within LOAD1) and symbol index 8, corresponding to `puts@GLIBC_2.17` in symbol table `.dynsym`.
 
-The `puts@GLIBC_2.17` is currently labelled as `UND`EFINED, the corresponding GOT entry is filled with `00000000000005d0`, which represents the `.plt` section in the LOAD0 segment.
+The `puts@GLIBC_2.17` is currently labelled as `UND`EFINED, the corresponding GOT entry is filled with `00000000000005d0`, which represents the *first* PLT stub(PLT[0], PLT header) of the `.plt` section in segment.LOAD0.
+
+!!! note "GOT reserved entries"
+
+    [All about Procedure Linkage Table | MaskRay](https://maskray.me/blog/2021-09-19-all-about-procedure-linkage-table)
+    [Computer Systems - A Programmer’s Perspective](https://www.amazon.com/Computer-Systems-OHallaron-Randal-Bryant/dp/1292101768/) | Chapter 7: Linking - 7.12: Position-Independent Code (PIC)
+
+    On some architectures(x86-32, x86-64) `.got.plt[0]` is the link time address of `_DYNAMIC`. `.got.plt[1]` and `.got.plt[2]` are reserved by `ld.so`. `.got.plt[1]` is a descriptor of the current component while `.got.plt[2]` is the address of the PLT resolver.
 
 When the required(DT_NEEDED) *libc.so* is loaded, the value would be resolved to be the actual address of symbol `puts@GLIBC_2.17` during process initialization.
 
@@ -872,6 +883,8 @@ $ nm a.out
 The value of `_GLOBAL_OFFSET_TABLE_`(0x0000000000010fd0) is 0x0000000000010da0, it's the address of the `.dynamic` section.
 
 ## puts@plt
+
+[assembly - Why does the PLT exist in addition to the GOT, instead of just using the GOT? - Stack Overflow](https://stackoverflow.com/questions/43048932/why-does-the-plt-exist-in-addition-to-the-got-instead-of-just-using-the-got)
 
 The *`GOT`*(Global Offset Table) is something like a socket, it connects the internal host and the external required.
 
@@ -993,5 +1006,22 @@ As we can see, 0x10000+0xfc8 is the offset of `.rela.plt` relocation entry. The 
 Line 40 `adrp x16, 10000` is used to form PC-relative address to 4KB page. `IMM = 0x10000` is the PC-relative literal that encoded in the [ADRP instruction](../arm/arm-adr-demo.md).
 
 Lines 41\~42 are the equivalent expansion of the pre-indexing addressing instruction `ldr x17, [x16, #0xfc8]!`. Reg `x17` will load the value stored in GOT entry 0x10fc8 (PC relative). It is currently 0x5d0 and will be adjusted during dynamic linking. This is usually called "lazy symbol binding/loading".
+
+```bash title="ASCII art of puts@plt -> puts@GLIBC"
+Program                    PLT(puts@plt)                        GOT(0xfc8)
++-----------------+        +------------------------+           +------------+
+| ...             |        | adrp x16, 10000        |           | ...        |
+| bl sym.imp.puts |------->| ldr  x17, [x16, #4040] |---------->| reloc.puts |--------+
+| ...             |        | add  x16, x16, #0xfc8  |           | ...        |        |
++-----------------+        | br   x17               |-----+     +------------+        |
+                           +------------------------+     |                           |
+                                                          |                           |
+                                                          |      GLIBC                |
+                                                          |      +------------+       |
+                                                          |      | ...        |       |
+                                                          +----->| puts       | <-----+
+                                                                 | ...        |
+                                                                 +------------+
+```
 
 In the following articles, we'll explore how PLT/RELA/GOT work together to resolve lazy symbol binding/loading in dynamic linking.

@@ -1779,6 +1779,8 @@ The output extracts full binary information from the ELF header.</p>
 </span></code></pre></div>
 <h2 id="sections2segments">sections2segments<a class="headerlink" href="#sections2segments" title="Permanent link">#</a></h2>
 <h3 id="sections">sections<a class="headerlink" href="#sections" title="Permanent link">#</a></h3>
+<p><code>readelf [-p|--string-dump] .shstrtab a.out</code>: Dump the contents of section <code>.shstrtab</code> as strings.</p>
+<p>Elf[32|64]_Shdr.<code>sh_name</code> is the index of section header string table(<code>.shstrtab</code>).</p>
 <p><code>rabin2 -S</code> / <code>r2 &gt; iS</code>: sections</p>
 <ul>
 <li><code>readelf [-S|--section-headers|--sections]</code>: Display the sections' header.</li>
@@ -2257,9 +2259,9 @@ The output extracts full binary information from the ELF header.</p>
 </span><span id="__span-19-5"><a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a><span class="w">                 </span>w<span class="w"> </span>__gmon_start__
 </span><span id="__span-19-6"><a id="__codelineno-19-6" name="__codelineno-19-6" href="#__codelineno-19-6"></a><span class="w">                 </span>w<span class="w"> </span>_ITM_deregisterTMCloneTable
 </span><span id="__span-19-7"><a id="__codelineno-19-7" name="__codelineno-19-7" href="#__codelineno-19-7"></a><span class="w">                 </span>w<span class="w"> </span>_ITM_registerTMCloneTable
-</span><span id="__span-19-8"><a id="__codelineno-19-8" name="__codelineno-19-8" href="#__codelineno-19-8"></a><span class="hll"><span class="w">                 </span>U<span class="w"> </span>__libc_start_main@GLIBC_2.34
-</span></span><span id="__span-19-9"><a id="__codelineno-19-9" name="__codelineno-19-9" href="#__codelineno-19-9"></a><span class="w">                 </span>U<span class="w"> </span>puts@GLIBC_2.17
-</span></code></pre></div>
+</span><span id="__span-19-8"><a id="__codelineno-19-8" name="__codelineno-19-8" href="#__codelineno-19-8"></a><span class="w">                 </span>U<span class="w"> </span>__libc_start_main@GLIBC_2.34
+</span><span id="__span-19-9"><a id="__codelineno-19-9" name="__codelineno-19-9" href="#__codelineno-19-9"></a><span class="hll"><span class="w">                 </span>U<span class="w"> </span>puts@GLIBC_2.17
+</span></span></code></pre></div>
 <p><code>readelf --dyn-syms</code>: display the dynamic symbol table.<br />
 <code>objdump [-T|--dynamic-syms]</code>: display the contents of the dynamic symbol table.</p>
 <div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">readelf --dyn-syms</label><label for="__tabbed_1_2">objdump -T</label></div>
@@ -2477,7 +2479,13 @@ The output extracts full binary information from the ELF header.</p>
 </span><span id="__span-30-20"><a id="__codelineno-30-20" name="__codelineno-30-20" href="#__codelineno-30-20"></a>00000ff8<span class="w">    </span>0000000000010ff8<span class="w">    </span><span class="m">0000000000000000</span>
 </span></code></pre></div>
 <p>As we have discussed, the last entry in the <code>.rela.plt</code> (DT_JMPREL) section describes the <code>R_AARCH64_JUMP_SLOT</code> / GOT entry with address <code>0000000000010fc8</code>(offset 0xfc8 within LOAD1) and symbol index 8, corresponding to <code>puts@GLIBC_2.17</code> in symbol table <code>.dynsym</code>.</p>
-<p>The <code>puts@GLIBC_2.17</code> is currently labelled as <code>UND</code>EFINED, the corresponding GOT entry is filled with <code>00000000000005d0</code>, which represents the <code>.plt</code> section in the LOAD0 segment.</p>
+<p>The <code>puts@GLIBC_2.17</code> is currently labelled as <code>UND</code>EFINED, the corresponding GOT entry is filled with <code>00000000000005d0</code>, which represents the <em>first</em> PLT stub(PLT[0], PLT header) of the <code>.plt</code> section in segment.LOAD0.</p>
+<div class="admonition note">
+<p class="admonition-title">GOT reserved entries</p>
+<p><a href="https://maskray.me/blog/2021-09-19-all-about-procedure-linkage-table">All about Procedure Linkage Table | MaskRay</a><br />
+<a href="https://www.amazon.com/Computer-Systems-OHallaron-Randal-Bryant/dp/1292101768/">Computer Systems - A Programmer’s Perspective</a> | Chapter 7: Linking - 7.12: Position-Independent Code (PIC)</p>
+<p>On some architectures(x86-32, x86-64) <code>.got.plt[0]</code> is the link time address of <code>_DYNAMIC</code>. <code>.got.plt[1]</code> and <code>.got.plt[2]</code> are reserved by <code>ld.so</code>. <code>.got.plt[1]</code> is a descriptor of the current component while <code>.got.plt[2]</code> is the address of the PLT resolver.</p>
+</div>
 <p>When the required(DT_NEEDED) <em>libc.so</em> is loaded, the value would be resolved to be the actual address of symbol <code>puts@GLIBC_2.17</code> during process initialization.</p>
 <h3 id="_global_offset_table_">_GLOBAL_OFFSET_TABLE_<a class="headerlink" href="#_global_offset_table_" title="Permanent link">#</a></h3>
 <p>For AArch64 the linker defined <code>_GLOBAL_OFFSET_TABLE_</code> symbol should be the address of the first global offset table entry in the <code>.got</code> section.</p>
@@ -2498,6 +2506,7 @@ The output extracts full binary information from the ELF header.</p>
 </span></code></pre></div>
 <p>The value of <code>_GLOBAL_OFFSET_TABLE_</code>(0x0000000000010fd0) is 0x0000000000010da0, it's the address of the <code>.dynamic</code> section.</p>
 <h2 id="putsplt">puts@plt<a class="headerlink" href="#putsplt" title="Permanent link">#</a></h2>
+<p><a href="https://stackoverflow.com/questions/43048932/why-does-the-plt-exist-in-addition-to-the-got-instead-of-just-using-the-got">assembly - Why does the PLT exist in addition to the GOT, instead of just using the GOT? - Stack Overflow</a></p>
 <p>The <em><code>GOT</code></em>(Global Offset Table) is something like a socket, it connects the internal host and the external required.</p>
 <p>Similar to how the global offset table redirects position-independent address calculations to absolute locations, the procedure linkage table(<em><code>PLT</code></em>) redirects position-independent function calls to absolute locations.</p>
 <p>The dynamic section <code>DT_PLTREL</code>(0000000000000014)=0x7 shows its type of reloc in PLT is <code>DT_RELA</code>.</p>
@@ -2641,6 +2650,21 @@ The output extracts full binary information from the ELF header.</p>
 <p>As we can see, 0x10000+0xfc8 is the offset of <code>.rela.plt</code> relocation entry. The output of <code>rabin2 -R a.out</code> maybe more clear: the vaddr=0x00010fc8 is relative to virtual baddr, while the paddr=0x00000fc8 is relative to memory segment.</p>
 <p>Line 40 <code>adrp x16, 10000</code> is used to form PC-relative address to 4KB page. <code>IMM = 0x10000</code> is the PC-relative literal that encoded in the <a href="../../20230609/arm-adr-demo/">ADRP instruction</a>.</p>
 <p>Lines 41~42 are the equivalent expansion of the pre-indexing addressing instruction <code>ldr x17, [x16, #0xfc8]!</code>. Reg <code>x17</code> will load the value stored in GOT entry 0x10fc8 (PC relative). It is currently 0x5d0 and will be adjusted during dynamic linking. This is usually called "lazy symbol binding/loading".</p>
+<div class="language-bash highlight"><span class="filename">ASCII art of puts@plt -> puts@GLIBC</span><pre><span></span><code><span id="__span-36-1"><a id="__codelineno-36-1" name="__codelineno-36-1" href="#__codelineno-36-1"></a>Program<span class="w">                    </span>PLT<span class="o">(</span>puts@plt<span class="o">)</span><span class="w">                        </span>GOT<span class="o">(</span>0xfc8<span class="o">)</span>
+</span><span id="__span-36-2"><a id="__codelineno-36-2" name="__codelineno-36-2" href="#__codelineno-36-2"></a>+-----------------+<span class="w">        </span>+------------------------+<span class="w">           </span>+------------+
+</span><span id="__span-36-3"><a id="__codelineno-36-3" name="__codelineno-36-3" href="#__codelineno-36-3"></a><span class="p">|</span><span class="w"> </span>...<span class="w">             </span><span class="p">|</span><span class="w">        </span><span class="p">|</span><span class="w"> </span>adrp<span class="w"> </span>x16,<span class="w"> </span><span class="m">10000</span><span class="w">        </span><span class="p">|</span><span class="w">           </span><span class="p">|</span><span class="w"> </span>...<span class="w">        </span><span class="p">|</span>
+</span><span id="__span-36-4"><a id="__codelineno-36-4" name="__codelineno-36-4" href="#__codelineno-36-4"></a><span class="p">|</span><span class="w"> </span>bl<span class="w"> </span>sym.imp.puts<span class="w"> </span><span class="p">|</span>-------&gt;<span class="p">|</span><span class="w"> </span>ldr<span class="w">  </span>x17,<span class="w"> </span><span class="o">[</span>x16,<span class="w"> </span><span class="c1">#4040] |----------&gt;| reloc.puts |--------+</span>
+</span><span id="__span-36-5"><a id="__codelineno-36-5" name="__codelineno-36-5" href="#__codelineno-36-5"></a><span class="p">|</span><span class="w"> </span>...<span class="w">             </span><span class="p">|</span><span class="w">        </span><span class="p">|</span><span class="w"> </span>add<span class="w">  </span>x16,<span class="w"> </span>x16,<span class="w"> </span><span class="c1">#0xfc8  |           | ...        |        |</span>
+</span><span id="__span-36-6"><a id="__codelineno-36-6" name="__codelineno-36-6" href="#__codelineno-36-6"></a>+-----------------+<span class="w">        </span><span class="p">|</span><span class="w"> </span>br<span class="w">   </span>x17<span class="w">               </span><span class="p">|</span>-----+<span class="w">     </span>+------------+<span class="w">        </span><span class="p">|</span>
+</span><span id="__span-36-7"><a id="__codelineno-36-7" name="__codelineno-36-7" href="#__codelineno-36-7"></a><span class="w">                           </span>+------------------------+<span class="w">     </span><span class="p">|</span><span class="w">                           </span><span class="p">|</span>
+</span><span id="__span-36-8"><a id="__codelineno-36-8" name="__codelineno-36-8" href="#__codelineno-36-8"></a><span class="w">                                                          </span><span class="p">|</span><span class="w">                           </span><span class="p">|</span>
+</span><span id="__span-36-9"><a id="__codelineno-36-9" name="__codelineno-36-9" href="#__codelineno-36-9"></a><span class="w">                                                          </span><span class="p">|</span><span class="w">      </span>GLIBC<span class="w">                </span><span class="p">|</span>
+</span><span id="__span-36-10"><a id="__codelineno-36-10" name="__codelineno-36-10" href="#__codelineno-36-10"></a><span class="w">                                                          </span><span class="p">|</span><span class="w">      </span>+------------+<span class="w">       </span><span class="p">|</span>
+</span><span id="__span-36-11"><a id="__codelineno-36-11" name="__codelineno-36-11" href="#__codelineno-36-11"></a><span class="w">                                                          </span><span class="p">|</span><span class="w">      </span><span class="p">|</span><span class="w"> </span>...<span class="w">        </span><span class="p">|</span><span class="w">       </span><span class="p">|</span>
+</span><span id="__span-36-12"><a id="__codelineno-36-12" name="__codelineno-36-12" href="#__codelineno-36-12"></a><span class="w">                                                          </span>+-----&gt;<span class="p">|</span><span class="w"> </span>puts<span class="w">       </span><span class="p">|</span><span class="w"> </span>&lt;-----+
+</span><span id="__span-36-13"><a id="__codelineno-36-13" name="__codelineno-36-13" href="#__codelineno-36-13"></a><span class="w">                                                                 </span><span class="p">|</span><span class="w"> </span>...<span class="w">        </span><span class="p">|</span>
+</span><span id="__span-36-14"><a id="__codelineno-36-14" name="__codelineno-36-14" href="#__codelineno-36-14"></a><span class="w">                                                                 </span>+------------+
+</span></code></pre></div>
 <p>In the following articles, we'll explore how PLT/RELA/GOT work together to resolve lazy symbol binding/loading in dynamic linking.</p>
 
 
