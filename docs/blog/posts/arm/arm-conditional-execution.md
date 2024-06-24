@@ -31,7 +31,7 @@ The A64 instruction set also has some *`conditional branch`* instructions. These
 - generating condition code
 - conditional select instructions
 
-[ARM Compiler armasm Reference Guide](https://developer.arm.com/documentation/dui0802/latest) | 3: A32 and T32 Instructions
+[ARM Compiler armasm Reference Guide](https://developer.arm.com/documentation/dui0802/latest/A32-and-T32-Instructions) | 3: A32 and T32 Instructions
 
 - 3.24 `B`, `BL`, `BX`, and `BLX`: Branch, Branch with Link, Branch and exchange instruction set, Branch with Link and exchange instruction set.
 - 3.27 `CBZ` and `CBNZ`: Compare and Branch on Zero, Compare and Branch on Non-Zero.

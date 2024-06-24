@@ -19,9 +19,9 @@ It loads an address within a certain range, without performing a data load.
 
 ## A32
 
-[Arm A-profile A32/T32 Instruction Set Architecture](https://developer.arm.com/documentation/ddi0597/2024-03/Base-Instructions/ADR--Form-PC-relative-address-?lang=en) | ADR (PC-relative)
-[ARM Compiler armasm Reference Guide](https://developer.arm.com/documentation/dui0802/latest) ｜ 3: A32 and T32 Instructions - 3.19 ADR (PC-relative)
-[Arm Compiler armasm User Guide](https://developer.arm.com/documentation/dui0801/latest) | 14. A32 and T32 Instructions - 14.10 ADR (PC-relative)
+[Arm A-profile A32/T32 Instruction Set Architecture](https://developer.arm.com/documentation/ddi0597/latest/Base-Instructions/ADR--Form-PC-relative-address-?lang=en) | ADR (PC-relative)
+[ARM Compiler armasm Reference Guide](https://developer.arm.com/documentation/dui0802/latest/A32-and-T32-Instructions/ADR--PC-relative-) ｜ 3: A32 and T32 Instructions - 3.19 ADR (PC-relative)
+[Arm Compiler armasm User Guide](https://developer.arm.com/documentation/dui0801/latest/A32-and-T32-Instructions/ADR--PC-relative---A32-) | 14. A32 and T32 Instructions - 14.10 ADR (PC-relative)
 
 Generate a PC-relative address in the destination register, for a label in the current area.
 
@@ -36,8 +36,8 @@ ADR{cond}{.W} Rd,label
 
 **instruction**
 
-This instruction is used by the alias [SUB (immediate, from PC)](https://developer.arm.com/documentation/ddi0597/2024-03/Base-Instructions/SUB--immediate--from-PC---Subtract-from-PC--an-alias-of-ADR-?lang=en).
-This instruction is used by the pseudo-instruction [SUB (immediate, from PC)](https://developer.arm.com/documentation/ddi0597/2024-03/Base-Instructions/SUB--immediate--from-PC---Subtract-from-PC--an-alias-of-ADR-?lang=en).
+This instruction is used by the alias [SUB (immediate, from PC)](https://developer.arm.com/documentation/ddi0597/latest/Base-Instructions/SUB--immediate--from-PC---Subtract-from-PC--an-alias-of-ADR-?lang=en).
+This instruction is used by the pseudo-instruction [SUB (immediate, from PC)](https://developer.arm.com/documentation/ddi0597/latest/Base-Instructions/SUB--immediate--from-PC---Subtract-from-PC--an-alias-of-ADR-?lang=en).
 
 ```c title="ADR Rd, label - imm"
 constant d = UInt(Rd);
@@ -167,9 +167,9 @@ We can use `ADR` to load the address of our source string into register `r1`.
 
 ## A64
 
-[Arm A-profile A64 Instruction Set Architecture](https://developer.arm.com/documentation/ddi0602/2024-03/Base-Instructions/ADR--Form-PC-relative-address-?lang=en) | ADR
-[ARM Compiler armasm Reference Guide](https://developer.arm.com/documentation/dui0802/latest) ｜ 5: A64 General Instructions - 5.11 ADR
-[Arm Compiler armasm User Guide](https://developer.arm.com/documentation/dui0801/latest) | 17. A64 General Instructions - 17.11 ADR : Form PC-relative address
+[Arm A-profile A64 Instruction Set Architecture](https://developer.arm.com/documentation/ddi0602/latest/Base-Instructions/ADR--Form-PC-relative-address-?lang=en) | ADR
+[ARM Compiler armasm Reference Guide](https://developer.arm.com/documentation/dui0802/latest/A64-General-Instructions/ADR) ｜ 5: A64 General Instructions - 5.11 ADR
+[Arm Compiler armasm User Guide](https://developer.arm.com/documentation/dui0801/latest/A64-General-Instructions/ADR--A64-) | 17. A64 General Instructions - 17.11 ADR : Form PC-relative address
 
 Address of label at a PC-relative offset.
 
@@ -212,10 +212,10 @@ The `ADR` instruction returns the address of a label, calculated based on the cu
 
 ## references
 
-[ARM Compiler armasm Reference Guide](https://developer.arm.com/documentation/dui0802/latest)
+[ARM Compiler armasm Reference Guide](https://developer.arm.com/documentation/dui0802/latest/A32-and-T32-Instructions/Memory-access-instructions)
 
 - 3: A32 and T32 Instructions - 3.3 Memory access instructions
 
-[ARM Cortex-A Series Programmer's Guide for ARMv8-A](https://developer.arm.com/documentation/den0024/latest)
+[ARM Cortex-A Series Programmer's Guide for ARMv8-A](https://developer.arm.com/documentation/den0024/latest/An-Introduction-to-the-ARMv8-Instruction-Sets/The-ARMv8-instruction-sets/Addressing)
 
 - 5: An Introduction to the ARMv8 Instruction Sets - 5.1 The ARMv8 instruction sets - 5.1.2 Addressing - Increased PC-relative offset addressing

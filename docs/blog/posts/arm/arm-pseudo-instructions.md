@@ -19,8 +19,8 @@ Instructions and pseudo-instructions make up the code a processor uses to perfor
 
 ## Pseudo-instructions
 
-[ARM Compiler toolchain Assembler Reference](https://developer.arm.com/documentation/dui0489/latest) | ARM and Thumb Instructions - Pseudo-instructions
-[ARM Compiler armasm Reference Guide](https://developer.arm.com/documentation/dui0802/latest) | 3: A32 and T32 Instructions - 3.16 Pseudo-instructions
+[ARM Compiler toolchain Assembler Reference](https://developer.arm.com/documentation/dui0489/latest/arm-and-thumb-instructions/pseudo-instructions) | ARM and Thumb Instructions - Pseudo-instructions
+[ARM Compiler armasm Reference Guide](https://developer.arm.com/documentation/dui0802/latest/A32-and-T32-Instructions/Pseudo-instructions) | 3: A32 and T32 Instructions - 3.16 Pseudo-instructions
 
 The ARM assembler supports a number of pseudo-instructions that are translated into the appropriate combination of A32 or T32 instructions at assembly time.
 
@@ -35,7 +35,7 @@ MOV32 | Load a register with a 32-bit immediate value or an address <br/>(unlimi
 NEG   | Negate a value in a register.
 UND   | Generate an architecturally undefined instruction.
 
-[Arm A-profile A64 ISA - Shared Pseudocode](https://developer.arm.com/documentation/ddi0602/2024-03/Shared-Pseudocode)
+[Arm A-profile A64 ISA - Shared Pseudocode](https://developer.arm.com/documentation/ddi0602/latest/Shared-Pseudocode)
 
 ## gas ARM Opcodes
 

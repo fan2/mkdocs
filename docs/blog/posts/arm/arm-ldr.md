@@ -36,9 +36,9 @@ All *computational* instructions assume that the registers already contain the d
 
 ### A32
 
-[Arm A-profile A32/T32 Instruction Set Architecture](https://developer.arm.com/documentation/ddi0597/2024-03/Base-Instructions/LDR--literal---Load-Register--literal--?lang=en) | LDR (literal)
-[ARM Compiler armasm Reference Guide](https://developer.arm.com/documentation/dui0802/latest) ｜ 3: A32 and T32 Instructions - 3.47 LDR (PC-relative)
-[Arm Compiler armasm User Guide](https://developer.arm.com/documentation/dui0801/latest) | 14. A32 and T32 Instructions - 14.51 LDR (PC-relative)
+[Arm A-profile A32/T32 Instruction Set Architecture](https://developer.arm.com/documentation/ddi0597/latest/Base-Instructions/LDR--literal---Load-Register--literal--?lang=en) | LDR (literal)
+[ARM Compiler armasm Reference Guide](https://developer.arm.com/documentation/dui0802/latest/A32-and-T32-Instructions/LDR--PC-relative-) ｜ 3: A32 and T32 Instructions - 3.47 LDR (PC-relative)
+[Arm Compiler armasm User Guide](https://developer.arm.com/documentation/dui0801/latest/A32-and-T32-Instructions/LDR--PC-relative---A32-) | 14. A32 and T32 Instructions - 14.51 LDR (PC-relative)
 
 Load register. The address is an oﬀset from the PC.
 
@@ -100,9 +100,9 @@ A32 LDRD                                    | ±255
 
 ### A64
 
-[Arm A-profile A64 Instruction Set Architecture](https://developer.arm.com/documentation/ddi0602/2024-03/Base-Instructions/LDR--literal---Load-Register--literal--?lang=en) | LDR (literal)
-[ARM Compiler armasm Reference Guide](https://developer.arm.com/documentation/dui0802/latest) ｜ 6: A64 Data Transfer Instructions - 6.18 LDR (literal)
-[Arm Compiler armasm User Guide](https://developer.arm.com/documentation/dui0801/latest) | 18. A64 Data Transfer Instructions - 18.32 LDR (literal)
+[Arm A-profile A64 Instruction Set Architecture](https://developer.arm.com/documentation/ddi0602/latest/Base-Instructions/LDR--literal---Load-Register--literal--?lang=en) | LDR (literal)
+[ARM Compiler armasm Reference Guide](https://developer.arm.com/documentation/dui0802/latest/A64-Data-Transfer-Instructions/LDR--literal-) ｜ 6: A64 Data Transfer Instructions - 6.18 LDR (literal)
+[Arm Compiler armasm User Guide](https://developer.arm.com/documentation/dui0801/latest/A64-Data-Transfer-Instructions/LDR--literal-) | 18. A64 Data Transfer Instructions - 18.32 LDR (literal)
 
 Load register (PC-relative literal).
 
@@ -158,8 +158,8 @@ ldr x3, offset          // ldr x3, [pc+0x20] => x3 = *(pc+0x20)
 
 ### A32
 
-[ARM Compiler armasm Reference Guide](https://developer.arm.com/documentation/dui0802/latest) | 3: A32 and T32 Instructions - 3.49 LDR pseudo-instruction
-[Arm Compiler armasm User Guide](https://developer.arm.com/documentation/dui0801/latest) | 14. A32 and T32 Instructions - 14.54 LDR pseudo-instruction
+[ARM Compiler armasm Reference Guide](https://developer.arm.com/documentation/dui0802/latest/A64-Data-Transfer-Instructions/LDR-pseudo-instruction) | 3: A32 and T32 Instructions - 3.49 LDR pseudo-instruction
+[Arm Compiler armasm User Guide](https://developer.arm.com/documentation/dui0801/latest/A64-Data-Transfer-Instructions/LDR-pseudo-instruction) | 14. A32 and T32 Instructions - 14.54 LDR pseudo-instruction
 
 Load a register with either a 32-bit immediate value or an address.
 
@@ -214,8 +214,8 @@ If the label referenced is in T32 code, the `LDR` pseudo-instruction sets the T3
 
 ### A64
 
-[ARM Compiler armasm Reference Guide](https://developer.arm.com/documentation/dui0802/latest) ｜ 6: A64 Data Transfer Instructions - 6.19 LDR pseudo-instruction
-[Arm Compiler armasm User Guide](https://developer.arm.com/documentation/dui0801/latest) | 18. A64 Data Transfer Instructions - 18.33 LDR pseudo-instruction
+[ARM Compiler armasm Reference Guide](https://developer.arm.com/documentation/dui0802/latest/A64-Data-Transfer-Instructions/LDR-pseudo-instruction) ｜ 6: A64 Data Transfer Instructions - 6.19 LDR pseudo-instruction
+[Arm Compiler armasm User Guide](https://developer.arm.com/documentation/dui0801/latest/A64-Data-Transfer-Instructions/LDR-pseudo-instruction) | 18. A64 Data Transfer Instructions - 18.33 LDR pseudo-instruction
 
 Load a register with either a 32-bit or 64-bit immediate value or an address.
 
@@ -302,7 +302,7 @@ The ==oﬀset== from the PC to the value in the literal pool must be less than �
 
 ## references
 
-[ARM Compiler armasm Reference Guide](https://developer.arm.com/documentation/dui0802/latest)
+[ARM Compiler armasm Reference Guide](https://developer.arm.com/documentation/dui0802/latest/A32-and-T32-Instructions/Memory-access-instructions)
 
 - 3: A32 and T32 Instructions - 3.3 Memory access instructions
 
@@ -311,6 +311,6 @@ The ==oﬀset== from the PC to the value in the literal pool must be less than �
 - 7\. Writing A32/T32 Assembly Language - 7.8 Literal pools
 - 13.5 PC-relative expressions - 13. Symbols, Literals, Expressions, and Operators
 
-[ARM Cortex-A Series Programmer's Guide for ARMv8-A](https://developer.arm.com/documentation/den0024/latest)
+[ARM Cortex-A Series Programmer's Guide for ARMv8-A](https://developer.arm.com/documentation/den0024/latest/An-Introduction-to-the-ARMv8-Instruction-Sets/The-ARMv8-instruction-sets/Addressing)
 
 - 5: An Introduction to the ARMv8 Instruction Sets - 5.1 The ARMv8 instruction sets - 5.1.2 Addressing - Increased PC-relative offset addressing

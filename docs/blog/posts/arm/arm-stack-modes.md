@@ -57,18 +57,18 @@ Table 2. Suffixes for load and store multiple instructions
 
 Full Ascending:
 
-- [STMIB, STMFA: Store Multiple Increment Before (Full Ascending)](https://developer.arm.com/documentation/ddi0597/2024-03/Base-Instructions/STMIB--STMFA--Store-Multiple-Increment-Before--Full-Ascending--)
-- [LDMDA, LDMFA: Load Multiple Decrement After (Full Ascending)](https://developer.arm.com/documentation/ddi0597/2024-03/Base-Instructions/LDMDA--LDMFA--Load-Multiple-Decrement-After--Full-Ascending--)
+- [STMIB, STMFA: Store Multiple Increment Before (Full Ascending)](https://developer.arm.com/documentation/ddi0597/latest/Base-Instructions/STMIB--STMFA--Store-Multiple-Increment-Before--Full-Ascending--)
+- [LDMDA, LDMFA: Load Multiple Decrement After (Full Ascending)](https://developer.arm.com/documentation/ddi0597/latest/Base-Instructions/LDMDA--LDMFA--Load-Multiple-Decrement-After--Full-Ascending--)
 
 Empty Descending:
 
-- [STMDA, STMED: Store Multiple Decrement After (Empty Descending)](https://developer.arm.com/documentation/ddi0597/2024-03/Base-Instructions/STMDA--STMED--Store-Multiple-Decrement-After--Empty-Descending--)
-- [LDMIB, LDMED: Load Multiple Increment Before (Empty Descending)](https://developer.arm.com/documentation/ddi0597/2024-03/Base-Instructions/LDMIB--LDMED--Load-Multiple-Increment-Before--Empty-Descending--)
+- [STMDA, STMED: Store Multiple Decrement After (Empty Descending)](https://developer.arm.com/documentation/ddi0597/latest/Base-Instructions/STMDA--STMED--Store-Multiple-Decrement-After--Empty-Descending--)
+- [LDMIB, LDMED: Load Multiple Increment Before (Empty Descending)](https://developer.arm.com/documentation/ddi0597/latest/Base-Instructions/LDMIB--LDMED--Load-Multiple-Increment-Before--Empty-Descending--)
 
 Empty Ascending:
 
-- [STM, STMIA, STMEA: Store Multiple (Increment After, Empty Ascending)](https://developer.arm.com/documentation/ddi0597/2024-03/Base-Instructions/STM--STMIA--STMEA--Store-Multiple--Increment-After--Empty-Ascending--)
-- [LDMDB, LDMEA: Load Multiple Decrement Before (Empty Ascending)](https://developer.arm.com/documentation/ddi0597/2024-03/Base-Instructions/LDMDB--LDMEA--Load-Multiple-Decrement-Before--Empty-Ascending--)
+- [STM, STMIA, STMEA: Store Multiple (Increment After, Empty Ascending)](https://developer.arm.com/documentation/ddi0597/latest/Base-Instructions/STM--STMIA--STMEA--Store-Multiple--Increment-After--Empty-Ascending--)
+- [LDMDB, LDMEA: Load Multiple Decrement Before (Empty Ascending)](https://developer.arm.com/documentation/ddi0597/latest/Base-Instructions/LDMDB--LDMEA--Load-Multiple-Decrement-Before--Empty-Ascending--)
 
 ### default(FD)
 
@@ -76,11 +76,11 @@ The Procedure Call Standard for the Arm Architecture (AAPCS), and `armclang` alw
 
 The `PUSH` and `POP` instructions assume a *`full descending`* stack. They are the preferred synonyms for `STMDB` and `LDM` with writeback.
 
-**Push**: decrement `sp` then put item on stack – pre-decrement, e.g. *stmfd*. [STMDB, STMFD: Store Multiple Decrement Before (Full Descending)](https://developer.arm.com/documentation/ddi0597/2024-03/Base-Instructions/STMDB--STMFD--Store-Multiple-Decrement-Before--Full-Descending--).
+**Push**: decrement `sp` then put item on stack – pre-decrement, e.g. *stmfd*. [STMDB, STMFD: Store Multiple Decrement Before (Full Descending)](https://developer.arm.com/documentation/ddi0597/latest/Base-Instructions/STMDB--STMFD--Store-Multiple-Decrement-Before--Full-Descending--).
 
 Store Multiple Decrement Before (Full Descending) stores multiple registers to consecutive memory locations using an address from a base register. The consecutive memory locations end just below this address, and the address of the first of those locations can optionally be written back to the base register.
 
-**Pop**: copy item from stack then increment `sp` – post-increment, e.g. *ldmfd*. [LDM, LDMIA, LDMFD: Load Multiple (Increment After, Full Descending)](https://developer.arm.com/documentation/ddi0597/2024-03/Base-Instructions/LDM--LDMIA--LDMFD--Load-Multiple--Increment-After--Full-Descending--).
+**Pop**: copy item from stack then increment `sp` – post-increment, e.g. *ldmfd*. [LDM, LDMIA, LDMFD: Load Multiple (Increment After, Full Descending)](https://developer.arm.com/documentation/ddi0597/latest/Base-Instructions/LDM--LDMIA--LDMFD--Load-Multiple--Increment-After--Full-Descending--).
 
 Load Multiple (Increment After, Full Descending) loads multiple registers from consecutive memory locations using an address from a base register. The consecutive memory locations start at this address, and the address just above the highest of those locations can optionally be written back to the base register.
 
@@ -93,11 +93,11 @@ For example:
 
 ### PUSH/POP
 
-[PUSH (single register): an alias of STR (immediate)](https://developer.arm.com/documentation/ddi0597/2024-03/Base-Instructions/PUSH--single-register---Push-Single-Register-to-Stack--an-alias-of-STR--immediate--)
+[PUSH (single register): an alias of STR (immediate)](https://developer.arm.com/documentation/ddi0597/latest/Base-Instructions/PUSH--single-register---Push-Single-Register-to-Stack--an-alias-of-STR--immediate--)
 
 It's equivalent to `STR{<c>}{<q>} <Rt>, [SP, #-4]!`and is always the preferred disassembly.
 
-[PUSH: Push Multiple Registers to Stack](https://developer.arm.com/documentation/ddi0597/2024-03/Base-Instructions/PUSH--Push-Multiple-Registers-to-Stack-) - [PUSH (multiple registers): an alias of STMDB, STMFD](https://developer.arm.com/documentation/ddi0597/2024-03/Base-Instructions/PUSH--multiple-registers---Push-multiple-registers-to-Stack--an-alias-of-STMDB--STMFD-)
+[PUSH: Push Multiple Registers to Stack](https://developer.arm.com/documentation/ddi0597/latest/Base-Instructions/PUSH--Push-Multiple-Registers-to-Stack-) - [PUSH (multiple registers): an alias of STMDB, STMFD](https://developer.arm.com/documentation/ddi0597/latest/Base-Instructions/PUSH--multiple-registers---Push-multiple-registers-to-Stack--an-alias-of-STMDB--STMFD-)
 
 Push Multiple Registers to Stack stores multiple general-purpose registers to the stack, storing to consecutive memory locations ending just below the address in SP, and updates SP to point to the start of the stored data.
 
@@ -105,11 +105,11 @@ The lowest-numbered register is stored to the lowest memory address, through to 
 
 ---
 
-[POP (single register): an alias of LDR (immediate)](https://developer.arm.com/documentation/ddi0597/2024-03/Base-Instructions/POP--single-register---Pop-Single-Register-from-Stack--an-alias-of-LDR--immediate--)
+[POP (single register): an alias of LDR (immediate)](https://developer.arm.com/documentation/ddi0597/latest/Base-Instructions/POP--single-register---Pop-Single-Register-from-Stack--an-alias-of-LDR--immediate--)
 
 It's equivalent to `LDR{<c>}{<q>} <Rt>, [SP], #4` and is always the preferred disassembly.
 
-[POP: Pop Multiple Registers from Stack](https://developer.arm.com/documentation/ddi0597/2024-03/Base-Instructions/POP--Pop-Multiple-Registers-from-Stack-) - [POP (multiple registers): an alias of LDM, LDMIA, LDMFD](https://developer.arm.com/documentation/ddi0597/2024-03/Base-Instructions/POP--multiple-registers---Pop-Multiple-Registers-from-Stack--an-alias-of-LDM--LDMIA--LDMFD-)
+[POP: Pop Multiple Registers from Stack](https://developer.arm.com/documentation/ddi0597/latest/Base-Instructions/POP--Pop-Multiple-Registers-from-Stack-) - [POP (multiple registers): an alias of LDM, LDMIA, LDMFD](https://developer.arm.com/documentation/ddi0597/latest/Base-Instructions/POP--multiple-registers---Pop-Multiple-Registers-from-Stack--an-alias-of-LDM--LDMIA--LDMFD-)
 
 Pop Multiple Registers from Stack loads multiple general-purpose registers from the stack, loading from consecutive memory locations starting at the address in SP, and updates SP to point just above the loaded data.
 

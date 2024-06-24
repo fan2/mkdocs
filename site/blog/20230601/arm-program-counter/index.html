@@ -1432,7 +1432,7 @@
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7h1.5Z"/></svg>
                           <span class="md-ellipsis">
                             
-                              需要 6 分钟阅读时间
+                              需要 7 分钟阅读时间
                             
                           </span>
                         </div>
@@ -1488,10 +1488,12 @@
 <!-- more -->
 
 <h2 id="pc_in_aarch32_state">PC in AArch32 state<a class="headerlink" href="#pc_in_aarch32_state" title="Permanent link">#</a></h2>
-<p><a href="https://developer.arm.com/documentation/dui0801/latest">Arm Compiler armasm User Guide</a> | 4.9 Program Counter in AArch32 state</p>
+<p><a href="https://developer.arm.com/documentation/dui0801/latest/Overview-of-AArch32-state/Program-Counter-in-AArch32-state">Arm Compiler armasm User Guide</a> | 4.9 Program Counter in AArch32 state</p>
 <p>You can use the Program Counter explicitly, for example in some T32 data processing instructions, and implicitly, for example in branch instructions.</p>
-<p>The Program Counter (<code>PC</code>) is accessed as PC (or R15). It is incremented by the size of the instruction executed, which is always <em>four</em> bytes in A32 state. Branch instructions load the destination address into the PC. You can also load the PC directly using data operation instructions. For example, to branch to the address in a general purpose register, use:</p>
-<div class="language-asm highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">MOV</span><span class="w"> </span><span class="no">PC</span><span class="p">,</span><span class="no">R0</span>
+<p>The Program Counter is accessed as <code>PC</code> (or <code>R15</code>). It is incremented by the size of the instruction executed, which is always <em>four</em> bytes in A32 state. Branch instructions load the destination address into the PC. You can also load the PC directly using data operation instructions. For example, to branch to the address in a general purpose register, use:</p>
+<div class="language-asm highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">ldr</span><span class="w"> </span><span class="no">pc</span><span class="p">,</span><span class="w"> </span><span class="err">=</span><span class="no">on_sdram</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nf">mov</span><span class="w"> </span><span class="no">pc</span><span class="p">,</span><span class="w"> </span><span class="mi">#0</span><span class="no">x40000000</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="nf">mov</span><span class="w"> </span><span class="no">pc</span><span class="p">,</span><span class="w"> </span><span class="no">r0</span>
 </span></code></pre></div>
 <p>During execution, the <code>PC</code> does not contain the address of the currently executing instruction. The address of the currently executing instruction is typically <mark>PC-8</mark> for A32, or <mark>PC-4</mark> for T32.</p>
 <div class="admonition note">
@@ -1503,6 +1505,10 @@
 <p>The AArch32 Execution State - AArch32 Registers</p>
 <p>AArch32’s program counter (<code>PC</code>) is a 32-bit integer register that stores the location in memory of the next instruction the processor should execute. For historical reasons, the PC in AArch32 reads the address of the current instruction plus <mark>8</mark> when executing an A32 instruction and plus <mark>4</mark> when executing a T32 instruction. In AArch32, many data-processing instructions can write to the PC and even redirect the program flow when overwriting the PC with an address the program can branch to. Using the PC as the destination register of an instruction has the effect of converting that instruction into a branch-type instruction. Depending on the instruction set state, values written to the PC will be aligned accordingly because the PC ignores the least significant bit and treats it as 0.</p>
 <h3 id="pc__current_">PC != current !?<a class="headerlink" href="#pc__current_" title="Permanent link">#</a></h3>
+<p><a href="https://stackoverflow.com/questions/24115899/arm-ldr-instruction-on-pc-register">assembly - ARM LDR instruction on PC register</a></p>
+<blockquote>
+<p>What does <code>LDR PC, [PC, -4]</code> actually mean?</p>
+</blockquote>
 <p><a href="https://developer.arm.com/documentation/ddi0210/c/Introduction/About-the-ARM7TDMI-core/The-instruction-pipeline">ARM7TDMI Technical Reference Manual r4p1</a></p>
 <p>Introduction - About the ARM7TDMI core - The instruction pipeline</p>
 <p>The ARM7TDMI core uses a pipeline to increase the speed of the flow of instructions to the processor. This enables several operations to take place simultaneously, and the processing and memory systems to operate continuously.</p>
@@ -1532,11 +1538,11 @@
 <p>The program counter, <code>pc</code>, always contains the address of the <mark>next</mark> instruction that <em>will</em> be executed. The processor increments this register by <em>four</em>, automatically, after each instruction is <em>fetched</em> from memory. By moving an address into this register, the programmer can cause the processor to <em>fetch</em> the next instruction from the new address. This gives the programmer the ability to jump to any address and begin executing code there. Only a small number of instructions can access the pc directly. For example instructions that create a PC-relative address, such as <code>adr</code>, and instructions which load a register, such as <code>ldr</code>, are able to access the program counter directly.</p>
 <p><a href="https://developer.arm.com/documentation/den0024/latest">ARM Cortex-A Series Programmer's Guide for ARMv8-A</a> | 4: ARMv8 Registers</p>
 <p>4.1 AArch64 special registers - 4.1.3 Program Counter</p>
-<p>One feature of the original ARMv7 instruction set was the use of R15, the Program Counter (<code>PC</code>) as a general-purpose register. The PC enabled some clever programming tricks, but it introduced complications for compilers and the design of complex pipelines. Removing direct access to the <code>PC</code> in ARMv8 makes return prediction easier and simplifies the ABI specification.</p>
-<p>The PC is <em>never</em> accessible as a named register. Its use is implicit in certain instructions such as PC-relative load and address generation. The PC cannot be specified as the destination of a data processing instruction or load instruction.</p>
+<p>One feature of the original ARMv7 instruction set was the use of <code>R15</code>, the Program Counter (<code>PC</code>) as a general-purpose register. The <code>PC</code> enabled some clever programming tricks, but it introduced complications for compilers and the design of complex pipelines. Removing direct access to the <code>PC</code> in ARMv8 makes return prediction easier and simplifies the ABI specification.</p>
+<p>The <code>PC</code> is <em>never</em> accessible as a named register. Its use is implicit in certain instructions such as PC-relative load and address generation. The <code>PC</code> <em>cannot</em> be specified as the destination of a data processing instruction or load instruction.</p>
 <h2 id="pc_accessibility_restrictions">PC accessibility restrictions<a class="headerlink" href="#pc_accessibility_restrictions" title="Permanent link">#</a></h2>
-<p><a href="https://developer.arm.com/documentation/dui0801/latest">Arm Compiler armasm User Guide</a> | 5.7 Program Counter in AArch64 state</p>
-<p>In AArch64 state, the Program Counter (<code>PC</code>) contains the address of the <em>currently</em> executing instruction. It is incremented by the size of the instruction executed, which is always <em>four</em> bytes.</p>
+<p><a href="https://developer.arm.com/documentation/dui0801/latest/Overview-of-AArch64-state/Program-Counter-in-AArch64-state">Arm Compiler armasm User Guide</a> | 5.7 Program Counter in AArch64 state</p>
+<p>In AArch64 state, the Program Counter (<code>PC</code>) contains the address of the <em>currently</em> executing instruction. It is incremented by the size of the instruction executed, which is always <em>four</em> bytes(<code>$l</code> represents opcode length in <a href="../../20231002/radare2-expr/">r2</a>).</p>
 <p>In AArch64 state, the PC is <em>not</em> a general purpose register and you <em>cannot</em> access it explicitly. The following types of instructions read it implicitly:</p>
 <ul>
 <li>Instructions that compute a PC-relative address.</li>
@@ -1563,6 +1569,14 @@
 <p><strong>Chapter 6 Memory Access Instructions</strong></p>
 <p>Addressing Modes and Offset Forms - Literal (PC-Relative) Addressing - Loading an Address into a Register</p>
 <p>Keep in mind that in A64, only PC-relative address generating instructions are permitted to read the PC, such as <code>ADR</code>, <code>ADRP</code>, <code>LDR</code> (literal), <code>LDRW</code> (literal), direct branches that use an immediate offset, and unconditional branch with link instructions.</p>
+<p>Forcing an address directly into the program counter as in AArch32 isn't allowed.</p>
+<div class="language-asm highlight"><span class="filename">A32 valid, A64 disallowed</span><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># LDR pseudo-instruction</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="nf">ldr</span><span class="w"> </span><span class="no">pc</span><span class="p">,</span><span class="w"> </span><span class="err">=</span><span class="no">on_sdram</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="c1"># LDR (register)</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="nf">ldr</span><span class="w"> </span><span class="no">pc</span><span class="p">,</span><span class="w"> </span><span class="no">SVC_Addr</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="nf">ldr</span><span class="w"> </span><span class="no">pc</span><span class="p">,</span><span class="w"> </span><span class="no">FIQ_Addr</span>
+</span></code></pre></div>
 <h2 id="pc-relative_expressions">PC-relative expressions<a class="headerlink" href="#pc-relative_expressions" title="Permanent link">#</a></h2>
 <p><a href="https://developer.arm.com/documentation/dui0801/latest">Arm Compiler armasm User Guide</a> | 13.5 PC-relative expressions</p>
 <p>The assembler supports PC-relative and register-relative expressions.</p>

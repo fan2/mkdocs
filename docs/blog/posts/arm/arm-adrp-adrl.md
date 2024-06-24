@@ -20,9 +20,9 @@ comments: true
 
 ## ADRP (A64)
 
-[Arm A-profile A64 Instruction Set Architecture](https://developer.arm.com/documentation/ddi0602/2024-03/Base-Instructions/ADRP--Form-PC-relative-address-to-4KB-page-?lang=en) | ADRP
-[ARM Compiler armasm Reference Guide](https://developer.arm.com/documentation/dui0802/latest) ｜ 5: A64 General Instructions - 5.13 ADRP
-[Arm Compiler armasm User Guide](https://developer.arm.com/documentation/dui0801/latest) | 17. A64 General Instructions - 17.13 ADRP (A64): Form PC-relative address to 4KB page.
+[Arm A-profile A64 Instruction Set Architecture](https://developer.arm.com/documentation/ddi0602/latest/Base-Instructions/ADRP--Form-PC-relative-address-to-4KB-page-) | ADRP
+[ARM Compiler armasm Reference Guide](https://developer.arm.com/documentation/dui0802/latest/A64-General-Instructions/ADRP) ｜ 5: A64 General Instructions - 5.13 ADRP
+[Arm Compiler armasm User Guide](https://developer.arm.com/documentation/dui0801/latest/A64-General-Instructions/ADRP--A64-) | 17. A64 General Instructions - 17.13 ADRP (A64): Form PC-relative address to 4KB page.
 
 Load register (PC-relative literal).
 
@@ -60,8 +60,8 @@ Load Register (literal) calculates an address from the PC value and an immediate
 
 ### A32
 
-[ARM Compiler armasm Reference Guide](https://developer.arm.com/documentation/dui0802/latest) ｜ 3: A32 and T32 Instructions - 3.21 ADRL pseudo-instruction
-[Arm Compiler armasm User Guide](https://developer.arm.com/documentation/dui0801/latest) | 14. A32 and T32 Instructions - 14.12 ADRL pseudo-instruction
+[ARM Compiler armasm Reference Guide](https://developer.arm.com/documentation/dui0802/latest/A32-and-T32-Instructions/ADRL-pseudo-instruction) ｜ 3: A32 and T32 Instructions - 3.21 ADRL pseudo-instruction
+[Arm Compiler armasm User Guide](https://developer.arm.com/documentation/dui0801/latest/A64-General-Instructions/ADRL-pseudo-instruction--A64-) | 14. A32 and T32 Instructions - 14.12 ADRL pseudo-instruction
 
 Load a PC-relative or register-relative address into a register.
 
@@ -97,8 +97,8 @@ The given range is relative to a point four bytes (in T32 code) or two words (in
 
 ### A64
 
-[ARM Compiler armasm Reference Guide](https://developer.arm.com/documentation/dui0802/latest) ｜ 5: A64 General Instructions - 5.12 ADRL pseudo-instruction
-[Arm Compiler armasm User Guide](https://developer.arm.com/documentation/dui0801/latest) | 17. A64 General Instructions - 17.12 ADRL pseudo-instruction
+[ARM Compiler armasm Reference Guide](https://developer.arm.com/documentation/dui0802/latest/A64-General-Instructions/ADRL-pseudo-instruction) ｜ 5: A64 General Instructions - 5.12 ADRL pseudo-instruction
+[Arm Compiler armasm User Guide](https://developer.arm.com/documentation/dui0801/latest/A64-General-Instructions/ADRL-pseudo-instruction--A64-) | 17. A64 General Instructions - 17.12 ADRL pseudo-instruction
 
 Load a PC-relative address into a register. It is similar to the `ADR` instruction but `ADRL` can load a wider range of addresses than `ADR` because it generates *two* data processing instructions.
 
@@ -125,10 +125,10 @@ ADRL x0, mylabel ; loads address of mylabel into x0
 
 ## references
 
-[ARM Compiler armasm Reference Guide](https://developer.arm.com/documentation/dui0802/latest)
+[ARM Compiler armasm Reference Guide](https://developer.arm.com/documentation/dui0802/latest/A32-and-T32-Instructions/Memory-access-instructions)
 
 - 3: A32 and T32 Instructions - 3.3 Memory access instructions
 
-[ARM Cortex-A Series Programmer's Guide for ARMv8-A](https://developer.arm.com/documentation/den0024/latest)
+[ARM Cortex-A Series Programmer's Guide for ARMv8-A](https://developer.arm.com/documentation/den0024/latest/An-Introduction-to-the-ARMv8-Instruction-Sets/The-ARMv8-instruction-sets/Addressing)
 
 - 5: An Introduction to the ARMv8 Instruction Sets - 5.1 The ARMv8 instruction sets - 5.1.2 Addressing - Increased PC-relative offset addressing

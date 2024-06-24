@@ -16,8 +16,8 @@ Directives are used mainly to deﬁne symbols, allocate storage, and control the
 
 ## armasm Assembler Directives
 
-[ARM Compiler armasm Reference Guide](https://developer.arm.com/documentation/dui0802/latest) | 10: Directives Reference
-[Arm Compiler armasm User Guide](https://developer.arm.com/documentation/dui0801/latest) | 22. Directives Reference
+[ARM Compiler armasm Reference Guide](https://developer.arm.com/documentation/dui0802/latest/Directives-Reference) | 10: Directives Reference
+[Arm Compiler armasm User Guide](https://developer.arm.com/documentation/dui0801/latest/Directives-Reference) | 22. Directives Reference
 
 [ARM Assembly Language: Fundamentals and Techniques, 2nd Edition](https://www.oreilly.com/library/view/arm-assembly-language/9781482229851/) | Chapter 4: Assembler Rules and Directives
 

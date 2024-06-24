@@ -22,14 +22,16 @@ Removing direct access to the `PC` in ARMv8 makes return prediction easier and s
 
 ## PC in AArch32 state
 
-[Arm Compiler armasm User Guide](https://developer.arm.com/documentation/dui0801/latest) | 4.9 Program Counter in AArch32 state
+[Arm Compiler armasm User Guide](https://developer.arm.com/documentation/dui0801/latest/Overview-of-AArch32-state/Program-Counter-in-AArch32-state) | 4.9 Program Counter in AArch32 state
 
 You can use the Program Counter explicitly, for example in some T32 data processing instructions, and implicitly, for example in branch instructions.
 
-The Program Counter (`PC`) is accessed as PC (or R15). It is incremented by the size of the instruction executed, which is always *four* bytes in A32 state. Branch instructions load the destination address into the PC. You can also load the PC directly using data operation instructions. For example, to branch to the address in a general purpose register, use:
+The Program Counter is accessed as `PC` (or `R15`). It is incremented by the size of the instruction executed, which is always *four* bytes in A32 state. Branch instructions load the destination address into the PC. You can also load the PC directly using data operation instructions. For example, to branch to the address in a general purpose register, use:
 
 ```asm
-MOV PC,R0
+ldr pc, =on_sdram
+mov pc, #0x40000000
+mov pc, r0
 ```
 
 During execution, the `PC` does not contain the address of the currently executing instruction. The address of the currently executing instruction is typically ==PC-8== for A32, or ==PC-4== for T32.
@@ -47,6 +49,10 @@ The AArch32 Execution State - AArch32 Registers
 AArch32’s program counter (`PC`) is a 32-bit integer register that stores the location in memory of the next instruction the processor should execute. For historical reasons, the PC in AArch32 reads the address of the current instruction plus ==8== when executing an A32 instruction and plus ==4== when executing a T32 instruction. In AArch32, many data-processing instructions can write to the PC and even redirect the program flow when overwriting the PC with an address the program can branch to. Using the PC as the destination register of an instruction has the effect of converting that instruction into a branch-type instruction. Depending on the instruction set state, values written to the PC will be aligned accordingly because the PC ignores the least significant bit and treats it as 0.
 
 ### PC != current !?
+
+[assembly - ARM LDR instruction on PC register](https://stackoverflow.com/questions/24115899/arm-ldr-instruction-on-pc-register)
+
+> What does `LDR PC, [PC, -4]` actually mean?
 
 [ARM7TDMI Technical Reference Manual r4p1](https://developer.arm.com/documentation/ddi0210/c/Introduction/About-the-ARM7TDMI-core/The-instruction-pipeline)
 
@@ -94,15 +100,15 @@ The program counter, `pc`, always contains the address of the ==next== instructi
 
 4.1 AArch64 special registers - 4.1.3 Program Counter
 
-One feature of the original ARMv7 instruction set was the use of R15, the Program Counter (`PC`) as a general-purpose register. The PC enabled some clever programming tricks, but it introduced complications for compilers and the design of complex pipelines. Removing direct access to the `PC` in ARMv8 makes return prediction easier and simplifies the ABI specification.
+One feature of the original ARMv7 instruction set was the use of `R15`, the Program Counter (`PC`) as a general-purpose register. The `PC` enabled some clever programming tricks, but it introduced complications for compilers and the design of complex pipelines. Removing direct access to the `PC` in ARMv8 makes return prediction easier and simplifies the ABI specification.
 
-The PC is *never* accessible as a named register. Its use is implicit in certain instructions such as PC-relative load and address generation. The PC cannot be specified as the destination of a data processing instruction or load instruction.
+The `PC` is *never* accessible as a named register. Its use is implicit in certain instructions such as PC-relative load and address generation. The `PC` *cannot* be specified as the destination of a data processing instruction or load instruction.
 
 ## PC accessibility restrictions
 
-[Arm Compiler armasm User Guide](https://developer.arm.com/documentation/dui0801/latest) | 5.7 Program Counter in AArch64 state
+[Arm Compiler armasm User Guide](https://developer.arm.com/documentation/dui0801/latest/Overview-of-AArch64-state/Program-Counter-in-AArch64-state) | 5.7 Program Counter in AArch64 state
 
-In AArch64 state, the Program Counter (`PC`) contains the address of the *currently* executing instruction. It is incremented by the size of the instruction executed, which is always *four* bytes.
+In AArch64 state, the Program Counter (`PC`) contains the address of the *currently* executing instruction. It is incremented by the size of the instruction executed, which is always *four* bytes(`$l` represents opcode length in [r2](../toolchain/radare2-expr.md)).
 
 In AArch64 state, the PC is *not* a general purpose register and you *cannot* access it explicitly. The following types of instructions read it implicitly:
 
@@ -138,6 +144,17 @@ The only ordinary instructions that can read the `PC` are the following:
 Addressing Modes and Offset Forms - Literal (PC-Relative) Addressing - Loading an Address into a Register
 
 Keep in mind that in A64, only PC-relative address generating instructions are permitted to read the PC, such as `ADR`, `ADRP`, `LDR` (literal), `LDRW` (literal), direct branches that use an immediate offset, and unconditional branch with link instructions.
+
+Forcing an address directly into the program counter as in AArch32 isn't allowed.
+
+```asm title="A32 valid, A64 disallowed"
+# LDR pseudo-instruction
+ldr pc, =on_sdram
+
+# LDR (register)
+ldr pc, SVC_Addr
+ldr pc, FIQ_Addr
+```
 
 ## PC-relative expressions
 

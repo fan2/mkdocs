@@ -84,16 +84,16 @@ In each case, `Rn` is the base register and *offset* can be:
 
 ### LDR/STR
 
-[LDR (literal)](https://developer.arm.com/documentation/ddi0602/2024-03/Base-Instructions/LDR--literal---Load-Register--literal--): Load Register (literal).
-[LDR (register)](https://developer.arm.com/documentation/ddi0602/2024-03/Base-Instructions/LDR--register---Load-Register--register--): Load Register (register).
-[LDR (immediate)](https://developer.arm.com/documentation/ddi0602/2024-03/Base-Instructions/LDR--immediate---Load-Register--immediate--): Load Register (immediate).
+[LDR (literal)](https://developer.arm.com/documentation/ddi0602/latest/Base-Instructions/LDR--literal---Load-Register--literal--): Load Register (literal).
+[LDR (register)](https://developer.arm.com/documentation/ddi0602/latest/Base-Instructions/LDR--register---Load-Register--register--): Load Register (register).
+[LDR (immediate)](https://developer.arm.com/documentation/ddi0602/latest/Base-Instructions/LDR--immediate---Load-Register--immediate--): Load Register (immediate).
 
 Load Register (immediate) loads a word or doubleword from memory and writes it to a register. The address that is used for the load is **calculated** from a *base* register and an immediate *offset*. The Unsigned offset variant **scales** the immediate offset value by the size of the value accessed *before* adding it to the base register value.
 
 It has encodings from 3 classes: *Post-index*, *Pre-index* and *Unsigned offset*.
 
-[STR (register)](https://developer.arm.com/documentation/ddi0602/2024-03/Base-Instructions/STR--register---Store-Register--register--): Store Register (register).
-[STR (immediate)](https://developer.arm.com/documentation/ddi0602/2024-03/Base-Instructions/STR--immediate---Store-Register--immediate--): Store Register (immediate).
+[STR (register)](https://developer.arm.com/documentation/ddi0602/latest/Base-Instructions/STR--register---Store-Register--register--): Store Register (register).
+[STR (immediate)](https://developer.arm.com/documentation/ddi0602/latest/Base-Instructions/STR--immediate---Store-Register--immediate--): Store Register (immediate).
 
 Store Register (immediate) stores a word or a doubleword from a register to memory. The address that is used for the store is **calculated** from a *base* register and an immediate *offset*.
 
@@ -101,13 +101,13 @@ It has encodings from 3 classes: *Post-index*, *Pre-index* and *Unsigned offset*
 
 ### STP/LDP
 
-[STP](https://developer.arm.com/documentation/ddi0602/2024-03/Base-Instructions/STP--Store-Pair-of-Registers-): Store Pair of Registers.
+[STP](https://developer.arm.com/documentation/ddi0602/latest/Base-Instructions/STP--Store-Pair-of-Registers-): Store Pair of Registers.
 
 Store **Pair** of Registers calculates an address from a base register value and an immediate offset, and stores two 32-bit words or two 64-bit doublewords to the calculated address, from two registers.
 
 It has encodings from 3 classes: *Post-index*, *Pre-index* and *Signed offset*.
 
-[LDP](https://developer.arm.com/documentation/ddi0602/2024-03/Base-Instructions/LDP--Load-Pair-of-Registers-): Load Pair of Registers.
+[LDP](https://developer.arm.com/documentation/ddi0602/latest/Base-Instructions/LDP--Load-Pair-of-Registers-): Load Pair of Registers.
 
 Load **Pair** of Registers calculates an address from a base register value and an immediate offset, loads two 32-bit words or two 64-bit doublewords from memory, and writes them to two registers.
 
