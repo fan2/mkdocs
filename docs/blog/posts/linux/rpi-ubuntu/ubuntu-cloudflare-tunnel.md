@@ -60,6 +60,7 @@ aarch64
 $ cat /etc/issue
 Ubuntu 22.04.4 LTS \n \l
 
+# cat /etc/os-release
 $ lsb_release -a
 No LSB modules are available.
 Distributor ID:	Ubuntu

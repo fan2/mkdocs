@@ -37,6 +37,7 @@ rpi4b 的 CPU 和 OS 信息如下：
     pifan@rpi4b-ubuntu $ cat /etc/issue
     Ubuntu 22.04.4 LTS \n \l
 
+    # cat /etc/os-release
     pifan@rpi4b-ubuntu $ lsb_release -a
     No LSB modules are available.
     Distributor ID:	Ubuntu
