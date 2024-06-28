@@ -137,11 +137,17 @@ Table 4.1. Special registers in AArch64
 
 ## armasm guide - Registers in AArch64 state
 
-[Arm Compiler armasm User Guide](https://developer.arm.com/documentation/dui0801/latest) | 5. Overview of AArch64 state
+[Arm Compiler armasm User Guide](https://developer.arm.com/documentation/dui0801/latest)
+
+5\. Overview of AArch64 state
 
 - 5.1 Registers in AArch64 state
 - 5.3 Link registers
 - 5.4 Stack Pointer register
+
+7\. Writing A32/T32 Assembly Language
+
+- 7.3 Register usage in subroutine calls
 
 Arm® processors provide general-purpose and special-purpose registers. Some additional registers are available in privileged execution modes.
 
@@ -215,6 +221,12 @@ The argument registers, `x0`-`x7`, are considered to be ***volatile***, because 
 Registers `x8`-`x17` are used for holding local *variables* in a subroutine. These registers are also considered to be ***volatile***. Some of these registers are used for special purposes by the operating system and/or compiler. From the perspective of the programmer who is writing a user-level program, the special purposes are not important.
 
 Registers `x19`-`x28` can also be used for holding local variables. However, before using them, the subroutine must **save** their contents (usually on the stack) and their contents must be **restored** before the subroutine exits. These registers are considered ***non-volatile*** because their contents will not be changed by a subroutine call. More precisely, the subroutine may use them, but it will restore their contents before it returns.
+
+DESCRIPTION                   | REGISTERS (A32/T32)    | REGISTERS (A64)
+------------------------------|------------------------|----------------
+Volatile integer registers    | r0-r3, IP              | x0-x17
+Nonvolatile integer registers | r4-r8, r10, FP, SP, LR | x19-×30
+Platform-specific             | r9                     | x18
 
 !!! note "volatile vs. non-volatile in a nutshell"
 

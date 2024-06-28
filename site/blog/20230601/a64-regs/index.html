@@ -1480,7 +1480,7 @@
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7h1.5Z"/></svg>
                           <span class="md-ellipsis">
                             
-                              8 min read
+                              9 min read
                             
                           </span>
                         </div>
@@ -1658,11 +1658,16 @@
 </tbody>
 </table>
 <h2 id="armasm_guide_-_registers_in_aarch64_state">armasm guide - Registers in AArch64 state<a class="headerlink" href="#armasm_guide_-_registers_in_aarch64_state" title="Permanent link">#</a></h2>
-<p><a href="https://developer.arm.com/documentation/dui0801/latest">Arm Compiler armasm User Guide</a> | 5. Overview of AArch64 state</p>
+<p><a href="https://developer.arm.com/documentation/dui0801/latest">Arm Compiler armasm User Guide</a></p>
+<p>5. Overview of AArch64 state</p>
 <ul>
 <li>5.1 Registers in AArch64 state</li>
 <li>5.3 Link registers</li>
 <li>5.4 Stack Pointer register</li>
+</ul>
+<p>7. Writing A32/T32 Assembly Language</p>
+<ul>
+<li>7.3 Register usage in subroutine calls</li>
 </ul>
 <p>Arm® processors provide general-purpose and special-purpose registers. Some additional registers are available in privileged execution modes.</p>
 <p>In AArch64 state, the following registers are available:</p>
@@ -1745,6 +1750,32 @@ The <code>PSTATE</code> register contains bits that indicate the status of the c
 <p>The argument registers, <code>x0</code>-<code>x7</code>, are considered to be <strong><em>volatile</em></strong>, because their contents can change whenever a subroutine is called. If the contents are needed after the subroutine call, then they must be saved either to a <em>non-volatile</em> register or to the stack before the subroutine is called.</p>
 <p>Registers <code>x8</code>-<code>x17</code> are used for holding local <em>variables</em> in a subroutine. These registers are also considered to be <strong><em>volatile</em></strong>. Some of these registers are used for special purposes by the operating system and/or compiler. From the perspective of the programmer who is writing a user-level program, the special purposes are not important.</p>
 <p>Registers <code>x19</code>-<code>x28</code> can also be used for holding local variables. However, before using them, the subroutine must <strong>save</strong> their contents (usually on the stack) and their contents must be <strong>restored</strong> before the subroutine exits. These registers are considered <strong><em>non-volatile</em></strong> because their contents will not be changed by a subroutine call. More precisely, the subroutine may use them, but it will restore their contents before it returns.</p>
+<table>
+<thead>
+<tr>
+<th>DESCRIPTION</th>
+<th>REGISTERS (A32/T32)</th>
+<th>REGISTERS (A64)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Volatile integer registers</td>
+<td>r0-r3, IP</td>
+<td>x0-x17</td>
+</tr>
+<tr>
+<td>Nonvolatile integer registers</td>
+<td>r4-r8, r10, FP, SP, LR</td>
+<td>x19-×30</td>
+</tr>
+<tr>
+<td>Platform-specific</td>
+<td>r9</td>
+<td>x18</td>
+</tr>
+</tbody>
+</table>
 <div class="admonition note">
 <p class="admonition-title">volatile vs. non-volatile in a nutshell</p>
 <p>Registers which can be used freely are referred to as <strong><em>volatile</em></strong>, and registers which must be preserved or restored before returning are referred to as <strong><em>non-volatile</em></strong>.</p>

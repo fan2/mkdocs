@@ -133,7 +133,7 @@ UINT{==N==}_MAX | 2^N-1
 
 了解 C 语言的所有这些最重要的整数类型之后，下一个问题就是搞清楚编译器在怎样的情况下会把一个变量或者常数看作什么样的整数类型。
 
-## single char constant
+## integral promotion
 
 在 C 语言刚刚被设计出来的时候，一共只有两种整数类型—— `char` 和 `int`，在实际的运算当中，char 总是先被提升为 int。
 
@@ -163,6 +163,43 @@ sizeof('A') = 4
 ```
 
 显然，'A' 要占用4个字节，在32位平台上这恰好就是一个 int 的长度。综合上面所说，在 C 语言的早期，要确定一个表达式里的整型变量或者常数的具体类型并不复杂，原本就只有两种整数类型，在运算和传递参数时 char 又总是先被提升为 int，加上整型常数属于 int 类型、单字节字符常量也属于 int 类型——一切都非常清楚。
+
+再来看下面这个例子：
+
+```c title="integral_promotion.c"
+#include <stdio.h>
+
+int main(int argc, char* argv[]) {
+    char a;
+    unsigned int b;
+    unsigned long c;
+
+    a = 0x88;
+    b = ~a;
+    c = ~a;
+
+    printf("a=%#x, ~a=%#x, b=%#x, c=%#lx\n", a, ~a, b, c);
+
+    unsigned char d = 0xa5;
+    unsigned char e = ~d>>4 + 1;
+
+    printf("e=%d\n", e);
+
+    return 0;
+}
+```
+
+编译运行输出结果如下：
+
+```bash
+$ cc integral_promotion.c -o integral_promotion && ./integral_promotion
+a=0x88, ~a=0xffffff77, b=0xffffff77, c=0xffffffffffffff77
+e=250
+```
+
+1. 根据整形提升的规则，表达式 `～a` 会转化为 int 类型，符号扩展后的值为 0xffffff77。
+2. `b=~a`, `~a` 先提升为 int 值 0xffffff77，再提升为 unsigned int 值，十六进制输出不变。c 同理输出 0xffffffffffffff77。
+3. `e = ~d>>4 + 1`，`d` 被提升为 int 类型，取反得到 0xffffff5a。加法的优先级高于右移，0xffffff5a>>5=0xfffffffa（高位符号位扩展填充1），最终 b 的值为 0xfa=250。
 
 ## char: signed or unsigned?
 
