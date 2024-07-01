@@ -16,7 +16,7 @@ comments: true
 
 <!-- more -->
 
-[GNU Binary Utilities](https://en.wikipedia.org/wiki/GNU_Binary_Utilities) - [elfutils](https://sourceware.org/elfutils/)
+[GNU Binary Utilities](https://en.wikipedia.org/wiki/GNU_Binary_Utilities) - [elfutils](https://sourceware.org/elfutils/), [pyelftools](https://github.com/eliben/pyelftools)
 [GNU Hurd](https://www.gnu.org/savannah-checkouts/gnu/hurd/binutils.html) / [GNU Binutils](https://www.gnu.org/software/binutils/) - @[sourceware](https://sourceware.org/binutils/) - [Documentation](https://sourceware.org/binutils/docs/)
 
 - [readelf](https://man7.org/linux/man-pages/man1/readelf.1.html) - display information about ELF files

@@ -207,9 +207,25 @@ A platform shall mandate the minimum level of conformance with respect to the ma
 
 ## stack equiv
 
+### Functions and the Stack
+
+[Programming with 64-Bit ARM Assembly Language](https://www.amazon.com/Programming-64-Bit-ARM-Assembly-Language/dp/1484258800/) | Chapter 6: Functions and the Stack
+
+In this chapter, we will examine how to organize our code into small independent units called **`functions`**. This allows us to build *reusable* components, which we can call easily form anywhere we wish by setting up parameters and calling them.
+
+Typically, in software development, we start with low-level components. Then we build on these to create higher- and higher-level modules. So far, we know how to loop, perform conditional logic, and perform some arithmetic. Now, we examine how to compartmentalize code into building blocks.
+
+We introduce the **`stack`**, a computer science data structure for storing data. If we’re going to build useful *reusable* functions, we need a good way to manage register usage, so that all these functions don’t *clobber* each other. In Chapter 5, “Thanks for the Memories,” we studied how to store data in a data segment in main memory. The problem with this is that this memory exists for the duration that the program runs. With small functions, like converting to upper-case, they run quickly; thus they might need a few memory locations while they run, but when they’re done, they don’t need this memory anymore. Stacks provide us a tool to manage register usage across function calls and a tool to provide memory to functions for the duration of their invocation.
+
+We introduce several low-level concepts first, and then we put them all together to effectively create and use functions. First up is the abstract data type called a **`stack`** that is a convenient mechanism to store data for the duration of a function call.
+
+Stacks work great for saving and restoring registers, but to work well for other data, we need the concept of a **`stack frame`**. Here we allocate a block or frame of memory on the stack that we use to store our variables. This is an efficient mechanism to allocate some memory at the start of a function and then release it before we return.
+
+PUSHing variables on the stack isn’t practical, since we need to access them in a random order, rather than the strict *LIFO* protocol that `PUSH`/`POP` enforce.
+
 ### implementation
 
-For AArch64, sp must be 16-byte aligned whenever it is used to access memory. This is enforced by AArch64 hardware.
+For AArch64, `sp` must be 16-byte aligned whenever it is used to access memory. This is enforced by AArch64 hardware.
 
 - This means that it is difficult to implement a generic `push` or `pop` operation for AArch64. There are no `push` or `pop` aliases like there are for ARM and Thumb.
 - The hardware checks can be disabled by privileged code, but they're enabled in at least Linux and Android.
@@ -218,20 +234,22 @@ The alignment-check-on-memory-access means that AArch64 **cannot** have general-
 
 If you're dealing with hand-written AArch64 assembly code, you'll have to be aware of these limitation. Whenever the stack pointer is used as the base register in an address operand, it must have 16-byte alignment.
 
-For example:
+To allocate space on the stack, we use a subtract instruction to grow the stack by the amount we need.
 
 ```asm
 // Broken AArch64 implementation of `push {x1}; push {x0};`.
-    x1, [sp, #-8]! // This works, but leaves `sp` with 8-byte alignment ...
-    x0, [sp, #-8]! // ... so the second `str` will fail.
+str x1, [sp, #-8]! // This works, but leaves `sp` with 8-byte alignment ...
+str x0, [sp, #-8]! // ... so the second `str` will fail.
 ```
 
 In this particular case, the stores could be combined:
 
 ```asm
 // AArch64 implementation of `push {x0, x1}`.
-    x0, x1, [sp, #-16]!
+stp x0, x1, [sp, #-16]!
 ```
+
+The `STP` instruction moves the stack pointer down by 16 bytes, providing us a region of memory on the stack to place the variables.
 
 However, in a simple compiler, it is not always easy to combine instructions in that way.
 
@@ -245,9 +263,18 @@ The alignment checks can be very inconvenient in code generators where it is not
     - Reserve stack space in advance
     - Shadow `sp`
 
+Before the end of the function, we need to execute
+
+```asm
+ADD SP, SP, #16
+```
+
+to release our variables from the stack. Remember, it is the responsibility of a function to restore `SP` to its original state before returning.
+
 ### prolog/epilog
 
 [Arm Compiler armasm User Guide](https://developer.arm.com/documentation/dui0801/latest) | 7. Writing A32/T32 Assembly Language - 7.17 Stack operations for nested subroutines
+[Arm Assembly Internals and Reverse Engineering](https://www.amazon.com/Blue-Fox-Assembly-Internals-Analysis/dp/1119745306) | Chapter 8 Control Flow - Functions and Subroutines - Leaf and Nonleaf Functions
 
 Stack operations can be very useful at subroutine entry and exit to avoid losing register contents if other subroutines are called.
 
@@ -262,6 +289,12 @@ subroutine  PUSH    {r5-r7,lr} ; Push work registers and lr
             ; code
             POP     {r5-r7,pc} ; Pop work registers and pc
 ```
+
+The **`prologue`** of a function starts by pushing the register values it is going to modify but is required to *preserve* onto the stack. It adjusts the `SP` to make room for local variables and updates the frame pointer register for the current stack frame.
+
+One of the register values that nonleaf functions push onto the stack at the beginning of the prologue is the `LR`, since it will be overwritten when another subroutine is called. This value is then restored to the `PC` in the function epilogue.
+
+Depending on the implementation of the platform, the Frame Pointer (`FP`/`R29`) is used to keep track of the current stack frame and must be preserved as well.
 
 The following snippet is a typical prolog/prelude and epilog/postlude of a subroutine disassembly.
 

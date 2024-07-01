@@ -3,7 +3,7 @@ title: GNU Assembler Directives
 authors:
   - xman
 date:
-    created: 2023-06-15T09:00:00
+    created: 2023-06-15T15:00:00
 categories:
     - arm
     - toolchain

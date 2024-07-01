@@ -1398,6 +1398,15 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#functions_and_the_stack" class="md-nav__link">
+    <span class="md-ellipsis">
+      Functions and the Stack
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#implementation" class="md-nav__link">
     <span class="md-ellipsis">
       implementation
@@ -1507,7 +1516,7 @@
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7h1.5Z"/></svg>
                           <span class="md-ellipsis">
                             
-                              11 min read
+                              13 min read
                             
                           </span>
                         </div>
@@ -1735,23 +1744,32 @@ For AArch64, sp must be 16-byte aligned whenever it is used to access memory.</p
 </li>
 </ul>
 <h2 id="stack_equiv">stack equiv<a class="headerlink" href="#stack_equiv" title="Permanent link">#</a></h2>
+<h3 id="functions_and_the_stack">Functions and the Stack<a class="headerlink" href="#functions_and_the_stack" title="Permanent link">#</a></h3>
+<p><a href="https://www.amazon.com/Programming-64-Bit-ARM-Assembly-Language/dp/1484258800/">Programming with 64-Bit ARM Assembly Language</a> | Chapter 6: Functions and the Stack</p>
+<p>In this chapter, we will examine how to organize our code into small independent units called <strong><code>functions</code></strong>. This allows us to build <em>reusable</em> components, which we can call easily form anywhere we wish by setting up parameters and calling them.</p>
+<p>Typically, in software development, we start with low-level components. Then we build on these to create higher- and higher-level modules. So far, we know how to loop, perform conditional logic, and perform some arithmetic. Now, we examine how to compartmentalize code into building blocks.</p>
+<p>We introduce the <strong><code>stack</code></strong>, a computer science data structure for storing data. If we’re going to build useful <em>reusable</em> functions, we need a good way to manage register usage, so that all these functions don’t <em>clobber</em> each other. In Chapter 5, “Thanks for the Memories,” we studied how to store data in a data segment in main memory. The problem with this is that this memory exists for the duration that the program runs. With small functions, like converting to upper-case, they run quickly; thus they might need a few memory locations while they run, but when they’re done, they don’t need this memory anymore. Stacks provide us a tool to manage register usage across function calls and a tool to provide memory to functions for the duration of their invocation.</p>
+<p>We introduce several low-level concepts first, and then we put them all together to effectively create and use functions. First up is the abstract data type called a <strong><code>stack</code></strong> that is a convenient mechanism to store data for the duration of a function call.</p>
+<p>Stacks work great for saving and restoring registers, but to work well for other data, we need the concept of a <strong><code>stack frame</code></strong>. Here we allocate a block or frame of memory on the stack that we use to store our variables. This is an efficient mechanism to allocate some memory at the start of a function and then release it before we return.</p>
+<p>PUSHing variables on the stack isn’t practical, since we need to access them in a random order, rather than the strict <em>LIFO</em> protocol that <code>PUSH</code>/<code>POP</code> enforce.</p>
 <h3 id="implementation">implementation<a class="headerlink" href="#implementation" title="Permanent link">#</a></h3>
-<p>For AArch64, sp must be 16-byte aligned whenever it is used to access memory. This is enforced by AArch64 hardware.</p>
+<p>For AArch64, <code>sp</code> must be 16-byte aligned whenever it is used to access memory. This is enforced by AArch64 hardware.</p>
 <ul>
 <li>This means that it is difficult to implement a generic <code>push</code> or <code>pop</code> operation for AArch64. There are no <code>push</code> or <code>pop</code> aliases like there are for ARM and Thumb.</li>
 <li>The hardware checks can be disabled by privileged code, but they're enabled in at least Linux and Android.</li>
 </ul>
 <p>The alignment-check-on-memory-access means that AArch64 <strong>cannot</strong> have general-purpose push- or pop-like operations.</p>
 <p>If you're dealing with hand-written AArch64 assembly code, you'll have to be aware of these limitation. Whenever the stack pointer is used as the base register in an address operand, it must have 16-byte alignment.</p>
-<p>For example:</p>
+<p>To allocate space on the stack, we use a subtract instruction to grow the stack by the amount we need.</p>
 <div class="language-asm highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1">// Broken AArch64 implementation of `push {x1}; push {x0};`.</span>
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">    </span><span class="nf">x1</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">sp</span><span class="p">,</span><span class="w"> </span><span class="mi">#-8</span><span class="p">]!</span><span class="w"> </span><span class="c1">// This works, but leaves `sp` with 8-byte alignment ...</span>
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="w">    </span><span class="nf">x0</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">sp</span><span class="p">,</span><span class="w"> </span><span class="mi">#-8</span><span class="p">]!</span><span class="w"> </span><span class="c1">// ... so the second `str` will fail.</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="nf">str</span><span class="w"> </span><span class="no">x1</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">sp</span><span class="p">,</span><span class="w"> </span><span class="mi">#-8</span><span class="p">]!</span><span class="w"> </span><span class="c1">// This works, but leaves `sp` with 8-byte alignment ...</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="nf">str</span><span class="w"> </span><span class="no">x0</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">sp</span><span class="p">,</span><span class="w"> </span><span class="mi">#-8</span><span class="p">]!</span><span class="w"> </span><span class="c1">// ... so the second `str` will fail.</span>
 </span></code></pre></div>
 <p>In this particular case, the stores could be combined:</p>
 <div class="language-asm highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1">// AArch64 implementation of `push {x0, x1}`.</span>
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">    </span><span class="nf">x0</span><span class="p">,</span><span class="w"> </span><span class="no">x1</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">sp</span><span class="p">,</span><span class="w"> </span><span class="mi">#-16</span><span class="p">]!</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="nf">stp</span><span class="w"> </span><span class="no">x0</span><span class="p">,</span><span class="w"> </span><span class="no">x1</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">sp</span><span class="p">,</span><span class="w"> </span><span class="mi">#-16</span><span class="p">]!</span>
 </span></code></pre></div>
+<p>The <code>STP</code> instruction moves the stack pointer down by 16 bytes, providing us a region of memory on the stack to place the variables.</p>
 <p>However, in a simple compiler, it is not always easy to combine instructions in that way.</p>
 <p>The alignment checks can be very inconvenient in code generators where it is not feasible to determine how much stack space a function will require. Many JIT compilers fall into this category; they tend to rely on being able to push individual values to the stack.</p>
 <ol>
@@ -1766,29 +1784,37 @@ For AArch64, sp must be 16-byte aligned whenever it is used to access memory.</p
 </ul>
 </li>
 </ol>
+<p>Before the end of the function, we need to execute</p>
+<div class="language-asm highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nf">ADD</span><span class="w"> </span><span class="no">SP</span><span class="p">,</span><span class="w"> </span><span class="no">SP</span><span class="p">,</span><span class="w"> </span><span class="mi">#16</span>
+</span></code></pre></div>
+<p>to release our variables from the stack. Remember, it is the responsibility of a function to restore <code>SP</code> to its original state before returning.</p>
 <h3 id="prologepilog">prolog/epilog<a class="headerlink" href="#prologepilog" title="Permanent link">#</a></h3>
-<p><a href="https://developer.arm.com/documentation/dui0801/latest">Arm Compiler armasm User Guide</a> | 7. Writing A32/T32 Assembly Language - 7.17 Stack operations for nested subroutines</p>
+<p><a href="https://developer.arm.com/documentation/dui0801/latest">Arm Compiler armasm User Guide</a> | 7. Writing A32/T32 Assembly Language - 7.17 Stack operations for nested subroutines<br />
+<a href="https://www.amazon.com/Blue-Fox-Assembly-Internals-Analysis/dp/1119745306">Arm Assembly Internals and Reverse Engineering</a> | Chapter 8 Control Flow - Functions and Subroutines - Leaf and Nonleaf Functions</p>
 <p>Stack operations can be very useful at subroutine entry and exit to avoid losing register contents if other subroutines are called.</p>
 <p>At the <em>start</em> of a subroutine, any working registers required can be stored on the stack, and at <em>exit</em> they can be popped off again.</p>
 <p>In addition, if the link register is pushed onto the stack at entry, additional subroutine calls can be made safely without causing the return address to be lost. If you do this, you can also return from a subroutine by popping the <code>PC</code> off the stack at exit, instead of popping the <code>LR</code> and then moving that value into the <code>PC</code>. For example:</p>
-<div class="language-asm highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nf">subroutine</span><span class="w">  </span><span class="no">PUSH</span><span class="w">    </span><span class="p">{</span><span class="no">r5-r7</span><span class="p">,</span><span class="no">lr</span><span class="p">}</span><span class="w"> </span><span class="c1">; Push work registers and lr</span>
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">            </span><span class="c1">; code</span>
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">            </span><span class="nf">BL</span><span class="w">      </span><span class="no">somewhere_else</span>
-</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">            </span><span class="c1">; code</span>
-</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">            </span><span class="nf">POP</span><span class="w">     </span><span class="p">{</span><span class="no">r5-r7</span><span class="p">,</span><span class="no">pc</span><span class="p">}</span><span class="w"> </span><span class="c1">; Pop work registers and pc</span>
+<div class="language-asm highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nf">subroutine</span><span class="w">  </span><span class="no">PUSH</span><span class="w">    </span><span class="p">{</span><span class="no">r5-r7</span><span class="p">,</span><span class="no">lr</span><span class="p">}</span><span class="w"> </span><span class="c1">; Push work registers and lr</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">            </span><span class="c1">; code</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">            </span><span class="nf">BL</span><span class="w">      </span><span class="no">somewhere_else</span>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">            </span><span class="c1">; code</span>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="w">            </span><span class="nf">POP</span><span class="w">     </span><span class="p">{</span><span class="no">r5-r7</span><span class="p">,</span><span class="no">pc</span><span class="p">}</span><span class="w"> </span><span class="c1">; Pop work registers and pc</span>
 </span></code></pre></div>
+<p>The <strong><code>prologue</code></strong> of a function starts by pushing the register values it is going to modify but is required to <em>preserve</em> onto the stack. It adjusts the <code>SP</code> to make room for local variables and updates the frame pointer register for the current stack frame.</p>
+<p>One of the register values that nonleaf functions push onto the stack at the beginning of the prologue is the <code>LR</code>, since it will be overwritten when another subroutine is called. This value is then restored to the <code>PC</code> in the function epilogue.</p>
+<p>Depending on the implementation of the platform, the Frame Pointer (<code>FP</code>/<code>R29</code>) is used to keep track of the current stack frame and must be preserved as well.</p>
 <p>The following snippet is a typical prolog/prelude and epilog/postlude of a subroutine disassembly.</p>
-<div class="language-asm highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1">// pwndbg&gt; disassemble main</span>
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
-</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="c1">// prolog/prelude</span>
-</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">    </span><span class="err">0</span><span class="nf">x00000000004008e0</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">0</span><span class="err">&gt;</span><span class="p">:</span><span class="w">    </span><span class="no">stp</span><span class="w"> </span><span class="no">x29</span><span class="p">,</span><span class="w"> </span><span class="no">x30</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">sp</span><span class="p">,</span><span class="w"> </span><span class="mi">#-48</span><span class="p">]!</span>
-</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="w">    </span><span class="err">0</span><span class="nf">x00000000004008e4</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">4</span><span class="err">&gt;</span><span class="p">:</span><span class="w">    </span><span class="no">mov</span><span class="w"> </span><span class="no">x29</span><span class="p">,</span><span class="w"> </span><span class="no">sp</span>
-</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>
-</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="w">    </span><span class="err">[</span><span class="na">...armasm...</span><span class="p">]</span>
-</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>
-</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="c1">// epilog/postlude</span>
-</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="w">    </span><span class="err">0</span><span class="nf">x000000000040094c</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">108</span><span class="err">&gt;</span><span class="p">:</span><span class="w">  </span><span class="no">ldp</span><span class="w"> </span><span class="no">x29</span><span class="p">,</span><span class="w"> </span><span class="no">x30</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">sp</span><span class="p">],</span><span class="w"> </span><span class="mi">#48</span>
-</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="w">    </span><span class="err">0</span><span class="nf">x0000000000400950</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">112</span><span class="err">&gt;</span><span class="p">:</span><span class="w">  </span><span class="no">ret</span>
+<div class="language-asm highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1">// pwndbg&gt; disassemble main</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="c1">// prolog/prelude</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">    </span><span class="err">0</span><span class="nf">x00000000004008e0</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">0</span><span class="err">&gt;</span><span class="p">:</span><span class="w">    </span><span class="no">stp</span><span class="w"> </span><span class="no">x29</span><span class="p">,</span><span class="w"> </span><span class="no">x30</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">sp</span><span class="p">,</span><span class="w"> </span><span class="mi">#-48</span><span class="p">]!</span>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="w">    </span><span class="err">0</span><span class="nf">x00000000004008e4</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">4</span><span class="err">&gt;</span><span class="p">:</span><span class="w">    </span><span class="no">mov</span><span class="w"> </span><span class="no">x29</span><span class="p">,</span><span class="w"> </span><span class="no">sp</span>
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="w">    </span><span class="err">[</span><span class="na">...armasm...</span><span class="p">]</span>
+</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>
+</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="c1">// epilog/postlude</span>
+</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="w">    </span><span class="err">0</span><span class="nf">x000000000040094c</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">108</span><span class="err">&gt;</span><span class="p">:</span><span class="w">  </span><span class="no">ldp</span><span class="w"> </span><span class="no">x29</span><span class="p">,</span><span class="w"> </span><span class="no">x30</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">sp</span><span class="p">],</span><span class="w"> </span><span class="mi">#48</span>
+</span><span id="__span-5-11"><a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a><span class="w">    </span><span class="err">0</span><span class="nf">x0000000000400950</span><span class="w"> </span><span class="err">&lt;+</span><span class="mi">112</span><span class="err">&gt;</span><span class="p">:</span><span class="w">  </span><span class="no">ret</span>
 </span></code></pre></div>
 <p><code>stp x29, x30, [sp, #-48]!</code>:</p>
 <ul>

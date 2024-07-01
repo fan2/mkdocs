@@ -15,6 +15,7 @@ The Executable and Linkable Format (`ELF`), is a common standard file format for
 
 [Executable and Linkable Format](https://en.wikipedia.org/wiki/Executable_and_Linkable_Format) - [ELF - OSDev Wiki](https://wiki.osdev.org/ELF)
 
+- LSB - [Executable And Linking Format (ELF)](https://refspecs.linuxfoundation.org/LSB_4.1.0/LSB-Core-generic/LSB-Core-generic/elf-generic.html)
 - [Linux Foundation Referenced Specifications](https://refspecs.linuxfoundation.org/) - TIS - ELF: [v1.1](https://www.cs.cmu.edu/afs/cs/academic/class/15213-f00/docs/elf.pdf), [v1.2](https://refspecs.linuxfoundation.org/elf/elf.pdf)
 - [Ubuntu Manpage: elf - format of Executable and Linking Format (ELF) files](https://manpages.ubuntu.com/manpages/noble/en/man5/elf.5.html)
 - sysvabi64 - [System V ABI for the Arm® 64-bit Architecture (AArch64)](https://github.com/ARM-software/abi-aa/blob/844a79fd4c77252a11342709e3b27b2c9f590cf1/sysvabi64/sysvabi64.rst)
@@ -22,7 +23,11 @@ The Executable and Linkable Format (`ELF`), is a common standard file format for
 
 In computing, the Executable and Linkable Format (***ELF***, formerly named Extensible Linking Format), is a common standard file format for executable files, object code, shared libraries, and core dumps. First published in the specification for the application binary interface (ABI) of the Unix operating system version named System V Release 4 (SVR4), and later in the Tool Interface Standard, it was quickly accepted among different vendors of Unix systems. In 1999, it was chosen as the standard binary file format for Unix and Unix-like systems on x86 processors by the 86open project.
 
+ELF is the dominating file format for Linux. It competes with Mach-O for OS X and PE for Windows. ELF supersedes `.coff`, which supersedes `a.out`.
+
 ## layout
+
+A handy summary can be found by `man elf`:
 
 ```bash
 $ man elf
@@ -205,7 +210,7 @@ An object file's **`section header table`** lets one locate all the file's secti
 
 The `e_shoff` member of `Elf32_Ehdr`/`Elf64_Ehdr` holds the offset to the section header table.
 
-> refer to struct `Elf32_Shdr`/`Elf64_Shdr` and `sh_type`(Section Types) defined in /usr/include/elf.h.
+> refer to struct `Elf32_Shdr`/`Elf64_Shdr` and `sh_type`(Section Types) defined in /usr/include/elf.h @[torvalds/linux](https://github.com/torvalds/linux/tree/master/include/uapi/linux/elf.h).
 
 The `sh_offset` member holds the address to the section's first byte.
 
