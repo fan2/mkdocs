@@ -35,9 +35,9 @@ As you can see in the output, above, it seems that `complex double` still works 
 
 ---
 
-In the previous code example, we also see a new operator, `alignof` (or `_Alignof`, if you don’t include [<stdalign.h\>](https://en.cppreference.com/w/c/types)), that provides us with the alignment of a speciﬁc type. You will rarely ﬁnd the occasion to use it in real live code.
+In the previous code example, we also see a new operator, `alignof` (or `_Alignof`, if you don’t include [<stdalign.h\>](https://en.cppreference.com/w/c/types)), that provides us with the alignment of a specific type. You will rarely find the occasion to use it in real live code.
 
-Another keyword can be used to force allocation at a speciﬁed alignment: `alignas` (respectively, `_Alignas`). Its argument can be either a type or expression. It can be useful where you know that your platform can perform certain operations more efﬁciently if the data is aligned in a certain way.
+Another keyword can be used to force allocation at a specified alignment: `alignas` (respectively, `_Alignas`). Its argument can be either a type or expression. It can be useful where you know that your platform can perform certain operations more efficiently if the data is aligned in a certain way.
 
 ## C++ alignment
 

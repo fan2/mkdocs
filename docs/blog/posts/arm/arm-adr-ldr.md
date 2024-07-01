@@ -80,7 +80,7 @@ The range of `ADR` is just as limited as an unconditional `b` or a `bl`. To addr
 
 ## LDR or ADR? non-PIC or PIC?
 
-An address loaded using the `LDR` pseudo-instruction is ﬁxed at link time, so the code is *not* position-independent(*non-PIC*). The address holding the ==constant== remains valid regardless of where the linker places the ELF section containing the `LDR` instruction.
+An address loaded using the `LDR` pseudo-instruction is fixed at link time, so the code is *not* position-independent(*non-PIC*). The address holding the ==constant== remains valid regardless of where the linker places the ELF section containing the `LDR` instruction.
 
 Meanwhile, `ADR` produces [position-independent](https://en.wikipedia.org/wiki/Position-independent_code)(*PIC*) code, because the assembler generates an instruction that adds or subtracts a value to the `PC`. The expansive `ADRL` pseudo-instruction produces position-independent code too, because the address is PC-relative or register-relative.
 
@@ -90,7 +90,7 @@ if you plan to reference labels in ***other*** sections of code, or you know tha
 
 [Arm Compiler armasm User Guide](https://developer.arm.com/documentation/dui0801/latest) | 7. Writing A32/T32 Assembly Language - 7.12 Load addresses to a register using LDR Rd, =label
 
-The example of string copy also shows how, unlike the `ADR` and `ADRL` pseudo-instructions, you can use the `LDR` pseudo-instruction with labels that are *outside* the current section. The assembler places a *relocation directive* in the object code when the source ﬁle is assembled. The relocation directive instructs the linker to **resolve** the address at ^^link time^^. The address remains valid wherever the linker places the section containing the `LDR` and the literal pool.
+The example of string copy also shows how, unlike the `ADR` and `ADRL` pseudo-instructions, you can use the `LDR` pseudo-instruction with labels that are *outside* the current section. The assembler places a *relocation directive* in the object code when the source file is assembled. The relocation directive instructs the linker to **resolve** the address at ^^link time^^. The address remains valid wherever the linker places the section containing the `LDR` and the literal pool.
 
 [ARM 64-Bit Assembly Language](https://www.amazon.com/64-Bit-Assembly-Language-Larry-Pyeatt/dp/0128192216/) | 3 Load/store and branch instructions - 3.5 Branch instructions - 3.5.5 Form PC-relative address
 

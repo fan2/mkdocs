@@ -28,7 +28,7 @@ These instructions are used to calculate the address associated with a label:
 - `adr`: Form PC-Relative Address
 - `adrp`: Form PC-Relative Address to 4 KB Page
 
-They are more efﬁcient than the `ldr Rx,=label` pseudo instruction, because they can calculate a 64-bit address in one or two instructions without performing a memory access. They can be used to load any address that is *within* range. If the label is out of range, then the assembler or linker will emit an error, and the programmer can change their code to use the `ldr Rx,=label` syntax.
+They are more efficient than the `ldr Rx,=label` pseudo instruction, because they can calculate a 64-bit address in one or two instructions without performing a memory access. They can be used to load any address that is *within* range. If the label is out of range, then the assembler or linker will emit an error, and the programmer can change their code to use the `ldr Rx,=label` syntax.
 
 **Syntax**
 

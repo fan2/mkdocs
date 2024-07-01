@@ -25,13 +25,13 @@ In Armv8-A, a user-mode process invokes a system call to request a service provi
 
 [Learn the architecture - A64 Instruction Set Architecture Guide](https://developer.arm.com/documentation/102374/latest) | 28. System calls
 
-Sometimes it is necessary for software to request a function from a more *privileged* entity. This might happen when, for example, an application requests that the OS opens a ﬁle.
+Sometimes it is necessary for software to request a function from a more *privileged* entity. This might happen when, for example, an application requests that the OS opens a file.
 
 In A64, there are special instructions for making such system calls. These instructions cause an exception, which allows controlled entry into a more *privileged* Exception level.
 
 - `SVC` Supervisor call causes an exception targeting `EL1`. Used by an application to call the OS.
 - `HVC` Hypervisor call causes an exception targeting `EL2`. Used by an OS to call the hypervisor, not available at `EL0`.
-- `SMC` Secure monitor call causes an exception targeting `EL3`. Used by an OS or hypervisor to call the `EL3` ﬁrmware, not available at `EL0`.
+- `SMC` Secure monitor call causes an exception targeting `EL3`. Used by an OS or hypervisor to call the `EL3` firmware, not available at `EL0`.
 
 If an exception is executed from an Exception level higher than the target exception level, then the exception is taken to the current Exception level. This means that an `SVC` at `EL2` would cause exception entry to `EL2`. Similarly, an `HVC` at `EL3` causes exception entry to `EL3`. This is consistent with the rule that an exception can never cause the processor to lose privilege.
 

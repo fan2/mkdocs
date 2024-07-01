@@ -20,7 +20,7 @@ So far we've been through the [default gcc compilation process](./gcc-compilatio
 
 It links dynamically by default, a dynamic linker (aka interpreter) is used to resolve the final dependencies on dynamic libraries when the executable is loaded into memory to run.
 
-In this article I'll have a look at how the shared dynamic symbol such as `puts` is designated at link time in the DYN PIE ELF.
+[Previously](./symbol-resolution-relocation.md), we've gone through the basic concepts of static linking - symbol resolution and relocation. In this article I'll have a look at how the shared dynamic symbol such as `puts` is designated at link time in the DYN PIE ELF.
 
 <!-- more -->
 
@@ -483,6 +483,10 @@ Check readelf's analysis against the raw hexdump above and the sections dumped b
 
 ## dynamic symbol
 
+The linker relocates these sections by associating a memory location with each symbol definition and resolves symbol references by associating each reference with exactly one symbol definition from the symbol tables of its input relocatable object files.
+
+The `.symtab` section represents a symbol table with information about functions and global variables that are defined and referenced in the program. It contains an array of entries.
+
 ```c title="Symbol table entry"
 // /usr/include/elf.h
 
@@ -516,6 +520,13 @@ typedef struct
 #define ELF64_ST_TYPE(val)      ELF32_ST_TYPE (val)
 #define ELF64_ST_INFO(bind, type)   ELF32_ST_INFO ((bind), (type))
 ```
+
+The `.symtab` section holds a symbol table. Meanwhile, the `.dynsym` section holds the dynamic linking symbol table.
+
+Section Name | Contents                | load into memory? | strippable
+-------------|-------------------------|-------------------|-----------
+.symtab      | all symbols             | No                | Yes
+.dynsym      | dynamic linking symbols | Yes               | No
 
 ### .dynstr
 
@@ -635,6 +646,8 @@ $ nm -D a.out
     ```
 
 ## relocation entries
+
+Whenever the assembler encounters a reference to an object whose ultimate location is unknown, it generates a relocation entry that tells the linker how to modify the reference when it merges the object file into an executable.
 
 ```c title="Relocation table entry"
 // /usr/include/elf.h
@@ -853,7 +866,7 @@ The `puts@GLIBC_2.17` is currently labelled as `UND`EFINED, the corresponding GO
 !!! note "GOT reserved entries"
 
     [All about Procedure Linkage Table | MaskRay](https://maskray.me/blog/2021-09-19-all-about-procedure-linkage-table)
-    [Computer Systems - A Programmer’s Perspective](https://www.amazon.com/Computer-Systems-OHallaron-Randal-Bryant/dp/1292101768/) | Chapter 7: Linking - 7.12: Position-Independent Code (PIC)
+    [Computer Systems - A Programmer's Perspective](https://www.amazon.com/Computer-Systems-OHallaron-Randal-Bryant/dp/1292101768/) | Chapter 7: Linking - 7.12: Position-Independent Code (PIC)
 
     On some architectures(x86-32, x86-64) `.got.plt[0]` is the link time address of `_DYNAMIC`. `.got.plt[1]` and `.got.plt[2]` are reserved by `ld.so`. `.got.plt[1]` is a descriptor of the current component while `.got.plt[2]` is the address of the PLT resolver.
 

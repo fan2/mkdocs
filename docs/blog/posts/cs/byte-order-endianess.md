@@ -31,15 +31,15 @@ comments: true
 
     The binary representation for non-negative integer values is always exactly what the term indicates: such a number is represented by binary digits $b_0, b_1, \ldots, b_{p-1}$ called ***bits***. Each of the bits has a value of 0 or 1. The value of such a number is computed as $\sum_{i=0}^{p-1}b_i\ast2^i$.
 
-    The value *p* in that binary representation is called the ***precision*** of the underlying type. Bit $b_0$ is called the ***least-signiﬁcant bit***, and LSB, $b_{p−1}$ is the ***most-signiﬁcant bit***(MSB).
+    The value *p* in that binary representation is called the ***precision*** of the underlying type. Bit $b_0$ is called the ***least-significant bit***, and LSB, $b_{p−1}$ is the ***most-significant bit***(MSB).
 
-    Of the bits $b_i$ that are 1, the one with minimal index *i* is called the ***least-signiﬁcant bit set***, and the one with the highest index is the ***most-signiﬁcant bit set***.
+    Of the bits $b_i$ that are 1, the one with minimal index *i* is called the ***least-significant bit set***, and the one with the highest index is the ***most-significant bit set***.
 
 在 [The C Memory Model](../c/c-memory-model.md) 中借 union 一值两析，由 storage order 进一步引出了 `endianess` 的概念：
 
 !!! note "endianess: big-endian & little-endian"
 
-    That is, a platform provider might decide to provide a *storage order* that has the highest-order digits ﬁrst, and then print lower-order digits one by one. The storage order, the ***endianness***, as given for my machine, is called ***little-endian***. A system that has high-order representation digits ﬁrst is called ***big-endian***. Both orders are commonly used by modern processor types. Some processors are even able to switch between the two orders on the ﬂy.
+    That is, a platform provider might decide to provide a *storage order* that has the highest-order digits first, and then print lower-order digits one by one. The storage order, the ***endianness***, as given for my machine, is called ***little-endian***. A system that has high-order representation digits first is called ***big-endian***. Both orders are commonly used by modern processor types. Some processors are even able to switch between the two orders on the fly.
 
 [ARM Cortex-A Series Programmer's Guide for ARMv8-A](https://developer.arm.com/documentation/den0024/a/ARMv8-Registers/Endianness) - Endianness:
 
@@ -85,7 +85,7 @@ The mapping of a word-sized data object to memory is shown in the following figu
 
 > [64-bit PowerPC Function Calling Conventions](https://developer.apple.com/library/archive/documentation/DeveloperTools/Conceptual/LowLevelABI/110-64-bit_PowerPC_Function_Calling_Conventions/64bitPowerPC.html): This environment uses the big-endian byte ordering scheme to store numeric and pointer data types. That is, the most significant bytes go first, followed by the least significant bytes.
 
-《[深入理解计算机系统](https://item.jd.com/12006637.html)》（[Computer Systems - A Programmer’s Perspective](https://www.amazon.com/Computer-Systems-OHallaron-Randal-Bryant/dp/1292101768/)）中 2.1: Information Storage | 2.1.3: Addressing and Byte Ordering 也有关于 endianess 的详细论述。
+《[深入理解计算机系统](https://item.jd.com/12006637.html)》（[Computer Systems - A Programmer's Perspective](https://www.amazon.com/Computer-Systems-OHallaron-Randal-Bryant/dp/1292101768/)）中 2.1: Information Storage | 2.1.3: Addressing and Byte Ordering 也有关于 endianess 的详细论述。
 
 [assembly - QWORD Storing / implementing using 32-bit REGs.? - Stack Overflow](https://stackoverflow.com/questions/7865511/qword-storing-implementing-using-32-bit-regs)
 

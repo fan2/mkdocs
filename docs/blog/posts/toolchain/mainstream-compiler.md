@@ -153,9 +153,9 @@ lrwxrwxrwx 1 root root 12 Feb 21 10:59 /etc/alternatives/c++ -> /usr/bin/g++
 
 [GNU Hurd](https://www.gnu.org/savannah-checkouts/gnu/hurd/binutils.html) / [GNU Binutils](https://www.gnu.org/software/binutils/) - @[sourceware](https://sourceware.org/binutils/) - [Documentation](https://sourceware.org/binutils/docs/)
 
-Computer Systems - A Programmer’s Perspective | Chapter 7: Linking - 7.14 Tools for Manipulating Object Files:
+Computer Systems - A Programmer's Perspective | Chapter 7: Linking - 7.14 Tools for Manipulating Object Files:
 
-> There are a number of tools available on Linux systems to help you understand and manipulate object ﬁles. In particular, the GNU *binutils* package is especially helpful and runs on every Linux platform.
+> There are a number of tools available on Linux systems to help you understand and manipulate object files. In particular, the GNU *binutils* package is especially helpful and runs on every Linux platform.
 
 The GNU Binutils are a collection of binary tools. The main ones are:
 
@@ -175,7 +175,7 @@ But they also include:
 - `objdump` - Displays information from object files.
 
     - The mother of all binary tools.
-    - Can display *all* of the information in an object ﬁle.
+    - Can display *all* of the information in an object file.
     - `-f`/`-a`/`-h`/`-x`: display file/archive/section/all headers.
     - Its most useful function is *disassembling* the binary instructions in the `.text` section.
 

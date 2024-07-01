@@ -1322,15 +1322,6 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#integral_promotion" class="md-nav__link">
-    <span class="md-ellipsis">
-      integral promotion
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
   <a href="#char_signed_or_unsigned" class="md-nav__link">
     <span class="md-ellipsis">
       char: signed or unsigned?
@@ -1362,6 +1353,39 @@
   <a href="#c_standard_specs" class="md-nav__link">
     <span class="md-ellipsis">
       C++ standard specs
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#type_conversion" class="md-nav__link">
+    <span class="md-ellipsis">
+      type conversion
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="type conversion">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sizeofa__" class="md-nav__link">
+    <span class="md-ellipsis">
+      sizeof('A') = ?
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#integral_promotion" class="md-nav__link">
+    <span class="md-ellipsis">
+      integral promotion
     </span>
   </a>
   
@@ -1466,7 +1490,7 @@
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7h1.5Z"/></svg>
                           <span class="md-ellipsis">
                             
-                              8 min read
+                              9 min read
                             
                           </span>
                         </div>
@@ -1700,57 +1724,6 @@
 <li><code>uintptr_t</code>: unsigned integer type capable of holding a pointer</li>
 </ul>
 <p>了解 C 语言的所有这些最重要的整数类型之后，下一个问题就是搞清楚编译器在怎样的情况下会把一个变量或者常数看作什么样的整数类型。</p>
-<h2 id="integral_promotion">integral promotion<a class="headerlink" href="#integral_promotion" title="Permanent link">#</a></h2>
-<p>在 C 语言刚刚被设计出来的时候，一共只有两种整数类型—— <code>char</code> 和 <code>int</code>，在实际的运算当中，char 总是先被提升为 int。</p>
-<p>另外，在 C 语言中，单字节字符常数的类型从一开始到现在都是 int（单字节字符常数指 'A'、'\n'、'\045'、'\x33' 等常量）。本来大家很自然地以为 'A' 应该是 char 类型的，不是吗？例如：</p>
-<div class="language-c highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kt">char</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sc">&#39;A&#39;</span><span class="p">;</span>
-</span></code></pre></div>
-<p>上面这个表达式的确引起了我们的错觉。'A' 明显代表一个单字节字符值，把这个代表字符的值赋给 char 变量，可谓“门当户对”的事啊……然而，'A'虽然代表一个单字节字符值，但同时它的值必须要用与 int 等长的空间来存储，因此它的身份是不折不扣的 int。这也是 char 变量必须提升为 int 再参与运算的规则的另一个反映——反正到头来还是得提升为 int，索性一开始就给它 int 的身份！至于上面那个表达式，它的作用相当于把一个曾经提升为 int 类型的 char 数值还原回 char 而已，完全没有问题。虽然 C89 开始确立了一系列的新规则，但 <code>单字节字符常量的类型是 int</code> 这个惯例仍然被保留下来，即使到了 C99也同样如此：</p>
-<div class="language-c highlight"><span class="filename">sizeof-char-literal.c</span><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">argv</span><span class="p">[])</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;sizeof(&#39;A&#39;) = %zu</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="k">sizeof</span><span class="p">(</span><span class="sc">&#39;A&#39;</span><span class="p">));</span>
-</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>
-</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
-</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="p">}</span>
-</span></code></pre></div>
-<p>由于 sizeof 是编译期就确定的数值，我们完全可以从汇编代码中看出它的具体 值，不过这里还是编译成可执行文件再运行：</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>$<span class="w"> </span>cc<span class="w"> </span>single-char.c<span class="w"> </span>-o<span class="w"> </span>single-char<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>./single-char
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>sizeof<span class="o">(</span><span class="s1">&#39;A&#39;</span><span class="o">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">4</span>
-</span></code></pre></div>
-<p>显然，'A' 要占用4个字节，在32位平台上这恰好就是一个 int 的长度。综合上面所说，在 C 语言的早期，要确定一个表达式里的整型变量或者常数的具体类型并不复杂，原本就只有两种整数类型，在运算和传递参数时 char 又总是先被提升为 int，加上整型常数属于 int 类型、单字节字符常量也属于 int 类型——一切都非常清楚。</p>
-<p>再来看下面这个例子：</p>
-<div class="language-c highlight"><span class="filename">integral_promotion.c</span><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
-</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>
-</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">argv</span><span class="p">[])</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">    </span><span class="kt">char</span><span class="w"> </span><span class="n">a</span><span class="p">;</span>
-</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="w">    </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">b</span><span class="p">;</span>
-</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="w">    </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">c</span><span class="p">;</span>
-</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>
-</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="w">    </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x88</span><span class="p">;</span>
-</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="w">    </span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">~</span><span class="n">a</span><span class="p">;</span>
-</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="w">    </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">~</span><span class="n">a</span><span class="p">;</span>
-</span><span id="__span-5-11"><a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>
-</span><span id="__span-5-12"><a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a><span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;a=%#x, ~a=%#x, b=%#x, c=%#lx</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="o">~</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="p">);</span>
-</span><span id="__span-5-13"><a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a>
-</span><span id="__span-5-14"><a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a><span class="w">    </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="n">d</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0xa5</span><span class="p">;</span>
-</span><span id="__span-5-15"><a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a><span class="w">    </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="n">e</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">~</span><span class="n">d</span><span class="o">&gt;&gt;</span><span class="mi">4</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
-</span><span id="__span-5-16"><a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a>
-</span><span id="__span-5-17"><a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a><span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;e=%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">);</span>
-</span><span id="__span-5-18"><a id="__codelineno-5-18" name="__codelineno-5-18" href="#__codelineno-5-18"></a>
-</span><span id="__span-5-19"><a id="__codelineno-5-19" name="__codelineno-5-19" href="#__codelineno-5-19"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
-</span><span id="__span-5-20"><a id="__codelineno-5-20" name="__codelineno-5-20" href="#__codelineno-5-20"></a><span class="p">}</span>
-</span></code></pre></div>
-<p>编译运行输出结果如下：</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>$<span class="w"> </span>cc<span class="w"> </span>integral_promotion.c<span class="w"> </span>-o<span class="w"> </span>integral_promotion<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>./integral_promotion
-</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="nv">a</span><span class="o">=</span>0x88,<span class="w"> </span>~a<span class="o">=</span>0xffffff77,<span class="w"> </span><span class="nv">b</span><span class="o">=</span>0xffffff77,<span class="w"> </span><span class="nv">c</span><span class="o">=</span>0xffffffffffffff77
-</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="nv">e</span><span class="o">=</span><span class="m">250</span>
-</span></code></pre></div>
-<ol>
-<li>根据整形提升的规则，表达式 <code>～a</code> 会转化为 int 类型，符号扩展后的值为 0xffffff77。</li>
-<li><code>b=~a</code>, <code>~a</code> 先提升为 int 值 0xffffff77，再提升为 unsigned int 值，十六进制输出不变。c 同理输出 0xffffffffffffff77。</li>
-<li><code>e = ~d&gt;&gt;4 + 1</code>，<code>d</code> 被提升为 int 类型，取反得到 0xffffff5a。加法的优先级高于右移，0xffffff5a&gt;&gt;5=0xfffffffa（高位符号位扩展填充1），最终 b 的值为 0xfa=250。</li>
-</ol>
 <h2 id="char_signed_or_unsigned">char: signed or unsigned?<a class="headerlink" href="#char_signed_or_unsigned" title="Permanent link">#</a></h2>
 <p>后来，随着 C 语言的进一步发展，K&amp;R C 引入了无符号整数的概念以及 <code>unsigned</code> 关键字，并增加了 short、long 两种整数类型。这时，C 语言已经拥有以下整数类型：</p>
 <ul>
@@ -1764,8 +1737,8 @@
 <p>到了 K&amp;R C 引入 unsigned 关键字以后，基于 char 的分歧已经根深蒂固，unsigned char、unsigned short、unsigned int、unsigned long 都属于无符号整数类型，而 short、int、long 属于带符号整数类型，这些都毫无疑问，偏偏 char 例外。char 属于什么类型？在那些一直把 char 实现为带符号整数的平台上，char 属于带符号类型；而在另外那些使用8位字符编码的实现里，char 名副其实地拒绝负数的概念，很明显这些平台上的 char 相当于 unsigned char。</p>
 <p>大家可能会问，在那些坚持 char 永不为负的实现里岂不是少了一种8位带符号整数类型？因为在 char 被实现为带符号整数的平台上可以通过加上 unsigned 关键字来构造非负的 char 变量，但却没有办法让另外那些平台使用永远非负的 char 来存放负数啊。</p>
 <p>对，正因为如此，C89 才会引入 <code>signed</code> 关键字。如果不了解这段历史，大家肯定会认为 signed 关键字简直就是废物——已经专门有一个 unsigned 被发明出来表示无符号整数的概念，那只要不使用 unsigned 来修饰不就意味着带符号整数吗，何必再来一个 signed 呢？对于 short、int、long 这些类型来说，signed 真的是多余，但对于 char，关键字 signed 是必要的。否则大家就不知道自己的 char 变量在不同的平台会有什么表现，在一个平台上是负数，在另一个平台上又被解释为永远非负，这与 C 的标准化完全相抵。有了 signed，我们就能避开这个陷阱，明确表达自己究竟想怎样。</p>
-<div class="language-c highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="kt">signed</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="n">x</span><span class="p">;</span><span class="w">      </span><span class="cm">/* 无论在哪里，x 都是带符号整型变量 */</span>
-</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="kt">unsigned</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="n">y</span><span class="p">;</span><span class="w">    </span><span class="cm">/* 无论在哪里，y 都是无符号整型变量 */</span>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kt">signed</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="n">x</span><span class="p">;</span><span class="w">      </span><span class="cm">/* 无论在哪里，x 都是带符号整型变量 */</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="kt">unsigned</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="n">y</span><span class="p">;</span><span class="w">    </span><span class="cm">/* 无论在哪里，y 都是无符号整型变量 */</span>
 </span></code></pre></div>
 <p>所以，前面在讲述标准整数类型时，笔者已经在注释里着重强调：属于标准带符号整数类型的是 signed char（而不是 char）！char 既不属于标准带符号整数类型也不属于标准无符号整数类型，它属于历史遗物。</p>
 <h2 id="signedness_of_char">signedness of char<a class="headerlink" href="#signedness_of_char" title="Permanent link">#</a></h2>
@@ -1798,38 +1771,38 @@ The signedness of char depends on the compiler and the target platform: the defa
 <p>根据 &lt;climits&gt; 中定义的宏 CHAR_MIN 和 CHAR_MAX，可以用以下两种方式简单判断 char 默认的符号：</p>
 <ol>
 <li>判断 CHAR_MAX == UCHAR_MAX（或 CHAR_MAX == SCHAR_MAX），直观评判。</li>
-<li>判断 CHAR_MAX 最高位 MSB（most-signiﬁcant bit set），为 0 表示最高位为符号位，为 signed；否则，最高位为数值位，为 unsigned。</li>
+<li>判断 CHAR_MAX 最高位 MSB（most-significant bit set），为 0 表示最高位为符号位，为 signed；否则，最高位为数值位，为 unsigned。</li>
 </ol>
 <p>测试代码：</p>
 <div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">char-range.c</label><label for="__tabbed_1_2">char-range.cpp</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
-<div class="language-c highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
-</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;limits.h&gt;</span>
-</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>
-</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">argv</span><span class="p">[])</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">chmin</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CHAR_MIN</span><span class="p">;</span>
-</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">chmax</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CHAR_MAX</span><span class="p">;</span>
-</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>
-</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a><span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;CHAR_MIN = %d, CHAR_MAX = %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">chmin</span><span class="p">,</span><span class="w"> </span><span class="n">chmax</span><span class="p">);</span>
-</span><span id="__span-8-9"><a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a><span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;(CHAR_MAX == UCHAR_MAX) = %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">CHAR_MAX</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">UCHAR_MAX</span><span class="p">);</span>
-</span><span id="__span-8-10"><a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a><span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;CHAR_MAX &gt;&gt; 7 = %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">CHAR_MAX</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="mi">7</span><span class="p">);</span>
-</span><span id="__span-8-11"><a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a>
-</span><span id="__span-8-12"><a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
-</span><span id="__span-8-13"><a id="__codelineno-8-13" name="__codelineno-8-13" href="#__codelineno-8-13"></a><span class="p">}</span>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;limits.h&gt;</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">argv</span><span class="p">[])</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">chmin</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CHAR_MIN</span><span class="p">;</span>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">chmax</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CHAR_MAX</span><span class="p">;</span>
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;CHAR_MIN = %d, CHAR_MAX = %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">chmin</span><span class="p">,</span><span class="w"> </span><span class="n">chmax</span><span class="p">);</span>
+</span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;(CHAR_MAX == UCHAR_MAX) = %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">CHAR_MAX</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">UCHAR_MAX</span><span class="p">);</span>
+</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;CHAR_MAX &gt;&gt; 7 = %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">CHAR_MAX</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="mi">7</span><span class="p">);</span>
+</span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>
+</span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+</span><span id="__span-3-13"><a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a><span class="p">}</span>
 </span></code></pre></div>
 </div>
 <div class="tabbed-block">
-<div class="language-c highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;iostream&gt;</span>
-</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;climits&gt;</span>
-</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>
-</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">argv</span><span class="p">[])</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;CHAR_MIN = &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">CHAR_MIN</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;, CHAR_MAX = &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">CHAR_MAX</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
-</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;(CHAR_MAX == UCHAR_MAX) = &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="p">(</span><span class="n">CHAR_MAX</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">UCHAR_MAX</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
-</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;CHAR_MAX &gt;&gt; 7 = &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="p">(</span><span class="n">CHAR_MAX</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="mi">7</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
-</span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a>
-</span><span id="__span-9-9"><a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
-</span><span id="__span-9-10"><a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a><span class="p">}</span>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;iostream&gt;</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;climits&gt;</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">argv</span><span class="p">[])</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;CHAR_MIN = &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">CHAR_MIN</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;, CHAR_MAX = &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">CHAR_MAX</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;(CHAR_MAX == UCHAR_MAX) = &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="p">(</span><span class="n">CHAR_MAX</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">UCHAR_MAX</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="s">&quot;CHAR_MAX &gt;&gt; 7 = &quot;</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="p">(</span><span class="n">CHAR_MAX</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="mi">7</span><span class="p">)</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>
+</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="p">}</span>
 </span></code></pre></div>
 </div>
 </div>
@@ -1838,47 +1811,158 @@ The signedness of char depends on the compiler and the target platform: the defa
 <div class="tabbed-set tabbed-alternate" data-tabs="2:2"><input checked="checked" id="__tabbed_2_1" name="__tabbed_2" type="radio" /><input id="__tabbed_2_2" name="__tabbed_2" type="radio" /><div class="tabbed-labels"><label for="__tabbed_2_1">x86_64, arm64</label><label for="__tabbed_2_2">rpi4b-ubuntu/aarch64</label></div>
 <div class="tabbed-content">
 <div class="tabbed-block">
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="c1"># win10/x86_64</span>
-</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>&gt;cl<span class="w"> </span>char-range.cpp<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>char-range.exe
-</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="c1"># mbpa1398/x86_64, mbpa2991/arm64</span>
-</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="c1"># cc char-range.c -o char-range &amp;&amp; ./char-range</span>
-</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>$<span class="w"> </span>c++<span class="w"> </span>char-range.cpp<span class="w"> </span>-o<span class="w"> </span>char-range<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>./char-range
-</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a><span class="nv">CHAR_MIN</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>-128,<span class="w"> </span><span class="nv">CHAR_MAX</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">127</span>
-</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="o">(</span><span class="nv">CHAR_MAX</span><span class="w"> </span><span class="o">==</span><span class="w"> </span>UCHAR_MAX<span class="o">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span>
-</span><span id="__span-10-8"><a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a>CHAR_MAX<span class="w"> </span>&gt;&gt;<span class="w"> </span><span class="nv">7</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1"># win10/x86_64</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>&gt;cl<span class="w"> </span>char-range.cpp<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>char-range.exe
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="c1"># mbpa1398/x86_64, mbpa2991/arm64</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="c1"># cc char-range.c -o char-range &amp;&amp; ./char-range</span>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>$<span class="w"> </span>c++<span class="w"> </span>char-range.cpp<span class="w"> </span>-o<span class="w"> </span>char-range<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>./char-range
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="nv">CHAR_MIN</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>-128,<span class="w"> </span><span class="nv">CHAR_MAX</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">127</span>
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="o">(</span><span class="nv">CHAR_MAX</span><span class="w"> </span><span class="o">==</span><span class="w"> </span>UCHAR_MAX<span class="o">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span>
+</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>CHAR_MAX<span class="w"> </span>&gt;&gt;<span class="w"> </span><span class="nv">7</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span>
 </span></code></pre></div>
 </div>
 <div class="tabbed-block">
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="c1"># cc char-range.c -o char-range &amp;&amp; ./char-range</span>
-</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>$<span class="w"> </span>c++<span class="w"> </span>char-range.cpp<span class="w"> </span>-o<span class="w"> </span>char-range<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>./char-range
-</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="nv">CHAR_MIN</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span>,<span class="w"> </span><span class="nv">CHAR_MAX</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">255</span>
-</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="o">(</span><span class="nv">CHAR_MAX</span><span class="w"> </span><span class="o">==</span><span class="w"> </span>UCHAR_MAX<span class="o">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span>
-</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>CHAR_MAX<span class="w"> </span>&gt;&gt;<span class="w"> </span><span class="nv">7</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="c1"># cc char-range.c -o char-range &amp;&amp; ./char-range</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>$<span class="w"> </span>c++<span class="w"> </span>char-range.cpp<span class="w"> </span>-o<span class="w"> </span>char-range<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>./char-range
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="nv">CHAR_MIN</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">0</span>,<span class="w"> </span><span class="nv">CHAR_MAX</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">255</span>
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="o">(</span><span class="nv">CHAR_MAX</span><span class="w"> </span><span class="o">==</span><span class="w"> </span>UCHAR_MAX<span class="o">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>CHAR_MAX<span class="w"> </span>&gt;&gt;<span class="w"> </span><span class="nv">7</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span>
 </span></code></pre></div>
 </div>
 </div>
 </div>
+<h2 id="type_conversion">type conversion<a class="headerlink" href="#type_conversion" title="Permanent link">#</a></h2>
+<p>C语言有隐式的数据类型转换，它很容易出错。下面是隐式数据类型转换的一般规则。</p>
+<ol>
+<li>
+<p>在赋值表达式中，右边表达式的值自动隐式转换左边变量的类型。</p>
+</li>
+<li>
+<p>在算术表达式中，占字节少的数据类型向占字节多的数据类型转换，如下图所示。例如，在ARM64系统中，当对 int 类型和 long 类型的值进行运算时，int 类型的数据需要转换成 long 类型。</p>
+</li>
+</ol>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a> +----------------+  \
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a> | char /         |  |
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a> | unsigned char  |  |
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a> +----------------+  |                                                                    +-------+
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>                     |                                                                    | float |
+</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a> +----------------+  |                                                                    +-------+
+</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a> | short /        |  |                  +----------+                    +----------+          ↓
+</span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a> | unsigned short |  |     +-----+      | unsigned |      +------+      | unsigned |      +--------+
+</span><span id="__span-7-9"><a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a> +----------------+  +---&gt; | int | ---&gt; |          | ---&gt; | long | ---&gt; |          | ---&gt; | double |
+</span><span id="__span-7-10"><a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a>                     |     +-----+      |   int    |      +------+      |   long   |      +--------+
+</span><span id="__span-7-11"><a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a> +----------------+  |                  +----------+                    +----------+
+</span><span id="__span-7-12"><a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a> | bit-field      |  |
+</span><span id="__span-7-13"><a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a> +----------------+  |
+</span><span id="__span-7-14"><a id="__codelineno-7-14" name="__codelineno-7-14" href="#__codelineno-7-14"></a>                     |
+</span><span id="__span-7-15"><a id="__codelineno-7-15" name="__codelineno-7-15" href="#__codelineno-7-15"></a> +----------------+  |
+</span><span id="__span-7-16"><a id="__codelineno-7-16" name="__codelineno-7-16" href="#__codelineno-7-16"></a> | enumeration    |  |
+</span><span id="__span-7-17"><a id="__codelineno-7-17" name="__codelineno-7-17" href="#__codelineno-7-17"></a> +----------------+  /
+</span></code></pre></div>
+<ol start="3">
+<li>
+<p>在算术表达式中，当对有符号数据类型与无符号数据类型进行运算时，需要把有符号数据类型转换为无符号数据类型。例如，若表达式中既有 int 类型又有 unsigned int类型，则所有的 int 类型数据都被转化为 unsigned int 类型。</p>
+<div class="admonition example">
+<p class="admonition-title">unsigned int * signed int</p>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="kt">void</span><span class="w"> </span><span class="nf">main</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="w">    </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span>
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="w">    </span><span class="c1">// -1 是整数常量，可用 int 类型表达，而变量 i 是 unsigned int 类型。</span>
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="w">    </span><span class="c1">// 根据上述规则，需要把 int 类型转换成 unsigned int 类型再执行计算。</span>
+</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;0x%x</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">-1</span><span class="p">);</span>
+</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a><span class="p">}</span>
+</span></code></pre></div>
+</div>
+</li>
+<li>
+<p>整数常量通常是 int 类型。例如，在ARM64系统里，整数8会使用 <code>Wn</code> 寄存器来存储，8LL 则会使用 <code>Xn</code> 寄存器来存储。</p>
+</li>
+</ol>
+<h3 id="sizeofa__">sizeof('A') = ?<a class="headerlink" href="#sizeofa__" title="Permanent link">#</a></h3>
+<p>K&amp;R C 的整数类型转换规则之一就是 char、short 先被提升为 int 再参与运算（符合第 2 条），其源起于 C 语言刚刚被设计出来的时候，一共只有两种整数类型 —— <code>char</code> 和 <code>int</code>，故在实际的运算当中，char 总是先被提升为 int。</p>
+<p>另外，在 C 语言中，单字节字符常数的类型从一开始到现在都是 int（单字节字符常数指 'A'、'\n'、'\045'、'\x33' 等常量）。本来大家很自然地以为 'A' 应该是 char 类型的，不是吗？例如：</p>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="kt">char</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sc">&#39;A&#39;</span><span class="p">;</span>
+</span></code></pre></div>
+<p>上面这个表达式的确引起了我们的错觉。'A' 明显代表一个单字节字符值，把这个代表字符的值赋给 char 变量，可谓“门当户对”的事啊……然而，'A'虽然代表一个单字节字符值，但同时它的值必须要用与 int 等长的空间来存储，因此它的身份是不折不扣的 int。这也是 char 变量必须提升为 int 再参与运算的规则的另一个反映——反正到头来还是得提升为 int，索性一开始就给它 int 的身份！至于上面那个表达式，它的作用相当于把一个曾经提升为 int 类型的 char 数值还原回 char 而已，完全没有问题。虽然 C89 开始确立了一系列的新规则，但 <code>单字节字符常量的类型是 int</code> 这个惯例仍然被保留下来，即使到了 C99也同样如此：</p>
+<div class="language-c highlight"><span class="filename">sizeof-char-literal.c</span><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">argv</span><span class="p">[])</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;sizeof(&#39;A&#39;) = %zu</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="sc">&#39;A&#39;</span><span class="p">));</span>
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>
+</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="p">}</span>
+</span></code></pre></div>
+<p>由于 sizeof 是编译期就确定的数值，我们完全可以从汇编代码中看出它的具体 值，不过这里还是编译成可执行文件再运行：</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>$<span class="w"> </span>cc<span class="w"> </span>single-char.c<span class="w"> </span>-o<span class="w"> </span>single-char<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>./single-char
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>sizeof<span class="o">(</span><span class="s1">&#39;A&#39;</span><span class="o">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">4</span>
+</span></code></pre></div>
+<p>显然，'A' 要占用4个字节，在32位平台上这恰好就是一个 int 的长度。综合上面所说，在 C 语言的早期，要确定一个表达式里的整型变量或者常数的具体类型并不复杂，原本就只有两种整数类型，在运算和传递参数时 char 又总是先被提升为 int，加上整型常数属于 int 类型、单字节字符常量也属于 int 类型——一切都非常清楚。</p>
+<h3 id="integral_promotion">integral promotion<a class="headerlink" href="#integral_promotion" title="Permanent link">#</a></h3>
+<p>小结一下C语言规范中的整型提升（integral promotion）约定。</p>
+<ol>
+<li>在表达式中，当使用有符号或者无符号的 char、short、位域（bit-field）以及枚举类型时，都应该提升到 int 类型。</li>
+<li>如果上述类型可以使用 int 类型来表示，则使用 int 类型；否则，使用 unsigned int 类型。</li>
+</ol>
+<p><mark>整型提升的意义是，使 CPU 内部的 ALU 充分利用通用寄存器的长度。</mark></p>
+<p>例如，ARM64 处理器通用寄存器支持 32 位宽和 64 位宽，而 int 类型和 unsigned int 类型正好是 32 位宽。对于两个 char 类型值的运算，CPU 难以直接实现字节相加的运算，在 CPU 内部要先转换通用寄存器的标准长度。在 ARM64 处理器里，通用寄存器最小的标准长度是32位，即4字节。因此，两个 char 类型值需要存储到 32 位的 <code>Wn</code> 通用寄存器中，然后再进行相加运算。</p>
+<div class="admonition note">
+<p class="admonition-title">short signed to long unsigned</p>
+<p>另外一个特别需要注意的问题是，当系统要把长度较小的带符号整数类型转换为长度较大的无符号整数类型时，正确的做法是<strong>先</strong>把带符号整数类型通过带<em>符号扩展</em>（Sign Extension）转换成与最终的无符号整数类型长度相同的带符号整数类型，然后<strong>再</strong>进一步转换为无符号类型。</p>
+</div>
+<p>再来看下面这个例子：</p>
+<div class="language-c highlight"><span class="filename">integral_promotion.c</span><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">argv</span><span class="p">[])</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="w">    </span><span class="kt">char</span><span class="w"> </span><span class="n">a</span><span class="p">;</span>
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="w">    </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">b</span><span class="p">;</span>
+</span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a><span class="w">    </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">c</span><span class="p">;</span>
+</span><span id="__span-12-7"><a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a>
+</span><span id="__span-12-8"><a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a><span class="w">    </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0x88</span><span class="p">;</span>
+</span><span id="__span-12-9"><a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a><span class="w">    </span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">~</span><span class="n">a</span><span class="p">;</span>
+</span><span id="__span-12-10"><a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a><span class="w">    </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">~</span><span class="n">a</span><span class="p">;</span>
+</span><span id="__span-12-11"><a id="__codelineno-12-11" name="__codelineno-12-11" href="#__codelineno-12-11"></a>
+</span><span id="__span-12-12"><a id="__codelineno-12-12" name="__codelineno-12-12" href="#__codelineno-12-12"></a><span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;a=%#x, ~a=%#x, b=%#x, c=%#lx</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="o">~</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="p">);</span>
+</span><span id="__span-12-13"><a id="__codelineno-12-13" name="__codelineno-12-13" href="#__codelineno-12-13"></a>
+</span><span id="__span-12-14"><a id="__codelineno-12-14" name="__codelineno-12-14" href="#__codelineno-12-14"></a><span class="w">    </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="n">d</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0xa5</span><span class="p">;</span>
+</span><span id="__span-12-15"><a id="__codelineno-12-15" name="__codelineno-12-15" href="#__codelineno-12-15"></a><span class="w">    </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="n">e</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">~</span><span class="n">d</span><span class="o">&gt;&gt;</span><span class="mi">4</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+</span><span id="__span-12-16"><a id="__codelineno-12-16" name="__codelineno-12-16" href="#__codelineno-12-16"></a>
+</span><span id="__span-12-17"><a id="__codelineno-12-17" name="__codelineno-12-17" href="#__codelineno-12-17"></a><span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;e=%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">e</span><span class="p">);</span>
+</span><span id="__span-12-18"><a id="__codelineno-12-18" name="__codelineno-12-18" href="#__codelineno-12-18"></a>
+</span><span id="__span-12-19"><a id="__codelineno-12-19" name="__codelineno-12-19" href="#__codelineno-12-19"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+</span><span id="__span-12-20"><a id="__codelineno-12-20" name="__codelineno-12-20" href="#__codelineno-12-20"></a><span class="p">}</span>
+</span></code></pre></div>
+<p>编译运行输出结果如下：</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>$<span class="w"> </span>cc<span class="w"> </span>integral_promotion.c<span class="w"> </span>-o<span class="w"> </span>integral_promotion<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>./integral_promotion
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="nv">a</span><span class="o">=</span>0x88,<span class="w"> </span>~a<span class="o">=</span>0xffffff77,<span class="w"> </span><span class="nv">b</span><span class="o">=</span>0xffffff77,<span class="w"> </span><span class="nv">c</span><span class="o">=</span>0xffffffffffffff77
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="nv">e</span><span class="o">=</span><span class="m">250</span>
+</span></code></pre></div>
+<ol>
+<li>根据整形提升的规则，表达式 <code>~a</code> 会转化为 int 类型，符号扩展后的值为 0xffffff77。</li>
+<li><code>b=~a</code>, <code>~a</code> 先提升为 int 值 0xffffff77，再提升为 unsigned int 值，十六进制输出不变。c 同理输出 0xffffffffffffff77。</li>
+<li><code>e = ~d&gt;&gt;4 + 1</code>，<code>d</code> 被提升为 int 类型，取反得到 0xffffff5a。加法的优先级高于右移，0xffffff5a&gt;&gt;5=0xfffffffa（高位符号位扩展填充1），最终 b 的值为 0xfa=250。</li>
+</ol>
 <h2 id="why_getchar_return_int">why getchar() return int?<a class="headerlink" href="#why_getchar_return_int" title="Permanent link">#</a></h2>
 <p>最后，来看一下 <a href="https://en.cppreference.com/w/c/io">File input/output</a> - <a href="https://pubs.opengroup.org/onlinepubs/009695299/basedefs/stdio.h.html">&lt;stdio.h&gt;</a> 中读写字符相关接口的参数类型：</p>
-<div class="language-c highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="kt">int</span><span class="w"> </span><span class="nf">fgetc</span><span class="p">(</span><span class="w"> </span><span class="kt">FILE</span><span class="w"> </span><span class="o">*</span><span class="n">stream</span><span class="w"> </span><span class="p">);</span>
-</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="kt">int</span><span class="w"> </span><span class="nf">getc</span><span class="p">(</span><span class="w"> </span><span class="kt">FILE</span><span class="w"> </span><span class="o">*</span><span class="n">stream</span><span class="w"> </span><span class="p">);</span>
-</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="kt">int</span><span class="w"> </span><span class="nf">getchar</span><span class="p">(</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="p">);</span>
-</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="kt">int</span><span class="w"> </span><span class="nf">putchar</span><span class="p">(</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">ch</span><span class="w"> </span><span class="p">);</span>
-</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="kt">int</span><span class="w"> </span><span class="nf">ungetc</span><span class="p">(</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">ch</span><span class="p">,</span><span class="w"> </span><span class="kt">FILE</span><span class="w"> </span><span class="o">*</span><span class="n">stream</span><span class="w"> </span><span class="p">);</span>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="kt">int</span><span class="w"> </span><span class="nf">fgetc</span><span class="p">(</span><span class="w"> </span><span class="kt">FILE</span><span class="w"> </span><span class="o">*</span><span class="n">stream</span><span class="w"> </span><span class="p">);</span>
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="kt">int</span><span class="w"> </span><span class="nf">getc</span><span class="p">(</span><span class="w"> </span><span class="kt">FILE</span><span class="w"> </span><span class="o">*</span><span class="n">stream</span><span class="w"> </span><span class="p">);</span>
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="kt">int</span><span class="w"> </span><span class="nf">getchar</span><span class="p">(</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="p">);</span>
+</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="kt">int</span><span class="w"> </span><span class="nf">putchar</span><span class="p">(</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">ch</span><span class="w"> </span><span class="p">);</span>
+</span><span id="__span-14-5"><a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a><span class="kt">int</span><span class="w"> </span><span class="nf">ungetc</span><span class="p">(</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">ch</span><span class="p">,</span><span class="w"> </span><span class="kt">FILE</span><span class="w"> </span><span class="o">*</span><span class="n">stream</span><span class="w"> </span><span class="p">);</span>
 </span></code></pre></div>
 <p>遥想当年初学 C 语言，相信不少人对于 <code>getchar()</code> 函数家族的返回类型都会有所困惑。</p>
 <p>先来看一道《C 语言深度解剖》附录 1 中的 C 语言基础测试题：</p>
 <ol start="19">
 <li>下面的代码有什么问题？为什么？</li>
 </ol>
-<div class="language-c highlight"><span class="filename">getchar.c</span><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
-</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>
-</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="kt">char</span><span class="w"> </span><span class="n">c</span><span class="p">;</span>
-</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">getchar</span><span class="p">();</span>
-</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">EOF</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">c</span><span class="p">)</span>
-</span><span id="__span-13-6"><a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a><span class="p">{</span>
-</span><span id="__span-13-7"><a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a><span class="w">    </span><span class="n">do_something</span><span class="p">();</span>
-</span><span id="__span-13-8"><a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a><span class="p">}</span>
+<div class="language-c highlight"><span class="filename">getchar.c</span><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a><span class="kt">char</span><span class="w"> </span><span class="n">c</span><span class="p">;</span>
+</span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">getchar</span><span class="p">();</span>
+</span><span id="__span-15-5"><a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">EOF</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">c</span><span class="p">)</span>
+</span><span id="__span-15-6"><a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a><span class="p">{</span>
+</span><span id="__span-15-7"><a id="__codelineno-15-7" name="__codelineno-15-7" href="#__codelineno-15-7"></a><span class="w">    </span><span class="n">do_something</span><span class="p">();</span>
+</span><span id="__span-15-8"><a id="__codelineno-15-8" name="__codelineno-15-8" href="#__codelineno-15-8"></a><span class="p">}</span>
 </span></code></pre></div>
 <p>此为本节标题问题的衍生问题，弄清楚了标题问题，该测试题的答案自然明了。</p>
 <p><a href="https://stackoverflow.com/questions/39341213/why-is-getchar-function-in-c-an-integer">Why is getchar() function in C an Integer?</a></p>
@@ -1902,22 +1986,23 @@ The signedness of char depends on the compiler and the target platform: the defa
 <div class="admonition note">
 <p class="admonition-title">to accommodate EOF</p>
 <p>The function <code>getchar()</code> reads a single character from the standard input and returns the character value as the value of the function, but to <strong>accommodate</strong> a possible negative value for <code>EOF</code>, the type of the value returned is <code>int</code>. (Recall, EOF may be either 0 or -1 depending on implementation). So we could use <code>getchar()</code> to read a character and assign the returned value to an integer variable:</p>
-<div class="language-c highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">c</span><span class="p">;</span>
-</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="w">    </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">getchar</span><span class="p">();</span>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">c</span><span class="p">;</span>
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a><span class="w">    </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">getchar</span><span class="p">();</span>
 </span></code></pre></div>
 <p>If, after executing this statement, c equals EOF, we have reached the end of the input file; otherwise, c is the ASCII value of the next character in the input stream.</p>
 <p>While int type can be used to store the ASCII value of a character, programs can become <em>confusing</em> to read - we expect that the int data type is used for numeric integer data and that char data type is used for character data. The problem is that char type, depending on implementation, may or may not allow negative values. To resolve this, C allows us to explicitly declare a signed char data type for a variable, which can store negative values as well as positive ASCII values:</p>
-<div class="language-c highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="w">    </span><span class="kt">signed</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="n">c</span><span class="p">;</span>
-</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="w">    </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">getchar</span><span class="p">();</span>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="w">    </span><span class="kt">signed</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="n">c</span><span class="p">;</span>
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a><span class="w">    </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">getchar</span><span class="p">();</span>
 </span></code></pre></div>
 <p>An explicit signed char variable ensures that a character is stored in a character type object while allowing a possible negative value for EOF. The keyword signed is called a <strong>type qualifier</strong>.</p>
 <p>A similar routine for character output is <code>putchar()</code>, which outputs its argument as a character to the standard output. Thus,</p>
-<div class="language-c highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="n">putchar</span><span class="p">(</span><span class="n">c</span><span class="p">);</span>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="n">putchar</span><span class="p">(</span><span class="n">c</span><span class="p">);</span>
 </span></code></pre></div>
 <p>outputs the ASCII character whose value is in c to the standard output. The argument of putchar() is expected to be an integer; however, the variable c may be either char type or int type (ASCII value) since the value of a char type is really an integer ASCII value.</p>
 </div>
 <hr />
-<p>本文节选自 《<a href="https://att.newsmth.net/nForum/att/CProgramming/3213/245">C语言标准与实现(姚新颜)-2004</a>》 #2 数值运算 | 12 整数类型。</p>
+<p>本文节选自 《<a href="https://att.newsmth.net/nForum/att/CProgramming/3213/245">C语言标准与实现(姚新颜)-2004</a>》 #2 数值运算 | 12 整数类型。<br />
+参考 <a href="https://item.jd.com/13119117.html">《ARM64体系结构编程与实践》</a> | 第 21 章 操作系统相关话题 - C 语言常见陷阱 - 数据类型转换与整形提升。</p>
 
 
 

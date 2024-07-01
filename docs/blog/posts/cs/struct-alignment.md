@@ -15,7 +15,7 @@ tags:
 comments: true
 ---
 
-An object doesn't just need enough storage to hold its representation. In addition, on some machine architectures, the bytes used to hold it must have proper alignment for the hardware to access it efﬁciently.
+An object doesn't just need enough storage to hold its representation. In addition, on some machine architectures, the bytes used to hold it must have proper alignment for the hardware to access it efficiently.
 
 Where alignment most often becomes visible is in object layouts: sometimes structs contain "`holes`" to improve alignment.
 
@@ -58,7 +58,7 @@ Excerpt from [The C++ Programming Language(4e)-2013](https://www.stroustrup.com/
 
 6. Types and Declarations | 6.2 Types | **6.2.9 Alignment**
 
-An object doesn't just need enough storage to hold its representation. In addition, on some machine architectures, the bytes used to hold it must have proper alignment for the hardware to access it efﬁciently (or in extreme cases to access it at all). For example, a 4-byte `int` often has to be aligned on a word (4-byte) boundary, and sometimes an 8-byte `double` has to be aligned on a word (8-byte) boundary. Of course, this is all very implementation speciﬁc, and for most programmers completely implicit. You can write good C++ code for decades without needing to be explicit about alignment. Where alignment most often becomes visible is in object layouts: sometimes structs contain "`holes`" to improve alignment.
+An object doesn't just need enough storage to hold its representation. In addition, on some machine architectures, the bytes used to hold it must have proper alignment for the hardware to access it efficiently (or in extreme cases to access it at all). For example, a 4-byte `int` often has to be aligned on a word (4-byte) boundary, and sometimes an 8-byte `double` has to be aligned on a word (8-byte) boundary. Of course, this is all very implementation specific, and for most programmers completely implicit. You can write good C++ code for decades without needing to be explicit about alignment. Where alignment most often becomes visible is in object layouts: sometimes structs contain "`holes`" to improve alignment.
 
 The `alignof` operator returns the alignment of its argument expression.
 
@@ -85,7 +85,7 @@ You could imagine the members of a `Readout` object laid out in memory like this
 
 Members are allocated in memory in declaration order, so the address of `hour` must be less than the address of `value`. See also §8.2.6.
 
-However, the size of an object of a **struct** is not necessarily the sum of the sizes of its members. This is because many machines require objects of certain types to be allocated on architecture dependent *boundaries* or handle such objects much more *efﬁciently* if they are. For example, integers are often allocated on word boundaries. On such machines, objects are said to have to be properly ***aligned*** (§6.2.9). This leads to "`holes`" in the structures. A more realistic layout of a `Readout` on a machine with 4-byte int would be:
+However, the size of an object of a **struct** is not necessarily the sum of the sizes of its members. This is because many machines require objects of certain types to be allocated on architecture dependent *boundaries* or handle such objects much more *efficiently* if they are. For example, integers are often allocated on word boundaries. On such machines, objects are said to have to be properly ***aligned*** (§6.2.9). This leads to "`holes`" in the structures. A more realistic layout of a `Readout` on a machine with 4-byte int would be:
 
 <figure markdown="span">
     ![struct-Readout-2](./images/alignment/struct-Readout-2.png)
@@ -94,7 +94,7 @@ However, the size of an object of a **struct** is not necessarily the sum of the
 
 In this case, as on many machines, `sizeof(Readout)` is 12, and not 6 as one would naively expect from simply adding the sizes of the individual members.
 
-You can minimize wasted space by simply ordering members by size (*largest member ﬁrst*). For example:
+You can minimize wasted space by simply ordering members by size (*largest member first*). For example:
 
 ```c
 struct Readout {
@@ -113,7 +113,7 @@ Note that this still leaves a 2-byte "`hole`" (unused space) in a `Readout` and 
 
 It is usually best to order members for readability and sort them by size only if there is a demonstrated need to optimize.
 
-Use of multiple access speciﬁers (i.e., `public`, `private`, or `protected`) can affect layout (§20.5).
+Use of multiple access specifiers (i.e., `public`, `private`, or `protected`) can affect layout (§20.5).
 
 ## struct alignment rule
 
@@ -123,7 +123,7 @@ Use of multiple access speciﬁers (i.e., `public`, `private`, or `protected`) c
 
 各成员变量在存放的时候根据在结构体中声明的顺序依次申请空间，同时按照“地址边界对齐限制”原则调整存放位置（地址），空缺的字节会自动填充。
 
-### largest member ﬁrst
+### largest member first
 
 下面以 `struct st_dci` 为例来说明结构体的存储布局。
 
@@ -148,7 +148,7 @@ struct st_dci
 
 ### largest member middle
 
-上面的 `struct st_dci` 是一种类似 TC++PL 中调整后的 struct Readout - largest member ﬁrst 的内存布局。
+上面的 `struct st_dci` 是一种类似 TC++PL 中调整后的 struct Readout - largest member first 的内存布局。
 
 交换一下成员变量d和c的位置，将占位最长的 d 放在中间，新的结构体 `struct st_cdi` 的内存布局和占用空间又是怎样的呢？
 
@@ -303,6 +303,6 @@ GCC-specific `__alignof__` operator or Microsoft-specific `__alignof` operator.
 [C Structure Padding Initialization](https://interrupt.memfault.com/blog/c-struct-padding-initialization)
 [How Struct Memory Alignment Works in C](https://levelup.gitconnected.com/how-struct-memory-alignment-works-in-c-3ee897697236)  
 
-[Computer Systems - A Programmer’s Perspective](https://www.amazon.com/Computer-Systems-OHallaron-Randal-Bryant/dp/1292101768/) - 3.9.3: Data Alignment
+[Computer Systems - A Programmer's Perspective](https://www.amazon.com/Computer-Systems-OHallaron-Randal-Bryant/dp/1292101768/) - 3.9.3: Data Alignment
 
 [老码识途-从机器码到框架的系统观逆向修炼之路-2012](https://book.douban.com/subject/19930393/) - 1.5 无法沟通——对齐的错误

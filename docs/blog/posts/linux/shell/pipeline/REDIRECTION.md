@@ -187,7 +187,7 @@ check_python_version()
 
 重定向符号 `>` 正常情况，连接左侧的源头和右侧的目标，左侧源头缺省是1-stdout。因此 `>&2` 实际上是 `1>&2` 的简略写法。
 
-> `[n]>&word` - If `n` is not speciﬁed, the standard output (ﬁle descriptor 1) is used.
+> `[n]>&word` - If `n` is not specified, the standard output (file descriptor 1) is used.
 
 右侧的 `&2` 中的`&`类似C语言中的地址引用（denote），而后面的数字`2`为stderr的文件描述符。
 因此，`>&2` 表示将1（stdout，标准输出）重定向到2（stderr，标准错误）中。

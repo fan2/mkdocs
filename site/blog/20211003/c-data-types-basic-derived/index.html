@@ -1486,11 +1486,11 @@
 </div>
 <p>The representation that a particular value has should in most cases not be your concern; the compiler is there to organize the translation back and forth between values and representations.</p>
 <h3 id="51_the_abstract_state_machine">5.1 The abstract state machine<a class="headerlink" href="#51_the_abstract_state_machine" title="Permanent link">#</a></h3>
-<p>To explain the abstract state machine, we ﬁrst have to look into the concepts of a <em>value</em> (what state are we in), the <em>type</em> (what this state represents), and the <em>representation</em> (how state is distinguished). As the term abstract suggests, C’s mechanism allows different platforms to realize the abstract state machine of a given program differently according to their needs and capacities.</p>
+<p>To explain the abstract state machine, we first have to look into the concepts of a <em>value</em> (what state are we in), the <em>type</em> (what this state represents), and the <em>representation</em> (how state is distinguished). As the term abstract suggests, C’s mechanism allows different platforms to realize the abstract state machine of a given program differently according to their needs and capacities.</p>
 <h3 id="52_basic_types">5.2 Basic types<a class="headerlink" href="#52_basic_types" title="Permanent link">#</a></h3>
 <p>C has a series of basic types and means of constructing derived types from them.</p>
-<p>Mainly for historical reasons, the system of basic types is a bit complicated, and the syntax to specify such types is not completely straightforward. There is a ﬁrst level of speciﬁcation that is done entirely with keywords of the language, such as <strong>signed</strong>, <strong>int</strong>, and <strong>double</strong>. This <em>ﬁrst</em> level is mainly organized according to C internals. On top of that is a <em>second</em> level of speciﬁcation that comes through header ﬁles, and we have already seen examples: <code>size_t</code> and <code>bool</code>. This second level is organized by type semantics, specifying what properties a particular type brings to the programmer.</p>
-<p>We will start with the ﬁrst-level speciﬁcation of such types. As we discussed earlier (takeaway 5.2), all basic values in C are numbers, but there are different kinds of numbers. As a principal distinction, we have two different classes of numbers, each with two subclasses: unsigned integers, signed integers, real ﬂoating-point numbers, and complex ﬂoating-point numbers. Each of these four classes contains several types.They differ according to their precision, which determines the valid range of values that are allowed for a particular type. Table 5.1 contains an overview of the 18 base types.</p>
+<p>Mainly for historical reasons, the system of basic types is a bit complicated, and the syntax to specify such types is not completely straightforward. There is a first level of specification that is done entirely with keywords of the language, such as <strong>signed</strong>, <strong>int</strong>, and <strong>double</strong>. This <em>first</em> level is mainly organized according to C internals. On top of that is a <em>second</em> level of specification that comes through header files, and we have already seen examples: <code>size_t</code> and <code>bool</code>. This second level is organized by type semantics, specifying what properties a particular type brings to the programmer.</p>
+<p>We will start with the first-level specification of such types. As we discussed earlier (takeaway 5.2), all basic values in C are numbers, but there are different kinds of numbers. As a principal distinction, we have two different classes of numbers, each with two subclasses: unsigned integers, signed integers, real floating-point numbers, and complex floating-point numbers. Each of these four classes contains several types.They differ according to their precision, which determines the valid range of values that are allowed for a particular type. Table 5.1 contains an overview of the 18 base types.</p>
 <blockquote>
 <p>Types with a gray background don’t allow for arithmetic; they are promoted before doing arithmetic. Type char is special since it can be unsigned or signed, depending on the platform. All types in this table are considered to be distinct types, even if they have the same class and precision.</p>
 </blockquote>
@@ -1503,13 +1503,13 @@
 <p class="admonition-title">TAKEAWAY 5.10</p>
 <p>TAKEAWAY 5.10 Before arithmetic, narrow integer types are promoted to <strong>signed int</strong>.</p>
 </div>
-<p>Observe that among the narrow integer types, we have two prominent members: <code>char</code> and <code>bool</code>. The ﬁrst is C’s type that handles printable characters for text, and the second holds truth values, false and true. As we said earlier, for C, even these are just some sort of numbers.</p>
+<p>Observe that among the narrow integer types, we have two prominent members: <code>char</code> and <code>bool</code>. The first is C’s type that handles printable characters for text, and the second holds truth values, false and true. As we said earlier, for C, even these are just some sort of numbers.</p>
 <p>The 12 remaining, unpromoted, types split nicely into the four classes.</p>
 <div class="admonition note">
 <p class="admonition-title">TAKEAWAY 5.11</p>
 <p>TAKEAWAY 5.11 Each of the four classes of base types has three distinct unpromoted types.</p>
 </div>
-<p>Contrary to what many people believe, the C standard doesn’t prescribe the precision of these 12 types: it only constrains them. They depend on a lot of factors that are <strong><em>implementation deﬁned</em></strong>.</p>
+<p>Contrary to what many people believe, the C standard doesn’t prescribe the precision of these 12 types: it only constrains them. They depend on a lot of factors that are <strong><em>implementation defined</em></strong>.</p>
 <p>One of the things the standard <em>does</em> prescribe is that the possible ranges of values for the signed types must include each other according to their <em>rank</em>:</p>
 <figure><br />
 <img alt="signed-types-ranges" src="../../c/images/signed-types-ranges.png" style="width:80%;height:80%" /><br />
@@ -1519,17 +1519,17 @@
 <img alt="unsigned-types-ranges" src="../../c/images/unsigned-types-ranges.png" style="width:80%;height:80%" /><br />
 </figure>
 <p>But remember that for any arithmetic or comparison, the narrow unsigned types are promoted to <code>signed int</code> and not to <code>unsigned int</code>, as this diagram might suggest.</p>
-<p>The comparison of the ranges of signed and unsigned types is more difﬁcult. Obviously, an unsigned type can never include the negative values of a signed type. For the non-negative values, we have the following inclusion of the values of types with corresponding rank:</p>
+<p>The comparison of the ranges of signed and unsigned types is more difficult. Obviously, an unsigned type can never include the negative values of a signed type. For the non-negative values, we have the following inclusion of the values of types with corresponding rank:</p>
 <figure><br />
 <img alt="positive-signed&amp;unsigned" src="../../c/images/positive-signed%26unsigned.png" style="width:80%;height:80%" /><br />
 </figure>
-<p>That is, for a given rank, the non-negative values of the signed type ﬁt into the unsigned type. On any modern platform you encounter, this inclusion is strict: the unsigned type has values that do not ﬁt into the signed type. For example, a common pair of maximal values is 2<sup>31</sup> −1 = 2 147 483 647 for <code>signed int</code> and 2<sup>32</sup> − 1 = 4 294 967 295 for <code>unsigned int</code>.</p>
+<p>That is, for a given rank, the non-negative values of the signed type fit into the unsigned type. On any modern platform you encounter, this inclusion is strict: the unsigned type has values that do not fit into the signed type. For example, a common pair of maximal values is 2<sup>31</sup> −1 = 2 147 483 647 for <code>signed int</code> and 2<sup>32</sup> − 1 = 4 294 967 295 for <code>unsigned int</code>.</p>
 <p>Because the interrelationship between integer types depends on the platform, choosing the “best” type for a given purpose in a portable way can be a tedious task. Luckily, we can get some help from the compiler implementation, which provides us with <strong>typedef</strong> s such as <code>size_t</code> that represent certain features.</p>
 <div class="admonition note">
 <p class="admonition-title">TAKEAWAY 5.12</p>
 <p>TAKEAWAY 5.12 Use <code>size_t</code> for sizes, cardinalities, or ordinal numbers.</p>
 </div>
-<p>Remember that unsigned types are the most convenient types, since they are the only types that have an arithmetic that is deﬁned consistently with mathematical properties: the modulo operation. They can’t raise signals on overﬂow and can be optimized best. They are described in more detail in section 5.7.1.</p>
+<p>Remember that unsigned types are the most convenient types, since they are the only types that have an arithmetic that is defined consistently with mathematical properties: the modulo operation. They can’t raise signals on overflow and can be optimized best. They are described in more detail in section 5.7.1.</p>
 <div class="admonition note">
 <p class="admonition-title">TAKEAWAY 5.13</p>
 <p>TAKEAWAY 5.13 Use <strong>unsigned</strong> for small quantities that can’t be negative.</p>
@@ -1542,16 +1542,16 @@
 <li>TAKEAWAY 5.15 Use <code>ptrdiff_t</code> for large differences that bear a sign.</li>
 </ul>
 </div>
-<p>If you want to do fractional computation with a value such as 0.5 or 3.77189E+89, use ﬂoating-point types (see section 5.7.7).</p>
+<p>If you want to do fractional computation with a value such as 0.5 or 3.77189E+89, use floating-point types (see section 5.7.7).</p>
 <div class="admonition note">
 <p class="admonition-title">TAKEAWAY 5.16~5.17</p>
 <ul>
-<li>TAKEAWAY 5.16 Use <strong>double</strong> for ﬂoating-point calculations.</li>
+<li>TAKEAWAY 5.16 Use <strong>double</strong> for floating-point calculations.</li>
 <li>TAKEAWAY 5.17 Use <strong>double complex</strong> for complex calculations.</li>
 </ul>
 </div>
-<p>The C standard deﬁnes a lot of other types, among them other arithmetic types that model special use cases. Table 5.2 lists some of them. The second pair represents the types with maximal width that the platform supports. This is also the type in which the preprocessor does any of its arithmetic or comparison.</p>
-<p>The C standard deﬁnes a lot of other types, among them other arithmetic types that model special use cases. Table 5.2 lists some of them. The second pair represents the types with maximal width that the platform supports. This is also the type in which the preprocessor does any of its arithmetic or comparison.</p>
+<p>The C standard defines a lot of other types, among them other arithmetic types that model special use cases. Table 5.2 lists some of them. The second pair represents the types with maximal width that the platform supports. This is also the type in which the preprocessor does any of its arithmetic or comparison.</p>
+<p>The C standard defines a lot of other types, among them other arithmetic types that model special use cases. Table 5.2 lists some of them. The second pair represents the types with maximal width that the platform supports. This is also the type in which the preprocessor does any of its arithmetic or comparison.</p>
 <figure><br />
 <img alt="Table-5.2-some-semantic-arithmetic-types" src="../../c/images/Table-5.2-some-semantic-arithmetic-types.png" /><br />
 </figure>
@@ -1565,11 +1565,11 @@
 <p>The two other strategies to derive data types are more involved:</p>
 <p><strong>Pointers</strong>: Entities that refer to an object in memory.</p>
 <blockquote>
-<p>Pointers are by far the most involved concept, and we will delay a full discussion of them to chapter 11. Here, in section 6.2, we will only discuss them as opaque data types, without even mentioning the real purpose they fulﬁll.</p>
+<p>Pointers are by far the most involved concept, and we will delay a full discussion of them to chapter 11. Here, in section 6.2, we will only discuss them as opaque data types, without even mentioning the real purpose they fulfill.</p>
 </blockquote>
 <p><strong>Unions</strong>: These overlay items of different base types in the same memory location. Unions require a deeper understanding of C’s memory model and are not of much use in a programmer’s everyday life, so they are only introduced later, in section 12.2.</p>
 <blockquote>
-<p>There is a ﬁfth strategy that introduces new names for types: typedef. Unlike the previous four, this does not create a new type in C’s type system, but only creates a new name for an existing type. In that way, it is similar to the deﬁnition of macros with #define; thus the choice for the keyword for this feature.</p>
+<p>There is a fifth strategy that introduces new names for types: typedef. Unlike the previous four, this does not create a new type in C’s type system, but only creates a new name for an existing type. In that way, it is similar to the definition of macros with #define; thus the choice for the keyword for this feature.</p>
 </blockquote>
 <hr />
 <div class="admonition warning">

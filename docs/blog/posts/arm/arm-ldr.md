@@ -140,7 +140,7 @@ X[t, size * 8] = Mem[address, size, accdesc];
 
 **Usage**
 
-Load Register (literal) calculates an address from the PC value and an immediate oﬀset, loads a ==word== from memory, and writes it to a register. For information about memory accesses, see *Load/Store addressing modes* in the [Arm Architecture Reference Manual Armv8, for Armv8-A architecture proﬁle](https://developer.arm.com/documentation/ddi0487/latest).
+Load Register (literal) calculates an address from the PC value and an immediate oﬀset, loads a ==word== from memory, and writes it to a register. For information about memory accesses, see *Load/Store addressing modes* in the [Arm Architecture Reference Manual Armv8, for Armv8-A architecture profile](https://developer.arm.com/documentation/ddi0487/latest).
 
 **Examples**
 
@@ -182,14 +182,14 @@ When using the `LDR` pseudo-instruction:
 
 !!! note "LDR Rd, =label is not PIC"
 
-    - An address loaded in this way is ﬁxed at link time, so the code is not position-independent.
+    - An address loaded in this way is fixed at link time, so the code is not position-independent.
     - The address holding the constant remains valid regardless of where the linker places the ELF section containing the `LDR` instruction.
 
 The assembler places the value of `label_expr` in a literal pool and generates a PC-relative `LDR` instruction that loads the value from the literal pool.
 
-If `label_expr` is an external expression, or is not contained in the current section, the assembler places a linker relocation directive in the object ﬁle. The linker generates the address at link time.
+If `label_expr` is an external expression, or is not contained in the current section, the assembler places a linker relocation directive in the object file. The linker generates the address at link time.
 
-If `label_expr` is either a named or numeric local label, the assembler places a linker relocation directive in the object ﬁle and generates a symbol for that local label. The address is generated at link time. If the local label references T32 code, the T32 bit (bit 0) of the address is set.
+If `label_expr` is either a named or numeric local label, the assembler places a linker relocation directive in the object file and generates a symbol for that local label. The address is generated at link time. If the local label references T32 code, the T32 bit (bit 0) of the address is set.
 
 The ==oﬀset== from the PC to the value in the literal pool must be less than ±4KB (in an A32 or 32-bit T32 encoding) or in the range 0 to +1KB (16-bit T32 encoding). You are responsible for ensuring that there is a literal pool within range.
 
@@ -237,12 +237,12 @@ When using the LDR pseudo-instruction, the assembler places the value of `expr` 
 
 !!! note "LDR Rd, =label is not PIC"
 
-    - An address loaded in this way is ﬁxed at link time, so the code is not position independent.
+    - An address loaded in this way is fixed at link time, so the code is not position independent.
     - The address holding the constant remains valid regardless of where the linker places the ELF section containing the `LDR` instruction.
 
-If `label_expr` is an external expression, or is not contained in the current section, the assembler places a linker relocation directive in the object ﬁle. The linker generates the address at link time.
+If `label_expr` is an external expression, or is not contained in the current section, the assembler places a linker relocation directive in the object file. The linker generates the address at link time.
 
-If `label_expr` is a local label, the assembler places a linker relocation directive in the object ﬁle and generates a symbol for that local label. The address is generated at link time.
+If `label_expr` is a local label, the assembler places a linker relocation directive in the object file and generates a symbol for that local label. The address is generated at link time.
 
 The ==oﬀset== from the PC to the value in the literal pool must be less than ±1MB . You are responsible for ensuring that there is a literal pool within range.
 

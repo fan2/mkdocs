@@ -31,15 +31,15 @@ PSABI    |  Processor Specific Application Binary Interface
 
 [Learn the architecture - A64 Instruction Set Architecture Guide](https://developer.arm.com/documentation/102374/latest) | 27. Procedure Call Standard
 
-The Arm architecture places few restrictions on how general purpose registers are used. To recap, integer registers and ﬂoating-point registers are general purpose registers. However, if you want your code to *interact* with code that is written by someone else, or with code that is produced by a compiler, then you need to *agree* rules for register usage. For the Arm architecture, these rules are called the Procedure Call Standard, or **`PCS`**.
+The Arm architecture places few restrictions on how general purpose registers are used. To recap, integer registers and floating-point registers are general purpose registers. However, if you want your code to *interact* with code that is written by someone else, or with code that is produced by a compiler, then you need to *agree* rules for register usage. For the Arm architecture, these rules are called the Procedure Call Standard, or **`PCS`**.
 
-## Program ﬂow
+## Program flow
 
-[Learn the architecture - A64 Instruction Set Architecture Guide](https://developer.arm.com/documentation/102374/latest) | 22. Program ﬂow & 26. Function calls
+[Learn the architecture - A64 Instruction Set Architecture Guide](https://developer.arm.com/documentation/102374/latest) | 22. Program flow & 26. Function calls
 
 Ordinarily, a processor executes instructions in program order. This means that a processor executes instructions in the same order that they are *set* in memory. One way to *change* this order is to use branch instructions. Branch instructions *change* the program flow and are used for loops, decisions and function calls.
 
-When calling a function or sub-routine, we need a way to get *back* to the caller when ﬁnished. Adding an `L` to the `B` or `BR` instructions turns them into a branch with *link*. This means that a return address is written into `LR` (`X30`) as part of the branch.
+When calling a function or sub-routine, we need a way to get *back* to the caller when finished. Adding an `L` to the `B` or `BR` instructions turns them into a branch with *link*. This means that a return address is written into `LR` (`X30`) as part of the branch.
 
 There is a specialist function return instruction, `RET`. This performs an indirect branch to the address in the link register.
 
@@ -51,18 +51,18 @@ Why do we need a special function return instruction? Functionally, `BR LR` woul
 
 [ARM 64-Bit Assembly Language](https://www.amazon.com/64-Bit-Assembly-Language-Larry-Pyeatt/dp/0128192216/) | 5 Structured programming - 5.4 Subroutines
 
-A **`subroutine`** is a sequence of instructions to perform a speciﬁc task, packaged as a single *unit*. Depending on the particular programming language, a subroutine may be called a procedure, a function, a routine, a method, a subprogram, or some other name. Some languages, such as Pascal, make a distinction between functions and procedures. A *`function`* must return a value and must not alter its input arguments or have any other side effects (such as producing output or changing static or global variables). A *`procedure`* returns no value, but may alter the value of its arguments or have other side effects.
+A **`subroutine`** is a sequence of instructions to perform a specific task, packaged as a single *unit*. Depending on the particular programming language, a subroutine may be called a procedure, a function, a routine, a method, a subprogram, or some other name. Some languages, such as Pascal, make a distinction between functions and procedures. A *`function`* must return a value and must not alter its input arguments or have any other side effects (such as producing output or changing static or global variables). A *`procedure`* returns no value, but may alter the value of its arguments or have other side effects.
 
 Other languages, such as C, make *no* distinction between procedures and functions. In these languages, functions may be described as *pure* or *impure*. A function is pure if:
 
 1. the function always evaluates the *same* result value when given the same argument value(s), and
 2. evaluation of the result does not cause any semantically observable side effect or output.
 
-The ﬁrst condition implies that the function result *cannot* depend on any hidden information or state that may change as program execution proceeds, or between different executions of the program, nor can it depend on any external input from I/O devices. The result value of a pure function does not depend on anything other than the argument values. If the function returns multiple result values, then these two conditions must apply to all returned values. Otherwise the function is impure. Another way to state this is that impure functions have side effects while pure functions have no side effects.
+The first condition implies that the function result *cannot* depend on any hidden information or state that may change as program execution proceeds, or between different executions of the program, nor can it depend on any external input from I/O devices. The result value of a pure function does not depend on anything other than the argument values. If the function returns multiple result values, then these two conditions must apply to all returned values. Otherwise the function is impure. Another way to state this is that impure functions have side effects while pure functions have no side effects.
 
-Assembly language does not impose any distinction between procedures and functions, pure or impure. The assembly language will provide a way to call subroutines and return from them. It is up to the programmer to decide how to pass arguments to the subroutines and how to pass return values back to the section of code that called the subroutine. Once again, the expert assembly programmer will use these structured programming concepts to write efﬁcient, readable, debugable, and maintainable code.
+Assembly language does not impose any distinction between procedures and functions, pure or impure. The assembly language will provide a way to call subroutines and return from them. It is up to the programmer to decide how to pass arguments to the subroutines and how to pass return values back to the section of code that called the subroutine. Once again, the expert assembly programmer will use these structured programming concepts to write efficient, readable, debugable, and maintainable code.
 
-The stack pointer (`sp`), link register (`x30`), and program counter (`pc`), along with the argument registers, are all involved in performing subroutine calls. The calling subroutine must place arguments in the argument registers, and possibly on the stack as well. Placing the arguments in their proper locations is known as *marshaling* the arguments. After marshaling the arguments, the calling subroutine executes the `bl` instruction, which will modify the program counter and link register. The `bl` instruction copies the contents of the program counter to the link register, then loads the program counter with the address of the ﬁrst instruction in the subroutine that is being called. The CPU will then fetch and execute its next instruction from the address in the program counter, which is the ﬁrst instruction of the subroutine that is being called.
+The stack pointer (`sp`), link register (`x30`), and program counter (`pc`), along with the argument registers, are all involved in performing subroutine calls. The calling subroutine must place arguments in the argument registers, and possibly on the stack as well. Placing the arguments in their proper locations is known as *marshaling* the arguments. After marshaling the arguments, the calling subroutine executes the `bl` instruction, which will modify the program counter and link register. The `bl` instruction copies the contents of the program counter to the link register, then loads the program counter with the address of the first instruction in the subroutine that is being called. The CPU will then fetch and execute its next instruction from the address in the program counter, which is the first instruction of the subroutine that is being called.
 
 ## The Procedure Call Standard
 

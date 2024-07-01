@@ -409,7 +409,7 @@ $ man objdump
 
 [gcc - How to remove a specific ELF section, without stripping other symbols? - Stack Overflow](https://stackoverflow.com/questions/31453859/how-to-remove-a-specific-elf-section-without-stripping-other-symbols)
 
-[Computer Systems - A Programmer’s Perspective](https://www.amazon.com/Computer-Systems-OHallaron-Randal-Bryant/dp/1292101768/) | Chapter 7: Linking - 7.14: Tools for Manipulating Object Files
+[Computer Systems - A Programmer's Perspective](https://www.amazon.com/Computer-Systems-OHallaron-Randal-Bryant/dp/1292101768/) | Chapter 7: Linking - 7.14: Tools for Manipulating Object Files
 
 ```bash
 $ man objdump

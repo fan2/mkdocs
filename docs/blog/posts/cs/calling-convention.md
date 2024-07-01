@@ -128,9 +128,9 @@ The history of calling conventions:
 
 [A64 Instruction Set Architecture Guide](https://developer.arm.com/documentation/102374/0102/Procedure-Call-Standard) - 27. Procedure Call Standard
 
-The Arm architecture places few restrictions on how general purpose registers are used. To recap, integer registers and ﬂoating-point registers are general purpose registers. However, if you want your code to **interact** with code that is written by someone else, or with code that is produced by a compiler, then you need to **agree** rules for register usage. For the Arm architecture, these rules are called the Procedure Call Standard, or ***PCS***.
+The Arm architecture places few restrictions on how general purpose registers are used. To recap, integer registers and floating-point registers are general purpose registers. However, if you want your code to **interact** with code that is written by someone else, or with code that is produced by a compiler, then you need to **agree** rules for register usage. For the Arm architecture, these rules are called the Procedure Call Standard, or ***PCS***.
 
-The PCS speciﬁes:
+The PCS specifies:
 
 - Which registers are used to **pass** arguments into the function.
 - Which registers are used to **return** a value to the function doing the calling, known as the caller.
@@ -151,7 +151,7 @@ Why `W` and not `X`? Because the arguments are a 32-bit type, and therefore we o
 
     In C++, `X0` is used to pass the implicit *this* pointer that points to the called function.
 
-Next, the PCS deﬁnes which registers can be corrupted, and which registers cannot be corrupted. If a register can be corrupted, then the called function can **overwrite** without needing to restore, as this table of PCS register rules shows:
+Next, the PCS defines which registers can be corrupted, and which registers cannot be corrupted. If a register can be corrupted, then the called function can **overwrite** without needing to restore, as this table of PCS register rules shows:
 
 X0-X7 | X8-X15 | X16-X23 | X24-X30
 ------|--------|---------|--------
@@ -160,13 +160,13 @@ Parameter and Result Registers (X0-X7) | XR (X8) | IP0 (X16) | Callee-saved Regi
 - | - | PR (X18) | LR (X30)
 - | - | Callee-saved Registers (X19-X23) | -
 
-For example, the function `foo()` can use registers `X0` to `X15` without needing to preserve their values. However, if `foo()` wants to use `X19` to `X28` it must **save** them to stack ﬁrst, and then **restore** from the stack before returning.
+For example, the function `foo()` can use registers `X0` to `X15` without needing to preserve their values. However, if `foo()` wants to use `X19` to `X28` it must **save** them to stack first, and then **restore** from the stack before returning.
 
-Some registers have special signiﬁcance in the PCS:
+Some registers have special significance in the PCS:
 
 - `XR` - This is an *indirect* result register. If `foo()` returned a *struct*, then the memory for struct would be **allocated** by the caller, `main()` in the earlier example. `XR` is a pointer to the memory allocated by the caller for returning the struct.
 
-- `IP0` and `IP1` - These registers are intra-procedure-call corruptible registers. These registers can be corrupted between the time that the function is called and the time that it arrives at the ﬁrst instruction in the function. These registers are used by *linkers* to **insert** veneers between the caller and callee. Veneers are small pieces of code. The most common example is for branch range extension. The branch instruction in A64 has a limited range. If the target is beyond that range, then the linker needs to generate a veneer to **extend** the range of the branch.
+- `IP0` and `IP1` - These registers are intra-procedure-call corruptible registers. These registers can be corrupted between the time that the function is called and the time that it arrives at the first instruction in the function. These registers are used by *linkers* to **insert** veneers between the caller and callee. Veneers are small pieces of code. The most common example is for branch range extension. The branch instruction in A64 has a limited range. If the target is beyond that range, then the linker needs to generate a veneer to **extend** the range of the branch.
 
 - `FP` - Frame pointer.
 

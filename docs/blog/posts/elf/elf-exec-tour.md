@@ -17,6 +17,11 @@ In this article, I'll practice using [GNU binutils](./gnu-binutils.md) to take a
 
 <!-- more -->
 
+[Computer Systems - A Programmer's Perspective](https://www.amazon.com/Computer-Systems-OHallaron-Randal-Bryant/dp/1292101768/) | Chapter 7: Linking
+
+- 7.8: Executable Object Files
+- 7.9: Loading Executable Object Files
+
 ## ELF Header
 
 Now, let's check the [ELF](./elf-layout.md) header.

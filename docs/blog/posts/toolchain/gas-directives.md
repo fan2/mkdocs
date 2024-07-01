@@ -10,7 +10,7 @@ categories:
 comments: true
 ---
 
-Directives are used mainly to deﬁne symbols, allocate storage, and control the behavior of the assembler. Directives allow the programmer to control how the assembler does its job.
+Directives are used mainly to define symbols, allocate storage, and control the behavior of the assembler. Directives allow the programmer to control how the assembler does its job.
 
 <!-- more -->
 
@@ -70,7 +70,7 @@ arch/arm64/kernel/head.S: `.section ".idmap.text","a"`
 
 ### Allocating space for variables and constants
 
-There are several directives that allow the programmer to allocate and initialize static storage space for variables and constants. The assembler supports bytes, integer types, ﬂoating point types, and strings. These directives are used to allocate a ﬁxed amount of space in memory and optionally initialize the memory. Some of these directives allow the memory to be initialized using an expression. An expression can be a simple integer, or a C-style expression. The directives for allocating storage are as follows:
+There are several directives that allow the programmer to allocate and initialize static storage space for variables and constants. The assembler supports bytes, integer types, floating point types, and strings. These directives are used to allocate a fixed amount of space in memory and optionally initialize the memory. Some of these directives allow the memory to be initialized using an expression. An expression can be a simple integer, or a C-style expression. The directives for allocating storage are as follows:
 
 - `.byte expressions`: Each expression produces one byte of data.
 - `[.2byte | .hword | .short] expressions`: emit a 16-bit number for each expression
@@ -86,17 +86,17 @@ There are several directives that allow the programmer to allocate and initializ
 
 On the AArch64 CPU, data can be moved to and from memory one byte at a time, two bytes at a time (half-word), four bytes at a time (word), or eight bytes at a time (double-word).
 
-Moving a word between the CPU and memory takes signiﬁcantly more time if the address of the word is not aligned on a four-byte boundary (one where the least signiﬁcant *two* bits of the address are zero). Similarly, moving a half-word between the CPU and memory takes significantly more time if the address of the half-word is not aligned on a two-byte boundary (one where the least signiﬁcant bit of the address is zero), and moving a double-word takes more time if it is not aligned on an eight-byte boundary (one where the least signiﬁcant *three* bits of the address are zero).
+Moving a word between the CPU and memory takes significantly more time if the address of the word is not aligned on a four-byte boundary (one where the least significant *two* bits of the address are zero). Similarly, moving a half-word between the CPU and memory takes significantly more time if the address of the half-word is not aligned on a two-byte boundary (one where the least significant bit of the address is zero), and moving a double-word takes more time if it is not aligned on an eight-byte boundary (one where the least significant *three* bits of the address are zero).
 
 Therefore, when declaring storage, it is important that double-words, words, and half-words are stored on appropriate boundaries. The following directives allow the programmer to insert as much space as necessary to align the next item on any boundary desired.
 
-- `.align abs-expr, abs-expr, abs-expr`: Pad the location counter (in the current subsection) to a particular storage boundary. The ﬁrst expression speciﬁes the number of low-order zero bits the location counter must have after advancement.
+- `.align abs-expr, abs-expr, abs-expr`: Pad the location counter (in the current subsection) to a particular storage boundary. The first expression specifies the number of low-order zero bits the location counter must have after advancement.
 
     - That is aligned to power of 2, e.g., `.align 3` means to be aligned to $2^3=8$ bytes.
 
-- `.balign[lw] abs-expr, abs-expr, abs-expr`: Adjust the location counter to a particular storage boundary. The ﬁrst expression is the byte-multiple for the alignment request.
+- `.balign[lw] abs-expr, abs-expr, abs-expr`: Adjust the location counter to a particular storage boundary. The first expression is the byte-multiple for the alignment request.
 
-    - For example, `.balign 16` = `.align 4` will insert ﬁll bytes until the location counter is an even multiple of 16.
+    - For example, `.balign 16` = `.align 4` will insert fill bytes until the location counter is an even multiple of 16.
 
 - `[.skip | .space] size, fill`: Allocate a large area of memory and initialize it all to the same value. It is very useful for declaring large arrays in the `.bss` section.
 
@@ -105,13 +105,13 @@ Therefore, when declaring storage, it is important that double-words, words, and
 The assembler provides support for setting and manipulating symbols which can then be used in other places within the program. The labels that can be assigned to assembly statements and directives are one type of symbol. The programmer can also declare other symbols and use them throughout the program. Such symbols may not have an actual storage location in memory, but they are included in the assembler’s symbol table, and can be used anywhere that their value is required.
 
 - `[.equ | .set] symbol, expression`: Sets the value of symbol to expression, similar to the C language `#define` directive.
-- `.equiv symbol, expression`: like `.equ` and `.set`, except that the assembler will signal an error if the symbol is already deﬁned.
-- `[.global | .globl] symbol`: Makes the symbol *visible* to the linker. If symbol is deﬁned within a file, and this directive is used to make it global, then it will be available to any file that is linked with the one containing the symbol. Without this directive, symbols are visible *only* within the file where they are deﬁned.
-- `.comm symbol, length`: declares tentative symbol to be a common symbol, meaning that if it is deﬁned in more than one file, then all instances should be merged into a single symbol.
+- `.equiv symbol, expression`: like `.equ` and `.set`, except that the assembler will signal an error if the symbol is already defined.
+- `[.global | .globl] symbol`: Makes the symbol *visible* to the linker. If symbol is defined within a file, and this directive is used to make it global, then it will be available to any file that is linked with the one containing the symbol. Without this directive, symbols are visible *only* within the file where they are defined.
+- `.comm symbol, length`: declares tentative symbol to be a common symbol, meaning that if it is defined in more than one file, then all instances should be merged into a single symbol.
 
 ### Functions and objects
 
-There are a few assembler directives that are used for deﬁning the size and type of labels. This information is stored in the object file along with the code and data, and is used by the linker and/or debugger.
+There are a few assembler directives that are used for defining the size and type of labels. This information is stored in the object file along with the code and data, and is used by the linker and/or debugger.
 
 - `.size name,expression`: set the size associated with a symbol. This information helps the linker to exclude unneeded code and/or data when creating an executable file, and helps the debugger to keep track of where it is in the program.
 
@@ -147,8 +147,8 @@ There are a few assembler directives that are used for deﬁning the size and ty
 Sometimes it is desirable to skip assembly of portions of a file. The assembler provides some directives to allow conditional assembly. One use for these directives is to optionally assemble code as an aid for debugging.
 
 - `.if expression`: `.if` marks the beginning of a section of code which is only considered part of the source program being assembled if the argument (which must be an absolute expression) is non-zero. The end of the conditional section of code must be marked by the `.endif` directive. Optionally, code may be included for the alternative condition by using the `.else` directive.
-- `.ifdef symbol`: Assembles the following section of code if the speciﬁed symbol has been deﬁned.
-- `.ifndef symbol` Assembles the following section of code if the speciﬁed symbol has not been deﬁned.
+- `.ifdef symbol`: Assembles the following section of code if the specified symbol has been defined.
+- `.ifndef symbol` Assembles the following section of code if the specified symbol has not been defined.
 - `.else`: Assembles the following section of code only if the condition for the preceding `.if` or `.ifdef` was false.
 - `.endif`: Marks the end of a block of code that is only assembled conditionally.
 
@@ -156,19 +156,19 @@ Sometimes it is desirable to skip assembly of portions of a file. The assembler 
 
 `.include "file"`
 
-This directive provides a way to include supporting files at speciﬁed points in the source program. The code from the included file is assembled as if it followed the point of the `.include` directive. When the end of the included file is reached, assembly of the original file continues. The search paths used can be controlled with the ‘`-I`’ command line parameter when running the assembler.
+This directive provides a way to include supporting files at specified points in the source program. The code from the included file is assembled as if it followed the point of the `.include` directive. When the end of the included file is reached, assembly of the original file continues. The search paths used can be controlled with the ‘`-I`’ command line parameter when running the assembler.
 
 ### Macros
 
-The directives `.macro` and `.endm` allow the programmer to deﬁne macros that the assembler expands to generate assembly code. The GNU assembler supports simple macros. Some other assemblers have much more powerful macro capabilities.
+The directives `.macro` and `.endm` allow the programmer to define macros that the assembler expands to generate assembly code. The GNU assembler supports simple macros. Some other assemblers have much more powerful macro capabilities.
 
-- `.macro macname` / `.macro macname macargs ...`: Begin the deﬁnition of a macro called macname. If the macro deﬁnition requires arguments, their names are speciﬁed after the macro name, separated by commas or spaces. The programmer can supply a default value for any macro argument by following the name with ‘`=deflt`’.
+- `.macro macname` / `.macro macname macargs ...`: Begin the definition of a macro called macname. If the macro definition requires arguments, their names are specified after the macro name, separated by commas or spaces. The programmer can supply a default value for any macro argument by following the name with ‘`=deflt`’.
 
-- `.endm`: End the current macro deﬁnition.
+- `.endm`: End the current macro definition.
 
-- `.exitm`: Exit early from the current macro deﬁnition. This is usually used only within a `.if` or `.ifdef` directive.
+- `.exitm`: Exit early from the current macro definition. This is usually used only within a `.if` or `.ifdef` directive.
 
-- `\@`: This is a pseudo-variable used by the assembler to maintain a count of how many macros it has executed. That number can be accessed with ‘`\@`’, but only within a macro deﬁnition.
+- `\@`: This is a pseudo-variable used by the assembler to maintain a count of how many macros it has executed. That number can be accessed with ‘`\@`’, but only within a macro definition.
 
 #### examples
 

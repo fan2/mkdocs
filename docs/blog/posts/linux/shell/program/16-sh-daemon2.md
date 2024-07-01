@@ -65,7 +65,7 @@ ps -ef | grep while_loop | grep -v grep | awk '{print $2}' | xargs kill -KILL
 man bash - SHELL GRAMMAR - Lists
 
 > If a command is terminated by the control operator `&`, the shell executes the command in the *background* in a **subshell**. 
-> The shell does not wait for the command to ﬁnish, and the return status is 0.
+> The shell does not wait for the command to finish, and the return status is 0.
 
 在命令后面加上 `&` 符号，即可将命令切换到后台子shell进程执行，但命令的stdout和stderr仍会输出。
 

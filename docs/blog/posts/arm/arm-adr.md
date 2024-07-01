@@ -128,7 +128,7 @@ DoSub
         END                         ; Mark the end of this file
 ```
 
-In this example, the function arithfunc takes three arguments and returns a result in R0. The ﬁrst argument determines the operation to be carried out on the second and third arguments: 
+In this example, the function arithfunc takes three arguments and returns a result in R0. The first argument determines the operation to be carried out on the second and third arguments: 
 
 - **argument1=0**: Result = argument2 + argument3.
 - **argument1=1**: Result = argument2 - argument3.

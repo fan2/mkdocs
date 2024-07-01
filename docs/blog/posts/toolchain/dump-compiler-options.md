@@ -1017,7 +1017,7 @@ start address 0x0000000000000000
 `readelf -e`(--headers): Equivalent to: -h -l -S
 `readelf -s`(--syms): Display the symbol table.
 `readelf -d`(--dynamic): Displays the contents of the file's dynamic section, if it has one.
-`readelf -a`(--all): Displays the complete structure of an object ﬁle.
+`readelf -a`(--all): Displays the complete structure of an object file.
 
 === "readelf -d c.out"
 

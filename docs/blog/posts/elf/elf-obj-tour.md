@@ -17,6 +17,11 @@ In this article, I'll practice using [GNU binutils](./gnu-binutils.md) to take a
 
 <!-- more -->
 
+[Computer Systems - A Programmer's Perspective](https://www.amazon.com/Computer-Systems-OHallaron-Randal-Bryant/dp/1292101768/) | Chapter 7: Linking
+
+- 7.3: Object Files
+- 7.4: Relocatable Object Files
+
 In the assembly phase, you finally get to generate some real *machine code*! The input of the assembly phase is the set of assembly language files generated in the compilation phase, and the output is a set of *object files*, sometimes also referred to as *modules*. Object files contain machine instructions that are in principle executable by the processor. You need to do some more work before you have a ready-torun binary executable file.
 
 Typically, each source file corresponds to one assembly file, and each assembly file corresponds to one object file. To generate an object file, you can pass the `-c` flag to gcc.

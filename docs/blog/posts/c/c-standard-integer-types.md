@@ -133,74 +133,6 @@ UINT{==N==}_MAX | 2^N-1
 
 了解 C 语言的所有这些最重要的整数类型之后，下一个问题就是搞清楚编译器在怎样的情况下会把一个变量或者常数看作什么样的整数类型。
 
-## integral promotion
-
-在 C 语言刚刚被设计出来的时候，一共只有两种整数类型—— `char` 和 `int`，在实际的运算当中，char 总是先被提升为 int。
-
-另外，在 C 语言中，单字节字符常数的类型从一开始到现在都是 int（单字节字符常数指 'A'、'\n'、'\045'、'\x33' 等常量）。本来大家很自然地以为 'A' 应该是 char 类型的，不是吗？例如：
-
-```c
-char c = 'A';
-```
-
-上面这个表达式的确引起了我们的错觉。'A' 明显代表一个单字节字符值，把这个代表字符的值赋给 char 变量，可谓“门当户对”的事啊……然而，'A'虽然代表一个单字节字符值，但同时它的值必须要用与 int 等长的空间来存储，因此它的身份是不折不扣的 int。这也是 char 变量必须提升为 int 再参与运算的规则的另一个反映——反正到头来还是得提升为 int，索性一开始就给它 int 的身份！至于上面那个表达式，它的作用相当于把一个曾经提升为 int 类型的 char 数值还原回 char 而已，完全没有问题。虽然 C89 开始确立了一系列的新规则，但 `单字节字符常量的类型是 int` 这个惯例仍然被保留下来，即使到了 C99也同样如此：
-
-```c title="sizeof-char-literal.c"
-#include <stdio.h>
-
-int main(int argc, char* argv[]) {
-    printf("sizeof('A') = %zu\n",sizeof('A'));
-
-    return 0;
-}
-```
-
-由于 sizeof 是编译期就确定的数值，我们完全可以从汇编代码中看出它的具体 值，不过这里还是编译成可执行文件再运行：
-
-```Shell
-$ cc single-char.c -o single-char && ./single-char
-sizeof('A') = 4
-```
-
-显然，'A' 要占用4个字节，在32位平台上这恰好就是一个 int 的长度。综合上面所说，在 C 语言的早期，要确定一个表达式里的整型变量或者常数的具体类型并不复杂，原本就只有两种整数类型，在运算和传递参数时 char 又总是先被提升为 int，加上整型常数属于 int 类型、单字节字符常量也属于 int 类型——一切都非常清楚。
-
-再来看下面这个例子：
-
-```c title="integral_promotion.c"
-#include <stdio.h>
-
-int main(int argc, char* argv[]) {
-    char a;
-    unsigned int b;
-    unsigned long c;
-
-    a = 0x88;
-    b = ~a;
-    c = ~a;
-
-    printf("a=%#x, ~a=%#x, b=%#x, c=%#lx\n", a, ~a, b, c);
-
-    unsigned char d = 0xa5;
-    unsigned char e = ~d>>4 + 1;
-
-    printf("e=%d\n", e);
-
-    return 0;
-}
-```
-
-编译运行输出结果如下：
-
-```bash
-$ cc integral_promotion.c -o integral_promotion && ./integral_promotion
-a=0x88, ~a=0xffffff77, b=0xffffff77, c=0xffffffffffffff77
-e=250
-```
-
-1. 根据整形提升的规则，表达式 `～a` 会转化为 int 类型，符号扩展后的值为 0xffffff77。
-2. `b=~a`, `~a` 先提升为 int 值 0xffffff77，再提升为 unsigned int 值，十六进制输出不变。c 同理输出 0xffffffffffffff77。
-3. `e = ~d>>4 + 1`，`d` 被提升为 int 类型，取反得到 0xffffff5a。加法的优先级高于右移，0xffffff5a>>5=0xfffffffa（高位符号位扩展填充1），最终 b 的值为 0xfa=250。
-
 ## char: signed or unsigned?
 
 后来，随着 C 语言的进一步发展，K&R C 引入了无符号整数的概念以及 `unsigned` 关键字，并增加了 short、long 两种整数类型。这时，C 语言已经拥有以下整数类型：
@@ -269,7 +201,7 @@ Character types are integer types used for a *character* representation.
 根据 <climits\> 中定义的宏 CHAR_MIN 和 CHAR_MAX，可以用以下两种方式简单判断 char 默认的符号：
 
 1. 判断 CHAR_MAX == UCHAR_MAX（或 CHAR_MAX == SCHAR_MAX），直观评判。
-2. 判断 CHAR_MAX 最高位 MSB（most-signiﬁcant bit set），为 0 表示最高位为符号位，为 signed；否则，最高位为数值位，为 unsigned。
+2. 判断 CHAR_MAX 最高位 MSB（most-significant bit set），为 0 表示最高位为符号位，为 signed；否则，最高位为数值位，为 unsigned。
 
 测试代码：
 
@@ -310,7 +242,7 @@ Character types are integer types used for a *character* representation.
 
 === "x86_64, arm64"
 
-    ```Shell
+    ```bash
     # win10/x86_64
     >cl char-range.cpp && char-range.exe
     # mbpa1398/x86_64, mbpa2991/arm64
@@ -323,13 +255,141 @@ Character types are integer types used for a *character* representation.
 
 === "rpi4b-ubuntu/aarch64"
 
-    ```Shell
+    ```bash
     # cc char-range.c -o char-range && ./char-range
     $ c++ char-range.cpp -o char-range && ./char-range
     CHAR_MIN = 0, CHAR_MAX = 255
     (CHAR_MAX == UCHAR_MAX) = 1
     CHAR_MAX >> 7 = 1
     ```
+
+## type conversion
+
+C语言有隐式的数据类型转换，它很容易出错。下面是隐式数据类型转换的一般规则。
+
+1. 在赋值表达式中，右边表达式的值自动隐式转换左边变量的类型。
+
+2. 在算术表达式中，占字节少的数据类型向占字节多的数据类型转换，如下图所示。例如，在ARM64系统中，当对 int 类型和 long 类型的值进行运算时，int 类型的数据需要转换成 long 类型。
+
+```text
+ +----------------+  \
+ | char /         |  |
+ | unsigned char  |  |
+ +----------------+  |                                                                    +-------+
+                     |                                                                    | float |
+ +----------------+  |                                                                    +-------+
+ | short /        |  |                  +----------+                    +----------+          ↓
+ | unsigned short |  |     +-----+      | unsigned |      +------+      | unsigned |      +--------+
+ +----------------+  +---> | int | ---> |          | ---> | long | ---> |          | ---> | double |
+                     |     +-----+      |   int    |      +------+      |   long   |      +--------+
+ +----------------+  |                  +----------+                    +----------+
+ | bit-field      |  |
+ +----------------+  |
+                     |
+ +----------------+  |
+ | enumeration    |  |
+ +----------------+  /
+```
+
+3. 在算术表达式中，当对有符号数据类型与无符号数据类型进行运算时，需要把有符号数据类型转换为无符号数据类型。例如，若表达式中既有 int 类型又有 unsigned int类型，则所有的 int 类型数据都被转化为 unsigned int 类型。
+
+    !!! example "unsigned int * signed int"
+
+        ```c
+        #include <stdio.h>
+
+        void main () {
+            unsigned int i = 3;
+            // -1 是整数常量，可用 int 类型表达，而变量 i 是 unsigned int 类型。
+            // 根据上述规则，需要把 int 类型转换成 unsigned int 类型再执行计算。
+            printf("0x%x\n", i * -1);
+        }
+        ```
+
+4. 整数常量通常是 int 类型。例如，在ARM64系统里，整数8会使用 `Wn` 寄存器来存储，8LL 则会使用 `Xn` 寄存器来存储。
+
+### sizeof('A') = ?
+
+K&R C 的整数类型转换规则之一就是 char、short 先被提升为 int 再参与运算（符合第 2 条），其源起于 C 语言刚刚被设计出来的时候，一共只有两种整数类型 —— `char` 和 `int`，故在实际的运算当中，char 总是先被提升为 int。
+
+另外，在 C 语言中，单字节字符常数的类型从一开始到现在都是 int（单字节字符常数指 'A'、'\n'、'\045'、'\x33' 等常量）。本来大家很自然地以为 'A' 应该是 char 类型的，不是吗？例如：
+
+```c
+char c = 'A';
+```
+
+上面这个表达式的确引起了我们的错觉。'A' 明显代表一个单字节字符值，把这个代表字符的值赋给 char 变量，可谓“门当户对”的事啊……然而，'A'虽然代表一个单字节字符值，但同时它的值必须要用与 int 等长的空间来存储，因此它的身份是不折不扣的 int。这也是 char 变量必须提升为 int 再参与运算的规则的另一个反映——反正到头来还是得提升为 int，索性一开始就给它 int 的身份！至于上面那个表达式，它的作用相当于把一个曾经提升为 int 类型的 char 数值还原回 char 而已，完全没有问题。虽然 C89 开始确立了一系列的新规则，但 `单字节字符常量的类型是 int` 这个惯例仍然被保留下来，即使到了 C99也同样如此：
+
+```c title="sizeof-char-literal.c"
+#include <stdio.h>
+
+int main(int argc, char* argv[]) {
+    printf("sizeof('A') = %zu\n", sizeof('A'));
+
+    return 0;
+}
+```
+
+由于 sizeof 是编译期就确定的数值，我们完全可以从汇编代码中看出它的具体 值，不过这里还是编译成可执行文件再运行：
+
+```bash
+$ cc single-char.c -o single-char && ./single-char
+sizeof('A') = 4
+```
+
+显然，'A' 要占用4个字节，在32位平台上这恰好就是一个 int 的长度。综合上面所说，在 C 语言的早期，要确定一个表达式里的整型变量或者常数的具体类型并不复杂，原本就只有两种整数类型，在运算和传递参数时 char 又总是先被提升为 int，加上整型常数属于 int 类型、单字节字符常量也属于 int 类型——一切都非常清楚。
+
+### integral promotion
+
+小结一下C语言规范中的整型提升（integral promotion）约定。
+
+1. 在表达式中，当使用有符号或者无符号的 char、short、位域（bit-field）以及枚举类型时，都应该提升到 int 类型。
+2. 如果上述类型可以使用 int 类型来表示，则使用 int 类型；否则，使用 unsigned int 类型。
+
+==整型提升的意义是，使 CPU 内部的 ALU 充分利用通用寄存器的长度。==
+
+例如，ARM64 处理器通用寄存器支持 32 位宽和 64 位宽，而 int 类型和 unsigned int 类型正好是 32 位宽。对于两个 char 类型值的运算，CPU 难以直接实现字节相加的运算，在 CPU 内部要先转换通用寄存器的标准长度。在 ARM64 处理器里，通用寄存器最小的标准长度是32位，即4字节。因此，两个 char 类型值需要存储到 32 位的 `Wn` 通用寄存器中，然后再进行相加运算。
+
+!!! note "short signed to long unsigned"
+
+    另外一个特别需要注意的问题是，当系统要把长度较小的带符号整数类型转换为长度较大的无符号整数类型时，正确的做法是**先**把带符号整数类型通过带*符号扩展*（Sign Extension）转换成与最终的无符号整数类型长度相同的带符号整数类型，然后**再**进一步转换为无符号类型。
+
+再来看下面这个例子：
+
+```c title="integral_promotion.c"
+#include <stdio.h>
+
+int main(int argc, char* argv[]) {
+    char a;
+    unsigned int b;
+    unsigned long c;
+
+    a = 0x88;
+    b = ~a;
+    c = ~a;
+
+    printf("a=%#x, ~a=%#x, b=%#x, c=%#lx\n", a, ~a, b, c);
+
+    unsigned char d = 0xa5;
+    unsigned char e = ~d>>4 + 1;
+
+    printf("e=%d\n", e);
+
+    return 0;
+}
+```
+
+编译运行输出结果如下：
+
+```bash
+$ cc integral_promotion.c -o integral_promotion && ./integral_promotion
+a=0x88, ~a=0xffffff77, b=0xffffff77, c=0xffffffffffffff77
+e=250
+```
+
+1. 根据整形提升的规则，表达式 `~a` 会转化为 int 类型，符号扩展后的值为 0xffffff77。
+2. `b=~a`, `~a` 先提升为 int 值 0xffffff77，再提升为 unsigned int 值，十六进制输出不变。c 同理输出 0xffffffffffffff77。
+3. `e = ~d>>4 + 1`，`d` 被提升为 int 类型，取反得到 0xffffff5a。加法的优先级高于右移，0xffffff5a>>5=0xfffffffa（高位符号位扩展填充1），最终 b 的值为 0xfa=250。
 
 ## why getchar() return int?
 
@@ -417,3 +477,4 @@ if (EOF == c)
 ---
 
 本文节选自 《[C语言标准与实现(姚新颜)-2004](https://att.newsmth.net/nForum/att/CProgramming/3213/245)》 #2 数值运算 | 12 整数类型。
+参考 [《ARM64体系结构编程与实践》](https://item.jd.com/13119117.html) | 第 21 章 操作系统相关话题 - C 语言常见陷阱 - 数据类型转换与整形提升。

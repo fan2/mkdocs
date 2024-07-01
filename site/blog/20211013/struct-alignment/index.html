@@ -1347,9 +1347,9 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#largest_member_ﬁrst" class="md-nav__link">
+  <a href="#largest_member_first" class="md-nav__link">
     <span class="md-ellipsis">
-      largest member ﬁrst
+      largest member first
     </span>
   </a>
   
@@ -1566,7 +1566,7 @@
 
   <h1>Struct Alignment Rule</h1>
 
-<p>An object doesn't just need enough storage to hold its representation. In addition, on some machine architectures, the bytes used to hold it must have proper alignment for the hardware to access it efﬁciently.</p>
+<p>An object doesn't just need enough storage to hold its representation. In addition, on some machine architectures, the bytes used to hold it must have proper alignment for the hardware to access it efficiently.</p>
 <p>Where alignment most often becomes visible is in object layouts: sometimes structs contain "<code>holes</code>" to improve alignment.</p>
 <!-- more -->
 
@@ -1592,7 +1592,7 @@
 <ol start="6">
 <li>Types and Declarations | 6.2 Types | <strong>6.2.9 Alignment</strong></li>
 </ol>
-<p>An object doesn't just need enough storage to hold its representation. In addition, on some machine architectures, the bytes used to hold it must have proper alignment for the hardware to access it efﬁciently (or in extreme cases to access it at all). For example, a 4-byte <code>int</code> often has to be aligned on a word (4-byte) boundary, and sometimes an 8-byte <code>double</code> has to be aligned on a word (8-byte) boundary. Of course, this is all very implementation speciﬁc, and for most programmers completely implicit. You can write good C++ code for decades without needing to be explicit about alignment. Where alignment most often becomes visible is in object layouts: sometimes structs contain "<code>holes</code>" to improve alignment.</p>
+<p>An object doesn't just need enough storage to hold its representation. In addition, on some machine architectures, the bytes used to hold it must have proper alignment for the hardware to access it efficiently (or in extreme cases to access it at all). For example, a 4-byte <code>int</code> often has to be aligned on a word (4-byte) boundary, and sometimes an 8-byte <code>double</code> has to be aligned on a word (8-byte) boundary. Of course, this is all very implementation specific, and for most programmers completely implicit. You can write good C++ code for decades without needing to be explicit about alignment. Where alignment most often becomes visible is in object layouts: sometimes structs contain "<code>holes</code>" to improve alignment.</p>
 <p>The <code>alignof</code> operator returns the alignment of its argument expression.</p>
 <hr />
 <ol start="8">
@@ -1611,13 +1611,13 @@
     <figcaption>struct Readout packed layout</figcaption><br />
 </figure>
 <p>Members are allocated in memory in declaration order, so the address of <code>hour</code> must be less than the address of <code>value</code>. See also §8.2.6.</p>
-<p>However, the size of an object of a <strong>struct</strong> is not necessarily the sum of the sizes of its members. This is because many machines require objects of certain types to be allocated on architecture dependent <em>boundaries</em> or handle such objects much more <em>efﬁciently</em> if they are. For example, integers are often allocated on word boundaries. On such machines, objects are said to have to be properly <strong><em>aligned</em></strong> (§6.2.9). This leads to "<code>holes</code>" in the structures. A more realistic layout of a <code>Readout</code> on a machine with 4-byte int would be:</p>
+<p>However, the size of an object of a <strong>struct</strong> is not necessarily the sum of the sizes of its members. This is because many machines require objects of certain types to be allocated on architecture dependent <em>boundaries</em> or handle such objects much more <em>efficiently</em> if they are. For example, integers are often allocated on word boundaries. On such machines, objects are said to have to be properly <strong><em>aligned</em></strong> (§6.2.9). This leads to "<code>holes</code>" in the structures. A more realistic layout of a <code>Readout</code> on a machine with 4-byte int would be:</p>
 <figure><br />
 <img alt="struct-Readout-2" src="../../cs/images/alignment/struct-Readout-2.png" /><br />
     <figcaption>struct Readout aligned layout</figcaption><br />
 </figure>
 <p>In this case, as on many machines, <code>sizeof(Readout)</code> is 12, and not 6 as one would naively expect from simply adding the sizes of the individual members.</p>
-<p>You can minimize wasted space by simply ordering members by size (<em>largest member ﬁrst</em>). For example:</p>
+<p>You can minimize wasted space by simply ordering members by size (<em>largest member first</em>). For example:</p>
 <div class="language-c highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="k">struct</span><span class="w"> </span><span class="nc">Readout</span><span class="w"> </span><span class="p">{</span>
 </span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">value</span><span class="p">;</span>
 </span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">    </span><span class="kt">char</span><span class="w"> </span><span class="n">hour</span><span class="p">;</span><span class="w">  </span><span class="c1">// [0:23]</span>
@@ -1630,12 +1630,12 @@
 </figure>
 <p>Note that this still leaves a 2-byte "<code>hole</code>" (unused space) in a <code>Readout</code> and <code>sizeof(Readout)==8</code>. The reason is that we need to maintain alignment when we put two objects next to each other, say, in an array of <code>Readout</code>s. The size of an array of 10 <code>Readout</code> objects is <code>10∗sizeof(Readout)</code>.</p>
 <p>It is usually best to order members for readability and sort them by size only if there is a demonstrated need to optimize.</p>
-<p>Use of multiple access speciﬁers (i.e., <code>public</code>, <code>private</code>, or <code>protected</code>) can affect layout (§20.5).</p>
+<p>Use of multiple access specifiers (i.e., <code>public</code>, <code>private</code>, or <code>protected</code>) can affect layout (§20.5).</p>
 <h2 id="struct_alignment_rule">struct alignment rule<a class="headerlink" href="#struct_alignment_rule" title="Permanent link">#</a></h2>
 <p>在上一节 <a href="../../20211012/address-alignment/">Memory Address Alignment</a> 中，提到了基础类型（basic/fundamental types）的自然对齐规则（natural alignment rule）：任何 <span class="arithmatex">\(K\)</span> 字节的基本对象的存储地址必须是 <span class="arithmatex">\(K\)</span> 的倍数。</p>
 <p>结构体成员变量的存放地址也有“地址边界对齐限制”：在默认编译配置下，成员变量存放的地址相对结构体起始地址的<strong>偏移量</strong>也必须满足自然对齐，即偏移量为该成员变量自身类型大小的倍数。</p>
 <p>各成员变量在存放的时候根据在结构体中声明的顺序依次申请空间，同时按照“地址边界对齐限制”原则调整存放位置（地址），空缺的字节会自动填充。</p>
-<h3 id="largest_member_ﬁrst">largest member ﬁrst<a class="headerlink" href="#largest_member_ﬁrst" title="Permanent link">#</a></h3>
+<h3 id="largest_member_first">largest member first<a class="headerlink" href="#largest_member_first" title="Permanent link">#</a></h3>
 <p>下面以 <code>struct st_dci</code> 为例来说明结构体的存储布局。</p>
 <div class="language-c highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="k">struct</span><span class="w"> </span><span class="nc">st_dci</span>
 </span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="p">{</span>
@@ -1655,7 +1655,7 @@
 </blockquote>
 <p>可以调用 &lt;stddef.h&gt; 中定义的宏 <a href="https://en.wikibooks.org/wiki/C_Programming/stddef.h/Function_reference#offsetof">offsetof</a> 来读取各个成员的实际偏移量。</p>
 <h3 id="largest_member_middle">largest member middle<a class="headerlink" href="#largest_member_middle" title="Permanent link">#</a></h3>
-<p>上面的 <code>struct st_dci</code> 是一种类似 TC++PL 中调整后的 struct Readout - largest member ﬁrst 的内存布局。</p>
+<p>上面的 <code>struct st_dci</code> 是一种类似 TC++PL 中调整后的 struct Readout - largest member first 的内存布局。</p>
 <p>交换一下成员变量d和c的位置，将占位最长的 d 放在中间，新的结构体 <code>struct st_cdi</code> 的内存布局和占用空间又是怎样的呢？</p>
 <div class="language-c highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="k">struct</span><span class="w"> </span><span class="nc">st_cdi</span>
 </span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="p">{</span>
@@ -1796,7 +1796,7 @@ GCC-specific <code>__alignof__</code> operator or Microsoft-specific <code>__ali
 <h2 id="refs">refs<a class="headerlink" href="#refs" title="Permanent link">#</a></h2>
 <p><a href="https://interrupt.memfault.com/blog/c-struct-padding-initialization">C Structure Padding Initialization</a><br />
 <a href="https://levelup.gitconnected.com/how-struct-memory-alignment-works-in-c-3ee897697236">How Struct Memory Alignment Works in C</a>  </p>
-<p><a href="https://www.amazon.com/Computer-Systems-OHallaron-Randal-Bryant/dp/1292101768/">Computer Systems - A Programmer’s Perspective</a> - 3.9.3: Data Alignment</p>
+<p><a href="https://www.amazon.com/Computer-Systems-OHallaron-Randal-Bryant/dp/1292101768/">Computer Systems - A Programmer's Perspective</a> - 3.9.3: Data Alignment</p>
 <p><a href="https://book.douban.com/subject/19930393/">老码识途-从机器码到框架的系统观逆向修炼之路-2012</a> - 1.5 无法沟通——对齐的错误</p>
 
 

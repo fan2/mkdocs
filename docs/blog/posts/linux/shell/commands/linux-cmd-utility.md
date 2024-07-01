@@ -180,11 +180,11 @@ SHELL BUILTIN COMMANDS
 
 printf [−v var] format [arguments]
 
-Write the formatted arguments to the standard output under the control of the format. The format is a character string which contains three types of objects: plain characters, which are simply copied to standard output, character escape sequences, which are converted and copied to the standard output, and format speciﬁcations, each of which causes printing of the next successive argument. In addition to the standard printf(1) formats, %b causes printf to expand backslash escape sequences in the corresponding argument (except that \c terminates output, backslashes in \', \", and \? are not removed, and octal escapes beginning with \0 may contain up to four digits), and %q causes printf to output the corresponding argument in a format that can be reused as shell input.
+Write the formatted arguments to the standard output under the control of the format. The format is a character string which contains three types of objects: plain characters, which are simply copied to standard output, character escape sequences, which are converted and copied to the standard output, and format specifications, each of which causes printing of the next successive argument. In addition to the standard printf(1) formats, %b causes printf to expand backslash escape sequences in the corresponding argument (except that \c terminates output, backslashes in \', \", and \? are not removed, and octal escapes beginning with \0 may contain up to four digits), and %q causes printf to output the corresponding argument in a format that can be reused as shell input.
 
 The −v option causes the output to be assigned to the variable var rather than being printed to the standard output.
 
-The format is reused as necessary to consume all of the arguments. If the format requires more arguments than are supplied, the extra format speciﬁcations behave as if a zero value or null string, as appropriate, had been supplied. The return value is zero on success, non-zero on failure.
+The format is reused as necessary to consume all of the arguments. If the format requires more arguments than are supplied, the extra format specifications behave as if a zero value or null string, as appropriate, had been supplied. The return value is zero on success, non-zero on failure.
 ```
 
 - [Shell printf命令：格式化输出语句](https://wiki.jikexueyuan.com/project/shell-tutorial/shell-printf-command.html)  

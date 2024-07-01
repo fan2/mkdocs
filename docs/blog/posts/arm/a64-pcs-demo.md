@@ -114,7 +114,7 @@ Line 34\~36, the arguments are loaded into `W9`-`W11` and then the arguments are
 
 Line 39 decrements the stack pointer by 16 bytes, providing room for up to four 8-byte double-words. This is necessary because the AArch64 stack pointer must always be on a 16-byte boundary. Since we have three 8-byte arguments to push, we must allocate 32 bytes, rounding up to the next 16-byte boundary.
 
-Line 44\~43 then stores `X9` at address of the stack pointer, and `X10` 8 bytes above that. Line 42 stores `X11` 16 bytes above the (decremented) stack pointer. The remaining arguments are loaded in `X0`\~`X7`. Note that we assume that format has previously been deﬁned to be "data: %d %d %d %d %d %d %d %d %d\n" using an `.asciz` or `.string` assembler directive.
+Line 44\~43 then stores `X9` at address of the stack pointer, and `X10` 8 bytes above that. Line 42 stores `X11` 16 bytes above the (decremented) stack pointer. The remaining arguments are loaded in `X0`\~`X7`. Note that we assume that format has previously been defined to be "data: %d %d %d %d %d %d %d %d %d\n" using an `.asciz` or `.string` assembler directive.
 
 ```text
 P_FP
@@ -137,14 +137,14 @@ P_FP
  SP → +-------+         v
 ```
 
-Line 42\~44 store three parameters into the stack. It can be implemented with a `STP` and a `STR` instruction. This would be slightly more efﬁcient than the original version for it saves a `STR` instruction. The `STP` instruction is used to store `W9` and `W10` on the stack and adjust the stack pointer. After `W11` is stored on the stack, note that they have been placed in reverse order.
+Line 42\~44 store three parameters into the stack. It can be implemented with a `STP` and a `STR` instruction. This would be slightly more efficient than the original version for it saves a `STR` instruction. The `STP` instruction is used to store `W9` and `W10` on the stack and adjust the stack pointer. After `W11` is stored on the stack, note that they have been placed in reverse order.
 
 ```asm
 stp x9, x10, [sp, #-32]!    // 8 bytes per parameter
 str x11, [sp, #16]
 ```
 
-A little care must be taken to ensure that the arguments are stored in the correct order on the stack. Remember that the `STP` instruction will always push the ﬁrst register to the lower address, and the stack grows downward. Therefore, `X9`, which is the ninth argument will be pushed onto the stack ﬁrst. Because pre-indexing is used, `X9` is actually at the lowest address. The 64-bit notation is used because otherwise `STP` would store both registers in just 8 bytes, and 16 bytes are needed. 
+A little care must be taken to ensure that the arguments are stored in the correct order on the stack. Remember that the `STP` instruction will always push the first register to the lower address, and the stack grows downward. Therefore, `X9`, which is the ninth argument will be pushed onto the stack first. Because pre-indexing is used, `X9` is actually at the lowest address. The 64-bit notation is used because otherwise `STP` would store both registers in just 8 bytes, and 16 bytes are needed. 
 
 Additionally, the `printf` instruction does not care what the rest of the bits are for each int, they are just treated as padding on the stack. Moreover, the `X9` register has zeroes in the upper 32-bits because 32-bit operations, such as `LDR` zero the upper bits unless they are explicitly sign-extended using an instruction like `LDRSW`. Finally, the stack must always be 16-byte aligned, which is why it is pushed down 32 bytes instead of just 24.
 

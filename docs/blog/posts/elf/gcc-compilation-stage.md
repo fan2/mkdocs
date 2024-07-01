@@ -68,6 +68,16 @@ For a C source file they are the preprocessor and compiler `cc1`, the assembler 
 
 ## The C Compilation Process
 
+[Computer Systems - A Programmer's Perspective](https://www.amazon.com/Computer-Systems-OHallaron-Randal-Bryant/dp/1292101768/) | Chapter 1: A Tour of Computer Systems - 1.2 Programs Are Translated by Other Programs into Different Forms
+
+The *hello* program begins life as a high-level C program because it can be read and understood by human beings in that form. However, in order to run `hello.c` on the system, the individual C statements must be *translated* by other programs into a sequence of low-level machine-language instructions. These instructions are then packaged in a form called an executable object program and stored as a binary disk file. Object programs are also referred to as executable object files.
+
+On a Unix system, the translation from source file to object file is performed by a compiler driver such as `gcc`:
+
+![the-compilation-system](./images/the-compilation-system.png)
+
+Here, the gcc compiler driver reads the source file hello.c and translates it into an executable object file hello. The translation is performed in the sequence of four phases shown in the figure above. The programs that perform the *four* phases (preprocessor, compiler, assembler, and linker) are known collectively as the *`compilation system`*.
+
 [Practical Binary Analysis](https://www.amazon.com/Practical-Binary-Analysis-Instrumentation-Disassembly/dp/1593279124) | Chapter 1: Anatomy of a Binary
 
 Binaries are produced through *compilation*, which is the process of translating human-readable source code, such as C or C ++ , into machine code that your processor can execute. The following figure shows the steps involved in a typical compilation process for C code (the steps for C ++ compilation are similar).

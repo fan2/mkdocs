@@ -128,9 +128,9 @@ The addresses for load and store instructions appear within the square brackets,
 LDR W0, [X1]
 ```
 
-There are several **addressing modes** that deﬁne how the address is formed.
+There are several **addressing modes** that define how the address is formed.
 
-**Base register** - The simplest form of addressing is a single register. Base register is an X register that contains the full, or absolute, virtual address of the data being accessed, as you can see in this ﬁgure:
+**Base register** - The simplest form of addressing is a single register. Base register is an X register that contains the full, or absolute, virtual address of the data being accessed, as you can see in this figure:
 
 ![Base register example](https://documentation-service.arm.com/static/656f49c7130be919349bb541)
 

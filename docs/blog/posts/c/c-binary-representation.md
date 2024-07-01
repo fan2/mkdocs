@@ -39,15 +39,15 @@ $$
 \sum_{i=0}^{p-1}b_i\ast2^i
 $$
 
-The value *p* in that binary representation is called the ***precision*** of the underlying type. Bit $b_0$ is called the ***least-signiﬁcant bit***, and LSB, $b_{p−1}$ is the ***most-signiﬁcant bit***(MSB).
+The value *p* in that binary representation is called the ***precision*** of the underlying type. Bit $b_0$ is called the ***least-significant bit***, and LSB, $b_{p−1}$ is the ***most-significant bit***(MSB).
 
-Of the bits $b_i$ that are 1, the one with minimal index *i* is called the ***least-signiﬁcant bit set***, and the one with the highest index is the ***most-signiﬁcant bit set***. For example, for an unsigned type with $p = 16$, the value 240 would have $b_4 = 1, b_5 = 1, b_6 = 1$, and $b_7 = 1$. All other bits of the binary representation are 0, the least-signiﬁcant bit set *i* is $b_4$, and the most-signiﬁcant bit set is $b_7$. From (5.1), we see immediately that $2^p$ is the ﬁrst value that cannot be represented with the type. Thus $N = 2^p$ and
+Of the bits $b_i$ that are 1, the one with minimal index *i* is called the ***least-significant bit set***, and the one with the highest index is the ***most-significant bit set***. For example, for an unsigned type with $p = 16$, the value 240 would have $b_4 = 1, b_5 = 1, b_6 = 1$, and $b_7 = 1$. All other bits of the binary representation are 0, the least-significant bit set *i* is $b_4$, and the most-significant bit set is $b_7$. From (5.1), we see immediately that $2^p$ is the first value that cannot be represented with the type. Thus $N = 2^p$ and
 
 !!! note "TAKEAWAY 5.51"
 
     The maximum value of any integer type is of the form $2^p − 1$.
 
-Observe that for this discussion of the representation of non-negative values, we haven’t argued about the signedness of the type. These rules apply *equally* to signed and unsigned types. Only for unsigned types, we are lucky, and what we have said so far completely sufﬁces to describe such an unsigned type.
+Observe that for this discussion of the representation of non-negative values, we haven’t argued about the signedness of the type. These rules apply *equally* to signed and unsigned types. Only for unsigned types, we are lucky, and what we have said so far completely suffices to describe such an unsigned type.
 
 !!! note "TAKEAWAY 5.52"
 
@@ -70,7 +70,7 @@ unsigned char | [0, UCHAR_MAX ] | <limits.h\> | [0, 255]
 
 Signed types are a bit more complicated than unsigned types. A C implementation has to decide about two points:
 
-- What happens on arithmetic overﬂow?
+- What happens on arithmetic overflow?
 - How is the sign of a signed type represented?
 
 Signed and unsigned types come in pairs according to their integer rank, with the notable two exceptions from table 5.1: char and bool. The binary representation of the signed type is constrained by the inclusion diagram that we have seen above.
@@ -87,7 +87,7 @@ The next thing the standard prescribes is that signed types have one additional 
 - Ones’ complement
 - Two’s complement
 
-The ﬁrst two nowadays probably only have historical or exotic relevance: for sign and magnitude, the magnitude is taken as positive values, and the sign bit simply speciﬁes that there is a minus sign. Ones’ complement takes the corresponding positive value and complements all bits. Both representations have the disadvantage that two values evaluate to 0: there is a positive and a negative 0.
+The first two nowadays probably only have historical or exotic relevance: for sign and magnitude, the magnitude is taken as positive values, and the sign bit simply specifies that there is a minus sign. Ones’ complement takes the corresponding positive value and complements all bits. Both representations have the disadvantage that two values evaluate to 0: there is a positive and a negative 0.
 
 Commonly used on modern platforms is the two’s complement representation. It performs exactly the same arithmetic as we have seen for unsigned types, but the upper half of unsigned values (those with a high-order bit of 1) is interpreted as being negative. The following two functions are basically all that is needed to interpret unsigned values as signed values:
 
@@ -120,44 +120,44 @@ Prove that for unsigned arithmetic:
 - A + ~A is −1.
 - A + (~A + 1) == 0, 2^w^-1 overflow to 2^w^.
 
-When done that way, signed integer arithmetic will again behave more or less nicely. Unfortunately, there is a pitfall that makes the outcome of signed arithmetic difﬁcult to predict: overﬂow. Where unsigned values are forced to wrap around, the behavior of a signed overﬂow is ***undeﬁned***. The following two loops look much the same:
+When done that way, signed integer arithmetic will again behave more or less nicely. Unfortunately, there is a pitfall that makes the outcome of signed arithmetic difficult to predict: overflow. Where unsigned values are forced to wrap around, the behavior of a signed overflow is ***undefined***. The following two loops look much the same:
 
 ```c
 for (unsigned i = 1; i; ++i) do_something();
 for (signed i = 1; i; ++i) do_something();
 ```
 
-We know what happens for the ﬁrst loop: the counter is incremented up to `UINT_MAX` and then wraps around to 0. All of this may take some time, but after UINT_MAX-1 iterations, the loop stops because i will have reached `0`.
+We know what happens for the first loop: the counter is incremented up to `UINT_MAX` and then wraps around to 0. All of this may take some time, but after UINT_MAX-1 iterations, the loop stops because i will have reached `0`.
 
-For the second loop, everything looks similar. But because here the behavior of overﬂow is *undeﬁned*, the compiler is allowed to *pretend* that it will never happen. Since it also knows that the value at the start is positive, it may assume that i, as long as the program has deﬁned behavior, is never negative or 0. The as-if Rule (takeaway 5.8) allows it to optimize the second loop to
+For the second loop, everything looks similar. But because here the behavior of overflow is *undefined*, the compiler is allowed to *pretend* that it will never happen. Since it also knows that the value at the start is positive, it may assume that i, as long as the program has defined behavior, is never negative or 0. The as-if Rule (takeaway 5.8) allows it to optimize the second loop to
 
 ```c
 while (true) do_something();
 ```
 
-That’s right, an inﬁnite loop.
+That’s right, an infinite loop.
 
 !!! note "TAKEAWAY 5.55"
 
-    TAKEAWAY 5.55 Once the abstract state machine reaches an undeﬁned state, no further assumption about the continuation of the execution can be made.
+    TAKEAWAY 5.55 Once the abstract state machine reaches an undefined state, no further assumption about the continuation of the execution can be made.
 
-Not only that, the compiler is allowed to do what it pleases for the operation itself (“Undeﬁned? so let’s deﬁne it”), but it may also assume that it will never reach such a state and draw conclusions from that.
+Not only that, the compiler is allowed to do what it pleases for the operation itself (“Undefined? so let’s define it”), but it may also assume that it will never reach such a state and draw conclusions from that.
 
-Commonly, a program that has reached an undeﬁned state is referred to as “having” or “showing” undeﬁned behavior. This wording is a bit unfortunate; in many such cases, a program does not “show” any visible signs of weirdness. In the contrary, bad things will be going on that you will not even notice for a long time.
+Commonly, a program that has reached an undefined state is referred to as “having” or “showing” undefined behavior. This wording is a bit unfortunate; in many such cases, a program does not “show” any visible signs of weirdness. In the contrary, bad things will be going on that you will not even notice for a long time.
 
 !!! note "TAKEAWAY 5.56"
 
-    TAKEAWAY 5.56 It is your responsibility to avoid undeﬁned behavior of all operations.
+    TAKEAWAY 5.56 It is your responsibility to avoid undefined behavior of all operations.
 
-What makes things even worse is that on some platforms with some standard compiler options, the compilation will just look right. Since the behavior is undeﬁned, on such a platform, signed integer arithmetic might turn out to be basically the same as unsigned. But changing the platform, the compiler, or some options can change that. All of a sudden, your program that worked for years crashes out of nowhere.
+What makes things even worse is that on some platforms with some standard compiler options, the compilation will just look right. Since the behavior is undefined, on such a platform, signed integer arithmetic might turn out to be basically the same as unsigned. But changing the platform, the compiler, or some options can change that. All of a sudden, your program that worked for years crashes out of nowhere.
 
-Basically, what we have discussed up to this chapter always had well-deﬁned behavior, so the abstract state machine is always in a well-deﬁned state. Signed arithmetic changes this, so as long as you don’t need it, avoid it. We say that a program performs a trap C (or just traps) if it is terminated abruptly before its usual end.
+Basically, what we have discussed up to this chapter always had well-defined behavior, so the abstract state machine is always in a well-defined state. Signed arithmetic changes this, so as long as you don’t need it, avoid it. We say that a program performs a trap C (or just traps) if it is terminated abruptly before its usual end.
 
 !!! note "TAKEAWAY 5.57~5.59"
 
     TAKEAWAY 5.57 Signed arithmetic may trap badly.
     TAKEAWAY 5.58 In two’s complement representation, INT_MIN < -INT_MAX.
-    TAKEAWAY 5.59 Negation may overﬂow for signed arithmetic.
+    TAKEAWAY 5.59 Negation may overflow for signed arithmetic.
 
 For signed types, bit operations work with the binary representation. So the value of a bit operation depends in particular on the sign representation. In fact, bit operations even allow us to detect the sign representation:
 
@@ -195,7 +195,7 @@ unsigned | 16
 unsigned long | 32
 unsigned long long | 64
 
-Under usual circumstances, these guarantees should give you enough information; but under some technical constraints, such guarantees might not be sufﬁcient, or you might want to emphasize a particular precision. This may be the case if you want to use an unsigned quantity to represent a bit set of a known maximal size. If you know that 32-bit will sufﬁce for your set, depending on your platform, you might want to choose `unsigned` or `unsigned long` to represent it.
+Under usual circumstances, these guarantees should give you enough information; but under some technical constraints, such guarantees might not be sufficient, or you might want to emphasize a particular precision. This may be the case if you want to use an unsigned quantity to represent a bit set of a known maximal size. If you know that 32-bit will suffice for your set, depending on your platform, you might want to choose `unsigned` or `unsigned long` to represent it.
 
 The C standard provides names for *exact-width integer types* in [<stdint.h\>](https://en.cppreference.com/w/c/types/integer). As the name indicates, they are of an exact prescribed “width,” which for provided unsigned types is guaranteed to be the same as their precision.
 

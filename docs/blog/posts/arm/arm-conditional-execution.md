@@ -17,7 +17,7 @@ In this article, we'll explore ARM program flow based on conditional execution.
 
 [Learn the architecture - A64 Instruction Set Architecture Guide](https://developer.arm.com/documentation/102374/latest) | Program flow & PCS
 
-Ordinarily, a processor executes instructions in program order. This means that a processor executes instructions in the same order that they are set in memory. One way to change this order is to use *`branch`* instructions. Branch instructions change the program ﬂow and are used for *loops*, *decisions* and *function calls*.
+Ordinarily, a processor executes instructions in program order. This means that a processor executes instructions in the same order that they are set in memory. One way to change this order is to use *`branch`* instructions. Branch instructions change the program flow and are used for *loops*, *decisions* and *function calls*.
 
 The A64 instruction set also has some *`conditional branch`* instructions. These are instructions that change the way they execute, based on the results of previous instructions.
 
@@ -172,7 +172,7 @@ The following is an example of conditional execution in A32 code:
 [ARM 64-Bit Assembly Language](https://www.amazon.com/64-Bit-Assembly-Language-Larry-Pyeatt/dp/0128192216/)
 
 - 2 GNU assembly syntax - 2.3 GNU assembly directives - 2.3.6 Conditional assembly
-- 3 Load/store and branch instructions - 3.3 Instruction components - 3.3.1 Setting and using condition ﬂags
+- 3 Load/store and branch instructions - 3.3 Instruction components - 3.3.1 Setting and using condition flags
 - 4 Data processing and other instructions - 4.2 Data processing instructions - 4.2.10 Conditional operations
 - 5 Structured programming - 5.2 Selection - 5.2.2 If-then-else statement
 

@@ -1623,8 +1623,8 @@
 <p><code>Activation record</code> / <code>call frame</code>: The memory used by a routine for saving registers and holding local variables (usually allocated on a stack, once per activation of the routine).</p>
 <h3 id="pcs">PCS<a class="headerlink" href="#pcs" title="Permanent link">#</a></h3>
 <p><a href="https://developer.arm.com/documentation/102374/0102/Procedure-Call-Standard">A64 Instruction Set Architecture Guide</a> - 27. Procedure Call Standard</p>
-<p>The Arm architecture places few restrictions on how general purpose registers are used. To recap, integer registers and ﬂoating-point registers are general purpose registers. However, if you want your code to <strong>interact</strong> with code that is written by someone else, or with code that is produced by a compiler, then you need to <strong>agree</strong> rules for register usage. For the Arm architecture, these rules are called the Procedure Call Standard, or <strong><em>PCS</em></strong>.</p>
-<p>The PCS speciﬁes:</p>
+<p>The Arm architecture places few restrictions on how general purpose registers are used. To recap, integer registers and floating-point registers are general purpose registers. However, if you want your code to <strong>interact</strong> with code that is written by someone else, or with code that is produced by a compiler, then you need to <strong>agree</strong> rules for register usage. For the Arm architecture, these rules are called the Procedure Call Standard, or <strong><em>PCS</em></strong>.</p>
+<p>The PCS specifies:</p>
 <ul>
 <li>Which registers are used to <strong>pass</strong> arguments into the function.</li>
 <li>Which registers are used to <strong>return</strong> a value to the function doing the calling, known as the caller.</li>
@@ -1641,7 +1641,7 @@
 <p class="admonition-title">X0 reserved for this pointer in C++</p>
 <p>In C++, <code>X0</code> is used to pass the implicit <em>this</em> pointer that points to the called function.</p>
 </div>
-<p>Next, the PCS deﬁnes which registers can be corrupted, and which registers cannot be corrupted. If a register can be corrupted, then the called function can <strong>overwrite</strong> without needing to restore, as this table of PCS register rules shows:</p>
+<p>Next, the PCS defines which registers can be corrupted, and which registers cannot be corrupted. If a register can be corrupted, then the called function can <strong>overwrite</strong> without needing to restore, as this table of PCS register rules shows:</p>
 <table>
 <thead>
 <tr>
@@ -1678,14 +1678,14 @@
 </tr>
 </tbody>
 </table>
-<p>For example, the function <code>foo()</code> can use registers <code>X0</code> to <code>X15</code> without needing to preserve their values. However, if <code>foo()</code> wants to use <code>X19</code> to <code>X28</code> it must <strong>save</strong> them to stack ﬁrst, and then <strong>restore</strong> from the stack before returning.</p>
-<p>Some registers have special signiﬁcance in the PCS:</p>
+<p>For example, the function <code>foo()</code> can use registers <code>X0</code> to <code>X15</code> without needing to preserve their values. However, if <code>foo()</code> wants to use <code>X19</code> to <code>X28</code> it must <strong>save</strong> them to stack first, and then <strong>restore</strong> from the stack before returning.</p>
+<p>Some registers have special significance in the PCS:</p>
 <ul>
 <li>
 <p><code>XR</code> - This is an <em>indirect</em> result register. If <code>foo()</code> returned a <em>struct</em>, then the memory for struct would be <strong>allocated</strong> by the caller, <code>main()</code> in the earlier example. <code>XR</code> is a pointer to the memory allocated by the caller for returning the struct.</p>
 </li>
 <li>
-<p><code>IP0</code> and <code>IP1</code> - These registers are intra-procedure-call corruptible registers. These registers can be corrupted between the time that the function is called and the time that it arrives at the ﬁrst instruction in the function. These registers are used by <em>linkers</em> to <strong>insert</strong> veneers between the caller and callee. Veneers are small pieces of code. The most common example is for branch range extension. The branch instruction in A64 has a limited range. If the target is beyond that range, then the linker needs to generate a veneer to <strong>extend</strong> the range of the branch.</p>
+<p><code>IP0</code> and <code>IP1</code> - These registers are intra-procedure-call corruptible registers. These registers can be corrupted between the time that the function is called and the time that it arrives at the first instruction in the function. These registers are used by <em>linkers</em> to <strong>insert</strong> veneers between the caller and callee. Veneers are small pieces of code. The most common example is for branch range extension. The branch instruction in A64 has a limited range. If the target is beyond that range, then the linker needs to generate a veneer to <strong>extend</strong> the range of the branch.</p>
 </li>
 <li>
 <p><code>FP</code> - Frame pointer.</p>

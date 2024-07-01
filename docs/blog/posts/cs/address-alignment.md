@@ -60,7 +60,7 @@ If the highest and lowest bytes in a datum are not within the same memory word t
 
 总的来说，配合现代编译器和CPU架构，可以让程序获得令人难以置信的性能，但这种良好的性能取决于某些编程实践，其中一种编程实践是正确的数据对齐。
 
-[Computer Systems - A Programmer’s Perspective](https://www.amazon.com/Computer-Systems-OHallaron-Randal-Bryant/dp/1292101768/) - 3.9.3: Data Alignment:
+[Computer Systems - A Programmer's Perspective](https://www.amazon.com/Computer-Systems-OHallaron-Randal-Bryant/dp/1292101768/) - 3.9.3: Data Alignment:
 
 Many computer systems place restrictions on the allowable addresses for the primitive data types, requiring that the address for some objects must be a multiple of some value $K$ (typically 2, 4, or 8). Such ***alignment restrictions*** simplify the design of the hardware forming the interface between the processor and the memory system.
 
@@ -68,7 +68,7 @@ For example, suppose a processor always fetches 8 bytes from memory with an addr
 
 ## natural alignment
 
-[Computer Systems - A Programmer’s Perspective](https://www.amazon.com/Computer-Systems-OHallaron-Randal-Bryant/dp/1292101768/) - 3.9.3: Data Alignment:
+[Computer Systems - A Programmer's Perspective](https://www.amazon.com/Computer-Systems-OHallaron-Randal-Bryant/dp/1292101768/) - 3.9.3: Data Alignment:
 
 The x86-64 hardware will work correctly regardless of the alignment of data. However, Intel recommends that data be aligned to improve memory system performance. Their alignment rule is based on the principle that any primitive object of $K$ bytes must have an *address* that is a multiple of $K$. We can see that this rule leads to the following alignments:
 
@@ -79,7 +79,7 @@ K | Types
 4 | int, float
 8 | long, double, char *
 
-Alignment is **enforced** by making sure that every data type is organized and allocated in such a way that every object within the type **satisﬁes** its alignment restrictions.
+Alignment is **enforced** by making sure that every data type is organized and allocated in such a way that every object within the type **satisfies** its alignment restrictions.
 
 [ILP32 and LP64 data models.PDF](https://scc.ustc.edu.cn/zlsc/czxt/200910/W020100308601263456982.pdf) - [HP-UX](https://en.wikipedia.org/wiki/HP-UX) 64-bit data model list ILP32 and LP64 data alignment:
 

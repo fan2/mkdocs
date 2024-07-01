@@ -70,6 +70,8 @@ The `segments` contain information that is needed for run time execution of the 
 
 ## ELF header
 
+This header file /usr/include/elf.h([linux/include/uapi/linux/elf.h](https://github.com/torvalds/linux/tree/master/include/uapi/linux/elf.h)) defines standard ELF types, structures, and macros.
+
 ```bash
 $ vim -M /usr/include/elf.h
 ```
@@ -204,37 +206,24 @@ To view, dump, analyse or manipulate the object file and ELF file, you need [GNU
 
 ## section header
 
+The ELF header begins with a 16-byte sequence that describes the word size and byte ordering of the system that generated the file. The rest of the ELF header contains information that allows a linker to parse and interpret the object file. This includes the size of the ELF header, the object file type (e.g., relocatable, executable, or shared), the machine type (e.g., x86-64), the file offset of the section header table, and the size and number of entries in the section header table. The locations and sizes of the various sections are described by the section header table, which contains a fixed-size entry for each section in the object file.
+
+> The `e_shoff` member of `Elf32_Ehdr`/`Elf64_Ehdr` holds the offset to the section header table.
+
 [TIS - ELF v1.2](https://refspecs.linuxfoundation.org/elf/elf.pdf) | Book I: ELF - 1. Object Files - Sections
 
-An object file's **`section header table`** lets one locate all the file's sections.
+An object file's **`section header table`** lets one locate all the file's sections. Refer to struct `Elf32_Shdr`/`Elf64_Shdr` defined in /usr/include/elf.h.
 
-The `e_shoff` member of `Elf32_Ehdr`/`Elf64_Ehdr` holds the offset to the section header table.
+1. `sh_type` defines Section Types.
+2. `sh_offset` holds the address to the section's first byte.
 
-> refer to struct `Elf32_Shdr`/`Elf64_Shdr` and `sh_type`(Section Types) defined in /usr/include/elf.h @[torvalds/linux](https://github.com/torvalds/linux/tree/master/include/uapi/linux/elf.h).
+**`Sections`** contain all information in an object file, *except* the ELF header, the program header table, and the section header table.
 
-The `sh_offset` member holds the address to the section's first byte.
+1. For typical relocatable object files (suffixed `.o`), the sections are sandwiched between the ELF header and the section header table.
 
-```text
-            +-------------------+
-            | ELF header        |---+
-+---------> +-------------------+   | e_shoff
-|           |                   |<--+
-| Section   | Section header 0  |
-|           |                   |---+ sh_offset
-| Header    +-------------------+   |
-|           | Section header 1  |---|--+ sh_offset
-| Table     +-------------------+   |  |
-|           | Section header 2  |---|--|--+
-+---------> +-------------------+   |  |  |
-            | Section 0         |<--+  |  |
-            +-------------------+      |  | sh_offset
-            | Section 1         |<-----+  |
-            +-------------------+         |
-            | Section 2         |<--------+
-            +-------------------+
-```
+2. For typical executable (no suffix) or shared object files (usually suffixed with `.so`), there is a program header sandwiched between the ELF header and the section header table. Therefore the sections are sandwiched between the program header and the section header table.
 
-**`Sections`** contain all information in an object file, *except* the ELF header, the program header table, and the section header table. Moreover, object files' sections satisfy several conditions.
+Moreover, object files' sections satisfy several conditions.
 
 - Every section in an object file has exactly one section header describing it. Section headers may exist that do not have a section.
 - Each section occupies one contiguous (possibly empty) sequence of bytes within a file.
@@ -251,7 +240,7 @@ Please refer to the following materials for further details.
 - [Learning Linux Binary Analysis](https://www.amazon.com/Learning-Binary-Analysis-elfmaster-ONeill/dp/1782167102) | Chapter 2: The ELF Binary Format - ELF section headers
 - [Practical Binary Analysis](https://www.amazon.com/Practical-Binary-Analysis-Instrumentation-Disassembly/dp/1593279124) | Chapter 2: The ELF Format - 2.3 Sections
 - [Arm Assembly Internals and Reverse Engineering](https://www.amazon.com/Blue-Fox-Assembly-Internals-Analysis/dp/1119745306) | Chapter 2 ELF File Format Internals - ELF Section Headers
-- [Computer Systems - A Programmer’s Perspective](https://www.amazon.com/Computer-Systems-OHallaron-Randal-Bryant/dp/1292101768/) | Chapter 7: Linking - 7.3: Object Files ; 7.8: Executable Object Files
+- [Computer Systems - A Programmer's Perspective](https://www.amazon.com/Computer-Systems-OHallaron-Randal-Bryant/dp/1292101768/) | Chapter 7: Linking - 7.3: Object Files ; 7.8: Executable Object Files
 
 ## program header
 
@@ -303,9 +292,5 @@ MIPS - [64-bit ELF Object File Spec v2.5](https://irix7.com/techpubs/007-4658-00
 [ELF 文件 - CTF Wiki](https://ctf-wiki.org/executable/elf/structure/basic-info/)
 [ELF Format Cheatsheet](https://gist.github.com/x0nu11byt3/bcb35c3de461e5fb66173071a2379779)
 [ELF Hello World Tutorial](https://cirosantilli.com/elf-hello-world#rela-text)
-[The 101 of ELF files on Linux: Understanding and Analysis](https://linux-audit.com/elf-binaries-on-linux-understanding-and-analysis/)
-
 [BINARY ANALYSIS(PART 1): BINARY CREATION](https://www.linuxbaya.com/2021/05/binary-analysispart-1-binary-creation.html)
-[BINARY ANALYSIS(PART 2): INSIDE A BINARY](https://www.linuxbaya.com/2021/05/binary-analysispart-2-inside-binary.html)
-[BINARY ANALYSIS(PART 3): INSIDE A BINARY](https://www.linuxbaya.com/2021/05/binary-analysispart-3-inside-binary.html)
-[BINARY ANALYSIS(PART 4): BINARY HACKING](https://www.linuxbaya.com/2021/08/binary-analysispart-4-binary-hacking.html)
+[The 101 of ELF files on Linux: Understanding and Analysis](https://linux-audit.com/elf-binaries-on-linux-understanding-and-analysis/)

@@ -653,15 +653,15 @@ for (unsigned i = 1; i; ++i) do_something();
 
 > TAKEAWAY 5.57 Signed arithmetic may trap badly.
 
-Where unsigned values are forced to wrap around, the behavior of a signed overﬂow is ***undeﬁned***.
+Where unsigned values are forced to wrap around, the behavior of a signed overflow is ***undefined***.
 
 ```c
 for (signed i = 1; i; ++i) do_something();
 ```
 
-The as-if Rule (takeaway 5.8) allows it to optimize the second loop to an `while(true)` inﬁnite loop.
+The as-if Rule (takeaway 5.8) allows it to optimize the second loop to an `while(true)` infinite loop.
 
-> TAKEAWAY 5.56 It is your responsibility to avoid undeﬁned behavior of all operations.
+> TAKEAWAY 5.56 It is your responsibility to avoid undefined behavior of all operations.
 
 [C++ Standard - Data Types](../cpp/cpp-std-data-types.md)
 

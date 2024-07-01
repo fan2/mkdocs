@@ -54,7 +54,7 @@ X[d, 64] = base + imm;
 
 **Usage**
 
-Load Register (literal) calculates an address from the PC value and an immediate oﬀset, loads a word from memory, and writes it to a register. For information about memory accesses, see *Load/Store addressing modes* in the [Arm Architecture Reference Manual Armv8, for Armv8-A architecture proﬁle](https://developer.arm.com/documentation/ddi0487/latest).
+Load Register (literal) calculates an address from the PC value and an immediate oﬀset, loads a word from memory, and writes it to a register. For information about memory accesses, see *Load/Store addressing modes* in the [Arm Architecture Reference Manual Armv8, for Armv8-A architecture profile](https://developer.arm.com/documentation/ddi0487/latest).
 
 ## ADRL pseudo-instruction
 

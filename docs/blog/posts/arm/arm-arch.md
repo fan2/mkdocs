@@ -84,7 +84,7 @@ ARMv8-A includes the VFPv3/v4 and advanced SIMD (Neon) as standard features in b
 
 <figure markdown="span">
     ![AArch64-architecture](./images/AArch64-architecture.png){: style="width:75%;height:75%"}
-    <figcaption>A simpliﬁed conceptual view of the AArch64 architecture</figcaption>
+    <figcaption>A simplified conceptual view of the AArch64 architecture</figcaption>
 </figure>
 
 ### Naming conventions
@@ -223,13 +223,13 @@ ARMv8-A 64-bit milestones:
 
 1. Overview
 
-- An Instruction Set Architecture (*ISA*) is part of the abstract model of a computer. It deﬁnes how software **controls** the processor.
+- An Instruction Set Architecture (*ISA*) is part of the abstract model of a computer. It defines how software **controls** the processor.
 
-- The Arm ISA allows you to write software and ﬁrmware that **conforms** to the Arm speciﬁcations. This mean that, if your software or ﬁrmware conforms to the speciﬁcations, any Arm-based processor will execute it in the same way.
+- The Arm ISA allows you to write software and firmware that **conforms** to the Arm specifications. This mean that, if your software or firmware conforms to the specifications, any Arm-based processor will execute it in the same way.
 
 2. Why you should care about the ISA?
 
-- As developers, you may not need to write directly in assembler in our day-to-day role. However, assembler is still important in some areas, such as the ﬁrst stage boot software or some low-level kernel activities.
+- As developers, you may not need to write directly in assembler in our day-to-day role. However, assembler is still important in some areas, such as the first stage boot software or some low-level kernel activities.
 
 - Even if you are not writing assembly code directly, understanding what the instruction set can do, and how the compiler makes use of those instructions, can help you to write more eﬃcient code. It can also help you to understand the output of the compiler. This can be useful when debugging.
 
@@ -237,7 +237,7 @@ ARMv8-A 64-bit milestones:
 
 - Armv8-A supports three instruction sets: `A32`, `T32` and `A64`.
 
-- The `A64` instruction set is used when executing in the *AArch64 Execution state*. It is a ﬁxed-length ==32==-bit instruction set. The 64 in the name refers to the use of this instruction by the AArch64 Execution state. It does not refer to the size of the instructions in memory.
+- The `A64` instruction set is used when executing in the *AArch64 Execution state*. It is a fixed-length ==32==-bit instruction set. The 64 in the name refers to the use of this instruction by the AArch64 Execution state. It does not refer to the size of the instructions in memory.
 
 - The `A32` and `T32` instruction sets are also referred to as `Arm` and `Thumb`, respectively. These instruction sets are used when executing in the *AArch32 Execution state*.
 
