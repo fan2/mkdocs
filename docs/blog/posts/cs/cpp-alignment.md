@@ -25,7 +25,7 @@ Excerpt from [Modern C, 1st Edition, 2019](https://www.amazon.com/Modern-C-Jens-
 
 **12 The C memory model | 12.7 Alignment**
 
-The inverse direction of pointer conversions (from “pointer to character type” to “pointer to object”) is not harmless at all, and not only because of possible aliasing. This has to do with another property of C’s memory model: ***alignment***. Objects of most non-character types can’t start at any *arbitrary* byte position; they usually start at a ***word boundary***. The alignment of a type then describes the possible byte positions at which an object of that type can start.
+The inverse direction of pointer conversions (from “pointer to character type” to “pointer to object”) is not harmless at all, and not only because of possible aliasing. This has to do with another property of C's memory model: ***alignment***. Objects of most non-character types can't start at any *arbitrary* byte position; they usually start at a ***word boundary***. The alignment of a type then describes the possible byte positions at which an object of that type can start.
 
 If we force some data to a false alignment, really bad things can happen.
 
@@ -35,7 +35,7 @@ As you can see in the output, above, it seems that `complex double` still works 
 
 ---
 
-In the previous code example, we also see a new operator, `alignof` (or `_Alignof`, if you don’t include [<stdalign.h\>](https://en.cppreference.com/w/c/types)), that provides us with the alignment of a specific type. You will rarely find the occasion to use it in real live code.
+In the previous code example, we also see a new operator, `alignof` (or `_Alignof`, if you don't include [<stdalign.h\>](https://en.cppreference.com/w/c/types)), that provides us with the alignment of a specific type. You will rarely find the occasion to use it in real live code.
 
 Another keyword can be used to force allocation at a specified alignment: `alignas` (respectively, `_Alignas`). Its argument can be either a type or expression. It can be useful where you know that your platform can perform certain operations more efficiently if the data is aligned in a certain way.
 

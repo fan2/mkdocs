@@ -617,6 +617,8 @@ pwndbg> disassemble $pc
 [...snip...]
 ```
 
+*_start*+28 \~ *_start*+32 loads the value at `GOT`[0xff0]=*0xaaaaaaab0ff0. This corresponds to a static relocation entry of type `R_AARCH64_RELATIVE`, the value of which can be calculated by $reloc\_bias+addend$=0xaaaaaaaa0754, resulting in `x0` pointing to the `main` function.
+
 ### status info
 
 The output of `getfile` and `piebase` remains as before.

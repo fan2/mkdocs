@@ -27,7 +27,7 @@ comments: true
 - [The Python Tutorial](https://docs.python.org/3/tutorial/index.html)
 - [Python HOWTOs](https://docs.python.org/3/howto/index.html)
 
-[Python Developer’s Guide](https://devguide.python.org/)  
+[Python Developer's Guide](https://devguide.python.org/)  
 
 [查看python的模块和函数帮助文档方法](http://blog.csdn.net/u013810296/article/details/55509284)  
 

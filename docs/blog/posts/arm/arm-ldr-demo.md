@@ -218,7 +218,7 @@ LDR X1, =helloworld
 
 the Assembler did the same thing; it created the address of the hellostring in memory and then loaded the contents of that memory location, not the helloworld string.
 
-These constants the Assembler creates are placed at the *end* of the `.text` section which is where the Assembly instructions go, not in the `.data` section. This makes them read-only in normal circumstances, so they can’t be modified. Any data that you want to modify should go in a `.data` section.
+These constants the Assembler creates are placed at the *end* of the `.text` section which is where the Assembly instructions go, not in the `.data` section. This makes them read-only in normal circumstances, so they can't be modified. Any data that you want to modify should go in a `.data` section.
 
 ### Literal (PC-Relative) Addressing
 

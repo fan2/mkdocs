@@ -56,7 +56,7 @@ C17 - [ISO/IEC 9899:2018](https://www.iso.org/standard/74528.html)
 
 Jens Gustedt - [Modern C v1/2019 ](https://gustedt.gitlabpages.inria.fr/modern-c/) - C versions
 
-As the title of this book suggests, today’s C is not the same language as the one originally designed by its creators, Kernighan and Ritchie (usually referred to as K&R C). In particular, it has undergone an important standardization and extension process, now driven by ISO, the International Standards Organization. This led to the publication of a series of C standards in 1989, 1999, 2011, and 2018, commonly referred to as C89, C99, C11, and C17.
+As the title of this book suggests, today's C is not the same language as the one originally designed by its creators, Kernighan and Ritchie (usually referred to as K&R C). In particular, it has undergone an important standardization and extension process, now driven by ISO, the International Standards Organization. This led to the publication of a series of C standards in 1989, 1999, 2011, and 2018, commonly referred to as C89, C99, C11, and C17.
 
 The C standards committee puts a lot of effort into guaranteeing backward compatibility such that code written for earlier versions of the language, say C89, should compile to a semantically equivalent executable with a compiler that implements a newer version. Unfortunately, this backward compatibility has had the unwanted side effect of not motivating projects that could benefit greatly from the new features to update their code base.
 

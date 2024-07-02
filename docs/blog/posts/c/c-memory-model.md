@@ -18,13 +18,13 @@ Pointers present us with a certain abstraction of the environment and state in w
 
 <!-- more -->
 
-This access to objects via pointers is still an abstraction, because seen from C, no distinction of the “real” location of an object is made. It could reside in your computer’s RAM or on a disk file, or correspond to an IO port of a temperature sensor on the moon; you shouldn’t care. C is supposed to do the right thing, regardless.
+This access to objects via pointers is still an abstraction, because seen from C, no distinction of the “real” location of an object is made. It could reside in your computer's RAM or on a disk file, or correspond to an IO port of a temperature sensor on the moon; you shouldn't care. C is supposed to do the right thing, regardless.
 
 And indeed, on modern operating systems, all you get via pointers is something called *virtual memory*, basically a fiction that maps the *address space* of your process to physical memory addresses of your machine.
 
 The only thing C must care about is the *type* of the object a pointer addresses. Each pointer type is derived from another type, its base type, and each such derived type is a distinct new type.
 
-Figure 12.1 The different levels of the value-memory model for an `int32_t`. Example of a platform that maps this type to a 32-bit signed int that has two’s complement sign representation and little-endian object representation.
+Figure 12.1 The different levels of the value-memory model for an `int32_t`. Example of a platform that maps this type to a 32-bit signed int that has two's complement sign representation and little-endian object representation.
 
 <figure markdown="span">
     ![int32_t-representation](./images/int32_t-representation.png)
@@ -46,7 +46,7 @@ Not only can all objects be “accounted” in size as character types on a lowe
 > TAKEAWAY 12.3 Every object A can be viewed as `unsigned char[sizeof A]`.
 > TAKEAWAY 12.4 Pointers to character types are special.
 
-Unfortunately, the types that are used to compose all other object types are derived from char, the type we looked at for the characters of strings. This is merely a historical accident, and you shouldn’t read too much into it. In particular, you should clearly distinguish the two different use cases.
+Unfortunately, the types that are used to compose all other object types are derived from char, the type we looked at for the characters of strings. This is merely a historical accident, and you shouldn't read too much into it. In particular, you should clearly distinguish the two different use cases.
 
 > TAKEAWAY 12.5 Use the type `char` for character and string data.
 > TAKEAWAY 12.6 Use the type `unsigned char` as the *atom* of all object types.
@@ -76,7 +76,7 @@ unsigned char bytes[sizeof(unsigned)];
 unsignedInspect twofold = { .val = 0xAABBCCDD, };
 ```
 
-The difference here is that such a `union` doesn’t collect objects of different type into one bigger object, but rather *overlays* an object with a different type interpretation. That way, it is the perfect tool to **inspect** the individual bytes of an object of another type.
+The difference here is that such a `union` doesn't collect objects of different type into one bigger object, but rather *overlays* an object with a different type interpretation. That way, it is the perfect tool to **inspect** the individual bytes of an object of another type.
 
 Let us first try to figure out what values we would expect for the individual bytes. In a slight abuse of language, let us speak of the different parts of an unsigned number that correspond to the bytes as *representation digits*. Since we view the bytes as being of type `unsigned char`, they can have values 0 ... `UCHAR_MAX`, inclusive, and thus we interpret the number as written with a base of `UCHAR_MAX+1`. In the example, on my machine, a value of type `unsigned` can be expressed with `sizeof(unsigned) == 4` such representation digits, and I chose the values 0xAA, 0xBB, 0xCC, and 0xDD for the highest- to lowest-order representation digit. The complete `unsigned` value can be computed using the following expression, where `CHAR_BIT` is the number of bits in a character type:
 

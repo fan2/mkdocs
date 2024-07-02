@@ -21,7 +21,7 @@ comments: true
 
 1. 权值是零（符号位是“1”则表示数值为负），称为“符号-绝对值”模式（Sign and magnitude）。
 2. 权值是 –(2^N-1^-1)，“1的补码”方式（Ones’ complement）。
-3. 权值是 –2^N-1^，“2的补码”方式（Two’s complement）。
+3. 权值是 –2^N-1^，“2的补码”方式（Two's complement）。
 
 <!-- more -->
 

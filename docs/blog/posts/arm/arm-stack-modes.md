@@ -193,7 +193,7 @@ Conforming code shall construct a *linked* list of `stack-frames`. Each frame sh
 
 !!! note "sp sem break moment"
 
-    There will always be a short period during construction or destruction of each frame record during which the frame pointer will point to the caller’s record.
+    There will always be a short period during construction or destruction of each frame record during which the frame pointer will point to the caller's record.
 
 A platform shall mandate the minimum level of conformance with respect to the maintenance of frame records. The options are, in decreasing level of functionality:
 
@@ -215,13 +215,13 @@ In this chapter, we will examine how to organize our code into small independent
 
 Typically, in software development, we start with low-level components. Then we build on these to create higher- and higher-level modules. So far, we know how to loop, perform conditional logic, and perform some arithmetic. Now, we examine how to compartmentalize code into building blocks.
 
-We introduce the **`stack`**, a computer science data structure for storing data. If we’re going to build useful *reusable* functions, we need a good way to manage register usage, so that all these functions don’t *clobber* each other. In Chapter 5, “Thanks for the Memories,” we studied how to store data in a data segment in main memory. The problem with this is that this memory exists for the duration that the program runs. With small functions, like converting to upper-case, they run quickly; thus they might need a few memory locations while they run, but when they’re done, they don’t need this memory anymore. Stacks provide us a tool to manage register usage across function calls and a tool to provide memory to functions for the duration of their invocation.
+We introduce the **`stack`**, a computer science data structure for storing data. If we’re going to build useful *reusable* functions, we need a good way to manage register usage, so that all these functions don't *clobber* each other. In Chapter 5, “Thanks for the Memories,” we studied how to store data in a data segment in main memory. The problem with this is that this memory exists for the duration that the program runs. With small functions, like converting to upper-case, they run quickly; thus they might need a few memory locations while they run, but when they’re done, they don't need this memory anymore. Stacks provide us a tool to manage register usage across function calls and a tool to provide memory to functions for the duration of their invocation.
 
 We introduce several low-level concepts first, and then we put them all together to effectively create and use functions. First up is the abstract data type called a **`stack`** that is a convenient mechanism to store data for the duration of a function call.
 
 Stacks work great for saving and restoring registers, but to work well for other data, we need the concept of a **`stack frame`**. Here we allocate a block or frame of memory on the stack that we use to store our variables. This is an efficient mechanism to allocate some memory at the start of a function and then release it before we return.
 
-PUSHing variables on the stack isn’t practical, since we need to access them in a random order, rather than the strict *LIFO* protocol that `PUSH`/`POP` enforce.
+PUSHing variables on the stack isn't practical, since we need to access them in a random order, rather than the strict *LIFO* protocol that `PUSH`/`POP` enforce.
 
 ### implementation
 

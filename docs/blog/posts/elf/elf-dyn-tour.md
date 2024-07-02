@@ -486,7 +486,7 @@ Program Headers:
 
 The `INTERP` header is used to tell the operating system that an ELF file needs the help of another program to bring itself into memory. In almost all cases, this program will be the operating system loader file, which in this case is at the path `/lib/ld-linux-aarch64.so.1`.
 
-When a program is executed, the operating system uses this header to load the supporting loader into memory and schedules the *`loader`*, rather than the program itself, as the *initial* target for execution. The use of an external loader is necessary if the program makes use of dynamically linked libraries. The external loader manages the program’s global symbol table, handles connecting binaries together in a process called *`relocation`*, and then eventually calls into the program’s entry point when it is ready.
+When a program is executed, the operating system uses this header to load the supporting loader into memory and schedules the *`loader`*, rather than the program itself, as the *initial* target for execution. The use of an external loader is necessary if the program makes use of dynamically linked libraries. The external loader manages the program's global symbol table, handles connecting binaries together in a process called *`relocation`*, and then eventually calls into the program's entry point when it is ready.
 
 Since this is the case for virtually all nontrivial programs except the loader itself, almost all programs will use this field to specify the system loader. The `INTERP` header is relevant only to program files themselves; for shared libraries loaded either during initial program load or dynamically during program execution, the value is ignored.
 
@@ -556,7 +556,7 @@ Disassembly of section .text:
   30:	94000000 	bl	0 <abort>
 ```
 
-Although, by convention, C and C++ programs “begin” at the `main` function, programs do not actually begin execution here. Instead, they begin execution in a small stub of assembly code, traditionally at the symbol called `_start`. When linking against the standard C runtime, the `_start` function is usually a small stub of code that passes control to the *libc* helper function `__libc_start_main`. This function then prepares the parameters for the program’s `main` function and invokes it. The `main` function then runs the program’s core logic, and if main returns to `__libc_start_main`, the return value of `main` is then passed to `exit` to gracefully exit the program.
+Although, by convention, C and C++ programs “begin” at the `main` function, programs do not actually begin execution here. Instead, they begin execution in a small stub of assembly code, traditionally at the symbol called `_start`. When linking against the standard C runtime, the `_start` function is usually a small stub of code that passes control to the *libc* helper function `__libc_start_main`. This function then prepares the parameters for the program's `main` function and invokes it. The `main` function then runs the program's core logic, and if main returns to `__libc_start_main`, the return value of `main` is then passed to `exit` to gracefully exit the program.
 
 ## gdb debug
 

@@ -108,7 +108,7 @@ lrwxr-xr-x  1 faner  admin  55 Nov  3 08:09 /usr/local/Cellar/python3/3.6.3/bin/
 
 在安装并配置好环境变量的系统终端中输入 `python` 默认进入 python2 的命令行编辑交互控制台。若显式指定 `python3`（或 python3.6），则可启动运行版本 3。
 
-> The interpreter’s line-editing features include interactive editing, history substitution and code completion on systems that support readline.  
+> The interpreter's line-editing features include interactive editing, history substitution and code completion on systems that support readline.  
 
 > The interpreter operates somewhat like the Unix shell: when called with standard input connected to a tty device, it reads and executes commands interactively; when called with a file name argument or with a file as standard input, it reads and executes a *script* from that file.  
 
@@ -232,7 +232,7 @@ python 控制台及脚本中均支持开头或语句尾部以 `#` 开始的注�
 
 按下 `<C-d>`（windows 下为 `<C-z>`）或输入 `quit()`/`exit()` 即可退出 python shell，退回到系统 shell。
 
-> Typing an end-of-file character (`Control-D` on Unix, `Control-Z` on Windows) at the primary prompt causes the interpreter to exit with a zero exit status. If that doesn’t work, you can exit the interpreter by typing the following command: `quit()`.
+> Typing an end-of-file character (`Control-D` on Unix, `Control-Z` on Windows) at the primary prompt causes the interpreter to exit with a zero exit status. If that doesn't work, you can exit the interpreter by typing the following command: `quit()`.
 
 ### default python3
 

@@ -25,7 +25,7 @@ AWK (awk) is a domain-specific language designed for text processing and typical
 
 The AWK language is a data-driven scripting language consisting of a set of actions to be taken against *streams* of textual data – either run directly on files or used as part of a pipeline – for purposes of extracting or transforming text, such as producing formatted reports. The language extensively uses the string datatype, associative arrays (that is, arrays indexed by key strings), and [regular expressions](https://en.wikipedia.org/wiki/Regular_expression). While AWK has a limited intended application domain and was especially designed to support [one-liner programs](https://en.wikipedia.org/wiki/One-liner_program), the language is Turing-complete, and even the early Bell Labs users of AWK often wrote well-structured large AWK programs.
 
-[The GNU Awk User’s Guide](https://www.gnu.org/software/gawk/manual/gawk.html) - [Getting Started](https://www.gnu.org/software/gawk/manual/gawk.html#Getting-Started)  
+[The GNU Awk User's Guide](https://www.gnu.org/software/gawk/manual/gawk.html) - [Getting Started](https://www.gnu.org/software/gawk/manual/gawk.html#Getting-Started)  
 
 The basic function of `awk` is to search files for lines (or other units of text) that contain certain patterns. When a line matches one of the patterns, awk performs specified actions on that line. awk continues to process input lines in this way until it reaches the end of the input files.
 

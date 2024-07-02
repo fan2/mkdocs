@@ -366,7 +366,7 @@ if __name__ == '__main__':
     unittest.main(argv=[''], verbosity=2, exit=False)
 ```
 
-Without using a subtest, execution would **stop** after the *first* failure, and the error would be less easy to diagnose because the value of `i` wouldn’t be displayed.
+Without using a subtest, execution would **stop** after the *first* failure, and the error would be less easy to diagnose because the value of `i` wouldn't be displayed.
 
 对于以上 test_even 用例中的 for 循环，如果不添加 subTest，那么i=1时，用例即立即宣告失败并退出。
 实际上，我们希望跑完for循环，并将失败的循环变量i打印出来，添加 subTest 可满足这种需求。

@@ -32,7 +32,7 @@ comments: true
 
 	- For example, `$x^2$` becomes $x^2$.
 	- Pythagorean Theorem: `$a^2 + b^2 = c^2$`: $a^2 + b^2 = c^2$.
-	- Einstein’s Theory of Special Relativity: `e=mc^2`: $e=mc^2$.
+	- Einstein's Theory of Special Relativity: `e=mc^2`: $e=mc^2$.
 
 2. KaTeX blocks begin and end with **two** dollar signs:
 
@@ -44,7 +44,7 @@ $$
 % Pythagorean Theorem
 a^2 + b^2 = c^2 \\
 
-% Einstein’s Theory of Special Relativity
+% Einstein's Theory of Special Relativity
 e=mc^2
 $$
 ```
@@ -52,7 +52,7 @@ $$
 $$
 % % Pythagorean Theorem
 a^2 + b^2 = c^2 \\
-% Einstein’s Theory of Special Relativity
+% Einstein's Theory of Special Relativity
 e=mc^2
 $$
 

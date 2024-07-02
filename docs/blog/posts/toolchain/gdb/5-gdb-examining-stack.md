@@ -27,7 +27,7 @@ comments: true
 
 [8.1 Stack Frames](https://sourceware.org/gdb/current/onlinedocs/gdb.html/Frames.html#Frames)
 
-The call stack is divided up into contiguous pieces called *stack frames*, or frames for short; each frame is the data associated with one call to one function. The frame contains the arguments given to the function, the function’s local variables, and the address at which the function is executing.
+The call stack is divided up into contiguous pieces called *stack frames*, or frames for short; each frame is the data associated with one call to one function. The frame contains the arguments given to the function, the function's local variables, and the address at which the function is executing.
 
 When your program is started, the stack has only one frame, that of the function *main*. This is called the *initial* frame or the *outermost* frame. Each time a function is called, a new frame is made. Each time a function returns, the frame for that function invocation is eliminated.
 
@@ -100,8 +100,8 @@ Backtrace stopped: previous frame identical to this frame (corrupt stack?)
 *   the address of the next frame down (called by this frame)
 *   the address of the next frame up (caller of this frame)
 *   the language in which the source code corresponding to this frame is written
-*   the address of the frame’s arguments
-*   the address of the frame’s local variables
+*   the address of the frame's arguments
+*   the address of the frame's local variables
 *   the program counter saved in it (the address of execution in the caller frame)
 *   which registers were saved in the frame
 

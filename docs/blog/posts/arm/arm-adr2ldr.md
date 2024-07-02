@@ -40,9 +40,9 @@ Main
         BL filter               ; execute one pass of filter
 ```
 
-The first two instructions load a known address (called an absolute address, since it doesn’t move if you relocate your code in memory) into registers `r0` and `r3`. The third and fourth instructions are the pseudo-instruction `ADR`, which is particularly useful at loading addresses into a register. Why do it this way? Suppose that this section of code was to be used along with other blocks. You wouldn’t necessarily know exactly where your data starts once the two sections are assembled, so it’s easier to let the assembler **calculate** the addresses for you. As an example, if `image_data` actually started at address 0x8000 in memory, then this address gets moved into register `r1`, which we’ve renamed. However, if we change the code, move the image data, or add another block of code that we write later, then this address will change. By using `ADR`, we don’t have to worry about the address.
+The first two instructions load a known address (called an absolute address, since it doesn't move if you relocate your code in memory) into registers `r0` and `r3`. The third and fourth instructions are the pseudo-instruction `ADR`, which is particularly useful at loading addresses into a register. Why do it this way? Suppose that this section of code was to be used along with other blocks. You wouldn't necessarily know exactly where your data starts once the two sections are assembled, so it's easier to let the assembler **calculate** the addresses for you. As an example, if `image_data` actually started at address 0x8000 in memory, then this address gets moved into register `r1`, which we’ve renamed. However, if we change the code, move the image data, or add another block of code that we write later, then this address will change. By using `ADR`, we don't have to worry about the address.
 
-Let’s examine another example, this time to see how the `ADR` pseudo-instruction actually gets converted into real ARM instructions. Again, the code in this example doesn’t actually do anything except set up pointers, but it will serve to illustrate how `ADR` behaves.
+Let's examine another example, this time to see how the `ADR` pseudo-instruction actually gets converted into real ARM instructions. Again, the code in this example doesn't actually do anything except set up pointers, but it will serve to illustrate how `ADR` behaves.
 
 ```asm title="EXAMPLE 6.4" linenums="1"
         AREA    adrlabel,CODE,READONLY
@@ -67,7 +67,7 @@ DataArea
 
 You will note that the program calls a subroutine called `func`, using a branch and link operation (`BL`). The next instruction is for ending the program, so we really only need to examine what happens after the `LTORG` directive. The subroutine begins with a label, `func`, and an `ADR` pseudo-instruction to load the starting address of our main program into register `r0`. The assembler actually creates either an `ADD` or `SUB` instruction with the Program Counter to do this. Similar to the `LDR` pseudo-instruction we saw previously, by knowing the value of the Program Counter at the time when this `ADD` or `SUB` reaches the execute stage of the pipeline, we can simply take that value and modify it to **generate** an address. The catch is that the offset must be a particular type of number. For ARM instructions, that number must be one that can be created using a byte value rotated by an even number of bits, exactly as we saw in Section 6.2 (if rejected by the assembler, it will generate an error message to indicate that an offset cannot be represented by 0–255 and a rotation). For 32-bit Thumb instructions, that number must be within ±4095 bytes of a byte, half-word, or word-aligned address. If you notice the second `ADR` in this example, the distance between the instruction and the label DataArea is small enough that the assembler will use a simple `ADD` instruction to create the constant.
 
-The third `ADR` tries to create an address where the label is on the other side of an 8000-byte block of memory. This doesn’t work, but there is another pseudo-instruction: `ADRL`. Using *two* operations instead of one, the `ADRL` will calculate an offset that is within a range based on the addition of two values now, both created by the byte rotation scheme mentioned above (for ARM instructions). There is a fixed range for 32-bit Thumb instructions of ±1MB. You should note that if you invoke an `ADRL` pseudo-instruction in your code, it will generate two operations even if it could be done using only one, so be careful in loops that are sensitive to cycle counts. One other important point worth mentioning is that the label used with `ADR` or `ADRL` must be within the ***same*** code section. If a label is out of range in the same section, the assembler faults the reference. As an aside, if a label is out of range in other code sections, the linker faults the reference.
+The third `ADR` tries to create an address where the label is on the other side of an 8000-byte block of memory. This doesn't work, but there is another pseudo-instruction: `ADRL`. Using *two* operations instead of one, the `ADRL` will calculate an offset that is within a range based on the addition of two values now, both created by the byte rotation scheme mentioned above (for ARM instructions). There is a fixed range for 32-bit Thumb instructions of ±1MB. You should note that if you invoke an `ADRL` pseudo-instruction in your code, it will generate two operations even if it could be done using only one, so be careful in loops that are sensitive to cycle counts. One other important point worth mentioning is that the label used with `ADR` or `ADRL` must be within the ***same*** code section. If a label is out of range in the same section, the assembler faults the reference. As an aside, if a label is out of range in other code sections, the linker faults the reference.
 
 > `ADR r2, DataArea + 4300`: ADD `imm` is an unsigned immediate, in the range [0, 4095].
 
@@ -140,13 +140,13 @@ Use the pseudo-instruction
 LDR <Rd>, =label
 ```
 
-if you plan to reference labels in ***other*** sections of code, or you know that a literal table will exist and you don’t mind the extra cycles used to fetch the literal from memory. Use the same caution with literal pools that you would for the construct
+if you plan to reference labels in ***other*** sections of code, or you know that a literal table will exist and you don't mind the extra cycles used to fetch the literal from memory. Use the same caution with literal pools that you would for the construct
 
 ```asm
 LDR <Rd>, = constant
 ```
 
-Consult the Assembler User’s Guide (ARM 2008a) for more details on the use of `ADR`, `ADRL` and `LDR` for loading addresses.
+Consult the Assembler User's Guide (ARM 2008a) for more details on the use of `ADR`, `ADRL` and `LDR` for loading addresses.
 
 ---
 

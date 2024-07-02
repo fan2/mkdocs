@@ -25,7 +25,7 @@ First raw, then ripe. Well begun is half done.
 
 [2. First Steps - 2.2. Command Format](https://book.rada.re/first_steps/command_format.html)
 
-The standard UNIX pipe `|` is also available in the *radare2* shell. You can use it to filter the output of an `r2` command with any shell program that reads from stdin, such as `grep`, `less`, `wc`. If you do not want to spawn anything, or you can’t, or the target system does not have the basic UNIX tools you need (Windows or embedded users), you can also use the built-in grep (`~`).
+The standard UNIX pipe `|` is also available in the *radare2* shell. You can use it to filter the output of an `r2` command with any shell program that reads from stdin, such as `grep`, `less`, `wc`. If you do not want to spawn anything, or you can't, or the target system does not have the basic UNIX tools you need (Windows or embedded users), you can also use the built-in grep (`~`).
 
 ```bash
 [0x000000000000]> @?

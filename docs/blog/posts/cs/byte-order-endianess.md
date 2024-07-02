@@ -50,7 +50,7 @@ There are two basic ways of viewing bytes in memory, either as *Little-Endian* (
     ![ARM-CortexA-endianess](./images/ARM-CortexA-endianess.svg)
 </figure>
 
-The designers of the ARM processor didn’t want to take sides in the little- vs. big-endian debate, so they made the ARM processor support both.
+The designers of the ARM processor didn't want to take sides in the little- vs. big-endian debate, so they made the ARM processor support both.
 
 This data endianness is controlled independently for each Execution level. For `EL3`, `EL2` and `EL1`, the relevant register of `SCTLR_ELn.EE` sets the endianness. The additional bit at `EL1`, `SCTLR_EL1.E0E` controls the data endian setting for `EL0`. In the AArch64 execution state, data accesses can be `LE` or `BE`, while instruction fetches are always `LE`.
 

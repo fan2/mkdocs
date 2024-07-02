@@ -107,7 +107,7 @@ Quick Fix 将调用 isort Sort Python import definitions alphabetically within l
 
 ## __main__
 
-[`__main__`](https://docs.python.org/3/library/__main__.html#module-__main__) is the name of the scope in which top-level code executes. A module’s `__name__` is set equal to '`__main__`' when read from standard input, a script, or from an interactive prompt.
+[`__main__`](https://docs.python.org/3/library/__main__.html#module-__main__) is the name of the scope in which top-level code executes. A module's `__name__` is set equal to '`__main__`' when read from standard input, a script, or from an interactive prompt.
 
 A module can discover whether or not it is running in the main scope by checking its own `__name__`, which allows a common idiom for conditionally executing code in a module when it is run as a script or with `python -m` but not when it is imported:
 

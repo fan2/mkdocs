@@ -252,7 +252,7 @@ An executable or shared object file's program header table is an array of struct
 
 The program headers table describes to the loader, in effect, how to *bring* the ELF binary into memory efficiently.
 
-Program headers *differ* from section headers in that, although they both describe the program’s layout, the program headers do so in a *mapping-centric* way, whereas the section headers do so in more *fine-grained* logical units. The program headers define a series of *`segments`*, each telling the kernel how to get the program off the ground in the first place. These segments specify how and where to load the ELF file’s data into *memory*, whether the program needs a runtime loader to bootstrap it, what the initial layout of the primary thread’s thread-localstorage should look like, and other kernel-relevant metadata such as whether the program should be given executable thread stacks.
+Program headers *differ* from section headers in that, although they both describe the program's layout, the program headers do so in a *mapping-centric* way, whereas the section headers do so in more *fine-grained* logical units. The program headers define a series of *`segments`*, each telling the kernel how to get the program off the ground in the first place. These segments specify how and where to load the ELF file's data into *memory*, whether the program needs a runtime loader to bootstrap it, what the initial layout of the primary thread's thread-localstorage should look like, and other kernel-relevant metadata such as whether the program should be given executable thread stacks.
 
 ### Segment Contents
 

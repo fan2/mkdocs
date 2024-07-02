@@ -127,11 +127,11 @@ There are basically two different types of arguments that you can add to your co
 
 **Positional** arguments are the ones your command needs to operate. -- `required=True`
 
-In the previous example, the argument `path` was a positional argument, and our program couldn’t work without it.  
+In the previous example, the argument `path` was a positional argument, and our program couldn't work without it.  
 They are called **positional** because their position defines their function.
 
 For example, consider the cp command on Linux (or the copy command in Windows). 
-Here’s the standard usage:
+Here's the standard usage:
 
 ```
 faner@FAN-MB1 (master)✗ [64] % cp -h
@@ -146,7 +146,7 @@ The second one is the *destination* where you want to copy it.
 **Optional** arguments are not mandatory, and when they are used they can modify the behavior of the command at runtime.  
 In the `cp` example, an optional argument is, for example, the `-R` flag, which makes the command copy directories recursively.
 
-Syntactically, the difference between positional and optional arguments is that optional arguments start with `-` or `--`, while positional arguments don’t.
+Syntactically, the difference between positional and optional arguments is that optional arguments start with `-` or `--`, while positional arguments don't.
 
 To add an optional argument, you just need to call `.add_argument()` again and name the new argument with a starting `-`.
 

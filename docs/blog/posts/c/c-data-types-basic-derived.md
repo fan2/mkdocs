@@ -30,7 +30,7 @@ The representation that a particular value has should in most cases not be your 
 
 ### 5.1 The abstract state machine
 
-To explain the abstract state machine, we first have to look into the concepts of a *value* (what state are we in), the *type* (what this state represents), and the *representation* (how state is distinguished). As the term abstract suggests, C’s mechanism allows different platforms to realize the abstract state machine of a given program differently according to their needs and capacities.
+To explain the abstract state machine, we first have to look into the concepts of a *value* (what state are we in), the *type* (what this state represents), and the *representation* (how state is distinguished). As the term abstract suggests, C's mechanism allows different platforms to realize the abstract state machine of a given program differently according to their needs and capacities.
 
 ### 5.2 Basic types
 
@@ -40,20 +40,20 @@ Mainly for historical reasons, the system of basic types is a bit complicated, a
 
 We will start with the first-level specification of such types. As we discussed earlier (takeaway 5.2), all basic values in C are numbers, but there are different kinds of numbers. As a principal distinction, we have two different classes of numbers, each with two subclasses: unsigned integers, signed integers, real floating-point numbers, and complex floating-point numbers. Each of these four classes contains several types.They differ according to their precision, which determines the valid range of values that are allowed for a particular type. Table 5.1 contains an overview of the 18 base types.
 
-> Types with a gray background don’t allow for arithmetic; they are promoted before doing arithmetic. Type char is special since it can be unsigned or signed, depending on the platform. All types in this table are considered to be distinct types, even if they have the same class and precision.
+> Types with a gray background don't allow for arithmetic; they are promoted before doing arithmetic. Type char is special since it can be unsigned or signed, depending on the platform. All types in this table are considered to be distinct types, even if they have the same class and precision.
 
 <figure markdown="span">
     ![table-5.1-base-types](./images/table-5.1-base-types.png)
     <figcaption>Table 5.1 Base types according to the four main type classes</figcaption>
 </figure>
 
-As you can see from the table, there are six types that we can’t use directly for arithmetic, the so-called ***narrow types***. They are **promoted** to one of the wider types before they are considered in an arithmetic expression. Nowadays, on any realistic platform, this promotion will be a *signed int* of the same value as the narrow type, regardless of whether the narrow type was signed.
+As you can see from the table, there are six types that we can't use directly for arithmetic, the so-called ***narrow types***. They are **promoted** to one of the wider types before they are considered in an arithmetic expression. Nowadays, on any realistic platform, this promotion will be a *signed int* of the same value as the narrow type, regardless of whether the narrow type was signed.
 
 !!! note "TAKEAWAY 5.10"
 
     TAKEAWAY 5.10 Before arithmetic, narrow integer types are promoted to **signed int**.
 
-Observe that among the narrow integer types, we have two prominent members: `char` and `bool`. The first is C’s type that handles printable characters for text, and the second holds truth values, false and true. As we said earlier, for C, even these are just some sort of numbers.
+Observe that among the narrow integer types, we have two prominent members: `char` and `bool`. The first is C's type that handles printable characters for text, and the second holds truth values, false and true. As we said earlier, for C, even these are just some sort of numbers.
 
 The 12 remaining, unpromoted, types split nicely into the four classes.
 
@@ -61,7 +61,7 @@ The 12 remaining, unpromoted, types split nicely into the four classes.
 
     TAKEAWAY 5.11 Each of the four classes of base types has three distinct unpromoted types.
 
-Contrary to what many people believe, the C standard doesn’t prescribe the precision of these 12 types: it only constrains them. They depend on a lot of factors that are ***implementation defined***.
+Contrary to what many people believe, the C standard doesn't prescribe the precision of these 12 types: it only constrains them. They depend on a lot of factors that are ***implementation defined***.
 
 One of the things the standard *does* prescribe is that the possible ranges of values for the signed types must include each other according to their *rank*:
 
@@ -91,13 +91,13 @@ Because the interrelationship between integer types depends on the platform, cho
 
     TAKEAWAY 5.12 Use `size_t` for sizes, cardinalities, or ordinal numbers.
 
-Remember that unsigned types are the most convenient types, since they are the only types that have an arithmetic that is defined consistently with mathematical properties: the modulo operation. They can’t raise signals on overflow and can be optimized best. They are described in more detail in section 5.7.1.
+Remember that unsigned types are the most convenient types, since they are the only types that have an arithmetic that is defined consistently with mathematical properties: the modulo operation. They can't raise signals on overflow and can be optimized best. They are described in more detail in section 5.7.1.
 
 !!! note "TAKEAWAY 5.13"
 
-    TAKEAWAY 5.13 Use **unsigned** for small quantities that can’t be negative.
+    TAKEAWAY 5.13 Use **unsigned** for small quantities that can't be negative.
 
-If your program really needs values that may be both positive and negative but don’t have fractions, use a signed type (see section 5.7.5).
+If your program really needs values that may be both positive and negative but don't have fractions, use a signed type (see section 5.7.5).
 
 !!! note "TAKEAWAY 5.14~5.15"
 
@@ -119,7 +119,7 @@ The C standard defines a lot of other types, among them other arithmetic types t
     ![Table-5.2-some-semantic-arithmetic-types](./images/Table-5.2-some-semantic-arithmetic-types.png)
 </figure>
 
-The two types `time_t` and `clock_t` are used to handle times. They are semantic types, because the precision of the time computation can be different from platform to platform. The way to have a time in seconds that can be used in arithmetic is the function *difftime*: it computes the difference of two timestamps. `clock_t` values present the platform’s model of processor clock cycles, so the unit of time is usually much less than a second; *CLOCKS_PER_SEC* can be used to convert such values to seconds.
+The two types `time_t` and `clock_t` are used to handle times. They are semantic types, because the precision of the time computation can be different from platform to platform. The way to have a time in seconds that can be used in arithmetic is the function *difftime*: it computes the difference of two timestamps. `clock_t` values present the platform's model of processor clock cycles, so the unit of time is usually much less than a second; *CLOCKS_PER_SEC* can be used to convert such values to seconds.
 
 ## 6 Derived data types
 
@@ -134,9 +134,9 @@ The two other strategies to derive data types are more involved:
 
 > Pointers are by far the most involved concept, and we will delay a full discussion of them to chapter 11. Here, in section 6.2, we will only discuss them as opaque data types, without even mentioning the real purpose they fulfill.
 
-**Unions**: These overlay items of different base types in the same memory location. Unions require a deeper understanding of C’s memory model and are not of much use in a programmer’s everyday life, so they are only introduced later, in section 12.2.
+**Unions**: These overlay items of different base types in the same memory location. Unions require a deeper understanding of C's memory model and are not of much use in a programmer's everyday life, so they are only introduced later, in section 12.2.
 
-> There is a fifth strategy that introduces new names for types: typedef. Unlike the previous four, this does not create a new type in C’s type system, but only creates a new name for an existing type. In that way, it is similar to the definition of macros with #define; thus the choice for the keyword for this feature.
+> There is a fifth strategy that introduces new names for types: typedef. Unlike the previous four, this does not create a new type in C's type system, but only creates a new name for an existing type. In that way, it is similar to the definition of macros with #define; thus the choice for the keyword for this feature.
 
 ---
 

@@ -14,7 +14,7 @@ Online websites and resource for linux kernel code search and browse.
 
 <!-- more -->
 
-The kernel is the core of the Linux system. It is the first component loaded into the memory upon boot up. It provides a user interface that allows us to interact with the operating system and remains in the memory throughout the computer’s use.
+The kernel is the core of the Linux system. It is the first component loaded into the memory upon boot up. It provides a user interface that allows us to interact with the operating system and remains in the memory throughout the computer's use.
 
 ## repository
 

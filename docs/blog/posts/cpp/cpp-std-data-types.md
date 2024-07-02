@@ -164,7 +164,7 @@ $$
 
     !!! note "Pointer beyond the end - sentinel"
 
-        A pointer past the end of an object (7.6.6) is not considered to point to an unrelated object of the object’s type, even if the unrelated object is located at that address. A pointer value becomes invalid when the storage it denotes reaches the end of its storage duration; see 6.7.5.
+        A pointer past the end of an object (7.6.6) is not considered to point to an unrelated object of the object's type, even if the unrelated object is located at that address. A pointer value becomes invalid when the storage it denotes reaches the end of its storage duration; see 6.7.5.
 
 - For purposes of pointer arithmetic (7.6.6) and comparison (7.6.9, 7.6.10), a pointer past the end of the last element of an array x of n elements is considered to be equivalent to a pointer to a hypothetical array element n of x and an object of type T that is not an array element is considered to belong to an array with one element of type T. The value representation of pointer types is implementation-defined. Pointers to layout-compatible types shall have the same value representation and alignment requirements (6.7.6).
 

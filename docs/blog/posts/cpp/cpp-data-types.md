@@ -14,7 +14,7 @@ comments: true
 
 Every name and every expression has a type that determines the operations that may be performed on it.
 
-Types built out of the built-in types using C++’s abstraction mechanisms are called *user-defined types*. They are referred to as structures, classes and enumerations.
+Types built out of the built-in types using C++'s abstraction mechanisms are called *user-defined types*. They are referred to as structures, classes and enumerations.
 
 <!-- more -->
 
@@ -192,8 +192,8 @@ A char variable is of the natural size to hold a character on a given machine (t
 
 ### 2.3 User-Defined Types
 
-We call the types that can be built from the fundamental types, the const modifier, and the declarator operators ***built-in types***. C++’s set of built-in types and operations is rich, but deliberately low-level. They directly and efficiently reflect the capabilities of conventional computer hardware. However, they don’t provide the programmer with high-level facilities to conveniently write advanced applications. Instead, C++ augments the built-in types and operations with a sophisticated set of *abstraction mechanisms* out of which programmers can build such high-level facilities.
+We call the types that can be built from the fundamental types, the const modifier, and the declarator operators ***built-in types***. C++'s set of built-in types and operations is rich, but deliberately low-level. They directly and efficiently reflect the capabilities of conventional computer hardware. However, they don't provide the programmer with high-level facilities to conveniently write advanced applications. Instead, C++ augments the built-in types and operations with a sophisticated set of *abstraction mechanisms* out of which programmers can build such high-level facilities.
 
-The C++ abstraction mechanisms are primarily designed to let programmers design and implement their own types, with suitable representations and operations, and for programmers to simply and elegantly use such types. Types built out of the built-in types using C++’s abstraction mechanisms are called ***user-defined types***. They are referred to as structures, classes and enumerations.
+The C++ abstraction mechanisms are primarily designed to let programmers design and implement their own types, with suitable representations and operations, and for programmers to simply and elegantly use such types. Types built out of the built-in types using C++'s abstraction mechanisms are called ***user-defined types***. They are referred to as structures, classes and enumerations.
 
 User-defined types can be built out of both built-in types and other user-defined types. User-defined types are often preferred over built-in types because they are easier to use, less error-prone, and typically as efficient for what they do as direct use of built-in types, or even more efficient.

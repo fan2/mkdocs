@@ -18,13 +18,13 @@ In this article I have recorded the journal of the installation of cloudflared a
 
 [Cloudflare Tunnel](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/)
 
-Cloudflare Tunnel provides you with a secure way to connect your resources to Cloudflare without a publicly routable IP address. With Tunnel, you do not send traffic to an external IP — instead, a lightweight *daemon* in your infrastructure (`cloudflared`) creates outbound-only connections to Cloudflare’s global network. Cloudflare Tunnel can connect HTTP web servers, SSH servers, remote desktops, and other protocols safely to Cloudflare. This way, your origins can serve traffic through Cloudflare without being vulnerable to attacks that bypass Cloudflare.
+Cloudflare Tunnel provides you with a secure way to connect your resources to Cloudflare without a publicly routable IP address. With Tunnel, you do not send traffic to an external IP — instead, a lightweight *daemon* in your infrastructure (`cloudflared`) creates outbound-only connections to Cloudflare's global network. Cloudflare Tunnel can connect HTTP web servers, SSH servers, remote desktops, and other protocols safely to Cloudflare. This way, your origins can serve traffic through Cloudflare without being vulnerable to attacks that bypass Cloudflare.
 
 Refer to our [reference architecture](https://developers.cloudflare.com/reference-architecture/architectures/sase/) for details on how to implement Cloudflare Tunnel into your existing infrastructure.
 
 **How it works?**
 
-Cloudflared establishes outbound connections (tunnels) between your resources and Cloudflare’s global network. Tunnels are persistent objects that route traffic to DNS records. Within the same tunnel, you can run as many ‘cloudflared’ processes (connectors) as needed. These processes will establish connections to Cloudflare and send traffic to the nearest Cloudflare data center.
+Cloudflared establishes outbound connections (tunnels) between your resources and Cloudflare's global network. Tunnels are persistent objects that route traffic to DNS records. Within the same tunnel, you can run as many ‘cloudflared’ processes (connectors) as needed. These processes will establish connections to Cloudflare and send traffic to the nearest Cloudflare data center.
 
 ![Cloudflare Tunnel](https://developers.cloudflare.com/assets/handshake_hufad68abf6107ffc2ef859ebe1b42b6e2_299675_1768x1102_resize_q75_box-3f75968f.jpg)
 
@@ -96,14 +96,14 @@ Sorting... Done
 Full Text Search... Done
 ```
 
-1. Add Cloudflare’s package signing key:
+1. Add Cloudflare's package signing key:
 
 ```bash
 $ sudo mkdir -p --mode=0755 /usr/share/keyrings
 $ curl -fsSL https://pkg.cloudflare.com/cloudflare-main.gpg | sudo tee /usr/share/keyrings/cloudflare-main.gpg >/dev/null
 ```
 
-2. Add Cloudflare’s apt repo to your apt repositories:
+2. Add Cloudflare's apt repo to your apt repositories:
 
 ```bash
 $ echo "deb [signed-by=/usr/share/keyrings/cloudflare-main.gpg] https://pkg.cloudflare.com/cloudflared $(lsb_release -cs) main" | $ sudo tee /etc/apt/sources.list.d/cloudflared.list

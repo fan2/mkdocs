@@ -1490,7 +1490,7 @@
 <p class="admonition-title">TAKEAWAY 5.51</p>
 <p>The maximum value of any integer type is of the form <span class="arithmatex">\(2^p − 1\)</span>.</p>
 </div>
-<p>Observe that for this discussion of the representation of non-negative values, we haven’t argued about the signedness of the type. These rules apply <em>equally</em> to signed and unsigned types. Only for unsigned types, we are lucky, and what we have said so far completely suffices to describe such an unsigned type.</p>
+<p>Observe that for this discussion of the representation of non-negative values, we haven't argued about the signedness of the type. These rules apply <em>equally</em> to signed and unsigned types. Only for unsigned types, we are lucky, and what we have said so far completely suffices to describe such an unsigned type.</p>
 <div class="admonition note">
 <p class="admonition-title">TAKEAWAY 5.52</p>
 <p>Arithmetic on an unsigned integer type is determined by its precision.</p>
@@ -1572,10 +1572,10 @@
 <ul>
 <li>Sign and magnitude</li>
 <li>Ones’ complement</li>
-<li>Two’s complement</li>
+<li>Two's complement</li>
 </ul>
 <p>The first two nowadays probably only have historical or exotic relevance: for sign and magnitude, the magnitude is taken as positive values, and the sign bit simply specifies that there is a minus sign. Ones’ complement takes the corresponding positive value and complements all bits. Both representations have the disadvantage that two values evaluate to 0: there is a positive and a negative 0.</p>
-<p>Commonly used on modern platforms is the two’s complement representation. It performs exactly the same arithmetic as we have seen for unsigned types, but the upper half of unsigned values (those with a high-order bit of 1) is interpreted as being negative. The following two functions are basically all that is needed to interpret unsigned values as signed values:</p>
+<p>Commonly used on modern platforms is the two's complement representation. It performs exactly the same arithmetic as we have seen for unsigned types, but the upper half of unsigned values (those with a high-order bit of 1) is interpreted as being negative. The following two functions are basically all that is needed to interpret unsigned values as signed values:</p>
 <div class="language-c highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">is_signed_less.c</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-1"> 1</a></span>
 <span class="normal"><a href="#__codelineno-0-2"> 2</a></span>
 <span class="normal"><a href="#__codelineno-0-3"> 3</a></span>
@@ -1598,7 +1598,7 @@
 </span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10"></a><span class="w">    </span><span class="k">else</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">b</span><span class="p">;</span>
 </span><span id="__span-0-11"><a id="__codelineno-0-11" name="__codelineno-0-11"></a><span class="p">}</span>
 </span></code></pre></div></td></tr></table></div>
-<p>Table 5.6 shows an example of how the negative of our example value 240 can be constructed. For unsigned types, <code>-A</code> can be computed as <code>~A + 1</code>. Two’s complement representation performs exactly the same bit operation for signed types as for unsigned types. It only <em>interprets</em> representations that have the high-order bit as being negative.</p>
+<p>Table 5.6 shows an example of how the negative of our example value 240 can be constructed. For unsigned types, <code>-A</code> can be computed as <code>~A + 1</code>. Two's complement representation performs exactly the same bit operation for signed types as for unsigned types. It only <em>interprets</em> representations that have the high-order bit as being negative.</p>
 <table>
 <thead>
 <tr>
@@ -1644,23 +1644,23 @@
 <p>For the second loop, everything looks similar. But because here the behavior of overflow is <em>undefined</em>, the compiler is allowed to <em>pretend</em> that it will never happen. Since it also knows that the value at the start is positive, it may assume that i, as long as the program has defined behavior, is never negative or 0. The as-if Rule (takeaway 5.8) allows it to optimize the second loop to</p>
 <div class="language-c highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="nb">true</span><span class="p">)</span><span class="w"> </span><span class="n">do_something</span><span class="p">();</span>
 </span></code></pre></div>
-<p>That’s right, an infinite loop.</p>
+<p>That's right, an infinite loop.</p>
 <div class="admonition note">
 <p class="admonition-title">TAKEAWAY 5.55</p>
 <p>TAKEAWAY 5.55 Once the abstract state machine reaches an undefined state, no further assumption about the continuation of the execution can be made.</p>
 </div>
-<p>Not only that, the compiler is allowed to do what it pleases for the operation itself (“Undefined? so let’s define it”), but it may also assume that it will never reach such a state and draw conclusions from that.</p>
+<p>Not only that, the compiler is allowed to do what it pleases for the operation itself (“Undefined? so let's define it”), but it may also assume that it will never reach such a state and draw conclusions from that.</p>
 <p>Commonly, a program that has reached an undefined state is referred to as “having” or “showing” undefined behavior. This wording is a bit unfortunate; in many such cases, a program does not “show” any visible signs of weirdness. In the contrary, bad things will be going on that you will not even notice for a long time.</p>
 <div class="admonition note">
 <p class="admonition-title">TAKEAWAY 5.56</p>
 <p>TAKEAWAY 5.56 It is your responsibility to avoid undefined behavior of all operations.</p>
 </div>
 <p>What makes things even worse is that on some platforms with some standard compiler options, the compilation will just look right. Since the behavior is undefined, on such a platform, signed integer arithmetic might turn out to be basically the same as unsigned. But changing the platform, the compiler, or some options can change that. All of a sudden, your program that worked for years crashes out of nowhere.</p>
-<p>Basically, what we have discussed up to this chapter always had well-defined behavior, so the abstract state machine is always in a well-defined state. Signed arithmetic changes this, so as long as you don’t need it, avoid it. We say that a program performs a trap C (or just traps) if it is terminated abruptly before its usual end.</p>
+<p>Basically, what we have discussed up to this chapter always had well-defined behavior, so the abstract state machine is always in a well-defined state. Signed arithmetic changes this, so as long as you don't need it, avoid it. We say that a program performs a trap C (or just traps) if it is terminated abruptly before its usual end.</p>
 <div class="admonition note">
 <p class="admonition-title">TAKEAWAY 5.57~5.59</p>
 <p>TAKEAWAY 5.57 Signed arithmetic may trap badly.<br />
-TAKEAWAY 5.58 In two’s complement representation, INT_MIN &lt; -INT_MAX.<br />
+TAKEAWAY 5.58 In two's complement representation, INT_MIN &lt; -INT_MAX.<br />
 TAKEAWAY 5.59 Negation may overflow for signed arithmetic.</p>
 </div>
 <p>For signed types, bit operations work with the binary representation. So the value of a bit operation depends in particular on the sign representation. In fact, bit operations even allow us to detect the sign representation:</p>
@@ -1734,7 +1734,7 @@ TAKEAWAY 5.59 Negation may overflow for signed arithmetic.</p>
 <div class="admonition note">
 <p class="admonition-title">TAKEAWAY 5.61~5.62</p>
 <p>TAKEAWAY 5.61 If the type uint<mark class="critic">N</mark>_t is provided, it is an unsigned integer type with exactly N bits of width and precision.<br />
-TAKEAWAY 5.62 If the type int<mark class="critic">N</mark>_t is provided, it is signed, with two’s complement representation and has a width of exactly N bits and a precision of N − 1.</p>
+TAKEAWAY 5.62 If the type int<mark class="critic">N</mark>_t is provided, it is signed, with two's complement representation and has a width of exactly N bits and a precision of N − 1.</p>
 </div>
 <p>None of these types is guaranteed to exist, but for a convenient set of powers of two, the <code>typedef</code> must be provided if types with the corresponding properties exist.</p>
 <div class="admonition note">

@@ -33,7 +33,7 @@ Android Studio `Before launch` 如何启动 proxy daemon sh 脚本？
 command > /dev/null 2>&1 &
 ```
 
-`disown`: remove the job from the shell’s job control
+`disown`: remove the job from the shell's job control
 
 `nohup` stands for no hangup, ignores all hangup signals(SIGHUP).
 `SIGHUP` is a signal that is sent to a process when its controlling terminal is closed.
@@ -179,7 +179,7 @@ end tell
 
 I want to start a background server process; how do I make do shell script not wait until the command completes?
 
-Use do shell script "command &> file_path &". do shell script will return immediately with no result and your AppleScript script will be running in parallel with your shell script. The shell script’s output will go into `file_path`; if you don’t care about the output, use `/dev/null`. There is no direct support for getting or manipulating the background process from AppleScript, but see the next question.
+Use do shell script "command &> file_path &". do shell script will return immediately with no result and your AppleScript script will be running in parallel with your shell script. The shell script's output will go into `file_path`; if you don't care about the output, use `/dev/null`. There is no direct support for getting or manipulating the background process from AppleScript, but see the next question.
 
 ```AppleScript
 do shell script "/bin/blah &> /dev/null &"

@@ -194,7 +194,7 @@ Then restart SSH service: `sudo systemctl restart ssh`.
 
 ## Configure SSH client
 
-End users can connect to the SSH session without any configuration by using Cloudflare’s browser-based terminal. Users visit the URL of the application and Cloudflare’s terminal handles the short-lived certificate flow.
+End users can connect to the SSH session without any configuration by using Cloudflare's browser-based terminal. Users visit the URL of the application and Cloudflare's terminal handles the short-lived certificate flow.
 
 On an SSH client platform such as macOS, run `cloudflared access ssh-config` to print the required configuration command:
 
@@ -323,4 +323,4 @@ Side Notes: Visit [Zero Trust / Cloudflare One](https://one.dash.cloudflare.com/
 
 [使用cloudflare tunnel免费内网穿透，实现网站的外网访问和远程桌面](https://www.horosama.com/archives/281)
 [SSHing to my Raspberry Pi 400 from a browser, with Cloudflare Tunnel and Auditable Terminal](https://blog.cloudflare.com/ssh-raspberry-pi-400-cloudflare-tunnel-auditable-terminal)
-[How to access your Raspberry Pi via SSH or VNC from anywhere in the World using CloudFlare’s Zero Trust](https://medium.com/@mohsentaleb/how-to-access-your-raspberry-pi-via-ssh-orvnc-from-anywhere-in-the-world-using-cloudflares-zero-9dcd2e75a9d7)
+[How to access your Raspberry Pi via SSH or VNC from anywhere in the World using CloudFlare's Zero Trust](https://medium.com/@mohsentaleb/how-to-access-your-raspberry-pi-via-ssh-orvnc-from-anywhere-in-the-world-using-cloudflares-zero-9dcd2e75a9d7)

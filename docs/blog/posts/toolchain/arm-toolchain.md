@@ -487,7 +487,7 @@ To run ARM ELF32 under Aarch64(A64), we have to resort to QEMU emulator. The emu
 
 > [Arm Assembly Internals and Reverse Engineering](https://www.amazon.com/Blue-Fox-Assembly-Internals-Analysis/dp/1119745306) | Chapter 9 Arm Environments - Emulation with QEMU
 
-Let’s first install the following packages:
+Let's first install the following packages:
 
 ```bash
 $ sudo apt install qemu-user qemu-user-static
@@ -522,7 +522,7 @@ $ readelf -h swrite32 | grep Flags
   Flags:                             0x5000400, Version5 EABI, hard-float ABI
 ```
 
-Run it on the AArch64 Linux/Ubuntu host using QEMU’s user-mode emulation.
+Run it on the AArch64 Linux/Ubuntu host using QEMU's user-mode emulation.
 
 ```bash
 $ qemu-arm-static ./swrite32

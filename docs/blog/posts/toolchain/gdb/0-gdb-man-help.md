@@ -27,7 +27,7 @@ This initial piece introduces how to use the gdb help system.
 
 [GDB: The GNU Project Debugger](https://sourceware.org/gdb/current/onlinedocs/)
 
-- [GDB’s Obsolete Annotations](https://sourceware.org/gdb/current/onlinedocs/annotate.html)
+- [GDB's Obsolete Annotations](https://sourceware.org/gdb/current/onlinedocs/annotate.html)
 - Debugging with GDB: [integrated](https://sourceware.org/gdb/current/onlinedocs/gdb), [index/toc](https://sourceware.org/gdb/current/onlinedocs/gdb.html/index.html)
 
 VisualGDB - [GDB Command Reference](https://visualgdb.com/gdbreference/commands/): an incomplete reference of most frequently used GDB commands.

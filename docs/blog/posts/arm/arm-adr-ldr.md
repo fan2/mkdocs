@@ -86,7 +86,7 @@ Meanwhile, `ADR` produces [position-independent](https://en.wikipedia.org/wiki/P
 
 The label used with `ADR` or `ADRL` must be within the ***same*** code section. If a label is out of range in the same section, the assembler faults the reference. As an aside, if a label is out of range in other code sections, the linker faults the reference.
 
-if you plan to reference labels in ***other*** sections of code, or you know that a literal table will exist and you don’t mind the extra cycles used to fetch the literal from memory. Use the same caution with literal pools that you would for the construct `LDR <Rd>, = constant`.
+if you plan to reference labels in ***other*** sections of code, or you know that a literal table will exist and you don't mind the extra cycles used to fetch the literal from memory. Use the same caution with literal pools that you would for the construct `LDR <Rd>, = constant`.
 
 [Arm Compiler armasm User Guide](https://developer.arm.com/documentation/dui0801/latest) | 7. Writing A32/T32 Assembly Language - 7.12 Load addresses to a register using LDR Rd, =label
 

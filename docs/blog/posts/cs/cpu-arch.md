@@ -37,7 +37,7 @@ Architecture = ISA([Instruction set architecture](https://en.wikipedia.org/wiki/
 
 [ARM Assembly Language: Fundamentals and Techniques, 2nd Edition](https://www.oreilly.com/library/view/arm-assembly-language/9781482229851/) - 17 ARM, Thumb and Thumb-2 Instructions
 
-Keeping in mind that a processor’s microarchitecture and a processor’s instruction set are two different things. They often get developed at the same time, but it is possible for a given microarchitecture to be modified only slightly to support additional instructions, adding more control logic and a bit more datapath, adding registers, etc.
+Keeping in mind that a processor's microarchitecture and a processor's instruction set are two different things. They often get developed at the same time, but it is possible for a given microarchitecture to be modified only slightly to support additional instructions, adding more control logic and a bit more datapath, adding registers, etc.
 
 <figure markdown="span">
     ![hierarchy_of_computing](./images/hierarchy_of_computing.png){: style="width:75%;height:75%"}
@@ -65,9 +65,9 @@ The part of the computer architecture related to programming is referred to as t
 
 [Intel® 64 and IA-32 Architectures Software Developer Manuals](https://www.intel.com/content/www/us/en/developer/articles/technical/intel-sdm.html)
 
-[Intel® 64 and IA-32 Architectures Software Developer’s Manual Combined Volumes: 1, 2A, 2B, 2C, 2D, 3A, 3B, 3C, 3D, and 4](https://www.intel.com/content/www/us/en/content-details/782158/intel-64-and-ia-32-architectures-software-developer-s-manual-combined-volumes-1-2a-2b-2c-2d-3a-3b-3c-3d-and-4.html?wapkw=intel%2064%20and%20ia-32%20architectures%20software%20developer's%20manual&docid=782158)
+[Intel® 64 and IA-32 Architectures Software Developer's Manual Combined Volumes: 1, 2A, 2B, 2C, 2D, 3A, 3B, 3C, 3D, and 4](https://www.intel.com/content/www/us/en/content-details/782158/intel-64-and-ia-32-architectures-software-developer-s-manual-combined-volumes-1-2a-2b-2c-2d-3a-3b-3c-3d-and-4.html?wapkw=intel%2064%20and%20ia-32%20architectures%20software%20developer's%20manual&docid=782158)
 
-[IA-64 Application Developer’s Architecture Guide](https://redirect.cs.umbc.edu/portal/help/architecture/ex_sum.pdf)
+[IA-64 Application Developer's Architecture Guide](https://redirect.cs.umbc.edu/portal/help/architecture/ex_sum.pdf)
 
 ### textbooks
 

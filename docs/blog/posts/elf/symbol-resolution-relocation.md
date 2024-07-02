@@ -122,11 +122,6 @@ When an assembler generates an object module, it does not know *where* the code 
 
 ## references
 
-[TIS - ELF v1.2](https://refspecs.linuxfoundation.org/elf/elf.pdf)
-
-- Book I: ELF - 1. Object Files; 2. Program Loading and Dynamic Linking
-- Book III: SYSV - 2. Program Loading and Dynamic Linking
-
 [Arm Assembly Internals and Reverse Engineering](https://www.amazon.com/Blue-Fox-Assembly-Internals-Analysis/dp/1119745306) | Chapter 2 ELF File Format Internals
 
 - The Dynamic Section and Dynamic Loading - Program Relocations(Static, Dynamic, GOT, PLT).
@@ -136,4 +131,3 @@ When an assembler generates an object module, it does not know *where* the code 
 - 2.3.4 Lazy Binding and the `.plt`, `.got`, and `.got.plt` Sections
 - 2.3.5 The `.rel.*` and `.rela.*` Sections
 - 2.3.6 The `.dynamic` Section
-

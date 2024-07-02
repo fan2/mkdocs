@@ -229,8 +229,8 @@ Some architectures are more tolerant of **misalignment** than others, and we mig
 
 !!! note "enable alignment check for i386 processors"
 
-    Intel’s i386 processor family is quite tolerant in accepting misalignment of data. This can lead to irritating bugs when ported to other architectures that are not as tolerant.
+    Intel's i386 processor family is quite tolerant in accepting misalignment of data. This can lead to irritating bugs when ported to other architectures that are not as tolerant.
 
     This function enables a check for this problem also for this family or processors, such that you can be sure to detect this problem early.
 
-    I found that code on [Ygdrasil’s blog](http://orchistro.tistory.com/206): `void enable_alignment_check(void);`.
+    I found that code on [Ygdrasil's blog](http://orchistro.tistory.com/206): `void enable_alignment_check(void);`.

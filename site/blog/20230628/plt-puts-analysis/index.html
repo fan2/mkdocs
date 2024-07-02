@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://duetorun.com/blog/20230628/plt-puts-analysis/">
       
       
-        <link rel="prev" href="../../20230627/symbol-resolution-relocation/">
+        <link rel="prev" href="../../20230627/dynamic-linking/">
       
       
         <link rel="next" href="../../20230629/plt-puts-pwndbg/">
@@ -1691,7 +1691,7 @@
 
 <p>So far we've been through the <a href="../../20230625/gcc-compilation-dynamic/">default gcc compilation process</a> and had a look at <a href="../../20230625/elf-dyn-tour/">the product of our C demo program</a> <code>a.out</code> with <a href="../../20230620/gnu-binutils/">GNU binutils</a>.</p>
 <p>It links dynamically by default, a dynamic linker (aka interpreter) is used to resolve the final dependencies on dynamic libraries when the executable is loaded into memory to run.</p>
-<p><a href="../../20230627/symbol-resolution-relocation/">Previously</a>, we've gone through the basic concepts of static linking - symbol resolution and relocation. In this article I'll have a look at how the shared dynamic symbol such as <code>puts</code> is designated at link time in the DYN PIE ELF.</p>
+<p>Previously, we've gone through the basic concepts of <a href="../../20230627/symbol-resolution-relocation/">static linking</a> and <a href="../../20230627/dynamic-linking/">dynamic linking</a>. In this article I'll have a look at how the shared dynamic symbol such as <code>puts</code> is designated at link time in the DYN PIE ELF.</p>
 <!-- more -->
 
 <h2 id="dependency">dependency<a class="headerlink" href="#dependency" title="Permanent link">#</a></h2>
@@ -2356,7 +2356,7 @@ The output extracts full binary information from the ELF header.</p>
 </div>
 </div>
 <h2 id="relocation_entries">relocation entries<a class="headerlink" href="#relocation_entries" title="Permanent link">#</a></h2>
-<p>The second job of the loader, having loaded the program’s dependencies, is to perform the relocation and linking step. Relocation tables can be in one of two formats: <code>REL</code> or <code>RELA</code>, which differ slightly in their encoding.</p>
+<p>The second job of the loader, having loaded the program's dependencies, is to perform the relocation and linking step. Relocation tables can be in one of two formats: <code>REL</code> or <code>RELA</code>, which differ slightly in their encoding.</p>
 <p>As you can see in the readelf dump of the example binary's section headers, there are several sections with names of the form <code>rela.*</code>. These sections are of type <code>SHT_RELA</code>, meaning that they contain information used by the linker for performing relocations. Essentially, each section of type <code>SHT_RELA</code> is a table of relocation entries, with each entry detailing a particular address where a relocation needs to be applied, as well as instructions on how to resolve the particular value that needs to be plugged in at this address.</p>
 <p>Whenever the assembler encounters a reference to an object whose ultimate location is unknown, it generates a <code>relocation entry</code> that tells the linker how to modify the reference when it merges the object file into an executable.</p>
 <div class="language-c highlight"><span class="filename">Relocation table entry</span><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="c1">// /usr/include/elf.h</span>
@@ -2433,9 +2433,9 @@ The output extracts full binary information from the ELF header.</p>
 </span><span id="__span-24-3"><a id="__codelineno-24-3" name="__codelineno-24-3" href="#__codelineno-24-3"></a>$<span class="w"> </span>hexdump<span class="w"> </span>-v<span class="w"> </span>-s<span class="w"> </span><span class="nv">$rd_offset</span><span class="w"> </span>-n<span class="w"> </span><span class="nv">$rd_size</span><span class="w"> </span>-e<span class="w"> </span><span class="s1">&#39;&quot;%016_ax  &quot; 3/8 &quot;%016x &quot; &quot;\n&quot;&#39;</span><span class="w"> </span>a.out<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-24-4"><a id="__codelineno-24-4" name="__codelineno-24-4" href="#__codelineno-24-4"></a><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;BEGIN{print &quot;address\t\t\t\toffset\t\t\tinfo\t\t\taddend&quot;} 1&#39;</span>
 </span><span id="__span-24-5"><a id="__codelineno-24-5" name="__codelineno-24-5" href="#__codelineno-24-5"></a>address<span class="w">             </span>offset<span class="w">          </span>info<span class="w">            </span>addend
-</span><span id="__span-24-6"><a id="__codelineno-24-6" name="__codelineno-24-6" href="#__codelineno-24-6"></a><span class="m">0000000000000480</span><span class="w">  </span>0000000000010d90<span class="w"> </span><span class="m">0000000000000403</span><span class="w"> </span><span class="m">0000000000000750</span><span class="w"> </span><span class="c1"># .init_array</span>
-</span><span id="__span-24-7"><a id="__codelineno-24-7" name="__codelineno-24-7" href="#__codelineno-24-7"></a><span class="m">0000000000000498</span><span class="w">  </span>0000000000010d98<span class="w"> </span><span class="m">0000000000000403</span><span class="w"> </span><span class="m">0000000000000700</span><span class="w"> </span><span class="c1"># .fini_array</span>
-</span><span id="__span-24-8"><a id="__codelineno-24-8" name="__codelineno-24-8" href="#__codelineno-24-8"></a>00000000000004b0<span class="w">  </span>0000000000010ff0<span class="w"> </span><span class="m">0000000000000403</span><span class="w"> </span><span class="m">0000000000000754</span><span class="w"> </span><span class="c1"># GOT</span>
+</span><span id="__span-24-6"><a id="__codelineno-24-6" name="__codelineno-24-6" href="#__codelineno-24-6"></a><span class="m">0000000000000480</span><span class="w">  </span>0000000000010d90<span class="w"> </span><span class="m">0000000000000403</span><span class="w"> </span><span class="m">0000000000000750</span><span class="w"> </span><span class="c1"># frame_dummy?</span>
+</span><span id="__span-24-7"><a id="__codelineno-24-7" name="__codelineno-24-7" href="#__codelineno-24-7"></a><span class="m">0000000000000498</span><span class="w">  </span>0000000000010d98<span class="w"> </span><span class="m">0000000000000403</span><span class="w"> </span><span class="m">0000000000000700</span><span class="w"> </span><span class="c1"># __do_global_dtors_aux?</span>
+</span><span id="__span-24-8"><a id="__codelineno-24-8" name="__codelineno-24-8" href="#__codelineno-24-8"></a>00000000000004b0<span class="w">  </span>0000000000010ff0<span class="w"> </span><span class="m">0000000000000403</span><span class="w"> </span><span class="m">0000000000000754</span><span class="w"> </span><span class="c1"># GOT for main</span>
 </span><span id="__span-24-9"><a id="__codelineno-24-9" name="__codelineno-24-9" href="#__codelineno-24-9"></a>00000000000004c8<span class="w">  </span><span class="m">0000000000011008</span><span class="w"> </span><span class="m">0000000000000403</span><span class="w"> </span><span class="m">0000000000011008</span><span class="w"> </span><span class="c1"># .data[1]</span>
 </span><span id="__span-24-10"><a id="__codelineno-24-10" name="__codelineno-24-10" href="#__codelineno-24-10"></a>00000000000004e0<span class="w">  </span>0000000000010fd8<span class="w"> </span><span class="m">0000000400000401</span><span class="w"> </span><span class="m">0000000000000000</span><span class="w"> </span><span class="c1"># GOT</span>
 </span><span id="__span-24-11"><a id="__codelineno-24-11" name="__codelineno-24-11" href="#__codelineno-24-11"></a>00000000000004f8<span class="w">  </span>0000000000010fe0<span class="w"> </span><span class="m">0000000500000401</span><span class="w"> </span><span class="m">0000000000000000</span><span class="w"> </span><span class="c1"># GOT</span>
@@ -2853,7 +2853,7 @@ The output extracts full binary information from the ELF header.</p>
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../../20230627/symbol-resolution-relocation/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Symbol resolution &amp; relocation">
+          <a href="../../20230627/dynamic-linking/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Dynamic Linking and Relocations">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
@@ -2863,7 +2863,7 @@ The output extracts full binary information from the ELF header.</p>
                 Previous
               </span>
               <div class="md-ellipsis">
-                Symbol resolution & relocation
+                Dynamic Linking and Relocations
               </div>
             </div>
           </a>

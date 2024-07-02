@@ -50,7 +50,7 @@ sci-hub.do - [OA.mg](https://oa.mg/)
 
 ## Archive
 
-[Anna’s Archive](https://annas-archive.org/)
+[Anna's Archive](https://annas-archive.org/)
 
 - mirror Sci-Hub and LibGen
 - scrape and open-source Z-Lib

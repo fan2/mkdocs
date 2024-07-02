@@ -157,7 +157,7 @@ head -c $((off+sz)) test-gdb | tail -c $((sz)) | strings
 
 [Install radare2 on Ubuntu using the Snap Store | Snapcraft](https://snapcraft.io/install/radare2/ubuntu#install)
 
-[radare2](https://www.radare.org/n/).[Rabin2](https://book.rada.re/tools/rabin2/intro.html) is a command-line utility that can analyze and extract information from binary files. It’s commonly used for reverse engineering, analyzing malware, and forensics analysis.
+[radare2](https://www.radare.org/n/).[Rabin2](https://book.rada.re/tools/rabin2/intro.html) is a command-line utility that can analyze and extract information from binary files. It's commonly used for reverse engineering, analyzing malware, and forensics analysis.
 
 [Strings - The Official Radare2 Book](https://book.rada.re/tools/rabin2/strings.html)
 

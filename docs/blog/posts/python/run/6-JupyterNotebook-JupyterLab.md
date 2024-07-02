@@ -142,7 +142,7 @@ http(s)://<server:port>/<lab-location>/lab
 
 #### File Navigation with `/tree`
 
-JupyterLab’s file navigation URLs adopts the nomenclature of the classic notebook; these URLs are `/tree` URLs:
+JupyterLab's file navigation URLs adopts the nomenclature of the classic notebook; these URLs are `/tree` URLs:
 
 ```
 http(s)://<server:port>/<lab-location>/lab/tree/path/to/notebook.ipynb

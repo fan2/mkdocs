@@ -753,7 +753,7 @@ plugins=(
     #---------custom 
     # ls # improves the output, adds several aliases
     git-open
-    iterm2colors    # manage iterm2’s color scheme
+    iterm2colors    # manage iterm2's color scheme
     zsh-tab-colors  # automatically changes iTerm tab color
     zsh-256color
     zsh-autosuggestions

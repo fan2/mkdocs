@@ -57,7 +57,7 @@ For a C source file they are the preprocessor and compiler `cc1`, the assembler 
     ![GCC_Architecture](./images/GCC_Architecture.jpeg)
 </figure>
 
-[Developer Options](https://gcc.gnu.org/onlinedocs/gcc/Developer-Options.html): `-dumpspecs` : Print the compiler’s built-in [Spec Files](https://gcc.gnu.org/onlinedocs/gcc/Spec-Files.html):
+[Developer Options](https://gcc.gnu.org/onlinedocs/gcc/Developer-Options.html): `-dumpspecs` : Print the compiler's built-in [Spec Files](https://gcc.gnu.org/onlinedocs/gcc/Spec-Files.html):
 
 - cpp : Options to pass to the C preprocessor
 - cc1 : Options to pass to the C compiler
@@ -437,7 +437,7 @@ The GCC project includes an implementation of the C++ Standard Library called `l
 
 [GDB: The GNU Project Debugger](https://sourceware.org/gdb/current/onlinedocs/)
 
-- [GDB’s Obsolete Annotations](https://sourceware.org/gdb/current/onlinedocs/annotate.html)
+- [GDB's Obsolete Annotations](https://sourceware.org/gdb/current/onlinedocs/annotate.html)
 - Debugging with GDB: [integrated](https://sourceware.org/gdb/current/onlinedocs/gdb), [index/toc](https://sourceware.org/gdb/current/onlinedocs/gdb.html/index.html)
 - @[sourceware](https://www.sourceware.org/gdb/), [git](git://sourceware.org/git/binutils-gdb.git)
 
@@ -456,7 +456,7 @@ In 2006, [Chris Lattner](https://nondot.org/sabre/) started working on a new pro
 [Clang C Language Family Frontend for LLVM](https://clang.llvm.org/) - [wiki](https://en.wikipedia.org/wiki/Clang)
 
 - [Clang's documentation](https://clang.llvm.org/docs/)
-- [Clang Compiler User’s Manual](https://clang.llvm.org/docs/UsersManual.html)
+- [Clang Compiler User's Manual](https://clang.llvm.org/docs/UsersManual.html)
 - [clang - the Clang C, C++, and Objective-C compiler](https://clang.llvm.org/docs/CommandGuide/clang.html)
 - [Clang command line argument reference](https://clang.llvm.org/docs/ClangCommandLineReference.html)
 - [Preprocessor options](https://clang.llvm.org/docs/ClangCommandLineReference.html#preprocessor-options)

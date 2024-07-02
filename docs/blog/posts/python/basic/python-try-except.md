@@ -56,7 +56,7 @@ finally:
 控制台执行 `help('except')`：
 
 ```
-Before an except clause’s suite is executed, details about the
+Before an except clause's suite is executed, details about the
 exception are stored in the "sys" module and can be accessed via
 "sys.exc_info()". "sys.exc_info()" returns a 3-tuple consisting of the
 exception class, the exception instance and a traceback object (see

@@ -111,7 +111,7 @@ The history of calling conventions:
 
 [aapcs64](https://github.com/ARM-software/abi-aa/blob/2a70c42d62e9c3eb5887fa50b71257f20daca6f9/aapcs64/aapcs64.rst) - 2.2 Terms and abbreviations:
 
-`Program state`: The state of the program’s memory, including values in machine registers.
+`Program state`: The state of the program's memory, including values in machine registers.
 
 `Routine`, `subroutine`: A fragment of program to which control can be transferred that, on completing its task, returns control to its caller at an instruction following the call. Routine is used for clarity where there are nested calls: a routine is the *`caller`* and a subroutine is the *`callee`*.
 

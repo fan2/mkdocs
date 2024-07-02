@@ -20,7 +20,7 @@ So far we've been through the [default gcc compilation process](./gcc-compilatio
 
 It links dynamically by default, a dynamic linker (aka interpreter) is used to resolve the final dependencies on dynamic libraries when the executable is loaded into memory to run.
 
-[Previously](./symbol-resolution-relocation.md), we've gone through the basic concepts of static linking - symbol resolution and relocation. In this article I'll have a look at how the shared dynamic symbol such as `puts` is designated at link time in the DYN PIE ELF.
+Previously, we've gone through the basic concepts of [static linking](./symbol-resolution-relocation.md) and [dynamic linking](./dynamic-linking.md). In this article I'll have a look at how the shared dynamic symbol such as `puts` is designated at link time in the DYN PIE ELF.
 
 <!-- more -->
 
@@ -683,7 +683,7 @@ $ nm -D a.out
 
 ## relocation entries
 
-The second job of the loader, having loaded the program’s dependencies, is to perform the relocation and linking step. Relocation tables can be in one of two formats: `REL` or `RELA`, which differ slightly in their encoding.
+The second job of the loader, having loaded the program's dependencies, is to perform the relocation and linking step. Relocation tables can be in one of two formats: `REL` or `RELA`, which differ slightly in their encoding.
 
 As you can see in the readelf dump of the example binary's section headers, there are several sections with names of the form `rela.*`. These sections are of type `SHT_RELA`, meaning that they contain information used by the linker for performing relocations. Essentially, each section of type `SHT_RELA` is a table of relocation entries, with each entry detailing a particular address where a relocation needs to be applied, as well as instructions on how to resolve the particular value that needs to be plugged in at this address.
 
@@ -772,9 +772,9 @@ $ rd_size=$(objdump -hw a.out | awk '/.rela.dyn/{print "0x"$3}')
 $ hexdump -v -s $rd_offset -n $rd_size -e '"%016_ax  " 3/8 "%016x " "\n"' a.out \
 | awk 'BEGIN{print "address\t\t\t\toffset\t\t\tinfo\t\t\taddend"} 1'
 address				offset			info			addend
-0000000000000480  0000000000010d90 0000000000000403 0000000000000750 # .init_array
-0000000000000498  0000000000010d98 0000000000000403 0000000000000700 # .fini_array
-00000000000004b0  0000000000010ff0 0000000000000403 0000000000000754 # GOT
+0000000000000480  0000000000010d90 0000000000000403 0000000000000750 # frame_dummy?
+0000000000000498  0000000000010d98 0000000000000403 0000000000000700 # __do_global_dtors_aux?
+00000000000004b0  0000000000010ff0 0000000000000403 0000000000000754 # GOT for main
 00000000000004c8  0000000000011008 0000000000000403 0000000000011008 # .data[1]
 00000000000004e0  0000000000010fd8 0000000400000401 0000000000000000 # GOT
 00000000000004f8  0000000000010fe0 0000000500000401 0000000000000000 # GOT

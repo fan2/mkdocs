@@ -435,7 +435,7 @@ Hello world from c!
 
 The ‘start’ command does the equivalent of setting a *temporary* breakpoint at the beginning of the main procedure and then invoking the ‘run’ command.
 
-`starti`: The ‘starti’ command does the equivalent of setting a temporary breakpoint at the first instruction of a program’s execution and then invoking the ‘run’ command. For programs containing an *elaboration* phase, the starti command will stop execution at the start of the elaboration phase.
+`starti`: The ‘starti’ command does the equivalent of setting a temporary breakpoint at the first instruction of a program's execution and then invoking the ‘run’ command. For programs containing an *elaboration* phase, the starti command will stop execution at the start of the elaboration phase.
 
 ```Shell
 (gdb) help start

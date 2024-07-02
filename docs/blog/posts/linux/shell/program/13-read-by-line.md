@@ -152,7 +152,7 @@ while IFS= read -r line; do
 done < "$1"
 ```
 
-If the file isn’t a standard POSIX text file (= not terminated by a newline character), the loop can be modified to handle trailing partial lines:
+If the file isn't a standard POSIX text file (= not terminated by a newline character), the loop can be modified to handle trailing partial lines:
 
 ```Shell
 while IFS= read -r line || [[ -n "$line" ]]; do

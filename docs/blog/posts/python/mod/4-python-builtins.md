@@ -504,7 +504,7 @@ TypeError: unhashable type: 'dict'
 - dict：无序字典(键值对映射)  
 
 > A mapping object maps **hashable** values to arbitrary objects. Mappings are mutable objects. There is currently only one standard mapping type, the dictionary.  
-> A dictionary’s keys are almost arbitrary values. Values that are **not hashable**, that is, values containing lists, dictionaries or other mutable types may not be used as keys.  
+> A dictionary's keys are almost arbitrary values. Values that are **not hashable**, that is, values containing lists, dictionaries or other mutable types may not be used as keys.  
 
 - key 必须为 arbitrary（hashable），list、set、dict 等 unhashable 类型不能作为键；  
 - value 可为 not hashable 或 hashable。  

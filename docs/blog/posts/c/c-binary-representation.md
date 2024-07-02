@@ -47,7 +47,7 @@ Of the bits $b_i$ that are 1, the one with minimal index *i* is called the ***le
 
     The maximum value of any integer type is of the form $2^p − 1$.
 
-Observe that for this discussion of the representation of non-negative values, we haven’t argued about the signedness of the type. These rules apply *equally* to signed and unsigned types. Only for unsigned types, we are lucky, and what we have said so far completely suffices to describe such an unsigned type.
+Observe that for this discussion of the representation of non-negative values, we haven't argued about the signedness of the type. These rules apply *equally* to signed and unsigned types. Only for unsigned types, we are lucky, and what we have said so far completely suffices to describe such an unsigned type.
 
 !!! note "TAKEAWAY 5.52"
 
@@ -85,11 +85,11 @@ The next thing the standard prescribes is that signed types have one additional 
 
 - Sign and magnitude
 - Ones’ complement
-- Two’s complement
+- Two's complement
 
 The first two nowadays probably only have historical or exotic relevance: for sign and magnitude, the magnitude is taken as positive values, and the sign bit simply specifies that there is a minus sign. Ones’ complement takes the corresponding positive value and complements all bits. Both representations have the disadvantage that two values evaluate to 0: there is a positive and a negative 0.
 
-Commonly used on modern platforms is the two’s complement representation. It performs exactly the same arithmetic as we have seen for unsigned types, but the upper half of unsigned values (those with a high-order bit of 1) is interpreted as being negative. The following two functions are basically all that is needed to interpret unsigned values as signed values:
+Commonly used on modern platforms is the two's complement representation. It performs exactly the same arithmetic as we have seen for unsigned types, but the upper half of unsigned values (those with a high-order bit of 1) is interpreted as being negative. The following two functions are basically all that is needed to interpret unsigned values as signed values:
 
 ```c title="is_signed_less.c" linenums="1"
 # inclue <limits.h>
@@ -105,7 +105,7 @@ bool is_signed_less(unsigned a, unsigned b) {
 }
 ```
 
-Table 5.6 shows an example of how the negative of our example value 240 can be constructed. For unsigned types, `-A` can be computed as `~A + 1`. Two’s complement representation performs exactly the same bit operation for signed types as for unsigned types. It only *interprets* representations that have the high-order bit as being negative.
+Table 5.6 shows an example of how the negative of our example value 240 can be constructed. For unsigned types, `-A` can be computed as `~A + 1`. Two's complement representation performs exactly the same bit operation for signed types as for unsigned types. It only *interprets* representations that have the high-order bit as being negative.
 
 Op | Value | b15 … b0
 ---|-------|---------
@@ -135,13 +135,13 @@ For the second loop, everything looks similar. But because here the behavior of 
 while (true) do_something();
 ```
 
-That’s right, an infinite loop.
+That's right, an infinite loop.
 
 !!! note "TAKEAWAY 5.55"
 
     TAKEAWAY 5.55 Once the abstract state machine reaches an undefined state, no further assumption about the continuation of the execution can be made.
 
-Not only that, the compiler is allowed to do what it pleases for the operation itself (“Undefined? so let’s define it”), but it may also assume that it will never reach such a state and draw conclusions from that.
+Not only that, the compiler is allowed to do what it pleases for the operation itself (“Undefined? so let's define it”), but it may also assume that it will never reach such a state and draw conclusions from that.
 
 Commonly, a program that has reached an undefined state is referred to as “having” or “showing” undefined behavior. This wording is a bit unfortunate; in many such cases, a program does not “show” any visible signs of weirdness. In the contrary, bad things will be going on that you will not even notice for a long time.
 
@@ -151,12 +151,12 @@ Commonly, a program that has reached an undefined state is referred to as “hav
 
 What makes things even worse is that on some platforms with some standard compiler options, the compilation will just look right. Since the behavior is undefined, on such a platform, signed integer arithmetic might turn out to be basically the same as unsigned. But changing the platform, the compiler, or some options can change that. All of a sudden, your program that worked for years crashes out of nowhere.
 
-Basically, what we have discussed up to this chapter always had well-defined behavior, so the abstract state machine is always in a well-defined state. Signed arithmetic changes this, so as long as you don’t need it, avoid it. We say that a program performs a trap C (or just traps) if it is terminated abruptly before its usual end.
+Basically, what we have discussed up to this chapter always had well-defined behavior, so the abstract state machine is always in a well-defined state. Signed arithmetic changes this, so as long as you don't need it, avoid it. We say that a program performs a trap C (or just traps) if it is terminated abruptly before its usual end.
 
 !!! note "TAKEAWAY 5.57~5.59"
 
     TAKEAWAY 5.57 Signed arithmetic may trap badly.
-    TAKEAWAY 5.58 In two’s complement representation, INT_MIN < -INT_MAX.
+    TAKEAWAY 5.58 In two's complement representation, INT_MIN < -INT_MAX.
     TAKEAWAY 5.59 Negation may overflow for signed arithmetic.
 
 For signed types, bit operations work with the binary representation. So the value of a bit operation depends in particular on the sign representation. In fact, bit operations even allow us to detect the sign representation:
@@ -202,7 +202,7 @@ The C standard provides names for *exact-width integer types* in [<stdint.h\>](h
 !!! note "TAKEAWAY 5.61~5.62"
 
     TAKEAWAY 5.61 If the type uint{==N==}_t is provided, it is an unsigned integer type with exactly N bits of width and precision.
-    TAKEAWAY 5.62 If the type int{==N==}_t is provided, it is signed, with two’s complement representation and has a width of exactly N bits and a precision of N − 1.
+    TAKEAWAY 5.62 If the type int{==N==}_t is provided, it is signed, with two's complement representation and has a width of exactly N bits and a precision of N − 1.
 
 None of these types is guaranteed to exist, but for a convenient set of powers of two, the `typedef` must be provided if types with the corresponding properties exist.
 

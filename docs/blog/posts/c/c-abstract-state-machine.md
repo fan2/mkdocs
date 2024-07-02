@@ -34,7 +34,7 @@ The representation that a particular value has should in most cases not be your 
 
 **5.1 The abstract state machine**:
 
-To explain the abstract state machine, we first have to look into the concepts of a *value* (what state are we in), the *type* (what this state represents), and the *representation* (how state is distinguished). As the term abstract suggests, C’s mechanism allows different platforms to realize the abstract state machine of a given program differently according to their needs and capacities.
+To explain the abstract state machine, we first have to look into the concepts of a *value* (what state are we in), the *type* (what this state represents), and the *representation* (how state is distinguished). As the term abstract suggests, C's mechanism allows different platforms to realize the abstract state machine of a given program differently according to their needs and capacities.
 
 ## 5.1.1 Values
 
@@ -57,7 +57,7 @@ The *state* of the program execution is determined by:
 - The data
 - Outside intervention, such as IO from the user
 
-If we abstract from the last point, an executable that runs with the same data from the same point of execution must give the same result. But since C programs should be portable between systems, we want more than that. We don’t want the result of a computation to depend on the executable (which is platform specific) but ideally to depend only on the program specification itself. An important step to achieve this platform independence is the concept of ***types***.
+If we abstract from the last point, an executable that runs with the same data from the same point of execution must give the same result. But since C programs should be portable between systems, we want more than that. We don't want the result of a computation to depend on the executable (which is platform specific) but ideally to depend only on the program specification itself. An important step to achieve this platform independence is the concept of ***types***.
 
 ## 5.1.2 Types
 
@@ -67,7 +67,7 @@ A *type* is an additional property that C associates with values. Up to now, we 
 
     - TAKEAWAY 5.3 All values have a type that is statically determined.
     - TAKEAWAY 5.4 Possible operations on a value are determined by its type.
-    - TAKEAWAY 5.5 A value’s type determines the results of all operations.
+    - TAKEAWAY 5.5 A value's type determines the results of all operations.
 
 ## 5.1.3 Binary representation and the abstract state machine
 
@@ -80,15 +80,15 @@ For example, the operations on the type `size_t` can be entirely determined when
 
 !!! note "TAKEAWAY 5.6"
 
-    TAKEAWAY 5.6 A type’s binary representation determines the results of all operations.
+    TAKEAWAY 5.6 A type's binary representation determines the results of all operations.
 
 Generally, all information we need to determine that model is within reach of any C program: the C library headers provide the necessary information through named values (such as *SIZE_MAX*), operators, and function calls.
 
 !!! note "TAKEAWAY 5.7"
 
-    TAKEAWAY 5.7 A type’s binary representation is observable.
+    TAKEAWAY 5.7 A type's binary representation is observable.
 
-This binary representation is still a model and thus an abstract representation in the sense that it doesn’t completely determine how values are stored in the memory of a computer or on a disk or other persistent storage device. That representation is the object representation. In contrast to the binary representation, the object representation usually is not of much concern to us, as long as we don’t want to hack together values of objects in main memory or have to communicate between computers that have different platform models. Much later, in section 12.1, we will see that we can even observe the object representation, if such an object is stored in memory and we know its address.
+This binary representation is still a model and thus an abstract representation in the sense that it doesn't completely determine how values are stored in the memory of a computer or on a disk or other persistent storage device. That representation is the object representation. In contrast to the binary representation, the object representation usually is not of much concern to us, as long as we don't want to hack together values of objects in main memory or have to communicate between computers that have different platform models. Much later, in section 12.1, we will see that we can even observe the object representation, if such an object is stored in memory and we know its address.
 
 As a consequence, all computation is fixed through the values, types, and their binary representations that are specified in the program. The program text describes an abstract state machine C that regulates how the program switches from one state to the next. These transitions are determined by value, type, and binary representation only.
 

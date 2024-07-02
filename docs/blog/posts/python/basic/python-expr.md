@@ -410,7 +410,7 @@ for 循环用于针对集合中的每个元素都执行一个代码块，而 whi
 
 ### break
 
-A `break` statement executed in the first suite terminates the loop without executing the else clause’s suite.  
+A `break` statement executed in the first suite terminates the loop without executing the else clause's suite.  
 
 要立即退出while循环，不再运行循环中余下的代码，也不管条件测试的结果如何，可使用 `break` 语句。  
 break语句用于控制程序流程，可使用它来控制哪些代码行将执行，哪些代码行不执行，从而让程序按你的要求执行你要执行的代码。  

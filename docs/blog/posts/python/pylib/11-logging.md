@@ -319,7 +319,7 @@ logging 模块提供了 log 接口打点指定级别的日志，也可直接调�
 
 ```Shell
 logging.disable(level=CRITICAL)
-Provides an overriding level level for all loggers which takes precedence over the logger’s own level.
+Provides an overriding level level for all loggers which takes precedence over the logger's own level.
 
 logging.log(level, msg, *args, **kwargs)
 Logs a message with level level on the root logger. The other arguments are interpreted as for debug().
@@ -366,7 +366,7 @@ logging.basicConfig(**kwargs)
 Does basic configuration for the logging system by creating a StreamHandler with a default Formatter and adding it to the root logger. The functions debug(), info(), warning(), error() and critical() will call basicConfig() automatically if no handlers are defined for the root logger.
 ```
 
-- logging.debug() (as well as info(), warning(), error() and critical()) will call `basicConfig`() if the root logger doesn’t have any handler attached.
+- logging.debug() (as well as info(), warning(), error() and critical()) will call `basicConfig`() if the root logger doesn't have any handler attached.
 
 我们可以调用 `logging.getLogger()` 查看默认的 RootLogger。
 

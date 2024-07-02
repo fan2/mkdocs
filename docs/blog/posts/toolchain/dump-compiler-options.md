@@ -640,7 +640,7 @@ $ echo | clang -x c++ -Wp,-v -stdlib=libc++ -fsyntax-only -
 涉及到两个选项：
 
 1. [Preprocessor Options](https://gcc.gnu.org/onlinedocs/gcc/Preprocessor-Options.html) - `-Wp,option` : to bypass the compiler driver and pass option directly through to the preprocessor.
-2. [Warning Options](https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html) - `-fsyntax-only` : Check the code for syntax errors, but don’t do anything beyond that.
+2. [Warning Options](https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html) - `-fsyntax-only` : Check the code for syntax errors, but don't do anything beyond that.
 
 === "macOS <stdio.h\> / <iostream\>"
 

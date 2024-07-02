@@ -46,7 +46,7 @@ During execution, the `PC` does not contain the address of the currently executi
 
 The AArch32 Execution State - AArch32 Registers
 
-AArch32’s program counter (`PC`) is a 32-bit integer register that stores the location in memory of the next instruction the processor should execute. For historical reasons, the PC in AArch32 reads the address of the current instruction plus ==8== when executing an A32 instruction and plus ==4== when executing a T32 instruction. In AArch32, many data-processing instructions can write to the PC and even redirect the program flow when overwriting the PC with an address the program can branch to. Using the PC as the destination register of an instruction has the effect of converting that instruction into a branch-type instruction. Depending on the instruction set state, values written to the PC will be aligned accordingly because the PC ignores the least significant bit and treats it as 0.
+AArch32's program counter (`PC`) is a 32-bit integer register that stores the location in memory of the next instruction the processor should execute. For historical reasons, the PC in AArch32 reads the address of the current instruction plus ==8== when executing an A32 instruction and plus ==4== when executing a T32 instruction. In AArch32, many data-processing instructions can write to the PC and even redirect the program flow when overwriting the PC with an address the program can branch to. Using the PC as the destination register of an instruction has the effect of converting that instruction into a branch-type instruction. Depending on the instruction set state, values written to the PC will be aligned accordingly because the PC ignores the least significant bit and treats it as 0.
 
 ### PC != current !?
 
@@ -79,7 +79,7 @@ The program counter points to the instruction being ^^fetched^^ rather than to t
 
 [ARM Assembly Language: Fundamentals and Techniques, 2nd Edition](https://www.oreilly.com/library/view/arm-assembly-language/9781482229851/)
 
-Chapter 2: The Programmer’s Model - 2.3 ARM7TDMI - 2.3.2 Registers
+Chapter 2: The Programmer's Model - 2.3 ARM7TDMI - 2.3.2 Registers
 
 The [ARM7TDMI](https://en.wikipedia.org/wiki/ARM7TDMI) is a pipelined architecture, as shown in Figure 2.3, meaning that while one instruction is being *fetched*, another is being *decoded*, and yet another is being *executed*. The address of the instruction that is being ^^fetched^^ (not the one being executed) is contained in the Program Counter.
 

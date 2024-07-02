@@ -42,7 +42,7 @@ The ABI for the Arm 64-bit architecture gives additional rules for how DWARF 3.0
 
 ## Generating DWARF with GCC
 
-It’s very simple to generate DWARF with `gcc`. Simply specify the `–g` option to generate debugging information. The ELF sections can be displayed using `objump` with the `–h` option.
+It's very simple to generate DWARF with `gcc`. Simply specify the `–g` option to generate debugging information. The ELF sections can be displayed using `objump` with the `–h` option.
 
 [Debugging Options (Using the GNU Compiler Collection (GCC))](https://gcc.gnu.org/onlinedocs/gcc/Debugging-Options.html)
 
@@ -50,7 +50,7 @@ To tell GCC to emit extra information for use by a debugger, in almost all cases
 
 ```Shell
     -g
-    Produce debugging information in the operating system’s native format (stabs, COFF, XCOFF, or DWARF). GDB can work with this debugging information.
+    Produce debugging information in the operating system's native format (stabs, COFF, XCOFF, or DWARF). GDB can work with this debugging information.
 
     On most systems that use stabs format, -g enables use of extra debugging information that only GDB can use; this extra information makes debugging work better in GDB but probably makes other debuggers crash or refuse to read the program. If you want to control for certain whether to generate the extra information, use -gvms (see below).
 
@@ -291,7 +291,7 @@ $ man objdump
 
 7.12.2 `.cfi_startproc [simple]`
 
-- `.cfi_startproc` is used at the beginning of each function that should have an entry in `.eh_frame`. It initializes some internal data structures. Don’t forget to close the function by `.cfi_endproc`.
+- `.cfi_startproc` is used at the beginning of each function that should have an entry in `.eh_frame`. It initializes some internal data structures. Don't forget to close the function by `.cfi_endproc`.
 
 - Unless `.cfi_startproc` is used along with parameter simple it also emits some architecture dependent initial CFI instructions.
 

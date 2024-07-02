@@ -624,6 +624,8 @@ Type `pdf` to disassemble function at current pc, that is `entry0`:
 └           0xaaaadc76066c      e1ffff97       bl sym.imp.__libc_start_main ; int __libc_start_main(func main, int argc, char **ubp_av, func init, func fini, func rtld_fini, void *stack_end)
 ```
 
+*entry0*+28 \~ *entry0*+32 loads the value at `GOT`[0xff0]=*0xaaaadc770ff0. This corresponds to a static relocation entry of type `R_AARCH64_RELATIVE`, the value of which can be calculated by $reloc\_bias+addend$=0xaaaadc760754, resulting in `x0` pointing to the `main` function.
+
 Disassemble 8 instructions backwards. The PLT stubs of the `.plt` section happen to be above *entry0*.
 
 ```bash

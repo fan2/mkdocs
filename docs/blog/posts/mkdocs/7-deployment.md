@@ -133,7 +133,7 @@ $ sudo ln -s /home/pifan/Sites/mkdocs/site/ /usr/share/nginx/html
 
 === "Cloudflare Zero Trust"
 
-    Cloudflare Zero Trust provides the power of Cloudflare’s global network to your internal teams and infrastructure. It empowers users with secure, fast, and seamless access to any device on the Internet.
+    Cloudflare Zero Trust provides the power of Cloudflare's global network to your internal teams and infrastructure. It empowers users with secure, fast, and seamless access to any device on the Internet.
 
 === "Cloudflare Tunnel"
 
@@ -141,7 +141,7 @@ $ sudo ln -s /home/pifan/Sites/mkdocs/site/ /usr/share/nginx/html
 
 === "cloudflared"
 
-    cloudflared is the software powering Cloudflare Tunnel. It runs on origin servers to connect to Cloudflare’s network and on client devices for non-HTTP traffic.
+    cloudflared is the software powering Cloudflare Tunnel. It runs on origin servers to connect to Cloudflare's network and on client devices for non-HTTP traffic.
 
 [Cloudflare Docs](https://developers.cloudflare.com/) - [Cloudflare Zero Trust docs](https://developers.cloudflare.com/cloudflare-one/) - [Create a locally-managed tunnel (CLI)](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/get-started/create-local-tunnel/)
 

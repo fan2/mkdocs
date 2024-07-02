@@ -28,11 +28,11 @@ Glossary - **generator**：
 
 A function which returns a [generator iterator](https://docs.python.org/3/glossary.html#term-generator-iterator). It looks like a normal function except that it contains [`yield`](https://docs.python.org/3/reference/simple_stmts.html#yield) expressions for producing a series of values usable in a for-loop or that can be retrieved one at a time with the [`next()`](https://docs.python.org/3/library/functions.html#next "next") function.
 
-Usually refers to a generator function, but may refer to a *generator iterator* in some contexts. In cases where the intended meaning isn’t clear, using the full terms avoids ambiguity.
+Usually refers to a generator function, but may refer to a *generator iterator* in some contexts. In cases where the intended meaning isn't clear, using the full terms avoids ambiguity.
 
 **Generator Types**:
 
-Python’s [generator](https://docs.python.org/3/glossary.html#term-generator)s provide a convenient way to implement the iterator protocol. If a container object’s [`__iter__()`](https://docs.python.org/3/library/stdtypes.html#iterator.__iter__ "iterator.__iter__") method is implemented as a generator, it will automatically return an iterator object (technically, a generator object) supplying the `__iter__()` and [`__next__()`](https://docs.python.org/3/reference/expressions.html#generator.__next__ "generator.__next__") methods. More information about generators can be found in the documentation for [the yield expression](https://docs.python.org/3/reference/expressions.html#yieldexpr).
+Python's [generator](https://docs.python.org/3/glossary.html#term-generator)s provide a convenient way to implement the iterator protocol. If a container object's [`__iter__()`](https://docs.python.org/3/library/stdtypes.html#iterator.__iter__ "iterator.__iter__") method is implemented as a generator, it will automatically return an iterator object (technically, a generator object) supplying the `__iter__()` and [`__next__()`](https://docs.python.org/3/reference/expressions.html#generator.__next__ "generator.__next__") methods. More information about generators can be found in the documentation for [the yield expression](https://docs.python.org/3/reference/expressions.html#yieldexpr).
 
 **Generators**:
 

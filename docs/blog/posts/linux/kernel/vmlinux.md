@@ -9,7 +9,7 @@ categories:
 comments: true
 ---
 
-The kernel is the core of the Linux system. It is the first component loaded into the memory upon boot up. It provides a user interface that allows us to interact with the operating system and remains in the memory throughout the computer’s use.
+The kernel is the core of the Linux system. It is the first component loaded into the memory upon boot up. It provides a user interface that allows us to interact with the operating system and remains in the memory throughout the computer's use.
 
 <!-- more -->
 
@@ -19,7 +19,7 @@ The kernel is the core of the Linux system. It is the first component loaded int
 
 ## vmlinux
 
-A kernel image is a file with the binary representation of the kernel code and other components. When we compile a custom kernel, we can produce it into one of the following kernel images. The original, uncompressed Linux kernel image is called `vmlinux`. vmlinux is the kernel in a uncompressed and *non-bootable* form. It’s the intermediate step to producing `vmlinuz`.
+A kernel image is a file with the binary representation of the kernel code and other components. When we compile a custom kernel, we can produce it into one of the following kernel images. The original, uncompressed Linux kernel image is called `vmlinux`. vmlinux is the kernel in a uncompressed and *non-bootable* form. It's the intermediate step to producing `vmlinuz`.
 
 > The *`vm`* preceding the Linux stands for *virtual memory*. In Linux, we can use a portion of the hard disk space as virtual memory, hence the name `vm`.
 
@@ -27,7 +27,7 @@ In most cases, vmlinux is used to develop kernels, debug, and analyze them. The 
 
 Kernel image formats differ based on compression, architecture, and specific use cases.
 
-- `zimage` refers to a distinct compressed kernel image file format. It’s designed for X86-based systems.
+- `zimage` refers to a distinct compressed kernel image file format. It's designed for X86-based systems.
 - `bzimage` refers to a compressed kernel image file used by the Linux bootloader to load and initialize the kernel during the system boot.
 - `uImage` is a kernel image dedicated to U-Boot, which is processed from a `zImage` using the [mkimage](https://manpages.ubuntu.com/manpages/bionic/man1/mkimage.1.html) tool. U-Boot uses uImage through the `bootm` command.
 

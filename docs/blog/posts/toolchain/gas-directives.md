@@ -102,7 +102,7 @@ Therefore, when declaring storage, it is important that double-words, words, and
 
 ### Setting and manipulating symbols
 
-The assembler provides support for setting and manipulating symbols which can then be used in other places within the program. The labels that can be assigned to assembly statements and directives are one type of symbol. The programmer can also declare other symbols and use them throughout the program. Such symbols may not have an actual storage location in memory, but they are included in the assembler’s symbol table, and can be used anywhere that their value is required.
+The assembler provides support for setting and manipulating symbols which can then be used in other places within the program. The labels that can be assigned to assembly statements and directives are one type of symbol. The programmer can also declare other symbols and use them throughout the program. Such symbols may not have an actual storage location in memory, but they are included in the assembler's symbol table, and can be used anywhere that their value is required.
 
 - `[.equ | .set] symbol, expression`: Sets the value of symbol to expression, similar to the C language `#define` directive.
 - `.equiv symbol, expression`: like `.equ` and `.set`, except that the assembler will signal an error if the symbol is already defined.

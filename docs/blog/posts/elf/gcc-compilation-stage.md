@@ -47,7 +47,7 @@ For a C source file they are the preprocessor and compiler `cc1`, the assembler 
     ![GCC_Architecture](../toolchain/images/GCC_Architecture.jpeg)
 </figure>
 
-[Developer Options](https://gcc.gnu.org/onlinedocs/gcc/Developer-Options.html): `-dumpspecs` : Print the compiler’s built-in [Spec Files](https://gcc.gnu.org/onlinedocs/gcc/Spec-Files.html):
+[Developer Options](https://gcc.gnu.org/onlinedocs/gcc/Developer-Options.html): `-dumpspecs` : Print the compiler's built-in [Spec Files](https://gcc.gnu.org/onlinedocs/gcc/Spec-Files.html):
 
 - cpp : Options to pass to the C preprocessor
 - cc1 : Options to pass to the C compiler
@@ -153,7 +153,7 @@ You can tell `gcc` to stop at a certain stage by passing options.
 
 After the preprocessing phase is complete, the source is ready to be compiled. The compilation phase takes the preprocessed code and translates it into assembly language.
 
-Why does the compilation phase produce assembly language and not machine code? This design decision doesn’t seem to make sense in the context of just one language (in this case, C), but it does when you think about all the other languages out there.
+Why does the compilation phase produce assembly language and not machine code? This design decision doesn't seem to make sense in the context of just one language (in this case, C), but it does when you think about all the other languages out there.
 
 We can intercept this assembly listing to view what the compiler itself is generating using the command-line option `–S`, e.g., invoking `gcc main.c -S`. GCC will then compile our program in main.c into an assembly listing and write it to the file `main.s`.
 
