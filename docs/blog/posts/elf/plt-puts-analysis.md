@@ -977,6 +977,10 @@ The *`GOT`*(Global Offset Table) is something like a socket, it connects the int
 
 Similar to how the global offset table redirects position-independent address calculations to absolute locations, the procedure linkage table(*`PLT`*) redirects position-independent function calls to absolute locations.
 
+The `PLT` consists entirely of stubs of a well-defined format, dedicated to directing calls from the `.text` section to the appropriate library location.
+
+> `.plt` is a code section that contains executable code, just like `.text`, while `.got` and `.got.plt` are both data section.
+
 The dynamic section `DT_PLTREL`(0000000000000014)=0x7 shows its type of reloc in PLT is `DT_RELA`.
 
 Relocation section `.rela.plt` defines five `R_AARCH64_JUMP_SLOT`s pointing to GOT entries with offest. The indexes of the dynamic symbols are 3,5,6,7,8.

@@ -190,6 +190,134 @@ The output of `objdump -f` shows that the BFD format specific flags are `EXEC_P,
     Total                 0x89a74
     ```
 
+The code models assume that an executable or shared library use an ELF file layout similar to the diagram below.
+
+[sysvabi64](https://github.com/ARM-software/abi-aa/blob/844a79fd4c77252a11342709e3b27b2c9f590cf1/sysvabi64/sysvabi64.rst) | 7 Code Models - Illustrative ELF file layout
+
+<figure markdown="span">
+    ![Illustrative ELF file layout](./images/sysvabi64-elf-layout.svg){: style="width:70%;height:70%"}
+    <figcaption>Illustrative ELF file layout</figcaption>
+</figure>
+
+### disassemble .plt
+
+Use objdump to disassemble `.plt` section.
+
+```bash
+$ objdump -j .plt -d b.out
+
+b.out:     file format elf64-littleaarch64
+
+
+Disassembly of section .plt:
+
+00000000004002a0 <.plt>:
+  4002a0:	d0000490 	adrp	x16, 492000 <.got.plt+0x18>
+  4002a4:	f9400211 	ldr	x17, [x16]
+  4002a8:	91000210 	add	x16, x16, #0x0
+  4002ac:	d61f0220 	br	x17
+  4002b0:	d0000490 	adrp	x16, 492000 <.got.plt+0x18>
+  4002b4:	f9400611 	ldr	x17, [x16, #8]
+  4002b8:	91002210 	add	x16, x16, #0x8
+  4002bc:	d61f0220 	br	x17
+  4002c0:	d0000490 	adrp	x16, 492000 <.got.plt+0x18>
+  4002c4:	f9400a11 	ldr	x17, [x16, #16]
+  4002c8:	91004210 	add	x16, x16, #0x10
+  4002cc:	d61f0220 	br	x17
+  4002d0:	d0000490 	adrp	x16, 492000 <.got.plt+0x18>
+  4002d4:	f9400e11 	ldr	x17, [x16, #24]
+  4002d8:	91006210 	add	x16, x16, #0x18
+  4002dc:	d61f0220 	br	x17
+  4002e0:	d0000490 	adrp	x16, 492000 <.got.plt+0x18>
+  4002e4:	f9401211 	ldr	x17, [x16, #32]
+  4002e8:	91008210 	add	x16, x16, #0x20
+  4002ec:	d61f0220 	br	x17
+  4002f0:	d0000490 	adrp	x16, 492000 <.got.plt+0x18>
+  4002f4:	f9401611 	ldr	x17, [x16, #40]
+  4002f8:	9100a210 	add	x16, x16, #0x28
+  4002fc:	d61f0220 	br	x17
+  400300:	d0000490 	adrp	x16, 492000 <.got.plt+0x18>
+  400304:	f9401a11 	ldr	x17, [x16, #48]
+  400308:	9100c210 	add	x16, x16, #0x30
+  40030c:	d61f0220 	br	x17
+```
+
+### relocations
+
+`readelf [-r|--relocs]`: display the relocations.
+
+```bash
+$ readelf -r b.out
+
+Relocation section '.rela.plt' at offset 0x1d8 contains 7 entries:
+  Offset          Info           Type           Sym. Value    Sym. Name + Addend
+000000492000  000000000408 R_AARCH64_IRELATI                    4161d0
+000000492008  000000000408 R_AARCH64_IRELATI                    4165e0
+000000492010  000000000408 R_AARCH64_IRELATI                    4390c0
+000000492018  000000000408 R_AARCH64_IRELATI                    416310
+000000492020  000000000408 R_AARCH64_IRELATI                    415650
+000000492028  000000000408 R_AARCH64_IRELATI                    4390c0
+000000492030  000000000408 R_AARCH64_IRELATI                    415650
+```
+
+The relocation type is `R_AARCH64_IRELATIVE` defined in /usr/include/elf.h:
+
+```c
+#define R_AARCH64_IRELATIVE     1032 /* 0x408: STT_GNU_IFUNC relocation.  */
+```
+
+### .got & .got.plt
+
+[sysvabi64](https://github.com/ARM-software/abi-aa/blob/844a79fd4c77252a11342709e3b27b2c9f590cf1/sysvabi64/sysvabi64.rst) | 9 Program Loading and Dynamic Linking
+
+**9.1 Dynamic Section**
+
+The generic tag `DT_PLTGOT` has a processor specific implementation. On AArch64 it is defined to be the address of the `.got.plt` section.
+
+**9.2 Global Offset Table**
+
+AArch64 splits the global offset table (GOT) into two sections:
+
+- `.got.plt` for code addresses accessed only from the Procedure Linkage Table (PLT).
+- `.got` all other addresses and offsets.
+
+The difference is that `.got.plt` is runtime-writable, while `.got` is not if you enable a defense against GOT overwriting attacks called `RELRO` (relocations read-only). To enable `RELRO`, you use the ld option `-z relro`. `RELRO` places `GOT` entries that must be runtime-writable for *lazy binding* in `.got.plt`, and all others in the read-only `.got` section.
+
+BTW, `.plt` is a code section that contains executable code, just like `.text`, while both `.got` and `.got.plt` are data section.
+
+Hexdump `.got` and `.got.plt`:
+
+```bash
+# hexdump .got
+$ got_offset=$(objdump -hw b.out | awk '/.got/ && !/.got.plt/ {print "0x"$6}')
+$ got_size=$(objdump -hw b.out | awk '/.got/ && !/.got.plt/ {print "0x"$3}')
+$ hexdump -v -s $got_offset -n $got_size -e '"%_ad\t" /8 "%016x\t" "\n"' b.out \
+| awk 'BEGIN{print "Offset\t\tAddress\t\t\t\tValue"} \
+{printf("%08x\t", $1); printf("%016x\t", $1+65536); print $2}'
+
+[...snip...]
+
+# hexdump .got.plt
+$ gotplt_offset=$(objdump -hw b.out | awk '/.got.plt/{print "0x"$6}')
+$ gotplt_size=$(objdump -hw b.out | awk '/.got.plt/{print "0x"$3}')
+$ hhexdump -v -s $gotplt_offset -n $gotplt_size -e '"%_ad\t" /8 "%016x\t" "\n"' b.out \
+| awk 'BEGIN{print "Offset\t\tAddress\t\t\t\tValue"} \
+{printf("%08x\t", $1); printf("%016x\t", $1+65536); print $2}'
+Offset		Address				Value
+00081fe8	0000000000091fe8	0000000000000000
+00081ff0	0000000000091ff0	0000000000000000
+00081ff8	0000000000091ff8	0000000000000000
+00082000	0000000000092000	00000000004002a0
+00082008	0000000000092008	00000000004002a0
+00082010	0000000000092010	00000000004002a0
+00082018	0000000000092018	00000000004002a0
+00082020	0000000000092020	00000000004002a0
+00082028	0000000000092028	00000000004002a0
+00082030	0000000000092030	00000000004002a0
+```
+
+From the fourth to the last entries of `.got.plt` are initialized with `00000000004002a0`, which represents the *first* PLT stub(PLT[0], PLT header) of the `.plt` section in segment.LOAD0.
+
 ## symbol table
 
 1. `readelf [-s|--syms|--symbols]`: Displays the entries in symbol table section of the file, if it has one. If a symbol has version information associated with it then this is displayed as well.

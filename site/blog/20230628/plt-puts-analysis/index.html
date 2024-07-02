@@ -2597,6 +2597,10 @@ The output extracts full binary information from the ELF header.</p>
 <p><a href="https://stackoverflow.com/questions/43048932/why-does-the-plt-exist-in-addition-to-the-got-instead-of-just-using-the-got">assembly - Why does the PLT exist in addition to the GOT, instead of just using the GOT? - Stack Overflow</a></p>
 <p>The <em><code>GOT</code></em>(Global Offset Table) is something like a socket, it connects the internal host and the external required.</p>
 <p>Similar to how the global offset table redirects position-independent address calculations to absolute locations, the procedure linkage table(<em><code>PLT</code></em>) redirects position-independent function calls to absolute locations.</p>
+<p>The <code>PLT</code> consists entirely of stubs of a well-defined format, dedicated to directing calls from the <code>.text</code> section to the appropriate library location.</p>
+<blockquote>
+<p><code>.plt</code> is a code section that contains executable code, just like <code>.text</code>, while <code>.got</code> and <code>.got.plt</code> are both data section.</p>
+</blockquote>
 <p>The dynamic section <code>DT_PLTREL</code>(0000000000000014)=0x7 shows its type of reloc in PLT is <code>DT_RELA</code>.</p>
 <p>Relocation section <code>.rela.plt</code> defines five <code>R_AARCH64_JUMP_SLOT</code>s pointing to GOT entries with offest. The indexes of the dynamic symbols are 3,5,6,7,8.</p>
 <p><code>rabin2 -i</code> puts things on the stage, e.g. No.8 0x00000630 points to the PLT stub routine &lt;puts@plt&gt;.</p>

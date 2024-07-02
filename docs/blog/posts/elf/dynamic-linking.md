@@ -30,7 +30,7 @@ In this article I'll explore the basic concepts associated with dynamic linking 
 
 ## Dynamic Linking with Shared Libraries
 
-Figure 7.6 Member object ﬁles in the libvector library.
+Figure 7.6 Member object files in the libvector library.
 
 === "addvec.c"
 
@@ -155,6 +155,11 @@ Lazy binding is based on the observation that a given program may import a large
 
 - Book I: ELF - 1. Object Files; 2. Program Loading and Dynamic Linking
 - Book III: SYSV - 2. Program Loading and Dynamic Linking
+
+[sysvabi64](https://github.com/ARM-software/abi-aa/blob/844a79fd4c77252a11342709e3b27b2c9f590cf1/sysvabi64/sysvabi64.rst) | 9 Program Loading and Dynamic Linking
+
+- 9.2 Global Offset Table (GOT)
+- 9.3 Procedure Linkage Table
 
 [Arm Assembly Internals and Reverse Engineering](https://www.amazon.com/Blue-Fox-Assembly-Internals-Analysis/dp/1119745306) | Chapter 2 ELF File Format Internals
 
