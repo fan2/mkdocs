@@ -44,6 +44,8 @@ String dump of section '.interp':
 
 On the other hand, the program has called dynamic symbols such as `printf` (optimized out va_list without format specifier, fallback to `puts`) which are exported by the dynamic shared library `libc.so`. This means that the DYN PIE ELF depends on `libc.so` to implement its functionality. In other words, there is a dependency that has to be resolved at run time.
 
+The first major dynamic table entry processed by the loader is the `NEEDED` entry.
+
 ```bash
 $ readelf -d a.out | head -4
 
@@ -62,7 +64,11 @@ libc.so.6
 1 library
 ```
 
+During program load, the loader also loads all of the program's shared-library dependencies, as well as any of their dependencies, recursively. The program tells the loader which libraries it depends on via the `NEEDED` directive in the dynamic section. Each dependency used by the program gets its own `NEEDED` directive, and the loader loads each one in turn. The `NEEDED` directive completes once the shared library is fully operational and ready for use.
+
 ## entry point
+
+When you write a C program, there's always a `main` function where your program begins. But if you inspect the entry point of the binary, you'll find that it doesn't point to `main`. Instead, it points to the beginning of `_start`.
 
 `objdump [-f|--file-headers]`: display the contents of the overall file header.
 The output indicates the file type and the start logic address.
@@ -119,6 +125,11 @@ vaddr=0x00000750 paddr=0x00000750 hvaddr=0x00010d90 hpaddr=0x00000d90 type=init
 vaddr=0x00000700 paddr=0x00000700 hvaddr=0x00010d98 hpaddr=0x00000d98 type=fini
 
 2 entrypoints
+
+# show address of main symbol
+$ rabin2 -M a.out
+[Main]
+vaddr=0x00000754 paddr=0x00000754
 ```
 
 You can extract the address of the entry point by means of one of the following commands.
@@ -180,7 +191,11 @@ nth paddr        size vaddr       vsize perm type        name
 27  0x00001aac   0xfa 0x00000000   0xfa ---- STRTAB      .shstrtab
 ```
 
+If the executable that you are reconstructing is statically linked, then you won't have the `.dynamic`, `.dynstr` or `.dynsym` sections.
+
 ### segments
+
+The `LOAD` headers tell the operating system and loader how to get the program's data into memory as efficiently as possible. Each `LOAD` header directs the loader to create a region of memory with a given size, memory permissions, and alignment criteria, and tells the loader which bytes in the file to place in that region.
 
 `rabin2 -SS` / `r2 > iSS`: segments
 
@@ -274,6 +289,15 @@ GNU_RELRO    .init_array .fini_array .dynamic .got
 ehdr         .comment
 ```
 
+`LOAD` segments are fundamentally about helping the operating system and loader get data from the ELF file into memory efficiently, and they map coarsely to the *logical* sections of the binary.
+
+An executable will always have at least one `PT_LOAD` type segment. This type of program header is describing a *loadable* segment, which means that the segment is going to be loaded or mapped into memory.
+
+For instance, an ELF executable with dynamic linking will generally contain the following two loadable segments:
+
+- The *text* segment for program code and
+- The *data* segment for global variables and dynamic linking information
+
 From the above output of the section to segment mapping we can see that the ALLOC|LOAD|READONLY CONTENTS(CODE or DATA) sections `.rela.dyn`, `.rela.plt` and `.plt` along with the `.text` have been classified into the first loadable text segment *`LOAD0`*.
 
 > The `.comment`, `.symtab`, `.strtab`, `.shstrtab` sections are counted in the LOAD0 segment?
@@ -285,7 +309,15 @@ As `readelf -lW a.out` indicated, both *LOAD0* and *LOAD1* should be aligned at 
 1. *LOAD0* is placed at the beginning of the ELF, the zero address is aligned naturally.
 2. *LOAD1* contains the sections 18\~23. To satisfy the alignment, vaddr is adjusted with an increment of 0x10000 against paddr.
 
+The `DYNAMIC` program header is used by the loader to dynamically link programs to their shared-library dependencies, as well as to apply *`relocations`* to a program to **fix up** program code and pointers if the program is loaded to a different address than it was expecting. We will look at the dynamic section and the linking and relocations process later in this chapter.
+
 ## dynamic section
+
+The dynamic segment is specific to executables that are dynamically linked and contains information necessary for the dynamic linker. This segment(includes only the `.dynamic` section) contains *tagged* values and pointers, including but not limited to the following:
+
+- List of shared libraries that are to be linked at runtime
+- The address/location of the Global offset table (`GOT`) discussed in the ELF Dynamic Linking section
+- Information about relocation entries
 
 Refer to [TIS - ELF v1.2](https://refspecs.linuxfoundation.org/elf/elf.pdf) | Book III: SYSV - 2. Program Loading and Dynamic Linking - Dynamic Linking - Dynamic Section.
 
@@ -421,6 +453,8 @@ offset		address				d_tag				d_un
 
 ### readelf
 
+The `.dynamic` section in the ELF file format is used to instruct the loader on how to link and prepare the binary for execution. These sections are processed by the loader, eventually resulting in a program that is ready to run. As with the other tables we've seen, each entry has a corresponding type, detailing how it is to be interpreted, and a location of where its data is, relative to the start of the dynamic section.
+
 `readelf [-d|--dynamic]`: display the dynamic section.
 
 ```bash
@@ -485,7 +519,14 @@ Check readelf's analysis against the raw hexdump above and the sections dumped b
 
 The linker relocates these sections by associating a memory location with each symbol definition and resolves symbol references by associating each reference with exactly one symbol definition from the symbol tables of its input relocatable object files.
 
-The `.symtab` section represents a symbol table with information about functions and global variables that are defined and referenced in the program. It contains an array of entries.
+**`Symbols`** are a symbolic reference to some type of data or code such as a global variable or function. For instance, the `puts` function is going to have a symbol entry that points to it in the dynamic symbol table `.dynsym`. In most shared libraries and dynamically linked executables, there exist *two* symbol tables. In the `readelf -S` output shown previously, you can see two sections: `.dynsym` and `.symtab`.
+
+Section Name | Contents                | load into memory? | strippable
+-------------|-------------------------|-------------------|-----------
+.symtab      | all symbols             | No                | Yes
+.dynsym      | dynamic linking symbols | Yes               | No
+
+Both `.symtab` and `.dynsym` contain an array of entries. Let's take a look at what an ELF symbol entry looks like for 64-bit ELF files:
 
 ```c title="Symbol table entry"
 // /usr/include/elf.h
@@ -521,14 +562,9 @@ typedef struct
 #define ELF64_ST_INFO(bind, type)   ELF32_ST_INFO ((bind), (type))
 ```
 
-The `.symtab` section holds a symbol table. Meanwhile, the `.dynsym` section holds the dynamic linking symbol table.
-
-Section Name | Contents                | load into memory? | strippable
--------------|-------------------------|-------------------|-----------
-.symtab      | all symbols             | No                | Yes
-.dynsym      | dynamic linking symbols | Yes               | No
-
 ### .dynstr
+
+The `.dynsym` and `.dynstr` sections are analogous to `.symtab` and `.strtab`, except that they contain symbols and strings needed for dynamic linking rather than static linking. Because the information in these sections is needed during dynamic linking, they cannot be stripped.
 
 This `.dynstr` section holds strings needed for dynamic linking, most commonly the strings that represent the names associated with symbol table entries.
 
@@ -647,7 +683,11 @@ $ nm -D a.out
 
 ## relocation entries
 
-Whenever the assembler encounters a reference to an object whose ultimate location is unknown, it generates a relocation entry that tells the linker how to modify the reference when it merges the object file into an executable.
+The second job of the loader, having loaded the program’s dependencies, is to perform the relocation and linking step. Relocation tables can be in one of two formats: `REL` or `RELA`, which differ slightly in their encoding.
+
+As you can see in the readelf dump of the example binary's section headers, there are several sections with names of the form `rela.*`. These sections are of type `SHT_RELA`, meaning that they contain information used by the linker for performing relocations. Essentially, each section of type `SHT_RELA` is a table of relocation entries, with each entry detailing a particular address where a relocation needs to be applied, as well as instructions on how to resolve the particular value that needs to be plugged in at this address.
+
+Whenever the assembler encounters a reference to an object whose ultimate location is unknown, it generates a `relocation entry` that tells the linker how to modify the reference when it merges the object file into an executable.
 
 ```c title="Relocation table entry"
 // /usr/include/elf.h
@@ -667,12 +707,36 @@ typedef struct
 #define ELF64_R_TYPE(i)         ((i) & 0xffffffff)
 #define ELF64_R_INFO(sym,type)      ((((Elf64_Xword) (sym)) << 32) + (type))
 
-/* LP64 AArch64 relocs.  */
+/* ELF64_R_TYPE enums: LP64 AArch64 relocs.  */
 
-#define R_AARCH64_GLOB_DAT     1025 /* 0x401: Create GOT entry.  */
-#define R_AARCH64_JUMP_SLOT    1026 /* 0x402: Create PLT entry.  */
-#define R_AARCH64_RELATIVE     1027 /* 0x403: Adjust by program base.  */
+#define R_AARCH64_ABS64         257 /* 0x101: Direct 64 bit. */
+#define R_AARCH64_ABS32         258 /* Direct 32 bit.  */
+#define R_AARCH64_ABS16         259 /* Direct 16-bit.  */
+#define R_AARCH64_PREL64        260 /* PC-relative 64-bit.  */
+#define R_AARCH64_PREL32        261 /* PC-relative 32-bit.  */
+#define R_AARCH64_PREL16        262 /* PC-relative 16-bit.  */
 
+#define R_AARCH64_LD_PREL_LO19      273 /* 0x111: PC-rel. LD imm. from bits 20:2.  */
+#define R_AARCH64_ADR_PREL_LO21     274 /* PC-rel. ADR imm. from bits 20:0.  */
+#define R_AARCH64_ADR_PREL_PG_HI21  275 /* Page-rel. ADRP imm. from 32:12.  */
+
+#define R_AARCH64_TSTBR14       279 /* 0x117: PC-rel. TBZ/TBNZ imm. from 15:2.  */
+#define R_AARCH64_CONDBR19      280 /* PC-rel. cond. br. imm. from 20:2. */
+#define R_AARCH64_JUMP26        282 /* PC-rel. B imm. from bits 27:2.  */
+#define R_AARCH64_CALL26        283 /* Likewise for CALL.  */
+
+#define R_AARCH64_GOTREL64      307 /* 0x133: GOT-relative 64-bit.  */
+#define R_AARCH64_GOTREL32      308 /* GOT-relative 32-bit.  */
+#define R_AARCH64_GOT_LD_PREL19 309 /* PC-rel. GOT off. load imm. 20:2.  */
+
+#define R_AARCH64_ADR_GOT_PAGE  311 /* 0x137: P-page-rel. GOT off. ADRP 32:12.  */
+
+#define R_AARCH64_COPY          1024 /* 0x400: Copy symbol at runtime.  */
+#define R_AARCH64_GLOB_DAT      1025 /* 0x401: Create GOT entry.  */
+#define R_AARCH64_JUMP_SLOT     1026 /* 0x402: Create PLT entry.  */
+#define R_AARCH64_RELATIVE      1027 /* 0x403: Adjust by program base.  */
+
+#define R_AARCH64_IRELATIVE     1032 /* 0x408: STT_GNU_IFUNC relocation.  */
 ```
 
 We know the following points from the previous analysis of the dynamic section.
@@ -688,13 +752,19 @@ readelf -R .got -R .rela.dyn -R .rela.plt -R .plt a.out
 objdump -j .got -j .rela.dyn -j .rela.plt -j .plt -s a.out
 ```
 
+There are two types of relocations here, called `R_AARCH64_GLOB_DAT` and `R_AARCH64_JUMP_SLOT`. While you may encounter many more types in the wild, these are some of the most common and important ones. What all relocation types have in common is that they specify an ***offset*** at which to apply the relocation.
+
+The details of how to compute the value to plug in at that offset differ per relocation type and are sometimes rather involved. You can find all these specifics in the ELF specification, though for normal binary analysis tasks you don't need to know them. Consider the following hexdump output to help you understand these concepts and internal details.
+
 ### hexdump sections
 
 As is shown in `readelf -d a.out`, `DT_RELAENT`=0x18, that means size of one RELA reloc is 24.
 
-Hexdump contents of the `.rela.plt`(DT_RELA) section, grouped by unit of giant-word, 3 units per line.
+> The count of relocation entries in section `.rela.dyn` is DT_RELASZ/DT_RELAENT=192/24=8.
 
-> Pay attention to the offset, it points to a `.got` entry.
+Hexdump contents of the `.rela.dyn`(DT_RELA) section, grouped by unit of giant-word, 3 units per line.
+
+> Pay attention to the offset, compare it to the hexdump of `.got`, it points to a `.got` entry.
 
 ```bash
 $ rd_offset=$(objdump -hw a.out | awk '/.rela.dyn/{print "0x"$6}')
@@ -727,9 +797,11 @@ $ hexdump -v -s $d_offset -n $d_size -e '"%07.7_ax  " 2/8 "%016x " "\n"' a.out
 
 ---
 
+The count of relocation entries in section `.rela.plt` is DT_PLTRELSZ/DT_RELAENT=120/24=5.
+
 Hexdump contents of section `.rela.plt`(DT_JMPREL) grouped by unit of giant-word, 3 units per line.
 
-> Pay attention to the offset, it points to a `.got` entry.
+> Pay attention to the offset, compare it to the hexdump of `.got`, it points to a `.got` entry.
 
 ```bash
 $ rp_offset=$(objdump -hw a.out | awk '/.rela.plt/{print "0x"$6}')
@@ -820,6 +892,8 @@ OFFSET           TYPE              VALUE
 0000000000010fc0 R_AARCH64_JUMP_SLOT  abort@GLIBC_2.17
 0000000000010fc8 R_AARCH64_JUMP_SLOT  puts@GLIBC_2.17
 ```
+
+The jump slots have their offset in the `.got` section and represent slots where the addresses of library functions can be plugged in.
 
 ## global offset table
 

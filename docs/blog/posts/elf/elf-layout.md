@@ -208,11 +208,11 @@ To view, dump, analyse or manipulate the object file and ELF file, you need [GNU
 
 The ELF header begins with a 16-byte sequence that describes the word size and byte ordering of the system that generated the file. The rest of the ELF header contains information that allows a linker to parse and interpret the object file. This includes the size of the ELF header, the object file type (e.g., relocatable, executable, or shared), the machine type (e.g., x86-64), the file offset of the section header table, and the size and number of entries in the section header table. The locations and sizes of the various sections are described by the section header table, which contains a fixed-size entry for each section in the object file.
 
-> The `e_shoff` member of `Elf32_Ehdr`/`Elf64_Ehdr` holds the offset to the section header table.
+> The `e_shoff` member of `ElfN_Ehdr`(N ∈ {32, 64}) holds the offset to the section header table.
 
 [TIS - ELF v1.2](https://refspecs.linuxfoundation.org/elf/elf.pdf) | Book I: ELF - 1. Object Files - Sections
 
-An object file's **`section header table`** lets one locate all the file's sections. Refer to struct `Elf32_Shdr`/`Elf64_Shdr` defined in /usr/include/elf.h.
+An object file's **`section header table`** lets one locate all the file's sections. Refer to struct `ElfN_Shdr`(N ∈ {32, 64}) defined in /usr/include/elf.h.
 
 1. `sh_type` defines Section Types.
 2. `sh_offset` holds the address to the section's first byte.

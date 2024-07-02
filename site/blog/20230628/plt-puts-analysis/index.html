@@ -1615,7 +1615,7 @@
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7h1.5Z"/></svg>
                           <span class="md-ellipsis">
                             
-                              21 min read
+                              25 min read
                             
                           </span>
                         </div>
@@ -1706,6 +1706,7 @@ The output indicates the executable file type and the interpreter.</p>
 </span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">  </span><span class="o">[</span><span class="w">     </span><span class="m">0</span><span class="o">]</span><span class="w">  </span>/lib/ld-linux-aarch64.so.1
 </span></code></pre></div>
 <p>On the other hand, the program has called dynamic symbols such as <code>printf</code> (optimized out va_list without format specifier, fallback to <code>puts</code>) which are exported by the dynamic shared library <code>libc.so</code>. This means that the DYN PIE ELF depends on <code>libc.so</code> to implement its functionality. In other words, there is a dependency that has to be resolved at run time.</p>
+<p>The first major dynamic table entry processed by the loader is the <code>NEEDED</code> entry.</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>$<span class="w"> </span>readelf<span class="w"> </span>-d<span class="w"> </span>a.out<span class="w"> </span><span class="p">|</span><span class="w"> </span>head<span class="w"> </span>-4
 </span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
 </span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>Dynamic<span class="w"> </span>section<span class="w"> </span>at<span class="w"> </span>offset<span class="w"> </span>0xda0<span class="w"> </span>contains<span class="w"> </span><span class="m">27</span><span class="w"> </span>entries:
@@ -1722,7 +1723,9 @@ The output indicates the executable file type and the interpreter.</p>
 </span><span id="__span-2-14"><a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>
 </span><span id="__span-2-15"><a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a><span class="m">1</span><span class="w"> </span>library
 </span></code></pre></div>
+<p>During program load, the loader also loads all of the program's shared-library dependencies, as well as any of their dependencies, recursively. The program tells the loader which libraries it depends on via the <code>NEEDED</code> directive in the dynamic section. Each dependency used by the program gets its own <code>NEEDED</code> directive, and the loader loads each one in turn. The <code>NEEDED</code> directive completes once the shared library is fully operational and ready for use.</p>
 <h2 id="entry_point">entry point<a class="headerlink" href="#entry_point" title="Permanent link">#</a></h2>
+<p>When you write a C program, there's always a <code>main</code> function where your program begins. But if you inspect the entry point of the binary, you'll find that it doesn't point to <code>main</code>. Instead, it points to the beginning of <code>_start</code>.</p>
 <p><code>objdump [-f|--file-headers]</code>: display the contents of the overall file header.<br />
 The output indicates the file type and the start logic address.</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>$<span class="w"> </span>objdump<span class="w"> </span>-f<span class="w"> </span>a.out
@@ -1769,6 +1772,11 @@ The output extracts full binary information from the ELF header.</p>
 </span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="nv">vaddr</span><span class="o">=</span>0x00000700<span class="w"> </span><span class="nv">paddr</span><span class="o">=</span>0x00000700<span class="w"> </span><span class="nv">hvaddr</span><span class="o">=</span>0x00010d98<span class="w"> </span><span class="nv">hpaddr</span><span class="o">=</span>0x00000d98<span class="w"> </span><span class="nv">type</span><span class="o">=</span>fini
 </span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>
 </span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="m">2</span><span class="w"> </span>entrypoints
+</span><span id="__span-5-11"><a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>
+</span><span id="__span-5-12"><a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a><span class="c1"># show address of main symbol</span>
+</span><span id="__span-5-13"><a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a>$<span class="w"> </span>rabin2<span class="w"> </span>-M<span class="w"> </span>a.out
+</span><span id="__span-5-14"><a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a><span class="o">[</span>Main<span class="o">]</span>
+</span><span id="__span-5-15"><a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a><span class="nv">vaddr</span><span class="o">=</span>0x00000754<span class="w"> </span><span class="nv">paddr</span><span class="o">=</span>0x00000754
 </span></code></pre></div>
 <p>You can extract the address of the entry point by means of one of the following commands.</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>rabin2<span class="w"> </span>-eq<span class="w"> </span>a.out
@@ -1820,7 +1828,9 @@ The output extracts full binary information from the ELF header.</p>
 </span><span id="__span-7-32"><a id="__codelineno-7-32" name="__codelineno-7-32" href="#__codelineno-7-32"></a><span class="m">26</span><span class="w">  </span>0x00001880<span class="w">  </span>0x22c<span class="w"> </span>0x00000000<span class="w">  </span>0x22c<span class="w"> </span>----<span class="w"> </span>STRTAB<span class="w">      </span>.strtab
 </span><span id="__span-7-33"><a id="__codelineno-7-33" name="__codelineno-7-33" href="#__codelineno-7-33"></a><span class="m">27</span><span class="w">  </span>0x00001aac<span class="w">   </span>0xfa<span class="w"> </span>0x00000000<span class="w">   </span>0xfa<span class="w"> </span>----<span class="w"> </span>STRTAB<span class="w">      </span>.shstrtab
 </span></code></pre></div>
+<p>If the executable that you are reconstructing is statically linked, then you won't have the <code>.dynamic</code>, <code>.dynstr</code> or <code>.dynsym</code> sections.</p>
 <h3 id="segments">segments<a class="headerlink" href="#segments" title="Permanent link">#</a></h3>
+<p>The <code>LOAD</code> headers tell the operating system and loader how to get the program's data into memory as efficiently as possible. Each <code>LOAD</code> header directs the loader to create a region of memory with a given size, memory permissions, and alignment criteria, and tells the loader which bytes in the file to place in that region.</p>
 <p><code>rabin2 -SS</code> / <code>r2 &gt; iSS</code>: segments</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>rabin2<span class="w"> </span>-SS<span class="w"> </span>a.out
 </span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="o">[</span>Segments<span class="o">]</span>
@@ -1899,6 +1909,13 @@ The output extracts full binary information from the ELF header.</p>
 </span><span id="__span-10-13"><a id="__codelineno-10-13" name="__codelineno-10-13" href="#__codelineno-10-13"></a>GNU_RELRO<span class="w">    </span>.init_array<span class="w"> </span>.fini_array<span class="w"> </span>.dynamic<span class="w"> </span>.got
 </span><span id="__span-10-14"><a id="__codelineno-10-14" name="__codelineno-10-14" href="#__codelineno-10-14"></a>ehdr<span class="w">         </span>.comment
 </span></code></pre></div>
+<p><code>LOAD</code> segments are fundamentally about helping the operating system and loader get data from the ELF file into memory efficiently, and they map coarsely to the <em>logical</em> sections of the binary.</p>
+<p>An executable will always have at least one <code>PT_LOAD</code> type segment. This type of program header is describing a <em>loadable</em> segment, which means that the segment is going to be loaded or mapped into memory.</p>
+<p>For instance, an ELF executable with dynamic linking will generally contain the following two loadable segments:</p>
+<ul>
+<li>The <em>text</em> segment for program code and</li>
+<li>The <em>data</em> segment for global variables and dynamic linking information</li>
+</ul>
 <p>From the above output of the section to segment mapping we can see that the ALLOC|LOAD|READONLY CONTENTS(CODE or DATA) sections <code>.rela.dyn</code>, <code>.rela.plt</code> and <code>.plt</code> along with the <code>.text</code> have been classified into the first loadable text segment <em><code>LOAD0</code></em>.</p>
 <blockquote>
 <p>The <code>.comment</code>, <code>.symtab</code>, <code>.strtab</code>, <code>.shstrtab</code> sections are counted in the LOAD0 segment?</p>
@@ -1909,7 +1926,14 @@ The output extracts full binary information from the ELF header.</p>
 <li><em>LOAD0</em> is placed at the beginning of the ELF, the zero address is aligned naturally.</li>
 <li><em>LOAD1</em> contains the sections 18~23. To satisfy the alignment, vaddr is adjusted with an increment of 0x10000 against paddr.</li>
 </ol>
+<p>The <code>DYNAMIC</code> program header is used by the loader to dynamically link programs to their shared-library dependencies, as well as to apply <em><code>relocations</code></em> to a program to <strong>fix up</strong> program code and pointers if the program is loaded to a different address than it was expecting. We will look at the dynamic section and the linking and relocations process later in this chapter.</p>
 <h2 id="dynamic_section">dynamic section<a class="headerlink" href="#dynamic_section" title="Permanent link">#</a></h2>
+<p>The dynamic segment is specific to executables that are dynamically linked and contains information necessary for the dynamic linker. This segment(includes only the <code>.dynamic</code> section) contains <em>tagged</em> values and pointers, including but not limited to the following:</p>
+<ul>
+<li>List of shared libraries that are to be linked at runtime</li>
+<li>The address/location of the Global offset table (<code>GOT</code>) discussed in the ELF Dynamic Linking section</li>
+<li>Information about relocation entries</li>
+</ul>
 <p>Refer to <a href="https://refspecs.linuxfoundation.org/elf/elf.pdf">TIS - ELF v1.2</a> | Book III: SYSV - 2. Program Loading and Dynamic Linking - Dynamic Linking - Dynamic Section.</p>
 <div class="language-c highlight"><span class="filename">Dynamic section entry</span><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="c1">// /usr/include/elf.h</span>
 </span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>
@@ -2030,6 +2054,7 @@ The output extracts full binary information from the ELF header.</p>
 </span><span id="__span-14-41"><a id="__codelineno-14-41" name="__codelineno-14-41" href="#__codelineno-14-41"></a>00000f80<span class="w">    </span>0000000000010f80<span class="w">    </span><span class="m">0000000000000000</span><span class="w">    </span><span class="m">0000000000000000</span>
 </span></code></pre></div>
 <h3 id="readelf">readelf<a class="headerlink" href="#readelf" title="Permanent link">#</a></h3>
+<p>The <code>.dynamic</code> section in the ELF file format is used to instruct the loader on how to link and prepare the binary for execution. These sections are processed by the loader, eventually resulting in a program that is ready to run. As with the other tables we've seen, each entry has a corresponding type, detailing how it is to be interpreted, and a location of where its data is, relative to the start of the dynamic section.</p>
 <p><code>readelf [-d|--dynamic]</code>: display the dynamic section.</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>$<span class="w"> </span>readelf<span class="w"> </span>-d<span class="w"> </span>a.out
 </span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>
@@ -2088,7 +2113,32 @@ The output extracts full binary information from the ELF header.</p>
 </div>
 <h2 id="dynamic_symbol">dynamic symbol<a class="headerlink" href="#dynamic_symbol" title="Permanent link">#</a></h2>
 <p>The linker relocates these sections by associating a memory location with each symbol definition and resolves symbol references by associating each reference with exactly one symbol definition from the symbol tables of its input relocatable object files.</p>
-<p>The <code>.symtab</code> section represents a symbol table with information about functions and global variables that are defined and referenced in the program. It contains an array of entries.</p>
+<p><strong><code>Symbols</code></strong> are a symbolic reference to some type of data or code such as a global variable or function. For instance, the <code>puts</code> function is going to have a symbol entry that points to it in the dynamic symbol table <code>.dynsym</code>. In most shared libraries and dynamically linked executables, there exist <em>two</em> symbol tables. In the <code>readelf -S</code> output shown previously, you can see two sections: <code>.dynsym</code> and <code>.symtab</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Section Name</th>
+<th>Contents</th>
+<th>load into memory?</th>
+<th>strippable</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>.symtab</td>
+<td>all symbols</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>.dynsym</td>
+<td>dynamic linking symbols</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+</tbody>
+</table>
+<p>Both <code>.symtab</code> and <code>.dynsym</code> contain an array of entries. Let's take a look at what an ELF symbol entry looks like for 64-bit ELF files:</p>
 <div class="language-c highlight"><span class="filename">Symbol table entry</span><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="c1">// /usr/include/elf.h</span>
 </span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>
 </span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a><span class="k">typedef</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">Elf64_Word</span><span class="p">;</span>
@@ -2121,32 +2171,8 @@ The output extracts full binary information from the ELF header.</p>
 </span><span id="__span-16-30"><a id="__codelineno-16-30" name="__codelineno-16-30" href="#__codelineno-16-30"></a><span class="cp">#define ELF64_ST_TYPE(val)      ELF32_ST_TYPE (val)</span>
 </span><span id="__span-16-31"><a id="__codelineno-16-31" name="__codelineno-16-31" href="#__codelineno-16-31"></a><span class="cp">#define ELF64_ST_INFO(bind, type)   ELF32_ST_INFO ((bind), (type))</span>
 </span></code></pre></div>
-<p>The <code>.symtab</code> section holds a symbol table. Meanwhile, the <code>.dynsym</code> section holds the dynamic linking symbol table.</p>
-<table>
-<thead>
-<tr>
-<th>Section Name</th>
-<th>Contents</th>
-<th>load into memory?</th>
-<th>strippable</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>.symtab</td>
-<td>all symbols</td>
-<td>No</td>
-<td>Yes</td>
-</tr>
-<tr>
-<td>.dynsym</td>
-<td>dynamic linking symbols</td>
-<td>Yes</td>
-<td>No</td>
-</tr>
-</tbody>
-</table>
 <h3 id="dynstr">.dynstr<a class="headerlink" href="#dynstr" title="Permanent link">#</a></h3>
+<p>The <code>.dynsym</code> and <code>.dynstr</code> sections are analogous to <code>.symtab</code> and <code>.strtab</code>, except that they contain symbols and strings needed for dynamic linking rather than static linking. Because the information in these sections is needed during dynamic linking, they cannot be stripped.</p>
 <p>This <code>.dynstr</code> section holds strings needed for dynamic linking, most commonly the strings that represent the names associated with symbol table entries.</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>$<span class="w"> </span>readelf<span class="w"> </span>-p<span class="w"> </span>.dynstr<span class="w"> </span>a.out
 </span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>
@@ -2330,7 +2356,9 @@ The output extracts full binary information from the ELF header.</p>
 </div>
 </div>
 <h2 id="relocation_entries">relocation entries<a class="headerlink" href="#relocation_entries" title="Permanent link">#</a></h2>
-<p>Whenever the assembler encounters a reference to an object whose ultimate location is unknown, it generates a relocation entry that tells the linker how to modify the reference when it merges the object file into an executable.</p>
+<p>The second job of the loader, having loaded the program’s dependencies, is to perform the relocation and linking step. Relocation tables can be in one of two formats: <code>REL</code> or <code>RELA</code>, which differ slightly in their encoding.</p>
+<p>As you can see in the readelf dump of the example binary's section headers, there are several sections with names of the form <code>rela.*</code>. These sections are of type <code>SHT_RELA</code>, meaning that they contain information used by the linker for performing relocations. Essentially, each section of type <code>SHT_RELA</code> is a table of relocation entries, with each entry detailing a particular address where a relocation needs to be applied, as well as instructions on how to resolve the particular value that needs to be plugged in at this address.</p>
+<p>Whenever the assembler encounters a reference to an object whose ultimate location is unknown, it generates a <code>relocation entry</code> that tells the linker how to modify the reference when it merges the object file into an executable.</p>
 <div class="language-c highlight"><span class="filename">Relocation table entry</span><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="c1">// /usr/include/elf.h</span>
 </span><span id="__span-22-2"><a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a>
 </span><span id="__span-22-3"><a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a><span class="cm">/* Relocation table entry with addend (in section of type SHT_RELA).  */</span>
@@ -2348,11 +2376,36 @@ The output extracts full binary information from the ELF header.</p>
 </span><span id="__span-22-15"><a id="__codelineno-22-15" name="__codelineno-22-15" href="#__codelineno-22-15"></a><span class="cp">#define ELF64_R_TYPE(i)         ((i) &amp; 0xffffffff)</span>
 </span><span id="__span-22-16"><a id="__codelineno-22-16" name="__codelineno-22-16" href="#__codelineno-22-16"></a><span class="cp">#define ELF64_R_INFO(sym,type)      ((((Elf64_Xword) (sym)) &lt;&lt; 32) + (type))</span>
 </span><span id="__span-22-17"><a id="__codelineno-22-17" name="__codelineno-22-17" href="#__codelineno-22-17"></a>
-</span><span id="__span-22-18"><a id="__codelineno-22-18" name="__codelineno-22-18" href="#__codelineno-22-18"></a><span class="cm">/* LP64 AArch64 relocs.  */</span>
+</span><span id="__span-22-18"><a id="__codelineno-22-18" name="__codelineno-22-18" href="#__codelineno-22-18"></a><span class="cm">/* ELF64_R_TYPE enums: LP64 AArch64 relocs.  */</span>
 </span><span id="__span-22-19"><a id="__codelineno-22-19" name="__codelineno-22-19" href="#__codelineno-22-19"></a>
-</span><span id="__span-22-20"><a id="__codelineno-22-20" name="__codelineno-22-20" href="#__codelineno-22-20"></a><span class="cp">#define R_AARCH64_GLOB_DAT     1025 </span><span class="cm">/* 0x401: Create GOT entry.  */</span>
-</span><span id="__span-22-21"><a id="__codelineno-22-21" name="__codelineno-22-21" href="#__codelineno-22-21"></a><span class="cp">#define R_AARCH64_JUMP_SLOT    1026 </span><span class="cm">/* 0x402: Create PLT entry.  */</span>
-</span><span id="__span-22-22"><a id="__codelineno-22-22" name="__codelineno-22-22" href="#__codelineno-22-22"></a><span class="cp">#define R_AARCH64_RELATIVE     1027 </span><span class="cm">/* 0x403: Adjust by program base.  */</span>
+</span><span id="__span-22-20"><a id="__codelineno-22-20" name="__codelineno-22-20" href="#__codelineno-22-20"></a><span class="cp">#define R_AARCH64_ABS64         257 </span><span class="cm">/* 0x101: Direct 64 bit. */</span>
+</span><span id="__span-22-21"><a id="__codelineno-22-21" name="__codelineno-22-21" href="#__codelineno-22-21"></a><span class="cp">#define R_AARCH64_ABS32         258 </span><span class="cm">/* Direct 32 bit.  */</span>
+</span><span id="__span-22-22"><a id="__codelineno-22-22" name="__codelineno-22-22" href="#__codelineno-22-22"></a><span class="cp">#define R_AARCH64_ABS16         259 </span><span class="cm">/* Direct 16-bit.  */</span>
+</span><span id="__span-22-23"><a id="__codelineno-22-23" name="__codelineno-22-23" href="#__codelineno-22-23"></a><span class="cp">#define R_AARCH64_PREL64        260 </span><span class="cm">/* PC-relative 64-bit.  */</span>
+</span><span id="__span-22-24"><a id="__codelineno-22-24" name="__codelineno-22-24" href="#__codelineno-22-24"></a><span class="cp">#define R_AARCH64_PREL32        261 </span><span class="cm">/* PC-relative 32-bit.  */</span>
+</span><span id="__span-22-25"><a id="__codelineno-22-25" name="__codelineno-22-25" href="#__codelineno-22-25"></a><span class="cp">#define R_AARCH64_PREL16        262 </span><span class="cm">/* PC-relative 16-bit.  */</span>
+</span><span id="__span-22-26"><a id="__codelineno-22-26" name="__codelineno-22-26" href="#__codelineno-22-26"></a>
+</span><span id="__span-22-27"><a id="__codelineno-22-27" name="__codelineno-22-27" href="#__codelineno-22-27"></a><span class="cp">#define R_AARCH64_LD_PREL_LO19      273 </span><span class="cm">/* 0x111: PC-rel. LD imm. from bits 20:2.  */</span>
+</span><span id="__span-22-28"><a id="__codelineno-22-28" name="__codelineno-22-28" href="#__codelineno-22-28"></a><span class="cp">#define R_AARCH64_ADR_PREL_LO21     274 </span><span class="cm">/* PC-rel. ADR imm. from bits 20:0.  */</span>
+</span><span id="__span-22-29"><a id="__codelineno-22-29" name="__codelineno-22-29" href="#__codelineno-22-29"></a><span class="cp">#define R_AARCH64_ADR_PREL_PG_HI21  275 </span><span class="cm">/* Page-rel. ADRP imm. from 32:12.  */</span>
+</span><span id="__span-22-30"><a id="__codelineno-22-30" name="__codelineno-22-30" href="#__codelineno-22-30"></a>
+</span><span id="__span-22-31"><a id="__codelineno-22-31" name="__codelineno-22-31" href="#__codelineno-22-31"></a><span class="cp">#define R_AARCH64_TSTBR14       279 </span><span class="cm">/* 0x117: PC-rel. TBZ/TBNZ imm. from 15:2.  */</span>
+</span><span id="__span-22-32"><a id="__codelineno-22-32" name="__codelineno-22-32" href="#__codelineno-22-32"></a><span class="cp">#define R_AARCH64_CONDBR19      280 </span><span class="cm">/* PC-rel. cond. br. imm. from 20:2. */</span>
+</span><span id="__span-22-33"><a id="__codelineno-22-33" name="__codelineno-22-33" href="#__codelineno-22-33"></a><span class="cp">#define R_AARCH64_JUMP26        282 </span><span class="cm">/* PC-rel. B imm. from bits 27:2.  */</span>
+</span><span id="__span-22-34"><a id="__codelineno-22-34" name="__codelineno-22-34" href="#__codelineno-22-34"></a><span class="cp">#define R_AARCH64_CALL26        283 </span><span class="cm">/* Likewise for CALL.  */</span>
+</span><span id="__span-22-35"><a id="__codelineno-22-35" name="__codelineno-22-35" href="#__codelineno-22-35"></a>
+</span><span id="__span-22-36"><a id="__codelineno-22-36" name="__codelineno-22-36" href="#__codelineno-22-36"></a><span class="cp">#define R_AARCH64_GOTREL64      307 </span><span class="cm">/* 0x133: GOT-relative 64-bit.  */</span>
+</span><span id="__span-22-37"><a id="__codelineno-22-37" name="__codelineno-22-37" href="#__codelineno-22-37"></a><span class="cp">#define R_AARCH64_GOTREL32      308 </span><span class="cm">/* GOT-relative 32-bit.  */</span>
+</span><span id="__span-22-38"><a id="__codelineno-22-38" name="__codelineno-22-38" href="#__codelineno-22-38"></a><span class="cp">#define R_AARCH64_GOT_LD_PREL19 309 </span><span class="cm">/* PC-rel. GOT off. load imm. 20:2.  */</span>
+</span><span id="__span-22-39"><a id="__codelineno-22-39" name="__codelineno-22-39" href="#__codelineno-22-39"></a>
+</span><span id="__span-22-40"><a id="__codelineno-22-40" name="__codelineno-22-40" href="#__codelineno-22-40"></a><span class="cp">#define R_AARCH64_ADR_GOT_PAGE  311 </span><span class="cm">/* 0x137: P-page-rel. GOT off. ADRP 32:12.  */</span>
+</span><span id="__span-22-41"><a id="__codelineno-22-41" name="__codelineno-22-41" href="#__codelineno-22-41"></a>
+</span><span id="__span-22-42"><a id="__codelineno-22-42" name="__codelineno-22-42" href="#__codelineno-22-42"></a><span class="cp">#define R_AARCH64_COPY          1024 </span><span class="cm">/* 0x400: Copy symbol at runtime.  */</span>
+</span><span id="__span-22-43"><a id="__codelineno-22-43" name="__codelineno-22-43" href="#__codelineno-22-43"></a><span class="cp">#define R_AARCH64_GLOB_DAT      1025 </span><span class="cm">/* 0x401: Create GOT entry.  */</span>
+</span><span id="__span-22-44"><a id="__codelineno-22-44" name="__codelineno-22-44" href="#__codelineno-22-44"></a><span class="cp">#define R_AARCH64_JUMP_SLOT     1026 </span><span class="cm">/* 0x402: Create PLT entry.  */</span>
+</span><span id="__span-22-45"><a id="__codelineno-22-45" name="__codelineno-22-45" href="#__codelineno-22-45"></a><span class="cp">#define R_AARCH64_RELATIVE      1027 </span><span class="cm">/* 0x403: Adjust by program base.  */</span>
+</span><span id="__span-22-46"><a id="__codelineno-22-46" name="__codelineno-22-46" href="#__codelineno-22-46"></a>
+</span><span id="__span-22-47"><a id="__codelineno-22-47" name="__codelineno-22-47" href="#__codelineno-22-47"></a><span class="cp">#define R_AARCH64_IRELATIVE     1032 </span><span class="cm">/* 0x408: STT_GNU_IFUNC relocation.  */</span>
 </span></code></pre></div>
 <p>We know the following points from the previous analysis of the dynamic section.</p>
 <ol>
@@ -2364,11 +2417,16 @@ The output extracts full binary information from the ELF header.</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>readelf<span class="w"> </span>-R<span class="w"> </span>.got<span class="w"> </span>-R<span class="w"> </span>.rela.dyn<span class="w"> </span>-R<span class="w"> </span>.rela.plt<span class="w"> </span>-R<span class="w"> </span>.plt<span class="w"> </span>a.out
 </span><span id="__span-23-2"><a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a>objdump<span class="w"> </span>-j<span class="w"> </span>.got<span class="w"> </span>-j<span class="w"> </span>.rela.dyn<span class="w"> </span>-j<span class="w"> </span>.rela.plt<span class="w"> </span>-j<span class="w"> </span>.plt<span class="w"> </span>-s<span class="w"> </span>a.out
 </span></code></pre></div>
+<p>There are two types of relocations here, called <code>R_AARCH64_GLOB_DAT</code> and <code>R_AARCH64_JUMP_SLOT</code>. While you may encounter many more types in the wild, these are some of the most common and important ones. What all relocation types have in common is that they specify an <strong><em>offset</em></strong> at which to apply the relocation.</p>
+<p>The details of how to compute the value to plug in at that offset differ per relocation type and are sometimes rather involved. You can find all these specifics in the ELF specification, though for normal binary analysis tasks you don't need to know them. Consider the following hexdump output to help you understand these concepts and internal details.</p>
 <h3 id="hexdump_sections">hexdump sections<a class="headerlink" href="#hexdump_sections" title="Permanent link">#</a></h3>
 <p>As is shown in <code>readelf -d a.out</code>, <code>DT_RELAENT</code>=0x18, that means size of one RELA reloc is 24.</p>
-<p>Hexdump contents of the <code>.rela.plt</code>(DT_RELA) section, grouped by unit of giant-word, 3 units per line.</p>
 <blockquote>
-<p>Pay attention to the offset, it points to a <code>.got</code> entry.</p>
+<p>The count of relocation entries in section <code>.rela.dyn</code> is DT_RELASZ/DT_RELAENT=192/24=8.</p>
+</blockquote>
+<p>Hexdump contents of the <code>.rela.dyn</code>(DT_RELA) section, grouped by unit of giant-word, 3 units per line.</p>
+<blockquote>
+<p>Pay attention to the offset, compare it to the hexdump of <code>.got</code>, it points to a <code>.got</code> entry.</p>
 </blockquote>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>$<span class="w"> </span><span class="nv">rd_offset</span><span class="o">=</span><span class="k">$(</span>objdump<span class="w"> </span>-hw<span class="w"> </span>a.out<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;/.rela.dyn/{print &quot;0x&quot;$6}&#39;</span><span class="k">)</span>
 </span><span id="__span-24-2"><a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a>$<span class="w"> </span><span class="nv">rd_size</span><span class="o">=</span><span class="k">$(</span>objdump<span class="w"> </span>-hw<span class="w"> </span>a.out<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;/.rela.dyn/{print &quot;0x&quot;$3}&#39;</span><span class="k">)</span>
@@ -2394,9 +2452,10 @@ The output extracts full binary information from the ELF header.</p>
 </span><span id="__span-25-6"><a id="__codelineno-25-6" name="__codelineno-25-6" href="#__codelineno-25-6"></a><span class="m">0001000</span><span class="w">  </span><span class="m">0000000000000000</span><span class="w"> </span><span class="m">0000000000011008</span>
 </span></code></pre></div>
 <hr />
+<p>The count of relocation entries in section <code>.rela.plt</code> is DT_PLTRELSZ/DT_RELAENT=120/24=5.</p>
 <p>Hexdump contents of section <code>.rela.plt</code>(DT_JMPREL) grouped by unit of giant-word, 3 units per line.</p>
 <blockquote>
-<p>Pay attention to the offset, it points to a <code>.got</code> entry.</p>
+<p>Pay attention to the offset, compare it to the hexdump of <code>.got</code>, it points to a <code>.got</code> entry.</p>
 </blockquote>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-26-1"><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a>$<span class="w"> </span><span class="nv">rp_offset</span><span class="o">=</span><span class="k">$(</span>objdump<span class="w"> </span>-hw<span class="w"> </span>a.out<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;/.rela.plt/{print &quot;0x&quot;$6}&#39;</span><span class="k">)</span>
 </span><span id="__span-26-2"><a id="__codelineno-26-2" name="__codelineno-26-2" href="#__codelineno-26-2"></a>$<span class="w"> </span><span class="nv">rp_size</span><span class="o">=</span><span class="k">$(</span>objdump<span class="w"> </span>-hw<span class="w"> </span>a.out<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;/.rela.plt/{print &quot;0x&quot;$3}&#39;</span><span class="k">)</span>
@@ -2473,6 +2532,7 @@ The output extracts full binary information from the ELF header.</p>
 </span><span id="__span-29-18"><a id="__codelineno-29-18" name="__codelineno-29-18" href="#__codelineno-29-18"></a>0000000000010fc0<span class="w"> </span>R_AARCH64_JUMP_SLOT<span class="w">  </span>abort@GLIBC_2.17
 </span><span id="__span-29-19"><a id="__codelineno-29-19" name="__codelineno-29-19" href="#__codelineno-29-19"></a><span class="hll">0000000000010fc8<span class="w"> </span>R_AARCH64_JUMP_SLOT<span class="w">  </span>puts@GLIBC_2.17
 </span></span></code></pre></div>
+<p>The jump slots have their offset in the <code>.got</code> section and represent slots where the addresses of library functions can be plugged in.</p>
 <h2 id="global_offset_table">global offset table<a class="headerlink" href="#global_offset_table" title="Permanent link">#</a></h2>
 <p>The global offset table (<em><code>GOT</code></em>) is created by the static linker in response to GOT generating relocations. See <a href="https://github.com/ARM-software/abi-aa/blob/main/aaelf64/aaelf64.rst">AAELF64</a> Relocation operations for more information.</p>
 <p>AArch64 splits the global offset table (GOT) into two sections:</p>
@@ -2793,7 +2853,7 @@ The output extracts full binary information from the ELF header.</p>
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../../20230627/symbol-resolution-relocation/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Symbol resolution &amp; Relocation">
+          <a href="../../20230627/symbol-resolution-relocation/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Symbol resolution &amp; relocation">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
@@ -2803,7 +2863,7 @@ The output extracts full binary information from the ELF header.</p>
                 Previous
               </span>
               <div class="md-ellipsis">
-                Symbol resolution & Relocation
+                Symbol resolution & relocation
               </div>
             </div>
           </a>

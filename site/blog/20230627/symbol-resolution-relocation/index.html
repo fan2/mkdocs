@@ -26,7 +26,7 @@
     
     
       
-        <title>Symbol resolution & Relocation - ElseWhere</title>
+        <title>Symbol resolution & relocation - ElseWhere</title>
       
     
     
@@ -123,7 +123,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Symbol resolution & Relocation
+              Symbol resolution & relocation
             
           </span>
         </div>
@@ -1328,21 +1328,45 @@
     </span>
   </a>
   
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#resolution" class="md-nav__link">
+    <nav class="md-nav" aria-label="Symbols">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#symbol_table" class="md-nav__link">
     <span class="md-ellipsis">
-      Resolution
+      Symbol table
     </span>
   </a>
   
 </li>
+        
+          <li class="md-nav__item">
+  <a href="#symbol_resolution" class="md-nav__link">
+    <span class="md-ellipsis">
+      Symbol resolution
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#symbol_relocation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Symbol relocation
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
       
         <li class="md-nav__item">
-  <a href="#relocation" class="md-nav__link">
+  <a href="#references" class="md-nav__link">
     <span class="md-ellipsis">
-      Relocation
+      references
     </span>
   </a>
   
@@ -1426,7 +1450,7 @@
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7h1.5Z"/></svg>
                           <span class="md-ellipsis">
                             
-                              6 min read
+                              9 min read
                             
                           </span>
                         </div>
@@ -1455,7 +1479,7 @@
         
 
 
-  <h1>Symbol resolution & Relocation</h1>
+  <h1>Symbol resolution & relocation</h1>
 
 <p>In this article I'll explore the basic concepts associated with static linking - symbol resolution and relocation.</p>
 <!-- more -->
@@ -1469,32 +1493,32 @@
 <li>7.7: Relocation</li>
 </ul>
 <h2 id="static_linking">Static Linking<a class="headerlink" href="#static_linking" title="Permanent link">#</a></h2>
-<p>Static linkers such as the Linux <code>ld</code> program take as input a collection of <em>relocatable</em> object files and command-line arguments and generate as output a fully linked executable object file that can be loaded and run. The input relocatable object files consist of various code and data sections, where each section is a contiguous sequence of bytes. Instructions are in one section, initialized global variables are in another section, and uninitialized variables are in yet another section.</p>
+<p>Static linkers such as the Linux <code>ld</code> program take as input a collection of <em>relocatable</em> object files and command-line arguments and generate as output a fully linked <em>executable</em> object file that can be loaded and run. The input relocatable object files consist of various code and data sections, where each section is a contiguous sequence of bytes. Instructions are in one section(e.g. <code>.text</code>), initialized global variables are in another section(e.g. <code>.data</code>), and uninitialized variables are in yet another section(e.g. <code>.bss</code>).</p>
 <p>To build the executable, the linker must perform two main tasks:</p>
 <ol>
 <li>
-<p><strong><code>Symbol resolution</code></strong>. Object files define and reference <code>symbols</code>, where each symbol corresponds to a function, a global variable, or a static variable (i.e., any C variable declared with the <em>static</em> attribute). The purpose of symbol resolution is to <strong>associate</strong> each symbol reference with exactly one symbol definition.</p>
+<p><strong><code>Symbol resolution</code></strong>. Object files define and reference <code>symbols</code>, where each symbol corresponds to a function, a global variable, or a static variable (i.e., any C variable declared with the <mark>static</mark> attribute). The purpose of symbol resolution is to <strong>associate</strong> each symbol reference with exactly one symbol definition.</p>
 </li>
 <li>
-<p><strong><code>Relocation</code></strong>. Compilers and assemblers generate code and data sections that start at address 0. The linker <strong>relocates</strong> these sections by <em>associating</em> a memory location with each symbol definition, and then <em>modifying</em> all of the references to those symbols so that they point to this memory location. The linker blindly performs these relocations using detailed instructions, generated by the assembler, called <code>relocation entries</code>.</p>
+<p><strong><code>Relocation</code></strong>. Compilers and assemblers generate code and data sections that start at address 0. The linker <strong>relocates</strong> these sections by <em>associating</em> a memory location with each symbol definition, and then <em>modifying</em> all of the references to those symbols so that they point to this memory location. The linker blindly performs these relocations using detailed instructions, generated by the assembler, called <em><code>relocation entries</code></em>.</p>
 </li>
 </ol>
-<p>The sections that follow describe these tasks in more detail. As you read, keep in mind some basic facts about linkers: Object files are merely collections of blocks of bytes. Some of these blocks contain program code, others contain program data, and others contain data structures that guide the linker and loader. A linker <strong>concatenates</strong> blocks together, decides on run-time locations for the concatenated blocks, and <strong>modifies</strong> various locations within the code and data blocks. Linkers have minimal understanding of the target machine. The compilers and assemblers that generate the object files have already done most of the work.</p>
+<p>The sections that follow describe these tasks in more detail. As you read, keep in mind some basic facts about linkers: <ins>Object files are merely collections of blocks of bytes</ins>. Some of these blocks contain program code, others contain program data, and others contain data structures that <em>guide</em> the linker and loader. A linker <strong>concatenates</strong> blocks together, decides on run-time locations for the concatenated blocks, and <strong>modifies</strong> various locations within the code and data blocks. Linkers have minimal understanding of the target machine. The compilers and assemblers that generate the object files have already done most of the work.</p>
 <h2 id="object_files">Object Files<a class="headerlink" href="#object_files" title="Permanent link">#</a></h2>
 <p>Object files come in three forms:</p>
 <ol>
 <li>
-<p><em><code>Relocatable object file</code></em>. Contains binary code and data in a form that can be combined with other relocatable object files at compile time to create an executable object file.</p>
+<p><em><code>Relocatable object file</code></em>. Contains binary code and data in a form that can be <em>combined</em> with other relocatable object files at compile time to create an executable object file.</p>
 </li>
 <li>
-<p><em><code>Executable object file</code></em>. Contains binary code and data in a form that can be copied directly into memory and executed.</p>
+<p><em><code>Executable object file</code></em>. Contains binary code and data in a form that can be <em>copied</em> directly into memory and <em>executed</em>.</p>
 </li>
 <li>
-<p><em><code>Shared object file</code></em>. A special type of relocatable object file that can be loaded into memory and linked dynamically, at either load time or run time.</p>
+<p><em><code>Shared object file</code></em>. A special type of relocatable object file that can be <em>loaded</em> into memory and <em>linked</em> dynamically, at either load time or run time.</p>
 </li>
 </ol>
-<p>Compilers and assemblers generate relocatable object files (including <em>shared</em> object files). Linkers generate executable object files. Technically, an <em>object module</em> is a sequence of bytes, and an <em>object file</em> is an object module stored on disk in a file. However, we will use these terms interchangeably.</p>
-<p>Object files are organized according to specific <em>object file formats</em>, which vary from system to system. The first Unix systems from Bell Labs used the <code>a.out</code> format. (To this day, executables are still referred to as <code>a.out</code> files.) Windows uses the Portable Executable (<code>PE</code>) format. Mac OS-X uses the <code>Mach-O</code> format. Modern x86-64 Linux and Unix systems use Executable and Linkable Format (<code>ELF</code>). Although our discussion will focus on ELF, the basic concepts are similar, regardless of the particular format.</p>
+<p>Compilers and assemblers generate <em>relocatable</em> object files (including <em>shared</em> object files). Linkers generate <em>executable</em> object files. Technically, an <em><code>object module</code></em> is a sequence of bytes, and an <em><code>object file</code></em> is an object module stored on disk in a file. However, we will use these terms interchangeably.</p>
+<p>Object files are organized according to specific <em>object file formats</em>, which vary from system to system. The first Unix systems from Bell Labs used the <code>a.out</code> format. (To this day, executables are still referred to as <code>a.out</code> files.) Windows uses the Portable Executable (<code>PE</code>) format. Mac OS-X uses the <code>Mach-O</code> format. Modern x86-64 Linux and Unix systems use Executable and Linkable Format (<code>ELF</code>). Although our discussion will focus on <a href="../../20230616/elf-layout/">ELF</a>, the basic concepts are similar, regardless of the particular format.</p>
 <table>
 <thead>
 <tr>
@@ -1526,40 +1550,95 @@
 </tbody>
 </table>
 <p>For target files in Linux, from a technical point of view, the file suffix can be <em>arbitrary</em>, or no suffix at all, and the usual file suffix is just for ease of distinction. In fact, in the Linux system, the target file type is defined in a field in the <em>ELF</em> header(field <code>e_type</code> of Elf32_Ehdr/Elf64_Ehdr), and the system determines the true type of the target file by the value of this field, rather than by the extension of the target file.</p>
-<p>The generator in the above table refers specifically to the part directly involved in the process of generating the target file. For example, the <em>executable</em> target file generator is the linker, of course the compiler and assembler are also involved in this process, but the latter two are involved indirectly. Meanwhile, practice has shown that the <em>linker</em> is involved in the process of creating shareable object files. So we specify its generator as <em>linker</em> instead of the latter two.</p>
+<p>The generator in the above table refers specifically to the part <em>directly</em> involved in the process of generating the target file. For example, the <em>executable</em> target file generator is the linker, of course the compiler and assembler are also involved in this process, but the latter two are involved indirectly. Meanwhile, practice has shown that the <em>linker</em> is involved in the process of creating shareable object files. So we specify its generator as <em>linker</em> instead of the latter two.</p>
 <h2 id="symbols">Symbols<a class="headerlink" href="#symbols" title="Permanent link">#</a></h2>
-<p>Each relocatable object module, <em>m</em>, has a symbol table that contains information about the symbols that are defined and referenced by <em>m</em>. In the context of a linker, there are three different kinds of symbols:</p>
+<p>Each relocatable object module, <em>m</em>, has a symbol table that contains information about the symbols that are <ins>defined</ins> and <ins>referenced</ins> by <em>m</em>. In the context of a linker, there are three different kinds of symbols:</p>
 <ul>
 <li>
-<p><em><code>Global symbols</code></em> that are defined by module <em>m</em> and that can be referenced by other modules. Global linker symbols correspond to <em>nonstatic</em> C functions and global variables.</p>
+<p><em><code>Global symbols</code></em> that are <strong>defined</strong> by module <em>m</em> and that can be <strong>referenced</strong> by other modules. Global linker symbols correspond to <em>nonstatic</em> C functions and global variables.</p>
 </li>
 <li>
-<p><em><code>Global symbols</code></em> that are referenced by module <em>m</em> but defined by some other module. Such symbols are called <code>externals</code> and correspond to <em>nonstatic</em> C functions and global variables that are defined in other modules.</p>
+<p><em><code>Global symbols</code></em> that are <strong>referenced</strong> by module <em>m</em> but <strong>defined</strong> by some other module. Such symbols are called <mark>externals</mark> and correspond to <em>nonstatic</em> C functions and global variables that are defined in other modules.</p>
 </li>
 <li>
-<p><em><code>Local symbols</code></em> that are defined and referenced exclusively by module <em>m</em>. These correspond to <em>static</em> C functions and global variables that are defined with the static attribute. These symbols are visible anywhere within module <em>m</em>, but cannot be referenced by other modules.</p>
+<p><em><code>Local symbols</code></em> that are <strong>defined</strong> and <strong>referenced</strong> exclusively by module <em>m</em>. These correspond to <em>static</em> C functions and <em>global</em> variables that are defined with the <mark>static</mark> attribute. These symbols are visible anywhere within module <em>m</em>, but cannot be referenced by other modules.</p>
 </li>
 </ul>
 <div class="admonition note">
 <p class="admonition-title">local linker symbols vs. local program variables</p>
-<p>It is important to realize that local linker symbols are not the same as local program variables. The symbol table in <code>.symtab</code> does not contain any symbols that correspond to local nonstatic program variables. These are managed at run time on the stack and are not of interest to the linker.</p>
-<p>Interestingly, local procedure variables that are defined with the C static attribute are not managed on the <em>stack</em>. Instead, the compiler allocates space in <code>.data</code> or <code>.bss</code> for each definition and creates a local linker symbol in the symbol table with a unique name.</p>
+<p>It is important to realize that local linker symbols are not the same as local program variables. The symbol table in <code>.symtab</code> does not contain any symbols that correspond to local nonstatic program variables. These are managed at run time on the <em>stack</em> and are not of interest to the linker.</p>
+<p>Interestingly, local procedure variables that are defined with the C <em>static</em> attribute are not managed on the <em>stack</em>. Instead, the compiler allocates space in <code>.data</code> or <code>.bss</code> for each definition and creates a local linker symbol in the symbol table with a unique name.</p>
 </div>
-<h2 id="resolution">Resolution<a class="headerlink" href="#resolution" title="Permanent link">#</a></h2>
-<p>The linker <strong>resolves</strong> symbol references by <em>associating</em> each reference with exactly one symbol definition from the symbol tables of its input relocatable object files. Symbol resolution is straightforward for references to local symbols that are defined in the same module as the reference. The compiler allows <em>only</em> one definition of each local symbol per module. The compiler also ensures that static local variables, which get local linker symbols, have <em>unique</em> names.</p>
-<p>Resolving references to global symbols, however, is trickier. When the compiler encounters a symbol (either a variable or function name) that is <em>not</em> defined in the current module, it assumes that it is defined in some <em>other</em> module, generates a linker symbol table entry, and leaves it for the linker to handle. If the linker is unable to find a definition for the referenced symbol in any of its input modules, it prints an (often cryptic) error message and terminates.</p>
-<p>Symbol resolution for global symbols is also tricky because <em>multiple</em> object modules might define global symbols with the same name. In this case, the linker must either flag an error or somehow choose one of the definitions and discard the rest. The approach adopted by Linux systems involves cooperation between the compiler, assembler, and linker and can introduce some baffling bugs to the unwary programmer.</p>
-<h2 id="relocation">Relocation<a class="headerlink" href="#relocation" title="Permanent link">#</a></h2>
-<p>Once the linker has completed the symbol resolution step, it has <strong>associated</strong> each symbol reference in the code with exactly one symbol definition (i.e., a symbol table entry in one of its input object modules). At this point, the linker knows the exact sizes of the code and data sections in its input object modules. It is now ready to begin the relocation step, where it <strong>merges</strong> the input modules and assigns run-time addresses to each symbol. Relocation consists of two steps:</p>
+<h3 id="symbol_table">Symbol table<a class="headerlink" href="#symbol_table" title="Permanent link">#</a></h3>
+<p><a href="https://www.amazon.com/Learning-Binary-Analysis-elfmaster-ONeill/dp/1782167102">Learning Linux Binary Analysis</a> | Chapter 2: The ELF Binary Format - ELF symbols</p>
+<p><strong><code>Symbols</code></strong> are a symbolic reference to some type of data or code such as a global variable or function. For instance, the <code>puts</code> function is going to have a symbol entry that points to it in the dynamic symbol table <code>.dynsym</code>. In most shared libraries and dynamically linked executables, there exist <em>two</em> symbol tables. In the <code>readelf -S</code> output shown previously, you can see two sections: <code>.dynsym</code> and <code>.symtab</code>.</p>
+<p>The <code>.dynsym</code> contains global symbols that reference symbols from an <em>external</em> source, such as <code>libc</code> functions like <code>puts</code>, whereas the symbols contained in <code>.symtab</code> will <strong>contain</strong> all of the symbols in <code>.dynsym</code>, as well as the local symbols for the executable, such as global variables, or local functions that you have defined in your code. So <code>.symtab</code> contains all of the symbols, whereas <code>.dynsym</code> contains just the dynamic/global symbols.</p>
+<p>So the question is: Why have two symbol tables if <code>.symtab</code> already contains everything that's in <code>.dynsym</code>? If you check out the <code>readelf -S</code> output of an executable, you will see that some sections are marked <code>A</code> (ALLOC) or <code>WA</code> (WRITE/ ALLOC) or <code>AX</code> (ALLOC/EXEC). If you look at <code>.dynsym</code>, you will see that it is marked <code>ALLOC</code>, whereas <code>.symtab</code> has no flags.</p>
+<p><code>ALLOC</code> means that the section will be <strong>allocated</strong> at runtime and <strong>loaded</strong> into memory, and <code>.symtab</code> is not loaded into memory because it is not necessary for runtime.</p>
+<p>The <code>.dynsym</code> contains symbols that can <em>only</em> be resolved at runtime, and therefore they are the only symbols needed at runtime by the dynamic linker. So, while the <code>.dynsym</code> symbol table is necessary for the execution of dynamically linked executables, the <code>.symtab</code> symbol table exists <em>only</em> for debugging and linking purposes and is often stripped (removed) from production binaries to save space.</p>
+<table>
+<thead>
+<tr>
+<th>Section Name</th>
+<th>Contents</th>
+<th>load into memory?</th>
+<th>strippable</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>.symtab</td>
+<td>all symbols</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>.dynsym</td>
+<td>dynamic linking symbols</td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+</tbody>
+</table>
+<h3 id="symbol_resolution">Symbol resolution<a class="headerlink" href="#symbol_resolution" title="Permanent link">#</a></h3>
+<p>Most modern programs are not fully isolated units but rather depend on functions <em>imported</em> from system and other libraries. The linker <strong>resolves</strong> symbol references by <em>associating</em> each <ins>reference</ins> with exactly one symbol <ins>definition</ins> from the symbol tables of its input relocatable object files. Symbol resolution is straightforward for references to local symbols that are defined in the same module as the reference. The compiler allows <em>only</em> one definition of each local symbol per module. The compiler also ensures that static local variables, which get local linker symbols, have <em>unique</em> names.</p>
+<p><code>Resolving references</code> to global symbols, however, is trickier. When the compiler encounters a symbol (either a variable or function name) that is <em>not</em> defined in the current module, it assumes that it is defined in some <em>other</em> module, generates a linker symbol table entry, and leaves it for the linker to handle. If the linker is <strong><em>unable</em></strong> to find a definition for the referenced symbol in any of its input modules, it prints an (often cryptic) error message and terminates.</p>
+<p><code>Symbol resolution</code> for global symbols is also tricky because <strong><em>multiple</em></strong> object modules might define global symbols with the <strong><em>same</em></strong> name. In this case, the linker must either flag an error or somehow choose one of the definitions and discard the rest. The approach adopted by Linux systems involves cooperation between the compiler, assembler, and linker and can introduce some baffling bugs to the unwary programmer.</p>
+<h3 id="symbol_relocation">Symbol relocation<a class="headerlink" href="#symbol_relocation" title="Permanent link">#</a></h3>
+<p><strong><code>Relocation</code></strong> is the process of <strong>connecting</strong> symbolic references with symbolic definitions. For example, when a program calls a function, the associated call instruction must <strong>transfer</strong> control to the proper destination address at execution. In other words, relocatable files must have information that describes how to <strong>modify</strong> their section contents, thus allowing executable and shared object files to <strong>hold</strong> the right information for a process's program image.</p>
+<p>Relocations broadly fall into three broad categories:</p>
+<ol>
+<li><code>Static relocations</code>, which update pointers and dynamically rewrite instructions inside the program binary if the program has to be loaded at a nondefault address.</li>
+<li><code>Dynamic relocations</code>, which reference external symbols in a shared library dependency.</li>
+<li><code>Thread-local relocations</code>, which store the offset into the thread-local storage area for each thread that a given thread-local variable will use. We will look at thread-local storage later in this chapter.</li>
+</ol>
+<p>So far, our focus is on static relocations.</p>
+<p>Once the linker has completed the symbol <ins>resolution</ins> step, it has <strong>associated</strong> each symbol reference in the code with <em>exactly</em> one symbol definition (i.e., a symbol table entry in one of its input object modules). At this point, the linker knows the exact sizes of the code and data sections in its input object modules. It is now ready to begin the <ins>relocation</ins> step, where it <strong>merges</strong> the input modules and <strong>assigns</strong> run-time addresses to each symbol. Relocation consists of two steps:</p>
 <ol>
 <li>
-<p>Relocating sections and symbol definitions. In this step, the linker <strong>merges</strong> all sections of the same type into a new aggregate section of the same type. For example, the <code>.data</code> sections from the input modules are all merged into one section that will become the <code>.data</code> section for the output executable object file. The linker then assigns run-time memory addresses to the new aggregate sections, to each section defined by the input modules, and to each symbol defined by the input modules. When this step is complete, each instruction and global variable in the program has a unique run-time memory address.</p>
+<p>Relocating sections and symbol definitions. In this step, the linker <strong>merges</strong> all sections of the <em>same</em> type into a new <em>aggregate</em> section of the same type. For example, the <code>.data</code> sections from the input modules are all merged into one section that will become the <code>.data</code> section for the output executable object file. The linker then <strong>assigns</strong> run-time memory addresses to the new aggregate sections, to each section defined by the input modules, and to each symbol defined by the input modules. When this step is complete, each instruction and global variable in the program has a <em>unique</em> run-time memory address.</p>
 </li>
 <li>
-<p>Relocating symbol references within sections. In this step, the linker <strong>modifies</strong> every symbol reference in the bodies of the code and data sections so that they point to the correct run-time addresses. To perform this step, the linker relies on data structures in the relocatable object modules known as <code>relocation entries</code>, which we describe next.</p>
+<p>Relocating symbol references within sections. In this step, the linker <strong>modifies</strong> every symbol reference in the bodies of the code and data sections so that they <strong>point to</strong> the correct run-time addresses. To perform this step, the linker relies on data structures in the relocatable object modules known as <em><code>relocation entries</code></em>, which we describe next.</p>
 </li>
 </ol>
-<p>When an assembler generates an object module, it does not know where the code and data will ultimately be stored in memory. Nor does it know the locations of any externally defined functions or global variables that are referenced by the module. So whenever the assembler encounters a reference to an object whose ultimate location is unknown, it generates a relocation entry that tells the linker how to modify the reference when it merges the object file into an executable. Relocation entries for code are placed in <code>.rel.text</code>(<code>.rela.plt</code> for DYN). Relocation entries for data are placed in <code>.rel.data</code>(<code>.rela.dyn</code> for DYN).</p>
+<p>When an assembler generates an object module, it does not know <em>where</em> the code and data will ultimately be stored in memory. Nor does it know the <em>locations</em> of any externally defined functions or global variables that are referenced by the module. So whenever the assembler encounters a reference to an object whose ultimate location is unknown, it generates a <code>relocation entry</code> that tells the linker how to <strong>modify</strong> the reference when it merges the object file into an executable. Relocation entries for code are placed in <code>.rel.text</code>(<code>.rela.plt</code> for DYN). Relocation entries for data are placed in <code>.rel.data</code>(<code>.rela.dyn</code> for DYN).</p>
+<h2 id="references">references<a class="headerlink" href="#references" title="Permanent link">#</a></h2>
+<p><a href="https://refspecs.linuxfoundation.org/elf/elf.pdf">TIS - ELF v1.2</a></p>
+<ul>
+<li>Book I: ELF - 1. Object Files; 2. Program Loading and Dynamic Linking</li>
+<li>Book III: SYSV - 2. Program Loading and Dynamic Linking</li>
+</ul>
+<p><a href="https://www.amazon.com/Blue-Fox-Assembly-Internals-Analysis/dp/1119745306">Arm Assembly Internals and Reverse Engineering</a> | Chapter 2 ELF File Format Internals</p>
+<ul>
+<li>The Dynamic Section and Dynamic Loading - Program Relocations(Static, Dynamic, GOT, PLT).</li>
+</ul>
+<p><a href="https://www.amazon.com/Practical-Binary-Analysis-Instrumentation-Disassembly/dp/1593279124">Practical Binary Analysis</a> | Chapter 2: The ELF Format</p>
+<ul>
+<li>2.3.4 Lazy Binding and the <code>.plt</code>, <code>.got</code>, and <code>.got.plt</code> Sections</li>
+<li>2.3.5 The <code>.rel.*</code> and <code>.rela.*</code> Sections</li>
+<li>2.3.6 The <code>.dynamic</code> Section</li>
+</ul>
 
 
 
