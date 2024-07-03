@@ -345,6 +345,7 @@ machine  ARM aarch64
 type     DYN (Shared object file)
 bintype  elf
 
+# refer to checksec.sh, gdb-gef and gdb-pwndbg
 [0x000000000000]> i ~canary
 canary   false
 

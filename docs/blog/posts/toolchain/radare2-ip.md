@@ -734,3 +734,9 @@ A journey into Radare 2: [Part 1](https://www.megabeets.net/a-journey-into-radar
 [radare2逆向笔记](https://www.cnblogs.com/pannengzhi/p/play-with-radare2.html) - crackme0x00
 [Using Radare2 to patch a binary](https://rderik.com/blog/using-radare2-to-patch-a-binary/)
 [Understanding buffer overflows using Radare2](https://rderik.com/blog/understanding-buffer-overflows-using-radare2/)
+
+[无情剑客Burning](https://www.freebuf.com/author/%E6%97%A0%E6%83%85%E5%89%91%E5%AE%A2Burning?type=article):
+
+- [Radare2静态分析apk](https://cloud.tencent.com/developer/article/1755190)
+- [Radare静态分析so文件-ARM64](https://cloud.tencent.com/developer/article/1756806)
+- [Radare2和Frida结合实现破解](https://cloud.tencent.com/developer/article/1765439)

@@ -577,6 +577,38 @@ Continue until `entry0`(aka `_start`), refer to `entry point vaddr` and check:
 [0xffff98492c40]> dcu entry0
 INFO: Continue until 0xaaaadc760640 using 4 bpsize
 INFO: hit breakpoint at: 0xaaaadc760640
+
+# agi: imports graph
+# agr: references graph
+# agR: global references graph
+# agx: cross references graph
+[0xffff98492c40]> agc # function callgraph
+    ┌────────────────────┐
+    │  entry0            │
+    └────────────────────┘
+          t
+          │
+      ┌───┘
+      │
+┌─────────────────────────────┐
+│  sym.imp.__libc_start_main  │
+└─────────────────────────────┘
+
+[0xffff98492c40]> agC # global callgraph
+    ┌────────────────────┐                       ┌─────────────────────────────┐                                   ┌────────────────────┐                       ┌────────────────────┐
+    │  entry0            │                       │  sym.__do_global_dtors_aux  │                                   │  main              │                       │  sym._init         │
+    └────────────────────┘                       └─────────────────────────────┘                                   └────────────────────┘                       └────────────────────┘
+          t                                            t                                                                 t                                            t
+          │                                            │                                                                 │                                            │
+      ┌───┘                                            │                                                                 │                                            │
+      │                                 ┌──────────────│                                                                 │                                            │
+      │                                 │              └────────────────┐                                                │                                            │
+      │                                 │                               │                                 ┌──────────────│                                            │
+      │                                 │                               │                                 │              └──────────┐                                 │
+      │                                 │                               │                                 │                         │                                 │
+┌─────────────────────────────┐   ┌──────────────────────────┐    ┌────────────────────────────┐    ┌────────────────────┐    ┌────────────────────────────┐    ┌────────────────────┐
+│  sym.imp.__libc_start_main  │   │  sym.imp.__cxa_finalize  │    │  sym.deregister_tm_clones  │    │  sym.imp.printf    │    │  sym.imp.__stack_chk_fail  │    │  sym.call_weak_fn  │
+└─────────────────────────────┘   └──────────────────────────┘    └────────────────────────────┘    └────────────────────┘    └────────────────────────────┘    └────────────────────┘
 ```
 
 Type `?w $$` or `?w pc` to confirm what's in current address.

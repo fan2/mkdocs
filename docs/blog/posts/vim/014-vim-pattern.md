@@ -30,7 +30,7 @@ After doing a search in Vim, I get all the occurrences highlighted. How can I di
 
 [Clear Search Highlight in Vim — tech.serhatteker.com](https://tech.serhatteker.com/post/2020-03/clear-search-highlight-in-vim/)
 
-I personally use ’temporarily disable’ with key mapping. I mapped :noh to <esc> key. Since hitting <esc> is a very common and intuitive situtation in Vim.
+I personally use 'temporarily disable' with key mapping. I mapped :noh to <esc> key. Since hitting <esc> is a very common and intuitive situtation in Vim.
 
 ```vim
 " noh - no highlight

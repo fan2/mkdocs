@@ -236,7 +236,7 @@ Useful configuration variables:
 - Show opcode description: `e asm.describe = true`
 - Enable pseudo syntax: `e asm.pseudo = true`
 - Show symbol+delta before addr: `e!asm.symbol`
-- Don't show comments: `e!asm.comments`, see `e asm.cmt.` and `asm.usercomments`.
+- Don't show comments: `e!asm.comments`, see `e asm.cmt.` and `asm.cmt.user`.
 
 Write configuration to file for persistence:
 

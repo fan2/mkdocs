@@ -225,6 +225,79 @@ Usage: afv[rbs]   Function variables manipulation
 | afvx                          show function variable xrefs (same as afvR+afvW)
 ```
 
+## ag
+
+Type `?*~...` and ++enter++ , then do an instant apropos search with the keyword `graph`.
+
+```bash
+[0x004008e0]> ?*~...
+
+[...snip...]
+
+# type "graph" to apropos search
+0> graph|
+ - | V                       visual mode (Vv = func/var anal, VV = graph mode, ...)
+   | /g[g] [from]                 find all graph paths A to B (/gg follow jumps, see search.count and anal.depth)
+   | ag[?] [options]  draw graphs in various formats
+   | aarr       analyze all function reference graph to find more functions (EXPERIMENTAL)
+   | acg                                                        print inheritance ascii graph
+   | aeg [expr]               esil data flow graph
+   | aegf [expr] [register]   esil data flow graph filter
+   Usage: ag<graphtype><format> [addr]
+   Graph commands:
+   | aga[format]             data references graph
+   | agA[format]             global data references graph
+   | agc[format]             function callgraph
+   | agC[format]             global callgraph
+   | agd[format] [fcn addr]  diff graph
+   | agf[format]             basic blocks function graph
+   | agi[format]             imports graph
+   | agr[format]             references graph
+   | agR[format]             global references graph
+   | agx[format]             cross references graph
+   | agg[format]             custom graph
+   | agt[format]             tree map graph
+   | ag-                     clear the custom graph
+   | agn[?] title body       add a node to the custom graph
+   | age[?] title1 title2    add an edge to the custom graph
+   | d                       graphviz dot
+   | g                       graph Modelling Language (gml)
+   | w [path]                write to path or display graph image (see graph.gv.format)
+   | axg[j*] [addr]  show xrefs graph to reach current function
+   | axfg [addr]  display commands to generate graphs according to the xrefs
+   | axtg ([addr])  display commands to generate graphs according to the xrefs
+   | cg[?][afo] [file]        compare graphdiff current file and find similar functions
+   Usage: cg  Graph compare
+   | cgo        opcode-bytes code graph diff
+   | dmhbg [bin_num]                              Display double linked list graph of main_arena's bin [Under developemnt]
+   | dmhg [malloc_state]                          Display heap graph of a particular arena
+   | dmhg                                         Display heap graph of heap segment
+   | dtg                                graph call/ret trace
+   | dtg*                               graph in agn/age commands. use .dtg*;aggi for visual
+   | f= [glob]                 list range bars graphics with flag offsets and sizes
+   | fg[*] ([prefix])          construct a graph with the flag names
+   | icg [str]          List classes hirearchy graph with agn/age (match str if provided)
+   | pdr              recursive disassemble across the function graph
+   | pdr.             recursive disassemble across the function graph (from current basic block)
+   | pfd.fmt_name               show data using named format as graphviz commands
+   | txg           render the type xrefs graph (usage .txg;aggv)
+```
+
+Type `ag?` to see usage of *Graph commands* and *Output formats*.
+
+```bash
+[0x000000000000]> ag?
+Usage: ag<graphtype><format> [addr]
+Graph commands:
+
+[...snip...]
+
+Output formats:
+
+[...snip...]
+
+```
+
 ## flags
 
 After the analysis, radare2 associates names to interesting offsets in the file such as Sections, Function, Symbols, and Strings. Those names are called *`flags`*. Flags can be grouped into *`flag spaces`*. A flag space is a namespace for flags of similar characteristics or type. To list the flag spaces run `fs`.
