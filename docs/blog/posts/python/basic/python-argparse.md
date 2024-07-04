@@ -140,7 +140,7 @@ usage: cp [-R [-H | -L | -P]] [-fi | -n] [-apvXc] source_file target_file
        cp [-R [-H | -L | -P]] [-fi | -n] [-apvXc] source_file ... target_directory
 ```
 
-The first positional argument after the `cp` command is the *source* of the file you’re going to copy.  
+The first positional argument after the `cp` command is the *source* of the file you're going to copy.  
 The second one is the *destination* where you want to copy it.  
 
 **Optional** arguments are not mandatory, and when they are used they can modify the behavior of the command at runtime.  

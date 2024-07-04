@@ -376,9 +376,11 @@ From the compiler's point of view, a pointer is nothing more than a variable. Th
 
 The variable (name) is like a symbol/label in assembly that represents a memory address. As shown in this example, when it appears on the left, it's treated as a *box* ready to receive a value. While on the right side, it's a *reference* that unboxes a value out.
 
-A pointer variable holds an address of a certain type. The unary operator `&` gets the address of an object, e.g. `ip = &x` means `ip` stores the address of `x` or points to `x`. A direct reference to a pointer returns the address, i.e. `printf("ip = %p\n", ip)` will print the address of variable `x`.
+A pointer variable holds an address of a certain type. The unary *address-of* operator `&` gets the address of an object, e.g. `ip = &x` means `ip` stores the address of `x`(aka points to `x`). A direct reference to a pointer returns the address, i.e. `printf("ip = %p\n", ip)` will print the address of variable `x`.
 
-The declaration of the pointer `int *ip` is intended as a mnemonic; it says that `*ip` is an int. So to access the target value to which `ip` points, we should use the unary operator `*` for *indirection* or *dereferencing*. Indirectly, `y = *ip` gets `x` from the pointer `ip`, which is equivalent to `y = x` according to the result of the assignment.
+The declaration of the pointer `int *ip` is intended as a mnemonic; it says that `*ip` is an int. It allows us to refer to an object through its address. So to access the target value to which `ip` points, we should use the unary *object-of* operator `*` for *indirection* or *dereferencing*. Indirectly, `y = *ip` gets `x` from the pointer `ip`, which is equivalent to `y = x` according to the result of the assignment.
+
+Please note that the `*` character plays two different roles in the definition of the example. In a declaration, it creates a new type (a pointer type of `int*`), whereas in an expression it *dereferences* the object to which a pointer *refers*.
 
 Since `ip` points to the integer `x`, `*ip` can occur in any context where `x` could occur. So `*ip = 0` sets the target to zero, equivalent to `x = 0`. The unary operators `*` and `&` bind tighter than arithmetic operators, so the assignment `y = *ip + 1` takes whatever `ip` points to, adds 1, and assigns the result to `y`. `*ip = *ip + 10` increments `*ip` by 10, equivalent to `x = x + 10`.
 

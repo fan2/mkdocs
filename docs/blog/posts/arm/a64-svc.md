@@ -122,7 +122,7 @@ arm64   | x8         | x0     | x0   | x1   | x2   | x3   | x4   | x5
 x86     | eax        | eax    | ebx  | ecx  | edx  | esi  | edi  | ebp
 x86_64  | rax        | rax    | rdi  | rsi  | rdx  | r10  | r8   | r9
 
-[Programming with 64-Bit ARM Assembly Language: Single Board Computer Development for Raspberry Pi and Mobile Devices](https://www.amazon.com/Programming-64-Bit-ARM-Assembly-Language/dp/1484258800/) | Chapter 7: Linux Operating System Services - Calling Convention
+[Programming with 64-Bit ARM Assembly Language](https://www.amazon.com/Programming-64-Bit-ARM-Assembly-Language/dp/1484258800/) | Chapter 7: Linux Operating System Services - Calling Convention
 
 The calling convention for system calls is different from that for functions. It uses a software interrupt to switch context from our user-level program to the context of the Linux kernel.
 

@@ -103,7 +103,7 @@ The mapping of a word-sized data object to memory is shown in the following figu
 
 ## Pros of Little Endian
 
-[Programming with 64-Bit ARM Assembly Language: Single Board Computer Development for Raspberry Pi and Mobile Devices](https://www.amazon.com/Programming-64-Bit-ARM-Assembly-Language/dp/1484258800/) | Chapter 2: Loading and Adding - Big vs. Little Endian
+[Programming with 64-Bit ARM Assembly Language](https://www.amazon.com/Programming-64-Bit-ARM-Assembly-Language/dp/1484258800/) | Chapter 2: Loading and Adding - Big vs. Little Endian
 
 The advantage of little-endian format is that it makes it easy to change the size of integers, without requiring any address arithmetic. If you want to convert a 4-byte integer to a 1-byte integer, you take the first byte. Assuming the integer is in the range of 0–255, and the other three bytes are zero. For example, if memory contains the 4 bytes or word for 1, in little endian, the memory contains `01 00 00 00`.
 

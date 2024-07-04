@@ -29,7 +29,7 @@ GCC - [Instrumentation Options](https://gcc.gnu.org/onlinedocs/gcc/Instrumentati
 
 `-fstack-protector`: Emit extra code to check for *buffer overflows*, such as *stack smashing attacks*. This is done by adding a *guard variable* to functions with vulnerable objects. This includes functions that call alloca, and functions with buffers larger than or equal to 8 bytes. The guards are initialized when a function is entered and then checked when the function exits. If a guard check fails, an error message is printed and the program exits. Only variables that are actually allocated on the stack are considered, optimized away variables or variables allocated in registers don't count.
 
-Enhanced options:
+Aggressive options:
 
 - `-fstack-protector-all`
 - `-fstack-protector-strong`
@@ -55,15 +55,19 @@ $ gcc megabeets_0x2.c -no-pie -fno-stack-protector -o megabeets_0x2
 
 ## Stack Canaries
 
+[How to look at the stack with gdb](https://news.ycombinator.com/item?id=27204883)
+
+The canary is pretty clever: it starts with a null byte so that it won't be leaked by normal string functions, and the true canary is stored somewhere else in memory (not the stack) so it can't be easily leaked or corrupted.
+
 [Stack Canaries | Binary Exploitation](https://ir0nstone.gitbook.io/notes/types/stack/canaries)
 
 Stack Canaries are very simple - at the beginning of the function, a random value is placed on the stack. Before the program executes ret, the current value of that variable is compared to the initial: if they are the same, no buffer overflow has occurred.
 
 If they are not, the attacker attempted to overflow to control the return pointer and the program crashes, often with a *`stack smashing detected`* error message.
 
-[How to look at the stack with gdb](https://news.ycombinator.com/item?id=27204883)
+[Programming with 64-Bit ARM Assembly Language](https://www.amazon.com/Programming-64-Bit-ARM-Assembly-Language/dp/1484258800/) | Chapter 16: Hacking Code - Mitigating Buffer Overrun Vulnerabilities - Poor Stack Canaries Are the First to Go
 
-The canary is pretty clever: it starts with a null byte so that it won't be leaked by normal string functions, and the true canary is stored somewhere else in memory (not the stack) so it can't be easily leaked or corrupted.
+The GNU C compiler has a feature to detect buffer overruns. The idea is, in any routine that contains a string buffer located on the stack, to add extra code to place a secret random value next to the stored function return address. Then this value is tested before the function returns, and if corrupted, then a buffer overrun has occurred, and the program is terminated. These stack canaries are like the proverbial canaries in a coal mine, because when something goes wrong, they're the first to go and warn us that something bad is happening.
 
 [Reverse Engineering for Beginners(Understanding Assembly Language)](https://beginners.re/) @[PDF](https://repository.root-me.org/Reverse%20Engineering/EN%20-%20Reverse%20Engineering%20for%20Beginners%20-%20Dennis%20Yurichev.pdf)
 
@@ -111,7 +115,7 @@ stripped false
 
 In [ARM64 PCS - calling convention and stack layout](./a64-pcs-demo.md), pay attention to the disassembly prolog and epilog of `foo`.
 
-The first prolog instruction creates a space of 0x30/48 bytes for the function, and a *guard variable* is pushed to the stack base(`sp+0x28`). The original value is located at offset *0xfe8* of the data segment(*LOAD1*). The guard variable is labelled as `__stack_chk_guard` in pwndbg.
+The first prolog instruction creates a space of 0x30/48 bytes for the function, and a *guard variable* is pushed to the stack base(`sp+0x28`). The original value is located at offset *0xfe8* of the data segment(*LOAD1*). The `ADRP`+`LDR` instructions form the address of the initial canary.
 
 ```bash
     [0xaaaac5ab0934]> pdf @ sym.foo
@@ -129,7 +133,7 @@ The first prolog instruction creates a space of 0x30/48 bytes for the function, 
 
 After `sym.foo + 12`, we can use `?w x0` or `drr ~ x0` to inspect/telescope the guard variable.
 
-When debugging in `gdb-pwndbg`, type `i symbol $x0` to inspect the canary after <foo+12\>.
+When debugging in `gdb-pwndbg`, type `i symbol $x0` to inspect the canary after <foo+12\>. The guard variable is labelled as `__stack_chk_guard` by pwndbg.
 
 ```bash
 pwndbg> i symbol $x0
@@ -142,6 +146,8 @@ pwndbg> telescope $x0
 02:0010│    0xfffff7ffdb68 (_rtld_global_ro+8) —▸ 0xfffffffff4e8 ◂— 0x34366863726161 /* 'aarch64' */
 
 ```
+
+The `LDR`+`STR` instructions load canary from memory and store it to the correct place on the stack.
 
 At the beginning of the epilog, it reloads the initial value from `segment.LOAD1+0xfe8` to `X1` and loads its copy from stack `sp+0x28` to `X2`. Then the `SUBS` instruction performs a subtraction and updates the ALU flags, which is equivalent to a comparison to check the correctness of the "canary".
 
@@ -161,6 +167,8 @@ If `X2-X1` equals to zero, which means the original "canary" is still there, i.e
     │  sym.foo + 128        └─> 0xaaaac5ab092c      fd7bc3a8       ldp x29, x30, [sp], 0x30
     └  sym.foo + 132            0xaaaac5ab0930      c0035fd6       ret
 ```
+
+Stack canaries are quite effective, but if a hacker discovers the value used in a running process, they can construct a buffer overrun exploit. Plus, the fact that having your process terminate like this is never a good thing.
 
 ## references
 

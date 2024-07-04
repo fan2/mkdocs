@@ -421,4 +421,4 @@ The [string](https://docs.python.org/3.6/library/string.html#module-string) modu
 ## rule of thumb
 
 Python String Formatting Rule of Thumb: If your format strings are user-supplied, use Template Strings to avoid security issues.  
-Otherwise, use Literal String Interpolation/f-Strings if you’re on Python 3.6+, and “New Style” str.format if you’re not.  
+Otherwise, use Literal String Interpolation/f-Strings if you're on Python 3.6+, and “New Style” str.format if you're not.  

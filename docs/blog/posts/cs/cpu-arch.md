@@ -159,7 +159,7 @@ M-Profile Architecture:
 
 4. [Raspberry Pi Assembly Language Programming: ARM Processor Coding](https://www.amazon.com/Raspberry-Assembly-Language-Programming-Processor/dp/1484252861/), Stephen Smith, 2019
 
-    - [Programming with 64-Bit ARM Assembly Language: Single Board Computer Development for Raspberry Pi and Mobile Devices](https://www.amazon.com/Programming-64-Bit-ARM-Assembly-Language/dp/1484258800/), Stephen Smith, 2020
+    - [Programming with 64-Bit ARM Assembly Language](https://www.amazon.com/Programming-64-Bit-ARM-Assembly-Language/dp/1484258800/), Stephen Smith, 2020
 
 5. [Modern Arm Assembly Language Programming: Covers Armv8-A 32-bit, 64-bit, and SIMD](https://www.amazon.com/Modern-Assembly-Language-Programming-Armv8/dp/1484262662/), Daniel Kusswurm, 2020
 6. [《ARM64体系结构编程与实践（异步图书出品）》](https://item.jd.com/13119117.html)，奔跑吧Linux社区，2022

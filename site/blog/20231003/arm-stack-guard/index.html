@@ -1426,7 +1426,7 @@
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7h1.5Z"/></svg>
                           <span class="md-ellipsis">
                             
-                              5 min read
+                              6 min read
                             
                           </span>
                         </div>
@@ -1471,7 +1471,7 @@
 </ul>
 <p>GCC - <a href="https://gcc.gnu.org/onlinedocs/gcc/Instrumentation-Options.html">Instrumentation Options</a></p>
 <p><code>-fstack-protector</code>: Emit extra code to check for <em>buffer overflows</em>, such as <em>stack smashing attacks</em>. This is done by adding a <em>guard variable</em> to functions with vulnerable objects. This includes functions that call alloca, and functions with buffers larger than or equal to 8 bytes. The guards are initialized when a function is entered and then checked when the function exits. If a guard check fails, an error message is printed and the program exits. Only variables that are actually allocated on the stack are considered, optimized away variables or variables allocated in registers don't count.</p>
-<p>Enhanced options:</p>
+<p>Aggressive options:</p>
 <ul>
 <li><code>-fstack-protector-all</code></li>
 <li><code>-fstack-protector-strong</code></li>
@@ -1492,11 +1492,13 @@
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>$<span class="w"> </span>gcc<span class="w"> </span>megabeets_0x2.c<span class="w"> </span>-no-pie<span class="w"> </span>-fno-stack-protector<span class="w"> </span>-o<span class="w"> </span>megabeets_0x2
 </span></code></pre></div>
 <h2 id="stack_canaries">Stack Canaries<a class="headerlink" href="#stack_canaries" title="Permanent link">#</a></h2>
+<p><a href="https://news.ycombinator.com/item?id=27204883">How to look at the stack with gdb</a></p>
+<p>The canary is pretty clever: it starts with a null byte so that it won't be leaked by normal string functions, and the true canary is stored somewhere else in memory (not the stack) so it can't be easily leaked or corrupted.</p>
 <p><a href="https://ir0nstone.gitbook.io/notes/types/stack/canaries">Stack Canaries | Binary Exploitation</a></p>
 <p>Stack Canaries are very simple - at the beginning of the function, a random value is placed on the stack. Before the program executes ret, the current value of that variable is compared to the initial: if they are the same, no buffer overflow has occurred.</p>
 <p>If they are not, the attacker attempted to overflow to control the return pointer and the program crashes, often with a <em><code>stack smashing detected</code></em> error message.</p>
-<p><a href="https://news.ycombinator.com/item?id=27204883">How to look at the stack with gdb</a></p>
-<p>The canary is pretty clever: it starts with a null byte so that it won't be leaked by normal string functions, and the true canary is stored somewhere else in memory (not the stack) so it can't be easily leaked or corrupted.</p>
+<p><a href="https://www.amazon.com/Programming-64-Bit-ARM-Assembly-Language/dp/1484258800/">Programming with 64-Bit ARM Assembly Language</a> | Chapter 16: Hacking Code - Mitigating Buffer Overrun Vulnerabilities - Poor Stack Canaries Are the First to Go</p>
+<p>The GNU C compiler has a feature to detect buffer overruns. The idea is, in any routine that contains a string buffer located on the stack, to add extra code to place a secret random value next to the stored function return address. Then this value is tested before the function returns, and if corrupted, then a buffer overrun has occurred, and the program is terminated. These stack canaries are like the proverbial canaries in a coal mine, because when something goes wrong, they're the first to go and warn us that something bad is happening.</p>
 <p><a href="https://beginners.re/">Reverse Engineering for Beginners(Understanding Assembly Language)</a> @<a href="https://repository.root-me.org/Reverse%20Engineering/EN%20-%20Reverse%20Engineering%20for%20Beginners%20-%20Dennis%20Yurichev.pdf">PDF</a></p>
 <ul>
 <li>Code Patterns - Arrays - Buffer overflow protection methods</li>
@@ -1531,7 +1533,7 @@
 </span></code></pre></div>
 <h2 id="demonstration">Demonstration<a class="headerlink" href="#demonstration" title="Permanent link">#</a></h2>
 <p>In <a href="../../20230615/a64-pcs-demo/">ARM64 PCS - calling convention and stack layout</a>, pay attention to the disassembly prolog and epilog of <code>foo</code>.</p>
-<p>The first prolog instruction creates a space of 0x30/48 bytes for the function, and a <em>guard variable</em> is pushed to the stack base(<code>sp+0x28</code>). The original value is located at offset <em>0xfe8</em> of the data segment(<em>LOAD1</em>). The guard variable is labelled as <code>__stack_chk_guard</code> in pwndbg.</p>
+<p>The first prolog instruction creates a space of 0x30/48 bytes for the function, and a <em>guard variable</em> is pushed to the stack base(<code>sp+0x28</code>). The original value is located at offset <em>0xfe8</em> of the data segment(<em>LOAD1</em>). The <code>ADRP</code>+<code>LDR</code> instructions form the address of the initial canary.</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="w">    </span><span class="o">[</span>0xaaaac5ab0934<span class="o">]</span>&gt;<span class="w"> </span>pdf<span class="w"> </span>@<span class="w"> </span>sym.foo
 </span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">    </span><span class="c1"># prolog</span>
 </span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">    </span>│<span class="w">  </span>sym.foo<span class="w"> </span>+<span class="w"> </span><span class="m">0</span><span class="w">              </span>0xaaaac5ab08ac<span class="w">      </span>fd7bbda9<span class="w">       </span>stp<span class="w"> </span>x29,<span class="w"> </span>x30,<span class="w"> </span><span class="o">[</span>sp,<span class="w"> </span>-0x30<span class="o">]</span>!
@@ -1545,7 +1547,7 @@
 </span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="w">    </span>│<span class="w">  </span>sym.foo<span class="w"> </span>+<span class="w"> </span><span class="m">32</span><span class="w">             </span>0xaaaac5ab08cc<span class="w">      </span>e80300aa<span class="w">       </span>mov<span class="w"> </span>x8,<span class="w"> </span>x0
 </span></code></pre></div>
 <p>After <code>sym.foo + 12</code>, we can use <code>?w x0</code> or <code>drr ~ x0</code> to inspect/telescope the guard variable.</p>
-<p>When debugging in <code>gdb-pwndbg</code>, type <code>i symbol $x0</code> to inspect the canary after &lt;foo+12&gt;.</p>
+<p>When debugging in <code>gdb-pwndbg</code>, type <code>i symbol $x0</code> to inspect the canary after &lt;foo+12&gt;. The guard variable is labelled as <code>__stack_chk_guard</code> by pwndbg.</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>pwndbg&gt;<span class="w"> </span>i<span class="w"> </span>symbol<span class="w"> </span><span class="nv">$x0</span>
 </span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>__stack_chk_guard<span class="w"> </span><span class="k">in</span><span class="w"> </span>section<span class="w"> </span>.data.rel.ro<span class="w"> </span>of<span class="w"> </span>/lib/ld-linux-aarch64.so.1
 </span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>pwndbg&gt;<span class="w"> </span>i<span class="w"> </span>addr<span class="w"> </span>__stack_chk_guard
@@ -1555,6 +1557,7 @@
 </span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="m">01</span>:0008│<span class="w">    </span>0xfffff7ffdb60<span class="w"> </span><span class="o">(</span>_rtld_global_ro<span class="o">)</span><span class="w"> </span>◂—<span class="w"> </span>0x50f9500000000
 </span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="m">02</span>:0010│<span class="w">    </span>0xfffff7ffdb68<span class="w"> </span><span class="o">(</span>_rtld_global_ro+8<span class="o">)</span><span class="w"> </span>—▸<span class="w"> </span>0xfffffffff4e8<span class="w"> </span>◂—<span class="w"> </span>0x34366863726161<span class="w"> </span>/*<span class="w"> </span><span class="s1">&#39;aarch64&#39;</span><span class="w"> </span>*/
 </span></code></pre></div>
+<p>The <code>LDR</code>+<code>STR</code> instructions load canary from memory and store it to the correct place on the stack.</p>
 <p>At the beginning of the epilog, it reloads the initial value from <code>segment.LOAD1+0xfe8</code> to <code>X1</code> and loads its copy from stack <code>sp+0x28</code> to <code>X2</code>. Then the <code>SUBS</code> instruction performs a subtraction and updates the ALU flags, which is equivalent to a comparison to check the correctness of the "canary".</p>
 <p>If <code>X2-X1</code> equals to zero, which means the original "canary" is still there, i.e. the stack hasn't been overwritten/overflowed, <code>b.eq</code> jumps to the success branch. Otherwise the guard check fails, it jumps to <code>__stack_chk_fail</code>.</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="w">    </span><span class="o">[</span>0xaaaac5ab0934<span class="o">]</span>&gt;<span class="w"> </span>pdf<span class="w"> </span>@<span class="w"> </span>sym.foo
@@ -1570,6 +1573,7 @@
 </span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="w">    </span>│<span class="w">  </span>sym.foo<span class="w"> </span>+<span class="w"> </span><span class="m">128</span><span class="w">        </span>└─&gt;<span class="w"> </span>0xaaaac5ab092c<span class="w">      </span>fd7bc3a8<span class="w">       </span>ldp<span class="w"> </span>x29,<span class="w"> </span>x30,<span class="w"> </span><span class="o">[</span>sp<span class="o">]</span>,<span class="w"> </span>0x30
 </span><span id="__span-4-12"><a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a><span class="w">    </span>└<span class="w">  </span>sym.foo<span class="w"> </span>+<span class="w"> </span><span class="m">132</span><span class="w">            </span>0xaaaac5ab0930<span class="w">      </span>c0035fd6<span class="w">       </span>ret
 </span></code></pre></div>
+<p>Stack canaries are quite effective, but if a hacker discovers the value used in a running process, they can construct a buffer overrun exploit. Plus, the fact that having your process terminate like this is never a good thing.</p>
 <h2 id="references">references<a class="headerlink" href="#references" title="Permanent link">#</a></h2>
 <p><a href="https://book.hacktricks.xyz/binary-exploitation/common-binary-protections-and-bypasses/stack-canaries">Stack Canaries | HackTricks</a><br />
 <a href="https://ir0nstone.gitbook.io/notes/types/stack/canaries">Stack Canaries - The Buffer Overflow defence</a></p>
