@@ -22,7 +22,7 @@ It is also a thorough and comprehensive `pwndbg` debugging exercise, showcasing 
 
 <!-- more -->
 
-Run the DYN ELF `a.out` with the `-A` option using [GDB Enhanced Extensions](https://duetorun.com/blog/20200310/7-gdb-enhanced/) [pwndbg](https://github.com/pwndbg/pwndbg).
+Run the DYN ELF `a.out` with the `-A` option using [GDB Enhanced Extensions](../toolchain/gdb/7-gdb-enhanced.md) [pwndbg](https://github.com/pwndbg/pwndbg).
 
 ```bash
 $ gdb-pwndbg a.out

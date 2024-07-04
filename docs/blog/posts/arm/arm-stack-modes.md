@@ -19,7 +19,7 @@ In this article, we'll explore the stack modes, activities and accesses in ARM(A
 
 You can use the `LDM` and `STM` instructions to implement pop and push operations respectively. You use a suffix to indicate the stack type.
 
-The load and store multiple instructions can update the base register. For stack operations, the base register is usually the stack pointer, SP. This means that you can use these instructions to implement push and pop operations for any number of registers in a single instruction.
+The load and store multiple instructions can update the base register. For stack operations, the base register is usually the stack pointer, `SP`. This means that you can use these instructions to implement push and pop operations for any number of registers in a single instruction.
 
 The load and store multiple instructions can be used with several types of stack:
 
@@ -142,7 +142,7 @@ The stack is defined in terms of three values:
 
 ### activity
 
-The SP moves from the base to the limit as the stack *grows*, and from the limit to the base as the stack *shrinks*. In practice, an application might not be able to determine the value of either the base or the limit.
+The `SP` moves from the base to the limit as the stack *grows*, and from the limit to the base as the stack *shrinks*. In practice, an application might not be able to determine the value of either the base or the limit.
 
 In the description below, the base, limit, and current stack extent for a thread T are denoted `T.base`, `T.limit`, and `T.SP` respectively.
 

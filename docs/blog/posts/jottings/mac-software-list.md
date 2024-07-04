@@ -65,7 +65,7 @@ softorino [WALTR PRO](https://softorino.com/waltr/)
 - The gold standard of macOS file transfer apps just drove into the future.
 - Upload, download, and manage files on tons of servers with an easy, familiar, and powerful UI.
 
-[Rclone](https://rclone.org/) - [works like a charm!](https://duetorun.com/blog/20240318/rclone-access-webdav/)
+[Rclone](https://rclone.org/) - [works like a charm!](../webdav/rclone-access-webdav.md)
 
 - a command-line program to manage files on cloud storage.
 - a feature-rich alternative to cloud vendors' web storage interfaces.

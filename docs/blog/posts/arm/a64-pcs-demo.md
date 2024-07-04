@@ -157,8 +157,7 @@ $ cc format-extra-args.c -c
 $ objdump -d format-extra-args.o
 ```
 
-If you want to see what the disassembly of a program looks like with different compilers and compiler versions, you can use the 
-[Compiler Explorer](https://gcc.godbolt.org/). It highlights individual code sections and displays the equivalent disassembly in their respective colors.
+If you want to see what the disassembly of a program looks like with different compilers and compiler versions, you can use the [Compiler Explorer](https://gcc.godbolt.org/). It highlights individual code sections and displays the equivalent disassembly in their respective colors.
 
 Here we choose the source language as `C` and the target as `ARM64 GCC`. The equivalent disassembly is generated as follows.
 

@@ -15,7 +15,7 @@ comments: true
 
 The ISA is a contract between the hardware and the software. It defines the set of instructions and the set of registers that the hardware must support.
 
-The most important components of the CPU are the registers, where data is stored, and the arithmetic and logic unit (ALU), where arithmetic and logical operations are performed on the data.
+The most important components of the CPU are the registers, where data is stored, and the arithmetic and logic unit (`ALU`), where arithmetic and logical operations are performed on the data.
 
 Arm® processors provide general-purpose and special-purpose registers. Some additional registers are available in privileged execution modes.
 
@@ -178,7 +178,7 @@ In the ARMv8 architecture, when executing in AArch64, the exception return state
 - _Exception Link Register_ (`ELR`).
 - _Saved Processor State Register_ (`SPSR`).
 
-There is a dedicated SP per Exception level, but it is not used to hold return state.
+There is a dedicated `SP` per Exception level, but it is not used to hold return state.
 
 Table 4.2. Special registers by Exception level
 
@@ -235,3 +235,47 @@ Platform-specific             | r9                     | x18
     - registers `x0`-`x18` are *volatile*,
     - registers `x19`-`x29` are *non-volatile* (they can be used, but their contents *must* be restored to their original value before the function returns),
     - register `x30` can be used by the function, but its contents must be saved so that they can be loaded into the program counter, which will cause the function to return to its caller.
+
+## armasm dedicated pointers
+
+In fact, in AArch64 assembly, there are four special registers `PC`, `LR`(`X30`), `SP`(`X31`?) and `FP`(`X29`) featured as *`P`*ointer or *`L`*inker.
+
+### PC(Program Counter)
+
+In AArch64 state, the [Program Counter](https://developer.arm.com/documentation/dui0801/l/Overview-of-AArch64-state/Program-Counter-in-AArch64-state) (`PC`) contains the ***address*** of the currently executing instruction and acts as a cursor/indicator. It is incremented by the size of the instruction executed, which is always four bytes. See [ARM Program Counter](./arm-program-counter.md) for details related to the instruction pipeline.
+
+!!! note "The program counter"
+
+    [ARM 64-Bit Assembly Language](https://www.amazon.com/64-Bit-Assembly-Language-Larry-Pyeatt/dp/0128192216/) | 3 Load/store and branch instructions - 3.2 AArch64 user registers
+
+    The program counter, `pc`, always contains the ***address*** of the next instruction that will be executed. The processor increments this register by four, automatically, after each instruction is fetched from memory. By moving an address into this register, the programmer can cause the processor to fetch the next instruction from the new address. This gives the programmer the ability to jump to any address and begin executing code there.
+
+### LR(Link Register)
+
+In AArch64 state, the [Link Register](https://developer.arm.com/documentation/dui0801/l/Overview-of-AArch64-state/Link-registers) (`LR`) stores the ***return address*** when a subroutine call is made. It can also be used as a general-purpose register if the return address is stored on the stack. The `LR` maps to register `X30`.
+
+!!! note "The procedure link register"
+
+    [ARM 64-Bit Assembly Language](https://www.amazon.com/64-Bit-Assembly-Language-Larry-Pyeatt/dp/0128192216/) | 3 Load/store and branch instructions - 3.2 AArch64 user registers
+
+    The procedure link register, `x30`, is used to hold the ***return address*** for subroutines. Certain instructions cause the program counter to be copied to the link register, then the program counter is loaded with a new address. The link register could theoretically be used as a scratch register, but its contents are modified by hardware when a subroutine is called, in order to save the correct return address. Using `x30` as a general-purpose register is dangerous and is strongly discouraged.
+
+### SP(Stack Pointer)
+
+The current stack extent, stored in the special-purpose register [SP](https://github.com/ARM-software/abi-aa/blob/2a70c42d62e9c3eb5887fa50b71257f20daca6f9/aapcs64/aapcs64.rst#the-stack). You can use the [stack pointer](https://developer.arm.com/documentation/102374/0102/Registers-in-AArch64---other-registers) (`SP`) as the ***base address*** for loads and stores. The [SP](https://github.com/ARM-software/abi-aa/blob/2a70c42d62e9c3eb5887fa50b71257f20daca6f9/aapcs64/aapcs64.rst#the-stack) moves from the base to the limit as the stack *grows*, and from the limit to the base as the stack *shrinks*.
+
+!!! note "The stack pointer"
+
+    [ARM 64-Bit Assembly Language](https://www.amazon.com/64-Bit-Assembly-Language-Larry-Pyeatt/dp/0128192216/) | 3 Load/store and branch instructions - 3.2 AArch64 user registers
+
+    The stack pointer, **`sp`**, is used to hold the ***address*** where the stack ends. This is commonly referred to as the *top* of the stack, although on most systems the stack grows *downwards* and the stack pointer really refers to the *lowest* address in the stack. The address where the stack ends may change when registers are pushed onto the stack, or when temporary local variables (*automatic variables*) are allocated or deleted.
+
+### FP(Frame Pointer)
+
+Conforming code shall construct a *linked* list of [stack-frames](https://github.com/ARM-software/abi-aa/blob/2a70c42d62e9c3eb5887fa50b71257f20daca6f9/aapcs64/aapcs64.rst#the-frame-pointer). Each frame shall **link to** the frame of its caller by means of a frame record of *two* 64-bit values on the stack (independent of the data model). The frame record for the innermost frame (belonging to the most recent routine invocation) shall be pointed to by the frame pointer register (`FP`, X29 in AArch64). The lowest addressed double-word shall **point to** the *previous* frame record and the highest(next to `FP`?) addressed double-word shall contain the value passed in `LR`(X30 in AArch64) on entry to the current function.
+
+!!! note "The frame pointer"
+
+    [ARM 64-Bit Assembly Language](https://www.amazon.com/64-Bit-Assembly-Language-Larry-Pyeatt/dp/0128192216/) | 3 Load/store and branch instructions - 3.2 AArch64 user registers
+
+    The frame pointer, `x29`, is used by high-level language compilers to **track** the current stack frame. This register can be helpful when the program is running under a debugger, and can sometimes help the compiler to generate more efficient code for returning from a subroutine. The GNU C compiler can be instructed to use `x29` as a general-purpose register by using the `-fomit-frame-pointer` command line option. The use of `x29` as the frame pointer is a programming convention. Some instructions (e.g. *branches*) implicitly modify the program counter, the link register, and even the stack pointer, so they are considered to be hardware special registers. As far as the hardware is concerned, the frame pointer is exactly the same as the other general-purpose registers, but AArch64 programmers use it for the frame pointer because of the ABI.
