@@ -1,0 +1,1933 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="在别处或在路上">
+      
+      
+        <meta name="author" content="Cliff Fan">
+      
+      
+        <link rel="canonical" href="https://duetorun.com/blog/20231005/c-pointer-array/">
+      
+      
+        <link rel="prev" href="../../20231004/c-pointer-armasm/">
+      
+      
+        <link rel="next" href="../../20240316/mac-setup-httpd-dav/">
+      
+      
+      <link rel="icon" href="../../../assets/hold_yourself.jpg">
+      <meta name="generator" content="mkdocs-1.6.0, mkdocs-material-9.5.27">
+    
+    
+      
+        <title>C Pointers and Arrays - ElseWhere</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.6543a935.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function n(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],n("js",new Date),n("config","G-XGW41EGL31"),document.addEventListener("DOMContentLoaded",function(){document.forms.search&&document.forms.search.query.addEventListener("blur",function(){this.value&&n("event","search",{search_term:this.value})}),document$.subscribe(function(){var a=document.forms.feedback;if(void 0!==a)for(var e of a.querySelectorAll("[type=submit]"))e.addEventListener("click",function(e){e.preventDefault();var t=document.location.pathname,e=this.getAttribute("data-md-value");n("event","feedback",{page:t,data:e}),a.firstElementChild.disabled=!0;e=a.querySelector(".md-feedback__note [data-md-value='"+e+"']");e&&(e.hidden=!1)}),a.hidden=!1}),location$.subscribe(function(e){n("config","G-XGW41EGL31",{page_path:e.pathname})})});var e=document.createElement("script");e.async=!0,e.src="https://www.googletagmanager.com/gtag/js?id=G-XGW41EGL31",document.getElementById("__analytics").insertAdjacentElement("afterEnd",e)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+    
+  
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#pointers_and_arrays" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="ElseWhere" class="md-header__button md-logo" aria-label="ElseWhere" data-md-component="logo">
+      
+  <img src="../../../assets/hold_yourself.jpg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ElseWhere
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              C Pointers and Arrays
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1M8 13h8v-2H8v2m9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1 0 1.71-1.39 3.1-3.1 3.1h-4V17h4a5 5 0 0 0 5-5 5 5 0 0 0-5-5Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="indigo"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5M7 15a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../about/" class="md-tabs__link">
+        
+  
+    
+  
+  About
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../" class="md-tabs__link">
+          
+  
+  Blog
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../link/" class="md-tabs__link">
+        
+  
+    
+  
+  Link
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" hidden>
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="ElseWhere" class="md-nav__button md-logo" aria-label="ElseWhere" data-md-component="logo">
+      
+  <img src="../../../assets/hold_yourself.jpg" alt="logo">
+
+    </a>
+    ElseWhere
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../about/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    About
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Blog
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      <a href="../../" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Archive
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            Archive
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2024/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2024
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2023/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2023
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2022/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2022
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2021/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2021
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2020/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2020
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2019/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2019
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2018/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2018
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2017/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2017
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2015/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2015
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2009/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2009
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Categories
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            Categories
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/cs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CS
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/arm/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    arm
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/c/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    c
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/cpp/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    cpp
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/editor/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    editor
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/elf/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    elf
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/excerpt/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    excerpt
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/git/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    git
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/linux/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    linux
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/macos/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    macOS
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/markdown/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    markdown
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/material/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    material
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/mkdocs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    mkdocs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/nginx/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    nginx
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/python/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    python
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/resource/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    resource
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/shell/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    shell
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/toolchain/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    toolchain
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/ubuntu/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ubuntu
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/vim/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    vim
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/webdav/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    webDAV
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/wiki/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    wiki
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/zsh/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    zsh
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../link/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Link
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#pointers_and_arrays" class="md-nav__link">
+    <span class="md-ellipsis">
+      Pointers and Arrays
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#array-to-pointer_decay" class="md-nav__link">
+    <span class="md-ellipsis">
+      array-to-pointer decay
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#distinguish_a0_and_a" class="md-nav__link">
+    <span class="md-ellipsis">
+      distinguish &amp;a[0] and &amp;a
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#array_name_as_lvalue_or_rvalue" class="md-nav__link">
+    <span class="md-ellipsis">
+      array name as lvalue or rvalue
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#test_programs_about_pointers" class="md-nav__link">
+    <span class="md-ellipsis">
+      test programs about pointers
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="test programs about pointers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sizeof_pointer" class="md-nav__link">
+    <span class="md-ellipsis">
+      sizeof pointer
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pointer_arithmetic" class="md-nav__link">
+    <span class="md-ellipsis">
+      pointer arithmetic
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+  <div class="md-content md-content--post" data-md-component="content">
+    <div class="md-sidebar md-sidebar--post" data-md-component="sidebar" data-md-type="navigation">
+      <div class="md-sidebar__scrollwrap">
+        <div class="md-sidebar__inner md-post">
+          <nav class="md-nav md-nav--primary">
+            <div class="md-post__back">
+              <div class="md-nav__title md-nav__container">
+                <a href="../../" class="md-nav__link">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+                  <span class="md-ellipsis">
+                    Back to index
+                  </span>
+                </a>
+              </div>
+            </div>
+            
+              <div class="md-post__authors md-typeset">
+                
+                  <div class="md-profile md-post__profile">
+                    <span class="md-author md-author--long">
+                      <img src="https://duetorun.com/assets/carve_yourself.jpg" alt="Cliff Fan">
+                    </span>
+                    <span class="md-profile__description">
+                      <strong>
+                        
+                          Cliff Fan
+                        
+                      </strong>
+                      <br>
+                      Just do IT
+                    </span>
+                  </div>
+                
+              </div>
+            
+            <ul class="md-post__meta md-nav__list">
+              <li class="md-nav__item md-nav__item--section">
+                <div class="md-post__title">
+                  <span class="md-ellipsis">
+                    Metadata
+                  </span>
+                </div>
+                <nav class="md-nav">
+                  <ul class="md-nav__list">
+                    <li class="md-nav__item">
+                      <div class="md-nav__link">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 19H5V8h14m-3-7v2H8V1H6v2H5c-1.11 0-2 .89-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-1V1m-1 11h-5v5h5v-5Z"/></svg>
+                        <time datetime="2023-10-05 10:00:00" class="md-ellipsis">Oct 5, 2023</time>
+                      </div>
+                    </li>
+                    
+                    
+                      <li class="md-nav__item">
+                        <div class="md-nav__link">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 3v15h3V3H9m3 2 4 13 3-1-4-13-3 1M5 5v13h3V5H5M3 19v2h18v-2H3Z"/></svg>
+                          <span class="md-ellipsis">
+                            in
+                            
+                              <a href="../../category/c/">c</a></span>
+                        </div>
+                      </li>
+                    
+                    
+                      
+                      <li class="md-nav__item">
+                        <div class="md-nav__link">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7h1.5Z"/></svg>
+                          <span class="md-ellipsis">
+                            
+                              13 min read
+                            
+                          </span>
+                        </div>
+                      </li>
+                    
+                    <!-- Add by Cliff.Fan, 29Mar24. -->
+                    <li class="md-nav__item">
+                      <div class="md-nav__link">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m19 1-5 5v11l5-4.5V1m2 4v13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V6c-1.45-1.1-3.55-1.5-5.5-1.5-1.95 0-4.05.4-5.5 1.5v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1M10 18.41C8.75 18.09 7.5 18 6.5 18c-1.06 0-2.32.19-3.5.5V7.13c.91-.4 2.14-.63 3.5-.63 1.36 0 2.59.23 3.5.63v11.28Z"/></svg>
+                        <span class="md-ellipsis" id="busuanzi_container_page_pv">
+                          PV：<span id="busuanzi_value_page_pv">N/A</span>
+                        </span>
+                      </div>
+                    </li>
+                  </ul>
+                </nav>
+              </li>
+            </ul>
+          </nav>
+          
+        </div>
+      </div>
+    </div>
+    <article class="md-content__inner md-typeset">
+      
+        
+
+
+  <h1>C Pointers and Arrays</h1>
+
+<p>Many beginners don't know about the relationship between pointers and arrays. I'll tell you now: there is no relationship between them, they just often wear similar clothes to tease you. A pointer is a pointer. A pointer variable occupies 4 bytes in a 32-bit system and 8 bytes in a 64-bit system. Its value is the address of a particular memory location. A pointer can point to anything, but can you access anything using this pointer variable?</p>
+<p>An array is an array, and its size is related to the type and number of its elements; when defining an array, the type and number of its elements must be specified; an array can hold any kind of data, but not functions. Since there is no relationship between them, why do many people often confuse arrays with pointers, and even think that pointers and arrays are the same?</p>
+<p>This is related to the mixed C language reference books on the market. Few books explain this topic thoroughly and clearly. Let's go back to the classics, back to the basics, and get the truth from the classic explanations and interpretations of the masters.</p>
+<!-- more -->
+
+<p>Previously, at the end of <a href="../../20230601/a64-regs/">Register file of ARM64</a>, we specially mentioned dedicated pointers in armasm, such as <code>SP</code>(Stack Pointer) and <code>FP</code>(Frame Pointer). See <a href="../../20230614/arm-stack-modes/">ARM Push/Pop Stack Modes</a>, if we take the stack frame as an array occupying the memory area bounded by the half-open internal <span class="arithmatex">\([T.limit, T.base)\)</span>. The stack pointer(<code>SP</code>) point to the top of the current stack frame, walking between the ad-hoc memory area with offset. Check the previous post <a href="../../20231004/c-pointer-armasm/">C Pointer Explanation in armasm</a> against the stack layout of the demo program.</p>
+<h2 id="pointers_and_arrays">Pointers and Arrays<a class="headerlink" href="#pointers_and_arrays" title="Permanent link">#</a></h2>
+<p><a href="https://www.amazon.com/Programming-Language-2nd-Brian-Kernighan/dp/0131103628/">TCPL</a> | Chapter 5 - Pointers and Arrays - 5.3 Pointers and Arrays; 5.4 Address Arithmetic</p>
+<p>In C, there is a strong relationship between pointers and arrays, strong enough that pointers and arrays should be discussed simultaneously. Any operation that can be achieved by array subscripting can also be done with pointers. The pointer version will in general be faster but, at least to the uninitiated, somewhat harder to understand.</p>
+<p>The declaration <strong><code>int a[10];</code></strong> defines an array of size 10, that is, a block of 10 consecutive objects named <code>a[0]</code>, <code>a[1]</code>, ..., <code>a[9]</code>.</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>    ---------------------------------------------------
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>    |    |    |    |    |    |    |    |    |    |    |
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    ---------------------------------------------------
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>     a[0] a[1] a[2] a[3] a[4] a[5] a[6] a[7] a[8] a[9]
+</span></code></pre></div>
+<p>The notation <code>a[i]</code> refers to the <span class="arithmatex">\(i^{th}\)</span> element of the array. If <code>pa</code> is a pointer to an integer, declared as <strong><code>int *pa;</code></strong> then the assignment <strong><code>pa = &amp;a[0];</code></strong> sets <code>pa</code> to point to element zero of <code>a</code>; that is, <code>pa</code> contains the address of <code>a[0]</code>.</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>     +-----------+
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>     ↑           ↓
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>  ------------------------------------------------------------------------
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>  |    |    |    |    |    |    |    |    |    |    |    |    |    |    |
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>  ------------------------------------------------------------------------
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>    pa            a[0] a[1] a[2] a[3] a[4] a[5] a[6] a[7] a[8] a[9]
+</span></code></pre></div>
+<p>Now the assignment <strong><code>x = *pa;</code></strong> will copy the contents of <code>a[0]</code> into <code>x</code>.</p>
+<p>If <code>pa</code> points to a particular element of an array, then by definition <code>pa+1</code> points to the <em>next</em> element, <code>pa+i</code> points <em>i</em> elements after <code>pa</code>, and <code>pa-i</code> points <em>i</em> elements before. Thus, if <code>pa</code> points to <code>a[0]</code>, <strong><code>*(pa+1)</code></strong> refers to the contents of <code>a[1]</code>, <code>pa+i</code> is the address of <code>a[i]</code>, and <code>*(pa+i)</code> is the contents of <code>a[i]</code>.</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>                     pa+1 pa+2
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>     +-----------+    |    |
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>     ↑           ↓    ↓    ↓
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>  ------------------------------------------------------------------------
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>  |    |    |    |    |    |    |    |    |    |    |    |    |    |    |
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>  ------------------------------------------------------------------------
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>    pa            a[0] a[1] a[2] a[3] a[4] a[5] a[6] a[7] a[8] a[9]
+</span></code></pre></div>
+<p>These remarks are true regardless of the type or size of the variables in the array <code>a</code>. The meaning of "adding 1 to a pointer," and by extension, all pointer arithmetic, is that <code>pa+1</code> points to the <em>next</em> object, and <code>pa+i</code> points to the <span class="arithmatex">\(i^{th}\)</span> object beyond <code>pa</code>.</p>
+<div class="admonition note">
+<p class="admonition-title">step size of pointer movement</p>
+<p>The number <em><code>i</code></em> in <code>pa+i</code> represents the number of the element. For example, <code>pa+1</code> moves the cursor <em>one</em> step forward, pointing to the next element. This means <code>i</code> is scaled according to the size of the object <code>pa</code> points to, which is determined by the declaration of <code>pa</code>. The step size here is <code>sizeof(int)=4</code> bytes, not a single byte.</p>
+<p><strong>Question time</strong>: Think about <code>a+1</code>, what does <code>1</code> mean? Where would <code>a+1</code> go? Take the question with you, read on to find out.</p>
+</div>
+<p>The correspondence between indexing and pointer arithmetic is very close. By definition, the value of a variable or expression of type array is the address of element zero of the array. Thus after the assignment <strong><code>pa = &amp;a[0];</code></strong> <code>pa</code> and <code>a</code> have <em>identical</em> values. Since the <em>name</em> of an array is a synonym for the <em>location</em> of the initial element, the assignment <code>pa=&amp;a[0]</code> can also be written as <strong><code>pa = a;</code></strong>.</p>
+<p>Rather more surprising, at first sight, is the fact that a reference to <code>a[i]</code> can also be written as <code>*(a+i)</code>. In evaluating <code>a[i]</code>, C converts it to <code>*(a+i)</code> immediately; the two forms are equivalent. Applying the operator <code>&amp;</code> to both parts of this equivalence, it follows that <code>&amp;a[i]</code> and <code>a+i</code> are also identical: <code>a+i</code> is the address of the <span class="arithmatex">\(i^{th}\)</span> element beyond <code>a</code>. As the other side of this coin, if <code>pa</code> is a pointer, expressions might use it with a subscript; <code>pa[i]</code> is identical to <code>*(pa+i)</code>. In short, an <em>array-and-index</em> expression is equivalent to one written as a <em>pointer and offset</em>.</p>
+<p>There is one difference between an <em>array name</em> and a pointer that must be kept in mind. A pointer is a variable, so <code>pa=a</code> and <code>pa++</code> are legal. But an array name is <em>not</em> a variable (but a const pointer); constructions like <code>a=pa</code> and <code>a++</code> are illegal.</p>
+<p>When an array name is passed to a function, what is passed is the <em>location</em> of the initial element. Within the called function, this argument is a local variable, and so an <em>array name</em> parameter is a <em>pointer</em>, that is, a variable containing an address. We can use this fact to write another version of <code>strlen</code>, which computes the length of a string.</p>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="cm">/* strlen: return length of string s */</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="kt">int</span><span class="w"> </span><span class="nf">strlen</span><span class="p">(</span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">s</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">n</span><span class="p">;</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">n</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="o">*</span><span class="n">s</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="sc">&#39;\0&#39;</span><span class="p">,</span><span class="w"> </span><span class="n">s</span><span class="o">++</span><span class="p">)</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">        </span><span class="n">n</span><span class="o">++</span><span class="p">;</span>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">n</span><span class="p">;</span>
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="p">}</span>
+</span></code></pre></div>
+<p>Since <code>s</code> is a pointer, incrementing it is perfectly legal; <code>s++</code> has no effect on the character string in the function that called <code>strlen</code>, but merely increments <code>strlen</code>'s private copy of the pointer. That means that calls like the following all work.</p>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="n">strlen</span><span class="p">(</span><span class="s">&quot;hello, world&quot;</span><span class="p">);</span><span class="w"> </span><span class="cm">/* string constant */</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="n">strlen</span><span class="p">(</span><span class="n">array</span><span class="p">);</span><span class="w">          </span><span class="cm">/* char array[100]; */</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="n">strlen</span><span class="p">(</span><span class="n">ptr</span><span class="p">);</span><span class="w">            </span><span class="cm">/* char *ptr; */</span>
+</span></code></pre></div>
+<p>As formal parameters in a function definition, <strong><code>char s[];</code></strong> and <strong><code>char *s;</code></strong> are equivalent; we prefer the latter because it says more explicitly that the variable is a pointer. When an array name is passed to a function, the function can at its convenience believe that it has been handed either an array or a pointer, and manipulate it accordingly. It can even use both notations if it seems appropriate and clear.</p>
+<p>It is possible to pass <em>part</em> of an array to a function, by passing a pointer to the beginning of the subarray. For example, if a is an array, <strong><code>f(&amp;a[2])</code></strong> and <strong><code>f(a+2)</code></strong> both pass to the function <code>f</code> the address of the subarray that starts at <code>a[2]</code>. Within <code>f</code>, the parameter declaration can read <strong><code>f(int arr[]) { ... }</code></strong> or <strong><code>f(int *arr) { ... }</code></strong>. So as far as <code>f</code> is concerned, the fact that the parameter refers to part of a larger array is of no consequence.</p>
+<p>If one is sure that the elements exist, it is also possible to index backwards in an array; <code>p[-1]</code>, <code>p[-2]</code>, and so on are syntactically legal, and refer to the elements that immediately precede <code>p[0]</code>. Of course, it is illegal to refer to objects that are not within the array bounds.</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>          Lbound                  pa   pa+1 pa+2           pa+5
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>         /                        |    |    |              |
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>         |                        ↓    ↓    ↓              ↓
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>   ---------------------------------------------------------------
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>   |  ⚡️  |    |    |    |    |    |    |    |    |    |    |  ⚡️  |
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>   ---------------------------------------------------------------
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>          a[0] a[1] a[2] a[3] a[4] a[5] a[6] a[7] a[8] a[9] \
+</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>    ↑                    ↑    ↑                              |
+</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>    pa-6                 pa-2 pa-1                           Rbound
+</span></code></pre></div>
+<h2 id="array-to-pointer_decay">array-to-pointer decay<a class="headerlink" href="#array-to-pointer_decay" title="Permanent link">#</a></h2>
+<p><a href="https://www.amazon.com/Modern-C-Jens-Gustedt-ebook/dp/B0978347Z6/">Modern C, 1st Edition, 2019</a> | 11 Pointers - 11.3 Pointers and arrays</p>
+<p><strong>11.3.1 Array and pointer access are the same</strong></p>
+<blockquote>
+<p>TAKEAWAY 11.16: <code>A[i]</code> and <code>*(A+i)</code> are equivalent regardless of whether <code>A</code> is an array or a pointer.</p>
+</blockquote>
+<p>If <code>A</code> is a pointer, we understand the second expression. Here, it just says that we may write the same expression as <code>A[i]</code>. Applying this notion of array access to pointers should improve the readability of your code. The equivalence does not mean that all of the sudden an array object appears where there was none. If <code>A</code> is null, <code>A[i]</code> should crash nicely, as should <code>*(A+i)</code>.</p>
+<p>If <code>A</code> is an array, <code>*(A+i)</code> shows our first application of one of the most important rules in C, called <strong><em>array-to-pointer decay</em></strong>:</p>
+<blockquote>
+<p>TAKEAWAY 11.17 (array decay): Evaluation of an array <code>A</code> returns <code>&amp;A[0]</code>.</p>
+</blockquote>
+<p>In fact, this is the reason there are no "array values" and all the difficulties they entail. Whenever an array occurs that requires a value, it <strong>decays</strong> to a pointer, and we lose all additional information.</p>
+<blockquote>
+<p>TAKEAWAY 6.3: There are array objects but no array values.<br />
+TAKEAWAY 6.5: Arrays can't be assigned to.</p>
+</blockquote>
+<p><strong>11.3.2 Array and pointer parameters are the same</strong></p>
+<p>Because of the decay, arrays <em>cannot</em> be function arguments. There would be no way to call such a function with an array parameter; before any call to the function, an array that we feed into it would <strong>decay</strong> into a pointer, and thus the argument type wouldn't match.</p>
+<p>But we have seen declarations of functions with array parameters, so how did they work?</p>
+<p>The trick C gets away with is to <strong>rewrite</strong> array parameters to pointers.</p>
+<blockquote>
+<p>TAKEAWAY 11.18: In a function declaration, any array parameter rewrites to a pointer.</p>
+</blockquote>
+<p>Think of this and what it means for a while. Understanding this "chief feature" (or character flaw) is central for coding easily in C.</p>
+<p>To come back to our examples from section 6.1.5, the functions that were written with array parameters could be declared as follows:</p>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kt">size_t</span><span class="w"> </span><span class="nf">strlen</span><span class="p">(</span><span class="kt">char</span><span class="w"> </span><span class="k">const</span><span class="o">*</span><span class="w"> </span><span class="n">s</span><span class="p">);</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="nf">strcpy</span><span class="p">(</span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">target</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="k">const</span><span class="o">*</span><span class="w"> </span><span class="n">source</span><span class="p">);</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="kt">signed</span><span class="w"> </span><span class="nf">strcmp</span><span class="p">(</span><span class="kt">char</span><span class="w"> </span><span class="k">const</span><span class="o">*</span><span class="w"> </span><span class="n">s0</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="k">const</span><span class="o">*</span><span class="w"> </span><span class="n">s1</span><span class="p">);</span>
+</span></code></pre></div>
+<p>These are completely equivalent, and any C compiler should be able to use both forms interchangeably.</p>
+<p>Which one to use is a question of habit, culture, or other social contexts. The rule that we follow in this book to use array notation if we suppose it <em>can't</em> be null, and pointer notation if it corresponds to a single item of the base type that <em>also</em> can be null to indicate a special condition.</p>
+<h2 id="distinguish_a0_and_a">distinguish &amp;a[0] and &amp;a<a class="headerlink" href="#distinguish_a0_and_a" title="Permanent link">#</a></h2>
+<p><a href="https://blog.csdn.net/dissection_c">dissection_c</a> - <a href="https://item.jd.com/12720594.html">《C语言深度解剖（第3版）》</a> | 第 4 章 指针和数组</p>
+<p>When we define an array <code>a</code>, the compiler allocates a block of memory of a certain size (element type size * number of elements) according to the specified number of elements and element type, and names this block of memory <code>a</code>.</p>
+<p>Once the name <code>a</code> occupies this block of memory, it cannot be changed. <code>a[0]</code>, <code>a[1]</code>, etc. are elements of <code>a</code>, but they are not the names of the elements. Each element of the array has no name.</p>
+<p>What is the difference between <code>&amp;a[0]</code> and <code>&amp;a</code>?</p>
+<p><code>a[0]</code> is an element, <code>a</code> is the whole array. Although <code>&amp;a[0]</code> and <code>&amp;a</code> have the same value, they have different meanings. The former is the first address of the first element of the array, while the latter is the first address of the array.</p>
+<p>Think of <code>a</code> as Kwangtung Province, <code>a[0]</code> could stand for Canton, which is the capital of Kwangtung. The provincial government of Kwangtung resides in Canton, and the city government of Canton is also located in Canton. Both governments are in Canton, but their meanings are completely different. They have different administrative levels and different jurisdictions.</p>
+<p>Usually we can assign a pointer to point to the first element of an array like this <code>int *pa = &amp;a[0];</code>, but <code>int *pa = &amp;a;</code> will receive a <code>-Wincompatible-pointer-types</code> warning: initialization of <code>int *</code> from incompatible pointer type <code>int (*)[10]</code>. Anyhow, city government is not the counterpart of province government.</p>
+<div class="admonition note">
+<p>Going back to the leftover question in Part One, <code>pa+1</code>(i.e. <code>a[1]</code>) could refer to Canton's sister city, e.g. Shenzhen or Zhuhai, while <code>a+1</code> could refer to Kwangtung's neighbouring province, e.g. Guangxi or Fujian.</p>
+</div>
+<h2 id="array_name_as_lvalue_or_rvalue">array name as lvalue or rvalue<a class="headerlink" href="#array_name_as_lvalue_or_rvalue" title="Permanent link">#</a></h2>
+<p>What does <code>a</code> mean when used as an rvalue?</p>
+<p>Many books assume that it means the first address of the array, but this is actually very wrong. When <code>a</code> is used as an rvalue, its meaning is the same as <code>&amp;a[0]</code>, which represents the first address of the first element of the array, not the first address of the array (when used in the expression <code>sizof(a)</code>, <code>a</code> represents the array name, not used as an rvalue). They are two different things. But note that this is just a representation, and there is <em>no</em> place (this is just a simple assumption, and its specific implementation details will not be discussed too much) to store this address, i.e. the compiler does not allocate a piece of memory for the array <code>a</code> to store its address, which is very different from a pointer.</p>
+<p>Now that we know the meaning of <code>a</code> as an rvalue, what about as an lvalue?</p>
+<p><code>a</code> cannot be an lvalue! Almost every student has made this mistake. The compiler will think that the array name as lvalue means the first address of the first element of <code>a</code>, but the memory starting from that address is a whole. We can only access a particular element of the array, not the array as a whole. So we can treat <code>a[i]</code> as an lvalue, but we cannot treat <code>a</code> as an lvalue. In fact, we can treat <code>a</code> as an ordinary variable, but this variable is divided into many small blocks, and we can <em>only</em> access the whole variable a by accessing these small blocks separately.</p>
+<h2 id="test_programs_about_pointers">test programs about pointers<a class="headerlink" href="#test_programs_about_pointers" title="Permanent link">#</a></h2>
+<h3 id="sizeof_pointer">sizeof pointer<a class="headerlink" href="#sizeof_pointer" title="Permanent link">#</a></h3>
+<p>On the A32/<em>ILP32</em> data model, all pointers are 4 bytes long, that's what <code>P32</code> means, whereas on the A64/<em>LP64</em> data model, all pointers are 8 bytes long, that's what <code>P64</code> means. See <a href="../../20211010/machine-word/">Machine Word</a> for more details about <code>__SIZEOF_POINTER__</code> and <code>__WORDSIZE</code> and print <code>sizeof(void*)</code> to check.</p>
+<p><code>sizeof</code> is a keyword, not a function. Functions are evaluated at run time, while the keyword <code>sizeof</code> is evaluated at compile time.</p>
+<div class="language-c highlight"><span class="filename">sizeof-pointer.c</span><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">argv</span><span class="p">[])</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="w">    </span><span class="kt">char</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sc">&#39;c&#39;</span><span class="p">;</span>
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="w">    </span><span class="kt">short</span><span class="w"> </span><span class="n">s</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2048</span><span class="p">;</span>
+</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">19890604</span><span class="p">;</span>
+</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="w">    </span><span class="kt">long</span><span class="w"> </span><span class="n">l</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mh">0xFEEDBABEDEADBEEF</span><span class="p">;</span>
+</span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">a</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">};</span>
+</span><span id="__span-7-9"><a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a>
+</span><span id="__span-7-10"><a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a><span class="w">    </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">pc</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">c</span><span class="p">;</span>
+</span><span id="__span-7-11"><a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a><span class="w">    </span><span class="kt">short</span><span class="w"> </span><span class="o">*</span><span class="n">ps</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">s</span><span class="p">;</span>
+</span><span id="__span-7-12"><a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">pi</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">i</span><span class="p">;</span>
+</span><span id="__span-7-13"><a id="__codelineno-7-13" name="__codelineno-7-13" href="#__codelineno-7-13"></a><span class="w">    </span><span class="kt">long</span><span class="w"> </span><span class="o">*</span><span class="n">pl</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">l</span><span class="p">;</span>
+</span><span id="__span-7-14"><a id="__codelineno-7-14" name="__codelineno-7-14" href="#__codelineno-7-14"></a><span class="w">    </span><span class="c1">// int *pa = &amp;a; // -Wincompatible-pointer-types</span>
+</span><span id="__span-7-15"><a id="__codelineno-7-15" name="__codelineno-7-15" href="#__codelineno-7-15"></a><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">pa</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+</span><span id="__span-7-16"><a id="__codelineno-7-16" name="__codelineno-7-16" href="#__codelineno-7-16"></a>
+</span><span id="__span-7-17"><a id="__codelineno-7-17" name="__codelineno-7-17" href="#__codelineno-7-17"></a><span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;sizeof(void*) = %zu</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="kt">void</span><span class="o">*</span><span class="p">));</span>
+</span><span id="__span-7-18"><a id="__codelineno-7-18" name="__codelineno-7-18" href="#__codelineno-7-18"></a><span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;sizeof(pc) = %zu, sizeof(*pc) = %zu</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">pc</span><span class="p">),</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="o">*</span><span class="n">pc</span><span class="p">));</span>
+</span><span id="__span-7-19"><a id="__codelineno-7-19" name="__codelineno-7-19" href="#__codelineno-7-19"></a><span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;sizeof(ps) = %zu, sizeof(*ps) = %zu</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">ps</span><span class="p">),</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="o">*</span><span class="n">ps</span><span class="p">));</span>
+</span><span id="__span-7-20"><a id="__codelineno-7-20" name="__codelineno-7-20" href="#__codelineno-7-20"></a><span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;sizeof(pi) = %zu, sizeof(*pi) = %zu</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">pi</span><span class="p">),</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="o">*</span><span class="n">pi</span><span class="p">));</span>
+</span><span id="__span-7-21"><a id="__codelineno-7-21" name="__codelineno-7-21" href="#__codelineno-7-21"></a><span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;sizeof(pl) = %zu, sizeof(*pl) = %zu</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">pl</span><span class="p">),</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="o">*</span><span class="n">pl</span><span class="p">));</span>
+</span><span id="__span-7-22"><a id="__codelineno-7-22" name="__codelineno-7-22" href="#__codelineno-7-22"></a><span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;sizeof(a) = %zu, sizeof(pa) = %zu</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">a</span><span class="p">),</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">pa</span><span class="p">));</span>
+</span><span id="__span-7-23"><a id="__codelineno-7-23" name="__codelineno-7-23" href="#__codelineno-7-23"></a><span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;sizeof(*pa) = %zu, sizeof(a[10]) = %zu</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="o">*</span><span class="n">pa</span><span class="p">),</span><span class="w"> </span><span class="k">sizeof</span><span class="p">(</span><span class="n">a</span><span class="p">[</span><span class="mi">10</span><span class="p">]));</span>
+</span><span id="__span-7-24"><a id="__codelineno-7-24" name="__codelineno-7-24" href="#__codelineno-7-24"></a>
+</span><span id="__span-7-25"><a id="__codelineno-7-25" name="__codelineno-7-25" href="#__codelineno-7-25"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+</span><span id="__span-7-26"><a id="__codelineno-7-26" name="__codelineno-7-26" href="#__codelineno-7-26"></a><span class="p">}</span>
+</span></code></pre></div>
+<p>On rpi4b-ubuntu/aarch64 and the LP64 data model, the result is as follows.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>$<span class="w"> </span>cc<span class="w"> </span>sizeof-pointer.c<span class="w"> </span>-o<span class="w"> </span>sizeof-pointer<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>./sizeof-pointer
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>sizeof<span class="o">(</span>void*<span class="o">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">8</span>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>sizeof<span class="o">(</span>pc<span class="o">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">8</span>,<span class="w"> </span>sizeof<span class="o">(</span>*pc<span class="o">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">1</span>
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>sizeof<span class="o">(</span>ps<span class="o">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">8</span>,<span class="w"> </span>sizeof<span class="o">(</span>*ps<span class="o">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">2</span>
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>sizeof<span class="o">(</span>pi<span class="o">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">8</span>,<span class="w"> </span>sizeof<span class="o">(</span>*pi<span class="o">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">4</span>
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>sizeof<span class="o">(</span>pl<span class="o">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">8</span>,<span class="w"> </span>sizeof<span class="o">(</span>*pl<span class="o">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">8</span>
+</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>sizeof<span class="o">(</span>a<span class="o">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">40</span>,<span class="w"> </span>sizeof<span class="o">(</span>pa<span class="o">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">8</span>
+</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>sizeof<span class="o">(</span>*pa<span class="o">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">4</span>,<span class="w"> </span>sizeof<span class="o">(</span>a<span class="o">[</span><span class="m">10</span><span class="o">])</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="m">4</span>
+</span></code></pre></div>
+<p>Although the element <code>a[10]</code> does not exist(out of boundary), <code>a[10]</code> is not actually accessed here. Instead, its size is determined based on the type of the array element.</p>
+<h3 id="pointer_arithmetic">pointer arithmetic<a class="headerlink" href="#pointer_arithmetic" title="Permanent link">#</a></h3>
+<p>Finally, I designed a comprehensive test case as a quiz to measure learning outcomes based on the topics of this article.</p>
+<div class="language-c highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">array-pointer.c</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-9-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-9-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-9-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-9-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-9-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-9-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-9-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-9-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-9-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-9-10">10</a></span>
+<span class="normal"><a href="#__codelineno-9-11">11</a></span>
+<span class="normal"><a href="#__codelineno-9-12">12</a></span>
+<span class="normal"><a href="#__codelineno-9-13">13</a></span>
+<span class="normal"><a href="#__codelineno-9-14">14</a></span>
+<span class="normal"><a href="#__codelineno-9-15">15</a></span>
+<span class="normal"><a href="#__codelineno-9-16">16</a></span>
+<span class="normal"><a href="#__codelineno-9-17">17</a></span>
+<span class="normal"><a href="#__codelineno-9-18">18</a></span>
+<span class="normal"><a href="#__codelineno-9-19">19</a></span>
+<span class="normal"><a href="#__codelineno-9-20">20</a></span>
+<span class="normal"><a href="#__codelineno-9-21">21</a></span>
+<span class="normal"><a href="#__codelineno-9-22">22</a></span>
+<span class="normal"><a href="#__codelineno-9-23">23</a></span>
+<span class="normal"><a href="#__codelineno-9-24">24</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdint.h&gt;</span><span class="c1"> // uintptr_t</span>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3"></a>
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4"></a><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">argv</span><span class="p">[])</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5"></a><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">a</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="p">};</span>
+</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6"></a><span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%p, %p, %p</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]);</span><span class="w"> </span><span class="c1">// same</span>
+</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7"></a><span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%p, %p, %p</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">a</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">);</span>
+</span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8"></a>
+</span><span id="__span-9-9"><a id="__codelineno-9-9" name="__codelineno-9-9"></a><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">p1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="p">)(</span><span class="o">&amp;</span><span class="n">a</span><span class="o">+</span><span class="mi">1</span><span class="p">);</span>
+</span><span id="__span-9-10"><a id="__codelineno-9-10" name="__codelineno-9-10"></a><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">p2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="p">)(</span><span class="n">a</span><span class="o">+</span><span class="mi">1</span><span class="p">);</span><span class="w"> </span><span class="c1">// (int *)(&amp;a[0]+1);</span>
+</span><span id="__span-9-11"><a id="__codelineno-9-11" name="__codelineno-9-11"></a><span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%#x, 0x%02x</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">p1</span><span class="p">[</span><span class="mi">-1</span><span class="p">],</span><span class="w"> </span><span class="o">*</span><span class="n">p2</span><span class="p">);</span>
+</span><span id="__span-9-12"><a id="__codelineno-9-12" name="__codelineno-9-12"></a>
+</span><span id="__span-9-13"><a id="__codelineno-9-13" name="__codelineno-9-13"></a><span class="w">    </span><span class="c1">// little endian</span>
+</span><span id="__span-9-14"><a id="__codelineno-9-14" name="__codelineno-9-14"></a><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">p3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="p">)((</span><span class="kt">uintptr_t</span><span class="p">)</span><span class="n">a</span><span class="o">+</span><span class="mi">1</span><span class="p">);</span>
+</span><span id="__span-9-15"><a id="__codelineno-9-15" name="__codelineno-9-15"></a><span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%p = 0x%0*x: &quot;</span><span class="p">,</span><span class="w"> </span><span class="n">p3</span><span class="p">,</span><span class="w"> </span><span class="mi">8</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="n">p3</span><span class="p">);</span>
+</span><span id="__span-9-16"><a id="__codelineno-9-16" name="__codelineno-9-16"></a>
+</span><span id="__span-9-17"><a id="__codelineno-9-17" name="__codelineno-9-17"></a><span class="w">    </span><span class="c1">// dump *p3 byte by byte</span>
+</span><span id="__span-9-18"><a id="__codelineno-9-18" name="__codelineno-9-18"></a><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="o">&lt;</span><span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">);</span><span class="w"> </span><span class="n">i</span><span class="o">++</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-9-19"><a id="__codelineno-9-19" name="__codelineno-9-19"></a><span class="w">        </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%02x &quot;</span><span class="p">,</span><span class="w"> </span><span class="o">*</span><span class="p">((</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="p">)</span><span class="n">p3</span><span class="o">+</span><span class="n">i</span><span class="p">));</span>
+</span><span id="__span-9-20"><a id="__codelineno-9-20" name="__codelineno-9-20"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-9-21"><a id="__codelineno-9-21" name="__codelineno-9-21"></a><span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">);</span>
+</span><span id="__span-9-22"><a id="__codelineno-9-22" name="__codelineno-9-22"></a>
+</span><span id="__span-9-23"><a id="__codelineno-9-23" name="__codelineno-9-23"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+</span><span id="__span-9-24"><a id="__codelineno-9-24" name="__codelineno-9-24"></a><span class="p">}</span>
+</span></code></pre></div></td></tr></table></div>
+<ul>
+<li>line 6: <code>&amp;a</code> is type of array pointer <code>int (*)[5]</code>, so p1=<code>&amp;a+1</code> points to the next array.</li>
+<li>line 7: <code>(int *)(a+1)</code> equiv to <code>(int *)(&amp;a[0]+1)</code>, so p2 points to the second element <code>a[1]</code>. Check against output of line 9.</li>
+<li>line 13: The address of the array <code>&amp;a</code> is forced to be cast to an integer, then add 1, so that p3 points to the second byte of <code>a[0]</code>.</li>
+</ul>
+<p>On rpi4b-ubuntu/aarch64 and the LP64 data model, the result is as follows.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>$<span class="w"> </span>cc<span class="w"> </span>array-pointer.c<span class="w"> </span>-o<span class="w"> </span>array-pointer<span class="w"> </span>-g<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>./array-pointer
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>0xfffff0b59c00,<span class="w"> </span>0xfffff0b59c00,<span class="w"> </span>0xfffff0b59c00
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>0xfffff0b59c04,<span class="w"> </span>0xfffff0b59c14,<span class="w"> </span>0xfffff0b59c04
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a>0x5,<span class="w"> </span>0x02
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="nv">0xfffff0b59c01</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>0x02000000:<span class="w"> </span><span class="m">00</span><span class="w"> </span><span class="m">00</span><span class="w"> </span><span class="m">00</span><span class="w"> </span><span class="m">02</span>
+</span></code></pre></div>
+<p>The following ascii graph illustrates the position and layout of array and pointers.</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>             p3             p2                                                                       p1
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>             |              |                                                                        |
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>             ↓              ↓                                                                        ↓
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>------------------------------------------------------------------------------------------------------------
+</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>|  ⚡️  | \x01\x00\x00\x00 | \x02\x00\x00\x00 | \x03\x00\x00\x00 | \x04\x00\x00\x00 | \x05\x00\x00\x00 |  ⚡️  |
+</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a>------------------------------------------------------------------------------------------------------------
+</span><span id="__span-11-7"><a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a>      a[0]               a[1]               a[2]               a[3]               a[4]
+</span></code></pre></div>
+<p>Note that <code>p3</code> is a misaligned address, dereferencing <code>*p3</code> as an integer will combine the last three bytes of <code>a[0]</code> and the first byte of <code>a[1]</code>. It is only an artificially constructed test case and is not practical.</p>
+<hr />
+<p>Follow the <a href="../../20231004/c-pointer-armasm/">C Pointer Explanation in armasm</a>, disassemble the binary ELF <code>array-pointer</code> and draw the stack layout to understand it from the ground up.</p>
+<p>First dump contents of section <code>.rodata</code> to see the format literals of <code>printf</code>.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>$<span class="w"> </span>objdump<span class="w"> </span>-j<span class="w"> </span>.rodata<span class="w"> </span>-s<span class="w"> </span>array-pointer<span class="w"> </span><span class="c1"># or</span>
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>$<span class="w"> </span>rabin2<span class="w"> </span>-z<span class="w"> </span>array-pointer
+</span></code></pre></div>
+<p>Then execute <code>objdump --disassemble=main --source-comment -l array-pointer</code> to disassemble the binary ELF statically. To debug dynamically, use <a href="../../20200310/7-gdb-enhanced/">GDB-pwndbg</a> <code>gdb-pwndbg array-pointer</code> or <a href="../../20231002/radare2-basics/">radare2</a> <code>r2 -Ad array-pointer</code>.</p>
+<p>The stack layout(ascii graph) and illustration are as follows.</p>
+<ol>
+<li>StackGuard in prolog/epilog, see <a href="../../20231003/arm-stack-guard/">ARM StackGuard - Stack Canary</a></li>
+<li>stack size = 0x60/96, it can accommodate 12 double(giant)-word</li>
+<li>sizeof(a[n])=4, sizeof(p1|p2|p3)=8, corresponds to word/double-word</li>
+<li>int array <code>a[5]</code> ranges from 0x40~0x50, with right boundary 0x54</li>
+<li><code>int *p1</code> points to <code>a[5]</code>; <code>int *p2</code> points to <code>a[1]</code></li>
+<li>the loop variable <code>int i</code> resides in 0x20, occupy a 4-byte word</li>
+<li>use instruction <code>LDRB</code> to load register byte per loop</li>
+</ol>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>                  stack
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>high addr       +-----------+
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>    ↓           |  canary   | 🐦‍⬛
+</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>            /   |-----------|+0x58
+</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>            |   |a[4] |     | ←-----------+
+</span><span id="__span-13-6"><a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a>            |   |-----------|+0x50        |
+</span><span id="__span-13-7"><a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a>      a[5] &lt;    |a[2] | a[3]|             |
+</span><span id="__span-13-8"><a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a>            |   |-----------|+0x48        |
+</span><span id="__span-13-9"><a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a>            |   |a[0] | a[1]| ←-------+   |
+</span><span id="__span-13-10"><a id="__codelineno-13-10" name="__codelineno-13-10" href="#__codelineno-13-10"></a>            \   |-----------|+0x40    |   |
+</span><span id="__span-13-11"><a id="__codelineno-13-11" name="__codelineno-13-11" href="#__codelineno-13-11"></a>                |  sp+0x41  |         |   |
+</span><span id="__span-13-12"><a id="__codelineno-13-12" name="__codelineno-13-12" href="#__codelineno-13-12"></a>          p3 -→ |-----------|+0x38    |   |
+</span><span id="__span-13-13"><a id="__codelineno-13-13" name="__codelineno-13-13" href="#__codelineno-13-13"></a>                |  sp+0x44  | --------+   |
+</span><span id="__span-13-14"><a id="__codelineno-13-14" name="__codelineno-13-14" href="#__codelineno-13-14"></a>          p2 -→ |-----------|+0x30        |
+</span><span id="__span-13-15"><a id="__codelineno-13-15" name="__codelineno-13-15" href="#__codelineno-13-15"></a>                |  sp+0x54  | ------------+
+</span><span id="__span-13-16"><a id="__codelineno-13-16" name="__codelineno-13-16" href="#__codelineno-13-16"></a>          p1 -→ |-----------|+0x28
+</span><span id="__span-13-17"><a id="__codelineno-13-17" name="__codelineno-13-17" href="#__codelineno-13-17"></a>                |  i  |     |
+</span><span id="__span-13-18"><a id="__codelineno-13-18" name="__codelineno-13-18" href="#__codelineno-13-18"></a>                |-----------|+0x20
+</span><span id="__span-13-19"><a id="__codelineno-13-19" name="__codelineno-13-19" href="#__codelineno-13-19"></a>                |     | w0  |
+</span><span id="__span-13-20"><a id="__codelineno-13-20" name="__codelineno-13-20" href="#__codelineno-13-20"></a>                |-----------|+0x18
+</span><span id="__span-13-21"><a id="__codelineno-13-21" name="__codelineno-13-21" href="#__codelineno-13-21"></a>                |    x1     |
+</span><span id="__span-13-22"><a id="__codelineno-13-22" name="__codelineno-13-22" href="#__codelineno-13-22"></a>                |-----------|+0x10
+</span><span id="__span-13-23"><a id="__codelineno-13-23" name="__codelineno-13-23" href="#__codelineno-13-23"></a>                |    LR     |
+</span><span id="__span-13-24"><a id="__codelineno-13-24" name="__codelineno-13-24" href="#__codelineno-13-24"></a>                |-----------|+0x8
+</span><span id="__span-13-25"><a id="__codelineno-13-25" name="__codelineno-13-25" href="#__codelineno-13-25"></a>                |    P_FP   |
+</span><span id="__span-13-26"><a id="__codelineno-13-26" name="__codelineno-13-26" href="#__codelineno-13-26"></a>        SP/FP → +-----------+
+</span></code></pre></div>
+
+
+
+
+
+
+
+  
+  
+
+
+
+  
+
+
+  
+
+
+
+  <h2 id="__comments">Comments</h2>
+  <!-- Insert generated snippet here -->
+  <script src="https://giscus.app/client.js"
+    data-repo="fan2/mkdocs"
+    data-repo-id="R_kgDOLltxSg"
+    data-category="Announcements"
+    data-category-id="DIC_kwDOLltxSs4CeURH"
+    data-mapping="pathname"
+    data-strict="0"
+    data-reactions-enabled="1"
+    data-emit-metadata="1"
+    data-input-position="top"
+    data-theme="preferred_color_scheme"
+    data-lang="en"
+    data-loading="lazy"
+    crossorigin="anonymous"
+    async>
+  </script>
+
+  <!-- Synchronize Giscus theme with palette -->
+  <script>
+    var giscus = document.querySelector("script[src*=giscus]")
+
+    // Set palette on initial load
+    var palette = __md_get("__palette")
+    if (palette && typeof palette.color === "object") {
+      var theme = palette.color.scheme === "slate"
+        ? "transparent_dark"
+        : "light"
+
+      // Instruct Giscus to set theme
+      giscus.setAttribute("data-theme", theme) 
+    }
+
+    // Register event handlers after documented loaded
+    document.addEventListener("DOMContentLoaded", function() {
+      var ref = document.querySelector("[data-md-component=palette]")
+      ref.addEventListener("change", function() {
+        var palette = __md_get("__palette")
+        if (palette && typeof palette.color === "object") {
+          var theme = palette.color.scheme === "slate"
+            ? "transparent_dark"
+            : "light"
+
+          // Instruct Giscus to change theme
+          var frame = document.querySelector(".giscus-frame")
+          frame.contentWindow.postMessage(
+            { giscus: { setConfig: { theme } } },
+            "https://giscus.app"
+          )
+        }
+      })
+    })
+  </script>
+
+      
+    </article>
+  </div>
+
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12Z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+        
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../../20231004/c-pointer-armasm/" class="md-footer__link md-footer__link--prev" aria-label="Previous: C Pointer Explanation in armasm">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                C Pointer Explanation in armasm
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../../20240316/mac-setup-httpd-dav/" class="md-footer__link md-footer__link--next" aria-label="Next: macOS上基于httpd搭建WebDav服务">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                macOS上基于httpd搭建WebDav服务
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2024- Cliff Fan
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["toc.follow", "header.autohide", "navigation.tabs", "navigation.top", "navigation.footer", "navigation.tracking", "content.code.copy", "content.code.select", "content.code.annotate"], "search": "../../../assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.ad660dcc.min.js"></script>
+      
+        <script src="../../../javascripts/mathjax.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+        <script src="https://vercount.one/js"></script>
+      
+    
+  </body>
+</html>

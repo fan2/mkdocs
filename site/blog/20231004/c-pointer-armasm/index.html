@@ -18,7 +18,7 @@
         <link rel="prev" href="../../20231003/arm-stack-guard/">
       
       
-        <link rel="next" href="../../20240316/mac-setup-httpd-dav/">
+        <link rel="next" href="../../20231005/c-pointer-array/">
       
       
       <link rel="icon" href="../../../assets/hold_yourself.jpg">
@@ -1463,7 +1463,7 @@
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7h1.5Z"/></svg>
                           <span class="md-ellipsis">
                             
-                              10 min read
+                              11 min read
                             
                           </span>
                         </div>
@@ -1495,22 +1495,24 @@
   <h1>C Pointer Explanation in armasm</h1>
 
 <p>A C program, whatever its size, consists of <code>functions</code> and <code>variables</code>. A <code>function</code> contains statements that specify the computing operations to be done, and <code>variables</code> store values used during the computation.</p>
+<p>Every time we want to use a variable(e.g. <code>char c</code>; <code>int i</code>;), we must declare it in advance, which actually allocates a space in memory with the width corresponding to the variable type.</p>
+<p>A pointer is a variable that contains the <em>address</em> of another variable.</p>
+<!-- more -->
+
 <p>The compiler allocates space for local procedure variables qualified with the <code>static</code> attribute in <code>.data</code> or <code>.bss</code> for each definition. On the other hand, local <em>nonstatic</em> program variables are managed at run-time on the <em>stack</em> and are of no interest to the linker.</p>
-<p>Memory is just a place to store data, just like the seats in the cinema when I watch a film. Each seat in the cinema has to be numbered, and our memory has to store different data. Of course, we need to know where our data is stored! So the memory has to be numbered like the seats, which we call memory addressing. The seats can follow the principle of "one seat corresponds to one number", starting from "No. 1". The memory is addressed one byte at a time, as shown in the figure below. Each byte has a number, which we call the memory address.</p>
+<p>Let us begin with a simplified picture of how memory is organized. Memory is just a place to store data, just like the seats in the cinema when I watch a film. Each seat in the cinema has to be numbered, and our memory has to store different data. Of course, we need to know where our data is stored! So the memory has to be numbered like the seats, which we call <em>memory addressing</em>. The seats can follow the principle of "one seat corresponds to one number", starting from "No. 1". The memory is <em>addressed</em> one byte at a time, as shown in the figure below. Each byte has a number, which we call the memory address.</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>       6    7    8    9   10   11   12   13
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>-----------------------------------------------------------------------------
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>... |    |    |    |    |    |    |    |    | ...
 </span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>-----------------------------------------------------------------------------
 </span></code></pre></div>
-<p>Every time we want to use a variable(e.g. <code>char c</code>; <code>int i</code>;), we must declare it in advance, which actually allocates a space in memory with the width corresponding to the variable type.</p>
-<p>A pointer is a variable that contains the address of a variable. Pointers are much used in C, partly because they are sometimes the only way to express a computation, and partly because they usually lead to more compact and efficient code than can be obtained in other ways.</p>
+<p>A typical machine has an array of consecutively numbered or addressed memory cells that may be manipulated individually or in contiguous groups. One common situation is that any byte can be a <code>char</code>, a pair of one-byte cells can be treated as a <code>short</code> integer, and four/eight(depends on data model) adjacent bytes form a <code>long</code>.</p>
+<p>A pointer is a group of cells (four in A32, eight in A64) that can hold an <em>address</em>. Pointers are much used in C, partly because they are sometimes the only way to express a computation, and partly because they usually lead to more compact and efficient code than can be obtained in other ways.</p>
 <p>Pointers have been lumped with the <code>goto</code> statement as a marvelous way to create impossible-to-understand programs. This is certainly true when they are used carelessly, and it is easy to create pointers that point somewhere unexpected. With discipline, however, pointers can also be used to achieve clarity and simplicity.</p>
 <p>You should also note the implication that a pointer is constrained to point to a particular kind of object: every pointer points to a specific data type.</p>
-<!-- more -->
-
 <h2 id="demo_program">demo program<a class="headerlink" href="#demo_program" title="Permanent link">#</a></h2>
 <p>The following demo program is taken from <a href="https://www.amazon.com/Programming-Language-2nd-Brian-Kernighan/dp/0131103628/">TCPL</a> | Chapter 5 - Pointers and Arrays - 5.1 Pointers and Addresses.</p>
-<div class="language-c highlight"><span class="filename">pointer-1.c</span><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
+<div class="language-c highlight"><span class="filename">pointer-demo.c</span><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
 </span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">argv</span><span class="p">[])</span><span class="w"> </span><span class="p">{</span>
 </span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="n">z</span><span class="p">[</span><span class="mi">10</span><span class="p">];</span>
@@ -1532,19 +1534,19 @@
 </span><span id="__span-1-20"><a id="__codelineno-1-20" name="__codelineno-1-20" href="#__codelineno-1-20"></a><span class="p">}</span>
 </span></code></pre></div>
 <p>GCC compile with <code>-g</code> option to emit extra debugging information.</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>$<span class="w"> </span>cc<span class="w"> </span>pointer-1.c<span class="w"> </span>-o<span class="w"> </span>pointer-1<span class="w"> </span>-g
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>$<span class="w"> </span>cc<span class="w"> </span>pointer-demo.c<span class="w"> </span>-o<span class="w"> </span>pointer-demo<span class="w"> </span>-g
 </span></code></pre></div>
 <h2 id="format_literals">format literals<a class="headerlink" href="#format_literals" title="Permanent link">#</a></h2>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>$<span class="w"> </span>objdump<span class="w"> </span>-j<span class="w"> </span>.rodata<span class="w"> </span>-s<span class="w"> </span>pointer-1
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>$<span class="w"> </span>objdump<span class="w"> </span>-j<span class="w"> </span>.rodata<span class="w"> </span>-s<span class="w"> </span>pointer-demo
 </span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>pointer-1:<span class="w">     </span>file<span class="w"> </span>format<span class="w"> </span>elf64-littleaarch64
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>pointer-demo:<span class="w">     </span>file<span class="w"> </span>format<span class="w"> </span>elf64-littleaarch64
 </span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>
 </span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>Contents<span class="w"> </span>of<span class="w"> </span>section<span class="w"> </span>.rodata:
 </span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="w"> </span><span class="m">0958</span><span class="w"> </span><span class="m">01000200</span><span class="w"> </span><span class="m">00000000</span><span class="w"> </span>6970203d<span class="w"> </span>2025700a<span class="w">  </span>........ip<span class="w"> </span><span class="o">=</span><span class="w"> </span>%p.
 </span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="w"> </span><span class="m">0968</span><span class="w"> </span><span class="m">00000000</span><span class="w"> </span><span class="m">00000000</span><span class="w"> </span>78203d20<span class="w"> </span>25643b20<span class="w">  </span>........x<span class="w"> </span><span class="o">=</span><span class="w"> </span>%d<span class="p">;</span>
 </span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="w"> </span><span class="m">0978</span><span class="w"> </span>79203d20<span class="w"> </span>25640a00<span class="w">                    </span><span class="nv">y</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>%d..
 </span><span id="__span-3-9"><a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>
-</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>$<span class="w"> </span>rabin2<span class="w"> </span>-z<span class="w"> </span>pointer-1
+</span><span id="__span-3-10"><a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>$<span class="w"> </span>rabin2<span class="w"> </span>-z<span class="w"> </span>pointer-demo
 </span><span id="__span-3-11"><a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="o">[</span>Strings<span class="o">]</span>
 </span><span id="__span-3-12"><a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a>nth<span class="w"> </span>paddr<span class="w">      </span>vaddr<span class="w">      </span>len<span class="w"> </span>size<span class="w"> </span>section<span class="w"> </span><span class="nb">type</span><span class="w">  </span>string
 </span><span id="__span-3-13"><a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a>―――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -1553,17 +1555,17 @@
 </span></code></pre></div>
 <h2 id="disassemble_main">disassemble main<a class="headerlink" href="#disassemble_main" title="Permanent link">#</a></h2>
 <p>Before disassembling, execute <a href="https://github.com/slimm609/checksec.sh">checksec.sh</a> to check executables and kernel properties.</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>$<span class="w"> </span>checksec<span class="w"> </span>--file<span class="o">=</span>pointer-1
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>$<span class="w"> </span>checksec<span class="w"> </span>--file<span class="o">=</span>pointer-demo
 </span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>RELRO<span class="w">           </span>STACK<span class="w"> </span>CANARY<span class="w">      </span>NX<span class="w">            </span>PIE<span class="w">             </span>RPATH<span class="w">      </span>RUNPATH<span class="w">  </span>Symbols<span class="w">     </span>FORTIFY<span class="w"> </span>Fortified<span class="w">       </span>Fortifiable<span class="w">      </span>FILE
-</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>Full<span class="w"> </span>RELRO<span class="w">      </span>Canary<span class="w"> </span>found<span class="w">      </span>NX<span class="w"> </span>enabled<span class="w">    </span>PIE<span class="w"> </span>enabled<span class="w">     </span>No<span class="w"> </span>RPATH<span class="w">   </span>No<span class="w"> </span>RUNPATH<span class="w">   </span><span class="m">96</span><span class="o">)</span><span class="w"> </span>Symbols<span class="w">   </span>No<span class="w">    </span><span class="m">0</span><span class="w">           </span><span class="m">1</span><span class="w">        </span>pointer-1
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>Full<span class="w"> </span>RELRO<span class="w">      </span>Canary<span class="w"> </span>found<span class="w">      </span>NX<span class="w"> </span>enabled<span class="w">    </span>PIE<span class="w"> </span>enabled<span class="w">     </span>No<span class="w"> </span>RPATH<span class="w">   </span>No<span class="w"> </span>RUNPATH<span class="w">   </span><span class="m">96</span><span class="o">)</span><span class="w"> </span>Symbols<span class="w">   </span>No<span class="w">    </span><span class="m">0</span><span class="w">           </span><span class="m">1</span><span class="w">        </span>pointer-demo
 </span></code></pre></div>
 <p>Then use <code>objdump</code> or <code>gdb dissassemble</code> to disassemble the ELF binary.</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>$<span class="w"> </span>objdump<span class="w"> </span>--disassemble<span class="o">=</span>main<span class="w"> </span>--source-comment<span class="w"> </span>-l<span class="w"> </span>pointer-1<span class="w"> </span><span class="c1"># or</span>
-</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>$<span class="w"> </span>gdb<span class="w"> </span>-batch<span class="w"> </span>-ex<span class="w"> </span><span class="s1">&#39;file pointer-1&#39;</span><span class="w"> </span>-ex<span class="w"> </span><span class="s1">&#39;disassemble /rs main&#39;</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>$<span class="w"> </span>objdump<span class="w"> </span>--disassemble<span class="o">=</span>main<span class="w"> </span>--source-comment<span class="w"> </span>-l<span class="w"> </span>pointer-demo<span class="w"> </span><span class="c1"># or</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>$<span class="w"> </span>gdb<span class="w"> </span>-batch<span class="w"> </span>-ex<span class="w"> </span><span class="s1">&#39;file pointer-demo&#39;</span><span class="w"> </span>-ex<span class="w"> </span><span class="s1">&#39;disassemble /rs main&#39;</span>
 </span></code></pre></div>
 <p>You can also use the online <a href="https://gcc.godbolt.org/">Compiler Explorer</a>, honourably produced by <a href="https://xania.org/">Matt Godbolt</a>. It highlights individual code sections and displays the equivalent disassembly in their respective colors.</p>
-<p>Here I'm going to use radare2 to debug the targeted ELF binary.</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>$<span class="w"> </span>r2<span class="w"> </span>-Ad<span class="w"> </span>pointer-1
+<p>Here I'm going to use <a href="../../20231002/radare2-basics/">radare2</a> to debug the targeted ELF binary.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>$<span class="w"> </span>r2<span class="w"> </span>-Ad<span class="w"> </span>pointer-demo
 </span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="o">[</span>0xffff8fb41c40<span class="o">]</span>&gt;<span class="w"> </span>dcu<span class="w"> </span>main
 </span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>
 </span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="o">[</span>0xaaaacc200854<span class="o">]</span>&gt;<span class="w"> </span>i~canary,crypto,nx,pic,relocs,relro,static,stripped
@@ -1773,7 +1775,7 @@ Read on to keep an eye on its activity and wait for it to emerge.</p>
 </ol>
 <h2 id="stack_layoutascii_graph">stack layout(ascii graph)<a class="headerlink" href="#stack_layoutascii_graph" title="Permanent link">#</a></h2>
 <ol>
-<li>StackGuard in prolog/epilog, <a href="../../20231003/arm-stack-guard/">ARM StackGuard - Stack Canary</a></li>
+<li>StackGuard in prolog/epilog, see <a href="../../20231003/arm-stack-guard/">ARM StackGuard - Stack Canary</a></li>
 <li>stack size = 0x60/96, it can accommodate 12 double(giant)-word</li>
 <li>sizeof(x|y|z[n])=4, sizeof(ip)=8, corresponds to word/double-word</li>
 <li><code>z[10]</code> ranges from 0x30~0x50, uninitialized with random value</li>
@@ -1809,11 +1811,18 @@ Read on to keep an eye on its activity and wait for it to emerge.</p>
 <h2 id="brief_sum-up_of_c_pointer">brief sum-up of C pointer<a class="headerlink" href="#brief_sum-up_of_c_pointer" title="Permanent link">#</a></h2>
 <p>As is shown above, in AArch64, every double-word is like a slot or box in the stack. By declaration, <code>x</code> and <code>y</code> are both variables of type <code>int</code> in C, each 4 bytes long under the <code>LP64</code> <a href="../../20211008/data-model/">data model</a>, so together they occupy a double-word slot. <code>ip</code> is a pointer of 8 bytes width, conforming to <code>P64</code>. So it occupies an independent slot.</p>
 <p>From the compiler's point of view, a pointer is nothing more than a variable. The difference is the restriction of the value to be set. It couldn't be assigned a normal integer value like <code>x</code> or <code>y</code>, only the address of an integer variable could be accepted, e.g. <code>&amp;x</code>, <code>&amp;y</code>, <code>&amp;z[0]</code>.</p>
-<p>The variable (name) is like a symbol/label in assembly that represents a memory address. As shown in this example, when it appears on the left, it's treated as a <em>box</em> ready to receive a value. While on the right side, it's a <em>reference</em> that unboxes a value out.</p>
-<p>A pointer variable holds an address of a certain type. The unary <em>address-of</em> operator <code>&amp;</code> gets the address of an object, e.g. <code>ip = &amp;x</code> means <code>ip</code> stores the address of <code>x</code>(aka points to <code>x</code>). A direct reference to a pointer returns the address, i.e. <code>printf("ip = %p\n", ip)</code> will print the address of variable <code>x</code>.</p>
-<p>The declaration of the pointer <code>int *ip</code> is intended as a mnemonic; it says that <code>*ip</code> is an int. It allows us to refer to an object through its address. So to access the target value to which <code>ip</code> points, we should use the unary <em>object-of</em> operator <code>*</code> for <em>indirection</em> or <em>dereferencing</em>. Indirectly, <code>y = *ip</code> gets <code>x</code> from the pointer <code>ip</code>, which is equivalent to <code>y = x</code> according to the result of the assignment.</p>
-<p>Please note that the <code>*</code> character plays two different roles in the definition of the example. In a declaration, it creates a new type (a pointer type of <code>int*</code>), whereas in an expression it <em>dereferences</em> the object to which a pointer <em>refers</em>.</p>
-<p>Since <code>ip</code> points to the integer <code>x</code>, <code>*ip</code> can occur in any context where <code>x</code> could occur. So <code>*ip = 0</code> sets the target to zero, equivalent to <code>x = 0</code>. The unary operators <code>*</code> and <code>&amp;</code> bind tighter than arithmetic operators, so the assignment <code>y = *ip + 1</code> takes whatever <code>ip</code> points to, adds 1, and assigns the result to <code>y</code>. <code>*ip = *ip + 10</code> increments <code>*ip</code> by 10, equivalent to <code>x = x + 10</code>.</p>
+<p>The variable (name) is like a symbol/label in assembly that represents a memory cell. If we think of the contiguous memory cells as a telephone book or yellow pages, the variable is a bit like a phone number or house number that we can use to find a person or a house. As shown in the example, when it appears on the left, it's treated as a <em>box</em> ready to receive a value. While on the right side, it's a <em>reference</em> that unboxes a value out.</p>
+<p>A pointer variable holds an address of a certain type. The unary <strong><em>address-of</em></strong> operator <code>&amp;</code> gets the address of an object, e.g. <code>ip = &amp;x</code> assigns the address of <code>x</code> to the variable <code>ip</code>, and <code>ip</code> is said to <em>point to</em> <code>x</code>. The <code>&amp;</code> operator only applies to objects in memory: variables and array elements. It cannot be applied to expressions, constants, or register variables. A direct reference to a pointer returns the address it holds, i.e. <code>printf("ip = %p\n", ip)</code> will print the address of variable <code>x</code>.</p>
+<p>The declaration of the pointer <code>int *ip</code> is intended as a mnemonic; it implies that <code>*ip</code> is an int. It allows us to refer to an object through its address. So to access the target value to which <code>ip</code> points, we should use the unary <strong><em>object-of</em></strong> operator <code>*</code> for <em>indirection</em> or <em>dereferencing</em>. Indirectly, <code>y = *ip</code> gets <code>x</code> from the pointer <code>ip</code>, which is equivalent to <code>y = x</code> according to the result of the assignment.</p>
+<div class="admonition example">
+<p class="admonition-title">vivid analogy of pointer</p>
+<p>Let's take an example from everyday life. Suppose one day Tom comes to you and asks for Jerry's house number or telephone number, and you write this information down on a piece of paper. This piece of paper is a bit like the concept of a pointer that Tom can use to find Jerry. Back to our case, <em>Tom</em> is <code>y</code>, <em>Jerry</em> is <code>x</code>, <code>ip</code> is the <em>scrip</em>.</p>
+</div>
+<p>Since <code>ip</code> points to the integer <code>x</code>, <code>*ip</code> can occur in any context where <code>x</code> could occur. So <code>*ip = 0</code> sets the target to zero, equivalent to <code>x = 0</code>. The unary operators <code>*</code> and <code>&amp;</code> bind tighter than arithmetic operators, so the assignment <code>y = *ip + 1</code> takes whatever <code>ip</code> points to, adds 1, and assigns the result to <code>y</code>. <code>*ip = *ip + 10</code> increments <code>*ip</code> by 10, equivalent to <code>x = x + 10</code>, and so on.</p>
+<div class="admonition note">
+<p class="admonition-title">dual role of the asterisk(*)</p>
+<p>The character <code>*</code> plays two different roles in the definition of the example. In a declaration, it creates a new type (a pointer type of <code>int*</code>), while in an expression it <em>dereferences</em> the object to which a pointer <em>refers</em>, like the key to the treasure chest.</p>
+</div>
 <hr />
 <p><strong><code>Related Contents</code></strong>:</p>
 <ul>
@@ -1938,13 +1947,13 @@ Read on to keep an eye on its activity and wait for it to emerge.</p>
         
         
           
-          <a href="../../20240316/mac-setup-httpd-dav/" class="md-footer__link md-footer__link--next" aria-label="Next: macOS上基于httpd搭建WebDav服务">
+          <a href="../../20231005/c-pointer-array/" class="md-footer__link md-footer__link--next" aria-label="Next: C Pointers and Arrays">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                macOS上基于httpd搭建WebDav服务
+                C Pointers and Arrays
               </div>
             </div>
             <div class="md-footer__button md-icon">

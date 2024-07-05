@@ -12,9 +12,15 @@ comments: true
 
 A C program, whatever its size, consists of `functions` and `variables`. A `function` contains statements that specify the computing operations to be done, and `variables` store values used during the computation.
 
+Every time we want to use a variable(e.g. `char c`; `int i`;), we must declare it in advance, which actually allocates a space in memory with the width corresponding to the variable type.
+
+A pointer is a variable that contains the *address* of another variable.
+
+<!-- more -->
+
 The compiler allocates space for local procedure variables qualified with the `static` attribute in `.data` or `.bss` for each definition. On the other hand, local *nonstatic* program variables are managed at run-time on the *stack* and are of no interest to the linker.
 
-Memory is just a place to store data, just like the seats in the cinema when I watch a film. Each seat in the cinema has to be numbered, and our memory has to store different data. Of course, we need to know where our data is stored! So the memory has to be numbered like the seats, which we call memory addressing. The seats can follow the principle of "one seat corresponds to one number", starting from "No. 1". The memory is addressed one byte at a time, as shown in the figure below. Each byte has a number, which we call the memory address.
+Let us begin with a simplified picture of how memory is organized. Memory is just a place to store data, just like the seats in the cinema when I watch a film. Each seat in the cinema has to be numbered, and our memory has to store different data. Of course, we need to know where our data is stored! So the memory has to be numbered like the seats, which we call *memory addressing*. The seats can follow the principle of "one seat corresponds to one number", starting from "No. 1". The memory is *addressed* one byte at a time, as shown in the figure below. Each byte has a number, which we call the memory address.
 
 ```text
        6    7    8    9   10   11   12   13
@@ -23,21 +29,19 @@ Memory is just a place to store data, just like the seats in the cinema when I w
 -----------------------------------------------------------------------------
 ```
 
-Every time we want to use a variable(e.g. `char c`; `int i`;), we must declare it in advance, which actually allocates a space in memory with the width corresponding to the variable type.
+A typical machine has an array of consecutively numbered or addressed memory cells that may be manipulated individually or in contiguous groups. One common situation is that any byte can be a `char`, a pair of one-byte cells can be treated as a `short` integer, and four/eight(depends on data model) adjacent bytes form a `long`.
 
-A pointer is a variable that contains the address of a variable. Pointers are much used in C, partly because they are sometimes the only way to express a computation, and partly because they usually lead to more compact and efficient code than can be obtained in other ways.
+A pointer is a group of cells (four in A32, eight in A64) that can hold an *address*. Pointers are much used in C, partly because they are sometimes the only way to express a computation, and partly because they usually lead to more compact and efficient code than can be obtained in other ways.
 
 Pointers have been lumped with the `goto` statement as a marvelous way to create impossible-to-understand programs. This is certainly true when they are used carelessly, and it is easy to create pointers that point somewhere unexpected. With discipline, however, pointers can also be used to achieve clarity and simplicity.
 
 You should also note the implication that a pointer is constrained to point to a particular kind of object: every pointer points to a specific data type.
 
-<!-- more -->
-
 ## demo program
 
 The following demo program is taken from [TCPL](https://www.amazon.com/Programming-Language-2nd-Brian-Kernighan/dp/0131103628/) | Chapter 5 - Pointers and Arrays - 5.1 Pointers and Addresses.
 
-```c title="pointer-1.c"
+```c title="pointer-demo.c"
 #include <stdio.h>
 
 int main(int argc, char* argv[]) {
@@ -63,22 +67,22 @@ int main(int argc, char* argv[]) {
 GCC compile with `-g` option to emit extra debugging information.
 
 ```bash
-$ cc pointer-1.c -o pointer-1 -g
+$ cc pointer-demo.c -o pointer-demo -g
 ```
 
 ## format literals
 
 ```bash
-$ objdump -j .rodata -s pointer-1
+$ objdump -j .rodata -s pointer-demo
 
-pointer-1:     file format elf64-littleaarch64
+pointer-demo:     file format elf64-littleaarch64
 
 Contents of section .rodata:
  0958 01000200 00000000 6970203d 2025700a  ........ip = %p.
  0968 00000000 00000000 78203d20 25643b20  ........x = %d;
  0978 79203d20 25640a00                    y = %d..
 
-$ rabin2 -z pointer-1
+$ rabin2 -z pointer-demo
 [Strings]
 nth paddr      vaddr      len size section type  string
 ―――――――――――――――――――――――――――――――――――――――――――――――――――――――
@@ -91,24 +95,24 @@ nth paddr      vaddr      len size section type  string
 Before disassembling, execute [checksec.sh](https://github.com/slimm609/checksec.sh) to check executables and kernel properties.
 
 ```bash
-$ checksec --file=pointer-1
+$ checksec --file=pointer-demo
 RELRO           STACK CANARY      NX            PIE             RPATH      RUNPATH	Symbols		FORTIFY	Fortified	    Fortifiable	     FILE
-Full RELRO      Canary found      NX enabled    PIE enabled     No RPATH   No RUNPATH   96) Symbols	  No	0		    1	     pointer-1
+Full RELRO      Canary found      NX enabled    PIE enabled     No RPATH   No RUNPATH   96) Symbols	  No	0		    1	     pointer-demo
 ```
 
 Then use `objdump` or `gdb dissassemble` to disassemble the ELF binary.
 
 ```bash
-$ objdump --disassemble=main --source-comment -l pointer-1 # or
-$ gdb -batch -ex 'file pointer-1' -ex 'disassemble /rs main'
+$ objdump --disassemble=main --source-comment -l pointer-demo # or
+$ gdb -batch -ex 'file pointer-demo' -ex 'disassemble /rs main'
 ```
 
 You can also use the online [Compiler Explorer](https://gcc.godbolt.org/), honourably produced by [Matt Godbolt](https://xania.org/). It highlights individual code sections and displays the equivalent disassembly in their respective colors.
 
-Here I'm going to use radare2 to debug the targeted ELF binary.
+Here I'm going to use [radare2](../toolchain/radare2-basics.md) to debug the targeted ELF binary.
 
 ```bash
-$ r2 -Ad pointer-1
+$ r2 -Ad pointer-demo
 [0xffff8fb41c40]> dcu main
 
 [0xaaaacc200854]> i~canary,crypto,nx,pic,relocs,relro,static,stripped
@@ -333,7 +337,7 @@ At this point, array `z` appears as a reference, and we can see where it sits on
 
 ## stack layout(ascii graph)
 
-1. StackGuard in prolog/epilog, [ARM StackGuard - Stack Canary](../arm/arm-stack-guard.md)
+1. StackGuard in prolog/epilog, see [ARM StackGuard - Stack Canary](../arm/arm-stack-guard.md)
 2. stack size = 0x60/96, it can accommodate 12 double(giant)-word
 3. sizeof(x|y|z[n])=4, sizeof(ip)=8, corresponds to word/double-word
 4. `z[10]` ranges from 0x30\~0x50, uninitialized with random value
@@ -374,15 +378,21 @@ As is shown above, in AArch64, every double-word is like a slot or box in the st
 
 From the compiler's point of view, a pointer is nothing more than a variable. The difference is the restriction of the value to be set. It couldn't be assigned a normal integer value like `x` or `y`, only the address of an integer variable could be accepted, e.g. `&x`, `&y`, `&z[0]`.
 
-The variable (name) is like a symbol/label in assembly that represents a memory address. As shown in this example, when it appears on the left, it's treated as a *box* ready to receive a value. While on the right side, it's a *reference* that unboxes a value out.
+The variable (name) is like a symbol/label in assembly that represents a memory cell. If we think of the contiguous memory cells as a telephone book or yellow pages, the variable is a bit like a phone number or house number that we can use to find a person or a house. As shown in the example, when it appears on the left, it's treated as a *box* ready to receive a value. While on the right side, it's a *reference* that unboxes a value out.
 
-A pointer variable holds an address of a certain type. The unary *address-of* operator `&` gets the address of an object, e.g. `ip = &x` means `ip` stores the address of `x`(aka points to `x`). A direct reference to a pointer returns the address, i.e. `printf("ip = %p\n", ip)` will print the address of variable `x`.
+A pointer variable holds an address of a certain type. The unary ***address-of*** operator `&` gets the address of an object, e.g. `ip = &x` assigns the address of `x` to the variable `ip`, and `ip` is said to *point to* `x`. The `&` operator only applies to objects in memory: variables and array elements. It cannot be applied to expressions, constants, or register variables. A direct reference to a pointer returns the address it holds, i.e. `printf("ip = %p\n", ip)` will print the address of variable `x`.
 
-The declaration of the pointer `int *ip` is intended as a mnemonic; it says that `*ip` is an int. It allows us to refer to an object through its address. So to access the target value to which `ip` points, we should use the unary *object-of* operator `*` for *indirection* or *dereferencing*. Indirectly, `y = *ip` gets `x` from the pointer `ip`, which is equivalent to `y = x` according to the result of the assignment.
+The declaration of the pointer `int *ip` is intended as a mnemonic; it implies that `*ip` is an int. It allows us to refer to an object through its address. So to access the target value to which `ip` points, we should use the unary ***object-of*** operator `*` for *indirection* or *dereferencing*. Indirectly, `y = *ip` gets `x` from the pointer `ip`, which is equivalent to `y = x` according to the result of the assignment.
 
-Please note that the `*` character plays two different roles in the definition of the example. In a declaration, it creates a new type (a pointer type of `int*`), whereas in an expression it *dereferences* the object to which a pointer *refers*.
+!!! example "vivid analogy of pointer"
 
-Since `ip` points to the integer `x`, `*ip` can occur in any context where `x` could occur. So `*ip = 0` sets the target to zero, equivalent to `x = 0`. The unary operators `*` and `&` bind tighter than arithmetic operators, so the assignment `y = *ip + 1` takes whatever `ip` points to, adds 1, and assigns the result to `y`. `*ip = *ip + 10` increments `*ip` by 10, equivalent to `x = x + 10`.
+    Let's take an example from everyday life. Suppose one day Tom comes to you and asks for Jerry's house number or telephone number, and you write this information down on a piece of paper. This piece of paper is a bit like the concept of a pointer that Tom can use to find Jerry. Back to our case, *Tom* is `y`, *Jerry* is `x`, `ip` is the *scrip*.
+
+Since `ip` points to the integer `x`, `*ip` can occur in any context where `x` could occur. So `*ip = 0` sets the target to zero, equivalent to `x = 0`. The unary operators `*` and `&` bind tighter than arithmetic operators, so the assignment `y = *ip + 1` takes whatever `ip` points to, adds 1, and assigns the result to `y`. `*ip = *ip + 10` increments `*ip` by 10, equivalent to `x = x + 10`, and so on.
+
+!!! note "dual role of the asterisk(*)"
+
+    The character `*` plays two different roles in the definition of the example. In a declaration, it creates a new type (a pointer type of `int*`), while in an expression it *dereferences* the object to which a pointer *refers*, like the key to the treasure chest.
 
 ---
 
