@@ -106,7 +106,7 @@ extern void disclose_p();
 void ref_array_as_pointer() {
     disclose_a();
     printf("a = %p\n", a);
-    printf("*a = %#x", *a);
+    printf("*a = %#x\n", *a);
 
     // for (int i=0; i<8; i++) {
     //     printf("a[%d] = %#x\n", i, a[i]);

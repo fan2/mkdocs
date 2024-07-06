@@ -46,6 +46,8 @@ char s2[4] = "120"; // char s1[] = {'1', '2', '0', '\0'};
 
 That is, a string like `cat`, `120` always has one more element than is visible, which contains the value `0`(`'\0'`), so here the array has length 4.
 
+### strlen of c_str
+
 It should be noted that [strlen](https://en.cppreference.com/w/c/string/byte/strlen) returns the length of the given null-terminated byte string, that is, the number of characters in a character array whose first element is pointed to by str up to and not including the first null character.
 
 ```c
@@ -89,16 +91,19 @@ char *pmessage = "now is the time"; /* a pointer */
 On the other hand, `pmessage` is a pointer, initialized to point to a string constant; the pointer may subsequently be *modified* to point elsewhere, but the result is undefined if you try to modify the string contents.
 
 ```text
-           +------+       +-----------------+
-amessage:  |  ⭕️--|----→  |now is the time\0|
-           +------+       +-----------------+
-
-           +-----------------+
-amessage:  |now is the time\0|
-           +-----------------+
+                    amessage
+               --------^--------
+              /                 \
+              +-----------------+
+pmessage: --→ |now is the time\0|
+              +-----------------+
 ```
 
-We will illustrate more aspects of pointers and arrays by studying versions of two useful functions adapted from the standard library. The first function is `strcpy(s,t)`, which copies the string `t` to the string `s`. It would be nice just to say `s=t` but this copies the pointer, not the characters. To copy the characters, we need a *loop*. The array version first:
+We will illustrate more aspects of pointers and arrays by studying versions of two useful functions adapted from the standard library.
+
+### evolution of strcpy
+
+The first function is `strcpy(s,t)`, which copies the string `t` to the string `s`. It would be nice just to say `s=t` but this copies the pointer, not the characters. To copy the characters, we need a *loop*. The array version first:
 
 ```c
 /* strcpy: copy t to s; array subscript version */
@@ -155,6 +160,8 @@ void strcpy(char *s, char *t)
 Although this may seem cryptic at first sight, the notational convenience is considerable, and the idiom should be mastered, because you will see it frequently in C programs.
 
 The `strcpy` in the standard library (<string.h\>) returns the target string as its function value.
+
+### evolution of strcmp
 
 The second routine that we will examine is `strcmp(s,t)`, which compares the character strings `s` and `t`, and returns negative, zero or positive if `s` is lexicographically less than, equal to, or greater than `t`. The value is obtained by subtracting the characters at the first position where `s` and `t` *disagree*.
 

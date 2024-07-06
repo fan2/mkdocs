@@ -1310,6 +1310,21 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="null-terminated string">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#strlen_of_c_str" class="md-nav__link">
+    <span class="md-ellipsis">
+      strlen of c_str
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1318,6 +1333,30 @@
       character pointers
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="character pointers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#evolution_of_strcpy" class="md-nav__link">
+    <span class="md-ellipsis">
+      evolution of strcpy
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#evolution_of_strcmp" class="md-nav__link">
+    <span class="md-ellipsis">
+      evolution of strcmp
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1459,6 +1498,7 @@
 <div class="language-c highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kt">char</span><span class="w"> </span><span class="n">s2</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;120&quot;</span><span class="p">;</span><span class="w"> </span><span class="c1">// char s1[] = {&#39;1&#39;, &#39;2&#39;, &#39;0&#39;, &#39;\0&#39;};</span>
 </span></code></pre></div>
 <p>That is, a string like <code>cat</code>, <code>120</code> always has one more element than is visible, which contains the value <code>0</code>(<code>'\0'</code>), so here the array has length 4.</p>
+<h3 id="strlen_of_c_str">strlen of c_str<a class="headerlink" href="#strlen_of_c_str" title="Permanent link">#</a></h3>
 <p>It should be noted that <a href="https://en.cppreference.com/w/c/string/byte/strlen">strlen</a> returns the length of the given null-terminated byte string, that is, the number of characters in a character array whose first element is pointed to by str up to and not including the first null character.</p>
 <div class="language-c highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kt">size_t</span><span class="w"> </span><span class="nf">strlen</span><span class="p">(</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">str</span><span class="w"> </span><span class="p">);</span>
 </span></code></pre></div>
@@ -1507,15 +1547,16 @@
 </span></code></pre></div>
 <p><code>amessage</code> is an array, just big enough to hold the sequence of characters and <code>'\0'</code> that initializes it. Individual characters within the array may be changed but <code>amessage</code> will always refer to the <em>same</em> storage.</p>
 <p>On the other hand, <code>pmessage</code> is a pointer, initialized to point to a string constant; the pointer may subsequently be <em>modified</em> to point elsewhere, but the result is undefined if you try to modify the string contents.</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>           +------+       +-----------------+
-</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>amessage:  |  ⭕️--|----→  |now is the time\0|
-</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>           +------+       +-----------------+
-</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>
-</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>           +-----------------+
-</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>amessage:  |now is the time\0|
-</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>           +-----------------+
+<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>                    amessage
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>               --------^--------
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>              /                 \
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>              +-----------------+
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>pmessage: --→ |now is the time\0|
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>              +-----------------+
 </span></code></pre></div>
-<p>We will illustrate more aspects of pointers and arrays by studying versions of two useful functions adapted from the standard library. The first function is <code>strcpy(s,t)</code>, which copies the string <code>t</code> to the string <code>s</code>. It would be nice just to say <code>s=t</code> but this copies the pointer, not the characters. To copy the characters, we need a <em>loop</em>. The array version first:</p>
+<p>We will illustrate more aspects of pointers and arrays by studying versions of two useful functions adapted from the standard library.</p>
+<h3 id="evolution_of_strcpy">evolution of strcpy<a class="headerlink" href="#evolution_of_strcpy" title="Permanent link">#</a></h3>
+<p>The first function is <code>strcpy(s,t)</code>, which copies the string <code>t</code> to the string <code>s</code>. It would be nice just to say <code>s=t</code> but this copies the pointer, not the characters. To copy the characters, we need a <em>loop</em>. The array version first:</p>
 <div class="language-c highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="cm">/* strcpy: copy t to s; array subscript version */</span>
 </span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="kt">void</span><span class="w"> </span><span class="nf">strcpy</span><span class="p">(</span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">s</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">t</span><span class="p">)</span>
 </span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="p">{</span>
@@ -1557,6 +1598,7 @@
 </span></code></pre></div>
 <p>Although this may seem cryptic at first sight, the notational convenience is considerable, and the idiom should be mastered, because you will see it frequently in C programs.</p>
 <p>The <code>strcpy</code> in the standard library (&lt;string.h&gt;) returns the target string as its function value.</p>
+<h3 id="evolution_of_strcmp">evolution of strcmp<a class="headerlink" href="#evolution_of_strcmp" title="Permanent link">#</a></h3>
 <p>The second routine that we will examine is <code>strcmp(s,t)</code>, which compares the character strings <code>s</code> and <code>t</code>, and returns negative, zero or positive if <code>s</code> is lexicographically less than, equal to, or greater than <code>t</code>. The value is obtained by subtracting the characters at the first position where <code>s</code> and <code>t</code> <em>disagree</em>.</p>
 <div class="language-c highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="cm">/* strcmp: return &lt;0 if s&lt;t, 0 if s==t, &gt;0 if s&gt;t */</span>
 </span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="kt">int</span><span class="w"> </span><span class="nf">strcmp</span><span class="p">(</span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">s</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="w"> </span><span class="o">*</span><span class="n">t</span><span class="p">)</span>
