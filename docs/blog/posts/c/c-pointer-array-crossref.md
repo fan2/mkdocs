@@ -315,8 +315,7 @@ readelf -x .data array-pointer-crossref # or -p
 objdump -j .data -s array-pointer-crossref
 ```
 
-During debugging with radare2, use `xr` to telescope the `.data`, see [reloc puts@plt via GOT - r2 debug
-](./xxx.md).
+During debugging with radare2, use `xr` to telescope the `.data`, see [reloc puts@plt via GOT - r2 debug](../elf/plt-puts-r2debug.md).
 
 ```bash
 [0xaaaad08408c0]> xr $w*(`iS,name/eq/.data ~.data[2]`/8) @ `iS,name/eq/.data ~.data[3]`
