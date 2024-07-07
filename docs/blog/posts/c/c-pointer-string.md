@@ -161,6 +161,13 @@ Although this may seem cryptic at first sight, the notational convenience is con
 
 The `strcpy` in the standard library (<string.h\>) returns the target string as its function value.
 
+!!! note "disassemble strcpy of libc"
+
+    ```bash
+    $ ar x /usr/lib/aarch64-linux-gnu/libc.a strcpy.o --output ~/Downloads && objdump -d ~/Downloads/strcpy.o
+    $ objdump --disassemble=strcpy /usr/lib/aarch64-linux-gnu/libc.so.6
+    ```
+
 ### evolution of strcmp
 
 The second routine that we will examine is `strcmp(s,t)`, which compares the character strings `s` and `t`, and returns negative, zero or positive if `s` is lexicographically less than, equal to, or greater than `t`. The value is obtained by subtracting the characters at the first position where `s` and `t` *disagree*.
@@ -203,6 +210,13 @@ val = *--p; /* pop top of stack into val */
 are the standard idiom for pushing and popping a stack.
 
 The header <string.h\> contains declarations for the functions mentioned in this section, plus a variety of other string-handling functions from the standard library.
+
+!!! note "disassemble strcmp of libc"
+
+    ```bash
+    $ ar x /usr/lib/aarch64-linux-gnu/libc.a strcmp.o --output ~/Downloads && objdump -d ~/Downloads/strcmp.o
+    $ objdump --disassemble=strcmp /usr/lib/aarch64-linux-gnu/libc.so.6
+    ```
 
 ## const string literals
 
