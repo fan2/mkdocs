@@ -31,11 +31,19 @@ Let us begin with a simplified picture of how memory is organized. Memory is jus
 
 A typical machine has an array of consecutively numbered or addressed memory cells that may be manipulated individually or in contiguous groups. One common situation is that any byte can be a `char`, a pair of one-byte cells can be treated as a `short` integer, and four/eight(depends on data model) adjacent bytes form a `long`.
 
+[How do pointer-to-pointers work in C?](https://stackoverflow.com/questions/897366/how-do-pointer-to-pointers-work-in-c-and-when-might-you-use-them) - [Finally understand how pointers work!](https://www.youtube.com/watch?v=3X-ray3tDjQ)
+
+<!-- ![pointer-illustration](https://i.sstatic.net/eaNS1.png) -->
+
+![pointer-illustration](./images/pointer-illustration.png)
+
 A pointer is a group of cells (four in A32, eight in A64) that can hold an *address*. Pointers are much used in C, partly because they are sometimes the only way to express a computation, and partly because they usually lead to more compact and efficient code than can be obtained in other ways.
 
 Pointers have been lumped with the `goto` statement as a marvelous way to create impossible-to-understand programs. This is certainly true when they are used carelessly, and it is easy to create pointers that point somewhere unexpected. With discipline, however, pointers can also be used to achieve clarity and simplicity.
 
 You should also note the implication that a pointer is constrained to point to a particular kind of object: every pointer points to a specific data type.
+
+![Pointer Dereferencing](https://media.geeksforgeeks.org/wp-content/uploads/20230223170531/2.png)
 
 ## demo program
 

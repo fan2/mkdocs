@@ -23,7 +23,7 @@ Related contents: [ABI & Calling conventions](../cs/calling-convention.md), [ARM
 
 Since C passes arguments to functions by *value*, there is no direct way for the called function to *alter* a variable in the calling function. For instance, a sorting routine might exchange two out-of-order arguments with a function called `swap`. It is not enough to write **`swap(a, b);`** where the `swap` function is defined as
 
-```c
+```c title="swap-value.c"
 void swap(int x, int y) /* WRONG */
 {
     int temp;
@@ -38,8 +38,9 @@ Because of call by value, `swap` can't affect the arguments `a` and `b` in the r
 
 The way to obtain the desired effect is for the calling program to pass ***pointers*** to the values to be changed: **`swap(&a, &b);`** Since the operator `&` produces the address of a variable, `&a` is a pointer to `a`. In swap itself, the parameters are declared as pointers, and the operands are accessed indirectly through them.
 
-```c
-void swap(int *px, int *py) /* interchange *px and *py */
+```c title="swap-pointer.c"
+/* interchange *px and *py */
+void swap(int *px, int *py)
 {
     int temp;
 
@@ -68,7 +69,7 @@ Each call sets `array[n]` to the next integer found in the input and increments 
 
 Our version of `getint` returns EOF for end of file, zero if the next input is not a number, and a positive value if the input contains a valid number.
 
-```c linenums="1" hl_lines="23"
+```c title="getint" linenums="1" hl_lines="23"
 #include <ctype.h>
 
 int getch(void); void ungetch(int);
@@ -109,7 +110,7 @@ int getint(int *pn)
 
 Let's begin with the example:
 
-```c title="array-as-param.c"
+```c title="array-as-param.c" linenums="1" hl_lines="9"
 void fun(char a[10])
 {
     char c = a[3];
@@ -213,7 +214,7 @@ void fun(char a[10])
 int main(int argc, char* argv[])
 {
     char b[100] = "abcdefg";
-    fun (b) ;
+    fun(b);
 
     return 0;
 }

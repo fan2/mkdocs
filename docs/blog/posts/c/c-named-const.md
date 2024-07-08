@@ -11,9 +11,7 @@ comments: true
 
 `const`-qualified read-only variables must be *initialized* and *named* at the same time as they are defined.
 
-Pointers are opaque objects that can remain in a *valid*, *null* or indeterminate state.
-
-Always initialise pointers to *0* as soon as possible.
+Pointers are opaque objects that can remain in a *valid*, *null* or indeterminate state. Always initialise pointers to *0* as soon as possible.
 
 <!-- more -->
 
@@ -175,6 +173,7 @@ char const * const p2invalid;
 
 Because it is uninitialized, its state is indeterminate, and any use of it would do you harm and leave your program in an undefined state (takeaway 5.55). Thus, if we can't ensure that a pointer is valid, we *must* at least ensure that it is set to null.
 
+> **TAKEAWAY** 5.55: Once the abstract state machine reaches an undeﬁned state, no further assumption about the continuation of the execution can be made.
 > **TAKEAWAY** 6.22: Always initialize pointers.
 
 ---

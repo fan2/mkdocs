@@ -135,6 +135,52 @@ It is important that the type behind `NULL` is not prescribed by the C standard.
 
 `NULL` hides more than it clarifies. Either use `0` or, if you really want to emphasize that the value is a pointer, use the magic token sequence `(void*)0` directly.
 
+## Wild pointers
+
+In [C Named Constants](./c-named-const.md), we've mentioned one particular property of pointers that distinguishes them from other variables is their *state*. Pointers are either valid, null, or indeterminate.
+
+Because it is uninitialized, its state is indeterminate. Indeterminate pointers(aka *`wild pointers`*) lead to *undefined* behavior.
+
+Any use of wild pointers would do you harm and leave your program in an undefined state (takeaway 5.55). Thus, if we can't ensure that a pointer is valid, we *must* at least ensure that it is set to null.
+
+Often mentioned in conjunction with wild pointers, there is also the concept of dangling pointers.
+
+A *`dangling pointer`* points to a memory address which used to hold a variable. Since the address it points at is no longer reserved, using it will lead to unexpected results.
+
+```c linenums="1" hl_lines="8"
+int main(int argc, char* argv[])
+{
+    int *ptr;
+    ptr = (int *)malloc(sizeof(int));
+    *ptr = 1;
+    printf("%d", *ptr); /* prints 1 */
+    free(ptr);          /* deallocation */
+    *ptr = 5;
+    printf("%d", *ptr); /* may or may not print 5 */
+
+    return 0;
+}
+```
+
+Though the memory has been deallocated by `free(ptr)`, the pointer to integer `ptr` still points to that unreserved memory address.
+
+To a certain extent, a dangling pointer can also be considered a type of wild pointer. They all point to unsafe areas where access should be prohibited in order to avoid undefined consequences.
+
+Finally, let's look at two other words that related to "wild" and end with a summary.
+
+- *Feral child*: a child who is unwanted and unattended; a child who is unruly and mischievous.
+- *Feral dog*: a dog without an owner, a dog without a chain, a dog that likes to bite people everywhere.
+
+The best way to deal with a feral child is to give them a set of rules and discipline them well. If you find that it does not follow the rules, you should punish it. The best way to deal with a wild dog is to tie it up with a dog chain and prevent it from running around.
+
+Dealing with a wild pointer is probably more difficult than dealing with a wild child or a wild dog. We need to use both methods of dealing with wild children and wild dogs. We need both rules and chains.
+
+Earlier we compared memory with a ruler and easy memory. 0mm on the ruler is the memory address 0, the zero pointer. The chain that binds the "wild pointer" is this "0". It is best to initialise the pointer variable to `0` when defining it, and to set it to `0` after using it.
+
+Remember to always initialize pointers. Always keep pointers in a certain state, pointing to something(valid) or nothing(null), don't let them invalid(undefined, indeterminate; wild, dangling)!
+
+In a nutshell, except when in use, guarantee that the pointer is always "tied" to address `0`, so it will be obedient.
+
 ---
 
 !!! warning "Copyright clarification"
