@@ -1,5 +1,5 @@
 ---
-title: C Pointer Validity and Null Pointers
+title: C Pointer Validity
 authors:
   - xman
 date:
@@ -93,7 +93,7 @@ p += 3;                         // Invalid pointer addition
 
 ## Null pointers
 
-You may have wondered why, in all this discussion about pointers, the macro `NULL` has not yet been used. The reason is that, unfortunately, the simple concept of a "generic pointer of value 0" didn't succeed very well.
+You may have wondered why, in all this discussion about pointers, the macro [NULL](https://en.cppreference.com/w/c/types/NULL) has not yet been used. The reason is that, unfortunately, the simple concept of a "generic pointer of value 0" didn't succeed very well.
 
 C has the concept of a *`null pointer`* that corresponds to a `0` value of any pointer type.
 
@@ -133,7 +133,7 @@ It is important that the type behind `NULL` is not prescribed by the C standard.
 
 > TAKEAWAY 11.14: Don't use `NULL`.
 
-`NULL` hides more than it clarifies. Either use `0` or, if you really want to emphasize that the value is a pointer, use the magic token sequence `(void*)0` directly.
+`NULL` hides more than it clarifies. Either use `0` or, if you really want to emphasize that the value is a pointer, use the magic token sequence `(void*)0` directly. For example, POSIX requires `NULL` to be defined as an integer constant expression with the value ​`0`​ cast to `void*`.
 
 ## Wild pointers
 
