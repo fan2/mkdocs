@@ -102,7 +102,7 @@ The test team combines automated and manual testing to check against their test 
 
 ### Deployment(config, preview, release)
 
-After detailed unit testing and system integration testing, it's expected that all bugs have been fixed. The product can then be showcased to the Senior Product Manager. If it passes the showcase, the product is ready for release. The final product is rolled out in phases according to the organisation's strategy.
+After detailed unit testing and system integration testing, it's expected that all bugs have been fixed. The product can then be presented/showcased/demonstrated to the Senior Product Manager and relevant stakeholders (aka general acceptance before delivery). If it passes the showcase, the product is ready for release/delivery. The final product is rolled out in phases according to the organisation's strategy.
 
 Typically, the deployment team will perform the configuration and test the preview/pre-release version of the production in a real industrial environment, e.g. A/B test, test flight. The process involves feedback-improving and CD (continuous delivery/deployment). It is important to ensure its fulfilment and smooth performance.
 
