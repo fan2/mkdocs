@@ -80,6 +80,39 @@ Here is a method to remember and understand: ignore the type name first (the com
 
 ***Summary***: The `const` to the right of the asterisk qualifies the pointer *variable*, and the const to the left of the asterisk qualifies the *location* to which the pointer is pointing.
 
+### implicit this pointer in C++
+
+Let's see how `this` pointer works in C++ class. `this` pointer is used implicitly in member functions, and the compiler automatically implements `this` pointer. The implementation principle is to add an *extra* parameter to the member function, which is the `this` pointer. Then, if the member function uses data members, the `this` pointer is added implicitly. When calling a member function, the compiler automatically adds an *extra* actual parameter to the called member function, which is the *address* of the object that calls this function.
+
+For example:
+
+```cpp
+class A {
+    int a;
+    void f() {
+        a=2;
+    }
+};
+A ma;
+ma.f();
+```
+
+The compiler will automatically convert the member function to:
+
+```cpp
+void f(A *const this) {
+    this->a=2;
+}
+```
+
+Its call will be automatically converted to `ma.f(&ma);`.
+
+Let's take a look at what the difference is within the constant member function.
+
+The `const` after the (empty) argument list in the function declarations indicates that these functions do not modify the state of a *Class*. Naturally, the compiler will catch accidental attempts to violate this promise.
+
+The underlying mechanism is as follows: In a C++ constant member function, a hidden `this` pointer is required when calling a member of a class. The `this` pointer type of a `const` member function is `const CLASS_TYPE *const`, which means that neither the value of the this pointer itself nor the object it points to can be changed.
+
 ## qualify function
 
 The const qualifier can also be used to qualify function parameters when you do not want the parameter value to be accidentally changed within the function body. For example:

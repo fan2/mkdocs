@@ -6,6 +6,7 @@ date:
     created: 2023-10-14T10:00:00
 categories:
     - c
+    - cpp
 comments: true
 ---
 

@@ -392,7 +392,7 @@ Along with the definition of `SIG_DFL`, there is an example in the classic book 
 3. `(*(void(*)())0)`, this is to read (dereference) the content of a section of memory starting at address 0, and its content is the function stored in a section with a first address of 0.
 4. `(*(void(*)())0)()`, this is a function call.
 
-It seems very simple, right? Let’s rewrite the above example:
+It seems very simple, right? Let's rewrite the above example:
 
 ```c
 (*(char * * (*)(char * *, char * *))0) (char * *, char * *);

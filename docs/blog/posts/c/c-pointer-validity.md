@@ -39,7 +39,7 @@ Therefore, it is important to control the state of all pointer variables. We hav
 
 In most cases, the simplest way to ensure this is to initialize pointer variables explicitly (TAKEAWAY 6.22: Always initialize pointers.).
 
-We have seen some examples of *representations* of different types: that is, the way the platform stores the value of a particular type in an object. The representation of one type, `size_t`, say, could be completely senseless to another type, for example `double`. As long as we only use variables directly, C’s type system will protect us from any mixup of these representations; a `size_t` object will always be accessed as such and never be interpreted as a (senseless) `double`.
+We have seen some examples of *representations* of different types: that is, the way the platform stores the value of a particular type in an object. The representation of one type, `size_t`, say, could be completely senseless to another type, for example `double`. As long as we only use variables directly, C's type system will protect us from any mixup of these representations; a `size_t` object will always be accessed as such and never be interpreted as a (senseless) `double`.
 
 If we did not use them carefully, pointers could break that barrier and lead us to code that tries to interpret the representation of a `size_t` as `double`. More generally, C even has coined a term for bit patterns that are nonsense when they are interpreted as a specific type: a ***trap representation*** for that type. This choice of words (*trap*) is meant to intimidate.
 
@@ -54,7 +54,7 @@ Thus, not only must a pointer be set to an object (or null), but such an object 
 As a direct consequence, a pointer that points beyond array bounds must not be dereferenced:
 
 ```c
-double A|2] = { 0.0, 1.0, };
+double A[2] = { 0.0, 1.0, };
 double* p = &A[0];
 printf ("element %g\n", *p);    // Referencing object
 ++p;                            // Valid pointer
@@ -66,7 +66,7 @@ printf ("element %g\n", *p);    // Referencing non-object
 
 Here, on the last line, `p` has a value that is beyond the bounds of the array. Even if this might be the address of a valid object, we don't know anything about the object it is pointing to. So even if `p` is valid at that point, accessing the contents as a type of `double` makes no sense, and C generally forbids such access.
 
-In the previous example, the pointer addition itself is correct, as long as we don't access the object on the last line. The valid values of pointers are all addresses of array elements and the address beyond the array. Otherwise, for loops with pointer addition as in the example wouldn't work reliably.
+In the previous example, the pointer addition itself is *correct*, as long as we don't access the object on the last line. The valid values of pointers are all addresses of array elements and the address beyond the array. Otherwise, `for` loops with pointer addition as in the example wouldn't work reliably.
 
 > TAKEAWAY 11.13: A pointer must point to a valid object or one position beyond a valid object or be null.
 
@@ -81,7 +81,7 @@ printf ("element %g\n", *p);    // Referencing non-object
                                 // Undefined behavior
 ```
 
-Whereas this last example may crash at the increment operation:
+Whereas this last example may **crash** at the increment operation:
 
 ```c
 double A[2] = { 0.0, 1.0, };
@@ -106,7 +106,7 @@ double const * const nix = 0;
 double const * const nax = nix;
 ```
 
-`nix` and `nax` would be pointer objects of value `0`. But unfortunately, a *`null pointer constant`* is then not what you’d expect.
+`nix` and `nax` would be pointer objects of value `0`. But unfortunately, a *`null pointer constant`* is then not what you'd expect.
 
 First, here the term *constant* refers to a compile-time constant, not to a const-qualified object. So for that reason, both pointer objects are *not* null pointer constants. Second, the permissible type for these constants is restricted: it may be any constant expression of integer type or of type `void*`. Other pointer types are not permitted, and we will learn about pointers of that "type" in section 12.4 (Pointers to unspecific objects).
 
@@ -145,7 +145,7 @@ Any use of wild pointers would do you harm and leave your program in an undefine
 
 Often mentioned in conjunction with wild pointers, there is also the concept of dangling pointers.
 
-A *`dangling pointer`* points to a memory address which used to hold a variable. Since the address it points at is no longer reserved, using it will lead to unexpected results.
+A *`dangling pointer`* points to a memory address which *used to* hold a variable. Since the address it points at is no longer reserved, using it will lead to *unexpected* results.
 
 ```c linenums="1" hl_lines="8"
 int main(int argc, char* argv[])
