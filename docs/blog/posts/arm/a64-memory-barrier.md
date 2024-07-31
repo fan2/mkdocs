@@ -289,11 +289,11 @@ The C11 and C++11 languages have a good platform-independent memory model that i
     inline constexpr memory_order memory_order_seq_cst = memory_order::seq_cst;
     ```
 
-All versions of C and C++ have *`sequence points`*, but C11 and C++11 also provide memory models. Sequence points *only* prevent the compiler from re-ordering C++ source code. There is *nothing* to stop the processor re-ordering instructions in the generated object code, or for read and write buffers to re-order the sequence in which data transfers are sent to the cache. In other words, they are only relevant for single-threaded code. For multi-threaded code, then either use the memory model features of C11 / C++11, or other ***synchronization*** mechanisms such as `mutexes` which are provided by the operating system. Typically, a compiler cannot re-arrange statements across a sequence point and restrict what optimizations the compiler can make. Examples of sequence points in code include function calls and accesses to [volatile](../c/c-volatile.md) variables.
+All versions of C and C++ have *`sequence points`*, but C11 and C++11 also provide memory models. Sequence points *only* prevent the compiler from re-ordering C++ source code. There is *nothing* to stop the processor re-ordering instructions in the generated object code, or for read and write buffers to re-order the sequence in which data transfers are sent to the cache. In other words, they are *only* relevant for single-threaded code. For multi-threaded code, then either use the memory model features of C11 / C++11, or other ***synchronization*** mechanisms such as `mutexes` which are provided by the operating system. Typically, a compiler cannot re-arrange statements across a sequence point and restrict what optimizations the compiler can make. Examples of sequence points in code include function calls and accesses to [volatile](../c/c-volatile.md) variables.
 
 The C language specification defines sequence points as follows:
 
-> At certain specified points in the execution sequence called sequence points, all side effects of previous evaluations shall be complete and no side effects of subsequent evaluations shall have taken place.
+> At certain specified points in the execution sequence called `sequence points`, all side effects of previous evaluations shall be ***complete*** and ***no*** side effects of subsequent evaluations shall have taken place.
 
 !!! note "Barriers in Linux"
 
