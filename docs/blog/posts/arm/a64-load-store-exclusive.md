@@ -74,6 +74,10 @@ The *Exclusives Reservation Granule* (`ERG`) is the granularity of the exclusive
 
 ## 原子操作(Atomic)
 
+[Concurrency support library (since C++11) - cppreference.com](https://en.cppreference.com/w/cpp/thread#Semaphores)
+
+> These components are provided for fine-grained atomic operations allowing for *lockless concurrent* programming. Each atomic operation is ***indivisible*** with regards to any other atomic operation that involves the same object. Atomic objects are [free of data races](https://en.cppreference.com/w/cpp/language/memory_model#Threads_and_data_races).
+
 本文节选自 [《ARM64体系结构编程与实践》](https://item.jd.com/13119117.html) | 第 20 章 原子操作，仅作学习参考之用途。
 
 原子操作是指保证指令以原子的方式执行，执行过程不会被打断。
