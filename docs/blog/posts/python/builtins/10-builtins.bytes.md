@@ -12,7 +12,7 @@ tags:
 comments: true
 ---
 
-Python内置模块中的字节流（bytes/bytearry）的基本用法。
+Python内置模块中的字节流（bytes/bytearray）的基本用法。
 
 <!-- more -->
 

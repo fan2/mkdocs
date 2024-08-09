@@ -60,25 +60,41 @@ int j = N;          // No more memory allocation
 int J = M;          // Perform macro replacement and allocate memory again
 ```
 
-From an assembler point of view, the read-only variable defined by `const` only returns the corresponding memory address, rather than an immediate value like `#define`. Therefore, the read-only variable defined by `const` has only *one* backup during program execution (because it is a global read-only variable stored in the *static* area), while the macro constant defined by `#define` has *several* backups in memory. The `#define` macro is replaced in the pre-compile stage, while the read-only variable qualified by `const` has its value determined at compile time. The `#define` macro has no type, while the read-only variable qualified by `const` has a specific type.
+From an assembler point of view, the read-only variable defined by `const` only returns the corresponding memory *address*, rather than an immediate value like `#define`. Therefore, the read-only variable defined by `const` has only *one* backup during program execution (because it is a global read-only variable stored in the *static* area), while the macro constant defined by `#define` has *several* backups in memory. The `#define` macro is replaced in the pre-compile stage, while the read-only variable qualified by `const` has its value determined at compile time. The `#define` macro has no type, while the read-only variable qualified by `const` has a specific type.
 
 ## qualify pointer and target
 
 ```c
 const int *p;           // p is mutable, the object pointed to by p is immutable
 int const *p;           // p is mutable, the object pointed to by p is immutable
-int* const p;          // p is immutable, the object pointed to by p is mutable
+int* const p;           // p is immutable, the object pointed to by p is mutable
 const int * const p;    // both p and the object it points to are immutable
 ```
 
 Here is a method to remember and understand: ignore the type name first (the compiler also ignores the type name when parsing), and see which one `const` is closest to. "Whoever is close to the water gets the moon first", so it qualifies whatever it is close to.
 
 - const ~~int~~ \*p; : const qualifies `*p`, the object `p` points to is immutable
-- ~~int~~ const \*p; : const qualifies `*p` ditto
+- ~~int~~ const \*p; : const qualifies `*p`, ditto
 - ~~int~~\* const p; : const qualifies `p`，`p` is immutable
 - const ~~int~~ \* const p; : the first qualifies `*p`, the latter `p`, both immutable
 
 ***Summary***: The `const` to the right of the asterisk qualifies the pointer *variable*, and the const to the left of the asterisk qualifies the *location* to which the pointer is pointing.
+
+In a certain project, it is required to set the value of an integer variable with an absolute address of *0x67a9* to *0xaa66*.
+
+Normal operation:
+
+```c
+int *ptr;
+ptr = (int *)0x67a9;
+*ptr = 0xaa55;
+```
+
+A more obscure way:
+
+```c
+*(int * const)(0x67a9) = 0xaa55;
+```
 
 ### implicit this pointer in C++
 

@@ -346,7 +346,7 @@ Format:
 Hexdump 4 raw bytes from pc.
 
 ```bash
-# memory storage/bytearry perspective
+# memory storage/bytearray perspective
 [0xaaaab3ce0630]> pf4b @ pc
 0xaaaab3ce0634 [0] {
   0xaaaab3ce0634 = 0x11

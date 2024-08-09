@@ -16,6 +16,12 @@ comments: true
 
 <!-- more -->
 
+The following are some typical scenarios for using `volatile` variables:
+
+1. Hardware **registers** of parallel devices (such as status registers)
+2. Non-automatic variables accessed in an **ISR**(Interrupt Service Routine)
+3. Variables shared by several tasks in a **multithreaded** application
+
 ## volatile in C
 
 [TCPL](https://www.amazon.com/Programming-Language-2nd-Brian-Kernighan/dp/0131103628/) | Appendix A - Reference Manual
@@ -150,7 +156,9 @@ volatile int iax[max_size];     // each element in iax is volatile
 volatile Screen bitmapBuf;      // each member of bitmapBuf is volatile
 ```
 
-There is no interaction between the `const` and `volatile` type qualifiers. A type can be both `const` and `volatile`, in which case it has the properties of both.
+There is no interaction between the `const` and `volatile` type qualifiers. A type can be ***both*** `const` and `volatile`, in which case it has the properties of both.
+
+> An example is the read-only status register. It is `volatile` because it may be changed unexpectedly. It is `const` because programs should not try to modify it.
 
 In the same way that a class may define `const` member functions, it can also define member functions as `volatile`. Only `volatile` member functions may be called on `volatile` objects.
 

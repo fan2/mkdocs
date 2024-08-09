@@ -7,6 +7,8 @@ date:
     updated: 2024-04-28T12:00:00
 categories:
     - CS
+    - c
+    - cpp
 tags:
     - binary
     - bitset
@@ -93,9 +95,11 @@ CPU 在工作的时候把有的信息看作指令，有的信息看作数据，�
 
 1byte=8bit，底层都是二进制位串进行移位实现相关操作。
 
+### impl in C
+
 以下为打印单字节和双字节（short）、四字节（int）二进制位串的程序，包括三个子函数，功能如下：
 
-1. `hexdump`：输出指定内存起始地址 start 开始的 size 个字节，C 程序是按照 BYTE_ORDER dump memory bytearry。
+1. `hexdump`：输出指定内存起始地址 start 开始的 size 个字节，C 程序是按照 BYTE_ORDER 来 dump memory bytearray。
 2. `print_bytes`：输出指定内存地址 start 开始的 size 个字节的二进制位串，foreach 每个字节调用 print_byte 子函数。
 3. `count_bits`：统计整数 x 的二进制位串中 1 的个数。
 
@@ -211,6 +215,54 @@ hexdump(86400) = {0x80, 0x51, 0x01, 00}
 bitset = 00000000_00000001_01010001_10000000
 bits set count = 5
 ```
+
+关于统计二进制位串中包含 1 的位数的函数 `count_bits` 的分析：
+
+在 LE（Little Endian）小端机器上，2010 在内存中的 bytearray = {0xda, 0x07}，其 bitset 为 00000111_11011010。
+
+对于表达式 `x = x & (x - 1);`，先取 0x7(0b111) 为例来演绎一下其计算机制。
+
+| x     | x-1   | x=x&(x-1) | countx |
+|-------|-------|-----------|--------|
+| 0b111 | 0b110 | 0b110     | 1      |
+| 0b110 | 0b101 | 0b100     | 2      |
+| 0b100 | 0b011 | 0b000     | 3      |
+
+从结果来看，countx 的确输出的是 0x7(0b111) 包含的二进制 1 的个数。
+
+初始 x=0x7(0b111)，countx=0；x != 0 进入 while 循环。下来逐轮分析：
+
+- loop 1: countx=1，0b111 末尾的 1 减成 0，再执行位与计算，等于把末尾（最右一位，rightmost）的 1 清除，x 迭代为 0b110；
+- loop 2: countx=2，0b110 倒数两位的 0b10 减成 0b01，再执行位与计算，等于把倒数第 2 位（最右一位）1 清除，x 迭代为 0b100；
+- loop 3: countx=3，0b100 减成 0b011，再执行位与计算，等于把最后一位（rightmost）的 1 清除，x 迭代为 0b000；
+- x = 0，退出 while 循环。
+
+从上面的分析可以看出，每一轮 `x=x&(x-1)` 中 `(x-1)` 相当于掩码，把最右侧（权重最低）的 1 给抹掉了。当循环结束，countx 即统计出了 x 中可被抹掉的二进制 1 的位数。
+
+关于 `n & (n - 1)`，C 语言笔试中经常出现的其他相关考题：
+
+- [c - n & (n-1) what does this expression do?](https://stackoverflow.com/questions/4678333/n-n-1-what-does-this-expression-do)
+- [Using n&(n-1) trick](https://leetcode.com/problems/power-of-two/solutions/63974/Using-nand(n-1)-trick/)
+- [n & (n-1)](https://blog.csdn.net/zheng0518/article/details/8882394)
+
+请解释以下代码片段中 foo 和 bar 函数的作用。
+
+```c
+unsigned char foo(int n)
+{
+    return (n > 0) && ((n & (n - 1)) == 0);
+}
+
+unsigned char bar(int n)
+{
+    return !(n & n - 1) * n > 0;
+}
+```
+
+如果 n 的二进制位串中只包含一个 1，则说明 n 是 2 的方幂，`n & (n - 1)` 等于 0；否则，`n & (n - 1)` 相当于只掩蔽掉最右侧的 1，不等于 0。
+所以，`foo` 和 `bar` 函数都是用于判断 n 是否是 2 的方幂。
+
+### C++ <bitset\>
 
 标准C++中的 <bitset\> 提供了二进制位串操作接口，参考 [TC++PL](https://www.stroustrup.com/4th.html) 34.2.2 bitset 中的相关说明。
 
