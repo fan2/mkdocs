@@ -206,14 +206,18 @@ If you use defaults for *nfu*, you need not type the slash ‘`/`’. Several co
 !!! example "x/nfu <addr\>"
 
     1. `x/3uh 0x54320` is a request to display three halfwords (`h`) of memory, formatted as unsigned decimal integers (‘`u`’), starting at address 0x54320.
-    2. `x/xg $fp` hexdump double/giant word (‘`g`’) of memory addressed by the frame pointer(`x29`) in hexadecimal (‘`x`’).
-    3. `x/4xg $sp` hexdump four double/giant words of memory following the stack pointer in hexadecimal (‘`x`’).
+    2. suppose `int x = 0x12345678;` type `x/4xb &x` to hexdump integer **x**, it may output the bytearray in memory as follows under LE(Little Endian):
+
+        - 0xfffffffff074:   0x78    0x56    0x34    0x12
+
+    3. `x/xg $fp` hexdump double/giant word (‘`g`’) of memory addressed by the frame pointer(`x29`) in hexadecimal (‘`x`’).
+    4. `x/4xg $sp` hexdump four double/giant words of memory following the stack pointer in hexadecimal (‘`x`’).
 
         - `x/xg $sp+24`: hexdump double word of address `$sp+24`.
         - `x/xw $sp+28`: hexdump word of address `$sp+28`.
 
-    4. `x/i $pc`: print the instruction to be executed next with, equivalent to `disassemble $pc,$pc+4`.
-    5. `x/10i main` prints ten instructions of `disassemble main`.
+    5. `x/i $pc`: print the instruction to be executed next with, equivalent to `disassemble $pc,$pc+4`.
+    6. `x/10i main` prints ten instructions of `disassemble main`.
 
 View 32 items of the current stack, following the current sp:
 

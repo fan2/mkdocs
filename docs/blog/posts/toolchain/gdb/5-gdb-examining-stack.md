@@ -133,6 +133,10 @@ Stack level 0, frame at 0xfffffffff070:
  Locals at 0xfffffffff050, Previous frame's sp is 0xfffffffff070
 ```
 
+调试时，如果想查看局部变量，除了使用 `p`/`x` 命令检查内存外，也可以执行（`info locals`）查看当前堆栈的所有局部变量。
+
+> `info locals`(`i locals`) -- All local variables of current stack frame or those matching REGEXPs.
+
 ## Frame Switch
 
 [8.3 Selecting a Frame](https://sourceware.org/gdb/current/onlinedocs/gdb.html/Selection.html#Selection)
