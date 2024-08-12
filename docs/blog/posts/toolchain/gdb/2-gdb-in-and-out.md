@@ -553,3 +553,89 @@ From                To                  Syms Read   Shared Object Library
 To exit GDB, use the quit command (abbreviated `q`), the `exit` command, or type an end-of-file character (usually `Ctrl-d`). If you do not supply expression, GDB will terminate normally; otherwise it will terminate using the result of expression as the error code.
 
 An interrupt (often `Ctrl-c`) does not exit from GDB, but rather terminates the action of any GDB command that is in progress and returns to GDB command level.
+
+## online
+
+[GDB online Debugger](https://www.onlinegdb.com/)
+
+[CoderPad](https://coderpad.io/) - [Documentation](https://coderpad.io/resources/docs/)
+
+- [Interview documentation](https://coderpad.io/resources/docs/interview/)
+- [Candidate preparation guides](https://coderpad.io/resources/docs/for-candidates/)
+
+[I think coderpad.io is the modern day equivalent of a whiteboard.](https://news.ycombinator.com/item?id=13874277)
+
+[Is it possible to set breakpoints in CoderPad for C#? ](https://stackoverflow.com/questions/67595787/is-it-possible-to-set-breakpoints-in-coderpad-for-c)
+
+> No, you cannot set breakpoints in Coderpad. The only means of debugging I know is to print to console.
+
+[Is it possible to manually launch GDB without a core dump for C/C++?](https://x.com/5omik/status/1313590329845575680?lang=en)
+
+> No, this isn't currently possible on CoderPad - but if it's helpful, we'll consider adding it. What's your use case?
+
+!!! tip "Tricks to launch GDB in CoderPad"
+
+    Add some code at the end of main to cause an ***SEGV*** exception:
+
+    1. Attempt to modify a const(readonly) string literal.
+    2. Attempt to access an illegal random absolute address.
+
+```c
+#include <stdio.h>
+
+// To execute C, please define "int main()"
+
+int main() {
+
+    // Your solution code
+
+    //----------------trick 1------------------
+    // modify a const(readonly) string literal
+    char* str = "CoderPad"; // in section .rodata
+    *str = 'D'; // raise SEGV
+    //-----------------------------------------
+
+    //----------------trick 2------------------
+    // access illegal random absolute address
+    unsigned int *pui = (unsigned int *)0x2048;
+    *pui = 2048; // raise SEGV
+    //-----------------------------------------
+
+    return 0;
+}
+```
+
+Either way, a core dump will be generated so that you can launch the GDB.
+
+Type `Y` launch GDB:
+
+```bash
+==15==ERROR: AddressSanitizer: SEGV on unknown address 0x000000002048 (pc 0x563a22671f6c bp 0x7ffd83dfb9e0 sp 0x7ffd83dfb960 T0)
+==15==The signal is caused by a WRITE memory access.
+
+...
+
+Core dump detected, launch GDB? [Y/n] Y
+```
+
+Then type `start` to restart debugging with GDB. Now you can set breakpoints between your code and debug online the same way as the localized experience.
+
+In the GDB REPL console, you can run shell commands to probe the configuration of the host machine.
+
+```bash
+shell arch
+shell lscpu
+shell uname -a
+
+!cat /proc/version
+!cat /etc/issue
+
+!getconf WORD_BIT
+!getconf LONG_BIT
+```
+
+Of course, you can also use GNU binutils like *readelf*, *objdump*, *nm*, to explore the ELF binary.
+
+```bash
+!readelf -S ./solution
+```

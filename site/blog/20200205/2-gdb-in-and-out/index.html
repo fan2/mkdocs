@@ -1480,6 +1480,15 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#online" class="md-nav__link">
+    <span class="md-ellipsis">
+      online
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1558,7 +1567,7 @@
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7h1.5Z"/></svg>
                           <span class="md-ellipsis">
                             
-                              10 min read
+                              11 min read
                             
                           </span>
                         </div>
@@ -2053,6 +2062,77 @@
 </ul>
 <p>To exit GDB, use the quit command (abbreviated <code>q</code>), the <code>exit</code> command, or type an end-of-file character (usually <code>Ctrl-d</code>). If you do not supply expression, GDB will terminate normally; otherwise it will terminate using the result of expression as the error code.</p>
 <p>An interrupt (often <code>Ctrl-c</code>) does not exit from GDB, but rather terminates the action of any GDB command that is in progress and returns to GDB command level.</p>
+<h2 id="online">online<a class="headerlink" href="#online" title="Permanent link">#</a></h2>
+<p><a href="https://www.onlinegdb.com/">GDB online Debugger</a></p>
+<p><a href="https://coderpad.io/">CoderPad</a> - <a href="https://coderpad.io/resources/docs/">Documentation</a></p>
+<ul>
+<li><a href="https://coderpad.io/resources/docs/interview/">Interview documentation</a></li>
+<li><a href="https://coderpad.io/resources/docs/for-candidates/">Candidate preparation guides</a></li>
+</ul>
+<p><a href="https://news.ycombinator.com/item?id=13874277">I think coderpad.io is the modern day equivalent of a whiteboard.</a></p>
+<p><a href="https://stackoverflow.com/questions/67595787/is-it-possible-to-set-breakpoints-in-coderpad-for-c">Is it possible to set breakpoints in CoderPad for C#? </a></p>
+<blockquote>
+<p>No, you cannot set breakpoints in Coderpad. The only means of debugging I know is to print to console.</p>
+</blockquote>
+<p><a href="https://x.com/5omik/status/1313590329845575680?lang=en">Is it possible to manually launch GDB without a core dump for C/C++?</a></p>
+<blockquote>
+<p>No, this isn't currently possible on CoderPad - but if it's helpful, we'll consider adding it. What's your use case?</p>
+</blockquote>
+<div class="admonition tip">
+<p class="admonition-title">Tricks to launch GDB in CoderPad</p>
+<p>Add some code at the end of main to cause an <strong><em>SEGV</em></strong> exception:</p>
+<ol>
+<li>Attempt to modify a const(readonly) string literal.</li>
+<li>Attempt to access an illegal random absolute address.</li>
+</ol>
+</div>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-29-1"><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
+</span><span id="__span-29-2"><a id="__codelineno-29-2" name="__codelineno-29-2" href="#__codelineno-29-2"></a>
+</span><span id="__span-29-3"><a id="__codelineno-29-3" name="__codelineno-29-3" href="#__codelineno-29-3"></a><span class="c1">// To execute C, please define &quot;int main()&quot;</span>
+</span><span id="__span-29-4"><a id="__codelineno-29-4" name="__codelineno-29-4" href="#__codelineno-29-4"></a>
+</span><span id="__span-29-5"><a id="__codelineno-29-5" name="__codelineno-29-5" href="#__codelineno-29-5"></a><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-29-6"><a id="__codelineno-29-6" name="__codelineno-29-6" href="#__codelineno-29-6"></a>
+</span><span id="__span-29-7"><a id="__codelineno-29-7" name="__codelineno-29-7" href="#__codelineno-29-7"></a><span class="w">    </span><span class="c1">// Your solution code</span>
+</span><span id="__span-29-8"><a id="__codelineno-29-8" name="__codelineno-29-8" href="#__codelineno-29-8"></a>
+</span><span id="__span-29-9"><a id="__codelineno-29-9" name="__codelineno-29-9" href="#__codelineno-29-9"></a><span class="w">    </span><span class="c1">//----------------trick 1------------------</span>
+</span><span id="__span-29-10"><a id="__codelineno-29-10" name="__codelineno-29-10" href="#__codelineno-29-10"></a><span class="w">    </span><span class="c1">// modify a const(readonly) string literal</span>
+</span><span id="__span-29-11"><a id="__codelineno-29-11" name="__codelineno-29-11" href="#__codelineno-29-11"></a><span class="w">    </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">str</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;CoderPad&quot;</span><span class="p">;</span><span class="w"> </span><span class="c1">// in section .rodata</span>
+</span><span id="__span-29-12"><a id="__codelineno-29-12" name="__codelineno-29-12" href="#__codelineno-29-12"></a><span class="w">    </span><span class="o">*</span><span class="n">str</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="sc">&#39;D&#39;</span><span class="p">;</span><span class="w"> </span><span class="c1">// raise SEGV</span>
+</span><span id="__span-29-13"><a id="__codelineno-29-13" name="__codelineno-29-13" href="#__codelineno-29-13"></a><span class="w">    </span><span class="c1">//-----------------------------------------</span>
+</span><span id="__span-29-14"><a id="__codelineno-29-14" name="__codelineno-29-14" href="#__codelineno-29-14"></a>
+</span><span id="__span-29-15"><a id="__codelineno-29-15" name="__codelineno-29-15" href="#__codelineno-29-15"></a><span class="w">    </span><span class="c1">//----------------trick 2------------------</span>
+</span><span id="__span-29-16"><a id="__codelineno-29-16" name="__codelineno-29-16" href="#__codelineno-29-16"></a><span class="w">    </span><span class="c1">// access illegal random absolute address</span>
+</span><span id="__span-29-17"><a id="__codelineno-29-17" name="__codelineno-29-17" href="#__codelineno-29-17"></a><span class="w">    </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">pui</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="mh">0x2048</span><span class="p">;</span>
+</span><span id="__span-29-18"><a id="__codelineno-29-18" name="__codelineno-29-18" href="#__codelineno-29-18"></a><span class="w">    </span><span class="o">*</span><span class="n">pui</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2048</span><span class="p">;</span><span class="w"> </span><span class="c1">// raise SEGV</span>
+</span><span id="__span-29-19"><a id="__codelineno-29-19" name="__codelineno-29-19" href="#__codelineno-29-19"></a><span class="w">    </span><span class="c1">//-----------------------------------------</span>
+</span><span id="__span-29-20"><a id="__codelineno-29-20" name="__codelineno-29-20" href="#__codelineno-29-20"></a>
+</span><span id="__span-29-21"><a id="__codelineno-29-21" name="__codelineno-29-21" href="#__codelineno-29-21"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+</span><span id="__span-29-22"><a id="__codelineno-29-22" name="__codelineno-29-22" href="#__codelineno-29-22"></a><span class="p">}</span>
+</span></code></pre></div>
+<p>Either way, a core dump will be generated so that you can launch the GDB.</p>
+<p>Type <code>Y</code> launch GDB:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-30-1"><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a><span class="o">==</span><span class="nv">15</span><span class="o">==</span>ERROR:<span class="w"> </span>AddressSanitizer:<span class="w"> </span>SEGV<span class="w"> </span>on<span class="w"> </span>unknown<span class="w"> </span>address<span class="w"> </span>0x000000002048<span class="w"> </span><span class="o">(</span>pc<span class="w"> </span>0x563a22671f6c<span class="w"> </span>bp<span class="w"> </span>0x7ffd83dfb9e0<span class="w"> </span>sp<span class="w"> </span>0x7ffd83dfb960<span class="w"> </span>T0<span class="o">)</span>
+</span><span id="__span-30-2"><a id="__codelineno-30-2" name="__codelineno-30-2" href="#__codelineno-30-2"></a><span class="o">==</span><span class="nv">15</span><span class="o">==</span>The<span class="w"> </span>signal<span class="w"> </span>is<span class="w"> </span>caused<span class="w"> </span>by<span class="w"> </span>a<span class="w"> </span>WRITE<span class="w"> </span>memory<span class="w"> </span>access.
+</span><span id="__span-30-3"><a id="__codelineno-30-3" name="__codelineno-30-3" href="#__codelineno-30-3"></a>
+</span><span id="__span-30-4"><a id="__codelineno-30-4" name="__codelineno-30-4" href="#__codelineno-30-4"></a>...
+</span><span id="__span-30-5"><a id="__codelineno-30-5" name="__codelineno-30-5" href="#__codelineno-30-5"></a>
+</span><span id="__span-30-6"><a id="__codelineno-30-6" name="__codelineno-30-6" href="#__codelineno-30-6"></a>Core<span class="w"> </span>dump<span class="w"> </span>detected,<span class="w"> </span>launch<span class="w"> </span>GDB?<span class="w"> </span><span class="o">[</span>Y/n<span class="o">]</span><span class="w"> </span>Y
+</span></code></pre></div>
+<p>Then type <code>start</code> to restart debugging with GDB. Now you can set breakpoints between your code and debug online the same way as the localized experience.</p>
+<p>In the GDB REPL console, you can run shell commands to probe the configuration of the host machine.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-31-1"><a id="__codelineno-31-1" name="__codelineno-31-1" href="#__codelineno-31-1"></a>shell<span class="w"> </span>arch
+</span><span id="__span-31-2"><a id="__codelineno-31-2" name="__codelineno-31-2" href="#__codelineno-31-2"></a>shell<span class="w"> </span>lscpu
+</span><span id="__span-31-3"><a id="__codelineno-31-3" name="__codelineno-31-3" href="#__codelineno-31-3"></a>shell<span class="w"> </span>uname<span class="w"> </span>-a
+</span><span id="__span-31-4"><a id="__codelineno-31-4" name="__codelineno-31-4" href="#__codelineno-31-4"></a>
+</span><span id="__span-31-5"><a id="__codelineno-31-5" name="__codelineno-31-5" href="#__codelineno-31-5"></a>!cat<span class="w"> </span>/proc/version
+</span><span id="__span-31-6"><a id="__codelineno-31-6" name="__codelineno-31-6" href="#__codelineno-31-6"></a>!cat<span class="w"> </span>/etc/issue
+</span><span id="__span-31-7"><a id="__codelineno-31-7" name="__codelineno-31-7" href="#__codelineno-31-7"></a>
+</span><span id="__span-31-8"><a id="__codelineno-31-8" name="__codelineno-31-8" href="#__codelineno-31-8"></a>!getconf<span class="w"> </span>WORD_BIT
+</span><span id="__span-31-9"><a id="__codelineno-31-9" name="__codelineno-31-9" href="#__codelineno-31-9"></a>!getconf<span class="w"> </span>LONG_BIT
+</span></code></pre></div>
+<p>Of course, you can also use GNU binutils like <em>readelf</em>, <em>objdump</em>, <em>nm</em>, to explore the ELF binary.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-32-1"><a id="__codelineno-32-1" name="__codelineno-32-1" href="#__codelineno-32-1"></a>!readelf<span class="w"> </span>-S<span class="w"> </span>./solution
+</span></code></pre></div>
 
 
 
