@@ -182,7 +182,7 @@ $ objdump --help
 
 ### nm
 
-List symbols in [file(s)] (a.out by default).
+List symbols in file(s) (a.out by default).
 
 ```bash
 $ nm --help

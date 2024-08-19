@@ -151,6 +151,9 @@ Lazy binding is based on the observation that a given program may import a large
 
 ## references
 
+[ld](https://sourceware.org/binutils/docs/ld/index.html) - the [GNU linker](https://en.wikipedia.org/wiki/Linker_(computing)#GNU_linker).
+Sun - [Linker and Libraries Guide](https://www.shrubbery.net/solaris9ab/SUNWdev/LLM/toc.html)
+
 [TIS - ELF v1.2](https://refspecs.linuxfoundation.org/elf/elf.pdf)
 
 - Book I: ELF - 1. Object Files; 2. Program Loading and Dynamic Linking

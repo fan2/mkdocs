@@ -15,8 +15,9 @@ The Executable and Linkable Format (`ELF`), is a common standard file format for
 
 [Executable and Linkable Format](https://en.wikipedia.org/wiki/Executable_and_Linkable_Format) - [ELF - OSDev Wiki](https://wiki.osdev.org/ELF)
 
-- LSB - [Executable And Linking Format (ELF)](https://refspecs.linuxfoundation.org/LSB_4.1.0/LSB-Core-generic/LSB-Core-generic/elf-generic.html)
+- [Linux Standard Base Core Specification 4.1](https://refspecs.linuxbase.org/LSB_4.1.0/LSB-Core-generic/LSB-Core-generic/book1.html) | II. Executable And Linking Format (ELF), @[linuxfoundation](https://refspecs.linuxfoundation.org/LSB_4.1.0/LSB-Core-generic/LSB-Core-generic/book1.html)
 - [Linux Foundation Referenced Specifications](https://refspecs.linuxfoundation.org/) - TIS - ELF: [v1.1](https://www.cs.cmu.edu/afs/cs/academic/class/15213-f00/docs/elf.pdf), [v1.2](https://refspecs.linuxfoundation.org/elf/elf.pdf)
+- [Linux Standard Base Embedded Specification 2.1](http://refspecs.linux-foundation.org/LSB_2.1.0/LSB-Embedded/LSB-Embedded/set1.html) | ELF Specification
 - [Ubuntu Manpage: elf - format of Executable and Linking Format (ELF) files](https://manpages.ubuntu.com/manpages/noble/en/man5/elf.5.html)
 - sysvabi64 - [System V ABI for the Arm® 64-bit Architecture (AArch64)](https://github.com/ARM-software/abi-aa/blob/844a79fd4c77252a11342709e3b27b2c9f590cf1/sysvabi64/sysvabi64.rst)
 - aaelf64 - [ELF for the Arm® 64-bit Architecture (AArch64)](https://github.com/ARM-software/abi-aa/blob/main/aaelf64/aaelf64.rst)
