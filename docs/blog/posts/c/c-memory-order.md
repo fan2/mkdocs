@@ -22,13 +22,13 @@ Explicitly using acquire-release consistency can lead to more efficient code, bu
 
 ## Sequential consistency
 
-The data consistency for atomic objects that we described earlier, guaranteed by the happenedbefore relation, is called acquire-release consistency. Whereas the C library calls we have seen always synchronize with that kind of consistency, no more and no less, accesses to atomics can be specified with different consistency models.
+The data consistency for atomic objects that we described earlier, guaranteed by the *happened-before* relation, is called *acquire-release* consistency. Whereas the C library calls we have seen always synchronize with that kind of consistency, no more and no less, accesses to atomics can be specified with different consistency models.
 
-As you remember, all atomic objects have a modification order that is consistent with all sequenced-before relations that see these modifications on the same object. Sequential consistency has even more requirements than that; see figure 19.3. Here we illustrate the common timeline of all sequentially consistent operations on top. Even if these operations are performed on different processors and the atomic objects are realized in different memory banks, the platform has to **ensure** that all threads perceive all these operations as being consistent with this one global linearization.
+As you remember, all atomic objects have a *modification order* that is consistent with all sequenced-before relations that see these modifications *on the same* object. *Sequential consistency* has even more requirements than that; see figure 19.3. Here we illustrate the common timeline of all sequentially consistent operations on top. Even if these operations are performed on different processors and the atomic objects are realized in different memory banks, the platform has to **ensure** that all threads perceive all these operations as being consistent with this one global linearization.
 
 > TAKEAWAY 19.13: All atomic operations with sequential consistency occur in one global modification order, regardless of the atomic object they are applied to.
 
-So, sequential consistency is a very strong requirement. Not only that, it enforces acquirerelease semantics (a causal partial ordering between events), but it rolls out this partial ordering to a total ordering. If you are interested in parallelizing the execution of your program, sequential consistency may not be the right choice, because it may force sequential execution of the atomic accesses.
+So, sequential consistency is a very ***strong*** requirement. Not only that, it enforces acquire-release semantics (a causal partial ordering between events), but it rolls out this partial ordering to a total ordering. If you are interested in parallelizing the execution of your program, sequential consistency *may not* be the right choice, because it may force sequential execution of the atomic accesses.
 
 So, sequential consistency is a very strong requirement. Not only that, it **enforces** acquire-release semantics (a causal partial ordering between events), but it rolls out this *partial* ordering to a *total* ordering. If you are interested in parallelizing the execution of your program, sequential consistency may not be the right choice, because it may force sequential execution of the atomic accesses.
 
@@ -91,7 +91,7 @@ A different consistency model can be requested with a complementary set of funct
 ```c
     _Atomic (unsigned) at = 67;
     // ...
-    if (atomic_fetch_add_explicit (&at, 1, memory_order_aca_rel)) {
+    if (atomic_fetch_add_explicit (&at, 1, memory_order_acq_rel)) {
         // ...
     }
 ```
@@ -117,7 +117,7 @@ Value | Explanation
 `memory_order_relaxed` | Relaxed operation: there are ***no*** synchronization or ordering constraints imposed on other reads or writes, ***only*** this operation's *`atomicity`* is guaranteed (see Relaxed ordering below).
 `memory_order_consume` | A `load` operation with this memory order performs a *consume operation* on the affected memory location: ***no*** reads or writes in the current thread *dependent* on the value currently loaded can be reordered *before* this load. Writes to data-dependent variables in other threads that release the same atomic variable are *visible* in the current thread. On most platforms, this affects compiler optimizations only (see Release-Consume ordering below).
 `memory_order_acquire` | A `load` operation with this memory order performs the *acquire operation* on the affected memory location: ***no*** reads or writes in the current thread can be reordered *before* this load. All writes in other threads that release the same atomic variable are *visible* in the current thread (see Release-Acquire ordering below).
-`memory_order_release` | A `store` operation with this memory order performs the *release operation*: no reads or writes in the current thread can be reordered *after* this store. All writes in the current thread are *visible* in other threads that acquire the same atomic variable (see Release-Acquire ordering below) and writes that carry a dependency into the atomic variable become *visible* in other threads that consume the same atomic (see Release-Consume ordering below).
+`memory_order_release` | A `store` operation with this memory order performs the *release operation*: ***no*** reads or writes in the current thread can be reordered *after* this store. All writes in the current thread are *visible* in other threads that acquire the same atomic variable (see Release-Acquire ordering below) and writes that carry a dependency into the atomic variable become *visible* in other threads that consume the same atomic (see Release-Consume ordering below).
 `memory_order_acq_rel` | A `read-modify-write` operation with this memory order is both an *acquire operation* and a *release operation*. ***No*** memory reads or writes in the current thread can be reordered *before* the load, nor *after* the store. All writes in other threads that release the same atomic variable are *visible* before the modification and the modification is visible in other threads that acquire the same atomic variable.
 `memory_order_seq_cst` | A `load` operation with this memory order performs an *acquire operation*, a `store` performs a *release operation*, and `read-modify-write` performs *both* an acquire operation and a release operation, plus a single total order exists in which all threads **observe** all modifications in the same order (see Sequentially-consistent ordering below).
 
@@ -161,3 +161,9 @@ Up to now, we have implicitly assumed that the *acquire* and *release* sides of 
     Excerpt from [Modern C, 1st Edition, 2019](https://www.amazon.com/Modern-C-Jens-Gustedt-ebook/dp/B0978347Z6/).
     Copyright credit to [Jens Gustedt](https://gustedt.gitlabpages.inria.fr/modern-c/). 🫡
     For studying only, not commercial.
+
+## references
+
+[C和C++中的volatile、内存屏障和CPU缓存一致性协议MESI](https://cloud.tencent.com/developer/article/1403223)
+[深入理解C11/C++11内存模型](https://cloud.tencent.com/developer/article/2120357)
+[理解 C++ 内存一致性模型](https://weakyon.com/2023/07/23/understanding-of-the-cpp-memory-order.html)

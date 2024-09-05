@@ -357,12 +357,17 @@ The compiler does not optimize the variables you have declared as `volatile`.
 
 ## references
 
+[P1152R0: Deprecating volatile](https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2018/p1152r0.html)
 [6.49 When is a Volatile Object Accessed?](https://gcc.gnu.org/onlinedocs/gcc/Volatiles.html)
 [7.1 When is a Volatile C++ Object Accessed?](https://gcc.gnu.org/onlinedocs/gcc/C_002b_002b-Volatiles.html)
-[c++ - Is the definition of "volatile" this volatile, or is GCC having some standard compliancy problems? - Stack Overflow](https://stackoverflow.com/questions/38230856/is-the-definition-of-volatile-this-volatile-or-is-gcc-having-some-standard-co)
+[Should volatile acquire atomicity and thread visibility semantics?](https://www.open-std.org/JTC1/sc22/wg21/docs/papers/2006/n2016.html)
+[c++ - Is the definition of "volatile" this volatile, or is GCC having some standard compliancy problems?](https://stackoverflow.com/questions/38230856/is-the-definition-of-volatile-this-volatile-or-is-gcc-having-some-standard-co)
 
-[volatile - Multithreaded Programmer's Best Friend](http://www.drdobbs.com/184403766)
+[volatile: The Multithreaded Programmer's Best Friend](http://www.drdobbs.com/184403766)
 [C++ and the Perils of Double-Checked Locking](http://www.aristeia.com/Papers/DDJ_Jul_Aug_2004_revised.pdf)
 [Re: Usage of C "volatile" Keyword in Embedded Development](http://www.expertcore.org/viewtopic.php?f=18&t=2674#p7737)
 [Nils Pipenbrinck's highly-voted answer](https://stackoverflow.com/a/246148/1677912)
 [Why the "volatile" type class should not be used](https://www.kernel.org/doc/html/latest/process/volatile-considered-harmful.html#why-the-volatile-type-class-should-not-be-used)
+
+[volatile关键字？MESI协议？指令重排？内存屏障？这都是啥玩意](https://www.cnblogs.com/yungyu16/p/13200453.html)
+[C和C++中的volatile、内存屏障和CPU缓存一致性协议MESI](https://cloud.tencent.com/developer/article/1403223)

@@ -144,4 +144,6 @@ for (dst = &_bstart; dst< &_bend; dst++)
 [详解 LMA 与 VMA](https://blog.csdn.net/WIP56/article/details/139154878) - [eydwyz](https://blog.csdn.net/eydwyz/article/details/124179377), [cisen](https://github.com/cisen/blog/issues/887)
 [虚拟内存地址VMA、装载内存地址LMA和位置无关代码PIC](https://blog.csdn.net/phunxm/article/details/8905309)
 [10分鐘讀懂 linker scripts](https://blog.louie.lu/2016/11/06/10%E5%88%86%E9%90%98%E8%AE%80%E6%87%82-linker-scripts/) - [linker_script_vma_lma_example](https://github.com/mlouielu/linker_script_vma_lma_example)
+
+[linker - virtual and physical addresses of sections in elf files](https://stackoverflow.com/questions/6218384/virtual-and-physical-addresses-of-sections-in-elf-files)
 [linker - Trying to understand the load memory address (LMA) and the binary file offset in an ARM binary image](https://stackoverflow.com/questions/54578360/trying-to-understand-the-load-memory-address-lma-and-the-binary-file-offset-in)

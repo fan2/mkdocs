@@ -36,11 +36,11 @@ where both I and you refer to cores or other masters in the system.
 
 There are three types of barrier instruction provided by the architecture:
 
-**Instruction Synchronization Barrier** (`ISB`)
+### ISB(Instruction Synchronization Barrier)
 
-This is used to guarantee that any *subsequent* instructions are fetched, again, so that privilege and access are checked with the current MMU configuration. It is used to **ensure** any previously executed context-changing operations, such as writes to system control registers, have **completed** by the time the `ISB` completes. In hardware terms, this might mean that the instruction pipeline is ***flushed***, for example. Typical uses of this would be in memory management, cache control, and context switching code, or where code is being moved about in memory.
+This is used to guarantee that any *subsequent* instructions are fetched, again, so that privilege and access are checked with the current MMU configuration. It is used to **ensure** any previously executed context-changing operations, such as writes to system control registers, have ***completed*** by the time the `ISB` completes. In hardware terms, this might mean that the instruction pipeline is ***flushed***, for example. Typical uses of this would be in memory management, cache control, and context switching code, or where code is being moved about in memory.
 
-**Data Memory Barrier** (`DMB`)
+### DMB(Data Memory Barrier)
 
 This prevents re-ordering of data accesses instructions across the barrier instruction. All data accesses, that is, loads or stores, but not instruction fetches, performed by this processor before the `DMB`, are **visible** to all other masters within the specified shareability domain before any of the data accesses after the `DMB`.
 
@@ -65,7 +65,7 @@ DMB ISH
 LDR x2, [x3]    // Effect of data cache clean will be seen by this instruction
 ```
 
-**Data Synchronization Barrier** (`DSB`)
+### DSB(Data Synchronization Barrier)
 
 This **enforces** the same ordering as the Data Memory Barrier (DMB), but has the additional effect of blocking execution of *any* further instructions, not just loads or stores, or both, until synchronization is complete. This can be used to **prevent** execution of a `SEV` instruction, for instance, that would *signal* to other cores that an event occurred. It **waits** until all cache, TLB and branch predictor maintenance operations issued by this processor have completed for the specified shareability domain.
 
@@ -80,7 +80,7 @@ ADD x2, x2, #3  // Cannot be executed until DSB completes
 
 ## params for DMB/DSB
 
-As you can see from the above examples, the `DMB` and `DSB` instructions take a parameter which specifies the types of access to which the barrier operates, before or after, and a shareability domain to which it applies.
+As you can see from the above examples, the `DMB` and `DSB` instructions take a parameter which specifies the types of access to which the barrier operates, *before* or *after*, and a shareability domain to which it applies.
 
 <option\> | Ordered Accesses (before - after) | Shareability Domain
 ---------|-----------------------------------|--------------------
@@ -243,6 +243,17 @@ MSR CPACR_EL1, X1
 ISB
 ```
 
+## usage scenarios
+
+In most scenarios, we don't need to pay special attention to memory barriers. Especially in single-processor systems, although the CPU supports out-of-order execution and predictive execution, in general, the CPU will ensure that the final execution result meets the programmer's requirements. In the scenario of multi-core concurrent programming, programmers need to consider whether to use memory barrier instructions. The following are some typical scenarios where you need to consider using memory barrier instructions.
+
+- Share data between multiple CPU cores. Under the weak consistency memory model, a CPU's disordered memory access order may cause contention access.
+- Perform operations related to peripherals, such as DMA operations. The process of starting DMA operations is usually as follows: the first step is to write data to the DMA buffer; the second step is to set DMA-related registers to start DMA. If there is no memory barrier instruction in the middle, the related operations of the second step may be executed before the first step, so that DMA transmits wrong data.
+- Modify the memory management strategy, such as context switching, requesting page faults, and modifying page tables.
+- Modify the memory area where instructions are stored, such as the scenario of self-modifying code.
+
+In short, the purpose of using memory barrier instructions is to make the CPU execute according to the logic of the program code, rather than having the execution order of the code disrupted by the CPU's out-of-order execution and speculative execution.
+
 ## barriers in C code
 
 The C11 and C++11 languages have a good platform-independent memory model that is preferable to intrinsics if possible.
@@ -298,3 +309,5 @@ The C language specification defines sequence points as follows:
 !!! note "Barriers in Linux"
 
     The Linux kernel includes a number of platform independent barrier functions. See the Linux kernel documentation in the [memory-barriers.txt](https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/memory-barriers.txt) file.
+
+See [C Memory Order(Sequential Consistency)](../c/c-memory-order.md).

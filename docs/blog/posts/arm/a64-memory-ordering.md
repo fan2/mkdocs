@@ -19,11 +19,11 @@ In modern microprocessors, memory ordering characterizes the CPU's ability to re
 
 If your code interacts directly either with the hardware or with code executing on other cores, or if it directly loads or writes instructions to be executed, or modifies page tables, you need to be aware of *memory ordering* issues.
 
-If you are an application developer, hardware interaction is probably through a device driver, the interaction with other cores is through [Pthreads](https://en.wikipedia.org/wiki/Pthreads) or another multithreading API, and the interaction with a paged memory system is through the operating system. In all of these cases, the memory ordering issues are taken care of for you by the relevant code. However, if you are writing the operating system kernel or device drivers, or implementing a hypervisor, JIT compiler, or multithreading library, you must have a good understanding of the memory ordering rules of the ARM Architecture. You must **ensure** that where your code requires explicit ordering of memory accesses, you are able to achieve this through the correct use of barriers.
+If you are an application developer, hardware interaction is probably through a device driver, the interaction with other cores is through [Pthreads](https://en.wikipedia.org/wiki/Pthreads) or another multithreading API, and the interaction with a paged memory system is through the operating system. In all of these cases, the memory ordering issues are taken care of for you by the relevant code. However, if you are writing the operating system kernel or device drivers, or implementing a hypervisor, JIT compiler, or multithreading library, you must have a good understanding of the memory ordering rules of the ARM Architecture. You must **ensure** that where your code requires *explicit* ordering of memory accesses, you are able to achieve this through the correct use of *`barriers`*.
 
-The ARMv8 architecture employs a *`weakly-ordered`* model of memory. In general terms, this means that the order of memory accesses is not required to be the same as the program order for load and store operations. The processor is able to ***re-order*** memory read operations with respect to each other. Writes may also be ***re-ordered*** (for example, write combining) . As a result, hardware optimizations, such as the use of cache and write buffer, function in a way that improves the performance of the processor, which means that the required *bandwidth* between the processor and external memory can be reduced and the long latencies associated with such external memory accesses are hidden.
+The ARMv8 architecture employs a *`weakly-ordered`* model of memory. In general terms, this means that the order of memory accesses is not required to be the same as the program order for load and store operations. The processor is able to ***re-order*** memory read operations with respect to each other. Writes may also be ***re-ordered*** (for example, write combining) . As a result, hardware optimizations, such as the use of *cache* and *write buffer*, function in a way that improves the performance of the processor, which means that the required *bandwidth* between the processor and external memory can be reduced and the long latencies associated with such external memory accesses are hidden.
 
-Reads and writes to Normal memory can be **re-ordered** by hardware, being subject only to data dependencies and explicit memory barrier instructions. Certain situations require stronger ordering rules. You can provide information to the core about this through the memory type attribute of the translation table entry that describes that memory.
+Reads and writes to Normal memory can be **re-ordered** by hardware, being subject *only* to data dependencies and explicit memory barrier instructions. Certain situations require stronger ordering rules. You can provide information to the core about this through the memory type attribute of the translation table entry that describes that memory.
 
 ## re-ordering
 
@@ -35,7 +35,7 @@ Very high performance systems might support techniques such as speculative memor
 
 **Out-of-order execution**
 
-> Many processors support out-of-order execution of *non-dependent* instructions. Whenever an instruction is stalled while it waits for the result of a preceding instruction, the processor can execute subsequent instructions that do not have a dependency.
+> Many processors support out-of-order execution of *non-dependent* instructions. Whenever an instruction is stalled while it *waits* for the result of a preceding instruction, the processor can execute subsequent instructions that *do not* have a dependency.
 
 **Speculation**
 
