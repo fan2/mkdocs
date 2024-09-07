@@ -70,6 +70,7 @@ The instruction pipeline is shown in Figure 1.1.
 
 <figure markdown="span">
     ![Figure 1.1. Instruction pipeline](https://documentation-service.arm.com/static/5f4786a179ff4c392c0ff7e7)
+    <!-- ![Figure 1.1. Instruction pipeline](./images/5f4786a179ff4c392c0ff7e7-instruction_pipeline.svg) -->
     <figcaption>Figure 1-1 Instruction pipeline</figcaption>
 </figure>
 

@@ -452,7 +452,7 @@ $ cloudflared tunnel delete cft
 
 ## references
 
-[Tunnel logs](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/monitor-tunnels/logs/)
+[Tunnel logs](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/monitor-tunnels/logs/) - ubuntu: /var/log/syslog
 
 [Cloudflare Tunnel体验](https://hin.cool/posts/cloudflaretunnels.html)
 [使用Cloudflare做HTTP内网穿透](https://zhuanlan.zhihu.com/p/671576822)

@@ -324,7 +324,8 @@ In the ARM64 architecture, the stack grows from high addresses to low addresses.
 An AAPC64 stack frame shown in Figure 9-2. The frame pointer (`X29`) should point to the *previous* frame pointer saved on stack, with the saved LR (`X30`) stored after it. The final frame pointer in the *chain* should be set to 0. The Stack Pointer (`SP`) must always be aligned on a 16 byte boundary. There can be some variation of the exact layout of a stack frame, particularly in the case of variadic or frameless functions.
 
 <figure markdown="span">
-    ![Figure 9.2. Stack frame](https://documentation-service.arm.com/static/5fbd26f271eff94ef49c7012)
+    <!-- https://documentation-service.arm.com/static/5fbd26f271eff94ef49c7012 -->
+    ![Figure 9.2. Stack frame](./images/5fbd26f271eff94ef49c7012-stack-frame.png){: style="width:80%;height:80%"}
     <figcaption>Figure 9.2. Stack frame</figcaption>
 </figure>
 

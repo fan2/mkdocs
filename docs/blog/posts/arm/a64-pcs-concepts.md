@@ -43,7 +43,8 @@ When calling a function or sub-routine, we need a way to get *back* to the calle
 
 There is a specialist function return instruction, `RET`. This performs an indirect branch to the address in the link register.
 
-![RET](https://documentation-service.arm.com/static/656f49c7130be919349bb545)
+<!-- ![RET](https://documentation-service.arm.com/static/656f49c7130be919349bb545) -->
+![RET](./images/656f49c7130be919349bb545_BL-RET.jpg)
 
 Why do we need a special function return instruction? Functionally, `BR LR` would do the same job as `RET`. Using `RET` tells the processor that this is a function return. Most modern processors, and all Cortex-A processors, support branch prediction. Knowing that this is a function return allows processors to more accurately *predict* the branch.
 

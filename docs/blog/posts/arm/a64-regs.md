@@ -36,7 +36,8 @@ Registers which can be used freely are referred to as *volatile*, and registers 
 Most A64 instructions operate on registers. The architecture provides 31 general purpose registers. Each register can be used as a 64-bit `X` register (X0..X30), or as a 32-bit `W` register (W0..W30). These are two separate ways of looking at the *same* register. For example, this register diagram shows that `W0` is the bottom 32 bits of `X0`, and `W1` is the bottom 32 bits of `X1`:
 
 <figure markdown="span">
-    ![Figure 6-1: Register diagram](https://documentation-service.arm.com/static/656f49c7130be919349bb538)
+    <!-- https://documentation-service.arm.com/static/656f49c7130be919349bb538 -->
+    ![Figure 6-1: Register diagram](./images/656f49c7130be919349bb538_register-diagram.jpg)
     <figcaption>Figure 6-1 Register diagram</figcaption>
 </figure>
 
@@ -57,7 +58,8 @@ When a `W` register is written, as seen in the example above, the top 32 bits of
 There is a *separate* set of 32 registers used for floating point and vector operations. These registers are 128-bit, but like the general-purpose registers, can be accessed in several ways. `Bx` is 8 bits, `Hx` is 16 bits and so on to `Qx` which is 128 bits.
 
 <figure markdown="span">
-    ![Figure 6-2: Register diagram](https://documentation-service.arm.com/static/656f49c7130be919349bb53b)
+    <!-- https://documentation-service.arm.com/static/656f49c7130be919349bb53b -->
+    ![Figure 6-2: Register diagram](./images/656f49c7130be919349bb53b_other-registers.jpg)
     <figcaption>Figure 6-2 Register diagram</figcaption>
 </figure>
 
@@ -92,14 +94,16 @@ The AArch64 execution state provides 31 × 64-bit general-purpose registers acce
 Each register is 64 bits wide and they are generally referred to as registers `X0`-`X30`.
 
 <figure markdown="span">
-    ![Figure 4.1. AArch64 general-purpose registers](https://documentation-service.arm.com/static/5fbd26f271eff94ef49c7032)
+    <!-- https://documentation-service.arm.com/static/5fbd26f271eff94ef49c7032 -->
+    ![Figure 4.1. AArch64 general-purpose registers](./images/5fbd26f271eff94ef49c7032-A64-general-purpose-registers.png){: style="width:80%;height:80%"}
     <figcaption>Figure 4.1. AArch64 general-purpose registers</figcaption>
 </figure>
 
 Each AArch64 64-bit general-purpose register (`X0`-`X30`) also has a 32-bit (`W0`-`W30`) form.
 
 <figure markdown="span">
-    ![Figure 4.2. 64-bit register with W and X access](https://documentation-service.arm.com/static/5fbd26f271eff94ef49c700c)
+    <!-- https://documentation-service.arm.com/static/5fbd26f271eff94ef49c700c -->
+    ![Figure 4.2. 64-bit register with W and X access](./images/5fbd26f271eff94ef49c700c-A64-register-with-W-and-X-access.png){: style="width:80%;height:80%"}
     <figcaption>Figure 4.2. 64-bit register with W and X access</figcaption>
 </figure>
 
@@ -114,8 +118,8 @@ Reads from `W` registers disregard the higher 32 bits of the corresponding X reg
 In addition to the 31 core registers, there are also several special registers.
 
 <figure markdown="span">
-    <!-- ![AArch64-special-registers](./images/AArch64-special-registers.png){: style="width:80%;height:80%"} -->
-    ![Figure 4.3. AArch64 special registers](https://documentation-service.arm.com/static/5fbd26f271eff94ef49c7033)
+    <!-- https://documentation-service.arm.com/static/5fbd26f271eff94ef49c7033 -->
+    ![AArch64-special-registers](./images/5fbd26f271eff94ef49c7033-A64-special-registers.png){: style="width:80%;height:80%"}
     <figcaption>Figure 4.3. AArch64 special registers</figcaption>
 </figure>
 

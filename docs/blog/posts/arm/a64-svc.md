@@ -100,7 +100,8 @@ When an exception is taken, the processor may change execution state (from AArch
 Consider an application running in `EL0`, which is interrupted by an IRQ as in Figure 10-5. The Kernel IRQ handler runs at `EL1`. The processor determines which execution state to set when it takes the IRQ exception.
 
 <figure markdown="span">
-    ![A64-Exception-flow](https://documentation-service.arm.com/static/5fbd26f271eff94ef49c7052)
+    <!-- https://documentation-service.arm.com/static/5fbd26f271eff94ef49c7052 -->
+    ![A64-Exception-flow](./images/5fbd26f271eff94ef49c7052-Exception-to-EL1.png){: style="width:80%;height:80%"}
     <figcaption>Figure 10.5. Exception to EL1</figcaption>
 </figure>
 

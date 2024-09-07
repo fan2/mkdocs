@@ -1537,7 +1537,8 @@
 <p>When an exception is taken, the processor may change execution state (from AArch64 to AArch32) or stay in the same execution state. For example, an external source may generate an IRQ (interrupt) exception while executing an application running in AArch32 mode and then execute the IRQ handler within the OS Kernel running in AArch64 mode.</p>
 <p>Consider an application running in <code>EL0</code>, which is interrupted by an IRQ as in Figure 10-5. The Kernel IRQ handler runs at <code>EL1</code>. The processor determines which execution state to set when it takes the IRQ exception. It does this by looking at the RW bit of the control register for the Exception level above the one that the exception is being handled in. So, in the example, where the exception is taken in <code>EL1</code>, it is <code>HCR_EL2.RW</code> which controls the execution state for the handler.</p>
 <figure><br />
-<img alt="A64-Exception-flow" src="https://documentation-service.arm.com/static/5fbd26f271eff94ef49c7052" /><br />
+    <!-- https://documentation-service.arm.com/static/5fbd26f271eff94ef49c7052 --><br />
+<img alt="A64-Exception-flow" src="../../arm/images/5fbd26f271eff94ef49c7052-Exception-to-EL1.png" style="width:80%;height:80%" /><br />
     <figcaption>Figure 10.5. Exception to EL1</figcaption><br />
 </figure>
 <p>We must now consider what Exception level an exception is taken at. Again, when an exception is taken, the Exception level may stay the same, or it can get higher. Exceptions are never taken to EL0, as we have already seen.</p>
@@ -1554,7 +1555,8 @@
 </ul>
 <p>The following diagram shows the two Security states in AArch64 with the software components that are typically found in each Security state:</p>
 <figure><br />
-<img alt="Security states before RME" src="https://documentation-service.arm.com/static/6389abc62b0dd145f802fff2" /><br />
+    <!-- https://documentation-service.arm.com/static/6389abc62b0dd145f802fff2 --><br />
+<img alt="Security states before RME" src="../../arm/images/6389abc62b0dd145f802fff2-security-states-before-RME.png" style="width:80%;height:80%" /><br />
     <figcaption>Figure 2-1: Security states before RME</figcaption><br />
 </figure>
 <p>The architecture isolates software running in Secure state from software running in Non-secure state. This isolation enables a software architecture in which trusted code runs in Secure state and is protected from code in Non-secure state.</p>
@@ -1567,7 +1569,8 @@
 </ul>
 <p>The following diagram shows the Security states in an RME-enabled PE, and how these Security states map to Exception levels:</p>
 <figure><br />
-<img alt="Security states with RME" src="https://documentation-service.arm.com/static/6389abc62b0dd145f802fff1" /><br />
+    <!-- https://documentation-service.arm.com/static/6389abc62b0dd145f802fff1 --><br />
+<img alt="Security states with RME" src="../../arm/images/6389abc62b0dd145f802fff1-security-states-with-RME.png" style="width:80%;height:80%" /><br />
     <figcaption>Figure 2-2: Security states with RME</figcaption><br />
 </figure>
 <p>Maintaining Secure state provides backwards compatibility with existing TrustZone use cases. These use cases can also be upgraded to take advantage of new features added by RME, like <a href="https://developer.arm.com/documentation/den0125/latest">dynamic memory assignment</a>.</p>
@@ -1581,7 +1584,8 @@
 <p>With RME, Exception level 3 moves out of Secure state and into its own Security state called root. RME isolates Exception level 3 from all other Security states. Exception level 3 hosts the platform and initial boot code and therefore must be trusted by the software in Non-secure, Secure, and realm states. Because these Security states do not trust each other, Exception level 3 must be in a Security state of its own.</p>
 <p><a href="https://www.allaboutcircuits.com/industry-articles/mixed-safety-systems-using-multicore-socs-with-hypervisors-and-multicore-frameworks/">Mixed-safety Systems Using Multicore SoCs With Hypervisors and Multicore Frameworks</a></p>
 <figure><br />
-<img alt="Supervisory capabilities of hypervisors" src="https://www.allaboutcircuits.com/uploads/articles/Siemens_Figure_2.png" /><br />
+    <!-- https://www.allaboutcircuits.com/uploads/articles/Siemens_Figure_2.png --><br />
+<img alt="Supervisory capabilities of hypervisors" src="../../arm/images/supervisory-capabilities-of-hypervisors.webp" style="width:80%;height:80%" /><br />
     <figcaption>Figure 2. Supervisory capabilities of hypervisors.</figcaption><br />
 </figure>
 <h3 id="switching_security_state">Switching security state<a class="headerlink" href="#switching_security_state" title="Permanent link">#</a></h3>
@@ -1594,13 +1598,15 @@
 <p><strong>17.2 Switching security worlds through interrupts</strong>:</p>
 <p>As the cores execute code from the two worlds, context switching between them occurs through execution of the Secure Monitor (<code>SMC</code>) instruction or by hardware exception mechanisms, such as interrupts. ARM processors have two interrupt types, FIQ and IRQ.</p>
 <figure><br />
-<img alt="Figure 17.1. Non-secure interrupts" src="https://documentation-service.arm.com/static/5fbd26f271eff94ef49c700a" /><br />
+    <!-- https://documentation-service.arm.com/static/5fbd26f271eff94ef49c700a --><br />
+<img alt="Figure 17.1. Non-secure interrupts" src="../../arm/images/5fbd26f271eff94ef49c700a-Non-secure-interrupts.png" style="width:80%;height:80%" /><br />
     <figcaption>Figure 17-1 Non-secure interrupts</figcaption><br />
 </figure>
 <p>There is explicit support for Secure interrupts in the form of controls for redirecting exceptions and interrupts to <code>EL3</code>, independently of the current DAIF. However, these controls only distinguish between the main interrupt types: IRQ, FIQ and asynchronous aborts. Finer grained control requires interrupts to be filtered into Secure and Non-secure groups. Doing this efficiently requires support from the GIC, which has explicit facilities for this.</p>
 <p>A typical use case is for FIQs to be used as Secure interrupts, by mapping Secure interrupt sources as FIQ within the interrupt controller. The relevant peripheral and interrupt controller registers must be marked as Secure access only, to prevent the Normal World from reconfiguring these interrupts.</p>
 <figure><br />
-<img alt="Figure 17.2. Secure interrupts" src="https://documentation-service.arm.com/static/5fbd26f271eff94ef49c7040" /><br />
+    <!-- https://documentation-service.arm.com/static/5fbd26f271eff94ef49c7040 --><br />
+<img alt="Figure 17.2. Secure interrupts" src="../../arm/images/5fbd26f271eff94ef49c7040-secure-interrupts.png" style="width:80%;height:80%" /><br />
     <figcaption>Figure 17-2 Secure interrupts</figcaption><br />
 </figure>
 <p>These Secure FIQ interrupts must be routed to handlers in the Secure execution state.</p>
@@ -1610,13 +1616,15 @@
 <p>For the ARMv8 architecture, when <code>EL3</code> is using AArch32 the system behaves as ARMv7 to ensure full compatibility, with the result that all the privileged modes within the Secure state are treated as being at <code>EL3</code>.</p>
 <p>The security model for AArch32 is shown in Figure 17-4. In this scenario, AArch32 is using <code>EL3</code> to provide a Secure OS and monitor.</p>
 <figure><br />
-<img alt="Figure 17.4. Security model when EL3 is using AArch32" src="https://documentation-service.arm.com/static/5fbd26f271eff94ef49c7024" /><br />
+    <!-- https://documentation-service.arm.com/static/5fbd26f271eff94ef49c7024 --><br />
+<img alt="Figure 17.4. Security model when EL3 is using AArch32" src="../../arm/images/5fbd26f271eff94ef49c7024-security-model-a32-EL3.png" style="width:80%;height:80%" /><br />
     <figcaption>Figure 17-4 Security model when EL3 is using AArch32</figcaption><br />
 </figure>
 <p>In keeping with the ARMv7 architecture, the Secure state <code>EL1</code> and <code>EL0</code> have a different Virtual Address space from the Non-secure state <code>EL1</code> and <code>EL0</code>. This permits secure side code from the ARMv7 32-bit architecture to be used in a system with a 64-bit operating system or hypervisor running on the Non-secure side.</p>
 <p>Figure 17-5 shows the security model when AArch64 is using <code>EL3</code> to provide a Secure monitor. The <code>EL3</code> state is not available to AArch32, but <code>EL1</code> can be used for the secure OS. When <code>EL3</code> is using AArch64, the <code>EL3</code> level is used to execute the code responsible for switching between the Non-secure state and the Secure state.</p>
 <figure><br />
-<img alt="Figure 17.5. Security model when EL3 is using AArch64" src="https://documentation-service.arm.com/static/5fbd26f271eff94ef49c7007" /><br />
+    <!-- https://documentation-service.arm.com/static/5fbd26f271eff94ef49c7007 --><br />
+<img alt="Figure 17.5. Security model when EL3 is using AArch64" src="../../arm/images/5fbd26f271eff94ef49c7007-security-model-a64-EL3.png" style="width:80%;height:80%" /><br />
     <figcaption>Figure 17-5 Security model when EL3 is using AArch64</figcaption><br />
 </figure>
 <h2 id="references">references<a class="headerlink" href="#references" title="Permanent link">#</a></h2>

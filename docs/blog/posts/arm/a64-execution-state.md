@@ -29,7 +29,8 @@ When in AArch64 state, the processor executes the A64 instruction set. When in A
 The following diagrams show the organization of the Exception levels in AArch64 and AArch32.
 
 <figure markdown="span">
-    ![Figure 3.3. Exception levels in AArch64](https://documentation-service.arm.com/static/5fbd26f271eff94ef49c7036)
+    <!-- https://documentation-service.arm.com/static/5fbd26f271eff94ef49c7036 -->
+    ![Figure 3.3. Exception levels in AArch64](./images/5fbd26f271eff94ef49c7036-a64-exception-levels.png){: style="width:80%;height:80%"}
     <figcaption>Figure 3-3 Exception levels in AArch64</figcaption>
 </figure>
 
@@ -58,7 +59,8 @@ There are times when you must change the execution state of your system. This co
 When the application has completed or execution returns to the OS, the system can *switch back* to `AArch64`. Figure 3-7 shows that you cannot do it the other way around. An AArch32 operating system cannot host a 64-bit application.
 
 <figure markdown="span">
-    ![Figure 3.7. Moving between AArch32 and AArch64](https://documentation-service.arm.com/static/5fbd26f271eff94ef49c7013)
+    <!-- https://documentation-service.arm.com/static/5fbd26f271eff94ef49c7013 -->
+    ![Figure 3.7. Moving between AArch32 and AArch64](./images/5fbd26f271eff94ef49c7013-moving-between-A32-A64.png){: style="width:80%;height:80%"}
     <figcaption>Figure 3-7 Moving between AArch32 and AArch64</figcaption>
 </figure>
 
@@ -80,7 +82,8 @@ For the highest implemented Exception level (`EL3` on the Cortex-A53 and Cortex-
 It is not possible to use code from the two execution states within a single application. There is no interworking between A64 and A32 or T32 instruction sets in ARMv8 as there is between A32 and T32 instruction sets. Code written in A64 for the ARMv8 processors cannot run on ARMv7 Cortex-A series processors. However, code written for ARMv7-A processors can run on ARMv8 processors in the AArch32 execution state. This is summarized in Figure 5-1.
 
 <figure markdown="span">
-    ![Figure 5.1. Switching between instruction sets](https://documentation-service.arm.com/static/5fbd26f271eff94ef49c7029)
+    <!-- https://documentation-service.arm.com/static/5fbd26f271eff94ef49c7029 -->
+    ![Figure 5.1. Switching between instruction sets](./images/5fbd26f271eff94ef49c7029-switching-between-ISA.png){: style="width:80%;height:80%"}
     <figcaption>Figure 5-1 Switching between instruction sets</figcaption>
 </figure>
 

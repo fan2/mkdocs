@@ -133,22 +133,26 @@ There are several **addressing modes** that define how the address is formed.
 **Base register** - The simplest form of addressing is a single register. Base register is an X register that contains the full, or absolute, virtual address of the data being accessed, as you can see in this figure:
 
 ![Base register example](https://documentation-service.arm.com/static/656f49c7130be919349bb541)
+<!-- ![Base register example](./images/656f49c7130be919349bb541_base-register.jpg) -->
 
 Offset addressing modes - An offset can be applied optionally to the base address, as you can see in this figure:
 
 ![Offset example](https://documentation-service.arm.com/static/656f49c7130be919349bb53c)
+<!-- ![Offset example](./images/656f49c7130be919349bb53c_offset.jpg) -->
 
 In the preceding figure, `X1` contains the base address and `#12` is a byte offset from that address. This means that the accessed address is `X1+12`. The offset can be either a constant or another register. This type of addressing might be used for structs, for example. The compiler maintains a pointer to the base of struct using the offset to select different members.
 
 Pre-index addressing modes - In the instruction syntax, pre-indexing is shown by adding an exclamation mark `!` after the square brackets, as this figure shows:
 
 ![Pre-indexing example](https://documentation-service.arm.com/static/656f49c7130be919349bb539)
+<!-- ![Pre-indexing example](./images/656f49c7130be919349bb539_pre-index.jpg) -->
 
 Pre-indexed addressing is like offset addressing, except that the base pointer is updated as a result of the instruction. In the preceding figure, `X1` would have the value `X1+12` after the instruction has completed.
 
 Post-index addressing modes - With post-index addressing, the value is loaded from the address in the base pointer, and then the pointer is updated, as this figure shows:
 
-![Post-indexing example](https://documentation-service.arm.com/static/656f49c7130be919349bb53a?token=)
+![Post-indexing example](https://documentation-service.arm.com/static/656f49c7130be919349bb53a)
+<!-- ![Post-indexing example](./images/656f49c7130be919349bb53a_post-index.jpg) -->
 
 Post-index addressing is useful for popping off the stack. The instruction loads the value from the location pointed at by the stack pointer, and then moves the stack pointer on to the next full location in the stack.
 
