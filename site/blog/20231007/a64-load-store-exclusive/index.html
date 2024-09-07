@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://duetorun.com/blog/20231007/a64-load-store-exclusive/">
       
       
-        <link rel="prev" href="../a64-memory-barrier/">
+        <link rel="prev" href="../a64-oneway-barrier/">
       
       
         <link rel="next" href="../../20231008/c-pointer-parameters/">
@@ -26,7 +26,7 @@
     
     
       
-        <title>ARM64 Load/Store exclusive & Atomic operations - ElseWhere</title>
+        <title>ARM64 exclusive Load/Store - ElseWhere</title>
       
     
     
@@ -90,7 +90,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#loadstore_exclusive" class="md-skip">
+        <a href="#memory_access" class="md-skip">
           Skip to content
         </a>
       
@@ -123,7 +123,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              ARM64 Load/Store exclusive & Atomic operations
+              ARM64 exclusive Load/Store
             
           </span>
         </div>
@@ -1304,16 +1304,6 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#loadstore_exclusive" class="md-nav__link">
-    <span class="md-ellipsis">
-      Load/Store exclusive
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Load/Store exclusive">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
   <a href="#memory_access" class="md-nav__link">
     <span class="md-ellipsis">
       Memory access
@@ -1321,8 +1311,8 @@
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#multi-processing" class="md-nav__link">
     <span class="md-ellipsis">
       Multi-processing
@@ -1330,75 +1320,13 @@
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#exclusive_monitor" class="md-nav__link">
     <span class="md-ellipsis">
       Exclusive monitor
     </span>
   </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#原子操作atomic" class="md-nav__link">
-    <span class="md-ellipsis">
-      原子操作(Atomic)
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="原子操作(Atomic)">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#独占内存访问指令" class="md-nav__link">
-    <span class="md-ellipsis">
-      独占内存访问指令
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#独占内存访问工作原理" class="md-nav__link">
-    <span class="md-ellipsis">
-      独占内存访问工作原理
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#原子内存访问操作指令" class="md-nav__link">
-    <span class="md-ellipsis">
-      原子内存访问操作指令
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="原子内存访问操作指令">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#比较并交换指令cas" class="md-nav__link">
-    <span class="md-ellipsis">
-      比较并交换指令(CAS)
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -1480,7 +1408,7 @@
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7z"/></svg>
                           <span class="md-ellipsis">
                             
-                              9 min read
+                              5 min read
                             
                           </span>
                         </div>
@@ -1515,39 +1443,32 @@
     
     
     
-      <span class="md-tag">LL/SC</span>
+      <span class="md-tag">LDAXR</span>
     
   
     
     
     
-      <span class="md-tag">LSE</span>
-    
-  
-    
-    
-    
-      <span class="md-tag">CAS</span>
+      <span class="md-tag">STLXR</span>
     
   
 </nav>
 
 
 
-  <h1>ARM64 Load/Store exclusive & Atomic operations</h1>
+  <h1>ARM64 exclusive Load/Store</h1>
 
 <p>ARMv7-A and ARMv8-A architectures both provide support for exclusive memory accesses. In A64, this is the <em>Load/Store exclusive</em> (<code>LDXR</code>/<code>STXR</code>) pair.</p>
 <p>In an SMP (Symmetric multiprocessing) system, data accesses must frequently be restricted to <em>one</em> modifier at any particular time.</p>
 <!-- more -->
 
-<h2 id="loadstore_exclusive">Load/Store exclusive<a class="headerlink" href="#loadstore_exclusive" title="Permanent link">#</a></h2>
-<h3 id="memory_access">Memory access<a class="headerlink" href="#memory_access" title="Permanent link">#</a></h3>
+<h2 id="memory_access">Memory access<a class="headerlink" href="#memory_access" title="Permanent link">#</a></h2>
 <p><a href="https://developer.arm.com/documentation/den0024/latest">ARM Cortex-A Series Programmer's Guide for ARMv8-A</a> | 6: The A64 instruction set - 6.3 Memory access instructions - 6.3.11 Synchronization primitives</p>
 <p>ARMv7-A and ARMv8-A architectures both provide support for exclusive memory accesses. In A64, this is the <em>Load/Store exclusive</em> (<code>LDXR</code>/<code>STXR</code>) pair.</p>
 <p>The <code>LDXR</code> instruction loads a value from a memory address and attempts to silently claim an exclusive <em>lock</em> on the address. The Store-Exclusive instruction <code>STXR</code> then writes a new value to that location only if the <em>lock</em> was successfully obtained and held. The <code>LDXR</code>/<code>STXR</code> pairing is used to construct standard synchronization primitives such as <strong><em>spinlocks</em></strong>.</p>
 <p>Software must avoid having any explicit memory accesses, system control register updates, or cache maintenance instructions between paired <code>LDXR</code> and <code>STXR</code> instructions.</p>
 <p>There is also an exclusive pair of Load Acquire/Store Release instructions called <code>LDAXR</code> and <code>STLXR</code>.</p>
-<h3 id="multi-processing">Multi-processing<a class="headerlink" href="#multi-processing" title="Permanent link">#</a></h3>
+<h2 id="multi-processing">Multi-processing<a class="headerlink" href="#multi-processing" title="Permanent link">#</a></h2>
 <p><a href="https://developer.arm.com/documentation/den0024/latest">ARM Cortex-A Series Programmer's Guide for ARMv8-A</a> | 14: Multi-core processors - 14.1 Multi-processing systems - 14.1.4 Synchronization</p>
 <p>In an SMP (<a href="https://en.wikipedia.org/wiki/Symmetric_multiprocessing">Symmetric multiprocessing</a>) system, data accesses must frequently be restricted to <em>one</em> modifier at any particular time. This can be true for peripheral devices, but also for global variables and data structures accessed by more than one thread or process. Protection of such shared resources is often through a method known as <strong><code>mutual exclusion</code></strong>. In a multi-core system, you can use a <em><code>spinlock</code></em>, which is effectively a <em>shared flag</em> with an atomic <em>indivisible</em> mechanism, to test and set its value.</p>
 <p>The ARM architecture provides three instructions relating to exclusive access, and variants of these instructions, that operate on byte, halfword, word, or doubleword sized data.</p>
@@ -1559,7 +1480,7 @@
 <li>Clear Exclusive access monitor (<code>CLREX</code>): This is used to clear the state of the Local Exclusive Monitor.</li>
 </ul>
 <p><code>LDXR</code> performs a load of memory, but also <strong>tags</strong> the Physical Address to be <em>monitored</em> for exclusive access by that core. <code>STXR</code> performs a conditional store to memory, succeeding only if the target location is <strong>tagged</strong> as being monitored for exclusive access by <em>that</em> core. This instruction returns non-zero in the general-purpose register <code>Ws</code> if the store does not succeed, and a value of <code>0</code> if the store is successful. In the assembler syntax, it is always specified as a <code>W</code> register, that is, not an <code>X</code> register. In addition, the <code>STXR</code> <strong>clears</strong> the exclusive tag.</p>
-<h3 id="exclusive_monitor">Exclusive monitor<a class="headerlink" href="#exclusive_monitor" title="Permanent link">#</a></h3>
+<h2 id="exclusive_monitor">Exclusive monitor<a class="headerlink" href="#exclusive_monitor" title="Permanent link">#</a></h2>
 <p><a href="https://developer.arm.com/documentation/den0024/latest">ARM Cortex-A Series Programmer's Guide for ARMv8-A</a> | 14: Multi-core processors - 14.1 Multi-processing systems - 14.1.7 Exclusive monitor system location</p>
 <p>A typical multi-core system might include multiple exclusive monitors. Each core has its own <em>local</em> monitor and there are one or more <em>global</em> monitors. The shareable and cacheable attributes of the translation table entry relating to the location used for the exclusive load or store instruction determines which exclusive monitor is used.</p>
 <p>In hardware, the core includes a device named the <em>local monitor</em>. This monitor <strong>observes</strong> the core. When the core performs an exclusive load access, it <strong><em>records</em></strong> that fact in the local monitor. When it performs an exclusive store, it <strong><em>checks</em></strong> that a previous exclusive load was performed and fails the exclusive store if this was not the case. The architecture enables individual implementations to determine the level of checking performed by the monitor. The core can only <strong>tag</strong> one Physical Address at a time.</p>
@@ -1573,317 +1494,6 @@
 <li>The exclusive instruction is treated as a standard <code>LDR</code>/<code>STR</code> instruction, the value held in the result register of the store exclusive instruction becomes <em><code>UNKNOWN</code></em>.</li>
 </ul>
 <p>The <em>Exclusives Reservation Granule</em> (<code>ERG</code>) is the granularity of the exclusive monitor. Its size is <em><code>IMPLEMENTAION DEFINED</code></em>, but is typically <em>one</em> cache line. It gives the minimum spacing between addresses for the monitor to distinguish between them. Placing two mutexes within a single <code>ERG</code> can lead to false negatives, where executing a <code>STXR</code> instruction to either mutex <strong>clears</strong> the exclusive tag of both. This does not prevent architecturally-correct software from functioning correctly but it might be less efficient. The size of the <code>ERG</code> of the exclusive monitor on a specific core might be read from the Cache Type Register, <code>CTR_EL0</code>.</p>
-<h2 id="原子操作atomic">原子操作(Atomic)<a class="headerlink" href="#原子操作atomic" title="Permanent link">#</a></h2>
-<p><a href="https://en.cppreference.com/w/cpp/thread#Semaphores">Concurrency support library (since C++11) - cppreference.com</a></p>
-<blockquote>
-<p>These components are provided for fine-grained atomic operations allowing for <em>lockless concurrent</em> programming. Each atomic operation is <strong><em>indivisible</em></strong> with regards to any other atomic operation that involves the same object. Atomic objects are <a href="https://en.cppreference.com/w/cpp/language/memory_model#Threads_and_data_races">free of data races</a>.</p>
-</blockquote>
-<p>本文节选自 <a href="https://item.jd.com/13119117.html">《ARM64体系结构编程与实践》</a> | 第 20 章 原子操作，仅作学习参考之用途。</p>
-<p>原子操作是指保证指令以原子的方式执行，执行过程不会被打断。</p>
-<p>【例 20-1】在如下代码片段中，假设 thread_A_func 和 thread_B_func 都尝试进行 i++ 操作，thread-A-func 和 thread-B-func 执行完后，i 的值是多少？</p>
-<div class="language-c highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="k">static</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="kt">void</span><span class="w"> </span><span class="nf">thread_A_func</span><span class="p">()</span>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="p">{</span>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">    </span><span class="n">i</span><span class="o">++</span><span class="p">;</span>
-</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="p">}</span>
-</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>
-</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="kt">void</span><span class="w"> </span><span class="nf">thread_B_func</span><span class="w"> </span><span class="p">()</span>
-</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="p">{</span>
-</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="w">    </span><span class="n">i</span><span class="o">++</span><span class="p">;</span>
-</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="p">}</span>
-</span></code></pre></div>
-<p>有的读者可能认为i等于2，但也可能不等于2，代码的执行过程如下。</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">CPU0: thread_A_func</label><label for="__tabbed_1_2">CPU1: thread_B_func</label></div>
-<div class="tabbed-content">
-<div class="tabbed-block">
-<div class="language-asm highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nf">load</span><span class="w"> </span><span class="no">i</span><span class="err">=</span><span class="mi">0</span>
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="nf">i</span><span class="err">++</span>
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>
-</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="nf">store</span><span class="w"> </span><span class="no">i</span><span class="w"> </span><span class="p">(</span><span class="no">i</span><span class="err">=</span><span class="mi">1</span><span class="p">)</span>
-</span></code></pre></div>
-</div>
-<div class="tabbed-block">
-<div class="language-asm highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1">// assumptive scheduling gap</span>
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="nf">load</span><span class="w"> </span><span class="no">i</span><span class="err">=</span><span class="mi">0</span>
-</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>
-</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="nf">i</span><span class="err">++</span>
-</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>
-</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="nf">store</span><span class="w"> </span><span class="no">i</span><span class="w"> </span><span class="p">(</span><span class="no">i</span><span class="err">=</span><span class="mi">1</span><span class="p">)</span>
-</span></code></pre></div>
-</div>
-</div>
-</div>
-<p>从上面的代码执行过程来看，最终 i 也可能等于1。因为变量 i 位于临界区，CPU0 和 CPU1 可能同时访问，发生并发访问。从CPU角度来看，变量 i 是一个静态全局变量，存储在数据段中，首先读取变量的值并存储到通用寄存器中，然后在通用寄存器里做加法运算，最后把寄存器的数值写回变量 i 所在的内存中。在多处理器体系结构中，上述动作可能同时进行。即使在单处理器体系结构上依然可能存储并发访问，例如 thread_B_func 在某个中断处理函数中执行。</p>
-<p>原子操作需要保证不会被打断，如上述的 <code>i++</code> 语句就可能被打断。要保证操作的完整性和原子性，通常需要“原子地”（不间断地）完成“<strong>读一修改-回写</strong>”机制，中间不能被打断。在下述操作中，如果其他 CPU 同时对该原子变量进行写操作，则会造成数据破坏。</p>
-<ol>
-<li>读取原子变量的值，从内存中读取原子变量的值到寄存器。</li>
-<li>修改原子变量的值，在寄存器中修改原子变量的值。</li>
-<li>把新值写回内存中，把寄存器中的新值写回内存中。</li>
-</ol>
-<p>处理器必须提供原子操作的汇编指令来完成上述操作，如 ARM64 处理器提供 <code>LDXR</code> 和 <code>STXR</code> 独占访问内存的指令以及原子内存访问操作指令。</p>
-<h3 id="独占内存访问指令">独占内存访问指令<a class="headerlink" href="#独占内存访问指令" title="Permanent link">#</a></h3>
-<p>原子操作需要处理器提供硬件支持，不同的处理器体系结构在原子操作上会有不同的实现。</p>
-<p>ARMv8 使用两种方式来实现原子操作：一种是经典的独占加载（Load-Exclusive）和独占存储（Store-Exclusive）指令，这种实现方式叫作连接加载/条件存储（Load-Link/Store-Conditional, <code>LL/SC</code>）；另一种是在ARMv8.1体系结构上实现的 <code>LSE</code> 指令。</p>
-<p>LL/SC 最早用于并发与同步访问内存的 CPU 指令，它分成两部分。</p>
-<ul>
-<li>第一部分（<code>LL</code>）表示从指定内存地址<strong>读取</strong>一个值，并且处理器会监控这个内存地址，看其他处理器是否修改该内存地址。</li>
-<li>第二部分（<code>SC</code>）表示如果这段时间内其他处理器没有修改该内存地址，则把新值<strong>写入</strong>该地址。</li>
-</ul>
-<p>因此，一个原子的 LL/SC 操作就是通过 LL 读取值，进行一些计算，最后通过 SC 来写回。如果SC失败，那么重新开始整个操作。</p>
-<p>LL/SC 常常用于实现 <strong><em>无锁</em></strong> 算法与“读-修改-回写”原子操作。很多 RISC 体系结构实现了这种 LL/SC 机制，比如 ARMv8 指令集里实现了 <code>LDXR</code> 和 <code>STXR</code> 指令。</p>
-<p>LDXR 指令是内存独占加载指令，它从内存中以独占方式加教内存地址的信到通用寄存器里。</p>
-<p>以下是 <code>LDXR</code> 指令的原型，它把 <code>Xn</code> 或者 <code>SP</code> 地址的值原子地加载到 <code>Xt</code> 寄存器里。</p>
-<div class="language-asm highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nf">ldxr</span><span class="w"> </span><span class="err">&lt;</span><span class="no">xt</span><span class="err">&gt;</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">xn</span><span class="w"> </span><span class="err">|</span><span class="w"> </span><span class="no">sp</span><span class="p">]</span>
-</span></code></pre></div>
-<p><code>STXR</code> 指令是内存独占存储指令，它以独占的方式把新的数据存储到内存中。这是 <code>STXR</code> 指令的原型。</p>
-<div class="language-asm highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nf">stxr</span><span class="w"> </span><span class="err">&lt;</span><span class="no">ws</span><span class="err">&gt;</span><span class="p">,</span><span class="w"> </span><span class="err">&lt;</span><span class="no">xt</span><span class="err">&gt;</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">xn</span><span class="w"> </span><span class="err">|</span><span class="w"> </span><span class="no">sp</span><span class="p">]</span>
-</span></code></pre></div>
-<p>它把 <code>Xt</code> 寄存器的值原子地存储到 <code>Xn</code> 或者 <code>SP</code> 地址里，执行的结果反映到 <code>Ws</code> 寄存器中。</p>
-<ul>
-<li>若 <code>Ws</code> 寄存器的值为 0，说明 <code>LDXR</code> 和 <code>STXR</code> 指令都执行完了。</li>
-<li>如果结果不是 0，说明 <code>LDXR</code> 和 <code>STXR</code> 指令都已经发生错误，此时需要跳转到 <code>LDXR</code> 指令处，重新做原子加载以及原子存储操作。</li>
-</ul>
-<p>LDXP和STXP指令是多字节独占内存访问指令，一条指令可以独占地加载和存储16字节。</p>
-<div class="language-asm highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nf">ldxp</span><span class="w"> </span><span class="err">&lt;</span><span class="no">xt1</span><span class="err">&gt;</span><span class="p">,</span><span class="w"> </span><span class="err">&lt;</span><span class="no">xt2</span><span class="err">&gt;</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">xn</span><span class="w"> </span><span class="err">|</span><span class="w"> </span><span class="no">sp</span><span class="p">]</span>
-</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="nf">stxp</span><span class="w"> </span><span class="err">&lt;</span><span class="no">ws</span><span class="err">&gt;</span><span class="p">,</span><span class="w"> </span><span class="err">&lt;</span><span class="no">xt1</span><span class="err">&gt;</span><span class="p">,</span><span class="w"> </span><span class="err">&lt;</span><span class="no">xt2</span><span class="err">＞</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">xn</span><span class="w"> </span><span class="err">|</span><span class="w"> </span><span class="no">sp</span><span class="p">]</span>
-</span></code></pre></div>
-<p>LDXR 和STXR 指令还可以和加载-获取以及存储-释放内存屏障原语结合使用，构成一个类似于临界区的内存屏障，在一些场景（比如自旋锁的实现）中非常有用。</p>
-<p>【例 20-2】下面的代码使用了原子的加法函数。<code>atomic_add(i,v)</code> 函数非常简单，它是原子地给 v 加上 i。</p>
-<div class="language-c highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-6-1"> 1</a></span>
-<span class="normal"><a href="#__codelineno-6-2"> 2</a></span>
-<span class="normal"><a href="#__codelineno-6-3"> 3</a></span>
-<span class="normal"><a href="#__codelineno-6-4"> 4</a></span>
-<span class="normal"><a href="#__codelineno-6-5"> 5</a></span>
-<span class="normal"><a href="#__codelineno-6-6"> 6</a></span>
-<span class="normal"><a href="#__codelineno-6-7"> 7</a></span>
-<span class="normal"><a href="#__codelineno-6-8"> 8</a></span>
-<span class="normal"><a href="#__codelineno-6-9"> 9</a></span>
-<span class="normal"><a href="#__codelineno-6-10">10</a></span>
-<span class="normal"><a href="#__codelineno-6-11">11</a></span>
-<span class="normal"><a href="#__codelineno-6-12">12</a></span>
-<span class="normal"><a href="#__codelineno-6-13">13</a></span>
-<span class="normal"><a href="#__codelineno-6-14">14</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1"></a><span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">atomic_add</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">atomic_t</span><span class="w"> </span><span class="o">*</span><span class="n">v</span><span class="p">)</span>
-</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2"></a><span class="w">    </span><span class="p">{</span>
-</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3"></a><span class="w">        </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">tmp</span><span class="p">;</span>
-</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4"></a><span class="w">        </span><span class="kt">int</span><span class="w"> </span><span class="n">result</span><span class="p">;</span>
-</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5"></a>
-</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6"></a><span class="w">        </span><span class="k">asm</span><span class="w"> </span><span class="k">volatile</span><span class="p">(</span><span class="s">&quot;// atomic_add</span><span class="se">\n</span><span class="s">&quot;</span>
-</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7"></a><span class="w">            </span><span class="s">&quot;1: ldxr %w0, [%2] </span><span class="se">\n</span><span class="s">&quot;</span>
-</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8"></a><span class="w">            </span><span class="s">&quot;   add %w0, %w0, %w3</span><span class="se">\n</span><span class="s">&quot;</span>
-</span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9"></a><span class="w">            </span><span class="s">&quot;   stxr %w1, %w0, [%2] </span><span class="se">\n</span><span class="s">&quot;</span>
-</span><span id="__span-6-10"><a id="__codelineno-6-10" name="__codelineno-6-10"></a><span class="w">            </span><span class="s">&quot;   cbnz %w1, 1b&quot;</span>
-</span><span id="__span-6-11"><a id="__codelineno-6-11" name="__codelineno-6-11"></a><span class="w">            </span><span class="o">:</span><span class="w"> </span><span class="s">&quot;=&amp;r&quot;</span><span class="w"> </span><span class="p">(</span><span class="n">result</span><span class="p">),</span><span class="w"> </span><span class="s">&quot;=&amp;r&quot;</span><span class="w"> </span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span>
-</span><span id="__span-6-12"><a id="__codelineno-6-12" name="__codelineno-6-12"></a><span class="w">            </span><span class="o">:</span><span class="w"> </span><span class="s">&quot;r&quot;</span><span class="w"> </span><span class="p">(</span><span class="o">&amp;</span><span class="n">v</span><span class="o">-&gt;</span><span class="n">counter</span><span class="p">),</span><span class="w"> </span><span class="s">&quot;Ir&quot;</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
-</span><span id="__span-6-13"><a id="__codelineno-6-13" name="__codelineno-6-13"></a><span class="w">            </span><span class="o">:</span><span class="w"> </span><span class="s">&quot;cc&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">;</span>
-</span><span id="__span-6-14"><a id="__codelineno-6-14" name="__codelineno-6-14"></a><span class="w">    </span><span class="p">}</span>
-</span></code></pre></div></td></tr></table></div>
-<p>其中 <code>atomic_t</code> 变量的定义如下。</p>
-<div class="language-c highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="n">typede</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">counter</span><span class="p">;</span>
-</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="p">}</span><span class="w"> </span><span class="n">atomic_t</span><span class="p">;</span>
-</span></code></pre></div>
-<p>在第6~13行中，通过内嵌汇编的方式实现 <code>atomic_add</code> 功能。<br />
-在第7行中，通过 <code>LDXR</code> 独占加载指令来加载 <code>v-&gt;counter</code> 的值到 <code>result</code> 变量中，该指令会标记 <code>v-&gt;counter</code> 的地址为独占。<br />
-在第8行中，通过 <strong><code>ADD</code></strong> 指令让 <code>v-&gt;counter</code> 的值加上变量 <code>i</code> 的值。<br />
-在第9行中，通过 <code>STXR</code> 独占存储指令来把最新的 <code>v-&gt;counter</code> 的值写入 <code>v-&gt;counter</code> 地址处。<br />
-在第10行中，判断 <code>tmp</code> 的值。如果 <code>tmp</code> 的值为 0，说明 <code>STXR</code> 指令存储成功；否则，存储失败。如果存储失败，那只能跳转到第7行重新调用 <code>LDXR</code> 指令。<br />
-在第11行中，输出部分有两个参数，其中 <code>result</code> 和 <code>tmp</code> 具有可写属性。<br />
-在第12行中，输入部分有两个参数，<code>v-&gt;counter</code> 的地址只有只读属性，<code>i</code> 也只有只读属性。</p>
-<h3 id="独占内存访问工作原理">独占内存访问工作原理<a class="headerlink" href="#独占内存访问工作原理" title="Permanent link">#</a></h3>
-<p>我们在前文已经介绍了 <code>LDXR</code> 和 <code>STXR</code> 指令。<code>LDXR</code> 是内存加载指令的一种，不过它会通过独占监视器（exclusive monitor）来监控对内存的访问。</p>
-<p>独占监视器会把对应内存地址标记为独占访问模式，保证以独占的方式来访问这个内存地址，不受其他因素的影响。而 <code>STXR</code> 是<em>有条件</em>的存储指令，它会把新数据写入 <code>LDXR</code> 指令标记独占访问的内存地址里。</p>
-<p>【例 20-3】下面是一段使用 <code>LDXR</code> 和 <code>STXR</code> 指令的简单代码。</p>
-<div class="language-asm highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-8-1">1</a></span>
-<span class="normal"><a href="#__codelineno-8-2">2</a></span>
-<span class="normal"><a href="#__codelineno-8-3">3</a></span>
-<span class="normal"><a href="#__codelineno-8-4">4</a></span>
-<span class="normal"><a href="#__codelineno-8-5">5</a></span>
-<span class="normal"><a href="#__codelineno-8-6">6</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1"></a><span class="nl">my_atomic_set:</span>
-</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2"></a><span class="err">1:</span>
-</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3"></a><span class="w">    </span><span class="nf">ldxr</span><span class="w"> </span><span class="no">x2</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">x1</span><span class="p">]</span>
-</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4"></a><span class="w">    </span><span class="nf">orr</span><span class="w"> </span><span class="no">x2</span><span class="p">,</span><span class="w"> </span><span class="no">x2</span><span class="p">,</span><span class="w"> </span><span class="no">x0</span>
-</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5"></a><span class="w">    </span><span class="nf">stxr</span><span class="w"> </span><span class="no">w3</span><span class="p">,</span><span class="w"> </span><span class="no">x2</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">x1</span><span class="p">]</span>
-</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6"></a><span class="w">    </span><span class="nf">cbnz</span><span class="w"> </span><span class="no">w3</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="no">b</span>
-</span></code></pre></div></td></tr></table></div>
-<p>在第3行中，读取 X1 寄存器的值，然后以 X1 寄存器的值为地址，以独占的方式加载该地址的内容到 X2 寄存器中。<br />
-在第4行中，通过 <code>ORR</code> 指令来设置 X2 寄存器的值。<br />
-在第5行中，以独占的方式把 X2 寄存器的值写入 X1 寄存器里。若 W3 寄存器的值为0，表示写入成功：若 W3 寄存器的值为1，表示不成功。<br />
-在第6行中，判断 W3 寄存器的值，如果 W3 寄存器的值不为0，说明 <code>LDXR</code> 和 <code>STXR</code> 指令执行失败，需要跳转到第2行的标签1处，重新使用 <code>LDXR</code> 指令进行独占加载。</p>
-<p>注意，<code>LDXR</code> 和 <code>STXR</code> 指令是需要<strong>配对使用</strong>的，而且它们之间是原子的，即使我们使用仿真器硬件也没有办法单步调试和执行 <code>LDXR</code> 和 <code>STXR</code> 指令，即我们无法使用仿真器来单步调试第3~5行的代码，它们是原子的，是一个不可分割的整体。</p>
-<p><code>LDXR</code> 指令本质上也是 <code>LDR</code> 指令，只不过在 ARM64 处理器内部使用一个独占监视器来监视它的状态。独占监视器一共有两个状态——<strong><em>开放访问状态</em></strong> 和 <strong><em>独占访问状态</em></strong>。</p>
-<p>当 CPU 通过 <code>LDXR</code> 指令从内存加载数据时，CPU 会把这个内存地址标记为独占访问，然后 CPU 内部的独占监视器的状态变成独占访问状态。当 CPU 执行 <code>STXR</code> 指令的时候，需要根据独占监视器的状态来做决定。</p>
-<ol>
-<li>如果独占监视器的状态为独占访问状态，并且 <code>STXR</code> 指令要存储的地址正好是刚才使用 <code>LDXR</code> 指令标记过的，那么 <code>STXR</code> 指令存储成功，<code>STXR</code> 指令返回0，独占监视器的状态变成开放访问状态。</li>
-<li>如果独占监视器的状态为开放访问状态，那么 <code>STXR</code> 指令存储失败，<code>STXR</code> 指令返回1，独占监视器的状态不变，依然保持开放访问状态。</li>
-</ol>
-<hr />
-<p><strong>独占监视器与缓存一致性</strong>：</p>
-<p><code>LDXR</code> 指令和 <code>STXR</code> 指令在多核之间利用高速缓存一致性协议以及独占监视器来保证执行的 <strong>串行化</strong> 和 <strong>数据一致性</strong>。以 Cortex-A72 为例，L1 数据高速缓存之间的缓存一致性是通过 <code>MESI</code> 协议来实现的。</p>
-<h3 id="原子内存访问操作指令">原子内存访问操作指令<a class="headerlink" href="#原子内存访问操作指令" title="Permanent link">#</a></h3>
-<p>在 ARMv8.1 体系结构中新增了原子内存访问操作指令（atomic memory access instruction），这个也称为 <code>LSE</code>（Large System Extension）。原子内存访问操作指令需要 AMBA 5 总线中的 <code>CHI</code>（Coherent Hub Interface）的支持。AMBA 5 总线引入了原子事务（atomic transaction），允许将原子操作发送到数据，并且允许原子操作在靠近数据的地方执行，例如在互连总线上执行原子算术和逻辑操作，而不需要加载到高速缓存中处理。原子事务非常适合要操作的数据离处理器核心比较<em>远</em>的情况，例如数据在内存中。</p>
-<p>使用独占内存访间指令会导致所有的 CPU 核都把锁加载到 L1 高速缓存中，然后不停地尝试获取锁（使用 <code>LDXR</code> 指令来读取锁）和检查独占监视器的状态，导致高速缓存颠簸。这个场最在 NUMA 体系结构下会变得更糟糕，远端节点（remote node）的 CPU 需要不断地跨节点访问数据。另外一个问题是不公平，当锁持有者释放锁时，所有的 CPU 都需要抢这把锁（使用 <code>STXR</code> 指令写这个 lock 变量），有可能最先申请锁的 CPU 反而没有抢到锁。</p>
-<p>如果使用原子内存访问操作指令，那么最先申请这个锁的 CPU 内核会通过 CHI 互连总线的 HN-F 节点完成算术和逻辑运算，不需要把数据加载到 L1 高速缓存，而且整个过程都是原子的。</p>
-<p>在使用这些指令之前需要确认一下你使用的 CPU 是否支持这个特性。我们可以通过 <code>ID_AA64ISAR0_EL1</code> 寄存器中的 <code>atomic</code> 域来判断 CPU 是否支持 LSE 特性。</p>
-<p>LSE 指令中主要新增了如下三类指令。</p>
-<ul>
-<li>比较并交换（Compare And Swap, <code>CAS</code>）指令。</li>
-<li>原子内存访问指令，比如 <code>LDADD</code> 指令，用于原子地加载内存地址的值，然后进行加法运算；<code>STADD</code> 指令原子地对内存地址的值进行加法运算，然后把结果存储到这个内存地址里。</li>
-<li>交换指令（Swap）。</li>
-</ul>
-<p>原子内存访问指令分成两类。</p>
-<ul>
-<li>原子加载（atomic load）指令，先原子地加载，然后做运算。</li>
-<li>原子存储（atomic store）指令，先运算，然后原子地存储。</li>
-</ul>
-<p>上述两类指令的执行过程都是原子性的。</p>
-<p>【例 20-5】下面以 <code>STADD</code> 指令来实现 <code>atomic_add()</code> 函数。</p>
-<div class="language-c highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-9-1">1</a></span>
-<span class="normal"><a href="#__codelineno-9-2">2</a></span>
-<span class="normal"><a href="#__codelineno-9-3">3</a></span>
-<span class="normal"><a href="#__codelineno-9-4">4</a></span>
-<span class="normal"><a href="#__codelineno-9-5">5</a></span>
-<span class="normal"><a href="#__codelineno-9-6">6</a></span>
-<span class="normal"><a href="#__codelineno-9-7">7</a></span>
-<span class="normal"><a href="#__codelineno-9-8">8</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1"></a><span class="k">static</span><span class="w"> </span><span class="kr">inline</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">atomic_add</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">atomic_t</span><span class="w"> </span><span class="o">*</span><span class="n">v</span><span class="p">)</span>
-</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2"></a><span class="p">{</span>
-</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3"></a><span class="w">    </span><span class="k">asm</span><span class="w"> </span><span class="k">volatile</span><span class="p">(</span>
-</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4"></a><span class="w">        </span><span class="s">&quot;stadd %w[i], %[v]</span><span class="se">\n</span><span class="s">&quot;</span>
-</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5"></a><span class="w">        </span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="s">&quot;+r&quot;</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="p">),</span><span class="w"> </span><span class="p">[</span><span class="n">v</span><span class="p">]</span><span class="w"> </span><span class="s">&quot;+Q&quot;</span><span class="w"> </span><span class="p">(</span><span class="n">v</span><span class="o">-</span><span class="err">›</span><span class="n">counter</span><span class="p">)</span>
-</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6"></a><span class="w">        </span><span class="o">:</span>
-</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7"></a><span class="w">        </span><span class="o">:</span><span class="w"> </span><span class="s">&quot;cc&quot;</span><span class="p">);</span>
-</span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8"></a><span class="p">}</span>
-</span></code></pre></div></td></tr></table></div>
-<p>在第4行中，使用 <code>STADD</code> 指令来把变量i的值添加到 <code>v-&gt;counter</code> 中<br />
-在第5行中，输出操作数列表，描述在指令部分中可以修改的C语言变量以及约束条件，其中变量 <code>i</code> 和 <code>v-&gt;counter</code> 都具有可读、可写属性。<br />
-在第7行中，改变资源列表。即告诉编译器哪些资源已修改，需要更新。</p>
-<p>使用原子内存访问操作指令来实现 <code>atomic_add()</code> 函数非常高效。</p>
-<p>【例 20-6】下面使用 <code>LDUMAX</code>（无符号的最大值加载） 指令来实现经典的自旋锁。</p>
-<blockquote>
-<p>获取自旋锁的函数原型为 <code>get_lock()</code>。</p>
-</blockquote>
-<div class="language-asm highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-10-1"> 1</a></span>
-<span class="normal"><a href="#__codelineno-10-2"> 2</a></span>
-<span class="normal"><a href="#__codelineno-10-3"> 3</a></span>
-<span class="normal"><a href="#__codelineno-10-4"> 4</a></span>
-<span class="normal"><a href="#__codelineno-10-5"> 5</a></span>
-<span class="normal"><a href="#__codelineno-10-6"> 6</a></span>
-<span class="normal"><a href="#__codelineno-10-7"> 7</a></span>
-<span class="normal"><a href="#__codelineno-10-8"> 8</a></span>
-<span class="normal"><a href="#__codelineno-10-9"> 9</a></span>
-<span class="normal"><a href="#__codelineno-10-10">10</a></span>
-<span class="normal"><a href="#__codelineno-10-11">11</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1"></a><span class="c1">#define LOCK 1</span>
-</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2"></a><span class="c1">#define UNLOCK 0</span>
-</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3"></a>
-</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4"></a><span class="c1">//函数原型：get_lock(lock)</span>
-</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5"></a><span class="nl">get_lock:</span>
-</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6"></a><span class="w">    </span><span class="nf">mov</span><span class="w"> </span><span class="no">x1</span><span class="p">,</span><span class="w"> </span><span class="c1">#LOCK</span>
-</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7"></a>
-</span><span id="__span-10-8"><a id="__codelineno-10-8" name="__codelineno-10-8"></a><span class="nl">retry:</span>
-</span><span id="__span-10-9"><a id="__codelineno-10-9" name="__codelineno-10-9"></a><span class="w">    </span><span class="nf">ldumaxa</span><span class="w"> </span><span class="no">x1</span><span class="p">,</span><span class="w"> </span><span class="no">x2</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">x0</span><span class="p">]</span>
-</span><span id="__span-10-10"><a id="__codelineno-10-10" name="__codelineno-10-10"></a><span class="w">    </span><span class="nf">cbnz</span><span class="w"> </span><span class="no">x2</span><span class="p">,</span><span class="w"> </span><span class="no">retry</span>
-</span><span id="__span-10-11"><a id="__codelineno-10-11" name="__codelineno-10-11"></a><span class="w">    </span><span class="nf">ret</span>
-</span></code></pre></div></td></tr></table></div>
-<p>首先比较 X1 寄存器的值与 [X0]（[X0] 表示以 X0 寄存器的值为地址）的值，然后把 <em>最大值</em> 写入以 X0 寄存器的值为地址的内存中。最后，返回 [X0] 的旧值，存放在 X2 寄存器中。<br />
-X2 寄存器存储了锁的旧值，如果 X2 寄存器的值为1，那么说明锁已经被其他进程持有了，当前 CPU 获取锁失败。如果 X2 寄存器的值为0，说明当前 CPU 成功获取了锁。</p>
-<p>释放锁比较简单，使用 <code>STLR</code> 指令来往锁的地址写0即可。</p>
-<div class="language-asm highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="c1">//释放锁：release_lock(lock)</span>
-</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="nl">release_lock:</span>
-</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="w">    </span><span class="nf">mov</span><span class="w"> </span><span class="no">x1</span><span class="p">,</span><span class="w"> </span><span class="c1">#UNLOCK</span>
-</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="w">    </span><span class="nf">stlr</span><span class="w"> </span><span class="no">x1</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">x0</span><span class="p">]</span>
-</span></code></pre></div>
-<h4 id="比较并交换指令cas">比较并交换指令(CAS)<a class="headerlink" href="#比较并交换指令cas" title="Permanent link">#</a></h4>
-<p>比较并交换（CAS）指令在 <strong><em>无锁</em></strong> 实现中起到非常重要的作用。比较并交换指令的伪代码如下。</p>
-<div class="language-c highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-12-1">1</a></span>
-<span class="normal"><a href="#__codelineno-12-2">2</a></span>
-<span class="normal"><a href="#__codelineno-12-3">3</a></span>
-<span class="normal"><a href="#__codelineno-12-4">4</a></span>
-<span class="normal"><a href="#__codelineno-12-5">5</a></span>
-<span class="normal"><a href="#__codelineno-12-6">6</a></span>
-<span class="normal"><a href="#__codelineno-12-7">7</a></span>
-<span class="normal"><a href="#__codelineno-12-8">8</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1"></a><span class="kt">int</span><span class="w"> </span><span class="nf">compare_swap</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">ptr</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">expected</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">new</span><span class="p">)</span>
-</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2"></a><span class="p">{</span>
-</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3"></a><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">actual</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">*</span><span class="n">ptr</span><span class="p">;</span>
-</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">actual</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">expected</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5"></a><span class="w">        </span><span class="o">*</span><span class="n">ptr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">new</span><span class="p">;</span>
-</span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6"></a><span class="w">    </span><span class="p">}</span>
-</span><span id="__span-12-7"><a id="__codelineno-12-7" name="__codelineno-12-7"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">actual</span><span class="p">;</span>
-</span><span id="__span-12-8"><a id="__codelineno-12-8" name="__codelineno-12-8"></a><span class="p">}</span>
-</span></code></pre></div></td></tr></table></div>
-<p>CAS 指令的基本思路是检查 <code>ptr</code> 指向的值与 <code>expected</code> 是否相等。若相等，则把 <code>new</code> 的值赋值给 <code>ptr</code>；否则，什么也不做。<br />
-不管是否相等，最终都会返回 <code>ptr</code> 的旧值，让调用者来判断该比较并交换指令执行是否成功。</p>
-<p>ARM64 处理器提供了 CAS 指令。CAS 指令根据内存屏障属性分成4类，如表20.2所示。</p>
-<ul>
-<li>隐含了加载-获取内存屏障原语。</li>
-<li>隐含了存储-释放内存屏障原语。</li>
-<li>同时隐含了加载-获取和存储-释放内存屏障原语。</li>
-<li>不隐含内存屏障原语。</li>
-</ul>
-<p>Linux 内核中常见的比较并交换函数是 <code>cmpxchg()</code>。由于 Linux 内核最早是基于 x86 体系结构来实现的，x86指令集中对应的指令是 <code>CMPXCHG</code> 指令，因此 Linux 内核使用该名字作为函<br />
-数名。</p>
-<p>【例 20-7】对于 ARM64 体系结构，<code>cmpxchg_mb_64()</code> 函数的实现如下。</p>
-<div class="language-c highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-13-1"> 1</a></span>
-<span class="normal"><a href="#__codelineno-13-2"> 2</a></span>
-<span class="normal"><a href="#__codelineno-13-3"> 3</a></span>
-<span class="normal"><a href="#__codelineno-13-4"> 4</a></span>
-<span class="normal"><a href="#__codelineno-13-5"> 5</a></span>
-<span class="normal"><a href="#__codelineno-13-6"> 6</a></span>
-<span class="normal"><a href="#__codelineno-13-7"> 7</a></span>
-<span class="normal"><a href="#__codelineno-13-8"> 8</a></span>
-<span class="normal"><a href="#__codelineno-13-9"> 9</a></span>
-<span class="normal"><a href="#__codelineno-13-10">10</a></span>
-<span class="normal"><a href="#__codelineno-13-11">11</a></span>
-<span class="normal"><a href="#__codelineno-13-12">12</a></span>
-<span class="normal"><a href="#__codelineno-13-13">13</a></span>
-<span class="normal"><a href="#__codelineno-13-14">14</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1"></a><span class="n">u64</span><span class="w"> </span><span class="nf">cmpxchg_mb_64</span><span class="w"> </span><span class="p">(</span><span class="k">volatile</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">ptr</span><span class="p">,</span><span class="w"> </span><span class="n">u64</span><span class="w"> </span><span class="n">old</span><span class="p">,</span><span class="w"> </span><span class="n">u64</span><span class="w"> </span><span class="n">new</span><span class="p">)</span>
-</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2"></a><span class="p">{</span>
-</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3"></a><span class="w">    </span><span class="n">u64</span><span class="w"> </span><span class="n">tmp</span><span class="p">;</span>
-</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4"></a>
-</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5"></a><span class="w">    </span><span class="k">asm</span><span class="w"> </span><span class="k">volatile</span><span class="p">(</span>
-</span><span id="__span-13-6"><a id="__codelineno-13-6" name="__codelineno-13-6"></a><span class="w">    </span><span class="s">&quot;   mov x30, %x[old]</span><span class="se">\n</span><span class="s">&quot;</span>
-</span><span id="__span-13-7"><a id="__codelineno-13-7" name="__codelineno-13-7"></a><span class="w">    </span><span class="s">&quot;   casal x30, %x[new], %[v]</span><span class="se">\n</span><span class="s">&quot;</span>
-</span><span id="__span-13-8"><a id="__codelineno-13-8" name="__codelineno-13-8"></a><span class="w">    </span><span class="s">&quot;   mov %x[ret], x30&quot;</span>
-</span><span id="__span-13-9"><a id="__codelineno-13-9" name="__codelineno-13-9"></a><span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="n">ret</span><span class="p">]</span><span class="w"> </span><span class="s">&quot;+r&quot;</span><span class="w"> </span><span class="p">(</span><span class="n">tmp</span><span class="p">),</span><span class="w"> </span><span class="p">[</span><span class="n">v</span><span class="p">]</span><span class="w"> </span><span class="s">&quot;+Q&quot;</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="n">ptr</span><span class="p">)</span>
-</span><span id="__span-13-10"><a id="__codelineno-13-10" name="__codelineno-13-10"></a><span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="n">old</span><span class="p">]</span><span class="w"> </span><span class="s">&quot;r&quot;</span><span class="w"> </span><span class="p">(</span><span class="n">old</span><span class="p">),</span><span class="w"> </span><span class="p">[</span><span class="n">new</span><span class="p">]</span><span class="w"> </span><span class="s">&quot;r&quot;</span><span class="w"> </span><span class="p">(</span><span class="n">new</span><span class="p">)</span>
-</span><span id="__span-13-11"><a id="__codelineno-13-11" name="__codelineno-13-11"></a><span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="s">&quot;memory&quot;</span><span class="p">);</span>
-</span><span id="__span-13-12"><a id="__codelineno-13-12" name="__codelineno-13-12"></a>
-</span><span id="__span-13-13"><a id="__codelineno-13-13" name="__codelineno-13-13"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">tmp</span><span class="p">;</span>
-</span><span id="__span-13-14"><a id="__codelineno-13-14" name="__codelineno-13-14"></a><span class="p">}</span>
-</span></code></pre></div></td></tr></table></div>
-<p>在第6行中，把 <code>old</code> 参数（expected）加载到 <code>X30</code> 寄存器中。<br />
-在第7行中，使用 <code>CASAL</code> 指令来执行比较并交换操作。比较 <code>ptr</code> 的值是否与 <code>X30</code> 的值相等，若相等，则把 <code>new</code> 的值设置到 <code>ptr</code> 中。</p>
-<blockquote>
-<p>注意，这里 <code>CASAL</code> 指令隐含了加载-获取和存储-释放内存屏障原语。</p>
-</blockquote>
-<p>在第8行中，通过 <code>ret</code> 参数返回 <code>X30</code> 寄存器的值。</p>
-<p>除 <code>cmpxchg()</code> 函数之外，Linux 内核还实现了多个变体，如表20.3所示。这些函数在 <strong><em>无锁</em></strong> 机制的实现中起到了非常重要的作用。</p>
-<table>
-<thead>
-<tr>
-<th>cmpxchg() 函数的变体</th>
-<th>描述</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>cmpxchg_acquire()</td>
-<td>比较并交换操作，隐含了加载-获取内存屏障原语</td>
-</tr>
-<tr>
-<td>cmpxchg_release()</td>
-<td>比较并交换操作，隐含了存储-释放内存屏障原语</td>
-</tr>
-<tr>
-<td>cmpchg_relaxed()</td>
-<td>比较并交换操作，不隐含任何内存屏障原语</td>
-</tr>
-<tr>
-<td>cmpxchg()</td>
-<td>比较并交换操作，隐含了加载-获取和存储-释放内存屏障原语</td>
-</tr>
-</tbody>
-</table>
 
 
 
@@ -1983,7 +1593,7 @@ X2 寄存器存储了锁的旧值，如果 X2 寄存器的值为1，那么说明
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../a64-memory-barrier/" class="md-footer__link md-footer__link--prev" aria-label="Previous: ARM64 Memory Ordering - barriers">
+          <a href="../a64-oneway-barrier/" class="md-footer__link md-footer__link--prev" aria-label="Previous: ARM64 One-Way Barriers">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -1993,7 +1603,7 @@ X2 寄存器存储了锁的旧值，如果 X2 寄存器的值为1，那么说明
                 Previous
               </span>
               <div class="md-ellipsis">
-                ARM64 Memory Ordering - barriers
+                ARM64 One-Way Barriers
               </div>
             </div>
           </a>

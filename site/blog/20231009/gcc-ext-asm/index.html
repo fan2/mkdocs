@@ -1,0 +1,1901 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="在别处或在路上">
+      
+      
+        <meta name="author" content="Cliff Fan">
+      
+      
+        <link rel="canonical" href="https://duetorun.com/blog/20231009/gcc-ext-asm/">
+      
+      
+        <link rel="prev" href="../c-const-readonly/">
+      
+      
+        <link rel="next" href="../../20231010/c-named-const/">
+      
+      
+      <link rel="icon" href="../../../assets/hold_yourself.jpg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.34">
+    
+    
+      
+        <title>GCC Extended Asm - C/C++ inline assembly - ElseWhere</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.35f28582.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function e(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],e("js",new Date),e("config","G-XGW41EGL31"),document.addEventListener("DOMContentLoaded",(function(){document.forms.search&&document.forms.search.query.addEventListener("blur",(function(){this.value&&e("event","search",{search_term:this.value})}));document$.subscribe((function(){var t=document.forms.feedback;if(void 0!==t)for(var a of t.querySelectorAll("[type=submit]"))a.addEventListener("click",(function(a){a.preventDefault();var n=document.location.pathname,d=this.getAttribute("data-md-value");e("event","feedback",{page:n,data:d}),t.firstElementChild.disabled=!0;var r=t.querySelector(".md-feedback__note [data-md-value='"+d+"']");r&&(r.hidden=!1)})),t.hidden=!1})),location$.subscribe((function(t){e("config","G-XGW41EGL31",{page_path:t.pathname})}))}));var t=document.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id=G-XGW41EGL31",document.getElementById("__analytics").insertAdjacentElement("afterEnd",t)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+    
+  
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#extended_asm" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="ElseWhere" class="md-header__button md-logo" aria-label="ElseWhere" data-md-component="logo">
+      
+  <img src="../../../assets/hold_yourself.jpg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ElseWhere
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              GCC Extended Asm - C/C++ inline assembly
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1M8 13h8v-2H8zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4a5 5 0 0 0 5-5 5 5 0 0 0-5-5"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="indigo"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5M7 15a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../about/" class="md-tabs__link">
+        
+  
+    
+  
+  About
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../" class="md-tabs__link">
+          
+  
+  Blog
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../link/" class="md-tabs__link">
+        
+  
+    
+  
+  Link
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" hidden>
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="ElseWhere" class="md-nav__button md-logo" aria-label="ElseWhere" data-md-component="logo">
+      
+  <img src="../../../assets/hold_yourself.jpg" alt="logo">
+
+    </a>
+    ElseWhere
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../about/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    About
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Blog
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      <a href="../../" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Blog
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Archive
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            Archive
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2024/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2024
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2023/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2023
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2022/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2022
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2021/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2021
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2020/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2020
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2019/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2019
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2018/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2018
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2017/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2017
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2015/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2015
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2009/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    2009
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Categories
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            Categories
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/cs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    CS
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/arm/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    arm
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/c/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    c
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/cpp/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    cpp
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/editor/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    editor
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/elf/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    elf
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/excerpt/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    excerpt
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/git/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    git
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/linux/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    linux
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/macos/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    macOS
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/markdown/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    markdown
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/material/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    material
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/mkdocs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    mkdocs
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/nginx/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    nginx
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/python/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    python
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/resource/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    resource
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/shell/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    shell
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/toolchain/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    toolchain
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/ubuntu/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ubuntu
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/vim/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    vim
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/webdav/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    webDAV
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/wiki/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    wiki
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/zsh/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    zsh
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../link/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Link
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+                
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#extended_asm" class="md-nav__link">
+    <span class="md-ellipsis">
+      Extended Asm
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Extended Asm">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#input_operands" class="md-nav__link">
+    <span class="md-ellipsis">
+      Input Operands
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Input Operands">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#constraint" class="md-nav__link">
+    <span class="md-ellipsis">
+      constraint
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cexpression" class="md-nav__link">
+    <span class="md-ellipsis">
+      cexpression
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#output_operands" class="md-nav__link">
+    <span class="md-ellipsis">
+      Output Operands
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Output Operands">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#constraint_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      constraint
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cvariablename" class="md-nav__link">
+    <span class="md-ellipsis">
+      cvariablename
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      examples
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="examples">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#example_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      example 1
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      example 2
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      example 3
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#a64_barrier" class="md-nav__link">
+    <span class="md-ellipsis">
+      a64 barrier
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+  <div class="md-content md-content--post" data-md-component="content">
+    <div class="md-sidebar md-sidebar--post" data-md-component="sidebar" data-md-type="navigation">
+      <div class="md-sidebar__scrollwrap">
+        <div class="md-sidebar__inner md-post">
+          <nav class="md-nav md-nav--primary">
+            <div class="md-post__back">
+              <div class="md-nav__title md-nav__container">
+                <a href="../../" class="md-nav__link">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+                  <span class="md-ellipsis">
+                    Back to index
+                  </span>
+                </a>
+              </div>
+            </div>
+            
+              <div class="md-post__authors md-typeset">
+                
+                  <div class="md-profile md-post__profile">
+                    <span class="md-author md-author--long">
+                      <img src="https://duetorun.com/assets/carve_yourself.jpg" alt="Cliff Fan">
+                    </span>
+                    <span class="md-profile__description">
+                      <strong>
+                        
+                          Cliff Fan
+                        
+                      </strong>
+                      <br>
+                      Just do IT
+                    </span>
+                  </div>
+                
+              </div>
+            
+            <ul class="md-post__meta md-nav__list">
+              <li class="md-nav__item md-nav__item--section">
+                <div class="md-post__title">
+                  <span class="md-ellipsis">
+                    Metadata
+                  </span>
+                </div>
+                <nav class="md-nav">
+                  <ul class="md-nav__list">
+                    <li class="md-nav__item">
+                      <div class="md-nav__link">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 19H5V8h14m-3-7v2H8V1H6v2H5c-1.11 0-2 .89-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-1V1m-1 11h-5v5h5z"/></svg>
+                        <time datetime="2023-10-09 10:00:00" class="md-ellipsis">Oct 9, 2023</time>
+                      </div>
+                    </li>
+                    
+                    
+                      <li class="md-nav__item">
+                        <div class="md-nav__link">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 3v15h3V3zm3 2 4 13 3-1-4-13zM5 5v13h3V5zM3 19v2h18v-2z"/></svg>
+                          <span class="md-ellipsis">
+                            in
+                            
+                              <a href="../../category/arm/">arm</a></span>
+                        </div>
+                      </li>
+                    
+                    
+                      
+                      <li class="md-nav__item">
+                        <div class="md-nav__link">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7z"/></svg>
+                          <span class="md-ellipsis">
+                            
+                              6 min read
+                            
+                          </span>
+                        </div>
+                      </li>
+                    
+                    <!-- Add by Cliff.Fan, 29Mar24. -->
+                    <li class="md-nav__item">
+                      <div class="md-nav__link">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m19 1-5 5v11l5-4.5zm2 4v13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V6c-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1M10 18.41C8.75 18.09 7.5 18 6.5 18c-1.06 0-2.32.19-3.5.5V7.13c.91-.4 2.14-.63 3.5-.63s2.59.23 3.5.63z"/></svg>
+                        <span class="md-ellipsis" id="busuanzi_container_page_pv">
+                          PV：<span id="busuanzi_value_page_pv">N/A</span>
+                        </span>
+                      </div>
+                    </li>
+                  </ul>
+                </nav>
+              </li>
+            </ul>
+          </nav>
+          
+        </div>
+      </div>
+    </div>
+    <article class="md-content__inner md-typeset">
+      
+        
+
+
+  <h1>GCC Extended Asm - C/C++ inline assembly</h1>
+
+<p>With extended asm you can read and write C variables from assembler and perform jumps from assembler code to C labels.</p>
+<!-- more -->
+
+<p><a href="https://gcc.gnu.org/onlinedocs/gcc/Using-Assembly-Language-with-C.html">GCC - Using Assembly Language with C</a> - <a href="https://gcc.gnu.org/onlinedocs/gcc/Extended-Asm.html">Extended Asm</a><br />
+<a href="https://dl.acm.org/doi/fullHtml/10.5555/3024956.3024958">GCC Inline Assembly and Its Usage in the Linux Kernel</a></p>
+<h2 id="extended_asm">Extended Asm<a class="headerlink" href="#extended_asm" title="Permanent link">#</a></h2>
+<p>Extended asm syntax uses colons (‘<code>:</code>’) to delimit the operand parameters after the assembler template:</p>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="k">asm</span><span class="w"> </span><span class="k">asm</span><span class="o">-</span><span class="n">qualifiers</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">AssemblerTemplate</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="w">                </span><span class="o">:</span><span class="w"> </span><span class="n">OutputOperands</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="w">                </span><span class="p">[</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">InputOperands</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="w">                </span><span class="p">[</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">Clobbers</span><span class="w"> </span><span class="p">]</span><span class="w"> </span><span class="p">])</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="k">asm</span><span class="w"> </span><span class="k">asm</span><span class="o">-</span><span class="n">qualifiers</span><span class="w"> </span><span class="p">(</span><span class="w"> </span><span class="n">AssemblerTemplate</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="w">                    </span><span class="o">:</span><span class="w"> </span><span class="n">OutputOperands</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="w">                    </span><span class="o">:</span><span class="w"> </span><span class="n">InputOperands</span>
+</span><span id="__span-0-9"><a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="w">                    </span><span class="o">:</span><span class="w"> </span><span class="n">Clobbers</span>
+</span><span id="__span-0-10"><a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="w">                    </span><span class="o">:</span><span class="w"> </span><span class="n">GotoLabels</span><span class="p">)</span>
+</span></code></pre></div>
+<ul>
+<li><code>AssemblerTemplate</code>: This is a literal string that is the template for the assembler code. It is a combination of fixed text and tokens that refer to the input, output, and goto parameters.</li>
+<li><code>OutputOperands</code>: A comma-separated list of the C variables modified by the instructions in the AssemblerTemplate. An empty list is permitted.</li>
+<li><code>InputOperands</code>: A comma-separated list of C expressions read by the instructions in the AssemblerTemplate. An empty list is permitted.</li>
+<li><code>Clobbers</code>: A comma-separated list of registers or other values changed by the AssemblerTemplate, beyond those listed as outputs. An empty list is permitted.</li>
+</ul>
+<h3 id="input_operands">Input Operands<a class="headerlink" href="#input_operands" title="Permanent link">#</a></h3>
+<p>Input operands make values from C variables and expressions available to the assembly code.</p>
+<p>Operands are separated by commas. Each operand has this format:</p>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="p">[</span><span class="w"> </span><span class="p">[</span><span class="n">asmSymbolicName</span><span class="p">]</span><span class="w"> </span><span class="p">]</span><span class="w"> </span><span class="n">constraint</span><span class="w"> </span><span class="p">(</span><span class="n">cexpression</span><span class="p">)</span>
+</span></code></pre></div>
+<h4 id="constraint">constraint<a class="headerlink" href="#constraint" title="Permanent link">#</a></h4>
+<p>A string constant specifying constraints on the placement of the operand; See <a href="https://gcc.gnu.org/onlinedocs/gcc/Constraints.html">Constraints for asm Operands</a>, for details.</p>
+<p>Input constraint strings may <strong><em>not</em></strong> begin with either ‘<code>=</code>’ or ‘<code>+</code>’. When you list more than one possible location (for example, ‘"<code>irm</code>"’), the compiler chooses the most efficient one based on the current context. If you must use a specific register, but your Machine Constraints do not provide sufficient control to select the specific register you want, local register variables may provide a solution (see <a href="https://gcc.gnu.org/onlinedocs/gcc/Local-Register-Variables.html">Specifying Registers for Local Variables</a>).</p>
+<p>Input constraints can also be <em>digits</em> (for example, "<code>0</code>"). This indicates that the specified input must be in the same place as the output constraint at the (zero-based) index in the output constraint list. When using <code>asmSymbolicName</code> syntax for the output operands, you may use these names (enclosed in brackets ‘[]’) instead of digits.</p>
+<p>If there are no output operands but there are input operands, place two consecutive colons where the output operands would go:</p>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">__asm__</span><span class="w"> </span><span class="p">(</span><span class="s">&quot;some instructions&quot;</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">            </span><span class="o">:</span><span class="w"> </span><span class="cm">/* No outputs. */</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">            </span><span class="o">:</span><span class="w"> </span><span class="s">&quot;r&quot;</span><span class="w"> </span><span class="p">(</span><span class="n">Offset</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">8</span><span class="p">));</span>
+</span></code></pre></div>
+<p>Here is an example using symbolic names.</p>
+<blockquote>
+<p><a href="https://mudongliang.github.io/x86/html/file_module_x86_id_34.html">CMOVcc</a> is Conditional Move, <code>cmoveq</code>: Move if Equal to Zero.</p>
+</blockquote>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1">// input: test(%1), new(%2), old</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="c1">// output: old(%0)</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="c1">// equivalent: if (test == 0) old = new;</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="k">asm</span><span class="w"> </span><span class="p">(</span><span class="s">&quot;cmoveq %1, %2, %[result]&quot;</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="w">        </span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="n">result</span><span class="p">]</span><span class="w"> </span><span class="s">&quot;=r&quot;</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="w">        </span><span class="o">:</span><span class="w"> </span><span class="s">&quot;r&quot;</span><span class="w"> </span><span class="p">(</span><span class="n">test</span><span class="p">),</span><span class="w"> </span><span class="s">&quot;r&quot;</span><span class="w"> </span><span class="p">(</span><span class="n">new</span><span class="p">),</span><span class="w"> </span><span class="s">&quot;[result]&quot;</span><span class="w"> </span><span class="p">(</span><span class="n">old</span><span class="p">));</span>
+</span></code></pre></div>
+<h4 id="cexpression">cexpression<a class="headerlink" href="#cexpression" title="Permanent link">#</a></h4>
+<p>This is the C variable or expression being passed to the asm statement as input. The enclosing parentheses are a required part of the syntax.</p>
+<h3 id="output_operands">Output Operands<a class="headerlink" href="#output_operands" title="Permanent link">#</a></h3>
+<p>Operands are separated by commas. Each operand has this format:</p>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="p">[</span><span class="w"> </span><span class="p">[</span><span class="n">asmSymbolicName</span><span class="p">]</span><span class="w"> </span><span class="p">]</span><span class="w"> </span><span class="n">constraint</span><span class="w"> </span><span class="p">(</span><span class="n">cvariablename</span><span class="p">)</span>
+</span></code></pre></div>
+<h4 id="constraint_1">constraint<a class="headerlink" href="#constraint_1" title="Permanent link">#</a></h4>
+<p>A string constant specifying <em><code>constraints</code></em> on the placement of the operand; See <a href="https://gcc.gnu.org/onlinedocs/gcc/Constraints.html">Constraints for asm Operands</a>, for details.</p>
+<p>Output constraints must begin with either ‘<code>=</code>’ (a variable overwriting an existing value) or ‘<code>+</code>’ (when reading and writing). When using ‘<code>=</code>’, do not assume the location contains the existing value on entry to the asm, except when the operand is tied to an input; see <a href="https://gcc.gnu.org/onlinedocs/gcc/Extended-Asm.html#InputOperands">Input Operands</a>.</p>
+<p>After the prefix, there must be one or more additional constraints (see <a href="https://gcc.gnu.org/onlinedocs/gcc/Constraints.html">Constraints for asm Operands</a>) that describe where the value <em>resides</em>. Common constraints include ‘<code>r</code>’ for register and ‘<code>m</code>’ for memory. When you list more than one possible location (for example, "<code>=rm</code>"), the compiler chooses the most efficient one based on the current context. If you list as many alternates as the asm statement allows, you permit the optimizers to produce the best possible code. If you must use a specific register, but your Machine Constraints do not provide sufficient control to select the specific register you want, local register variables may provide a solution (see <a href="https://gcc.gnu.org/onlinedocs/gcc/Local-Register-Variables.html">Specifying Registers for Local Variables</a>).</p>
+<h4 id="cvariablename">cvariablename<a class="headerlink" href="#cvariablename" title="Permanent link">#</a></h4>
+<p>Output operand expressions must be <em>lvalues</em>.</p>
+<p><code>cvariablename</code> Specifies a C lvalue expression to hold the output, typically a variable name. The enclosing parentheses are a required part of the syntax.</p>
+<h2 id="examples">examples<a class="headerlink" href="#examples" title="Permanent link">#</a></h2>
+<h3 id="example_1">example 1<a class="headerlink" href="#example_1" title="Permanent link">#</a></h3>
+<p>A simple (if not particularly useful) example for i386 using asm might look like this:</p>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1">// move: the source comes first and the destination second in AT&amp;T Syntax.</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="kt">int</span><span class="w"> </span><span class="n">src</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="kt">int</span><span class="w"> </span><span class="n">dst</span><span class="p">;</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="k">asm</span><span class="w"> </span><span class="p">(</span><span class="s">&quot;mov %1, %0</span><span class="se">\n\t</span><span class="s">&quot;</span>
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="w">    </span><span class="s">&quot;add $1, %0&quot;</span>
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="s">&quot;=r&quot;</span><span class="w"> </span><span class="p">(</span><span class="n">dst</span><span class="p">)</span>
+</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="s">&quot;r&quot;</span><span class="w"> </span><span class="p">(</span><span class="n">src</span><span class="p">));</span>
+</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>
+</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">dst</span><span class="p">);</span>
+</span></code></pre></div>
+<p>This code makes no use of the optional <code>asmSymbolicName</code>. Therefore it references the first output operand as <code>%0</code> (were there a second, it would be <code>%1</code>, etc). The number of the first input operand is <em>one</em> greater than that of the <em>last</em> output operand.</p>
+<p>Therefore, <code>dst</code> is %0, <code>src</code> is %1, and this code copies <code>src</code>(input) to <code>dst</code>(output) and add 1 to <code>dst</code>.</p>
+<h3 id="example_2">example 2<a class="headerlink" href="#example_2" title="Permanent link">#</a></h3>
+<p>In the following i386 example, <code>old</code> (referred to in the template string as <code>%0</code>) and <code>*Base</code> (as <code>%1</code>) are outputs and <code>Offset</code> (<code>%2</code>) is an input:</p>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kt">bool</span><span class="w"> </span><span class="n">old</span><span class="p">;</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="n">__asm__</span><span class="w"> </span><span class="p">(</span><span class="s">&quot;btsl %2,%1</span><span class="se">\n\t</span><span class="s">&quot;</span><span class="w">   </span><span class="c1">// Turn on zero-based bit #Offset in Base.</span>
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="w">            </span><span class="s">&quot;sbb %0,%0&quot;</span><span class="w">     </span><span class="c1">// Use the CF to calculate old.</span>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="w">            </span><span class="o">:</span><span class="w"> </span><span class="s">&quot;=r&quot;</span><span class="w"> </span><span class="p">(</span><span class="n">old</span><span class="p">),</span><span class="w"> </span><span class="s">&quot;+rm&quot;</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">Base</span><span class="p">)</span>
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="w">            </span><span class="o">:</span><span class="w"> </span><span class="s">&quot;Ir&quot;</span><span class="w"> </span><span class="p">(</span><span class="n">Offset</span><span class="p">)</span>
+</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="w">            </span><span class="o">:</span><span class="w"> </span><span class="s">&quot;cc&quot;</span><span class="p">);</span>
+</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>
+</span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="k">return</span><span class="w"> </span><span class="n">old</span><span class="p">;</span>
+</span></code></pre></div>
+<p>clobber argument: The "<code>cc</code>" clobber indicates that the assembler code modifies the <em><code>flags register</code></em>. On some machines, GCC represents the condition codes as a specific hardware register; "<code>cc</code>" serves to name this register. On other machines, condition code handling is different, and specifying "<code>cc</code>" has no effect. But it is valid no matter what the target.</p>
+<h3 id="example_3">example 3<a class="headerlink" href="#example_3" title="Permanent link">#</a></h3>
+<p>Refer to <a href="https://developer.arm.com/documentation/den0024/latest">ARM Cortex-A Series Programmer's Guide for ARMv8-A</a> | 5: An Introduction to the ARMv8 Instruction Sets - 5.2 C/C++ inline assembly.</p>
+<p>In this section, we briefly cover how to include assembly code within C or C++ language modules.</p>
+<p>The <code>asm</code> keyword can incorporate inline GCC syntax assembly code into a function. For example:</p>
+<div class="language-c highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-7-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-7-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-7-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-7-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-7-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-7-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-7-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-7-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-7-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-7-10">10</a></span>
+<span class="normal"><a href="#__codelineno-7-11">11</a></span>
+<span class="normal"><a href="#__codelineno-7-12">12</a></span>
+<span class="normal"><a href="#__codelineno-7-13">13</a></span>
+<span class="normal"><a href="#__codelineno-7-14">14</a></span>
+<span class="normal"><a href="#__codelineno-7-15">15</a></span>
+<span class="normal"><a href="#__codelineno-7-16">16</a></span>
+<span class="normal"><a href="#__codelineno-7-17">17</a></span>
+<span class="normal"><a href="#__codelineno-7-18">18</a></span>
+<span class="normal"><a href="#__codelineno-7-19">19</a></span>
+<span class="normal"><a href="#__codelineno-7-20">20</a></span>
+<span class="normal"><a href="#__codelineno-7-21">21</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdio.h&gt;</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2"></a>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3"></a><span class="kt">int</span><span class="w"> </span><span class="nf">add</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">j</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4"></a><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">res</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5"></a><span class="w">    </span><span class="k">asm</span><span class="w"> </span><span class="p">(</span>
+</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6"></a><span class="hll"><span class="w">        </span><span class="s">&quot;ADD %w[result], %w[input_i], %w[input_j]&quot;</span>
+</span></span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7"></a><span class="hll"><span class="w">        </span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="n">result</span><span class="p">]</span><span class="w"> </span><span class="s">&quot;=r&quot;</span><span class="w"> </span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+</span></span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8"></a><span class="hll"><span class="w">        </span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="n">input_i</span><span class="p">]</span><span class="w"> </span><span class="s">&quot;r&quot;</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="p">),</span><span class="w"> </span><span class="p">[</span><span class="n">input_j</span><span class="p">]</span><span class="w"> </span><span class="s">&quot;r&quot;</span><span class="w"> </span><span class="p">(</span><span class="n">j</span><span class="p">)</span>
+</span></span><span id="__span-7-9"><a id="__codelineno-7-9" name="__codelineno-7-9"></a><span class="w">    </span><span class="p">);</span>
+</span><span id="__span-7-10"><a id="__codelineno-7-10" name="__codelineno-7-10"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">res</span><span class="p">;</span>
+</span><span id="__span-7-11"><a id="__codelineno-7-11" name="__codelineno-7-11"></a><span class="p">}</span>
+</span><span id="__span-7-12"><a id="__codelineno-7-12" name="__codelineno-7-12"></a>
+</span><span id="__span-7-13"><a id="__codelineno-7-13" name="__codelineno-7-13"></a><span class="kt">int</span><span class="w"> </span><span class="nf">main</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">argc</span><span class="p">,</span><span class="w"> </span><span class="kt">char</span><span class="o">*</span><span class="w"> </span><span class="n">argv</span><span class="p">[])</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-7-14"><a id="__codelineno-7-14" name="__codelineno-7-14"></a><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+</span><span id="__span-7-15"><a id="__codelineno-7-15" name="__codelineno-7-15"></a><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">b</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span>
+</span><span id="__span-7-16"><a id="__codelineno-7-16" name="__codelineno-7-16"></a><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+</span><span id="__span-7-17"><a id="__codelineno-7-17" name="__codelineno-7-17"></a>
+</span><span id="__span-7-18"><a id="__codelineno-7-18" name="__codelineno-7-18"></a><span class="w">    </span><span class="n">c</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">add</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="n">b</span><span class="p">)</span>
+</span><span id="__span-7-19"><a id="__codelineno-7-19" name="__codelineno-7-19"></a>
+</span><span id="__span-7-20"><a id="__codelineno-7-20" name="__codelineno-7-20"></a><span class="w">    </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;Result of %d + %d = %d</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">c</span><span class="p">);</span>
+</span><span id="__span-7-21"><a id="__codelineno-7-21" name="__codelineno-7-21"></a><span class="p">}</span>
+</span></code></pre></div></td></tr></table></div>
+<p>The general form of an asm inline assembly statement is:</p>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="k">asm</span><span class="p">(</span><span class="n">code</span><span class="w"> </span><span class="p">[</span><span class="o">:</span><span class="w"> </span><span class="n">output_operand_list</span><span class="w"> </span><span class="p">[</span><span class="o">:</span><span class="w"> </span><span class="n">input_operand_list</span><span class="w"> </span><span class="p">[</span><span class="o">:</span><span class="w"> </span><span class="n">clobber_list</span><span class="p">]]]);</span>
+</span></code></pre></div>
+<p>where:</p>
+<p><code>code</code>(<em>AssemblerTemplate</em>) is the assembly code. In our example, this is <code>ADD %[result], %[input_i], %[input_j]</code>.</p>
+<blockquote>
+<p>Use <code>%w[name]</code> to operate on W(32) registers (as in this case). You can use <code>%x[name]</code> for X(64) registers too, but this is the default.</p>
+</blockquote>
+<p><code>output_operand_list</code>(<em>OutputOperands</em>) is an optional list of output operands, separated by commas. Each operand consists of a symbolic name in square brackets, a constraint string, and a C expression in parentheses. In this example, there is a single output operand: <code>[result] "=r" (res)</code>.</p>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="p">[</span><span class="w"> </span><span class="p">[</span><span class="n">asmSymbolicName</span><span class="p">]</span><span class="w"> </span><span class="p">]</span><span class="w"> </span><span class="n">constraint</span><span class="w"> </span><span class="p">(</span><span class="n">cvariablename</span><span class="p">)</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="w">  </span><span class="p">[</span><span class="n">result</span><span class="p">]</span><span class="w">            </span><span class="s">&quot;=r&quot;</span><span class="w">       </span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+</span></code></pre></div>
+<p><code>input_operand_list</code>(<em>InputOperands</em>) is an optional list of input operands, separated by commas. Input operands use the same syntax as output operands. In this example, there are two input operands: <code>[input_i] "r" (i)</code> and <code>[input_j] "r" (j)</code>.</p>
+<p><code>clobber_list</code>(<em>Clobbers</em>) is an optional list of clobbered registers, or other values. In our example, this is omitted.</p>
+<p>When calling functions between C/C++ and assembly code, you must follow the <a href="https://github.com/ARM-software/abi-aa/blob/2a70c42d62e9c3eb5887fa50b71257f20daca6f9/aapcs64/aapcs64.rst">AAPCS64</a> rules.</p>
+<h2 id="a64_barrier">a64 barrier<a class="headerlink" href="#a64_barrier" title="Permanent link">#</a></h2>
+<p>Previously, in <a href="../../20231006/a64-memory-model/">ARM64 memory model - the reason for memory barriers</a>, we mentioned that re-ordering at compile time can be avoided using the <code>barrier()</code> function macro.</p>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="cp">#define barrier() __asm__ __volatile__ (&quot;&quot; ::: &quot;memory&quot;)</span>
+</span></code></pre></div>
+<ul>
+<li><a href="https://stackoverflow.com/questions/14950614/working-of-asm-volatile-memory">c - Working of __asm__ __volatile__ ("" : : : "memory")</a></li>
+<li><a href="https://blog.csdn.net/KISSMonX/article/details/9105823">memory barrier --- asm volatile("" ::: "memory")</a></li>
+<li><a href="https://stackoverflow.com/questions/12183311/difference-in-mfence-and-asm-volatile-memory">gcc - difference in mfence and asm volatile ("" : : : "memory")</a></li>
+</ul>
+<p>Let's analyze the definition of macro <code>barrier()</code>:</p>
+<ol>
+<li><code>__asm__</code>: The <code>asm</code> keyword is a GNU extension to indicate insert assembly code.</li>
+<li><code>__volatile__</code>: to disable certain optimizations, refer to <a href="../../20231014/c-volatile/">volatile in C/C++</a>.</li>
+<li><code>""</code>: <em><code>AssemblerTemplate</code></em> is empty.</li>
+<li><code>: :</code>: both the <em><code>OutputOperands</code></em> and <em><code>InputOperands</code></em> are empty.</li>
+<li>
+<p><em><code>Clobbers</code></em> argument: <code>: "memory"</code>.</p>
+<ul>
+<li>
+<p>The "<code>memory</code>" clobber tells the compiler that the assembly code performs memory reads or writes to items other than those listed in the input and output operands (for example, accessing the memory pointed to by one of the input parameters). To ensure memory contains correct values, GCC may need to <strong>flush</strong> specific register values to memory before executing the <em><code>asm</code></em>. Further, the compiler does not assume that any values read from memory before an <em><code>asm</code></em> remain unchanged after that asm; it <strong>reloads</strong> them as needed. Using the "<code>memory</code>" clobber effectively forms a read/write memory barrier(<a href="https://en.cppreference.com/w/cpp/atomic/memory_order">memory_order_seq_cst; memory_order::seq_cst</a>) for the compiler.</p>
+</li>
+<li>
+<p>Note that this clobber does not prevent the <em>processor</em> from doing speculative reads past the asm statement. To prevent that, you need processor-specific fence instructions(See <a href="../../20231007/a64-memory-barrier/">ARM64 Memory Ordering - barriers</a>).</p>
+</li>
+</ul>
+</li>
+</ol>
+
+
+
+
+
+
+
+  
+  
+
+
+
+  
+
+
+  
+
+
+
+  <h2 id="__comments">Comments</h2>
+  <!-- Insert generated snippet here -->
+  <script src="https://giscus.app/client.js"
+    data-repo="fan2/mkdocs"
+    data-repo-id="R_kgDOLltxSg"
+    data-category="Announcements"
+    data-category-id="DIC_kwDOLltxSs4CeURH"
+    data-mapping="pathname"
+    data-strict="0"
+    data-reactions-enabled="1"
+    data-emit-metadata="1"
+    data-input-position="top"
+    data-theme="preferred_color_scheme"
+    data-lang="en"
+    data-loading="lazy"
+    crossorigin="anonymous"
+    async>
+  </script>
+
+  <!-- Synchronize Giscus theme with palette -->
+  <script>
+    var giscus = document.querySelector("script[src*=giscus]")
+
+    // Set palette on initial load
+    var palette = __md_get("__palette")
+    if (palette && typeof palette.color === "object") {
+      var theme = palette.color.scheme === "slate"
+        ? "transparent_dark"
+        : "light"
+
+      // Instruct Giscus to set theme
+      giscus.setAttribute("data-theme", theme) 
+    }
+
+    // Register event handlers after documented loaded
+    document.addEventListener("DOMContentLoaded", function() {
+      var ref = document.querySelector("[data-md-component=palette]")
+      ref.addEventListener("change", function() {
+        var palette = __md_get("__palette")
+        if (palette && typeof palette.color === "object") {
+          var theme = palette.color.scheme === "slate"
+            ? "transparent_dark"
+            : "light"
+
+          // Instruct Giscus to change theme
+          var frame = document.querySelector(".giscus-frame")
+          frame.contentWindow.postMessage(
+            { giscus: { setConfig: { theme } } },
+            "https://giscus.app"
+          )
+        }
+      })
+    })
+  </script>
+
+      
+    </article>
+  </div>
+
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+        
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../c-const-readonly/" class="md-footer__link md-footer__link--prev" aria-label="Previous: const qualifier in C">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                const qualifier in C
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../../20231010/c-named-const/" class="md-footer__link md-footer__link--next" aria-label="Next: C Named Constants">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                C Named Constants
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2024- Cliff Fan
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": "../../..", "features": ["toc.follow", "header.autohide", "navigation.tabs", "navigation.top", "navigation.footer", "navigation.tracking", "content.code.copy", "content.code.select", "content.code.annotate"], "search": "../../../assets/javascripts/workers/search.07f07601.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.56dfad97.min.js"></script>
+      
+        <script src="../../../javascripts/mathjax.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+        <script src="https://vercount.one/js"></script>
+      
+    
+  </body>
+</html>

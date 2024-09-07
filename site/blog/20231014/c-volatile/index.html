@@ -1379,6 +1379,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#volatile_in_gcc_extended_asm" class="md-nav__link">
+    <span class="md-ellipsis">
+      Volatile in GCC Extended Asm
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#references" class="md-nav__link">
     <span class="md-ellipsis">
       references
@@ -1466,7 +1475,7 @@
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7z"/></svg>
                           <span class="md-ellipsis">
                             
-                              12 min read
+                              13 min read
                             
                           </span>
                         </div>
@@ -1781,6 +1790,66 @@ TAKEAWAY 17.18: volatile objects are <strong><em>stored</em></strong> to memory 
 <li>Accessing global variables in an <em>interrupt routine</em> or <em>signal handler</em>.</li>
 </ul>
 <p>The compiler does not optimize the variables you have declared as <code>volatile</code>.</p>
+<h2 id="volatile_in_gcc_extended_asm">Volatile in GCC Extended Asm<a class="headerlink" href="#volatile_in_gcc_extended_asm" title="Permanent link">#</a></h2>
+<p><a href="https://gcc.gnu.org/onlinedocs/gcc/Extended-Asm.html">GCC - Extended Asm</a> - Volatile</p>
+<p>GCC's optimizers sometimes discard <code>asm</code> statements if they determine there is no need for the output variables. Also, the optimizers may move code <em>out</em> of loops if they believe that the code will always return the <em>same</em> result (i.e. none of its input values change between calls). Using the <code>volatile</code> qualifier disables these optimizations. <code>asm</code> statements that have no output operands and <code>asm</code> goto statements, are implicitly <code>volatile</code>.</p>
+<p>This i386 code demonstrates a case that does not use (or require) the <code>volatile</code> qualifier. If it is performing assertion checking, this code uses <code>asm</code> to perform the validation. Otherwise, <code>dwRes</code> is unreferenced by any code. As a result, the optimizers can <strong><em>discard</em></strong> the <code>asm</code> statement, which in turn removes the need for the entire <em><code>DoCheck</code></em> routine. By omitting the <code>volatile</code> qualifier when it isn't needed you allow the optimizers to produce the most efficient code possible.</p>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="c1">// BSF: Bit Scan Forward. Returns bit index of lowest set bit in input.</span>
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a><span class="kt">void</span><span class="w"> </span><span class="nf">DoCheck</span><span class="p">(</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">dwSomeValue</span><span class="p">)</span>
+</span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a><span class="p">{</span>
+</span><span id="__span-17-4"><a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a><span class="w">    </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">dwRes</span><span class="p">;</span>
+</span><span id="__span-17-5"><a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a>
+</span><span id="__span-17-6"><a id="__codelineno-17-6" name="__codelineno-17-6" href="#__codelineno-17-6"></a><span class="w">    </span><span class="c1">// Assumes dwSomeValue is not zero.</span>
+</span><span id="__span-17-7"><a id="__codelineno-17-7" name="__codelineno-17-7" href="#__codelineno-17-7"></a><span class="w">    </span><span class="k">asm</span><span class="w"> </span><span class="p">(</span><span class="s">&quot;bsfl %1,%0&quot;</span>
+</span><span id="__span-17-8"><a id="__codelineno-17-8" name="__codelineno-17-8" href="#__codelineno-17-8"></a><span class="w">        </span><span class="o">:</span><span class="w"> </span><span class="s">&quot;=r&quot;</span><span class="w"> </span><span class="p">(</span><span class="n">dwRes</span><span class="p">)</span>
+</span><span id="__span-17-9"><a id="__codelineno-17-9" name="__codelineno-17-9" href="#__codelineno-17-9"></a><span class="w">        </span><span class="o">:</span><span class="w"> </span><span class="s">&quot;r&quot;</span><span class="w"> </span><span class="p">(</span><span class="n">dwSomeValue</span><span class="p">)</span>
+</span><span id="__span-17-10"><a id="__codelineno-17-10" name="__codelineno-17-10" href="#__codelineno-17-10"></a><span class="w">        </span><span class="o">:</span><span class="w"> </span><span class="s">&quot;cc&quot;</span><span class="p">);</span>
+</span><span id="__span-17-11"><a id="__codelineno-17-11" name="__codelineno-17-11" href="#__codelineno-17-11"></a>
+</span><span id="__span-17-12"><a id="__codelineno-17-12" name="__codelineno-17-12" href="#__codelineno-17-12"></a><span class="w">    </span><span class="n">assert</span><span class="p">(</span><span class="n">dwRes</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">3</span><span class="p">);</span>
+</span><span id="__span-17-13"><a id="__codelineno-17-13" name="__codelineno-17-13" href="#__codelineno-17-13"></a><span class="p">}</span>
+</span></code></pre></div>
+<p>The next example shows a case where the optimizers can recognize that the input (<code>dwSomeValue</code>) never changes during the execution of the function and can therefore <strong><em>move</em></strong> the <code>asm</code> <em>outside</em> the loop to produce more efficient code. Again, using the <code>volatile</code> qualifier disables this type of optimization.</p>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="kt">void</span><span class="w"> </span><span class="nf">do_print</span><span class="p">(</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">dwSomeValue</span><span class="p">)</span>
+</span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a><span class="p">{</span>
+</span><span id="__span-18-3"><a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a><span class="w">    </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">dwRes</span><span class="p">;</span>
+</span><span id="__span-18-4"><a id="__codelineno-18-4" name="__codelineno-18-4" href="#__codelineno-18-4"></a>
+</span><span id="__span-18-5"><a id="__codelineno-18-5" name="__codelineno-18-5" href="#__codelineno-18-5"></a><span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">x</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">5</span><span class="p">;</span><span class="w"> </span><span class="n">x</span><span class="o">++</span><span class="p">)</span>
+</span><span id="__span-18-6"><a id="__codelineno-18-6" name="__codelineno-18-6" href="#__codelineno-18-6"></a><span class="w">    </span><span class="p">{</span>
+</span><span id="__span-18-7"><a id="__codelineno-18-7" name="__codelineno-18-7" href="#__codelineno-18-7"></a><span class="w">        </span><span class="c1">// Assumes dwSomeValue is not zero.</span>
+</span><span id="__span-18-8"><a id="__codelineno-18-8" name="__codelineno-18-8" href="#__codelineno-18-8"></a><span class="w">        </span><span class="k">asm</span><span class="w"> </span><span class="p">(</span><span class="s">&quot;bsfl %1,%0&quot;</span>
+</span><span id="__span-18-9"><a id="__codelineno-18-9" name="__codelineno-18-9" href="#__codelineno-18-9"></a><span class="w">            </span><span class="o">:</span><span class="w"> </span><span class="s">&quot;=r&quot;</span><span class="w"> </span><span class="p">(</span><span class="n">dwRes</span><span class="p">)</span>
+</span><span id="__span-18-10"><a id="__codelineno-18-10" name="__codelineno-18-10" href="#__codelineno-18-10"></a><span class="w">            </span><span class="o">:</span><span class="w"> </span><span class="s">&quot;r&quot;</span><span class="w"> </span><span class="p">(</span><span class="n">dwSomeValue</span><span class="p">)</span>
+</span><span id="__span-18-11"><a id="__codelineno-18-11" name="__codelineno-18-11" href="#__codelineno-18-11"></a><span class="w">            </span><span class="o">:</span><span class="w"> </span><span class="s">&quot;cc&quot;</span><span class="p">);</span>
+</span><span id="__span-18-12"><a id="__codelineno-18-12" name="__codelineno-18-12" href="#__codelineno-18-12"></a>
+</span><span id="__span-18-13"><a id="__codelineno-18-13" name="__codelineno-18-13" href="#__codelineno-18-13"></a><span class="w">        </span><span class="n">printf</span><span class="p">(</span><span class="s">&quot;%u: %u %u</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="n">dwSomeValue</span><span class="p">,</span><span class="w"> </span><span class="n">dwRes</span><span class="p">);</span>
+</span><span id="__span-18-14"><a id="__codelineno-18-14" name="__codelineno-18-14" href="#__codelineno-18-14"></a><span class="w">    </span><span class="p">}</span>
+</span><span id="__span-18-15"><a id="__codelineno-18-15" name="__codelineno-18-15" href="#__codelineno-18-15"></a><span class="p">}</span>
+</span></code></pre></div>
+<p>The following example demonstrates a case where you need to use the <code>volatile</code> qualifier. It uses the x86 <code>rdtsc</code> instruction, which reads the computer's time-stamp counter. Without the <code>volatile</code> qualifier, the optimizers might assume that the <code>asm</code> block will always return the <em>same</em> value and therefore <strong><em>optimize</em></strong> away the second call.</p>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="kt">uint64_t</span><span class="w"> </span><span class="n">msr</span><span class="p">;</span>
+</span><span id="__span-19-2"><a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a>
+</span><span id="__span-19-3"><a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a><span class="k">asm</span><span class="w"> </span><span class="k">volatile</span><span class="w"> </span><span class="p">(</span><span class="s">&quot;rdtsc</span><span class="se">\n\t</span><span class="s">&quot;</span><span class="w">               </span><span class="c1">// Returns the time in EDX:EAX.</span>
+</span><span id="__span-19-4"><a id="__codelineno-19-4" name="__codelineno-19-4" href="#__codelineno-19-4"></a><span class="w">                </span><span class="s">&quot;shl $32, %%rdx</span><span class="se">\n\t</span><span class="s">&quot;</span><span class="w">    </span><span class="c1">// Shift the upper bits left.</span>
+</span><span id="__span-19-5"><a id="__codelineno-19-5" name="__codelineno-19-5" href="#__codelineno-19-5"></a><span class="w">                </span><span class="s">&quot;or %%rdx, %0&quot;</span><span class="w">          </span><span class="c1">// &#39;Or&#39; in the lower bits.</span>
+</span><span id="__span-19-6"><a id="__codelineno-19-6" name="__codelineno-19-6" href="#__codelineno-19-6"></a><span class="w">                </span><span class="o">:</span><span class="w"> </span><span class="s">&quot;=a&quot;</span><span class="w"> </span><span class="p">(</span><span class="n">msr</span><span class="p">)</span>
+</span><span id="__span-19-7"><a id="__codelineno-19-7" name="__codelineno-19-7" href="#__codelineno-19-7"></a><span class="w">                </span><span class="o">:</span><span class="w"> </span>
+</span><span id="__span-19-8"><a id="__codelineno-19-8" name="__codelineno-19-8" href="#__codelineno-19-8"></a><span class="w">                </span><span class="o">:</span><span class="w"> </span><span class="s">&quot;rdx&quot;</span><span class="p">);</span>
+</span><span id="__span-19-9"><a id="__codelineno-19-9" name="__codelineno-19-9" href="#__codelineno-19-9"></a>
+</span><span id="__span-19-10"><a id="__codelineno-19-10" name="__codelineno-19-10" href="#__codelineno-19-10"></a><span class="n">printf</span><span class="p">(</span><span class="s">&quot;msr: %llx</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">msr</span><span class="p">);</span>
+</span><span id="__span-19-11"><a id="__codelineno-19-11" name="__codelineno-19-11" href="#__codelineno-19-11"></a>
+</span><span id="__span-19-12"><a id="__codelineno-19-12" name="__codelineno-19-12" href="#__codelineno-19-12"></a><span class="c1">// Do other work...</span>
+</span><span id="__span-19-13"><a id="__codelineno-19-13" name="__codelineno-19-13" href="#__codelineno-19-13"></a>
+</span><span id="__span-19-14"><a id="__codelineno-19-14" name="__codelineno-19-14" href="#__codelineno-19-14"></a><span class="c1">// Reprint the timestamp</span>
+</span><span id="__span-19-15"><a id="__codelineno-19-15" name="__codelineno-19-15" href="#__codelineno-19-15"></a><span class="k">asm</span><span class="w"> </span><span class="k">volatile</span><span class="w"> </span><span class="p">(</span><span class="s">&quot;rdtsc</span><span class="se">\n\t</span><span class="s">&quot;</span><span class="w">               </span><span class="c1">// Returns the time in EDX:EAX.</span>
+</span><span id="__span-19-16"><a id="__codelineno-19-16" name="__codelineno-19-16" href="#__codelineno-19-16"></a><span class="w">                </span><span class="s">&quot;shl $32, %%rdx</span><span class="se">\n\t</span><span class="s">&quot;</span><span class="w">    </span><span class="c1">// Shift the upper bits left.</span>
+</span><span id="__span-19-17"><a id="__codelineno-19-17" name="__codelineno-19-17" href="#__codelineno-19-17"></a><span class="w">                </span><span class="s">&quot;or %%rdx, %0&quot;</span><span class="w">          </span><span class="c1">// &#39;Or&#39; in the lower bits.</span>
+</span><span id="__span-19-18"><a id="__codelineno-19-18" name="__codelineno-19-18" href="#__codelineno-19-18"></a><span class="w">                </span><span class="o">:</span><span class="w"> </span><span class="s">&quot;=a&quot;</span><span class="w"> </span><span class="p">(</span><span class="n">msr</span><span class="p">)</span>
+</span><span id="__span-19-19"><a id="__codelineno-19-19" name="__codelineno-19-19" href="#__codelineno-19-19"></a><span class="w">                </span><span class="o">:</span><span class="w"> </span>
+</span><span id="__span-19-20"><a id="__codelineno-19-20" name="__codelineno-19-20" href="#__codelineno-19-20"></a><span class="w">                </span><span class="o">:</span><span class="w"> </span><span class="s">&quot;rdx&quot;</span><span class="p">);</span>
+</span><span id="__span-19-21"><a id="__codelineno-19-21" name="__codelineno-19-21" href="#__codelineno-19-21"></a>
+</span><span id="__span-19-22"><a id="__codelineno-19-22" name="__codelineno-19-22" href="#__codelineno-19-22"></a><span class="n">printf</span><span class="p">(</span><span class="s">&quot;msr: %llx</span><span class="se">\n</span><span class="s">&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">msr</span><span class="p">);</span>
+</span></code></pre></div>
+<p>GCC's optimizers do not treat this code like the non-volatile code in the earlier examples. They do not move it out of loops or omit it on the assumption that the result from a previous call is still valid.</p>
 <h2 id="references">references<a class="headerlink" href="#references" title="Permanent link">#</a></h2>
 <p><a href="https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2018/p1152r0.html">P1152R0: Deprecating volatile</a><br />
 <a href="https://gcc.gnu.org/onlinedocs/gcc/Volatiles.html">6.49 When is a Volatile Object Accessed?</a><br />

@@ -1,5 +1,5 @@
 ---
-title: ARM64 Memory Ordering - barriers
+title: ARM64 Memory Barriers
 authors:
     - xman
 date:
@@ -17,13 +17,15 @@ On most modern uniprocessors memory operations are not executed in the order spe
 
 <!-- more -->
 
-[ARM Cortex-A Series Programmer's Guide for ARMv8-A](https://developer.arm.com/documentation/den0024/latest) | Chapter 13 Memory Ordering
+[ARM Cortex-R Series Programmer's Guide](https://developer.arm.com/documentation/den0042/latest/Memory-Ordering) | Chapter 10 Memory Ordering:
 
-The ARM architecture includes barrier instructions to **force** access *ordering* and access *completion* at a specific point. In some architectures, similar instructions are known as a fence(membar, memory fence).
+A memory barrier is an instruction that requires the processor to apply an ordering *constraint* between memory operations that occur before and after the memory barrier instruction in the program.
+
+[ARM Cortex-A Series Programmer's Guide for ARMv8-A](https://developer.arm.com/documentation/den0024/latest) | Chapter 13 Memory Ordering:
+
+The ARM architecture includes barrier instructions to **force** access *ordering* and access *completion* at a specific point. In some architectures, similar instructions are known as a *fence*(membar, memory fence).
 
 If you are writing code where ordering is important, see *Appendix J7 Barrier Litmus Tests in the ARM Architecture Reference Manual - ARMv8, for ARMv8-A architecture profile* and *Appendix G Barrier Litmus Tests in the ARM Architecture Reference Manual ARMv7-A/R Edition*, which includes many worked examples.
-
-## barrier instructions
 
 The *ARM Architecture Reference Manual* defines certain key words, in particular, the terms *`observe`* and must be *`observed`*. In typical systems, this defines how the bus interface of a master, for example, a core or GPU and the interconnect, must handle bus transactions. Only masters are able to **observe** transfers. All bus transactions are initiated by a master. The order that a master performs transactions in is not necessarily the same order that such transactions complete at the slave device, because transactions might be **re-ordered** by the interconnect unless some ordering is explicitly **enforced**.
 
@@ -36,11 +38,34 @@ where both I and you refer to cores or other masters in the system.
 
 There are three types of barrier instruction provided by the architecture:
 
-### ISB(Instruction Synchronization Barrier)
+## ISB(Instruction Synchronization Barrier)
+
+[Instruction barriers](https://developer.arm.com/documentation/102336/latest/Instruction-barriers)
 
 This is used to guarantee that any *subsequent* instructions are fetched, again, so that privilege and access are checked with the current MMU configuration. It is used to **ensure** any previously executed context-changing operations, such as writes to system control registers, have ***completed*** by the time the `ISB` completes. In hardware terms, this might mean that the instruction pipeline is ***flushed***, for example. Typical uses of this would be in memory management, cache control, and context switching code, or where code is being moved about in memory.
 
-### DMB(Data Memory Barrier)
+The ARMv8 architecture defines *context* as the state of the system registers and *context-changing operations* as things like cache, TLB, and branch predictor maintenance operations, or changes to system control registers, for example, `SCTLR_EL1`, `TCR_EL1`, and `TTBRn_EL1`. The effect of such a context-changing operation is only guaranteed to be seen after a *context synchronization event*.
+
+There are three kinds of context synchronization event:
+
+- Taking an exception.
+- Returning from an exception.
+- Instruction Synchronization Barrier (`ISB`).
+
+An `ISB` flushes the pipeline, and re-fetches the instructions from the cache or memory and ensures that the effects of any completed context-changing operation before the `ISB` are visible to any instruction after the `ISB`. It also ensures that any context-changing operations after the `ISB` instruction only take effect after the `ISB` has been executed and are not seen by instructions before the `ISB`. This does not mean that an `ISB` is required after each instruction that modifies a processor register. For example, reads or writes to `PSTATE` fields, `ELRs`, `SPs` and `SPSRs` occur in program order relative to other instructions.
+
+This example shows how to enable the floating-point unit and `NEON`, which you can do in AArch64 by writing to bit[20] of the `CPACR_EL1` register. The `ISB` is a context synchronization event that guarantees that the enable is complete before any subsequent or `NEON` instructions are executed.
+
+```asm
+MRS X1, CPACR_EL1
+ORR X1, X1, #(0x3 << 20)
+MSR CPACR_EL1, X1
+ISB
+```
+
+## DMB(Data Memory Barrier)
+
+[Data Memory Barrier](https://developer.arm.com/documentation/102336/latest/Data-Memory-Barrier)
 
 This prevents re-ordering of data accesses instructions across the barrier instruction. All data accesses, that is, loads or stores, but not instruction fetches, performed by this processor before the `DMB`, are **visible** to all other masters within the specified shareability domain before any of the data accesses after the `DMB`.
 
@@ -50,7 +75,7 @@ For example:
 
 ```asm
 LDR x0, [x1]    // Must be seen by the memory system before the STR below.
-DMB ISHLD
+DMB ISHLD       // Inner shareable: Load - Load, Load - Store
 ADD x2, #1      // May be executed before or after the memory system sees LDR.
 STR x3, [x4]    // Must be seen by the memory system after the LDR above.
 ```
@@ -61,26 +86,72 @@ It also **ensures** that any explicit preceding data or unified cache maintenanc
 DC CSW, x5      // Data clean by Set/way
 LDR x0, [x1]    // Effect of data cache clean might not be seen by this instruction
 
-DMB ISH
+DMB ISH         // Inner shareable: Any - Any
 LDR x2, [x3]    // Effect of data cache clean will be seen by this instruction
 ```
 
-### DSB(Data Synchronization Barrier)
+Maintenance instructions related to data cache and unified cache(such as `DC`) are actually also considered data access instructions. Therefore, the data cache maintenance instructions before the `DMB` instruction must be executed before the memory access instructions after the DMB instruction.
 
-This **enforces** the same ordering as the Data Memory Barrier (DMB), but has the additional effect of blocking execution of *any* further instructions, not just loads or stores, or both, until synchronization is complete. This can be used to **prevent** execution of a `SEV` instruction, for instance, that would *signal* to other cores that an event occurred. It **waits** until all cache, TLB and branch predictor maintenance operations issued by this processor have completed for the specified shareability domain.
+From the analysis of the above examples, it can be seen that the `DMB` instruction focuses on the sequence of memory access and does not need to care when the memory access instructions are executed. The data access instructions before the `DMB` must be ***observed*** by the data access instructions after the `DMB`.
 
-For example:
+## DSB(Data Synchronization Barrier)
+
+[Data Synchronization Barrier](https://developer.arm.com/documentation/102336/latest/Data-Synchronization-Barrier)
+
+This **enforces** the same ordering as the Data Memory Barrier (`DMB`), but has the additional effect of blocking execution of *any* further instructions, *not* just loads or stores, or both, until synchronization is complete. This can be used to **prevent** execution of a `SEV` instruction, for instance, that would *signal* to other cores that an event occurred. It **waits** until all cache, TLB and branch predictor maintenance operations issued by this processor have completed for the specified shareability domain.
+
+The `DSB` instruction is much stricter than the `DMB` instruction. *Any* instruction after the `DSB` must meet the following two conditions before it can start executing.
+
+- All data access instructions (memory access instructions) before the `DSB` instruction must be executed.
+- The cache, branch prediction, TLB and other maintenance instructions before the `DSB` instruction must also be executed.
+
+The instructions after the `DSB` instruction can only be executed after these two conditions are met. Note that the instructions after the `DSB` refer to *any* instructions.
+
+Compared with the `DMB` instruction, the `DSB` instruction specifies under what conditions it can be executed, while the `DMB` instruction only constrains the execution order of the data access instructions before and after the barrier.
+
+Example 1: The CPU executes the following 3 instructions.
 
 ```asm
-DC ISW, x5      // operation must have completed before DSB can complete
+LDR x0, [x1]    // Access must have completed before DSB can complete
+DSB ISH         // Inner shareable: Any - Any
+ADD x2, x3, x4  // Cannot be executed until DSB completes
+```
+
+The `ADD` instruction must wait for the `DSB` instruction to be executed before it can start executing. It cannot be reordered before the `LDR` instruction.
+
+If the `DSB` instruction is replaced with the `DMB` instruction, the `ADD` instruction can be reordered before the `LDR` instruction.
+
+Example 2: The CPU executes the following 4 instructions.
+
+```asm
+// DC ISW, x5
+DC CIVA x5      // operation must have completed before DSB can complete
 STR x0, [x1]    // Access must have completed before DSB can complete
-DSB ISH
+DSB ISH         // Inner shareable: Any - Any
 ADD x2, x2, #3  // Cannot be executed until DSB completes
 ```
 
-## params for DMB/DSB
+The first instruction is the `DC` instruction, which clears and invalidates the data cache corresponding to the virtual address (X5 register).
+The second instruction stores the value of the X0 register to the address hold by register x1. The third instruction is the `DSB` instruction. The fourth instruction is the `ADD` instruction, which adds 3 to the value of the X2 register.
 
-As you can see from the above examples, the `DMB` and `DSB` instructions take a parameter which specifies the types of access to which the barrier operates, *before* or *after*, and a shareability domain to which it applies.
+The `DC` instruction and the `STR` instruction must be executed before the `DSB` instruction. The `ADD` instruction must wait until the `DSB` instruction is executed before it can start executing. Although the `ADD` instruction is not a data access instruction, it must wait until the `DSB` instruction is executed before it can start executing.
+
+In a multi-core system, cache and TLB maintenance instructions are broadcast to other CPU cores to perform local related maintenance operations. The `DSB` instruction is considered to be completed only when it waits for these broadcasts and receives the acknowledgement signal sent by other CPU cores. Therefore, when the `DSB` instruction is executed, the other CPU cores have seen that the first `DC` instruction has been executed.
+
+## parameters for DMB/DSB
+
+[Limiting the scope of memory barriers](https://developer.arm.com/documentation/102336/latest/Limiting-the-scope-of-memory-barriers)
+
+As you can see from the above examples, the `DMB` and `DSB` instructions take a parameter which specifies the types of access to which the barrier operates, *before* or *after*, and a [shareability domain](./a64-memory-ordering.md) to which it applies.
+
+The argument that defines which type of memory accesses are ordered by the memory barrier and the Shareability domain over which the instruction must operate. This *scope* effectively defines which Observers the ordering imposed by the barriers extend to.
+
+According to the scope of sharing, the cache can be divided into 4 share domains - non-shareable domain, inner shareable domain, outer shareable domain and system shareable domain. The purpose of the shared domain is to specify the scope of cache consistency for all hardware units that can access memory, which is mainly used for cache maintenance instructions and memory barrier instructions.
+
+1. If an area is marked as `Non-shareable`, it means that it can only be accessed by one processor and cannot be accessed by other processors.
+2. If an area is marked as `Inner Shareable`, it means that the processors in this area can access these shared caches, but the hardware units in other areas of the system (such as DMA devices, GPUs, etc.) cannot access them.
+3. If an area is marked as `Outer Shareable`, it means that the processors in this area and the hardware units with memory access capabilities (such as GPUs, etc.) can access and share caches with each other.
+4. If a memory area is marked as `System Shareable`(*Full system*), it means that all units in the system that access memory can access and share this area.
 
 <option\> | Ordered Accesses (before - after) | Shareability Domain
 ---------|-----------------------------------|--------------------
@@ -133,117 +204,7 @@ A `DSB` is required to ensure that the maintenance operations complete and an `I
 
 The processor might speculatively access an address marked as Normal at *any* time. So when considering whether barriers are required, don’t just consider explicit accesses generated by load or store instructions.
 
-## One-way barriers
-
-AArch64 adds new load and store instructions with implicit barrier semantics. These require that all loads and stores before or after the implicit barrier are **observed** in program order.
-
-**Load-Acquire (LDAR)**
-
-> All loads and stores that are after an `LDAR` in program order, and that match the shareability domain of the target address, must be observed *after* the `LDAR`.
-
-```text
-// read after write
-
-                  +------+
-                  | STR1 |------------+
-                  | LDR1 |            |
-                  +------+            |
-                                      |
-                                      |
---------------------------------------|-----
-           ⚡️ Load-Acquire (LDAR) ⚡️    |
---------------------------------------|-----
-        ↑                             |
-        |                             |
-        |         +------+            |
-        |         | STR2 |            |
-        +---------| LDR2 |            |
-                  +------+            |
-                                      ↓
-```
-
-**Store-Release (STLR)**
-
-> All loads and stores preceding an `STLR` that match the shareability domain of the target address, must be observed *before* the `STLR`.
-
-```text
-// wirte before read
-
-                                      ↑
-                  +------+            |
-        +---------| STR1 |            |
-        |         | LDR1 |            |
-        |         +------+            |
-        |                             |
-        ↓                             |
---------------------------------------|-----
-           ⚡️ Store-Release (STLR) ⚡️   |
---------------------------------------|-----
-                                      |
-                                      |
-                  +------+            |
-                  | STR2 |            |
-                  | LDR2 |------------+
-                  +------+
-```
-
-There are also exclusive versions of the above, `LDAXR` and `STLXR`, available. Here *`X`* stands for eXclusive.
-
-Unlike the data barrier instructions, which take a qualifier to control which shareability domains see the effect of the barrier, the `LDAR` and `STLR` instructions use the attribute of the address accessed.
-
-An `LDAR` instruction guarantees that any memory access instructions after the `LDAR`, are only visible *after* the load-acquire. A store-release guarantees that all earlier memory accesses are visible *before* the store-release becomes visible and that the store is visible to all parts of the system capable of storing cached data at the same time.
-
-```text
-                  +------+
-                  | STR1 |------------+
-                  | LDR1 |            |
-                  +------+            |
-                                      |
-                                      |
---------------------------------------|-------
-           ⚡️ Load-Acquire (LDAR) ⚡️    |
---------------------------------------|-------  \
-        ↑                             |   ↑     |
-        |         +------+            |   |     |
-        +---------| STR2 |            |   |     |   critical
-        +---------| LDR2 |            |   |     | code section
-        |         +------+            |   |     |
-        ↓                             ↓   |     |
-------------------------------------------|---  /
-           ⚡️ Store-Release (STLR) ⚡️       |
-------------------------------------------|---
-                                          |
-                                          |
-                  +------+                |
-                  | STR3 |                |
-                  | LDR3 |----------------+
-                  +------+
-```
-
-The diagram shows how accesses can cross a one-way barrier in one direction but not in the other.
-
-## ISB in more detail
-
-The ARMv8 architecture defines *context* as the state of the system registers and *context-changing operations* as things like cache, TLB, and branch predictor maintenance operations, or changes to system control registers, for example, `SCTLR_EL1`, `TCR_EL1`, and `TTBRn_EL1`. The effect of such a context-changing operation is only guaranteed to be seen after a *context synchronization event*.
-
-There are three kinds of context synchronization event:
-
-- Taking an exception.
-- Returning from an exception.
-- Instruction Synchronization Barrier (`ISB`).
-
-An `ISB` flushes the pipeline, and re-fetches the instructions from the cache or memory and ensures that the effects of any completed context-changing operation before the `ISB` are visible to any instruction after the `ISB`. It also ensures that any context-changing operations after the `ISB` instruction only take effect after the `ISB` has been executed and are not seen by instructions before the `ISB`. This does not mean that an `ISB` is required after each instruction that modifies a processor register. For example, reads or writes to `PSTATE` fields, `ELRs`, `SPs` and `SPSRs` occur in program order relative to other instructions.
-
-This example shows how to enable the floating-point unit and `NEON`, which you can do in AArch64 by writing to bit[20] of the `CPACR_EL1` register. The `ISB` is a context synchronization event that guarantees that the enable is complete before any subsequent or `NEON` instructions are executed.
-
-```asm
-MRS X1, CPACR_EL1
-ORR X1, X1, #(0x3 << 20)
-MSR CPACR_EL1, X1
-ISB
-```
-
-## usage scenarios
+## barrier usage scenarios
 
 In most scenarios, we don't need to pay special attention to memory barriers. Especially in single-processor systems, although the CPU supports out-of-order execution and predictive execution, in general, the CPU will ensure that the final execution result meets the programmer's requirements. In the scenario of multi-core concurrent programming, programmers need to consider whether to use memory barrier instructions. The following are some typical scenarios where you need to consider using memory barrier instructions.
 
@@ -253,61 +214,3 @@ In most scenarios, we don't need to pay special attention to memory barriers. Es
 - Modify the memory area where instructions are stored, such as the scenario of self-modifying code.
 
 In short, the purpose of using memory barrier instructions is to make the CPU execute according to the logic of the program code, rather than having the execution order of the code disrupted by the CPU's out-of-order execution and speculative execution.
-
-## barriers in C code
-
-The C11 and C++11 languages have a good platform-independent memory model that is preferable to intrinsics if possible.
-
-=== "C memory_order"
-
-    [memory_order - cppreference.com](https://en.cppreference.com/w/c/atomic/memory_order)
-
-    ```c
-    // Defined in header <stdatomic.h>
-    enum memory_order {
-        memory_order_relaxed,
-        memory_order_consume,
-        memory_order_acquire,
-        memory_order_release,       // (since C11)
-        memory_order_acq_rel,
-        memory_order_seq_cst
-    };
-    ```
-
-=== "C++ memory_order"
-
-    [std::memory_order - cppreference.com](https://en.cppreference.com/w/cpp/atomic/memory_order)
-
-    ```c
-    // Defined in header <atomic>
-    typedef enum memory_order {
-        memory_order_relaxed,
-        memory_order_consume,
-        memory_order_acquire, // (since C++11)
-        memory_order_release, // (until C++20)
-        memory_order_acq_rel,
-        memory_order_seq_cst
-    } memory_order;
-
-    enum class memory_order : /* unspecified */ {
-        relaxed, consume, acquire, release, acq_rel, seq_cst
-    };
-    inline constexpr memory_order memory_order_relaxed = memory_order::relaxed;
-    inline constexpr memory_order memory_order_consume = memory_order::consume; // (since C++20)
-    inline constexpr memory_order memory_order_acquire = memory_order::acquire;
-    inline constexpr memory_order memory_order_release = memory_order::release;
-    inline constexpr memory_order memory_order_acq_rel = memory_order::acq_rel;
-    inline constexpr memory_order memory_order_seq_cst = memory_order::seq_cst;
-    ```
-
-All versions of C and C++ have *`sequence points`*, but C11 and C++11 also provide memory models. Sequence points *only* prevent the compiler from re-ordering C++ source code. There is *nothing* to stop the processor re-ordering instructions in the generated object code, or for read and write buffers to re-order the sequence in which data transfers are sent to the cache. In other words, they are *only* relevant for single-threaded code. For multi-threaded code, then either use the memory model features of C11 / C++11, or other ***synchronization*** mechanisms such as `mutexes` which are provided by the operating system. Typically, a compiler cannot re-arrange statements across a sequence point and restrict what optimizations the compiler can make. Examples of sequence points in code include function calls and accesses to [volatile](../c/c-volatile.md) variables.
-
-The C language specification defines sequence points as follows:
-
-> At certain specified points in the execution sequence called `sequence points`, all side effects of previous evaluations shall be ***complete*** and ***no*** side effects of subsequent evaluations shall have taken place.
-
-!!! note "Barriers in Linux"
-
-    The Linux kernel includes a number of platform independent barrier functions. See the Linux kernel documentation in the [memory-barriers.txt](https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/memory-barriers.txt) file.
-
-See [C Memory Order(Sequential Consistency)](../c/c-memory-order.md).

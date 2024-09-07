@@ -12,11 +12,13 @@ tags:
 comments: true
 ---
 
-内存屏障指令是系统编程中很重要的一部分，特别是在多核并行编程中。
+在上一篇 [ARM64 Memory Ordering - re-ordering](./a64-memory-ordering.md) 中，我们介绍了编译器编译时和 CPU 执行时，可能为了提高并行效率，会将指令重排乱序执行。本篇梳理了不同的内存模型下，多处理器并发竞争访问存储器时，指令重排乱序执行可能导致的结果非预期风险。
+
+特别地，在 ARM64 实现的典型的弱一致性内存模型下，程序可能需要添加适当的同步操作来避免竞争访问以保障读写次序。这里说的“同步操作”指的是*`内存屏障指令`*，它是系统编程中很重要的一部分，特别是在多核并行编程中。
 
 <!-- more -->
 
-本文节选自 [《ARM64体系结构编程与实践》](https://item.jd.com/13119117.html) | 第 18.1 章 内存屏障指令产生的原因，仅作学习参考之用途。
+本文节选自 [《ARM64体系结构编程与实践》](https://item.jd.com/13119117.html) | 第 18.1 节 内存屏障指令产生的原因，仅作学习参考之用途。
 
 ## 乱序访问的两个阶段
 
@@ -25,58 +27,18 @@ comments: true
 1. 编译时：编译器优化导致内存乱序访问。
 2. 执行时：多个 CPU 的交互引起内存乱序访问。
 
-### barrier() 规避编译乱序
+### barrier() 宏规避编译乱序
 
-编译器会把符合人类思维逻辑的高级语言代码（如 C 语言的代码）翻译成符合 CPU 运算规则的江编指令。编泽器会在翻泽成汇编指令时对其进行优化，如内存访问指令的重新排序可以提高指令级并行效率。然而，这些优化可能会与程序员原始的代码逻辑不符，导致一些错误发生。编译时的乱序访问可以通过 `barrier()` 函数来规避。
+编译器会把符合人类思维逻辑的高级语言代码（如 C 语言的代码）翻译成符合 CPU 运算规则的江编指令。编泽器会在翻泽成汇编指令时对其进行优化，如内存访问指令的重新排序可以提高指令级并行效率。然而，这些优化可能会与程序员原始的代码逻辑不符，导致一些错误发生。
+
+在 GCC 中，您可以基于 [Extended Asm](https://gcc.gnu.org/onlinedocs/gcc/Extended-Asm.html) 插入 Inline Assembly 指定内存 Clobber，来表示指令改变了内存，以使优化器无法跨越屏障重排内存访问指令。编译时的乱序访问可以通过以下函数宏来规避。
 
 ```c
-// refer to the folllowing headers:
-// - arch/arm/include/asm/barrier.h
-// - arch/arm64/include/asm/barrier.h
+// refer to linux/arch/arm64/include/asm/barrier.h
 #define barrier() __asm__ __volatile__ ("" ::: "memory")
 ```
 
-`barrier()` 函数告诉编译器，不要为了性能优化而将这些代码重排。
-
-- [GCC - Extended Asm](https://gcc.gnu.org/onlinedocs/gcc/Extended-Asm.html)
-- [GCC Inline Assembly and Its Usage in the Linux Kernel](https://dl.acm.org/doi/fullHtml/10.5555/3024956.3024958)
-- [c - Working of \_\_asm__ \_\_volatile__ ("" : : : "memory")](https://stackoverflow.com/questions/14950614/working-of-asm-volatile-memory)
-- [memory barrier --- asm volatile("" ::: "memory")](https://blog.csdn.net/KISSMonX/article/details/9105823)
-- [gcc - difference in mfence and asm volatile ("" : : : "memory")](https://stackoverflow.com/questions/12183311/difference-in-mfence-and-asm-volatile-memory)
-
-!!! note "Extended Asm of barrier()"
-
-    Extended Asm - Assembler Instructions with C Expression Operands
-
-    With extended asm you can read and write C variables from assembler and perform jumps from assembler code to C labels. Extended asm syntax uses colons (‘`:`’) to delimit the operand parameters after the assembler template:
-
-    ```c
-    asm asm-qualifiers ( AssemblerTemplate 
-                    : OutputOperands 
-                    [ : InputOperands
-                    [ : Clobbers ] ])
-
-    asm asm-qualifiers ( AssemblerTemplate 
-                        : OutputOperands
-                        : InputOperands
-                        : Clobbers
-                        : GotoLabels)
-    ```
-
-    - `AssemblerTemplate`: This is a literal string that is the template for the assembler code. It is a combination of fixed text and tokens that refer to the input, output, and goto parameters.
-    - `OutputOperands`: A comma-separated list of the C variables modified by the instructions in the AssemblerTemplate. An empty list is permitted.
-    - `InputOperands`: A comma-separated list of C expressions read by the instructions in the AssemblerTemplate. An empty list is permitted.
-    - `Clobbers`: A comma-separated list of registers or other values changed by the AssemblerTemplate, beyond those listed as outputs. An empty list is permitted.
-
-    The macro definition of `barrier()`:
-
-    1. `__asm__`: The `asm` keyword is a GNU extension to indicate insert assembly code.
-    2. `__volatile__`: to disable certain optimizations, refer to [volatile in C/C++](../c/c-volatile.md).
-    3. `""`: *`AssemblerTemplate`* is empty.
-    4. `: : `: both the *`OutputOperands`* and *`InputOperands`* are empty.
-    4. `:memory`: The "memory" clobber tells the compiler that the assembly code performs memory reads or writes to items other than those listed in the input and output operands (for example, accessing the memory pointed to by one of the input parameters). To ensure memory contains correct values, GCC may need to **flush** specific register values to memory before executing the *`asm`*. Further, the compiler does not assume that any values read from memory before an *`asm`* remain unchanged after that asm; it **reloads** them as needed. Using the "memory" clobber effectively forms a read/write memory barrier for the compiler.
-
-        - Note that this clobber does not prevent the *processor* from doing speculative reads past the asm statement. To prevent that, you need processor-specific fence instructions.
+`barrier()` 函数宏告诉编译器，不要为了性能优化而将这些代码重排。
 
 ### 执行时的存储一致性问题
 
@@ -85,6 +47,8 @@ comments: true
 在一个单处理器系统里面，不管 CPU 怎么乱序执行，它最终的执行结果都是程序员想要的结果，也就是类似于顺序执行模型。在单处理器系统里，指令的乱序和重排对程序员来说是透明的，但是在多核处理器系统中，一个 CPU 内核中内存访问的乱序执行可能会对系统中其他的观察者（例如其他 CPU 内核）产生影响，即它们可能观察到的内存执行次序与实际执行次序有很大的不同，特别是多核并发访问共享数据的情况下。因此，这里引申出一个 ***存储一致性问题***，即系统中所有处理器所看到的对不同地址访问的次序问题。缓存一致性协议（例如 MESI 协议）用于解决多处理器对*同一个*地址访问的一致性问题，而存储一致性问题是多处理器对*多个不同*内存地址的访问次序引发的问题。在使能与未使能高速缓存的系统中都会存在存储一致性问题。
 
 由于现代处理器普遍采用超标量架构、乱序发射以及乱序执行等技术来提高指令级并行效率，因此指令的执行序列在处理器流水线中可能被打乱，与程序代码编写时的序列不一致，这就产生了程序员错觉——处理器访问内存的次序与代码的次序相同。
+
+> It is still possible to preserve the illusion that the hardware executes instructions in the order you wrote them.
 
 另外，现代处理器采用多级存储结构（寄存器、高速缓存、存储缓冲区、无效队列、内存），如何保证处理器对存储子系统访问的正确性也是一大挑战。
 
@@ -131,7 +95,7 @@ b=1    y=a
 - *共享访问*：多个处理器同时访问同一个变量，都是读操作。
 - *竞争访问*：多个处理器同时访问同一个变量，其中至少有一个是写操作，因此存在竞争访问。例如，一个写操作和一个读操作同时发生可能会导致读操作返回不同的值，这取决于读操作和写操作的次序。
 
-在程序中适当添加同步操作可以避免竞争访问的发生。与此同时，在同步点之后处理器可以改宽对存储访问的次序要求，因为这些访问次序是安全的。基于这种思路，存储器访问指令可以分成**数据访问指令**和**同步指令**（也称为内存屏障指令）两大类，对应的内存模型称为**弱一致性** （weak consistency）内存模型。
+在程序中适当添加同步操作可以避免竞争访问的发生。与此同时，在同步点之后处理器可以改宽对存储访问的次序要求，因为这些访问次序是安全的。基于这种思路，存储器访问指令可以分成**数据访问指令**和**同步指令**（也称为内存屏障指令）两大类，对应的内存模型称为**弱一致性**（weak consistency）内存模型（weakly ordered memory model）。
 
 1986年，Dubois 等发表的论文描述了弱一致性内存模型的定义，在这个定义中使用全局同步变量（global synchronizing variabile）来描述一个同步访问，这里的全局同步变最可以理解为内存屏障指令。在一个多处理器系统中，满足如下3个条件的内存访问称为弱一致性的内存访问：
 
@@ -164,6 +128,9 @@ ARM64 处理器实现了这种弱一致性内存模型，因此 ARM64 处理器�
 
 ## 参考资料
 
+[linux/tools/memory-model/Documentation/](https://github.com/torvalds/linux/blob/master/tools/memory-model/Documentation/)
+[linux/Documentation/memory-barriers.txt](https://github.com/torvalds/linux/blob/master/Documentation/memory-barriers.txt)
+
 [A Primer on Memory Consistency and Cache Coherence.PDF](https://link.springer.com/book/10.1007/978-3-031-01764-3) - [笔记](https://www.cnblogs.com/icwangpu/category/2394256.html)
 [Hardware Memory Models - 筆記](https://blog.kennycoder.io/2022/07/18/Hardware-Memory-Models-%E7%AD%86%E8%A8%98/)
 
@@ -181,9 +148,12 @@ x86 Total Store Order:
 
 [Memory Barriers - a Hardware View for Software Hackers.PDF](https://link.zhihu.com/?target=http%3A//www.puppetmastertrading.com/images/hwViewForSwHackers.pdf)
 
-高铭杰：[内存避障：一个内存乱序实例](https://blog.csdn.net/jackgo73/article/details/129580683)，[内存避障的前世今生](https://mingjie.blog.csdn.net/article/details/129588953)
+[为什么需要内存屏障？](https://blog.csdn.net/chen19870707/article/details/39896655)
+内存避障：[一个内存乱序实例](https://blog.csdn.net/jackgo73/article/details/129580683) & [前世今生](https://mingjie.blog.csdn.net/article/details/129588953)
 浅墨: 聊聊原子变量、锁、内存屏障那点事：[（1）](https://cloud.tencent.com/developer/article/1518180)，[（2）](https://cloud.tencent.com/developer/article/1517889)
 
 [从CPU缓存架构、内存一致性到内存屏障](https://blog.chongsheng.art/post/golang/cpu-cache-memory-barrier/)
 [从缓存一致性、指令重排、内存屏障到volatile](https://www.cnblogs.com/yungyu16/p/13200453.html)
-[内存屏障今生之 Store Buffer, Invalid Queue](https://blog.csdn.net/wll1228/article/details/107775976)
+
+[什么是内存屏障？](https://blog.csdn.net/s2603898260/article/details/109234770) - MESI, [Store Buffer, Invalid Queue](https://blog.csdn.net/wll1228/article/details/107775976)
+理解内存屏障及应用实例无锁环形队列kfifo：[bw_0927](https://www.cnblogs.com/my_life/articles/5220172.html)，[绿色冰点](https://www.cnblogs.com/moodlxs/p/10718706.html)

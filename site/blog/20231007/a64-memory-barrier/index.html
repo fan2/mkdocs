@@ -18,7 +18,7 @@
         <link rel="prev" href="../c-pointer-array-crossref/">
       
       
-        <link rel="next" href="../a64-load-store-exclusive/">
+        <link rel="next" href="../a64-oneway-barrier/">
       
       
       <link rel="icon" href="../../../assets/hold_yourself.jpg">
@@ -26,7 +26,7 @@
     
     
       
-        <title>ARM64 Memory Ordering - barriers - ElseWhere</title>
+        <title>ARM64 Memory Barriers - ElseWhere</title>
       
     
     
@@ -90,7 +90,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#barrier_instructions" class="md-skip">
+        <a href="#isbinstruction_synchronization_barrier" class="md-skip">
           Skip to content
         </a>
       
@@ -123,7 +123,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              ARM64 Memory Ordering - barriers
+              ARM64 Memory Barriers
             
           </span>
         </div>
@@ -1304,16 +1304,6 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#barrier_instructions" class="md-nav__link">
-    <span class="md-ellipsis">
-      barrier instructions
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="barrier instructions">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
   <a href="#isbinstruction_synchronization_barrier" class="md-nav__link">
     <span class="md-ellipsis">
       ISB(Instruction Synchronization Barrier)
@@ -1321,8 +1311,8 @@
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#dmbdata_memory_barrier" class="md-nav__link">
     <span class="md-ellipsis">
       DMB(Data Memory Barrier)
@@ -1330,8 +1320,8 @@
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
+      
+        <li class="md-nav__item">
   <a href="#dsbdata_synchronization_barrier" class="md-nav__link">
     <span class="md-ellipsis">
       DSB(Data Synchronization Barrier)
@@ -1339,52 +1329,20 @@
   </a>
   
 </li>
-        
-      </ul>
-    </nav>
-  
-</li>
       
         <li class="md-nav__item">
-  <a href="#params_for_dmbdsb" class="md-nav__link">
+  <a href="#parameters_for_dmbdsb" class="md-nav__link">
     <span class="md-ellipsis">
-      params for DMB/DSB
+      parameters for DMB/DSB
     </span>
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#one-way_barriers" class="md-nav__link">
+  <a href="#barrier_usage_scenarios" class="md-nav__link">
     <span class="md-ellipsis">
-      One-way barriers
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#isb_in_more_detail" class="md-nav__link">
-    <span class="md-ellipsis">
-      ISB in more detail
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#usage_scenarios" class="md-nav__link">
-    <span class="md-ellipsis">
-      usage scenarios
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#barriers_in_c_code" class="md-nav__link">
-    <span class="md-ellipsis">
-      barriers in C code
+      barrier usage scenarios
     </span>
   </a>
   
@@ -1468,7 +1426,7 @@
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7z"/></svg>
                           <span class="md-ellipsis">
                             
-                              9 min read
+                              10 min read
                             
                           </span>
                         </div>
@@ -1522,15 +1480,16 @@
 
 
 
-  <h1>ARM64 Memory Ordering - barriers</h1>
+  <h1>ARM64 Memory Barriers</h1>
 
 <p>On most modern uniprocessors memory operations are not executed in the order specified by the program code. In single threaded programs all operations <em>appear to</em> have been executed in the order specified, with all out-of-order execution hidden to the programmer – however in multi-threaded environments (or when interfacing with other hardware via memory buses) this can lead to problems. To avoid problems, <a href="https://en.wikipedia.org/wiki/Memory_barrier">memory barriers</a> can be used in these cases.</p>
 <!-- more -->
 
-<p><a href="https://developer.arm.com/documentation/den0024/latest">ARM Cortex-A Series Programmer's Guide for ARMv8-A</a> | Chapter 13 Memory Ordering</p>
-<p>The ARM architecture includes barrier instructions to <strong>force</strong> access <em>ordering</em> and access <em>completion</em> at a specific point. In some architectures, similar instructions are known as a fence(membar, memory fence).</p>
+<p><a href="https://developer.arm.com/documentation/den0042/latest/Memory-Ordering">ARM Cortex-R Series Programmer's Guide</a> | Chapter 10 Memory Ordering:</p>
+<p>A memory barrier is an instruction that requires the processor to apply an ordering <em>constraint</em> between memory operations that occur before and after the memory barrier instruction in the program.</p>
+<p><a href="https://developer.arm.com/documentation/den0024/latest">ARM Cortex-A Series Programmer's Guide for ARMv8-A</a> | Chapter 13 Memory Ordering:</p>
+<p>The ARM architecture includes barrier instructions to <strong>force</strong> access <em>ordering</em> and access <em>completion</em> at a specific point. In some architectures, similar instructions are known as a <em>fence</em>(membar, memory fence).</p>
 <p>If you are writing code where ordering is important, see <em>Appendix J7 Barrier Litmus Tests in the ARM Architecture Reference Manual - ARMv8, for ARMv8-A architecture profile</em> and <em>Appendix G Barrier Litmus Tests in the ARM Architecture Reference Manual ARMv7-A/R Edition</em>, which includes many worked examples.</p>
-<h2 id="barrier_instructions">barrier instructions<a class="headerlink" href="#barrier_instructions" title="Permanent link">#</a></h2>
 <p>The <em>ARM Architecture Reference Manual</em> defines certain key words, in particular, the terms <em><code>observe</code></em> and must be <em><code>observed</code></em>. In typical systems, this defines how the bus interface of a master, for example, a core or GPU and the interconnect, must handle bus transactions. Only masters are able to <strong>observe</strong> transfers. All bus transactions are initiated by a master. The order that a master performs transactions in is not necessarily the same order that such transactions complete at the slave device, because transactions might be <strong>re-ordered</strong> by the interconnect unless some ordering is explicitly <strong>enforced</strong>.</p>
 <p>A simple way to describe observability is to say that </p>
 <blockquote>
@@ -1539,36 +1498,83 @@ I have observed your read when I can no longer change the value you read.</p>
 </blockquote>
 <p>where both I and you refer to cores or other masters in the system.</p>
 <p>There are three types of barrier instruction provided by the architecture:</p>
-<h3 id="isbinstruction_synchronization_barrier">ISB(Instruction Synchronization Barrier)<a class="headerlink" href="#isbinstruction_synchronization_barrier" title="Permanent link">#</a></h3>
+<h2 id="isbinstruction_synchronization_barrier">ISB(Instruction Synchronization Barrier)<a class="headerlink" href="#isbinstruction_synchronization_barrier" title="Permanent link">#</a></h2>
+<p><a href="https://developer.arm.com/documentation/102336/latest/Instruction-barriers">Instruction barriers</a></p>
 <p>This is used to guarantee that any <em>subsequent</em> instructions are fetched, again, so that privilege and access are checked with the current MMU configuration. It is used to <strong>ensure</strong> any previously executed context-changing operations, such as writes to system control registers, have <strong><em>completed</em></strong> by the time the <code>ISB</code> completes. In hardware terms, this might mean that the instruction pipeline is <strong><em>flushed</em></strong>, for example. Typical uses of this would be in memory management, cache control, and context switching code, or where code is being moved about in memory.</p>
-<h3 id="dmbdata_memory_barrier">DMB(Data Memory Barrier)<a class="headerlink" href="#dmbdata_memory_barrier" title="Permanent link">#</a></h3>
+<p>The ARMv8 architecture defines <em>context</em> as the state of the system registers and <em>context-changing operations</em> as things like cache, TLB, and branch predictor maintenance operations, or changes to system control registers, for example, <code>SCTLR_EL1</code>, <code>TCR_EL1</code>, and <code>TTBRn_EL1</code>. The effect of such a context-changing operation is only guaranteed to be seen after a <em>context synchronization event</em>.</p>
+<p>There are three kinds of context synchronization event:</p>
+<ul>
+<li>Taking an exception.</li>
+<li>Returning from an exception.</li>
+<li>Instruction Synchronization Barrier (<code>ISB</code>).</li>
+</ul>
+<p>An <code>ISB</code> flushes the pipeline, and re-fetches the instructions from the cache or memory and ensures that the effects of any completed context-changing operation before the <code>ISB</code> are visible to any instruction after the <code>ISB</code>. It also ensures that any context-changing operations after the <code>ISB</code> instruction only take effect after the <code>ISB</code> has been executed and are not seen by instructions before the <code>ISB</code>. This does not mean that an <code>ISB</code> is required after each instruction that modifies a processor register. For example, reads or writes to <code>PSTATE</code> fields, <code>ELRs</code>, <code>SPs</code> and <code>SPSRs</code> occur in program order relative to other instructions.</p>
+<p>This example shows how to enable the floating-point unit and <code>NEON</code>, which you can do in AArch64 by writing to bit[20] of the <code>CPACR_EL1</code> register. The <code>ISB</code> is a context synchronization event that guarantees that the enable is complete before any subsequent or <code>NEON</code> instructions are executed.</p>
+<div class="language-asm highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">MRS</span><span class="w"> </span><span class="no">X1</span><span class="p">,</span><span class="w"> </span><span class="no">CPACR_EL1</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nf">ORR</span><span class="w"> </span><span class="no">X1</span><span class="p">,</span><span class="w"> </span><span class="no">X1</span><span class="p">,</span><span class="w"> </span><span class="c1">#(0x3 &lt;&lt; 20)</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="nf">MSR</span><span class="w"> </span><span class="no">CPACR_EL1</span><span class="p">,</span><span class="w"> </span><span class="no">X1</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="nf">ISB</span>
+</span></code></pre></div>
+<h2 id="dmbdata_memory_barrier">DMB(Data Memory Barrier)<a class="headerlink" href="#dmbdata_memory_barrier" title="Permanent link">#</a></h2>
+<p><a href="https://developer.arm.com/documentation/102336/latest/Data-Memory-Barrier">Data Memory Barrier</a></p>
 <p>This prevents re-ordering of data accesses instructions across the barrier instruction. All data accesses, that is, loads or stores, but not instruction fetches, performed by this processor before the <code>DMB</code>, are <strong>visible</strong> to all other masters within the specified shareability domain before any of the data accesses after the <code>DMB</code>.</p>
 <p>For example:</p>
 <blockquote>
 <p>Pay attention: <code>ADD</code> is not data accessing instructions.</p>
 </blockquote>
-<div class="language-asm highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">LDR</span><span class="w"> </span><span class="no">x0</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">x1</span><span class="p">]</span><span class="w">    </span><span class="c1">// Must be seen by the memory system before the STR below.</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="nf">DMB</span><span class="w"> </span><span class="no">ISHLD</span>
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="nf">ADD</span><span class="w"> </span><span class="no">x2</span><span class="p">,</span><span class="w"> </span><span class="mi">#1</span><span class="w">      </span><span class="c1">// May be executed before or after the memory system sees LDR.</span>
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="nf">STR</span><span class="w"> </span><span class="no">x3</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">x4</span><span class="p">]</span><span class="w">    </span><span class="c1">// Must be seen by the memory system after the LDR above.</span>
+<div class="language-asm highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nf">LDR</span><span class="w"> </span><span class="no">x0</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">x1</span><span class="p">]</span><span class="w">    </span><span class="c1">// Must be seen by the memory system before the STR below.</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="nf">DMB</span><span class="w"> </span><span class="no">ISHLD</span><span class="w">       </span><span class="c1">// Inner shareable: Load - Load, Load - Store</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="nf">ADD</span><span class="w"> </span><span class="no">x2</span><span class="p">,</span><span class="w"> </span><span class="mi">#1</span><span class="w">      </span><span class="c1">// May be executed before or after the memory system sees LDR.</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="nf">STR</span><span class="w"> </span><span class="no">x3</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">x4</span><span class="p">]</span><span class="w">    </span><span class="c1">// Must be seen by the memory system after the LDR above.</span>
 </span></code></pre></div>
 <p>It also <strong>ensures</strong> that any explicit preceding data or unified cache maintenance operations have <em>completed before</em> any subsequent data accesses are executed.</p>
-<div class="language-asm highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nf">DC</span><span class="w"> </span><span class="no">CSW</span><span class="p">,</span><span class="w"> </span><span class="no">x5</span><span class="w">      </span><span class="c1">// Data clean by Set/way</span>
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="nf">LDR</span><span class="w"> </span><span class="no">x0</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">x1</span><span class="p">]</span><span class="w">    </span><span class="c1">// Effect of data cache clean might not be seen by this instruction</span>
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="nf">DMB</span><span class="w"> </span><span class="no">ISH</span>
-</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="nf">LDR</span><span class="w"> </span><span class="no">x2</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">x3</span><span class="p">]</span><span class="w">    </span><span class="c1">// Effect of data cache clean will be seen by this instruction</span>
+<div class="language-asm highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nf">DC</span><span class="w"> </span><span class="no">CSW</span><span class="p">,</span><span class="w"> </span><span class="no">x5</span><span class="w">      </span><span class="c1">// Data clean by Set/way</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="nf">LDR</span><span class="w"> </span><span class="no">x0</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">x1</span><span class="p">]</span><span class="w">    </span><span class="c1">// Effect of data cache clean might not be seen by this instruction</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="nf">DMB</span><span class="w"> </span><span class="no">ISH</span><span class="w">         </span><span class="c1">// Inner shareable: Any - Any</span>
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="nf">LDR</span><span class="w"> </span><span class="no">x2</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">x3</span><span class="p">]</span><span class="w">    </span><span class="c1">// Effect of data cache clean will be seen by this instruction</span>
 </span></code></pre></div>
-<h3 id="dsbdata_synchronization_barrier">DSB(Data Synchronization Barrier)<a class="headerlink" href="#dsbdata_synchronization_barrier" title="Permanent link">#</a></h3>
-<p>This <strong>enforces</strong> the same ordering as the Data Memory Barrier (DMB), but has the additional effect of blocking execution of <em>any</em> further instructions, not just loads or stores, or both, until synchronization is complete. This can be used to <strong>prevent</strong> execution of a <code>SEV</code> instruction, for instance, that would <em>signal</em> to other cores that an event occurred. It <strong>waits</strong> until all cache, TLB and branch predictor maintenance operations issued by this processor have completed for the specified shareability domain.</p>
-<p>For example:</p>
-<div class="language-asm highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="nf">DC</span><span class="w"> </span><span class="no">ISW</span><span class="p">,</span><span class="w"> </span><span class="no">x5</span><span class="w">      </span><span class="c1">// operation must have completed before DSB can complete</span>
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="nf">STR</span><span class="w"> </span><span class="no">x0</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">x1</span><span class="p">]</span><span class="w">    </span><span class="c1">// Access must have completed before DSB can complete</span>
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="nf">DSB</span><span class="w"> </span><span class="no">ISH</span>
-</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="nf">ADD</span><span class="w"> </span><span class="no">x2</span><span class="p">,</span><span class="w"> </span><span class="no">x2</span><span class="p">,</span><span class="w"> </span><span class="mi">#3</span><span class="w">  </span><span class="c1">// Cannot be executed until DSB completes</span>
+<p>Maintenance instructions related to data cache and unified cache(such as <code>DC</code>) are actually also considered data access instructions. Therefore, the data cache maintenance instructions before the <code>DMB</code> instruction must be executed before the memory access instructions after the DMB instruction.</p>
+<p>From the analysis of the above examples, it can be seen that the <code>DMB</code> instruction focuses on the sequence of memory access and does not need to care when the memory access instructions are executed. The data access instructions before the <code>DMB</code> must be <strong><em>observed</em></strong> by the data access instructions after the <code>DMB</code>.</p>
+<h2 id="dsbdata_synchronization_barrier">DSB(Data Synchronization Barrier)<a class="headerlink" href="#dsbdata_synchronization_barrier" title="Permanent link">#</a></h2>
+<p><a href="https://developer.arm.com/documentation/102336/latest/Data-Synchronization-Barrier">Data Synchronization Barrier</a></p>
+<p>This <strong>enforces</strong> the same ordering as the Data Memory Barrier (<code>DMB</code>), but has the additional effect of blocking execution of <em>any</em> further instructions, <em>not</em> just loads or stores, or both, until synchronization is complete. This can be used to <strong>prevent</strong> execution of a <code>SEV</code> instruction, for instance, that would <em>signal</em> to other cores that an event occurred. It <strong>waits</strong> until all cache, TLB and branch predictor maintenance operations issued by this processor have completed for the specified shareability domain.</p>
+<p>The <code>DSB</code> instruction is much stricter than the <code>DMB</code> instruction. <em>Any</em> instruction after the <code>DSB</code> must meet the following two conditions before it can start executing.</p>
+<ul>
+<li>All data access instructions (memory access instructions) before the <code>DSB</code> instruction must be executed.</li>
+<li>The cache, branch prediction, TLB and other maintenance instructions before the <code>DSB</code> instruction must also be executed.</li>
+</ul>
+<p>The instructions after the <code>DSB</code> instruction can only be executed after these two conditions are met. Note that the instructions after the <code>DSB</code> refer to <em>any</em> instructions.</p>
+<p>Compared with the <code>DMB</code> instruction, the <code>DSB</code> instruction specifies under what conditions it can be executed, while the <code>DMB</code> instruction only constrains the execution order of the data access instructions before and after the barrier.</p>
+<p>Example 1: The CPU executes the following 3 instructions.</p>
+<div class="language-asm highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nf">LDR</span><span class="w"> </span><span class="no">x0</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">x1</span><span class="p">]</span><span class="w">    </span><span class="c1">// Access must have completed before DSB can complete</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="nf">DSB</span><span class="w"> </span><span class="no">ISH</span><span class="w">         </span><span class="c1">// Inner shareable: Any - Any</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="nf">ADD</span><span class="w"> </span><span class="no">x2</span><span class="p">,</span><span class="w"> </span><span class="no">x3</span><span class="p">,</span><span class="w"> </span><span class="no">x4</span><span class="w">  </span><span class="c1">// Cannot be executed until DSB completes</span>
 </span></code></pre></div>
-<h2 id="params_for_dmbdsb">params for DMB/DSB<a class="headerlink" href="#params_for_dmbdsb" title="Permanent link">#</a></h2>
-<p>As you can see from the above examples, the <code>DMB</code> and <code>DSB</code> instructions take a parameter which specifies the types of access to which the barrier operates, <em>before</em> or <em>after</em>, and a shareability domain to which it applies.</p>
+<p>The <code>ADD</code> instruction must wait for the <code>DSB</code> instruction to be executed before it can start executing. It cannot be reordered before the <code>LDR</code> instruction.</p>
+<p>If the <code>DSB</code> instruction is replaced with the <code>DMB</code> instruction, the <code>ADD</code> instruction can be reordered before the <code>LDR</code> instruction.</p>
+<p>Example 2: The CPU executes the following 4 instructions.</p>
+<div class="language-asm highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1">// DC ISW, x5</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="nf">DC</span><span class="w"> </span><span class="no">CIVA</span><span class="w"> </span><span class="no">x5</span><span class="w">      </span><span class="c1">// operation must have completed before DSB can complete</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="nf">STR</span><span class="w"> </span><span class="no">x0</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">x1</span><span class="p">]</span><span class="w">    </span><span class="c1">// Access must have completed before DSB can complete</span>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="nf">DSB</span><span class="w"> </span><span class="no">ISH</span><span class="w">         </span><span class="c1">// Inner shareable: Any - Any</span>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="nf">ADD</span><span class="w"> </span><span class="no">x2</span><span class="p">,</span><span class="w"> </span><span class="no">x2</span><span class="p">,</span><span class="w"> </span><span class="mi">#3</span><span class="w">  </span><span class="c1">// Cannot be executed until DSB completes</span>
+</span></code></pre></div>
+<p>The first instruction is the <code>DC</code> instruction, which clears and invalidates the data cache corresponding to the virtual address (X5 register).<br />
+The second instruction stores the value of the X0 register to the address hold by register x1. The third instruction is the <code>DSB</code> instruction. The fourth instruction is the <code>ADD</code> instruction, which adds 3 to the value of the X2 register.</p>
+<p>The <code>DC</code> instruction and the <code>STR</code> instruction must be executed before the <code>DSB</code> instruction. The <code>ADD</code> instruction must wait until the <code>DSB</code> instruction is executed before it can start executing. Although the <code>ADD</code> instruction is not a data access instruction, it must wait until the <code>DSB</code> instruction is executed before it can start executing.</p>
+<p>In a multi-core system, cache and TLB maintenance instructions are broadcast to other CPU cores to perform local related maintenance operations. The <code>DSB</code> instruction is considered to be completed only when it waits for these broadcasts and receives the acknowledgement signal sent by other CPU cores. Therefore, when the <code>DSB</code> instruction is executed, the other CPU cores have seen that the first <code>DC</code> instruction has been executed.</p>
+<h2 id="parameters_for_dmbdsb">parameters for DMB/DSB<a class="headerlink" href="#parameters_for_dmbdsb" title="Permanent link">#</a></h2>
+<p><a href="https://developer.arm.com/documentation/102336/latest/Limiting-the-scope-of-memory-barriers">Limiting the scope of memory barriers</a></p>
+<p>As you can see from the above examples, the <code>DMB</code> and <code>DSB</code> instructions take a parameter which specifies the types of access to which the barrier operates, <em>before</em> or <em>after</em>, and a <a href="../../20231006/a64-memory-ordering/">shareability domain</a> to which it applies.</p>
+<p>The argument that defines which type of memory accesses are ordered by the memory barrier and the Shareability domain over which the instruction must operate. This <em>scope</em> effectively defines which Observers the ordering imposed by the barriers extend to.</p>
+<p>According to the scope of sharing, the cache can be divided into 4 share domains - non-shareable domain, inner shareable domain, outer shareable domain and system shareable domain. The purpose of the shared domain is to specify the scope of cache consistency for all hardware units that can access memory, which is mainly used for cache maintenance instructions and memory barrier instructions.</p>
+<ol>
+<li>If an area is marked as <code>Non-shareable</code>, it means that it can only be accessed by one processor and cannot be accessed by other processors.</li>
+<li>If an area is marked as <code>Inner Shareable</code>, it means that the processors in this area can access these shared caches, but the hardware units in other areas of the system (such as DMA devices, GPUs, etc.) cannot access them.</li>
+<li>If an area is marked as <code>Outer Shareable</code>, it means that the processors in this area and the hardware units with memory access capabilities (such as GPUs, etc.) can access and share caches with each other.</li>
+<li>If a memory area is marked as <code>System Shareable</code>(<em>Full system</em>), it means that all units in the system that access memory can access and share this area.</li>
+</ol>
 <table>
 <thead>
 <tr>
@@ -1659,107 +1665,15 @@ Both <code>loads</code> and <code>stores</code> that appear <em>after</em> the b
 <p>A more subtle effect of the ordering rules is that the instruction interface, data interface, and MMU table walker of a core are considered as separate observers. This means that you might need, for example, to use <code>DSB</code> instructions to <strong>ensure</strong> that an access one interface is <strong>guaranteed</strong> to be <em>observable</em> on a different interface.</p>
 <p>If you execute a data cache clean and invalidate instruction, for example <code>DCCVAU, X0</code>, you must insert a <code>DSB</code> instruction after this to be sure that subsequent page table walks, modifications to translation table entries, instruction fetches, or updates to instructions in memory, can all see the new values.</p>
 <p>For example, consider an update of the translation tables:</p>
-<div class="language-asm highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nf">STR</span><span class="w"> </span><span class="no">X0</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">X1</span><span class="p">]</span><span class="w">    </span><span class="c1">// update a translation table entry</span>
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="nf">DSB</span><span class="w"> </span><span class="no">ISHST</span><span class="w">       </span><span class="c1">// ensure write has completed</span>
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="nf">TLBI</span><span class="w"> </span><span class="no">VAE1IS</span><span class="p">,</span><span class="w"> </span><span class="no">X2</span><span class="w"> </span><span class="c1">// invalidate the TLB entry for the entry that changes</span>
-</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="nf">DSB</span><span class="w"> </span><span class="no">ISH</span><span class="w">         </span><span class="c1">// ensure TLB invalidation is complete</span>
-</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="nf">ISB</span><span class="w">             </span><span class="c1">// synchronize context on this processor</span>
+<div class="language-asm highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nf">STR</span><span class="w"> </span><span class="no">X0</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">X1</span><span class="p">]</span><span class="w">    </span><span class="c1">// update a translation table entry</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="nf">DSB</span><span class="w"> </span><span class="no">ISHST</span><span class="w">       </span><span class="c1">// ensure write has completed</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="nf">TLBI</span><span class="w"> </span><span class="no">VAE1IS</span><span class="p">,</span><span class="w"> </span><span class="no">X2</span><span class="w"> </span><span class="c1">// invalidate the TLB entry for the entry that changes</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="nf">DSB</span><span class="w"> </span><span class="no">ISH</span><span class="w">         </span><span class="c1">// ensure TLB invalidation is complete</span>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="nf">ISB</span><span class="w">             </span><span class="c1">// synchronize context on this processor</span>
 </span></code></pre></div>
 <p>A <code>DSB</code> is required to ensure that the maintenance operations complete and an <code>ISB</code> is required to ensure that the effects of those operations are seen by the instructions that <em>follow</em>.</p>
 <p>The processor might speculatively access an address marked as Normal at <em>any</em> time. So when considering whether barriers are required, don’t just consider explicit accesses generated by load or store instructions.</p>
-<h2 id="one-way_barriers">One-way barriers<a class="headerlink" href="#one-way_barriers" title="Permanent link">#</a></h2>
-<p>AArch64 adds new load and store instructions with implicit barrier semantics. These require that all loads and stores before or after the implicit barrier are <strong>observed</strong> in program order.</p>
-<p><strong>Load-Acquire (LDAR)</strong></p>
-<blockquote>
-<p>All loads and stores that are after an <code>LDAR</code> in program order, and that match the shareability domain of the target address, must be observed <em>after</em> the <code>LDAR</code>.</p>
-</blockquote>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>// read after write
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
-</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>                  +------+
-</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>                  | STR1 |------------+
-</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>                  | LDR1 |            |
-</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>                  +------+            |
-</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>                                      |
-</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>                                      |
-</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>--------------------------------------|-----
-</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a>           ⚡️ Load-Acquire (LDAR) ⚡️    |
-</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a>--------------------------------------|-----
-</span><span id="__span-4-12"><a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a>        ↑                             |
-</span><span id="__span-4-13"><a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a>        |                             |
-</span><span id="__span-4-14"><a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a>        |         +------+            |
-</span><span id="__span-4-15"><a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a>        |         | STR2 |            |
-</span><span id="__span-4-16"><a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a>        +---------| LDR2 |            |
-</span><span id="__span-4-17"><a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a>                  +------+            |
-</span><span id="__span-4-18"><a id="__codelineno-4-18" name="__codelineno-4-18" href="#__codelineno-4-18"></a>                                      ↓
-</span></code></pre></div>
-<p><strong>Store-Release (STLR)</strong></p>
-<blockquote>
-<p>All loads and stores preceding an <code>STLR</code> that match the shareability domain of the target address, must be observed <em>before</em> the <code>STLR</code>.</p>
-</blockquote>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>// wirte before read
-</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>
-</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>                                      ↑
-</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>                  +------+            |
-</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>        +---------| STR1 |            |
-</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>        |         | LDR1 |            |
-</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>        |         +------+            |
-</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>        |                             |
-</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>        ↓                             |
-</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a>--------------------------------------|-----
-</span><span id="__span-5-11"><a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>           ⚡️ Store-Release (STLR) ⚡️   |
-</span><span id="__span-5-12"><a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a>--------------------------------------|-----
-</span><span id="__span-5-13"><a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a>                                      |
-</span><span id="__span-5-14"><a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a>                                      |
-</span><span id="__span-5-15"><a id="__codelineno-5-15" name="__codelineno-5-15" href="#__codelineno-5-15"></a>                  +------+            |
-</span><span id="__span-5-16"><a id="__codelineno-5-16" name="__codelineno-5-16" href="#__codelineno-5-16"></a>                  | STR2 |            |
-</span><span id="__span-5-17"><a id="__codelineno-5-17" name="__codelineno-5-17" href="#__codelineno-5-17"></a>                  | LDR2 |------------+
-</span><span id="__span-5-18"><a id="__codelineno-5-18" name="__codelineno-5-18" href="#__codelineno-5-18"></a>                  +------+
-</span></code></pre></div>
-<p>There are also exclusive versions of the above, <code>LDAXR</code> and <code>STLXR</code>, available. Here <em><code>X</code></em> stands for eXclusive.</p>
-<p>Unlike the data barrier instructions, which take a qualifier to control which shareability domains see the effect of the barrier, the <code>LDAR</code> and <code>STLR</code> instructions use the attribute of the address accessed.</p>
-<p>An <code>LDAR</code> instruction guarantees that any memory access instructions after the <code>LDAR</code>, are only visible <em>after</em> the load-acquire. A store-release guarantees that all earlier memory accesses are visible <em>before</em> the store-release becomes visible and that the store is visible to all parts of the system capable of storing cached data at the same time.</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>                  +------+
-</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>                  | STR1 |------------+
-</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>                  | LDR1 |            |
-</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>                  +------+            |
-</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>                                      |
-</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>                                      |
-</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>--------------------------------------|-------
-</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>           ⚡️ Load-Acquire (LDAR) ⚡️    |
-</span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>--------------------------------------|-------  \
-</span><span id="__span-6-10"><a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a>        ↑                             |   ↑     |
-</span><span id="__span-6-11"><a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a>        |         +------+            |   |     |
-</span><span id="__span-6-12"><a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a>        +---------| STR2 |            |   |     |   critical
-</span><span id="__span-6-13"><a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a>        +---------| LDR2 |            |   |     | code section
-</span><span id="__span-6-14"><a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a>        |         +------+            |   |     |
-</span><span id="__span-6-15"><a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a>        ↓                             ↓   |     |
-</span><span id="__span-6-16"><a id="__codelineno-6-16" name="__codelineno-6-16" href="#__codelineno-6-16"></a>------------------------------------------|---  /
-</span><span id="__span-6-17"><a id="__codelineno-6-17" name="__codelineno-6-17" href="#__codelineno-6-17"></a>           ⚡️ Store-Release (STLR) ⚡️       |
-</span><span id="__span-6-18"><a id="__codelineno-6-18" name="__codelineno-6-18" href="#__codelineno-6-18"></a>------------------------------------------|---
-</span><span id="__span-6-19"><a id="__codelineno-6-19" name="__codelineno-6-19" href="#__codelineno-6-19"></a>                                          |
-</span><span id="__span-6-20"><a id="__codelineno-6-20" name="__codelineno-6-20" href="#__codelineno-6-20"></a>                                          |
-</span><span id="__span-6-21"><a id="__codelineno-6-21" name="__codelineno-6-21" href="#__codelineno-6-21"></a>                  +------+                |
-</span><span id="__span-6-22"><a id="__codelineno-6-22" name="__codelineno-6-22" href="#__codelineno-6-22"></a>                  | STR3 |                |
-</span><span id="__span-6-23"><a id="__codelineno-6-23" name="__codelineno-6-23" href="#__codelineno-6-23"></a>                  | LDR3 |----------------+
-</span><span id="__span-6-24"><a id="__codelineno-6-24" name="__codelineno-6-24" href="#__codelineno-6-24"></a>                  +------+
-</span></code></pre></div>
-<p>The diagram shows how accesses can cross a one-way barrier in one direction but not in the other.</p>
-<h2 id="isb_in_more_detail">ISB in more detail<a class="headerlink" href="#isb_in_more_detail" title="Permanent link">#</a></h2>
-<p>The ARMv8 architecture defines <em>context</em> as the state of the system registers and <em>context-changing operations</em> as things like cache, TLB, and branch predictor maintenance operations, or changes to system control registers, for example, <code>SCTLR_EL1</code>, <code>TCR_EL1</code>, and <code>TTBRn_EL1</code>. The effect of such a context-changing operation is only guaranteed to be seen after a <em>context synchronization event</em>.</p>
-<p>There are three kinds of context synchronization event:</p>
-<ul>
-<li>Taking an exception.</li>
-<li>Returning from an exception.</li>
-<li>Instruction Synchronization Barrier (<code>ISB</code>).</li>
-</ul>
-<p>An <code>ISB</code> flushes the pipeline, and re-fetches the instructions from the cache or memory and ensures that the effects of any completed context-changing operation before the <code>ISB</code> are visible to any instruction after the <code>ISB</code>. It also ensures that any context-changing operations after the <code>ISB</code> instruction only take effect after the <code>ISB</code> has been executed and are not seen by instructions before the <code>ISB</code>. This does not mean that an <code>ISB</code> is required after each instruction that modifies a processor register. For example, reads or writes to <code>PSTATE</code> fields, <code>ELRs</code>, <code>SPs</code> and <code>SPSRs</code> occur in program order relative to other instructions.</p>
-<p>This example shows how to enable the floating-point unit and <code>NEON</code>, which you can do in AArch64 by writing to bit[20] of the <code>CPACR_EL1</code> register. The <code>ISB</code> is a context synchronization event that guarantees that the enable is complete before any subsequent or <code>NEON</code> instructions are executed.</p>
-<div class="language-asm highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="nf">MRS</span><span class="w"> </span><span class="no">X1</span><span class="p">,</span><span class="w"> </span><span class="no">CPACR_EL1</span>
-</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="nf">ORR</span><span class="w"> </span><span class="no">X1</span><span class="p">,</span><span class="w"> </span><span class="no">X1</span><span class="p">,</span><span class="w"> </span><span class="c1">#(0x3 &lt;&lt; 20)</span>
-</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="nf">MSR</span><span class="w"> </span><span class="no">CPACR_EL1</span><span class="p">,</span><span class="w"> </span><span class="no">X1</span>
-</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="nf">ISB</span>
-</span></code></pre></div>
-<h2 id="usage_scenarios">usage scenarios<a class="headerlink" href="#usage_scenarios" title="Permanent link">#</a></h2>
+<h2 id="barrier_usage_scenarios">barrier usage scenarios<a class="headerlink" href="#barrier_usage_scenarios" title="Permanent link">#</a></h2>
 <p>In most scenarios, we don't need to pay special attention to memory barriers. Especially in single-processor systems, although the CPU supports out-of-order execution and predictive execution, in general, the CPU will ensure that the final execution result meets the programmer's requirements. In the scenario of multi-core concurrent programming, programmers need to consider whether to use memory barrier instructions. The following are some typical scenarios where you need to consider using memory barrier instructions.</p>
 <ul>
 <li>Share data between multiple CPU cores. Under the weak consistency memory model, a CPU's disordered memory access order may cause contention access.</li>
@@ -1768,58 +1682,6 @@ Both <code>loads</code> and <code>stores</code> that appear <em>after</em> the b
 <li>Modify the memory area where instructions are stored, such as the scenario of self-modifying code.</li>
 </ul>
 <p>In short, the purpose of using memory barrier instructions is to make the CPU execute according to the logic of the program code, rather than having the execution order of the code disrupted by the CPU's out-of-order execution and speculative execution.</p>
-<h2 id="barriers_in_c_code">barriers in C code<a class="headerlink" href="#barriers_in_c_code" title="Permanent link">#</a></h2>
-<p>The C11 and C++11 languages have a good platform-independent memory model that is preferable to intrinsics if possible.</p>
-<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">C memory_order</label><label for="__tabbed_1_2">C++ memory_order</label></div>
-<div class="tabbed-content">
-<div class="tabbed-block">
-<p><a href="https://en.cppreference.com/w/c/atomic/memory_order">memory_order - cppreference.com</a></p>
-<div class="language-c highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="c1">// Defined in header &lt;stdatomic.h&gt;</span>
-</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="k">enum</span><span class="w"> </span><span class="n">memory_order</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="w">    </span><span class="n">memory_order_relaxed</span><span class="p">,</span>
-</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="w">    </span><span class="n">memory_order_consume</span><span class="p">,</span>
-</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="w">    </span><span class="n">memory_order_acquire</span><span class="p">,</span>
-</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="w">    </span><span class="n">memory_order_release</span><span class="p">,</span><span class="w">       </span><span class="c1">// (since C11)</span>
-</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="w">    </span><span class="n">memory_order_acq_rel</span><span class="p">,</span>
-</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a><span class="w">    </span><span class="n">memory_order_seq_cst</span>
-</span><span id="__span-8-9"><a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a><span class="p">};</span>
-</span></code></pre></div>
-</div>
-<div class="tabbed-block">
-<p><a href="https://en.cppreference.com/w/cpp/atomic/memory_order">std::memory_order - cppreference.com</a></p>
-<div class="language-c highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="c1">// Defined in header &lt;atomic&gt;</span>
-</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="k">typedef</span><span class="w"> </span><span class="k">enum</span><span class="w"> </span><span class="n">memory_order</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="w">    </span><span class="n">memory_order_relaxed</span><span class="p">,</span>
-</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="w">    </span><span class="n">memory_order_consume</span><span class="p">,</span>
-</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="w">    </span><span class="n">memory_order_acquire</span><span class="p">,</span><span class="w"> </span><span class="c1">// (since C++11)</span>
-</span><span id="__span-9-6"><a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="w">    </span><span class="n">memory_order_release</span><span class="p">,</span><span class="w"> </span><span class="c1">// (until C++20)</span>
-</span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="w">    </span><span class="n">memory_order_acq_rel</span><span class="p">,</span>
-</span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a><span class="w">    </span><span class="n">memory_order_seq_cst</span>
-</span><span id="__span-9-9"><a id="__codelineno-9-9" name="__codelineno-9-9" href="#__codelineno-9-9"></a><span class="p">}</span><span class="w"> </span><span class="n">memory_order</span><span class="p">;</span>
-</span><span id="__span-9-10"><a id="__codelineno-9-10" name="__codelineno-9-10" href="#__codelineno-9-10"></a>
-</span><span id="__span-9-11"><a id="__codelineno-9-11" name="__codelineno-9-11" href="#__codelineno-9-11"></a><span class="k">enum</span><span class="w"> </span><span class="n">class</span><span class="w"> </span><span class="n">memory_order</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="cm">/* unspecified */</span><span class="w"> </span><span class="p">{</span>
-</span><span id="__span-9-12"><a id="__codelineno-9-12" name="__codelineno-9-12" href="#__codelineno-9-12"></a><span class="w">    </span><span class="n">relaxed</span><span class="p">,</span><span class="w"> </span><span class="n">consume</span><span class="p">,</span><span class="w"> </span><span class="n">acquire</span><span class="p">,</span><span class="w"> </span><span class="n">release</span><span class="p">,</span><span class="w"> </span><span class="n">acq_rel</span><span class="p">,</span><span class="w"> </span><span class="n">seq_cst</span>
-</span><span id="__span-9-13"><a id="__codelineno-9-13" name="__codelineno-9-13" href="#__codelineno-9-13"></a><span class="p">};</span>
-</span><span id="__span-9-14"><a id="__codelineno-9-14" name="__codelineno-9-14" href="#__codelineno-9-14"></a><span class="kr">inline</span><span class="w"> </span><span class="n">constexpr</span><span class="w"> </span><span class="n">memory_order</span><span class="w"> </span><span class="n">memory_order_relaxed</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">memory_order</span><span class="o">::</span><span class="n">relaxed</span><span class="p">;</span>
-</span><span id="__span-9-15"><a id="__codelineno-9-15" name="__codelineno-9-15" href="#__codelineno-9-15"></a><span class="kr">inline</span><span class="w"> </span><span class="n">constexpr</span><span class="w"> </span><span class="n">memory_order</span><span class="w"> </span><span class="n">memory_order_consume</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">memory_order</span><span class="o">::</span><span class="n">consume</span><span class="p">;</span><span class="w"> </span><span class="c1">// (since C++20)</span>
-</span><span id="__span-9-16"><a id="__codelineno-9-16" name="__codelineno-9-16" href="#__codelineno-9-16"></a><span class="kr">inline</span><span class="w"> </span><span class="n">constexpr</span><span class="w"> </span><span class="n">memory_order</span><span class="w"> </span><span class="n">memory_order_acquire</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">memory_order</span><span class="o">::</span><span class="n">acquire</span><span class="p">;</span>
-</span><span id="__span-9-17"><a id="__codelineno-9-17" name="__codelineno-9-17" href="#__codelineno-9-17"></a><span class="kr">inline</span><span class="w"> </span><span class="n">constexpr</span><span class="w"> </span><span class="n">memory_order</span><span class="w"> </span><span class="n">memory_order_release</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">memory_order</span><span class="o">::</span><span class="n">release</span><span class="p">;</span>
-</span><span id="__span-9-18"><a id="__codelineno-9-18" name="__codelineno-9-18" href="#__codelineno-9-18"></a><span class="kr">inline</span><span class="w"> </span><span class="n">constexpr</span><span class="w"> </span><span class="n">memory_order</span><span class="w"> </span><span class="n">memory_order_acq_rel</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">memory_order</span><span class="o">::</span><span class="n">acq_rel</span><span class="p">;</span>
-</span><span id="__span-9-19"><a id="__codelineno-9-19" name="__codelineno-9-19" href="#__codelineno-9-19"></a><span class="kr">inline</span><span class="w"> </span><span class="n">constexpr</span><span class="w"> </span><span class="n">memory_order</span><span class="w"> </span><span class="n">memory_order_seq_cst</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">memory_order</span><span class="o">::</span><span class="n">seq_cst</span><span class="p">;</span>
-</span></code></pre></div>
-</div>
-</div>
-</div>
-<p>All versions of C and C++ have <em><code>sequence points</code></em>, but C11 and C++11 also provide memory models. Sequence points <em>only</em> prevent the compiler from re-ordering C++ source code. There is <em>nothing</em> to stop the processor re-ordering instructions in the generated object code, or for read and write buffers to re-order the sequence in which data transfers are sent to the cache. In other words, they are <em>only</em> relevant for single-threaded code. For multi-threaded code, then either use the memory model features of C11 / C++11, or other <strong><em>synchronization</em></strong> mechanisms such as <code>mutexes</code> which are provided by the operating system. Typically, a compiler cannot re-arrange statements across a sequence point and restrict what optimizations the compiler can make. Examples of sequence points in code include function calls and accesses to <a href="../../20231014/c-volatile/">volatile</a> variables.</p>
-<p>The C language specification defines sequence points as follows:</p>
-<blockquote>
-<p>At certain specified points in the execution sequence called <code>sequence points</code>, all side effects of previous evaluations shall be <strong><em>complete</em></strong> and <strong><em>no</em></strong> side effects of subsequent evaluations shall have taken place.</p>
-</blockquote>
-<div class="admonition note">
-<p class="admonition-title">Barriers in Linux</p>
-<p>The Linux kernel includes a number of platform independent barrier functions. See the Linux kernel documentation in the <a href="https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/memory-barriers.txt">memory-barriers.txt</a> file.</p>
-</div>
-<p>See <a href="../../20231015/c-memory-order/">C Memory Order(Sequential Consistency)</a>.</p>
 
 
 
@@ -1936,13 +1798,13 @@ Both <code>loads</code> and <code>stores</code> that appear <em>after</em> the b
         
         
           
-          <a href="../a64-load-store-exclusive/" class="md-footer__link md-footer__link--next" aria-label="Next: ARM64 Load/Store exclusive &amp; Atomic operations">
+          <a href="../a64-oneway-barrier/" class="md-footer__link md-footer__link--next" aria-label="Next: ARM64 One-Way Barriers">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                ARM64 Load/Store exclusive & Atomic operations
+                ARM64 One-Way Barriers
               </div>
             </div>
             <div class="md-footer__button md-icon">
