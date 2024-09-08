@@ -31,14 +31,118 @@ comments: true
 
 编译器会把符合人类思维逻辑的高级语言代码（如 C 语言的代码）翻译成符合 CPU 运算规则的江编指令。编泽器会在翻泽成汇编指令时对其进行优化，如内存访问指令的重新排序可以提高指令级并行效率。然而，这些优化可能会与程序员原始的代码逻辑不符，导致一些错误发生。
 
-在 GCC 中，您可以基于 [Extended Asm](https://gcc.gnu.org/onlinedocs/gcc/Extended-Asm.html) 插入 Inline Assembly 指定内存 Clobber，来表示指令修改了内存，以使优化器无法跨越屏障重排内存访问指令。
+在 GCC 中，您可以基于 [Extended Asm](https://gcc.gnu.org/onlinedocs/gcc/Extended-Asm.html) 插入 Inline Assembly 指定内存 Clobber，来表示指令修改了内存，以使优化器无法跨越屏障重排内存访问指令。`barrier()` 函数宏告诉编译器，不要为了性能优化而将这些代码乱序重排。
 
 ```c
-// refer to linux/arch/arm64/include/asm/barrier.h
-#define barrier() __asm__ __volatile__ ("" ::: "memory")
+// https://lxr.linux.no/linux+v2.6.31/include/linux/compiler-gcc.h
+/* Optimization barrier */
+/* The "volatile" is due to gcc bugs */
+#define barrier() __asm__ __volatile__("": : :"memory")
+
+// linux-6.9/arch/um/include/shared/user.h
+/* Copied from linux/compiler-gcc.h since we can't include it directly */
+#define barrier() __asm__ __volatile__("": : :"memory")
 ```
 
-`barrier()` 函数宏告诉编译器，不要为了性能优化而将这些代码乱序重排。
+关于 C 代码内嵌 ASM 汇编语法，详情参考 [GCC Extended Asm - C/C++ inline assembly](../toolchain/gcc-ext-asm.md)，其中有关于 Clobber="memory" 的作用说明。
+
+[Compile-time memory barrier implementation](https://en.wikipedia.org/wiki/Memory_ordering#Compile-time_memory_barrier_implementation): These barriers prevent a compiler from reordering instructions during compile time – they do not prevent reordering by CPU during runtime.
+
+Any of these GNU inline assembler statements forbids the GCC compiler to reorder read and write commands around it:
+
+```c
+asm volatile("" ::: "memory"); // or
+__asm__ __volatile__ ("" ::: "memory");
+```
+
+This C11/C++11 function forbids the compiler to reorder read and write commands around it:
+
+```cpp
+atomic_signal_fence(memory_order_acq_rel);
+```
+
+1. [atomic_signal_fence](https://en.cppreference.com/w/c/atomic/atomic_signal_fence)/[std::atomic_signal_fence](https://en.cppreference.com/w/cpp/atomic/atomic_signal_fence): Only reordering of the instructions by the compiler is suppressed as order instructs. For example, a fence with `release` semantics prevents reads or writes from being moved *past* subsequent writes and a fence with `acquire` semantics prevents reads or writes from being moved *ahead* of preceding reads.
+2. [memory_order](https://en.cppreference.com/w/c/atomic/memory_order)/[std::memory_order](https://en.cppreference.com/w/cpp/atomic/memory_order): `memory_order_acq_rel`: No memory reads or writes in the current thread can be reordered *before* the load, nor *after* the store.
+
+=== "gcc -O2 reordering"
+
+    ```c title="barrier-0.c" linenums="1"
+    int c(int *d, int *e) {
+        int r;
+        d[0] += 1;
+        r = e[0]; // no dependency on d
+        d[1] += 1;
+        return r;
+    }
+    ```
+
+    The `-O2` will optimize even more than `-O[1]`, it will turn on optimization flags like `-fhoist-adjacent-loads`, `-fstore-merging`.
+
+    To reduce the number of transfers, it uses a single instruction `LDP`(Load Pair) instead of two `LDR`s to hoist adjacent loads.
+
+    The load and modification of `d[1] += 1` are reordered before `r = e[0]`, while the write-back microstep remains after the load of e[0].
+
+    ```bash
+    $ gcc -O2 barrier-0.c -c
+    $ objdump -d barrier-0.o
+
+    barrier-0.o:     file format elf64-littleaarch64
+
+
+    Disassembly of section .text:
+
+    0000000000000000 <c>:
+    0:	aa0003e2 	mov	x2, x0       // x2 = d
+    4:	29400c00 	ldp	w0, w3, [x0] // w0 = d[0]; w3 = d[1]
+    8:	11000400 	add	w0, w0, #0x1 // w0 += 1;
+    c:	b9000040 	str	w0, [x2]     // d[0] = w0
+    10:	11000463 	add	w3, w3, #0x1 // w3 += 1;
+    14:	b9400020 	ldr	w0, [x1]     // w0 = e[0];
+    18:	b9000443 	str	w3, [x2, #4] // d[1] = w3
+    1c:	d65f03c0 	ret
+    ```
+
+=== "gcc -O2 barrier/fence"
+
+    ```c title="barrier-1.c" linenums="1"
+    // #include <stdatomic.h> // for atomic_signal_fence
+
+    #define barrier() __asm__ __volatile__ ("" ::: "memory")
+
+    int c(int *d, int *e) {
+        int r;
+        d[0] += 1;
+        r = e[0];
+        barrier(); // atomic_signal_fence(memory_order_acq_rel);
+        d[1] += 1;
+        return r;
+    }
+    ```
+
+    The barrier/fence will prevent the reordering optimization and execute in program order.
+
+    ```bash
+    # the same as: gcc -O barrier-0.c -c && objdump -d barrier-0.o
+
+    $ gcc -O2 barrier-1.c -c
+    $ objdump -d barrier-1.o
+
+    barrier-1.o:     file format elf64-littleaarch64
+
+
+    Disassembly of section .text:
+
+    0000000000000000 <c>:
+    0:	aa0003e2 	mov	x2, x0          // x2 = d
+    4:	b9400000 	ldr	w0, [x0]        // w0 = d[0]
+    8:	11000400 	add	w0, w0, #0x1    // w0 += 1
+    c:	b9000040 	str	w0, [x2]        // d[0] = w0
+    10:	b9400020 	ldr	w0, [x1]        // w0 = e[0]
+    14:	b9400441 	ldr	w1, [x2, #4]    // w1 = d[1]
+    18:	11000421 	add	w1, w1, #0x1    // w1 += 1
+    1c:	b9000441 	str	w1, [x2, #4]    // d[1] = w1
+    20:	d65f03c0 	ret
+    ```
 
 ### 执行时的存储一致性问题
 

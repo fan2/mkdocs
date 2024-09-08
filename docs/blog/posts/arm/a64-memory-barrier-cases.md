@@ -241,7 +241,7 @@ try_to_wake_up(struct task_struct *p, unsigned int state, int wake_flags)
 
 在ARM64体系结构里，实现自旋锁最简单的方式是使用 `LDAXR` 和 `STXR` 指令，参见上面的【例 18-13】和【例 18-15】。我们以 Linux 3.7 内核的源代码中自旋锁的实现为例进行说明。
 
-> 关于 C 代码内嵌 ASM 汇编，参考 [GCC Extended Asm - C/C++ inline assembly](../toolchain/gcc-ext-asm.md)。
+> 关于 C 代码内嵌 ASM 汇编，参考 [GCC Extended Asm - C/C++ inline assembly](../toolchain/gcc-ext-asm.md)，其中有本案例的详细说明。
 
 ```c
 // <linux-3.7/arch/arm64/include/asm/spinlock.h>

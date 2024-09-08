@@ -105,7 +105,7 @@ LDXR 和STXR 指令还可以和加载-获取以及存储-释放内存屏障原�
 
 【例 20-2】下面的代码使用了原子的加法函数。`atomic_add(i,v)` 函数非常简单，它是原子地给 v 加上 i。
 
-> 关于 C 代码内嵌 ASM 汇编，参考 [GCC Extended Asm - C/C++ inline assembly](../toolchain/gcc-ext-asm.md)。
+> 关于 C 代码内嵌 ASM 汇编，参考 [GCC Extended Asm - C/C++ inline assembly](../toolchain/gcc-ext-asm.md)，其中有本文相关案例的详细说明。
 
 ```c linenums="1"
     void atomic_add (int i, atomic_t *v)

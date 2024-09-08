@@ -1459,7 +1459,7 @@
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7z"/></svg>
                           <span class="md-ellipsis">
                             
-                              3 min read
+                              5 min read
                             
                           </span>
                         </div>
@@ -1522,11 +1522,118 @@
 </ol>
 <h3 id="barrier_宏规避编译乱序">barrier() 宏规避编译乱序<a class="headerlink" href="#barrier_宏规避编译乱序" title="Permanent link">#</a></h3>
 <p>编译器会把符合人类思维逻辑的高级语言代码（如 C 语言的代码）翻译成符合 CPU 运算规则的江编指令。编泽器会在翻泽成汇编指令时对其进行优化，如内存访问指令的重新排序可以提高指令级并行效率。然而，这些优化可能会与程序员原始的代码逻辑不符，导致一些错误发生。</p>
-<p>在 GCC 中，您可以基于 <a href="https://gcc.gnu.org/onlinedocs/gcc/Extended-Asm.html">Extended Asm</a> 插入 Inline Assembly 指定内存 Clobber，来表示指令修改了内存，以使优化器无法跨越屏障重排内存访问指令。</p>
-<div class="language-c highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1">// refer to linux/arch/arm64/include/asm/barrier.h</span>
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="cp">#define barrier() __asm__ __volatile__ (&quot;&quot; ::: &quot;memory&quot;)</span>
+<p>在 GCC 中，您可以基于 <a href="https://gcc.gnu.org/onlinedocs/gcc/Extended-Asm.html">Extended Asm</a> 插入 Inline Assembly 指定内存 Clobber，来表示指令修改了内存，以使优化器无法跨越屏障重排内存访问指令。<code>barrier()</code> 函数宏告诉编译器，不要为了性能优化而将这些代码乱序重排。</p>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1">// https://lxr.linux.no/linux+v2.6.31/include/linux/compiler-gcc.h</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="cm">/* Optimization barrier */</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="cm">/* The &quot;volatile&quot; is due to gcc bugs */</span>
+</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="cp">#define barrier() __asm__ __volatile__(&quot;&quot;: : :&quot;memory&quot;)</span>
+</span><span id="__span-0-5"><a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>
+</span><span id="__span-0-6"><a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="c1">// linux-6.9/arch/um/include/shared/user.h</span>
+</span><span id="__span-0-7"><a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="cm">/* Copied from linux/compiler-gcc.h since we can&#39;t include it directly */</span>
+</span><span id="__span-0-8"><a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="cp">#define barrier() __asm__ __volatile__(&quot;&quot;: : :&quot;memory&quot;)</span>
 </span></code></pre></div>
-<p><code>barrier()</code> 函数宏告诉编译器，不要为了性能优化而将这些代码乱序重排。</p>
+<p>关于 C 代码内嵌 ASM 汇编语法，详情参考 <a href="../../20231015/gcc-ext-asm/">GCC Extended Asm - C/C++ inline assembly</a>，其中有关于 Clobber="memory" 的作用说明。</p>
+<p><a href="https://en.wikipedia.org/wiki/Memory_ordering#Compile-time_memory_barrier_implementation">Compile-time memory barrier implementation</a>: These barriers prevent a compiler from reordering instructions during compile time – they do not prevent reordering by CPU during runtime.</p>
+<p>Any of these GNU inline assembler statements forbids the GCC compiler to reorder read and write commands around it:</p>
+<div class="language-c highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="k">asm</span><span class="w"> </span><span class="k">volatile</span><span class="p">(</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="o">:::</span><span class="w"> </span><span class="s">&quot;memory&quot;</span><span class="p">);</span><span class="w"> </span><span class="c1">// or</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="n">__asm__</span><span class="w"> </span><span class="n">__volatile__</span><span class="w"> </span><span class="p">(</span><span class="s">&quot;&quot;</span><span class="w"> </span><span class="o">:::</span><span class="w"> </span><span class="s">&quot;memory&quot;</span><span class="p">);</span>
+</span></code></pre></div>
+<p>This C11/C++11 function forbids the compiler to reorder read and write commands around it:</p>
+<div class="language-cpp highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">atomic_signal_fence</span><span class="p">(</span><span class="n">memory_order_acq_rel</span><span class="p">);</span>
+</span></code></pre></div>
+<ol>
+<li><a href="https://en.cppreference.com/w/c/atomic/atomic_signal_fence">atomic_signal_fence</a>/<a href="https://en.cppreference.com/w/cpp/atomic/atomic_signal_fence">std::atomic_signal_fence</a>: Only reordering of the instructions by the compiler is suppressed as order instructs. For example, a fence with <code>release</code> semantics prevents reads or writes from being moved <em>past</em> subsequent writes and a fence with <code>acquire</code> semantics prevents reads or writes from being moved <em>ahead</em> of preceding reads.</li>
+<li><a href="https://en.cppreference.com/w/c/atomic/memory_order">memory_order</a>/<a href="https://en.cppreference.com/w/cpp/atomic/memory_order">std::memory_order</a>: <code>memory_order_acq_rel</code>: No memory reads or writes in the current thread can be reordered <em>before</em> the load, nor <em>after</em> the store.</li>
+</ol>
+<div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">gcc -O2 reordering</label><label for="__tabbed_1_2">gcc -O2 barrier/fence</label></div>
+<div class="tabbed-content">
+<div class="tabbed-block">
+<div class="language-c highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">barrier-0.c</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-3-1">1</a></span>
+<span class="normal"><a href="#__codelineno-3-2">2</a></span>
+<span class="normal"><a href="#__codelineno-3-3">3</a></span>
+<span class="normal"><a href="#__codelineno-3-4">4</a></span>
+<span class="normal"><a href="#__codelineno-3-5">5</a></span>
+<span class="normal"><a href="#__codelineno-3-6">6</a></span>
+<span class="normal"><a href="#__codelineno-3-7">7</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1"></a><span class="kt">int</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">d</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2"></a><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">r</span><span class="p">;</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3"></a><span class="w">    </span><span class="n">d</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4"></a><span class="w">    </span><span class="n">r</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span><span class="w"> </span><span class="c1">// no dependency on d</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5"></a><span class="w">    </span><span class="n">d</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">r</span><span class="p">;</span>
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7"></a><span class="p">}</span>
+</span></code></pre></div></td></tr></table></div>
+<p>The <code>-O2</code> will optimize even more than <code>-O[1]</code>, it will turn on optimization flags like <code>-fhoist-adjacent-loads</code>, <code>-fstore-merging</code>.</p>
+<p>To reduce the number of transfers, it uses a single instruction <code>LDP</code>(Load Pair) instead of two <code>LDR</code>s to hoist adjacent loads.</p>
+<p>The load and modification of <code>d[1] += 1</code> are reordered before <code>r = e[0]</code>, while the write-back microstep remains after the load of e[0].</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>$<span class="w"> </span>gcc<span class="w"> </span>-O2<span class="w"> </span>barrier-0.c<span class="w"> </span>-c
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>$<span class="w"> </span>objdump<span class="w"> </span>-d<span class="w"> </span>barrier-0.o
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>barrier-0.o:<span class="w">     </span>file<span class="w"> </span>format<span class="w"> </span>elf64-littleaarch64
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a>Disassembly<span class="w"> </span>of<span class="w"> </span>section<span class="w"> </span>.text:
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>
+</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="m">0000000000000000</span><span class="w"> </span>&lt;c&gt;:
+</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="m">0</span>:<span class="w">  </span>aa0003e2<span class="w">    </span>mov<span class="w"> </span>x2,<span class="w"> </span>x0<span class="w">       </span>//<span class="w"> </span><span class="nv">x2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>d
+</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="m">4</span>:<span class="w">  </span>29400c00<span class="w">    </span>ldp<span class="w"> </span>w0,<span class="w"> </span>w3,<span class="w"> </span><span class="o">[</span>x0<span class="o">]</span><span class="w"> </span>//<span class="w"> </span><span class="nv">w0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>d<span class="o">[</span><span class="m">0</span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="nv">w3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>d<span class="o">[</span><span class="m">1</span><span class="o">]</span>
+</span><span id="__span-4-12"><a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a><span class="m">8</span>:<span class="w">  </span><span class="m">11000400</span><span class="w">    </span>add<span class="w"> </span>w0,<span class="w"> </span>w0,<span class="w"> </span><span class="c1">#0x1 // w0 += 1;</span>
+</span><span id="__span-4-13"><a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a>c:<span class="w">  </span>b9000040<span class="w">    </span>str<span class="w"> </span>w0,<span class="w"> </span><span class="o">[</span>x2<span class="o">]</span><span class="w">     </span>//<span class="w"> </span>d<span class="o">[</span><span class="m">0</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>w0
+</span><span id="__span-4-14"><a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a><span class="m">10</span>:<span class="w"> </span><span class="m">11000463</span><span class="w">    </span>add<span class="w"> </span>w3,<span class="w"> </span>w3,<span class="w"> </span><span class="c1">#0x1 // w3 += 1;</span>
+</span><span id="__span-4-15"><a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a><span class="m">14</span>:<span class="w"> </span>b9400020<span class="w">    </span>ldr<span class="w"> </span>w0,<span class="w"> </span><span class="o">[</span>x1<span class="o">]</span><span class="w">     </span>//<span class="w"> </span><span class="nv">w0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>e<span class="o">[</span><span class="m">0</span><span class="o">]</span><span class="p">;</span>
+</span><span id="__span-4-16"><a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a><span class="m">18</span>:<span class="w"> </span>b9000443<span class="w">    </span>str<span class="w"> </span>w3,<span class="w"> </span><span class="o">[</span>x2,<span class="w"> </span><span class="c1">#4] // d[1] = w3</span>
+</span><span id="__span-4-17"><a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a>1c:<span class="w"> </span>d65f03c0<span class="w">    </span>ret
+</span></code></pre></div>
+</div>
+<div class="tabbed-block">
+<div class="language-c highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">barrier-1.c</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-5-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-5-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-5-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-5-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-5-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-5-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-5-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-5-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-5-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-5-10">10</a></span>
+<span class="normal"><a href="#__codelineno-5-11">11</a></span>
+<span class="normal"><a href="#__codelineno-5-12">12</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1"></a><span class="c1">// #include &lt;stdatomic.h&gt; // for atomic_signal_fence</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2"></a>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3"></a><span class="cp">#define barrier() __asm__ __volatile__ (&quot;&quot; ::: &quot;memory&quot;)</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4"></a>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5"></a><span class="kt">int</span><span class="w"> </span><span class="nf">c</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">d</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="o">*</span><span class="n">e</span><span class="p">)</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6"></a><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">r</span><span class="p">;</span>
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7"></a><span class="w">    </span><span class="n">d</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8"></a><span class="w">    </span><span class="n">r</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">e</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9"></a><span class="w">    </span><span class="n">barrier</span><span class="p">();</span><span class="w"> </span><span class="c1">// atomic_signal_fence(memory_order_acq_rel);</span>
+</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10"></a><span class="w">    </span><span class="n">d</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+</span><span id="__span-5-11"><a id="__codelineno-5-11" name="__codelineno-5-11"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">r</span><span class="p">;</span>
+</span><span id="__span-5-12"><a id="__codelineno-5-12" name="__codelineno-5-12"></a><span class="p">}</span>
+</span></code></pre></div></td></tr></table></div>
+<p>The barrier/fence will prevent the reordering optimization and execute in program order.</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="c1"># the same as: gcc -O barrier-0.c -c &amp;&amp; objdump -d barrier-0.o</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>$<span class="w"> </span>gcc<span class="w"> </span>-O2<span class="w"> </span>barrier-1.c<span class="w"> </span>-c
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>$<span class="w"> </span>objdump<span class="w"> </span>-d<span class="w"> </span>barrier-1.o
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>barrier-1.o:<span class="w">     </span>file<span class="w"> </span>format<span class="w"> </span>elf64-littleaarch64
+</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a>
+</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>
+</span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>Disassembly<span class="w"> </span>of<span class="w"> </span>section<span class="w"> </span>.text:
+</span><span id="__span-6-10"><a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a>
+</span><span id="__span-6-11"><a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a><span class="m">0000000000000000</span><span class="w"> </span>&lt;c&gt;:
+</span><span id="__span-6-12"><a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a><span class="m">0</span>:<span class="w">  </span>aa0003e2<span class="w">    </span>mov<span class="w"> </span>x2,<span class="w"> </span>x0<span class="w">          </span>//<span class="w"> </span><span class="nv">x2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>d
+</span><span id="__span-6-13"><a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a><span class="m">4</span>:<span class="w">  </span>b9400000<span class="w">    </span>ldr<span class="w"> </span>w0,<span class="w"> </span><span class="o">[</span>x0<span class="o">]</span><span class="w">        </span>//<span class="w"> </span><span class="nv">w0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>d<span class="o">[</span><span class="m">0</span><span class="o">]</span>
+</span><span id="__span-6-14"><a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a><span class="m">8</span>:<span class="w">  </span><span class="m">11000400</span><span class="w">    </span>add<span class="w"> </span>w0,<span class="w"> </span>w0,<span class="w"> </span><span class="c1">#0x1    // w0 += 1</span>
+</span><span id="__span-6-15"><a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a>c:<span class="w">  </span>b9000040<span class="w">    </span>str<span class="w"> </span>w0,<span class="w"> </span><span class="o">[</span>x2<span class="o">]</span><span class="w">        </span>//<span class="w"> </span>d<span class="o">[</span><span class="m">0</span><span class="o">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>w0
+</span><span id="__span-6-16"><a id="__codelineno-6-16" name="__codelineno-6-16" href="#__codelineno-6-16"></a><span class="m">10</span>:<span class="w"> </span>b9400020<span class="w">    </span>ldr<span class="w"> </span>w0,<span class="w"> </span><span class="o">[</span>x1<span class="o">]</span><span class="w">        </span>//<span class="w"> </span><span class="nv">w0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>e<span class="o">[</span><span class="m">0</span><span class="o">]</span>
+</span><span id="__span-6-17"><a id="__codelineno-6-17" name="__codelineno-6-17" href="#__codelineno-6-17"></a><span class="m">14</span>:<span class="w"> </span>b9400441<span class="w">    </span>ldr<span class="w"> </span>w1,<span class="w"> </span><span class="o">[</span>x2,<span class="w"> </span><span class="c1">#4]    // w1 = d[1]</span>
+</span><span id="__span-6-18"><a id="__codelineno-6-18" name="__codelineno-6-18" href="#__codelineno-6-18"></a><span class="m">18</span>:<span class="w"> </span><span class="m">11000421</span><span class="w">    </span>add<span class="w"> </span>w1,<span class="w"> </span>w1,<span class="w"> </span><span class="c1">#0x1    // w1 += 1</span>
+</span><span id="__span-6-19"><a id="__codelineno-6-19" name="__codelineno-6-19" href="#__codelineno-6-19"></a>1c:<span class="w"> </span>b9000441<span class="w">    </span>str<span class="w"> </span>w1,<span class="w"> </span><span class="o">[</span>x2,<span class="w"> </span><span class="c1">#4]    // d[1] = w1</span>
+</span><span id="__span-6-20"><a id="__codelineno-6-20" name="__codelineno-6-20" href="#__codelineno-6-20"></a><span class="m">20</span>:<span class="w"> </span>d65f03c0<span class="w">    </span>ret
+</span></code></pre></div>
+</div>
+</div>
+</div>
 <h3 id="执行时的存储一致性问题">执行时的存储一致性问题<a class="headerlink" href="#执行时的存储一致性问题" title="Permanent link">#</a></h3>
 <p>在古老的处理器设计当中，指令是完全按照顺序执行的，这样的模型称为<strong>顺序执行模型</strong>（sequential execution mode）。现代 CPU 为了提高性能，已经抛弃了这种古老的顺序执行模型，采用很多现代化的技术，比如流水线（<a href="https://en.wikipedia.org/wiki/Instruction_pipelining">Instruction pipelining</a>）、写缓存（<a href="https://developer.arm.com/documentation/ddi0363/g/Chdcahcf">Store Buffer</a>）、高速缓存（<a href="https://en.wikipedia.org/wiki/Cache_(computing)">Cache</a>）、超标量技术（<a href="https://en.wikipedia.org/wiki/Superscalar_processor">Superscalar processor</a>）、乱序执行（<a href="https://en.wikipedia.org/wiki/Out-of-order_execution">Out-of-order execution</a>）等。这些新技术其实对编程者来说是透明的。</p>
 <p>在一个单处理器系统里面，不管 CPU 怎么乱序执行，它最终的执行结果都是程序员想要的结果，也就是类似于顺序执行模型。在单处理器系统里，指令的乱序和重排对程序员来说是透明的，但是在多核处理器系统中，一个 CPU 内核中内存访问的乱序执行可能会对系统中其他的观察者（例如其他 CPU 内核）产生影响，即它们可能观察到的内存执行次序与实际执行次序有很大的不同，特别是多核并发访问共享数据的情况下。因此，这里引申出一个 <strong><em>存储一致性问题</em></strong>，即系统中所有处理器所看到的对不同地址访问的次序问题。缓存一致性协议（例如 MESI 协议）用于解决多处理器对<em>同一个</em>地址访问的一致性问题，而存储一致性问题是多处理器对<em>多个不同</em>内存地址的访问次序引发的问题。在使能与未使能高速缓存的系统中都会存在存储一致性问题。</p>
@@ -1547,10 +1654,10 @@
 <li>从多处理器角度看，所有的内存访问都是原子性的，其执行顺字不必严格遵循时间顺序。</li>
 </ol>
 <p>在下面的例子中，假设系统实现的是顺序一致性内存模型，变基 a、b、x 和 y 的初始值为 0。</p>
-<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>CPU0   CPU1
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>------------
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>a=1    x=b
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>b=1    y=a
+<div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>CPU0   CPU1
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>------------
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>a=1    x=b
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>b=1    y=a
 </span></code></pre></div>
 <p>当 CPU1 读出 b 的值为 1 时，我们不可能读出 a 的值为 0。根据顺序一致性内存模型的意义，在 CPU0 侧，先写入变量 a，后写入变量 b，这个写操作改字是可以得到保证的。同理，在 CPU1 侧，先读 b 的值，后读 a 的值，这两次读操作的次序也是可以得到保证的。当 CPU1 读取 b 的值为 1 时，表明 CPU0 已经把 1 成功写入变量 b，于是 a 的值也会被成功写入 1，所以我们不可能读到 a 的值为 0 的情况。但是，如果这个系统实现的不是顺序一致性模型，那么 CPU1 有可能读到 a=0，因为读取 a 的操作可能会重排到读取 b 的操作前面，即不能保证这两次读的次序。</p>
 <p>总之，顺序一致性内存模型保证了每一条加载/存储指令与后续加载/存储指令严格按照程序的次序来执行，即保证了“读一读”、“读一写”、“写一写”以及“写一读”4种情况的次序。</p>
