@@ -20,6 +20,8 @@ Explicitly using acquire-release consistency can lead to more efficient code, bu
 
 <!-- more -->
 
+[Modern C, 1st Edition, 2019](https://www.amazon.com/Modern-C-Jens-Gustedt-ebook/dp/B0978347Z6/) | 19 Atomic access and memory consistency
+
 ## Sequential consistency
 
 The data consistency for atomic objects that we described earlier, guaranteed by the *happened-before* relation, is called *acquire-release* consistency. Whereas the C library calls we have seen always synchronize with that kind of consistency, no more and no less, accesses to atomics can be specified with different consistency models.
@@ -154,13 +156,30 @@ Here, the `success` consistency must be at least as strong as the `failure` cons
 
 Up to now, we have implicitly assumed that the *acquire* and *release* sides of a synchronization are symmetric, but they aren't: whereas there always is just one writer of a modification, there can be several readers. Because moving new data to several processors or cores is expensive, some platforms allow us to avoid the propagation of all visible effects that happened before an atomic operation to all threads that read the new value. C's *consume consistency* is designed to map this behavior. We will not go into the details of this model, and you should use it only when you are certain that some effects prior to an atomic read will *not* affect the reading thread.
 
----
+## ARM Memory Barriers
 
-!!! warning "Copyright clarification"
+Refer to [ARM64 Memory Barriers](../arm/a64-memory-barrier.md), [ARM64 One-Way Barriers](../arm/a64-oneway-barrier.md).
 
-    Excerpt from [Modern C, 1st Edition, 2019](https://www.amazon.com/Modern-C-Jens-Gustedt-ebook/dp/B0978347Z6/).
-    Copyright credit to [Jens Gustedt](https://gustedt.gitlabpages.inria.fr/modern-c/). 🫡
-    For studying only, not commercial.
+[Enabling the LDAPR instructions for C/C++ compilers](https://community.arm.com/arm-community-blogs/b/tools-software-ides-blog/posts/enabling-rcpc-in-gcc-and-llvm): Since the introduction of the Armv8-A architecture the defined mapping of atomic loads with an acquire memory model from C++11 has been to use the `LDAR` instruction. For example:
+
+```cpp
+#include <atomic>
+
+std::atomic<unsigned long> data;
+
+unsigned long foo() {
+    return data.load(std::memory_order_acquire);
+}
+```
+
+generates an `LDAR` instruction to preform the load from data. Such acquire loads are often paired with corresponding store-release operations using the `STLR` instructions.
+
+[arm - ARMv8.3 meaning of rcpc - Stack Overflow](https://stackoverflow.com/questions/68676666/armv8-3-meaning-of-rcpc):
+
+- When there is a `STLR` followed by a `LDAR` to a different address, then these 2 can't be reordered and hence it is called *`RCsc`* (release consistent sequential consistent).
+- When there is a `STLR` followed by a `LDAPR` to a different address, then these 2 can be reordered. This is called *`RCpc`* (release consistent processor consistent).
+
+In practice, `STLR` / `LDAPR` gives C++ `std::memory_order_acq_rel`, as opposed to SC.
 
 ## references
 

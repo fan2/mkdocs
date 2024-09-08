@@ -1331,6 +1331,24 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#sequentially_consistent" class="md-nav__link">
+    <span class="md-ellipsis">
+      Sequentially consistent
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#load-acquirepc" class="md-nav__link">
+    <span class="md-ellipsis">
+      Load-AcquirePC
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#barriers_in_c_code" class="md-nav__link">
     <span class="md-ellipsis">
       barriers in C code
@@ -1426,7 +1444,7 @@
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7z"/></svg>
                           <span class="md-ellipsis">
                             
-                              5 min read
+                              7 min read
                             
                           </span>
                         </div>
@@ -1476,6 +1494,7 @@
 
   <h1>ARM64 One-Way Barriers</h1>
 
+<p>In the previous article <a href="../a64-memory-barrier/">ARM64 Memory Barriers</a>, we systematically sorted out and summarized common memory barrier instructions.</p>
 <p>AArch64 adds new <em>load</em> and <em>store</em> instructions with implicit barrier semantics. These require that all loads and stores before or after the implicit barrier are <strong>observed</strong> in program order.</p>
 <!-- more -->
 
@@ -1485,8 +1504,13 @@
 <li><code>release</code> barrier primitive: read and write operations before this barrier primitive cannot be reordered <em>after</em> this barrier primitive. Usually, this barrier primitive is combined with <code>store</code> instructions.</li>
 </ul>
 <h2 id="load-acquire_ldar">Load-Acquire (LDAR)<a class="headerlink" href="#load-acquire_ldar" title="Permanent link">#</a></h2>
-<p>All loads and stores that are <em>after</em> an <code>LDAR</code> in program order, and that match the shareability domain of the target address, must be observed <em>after</em> the <code>LDAR</code>.</p>
+<p>The ordering requirements that are imposed by the Load-Acquire <code>LDAR</code> instruction are as follows:</p>
+<ul>
+<li>All explicit memory accesses after the <code>LDAR</code> are observed <strong><em>after</em></strong> the <code>LDAR</code>.</li>
+<li>All explicit memory accesses before the <code>LDAR</code> are not affected, and are reordered regarding the <code>LDAR</code>.</li>
+</ul>
 <p><img alt="LDAR ordering requirements" src="https://documentation-service.arm.com/static/62a304f231ea212bb662321f" /></p>
+<p>All loads and stores that are <em>after</em> an <code>LDAR</code> in program order, and that match the shareability domain of the target address, must be observed <em>after</em> the <code>LDAR</code>.</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>// read after write
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>                  +------+
@@ -1508,8 +1532,13 @@
 </span></code></pre></div>
 <p>STR1/LDR1 <em>can</em> be reordered across the <code>LDAR</code> barrier forwards, but STR2/LDR2 after <code>LDAR</code> <em>can't</em> be reordered across the <code>LDAR</code> barrier backwards.</p>
 <h2 id="store-release_stlr">Store-Release (STLR)<a class="headerlink" href="#store-release_stlr" title="Permanent link">#</a></h2>
-<p>All loads and stores <em>preceding</em> an <code>STLR</code> that match the shareability domain of the target address, must be observed <em>before</em> the <code>STLR</code>.</p>
+<p>The ordering requirements that are imposed by Store-Release <code>STLR</code> instruction are as follows:</p>
+<ul>
+<li>All explicit memory accesses before the <code>STLR</code> are observed <strong><em>before</em></strong> the <code>STLR</code>.</li>
+<li>All explicit memory accesses after the <code>STLR</code> are not affected, and are reordered regarding the <code>STLR</code>.</li>
+</ul>
 <p><img alt="STLR ordering requirements" src="https://documentation-service.arm.com/static/62a304f231ea212bb6623216" /></p>
+<p>All loads and stores <em>preceding</em> an <code>STLR</code> that match the shareability domain of the target address, must be observed <em>before</em> the <code>STLR</code>.</p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>// wirte before read
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
 </span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>                                      ↑
@@ -1558,10 +1587,11 @@
 </tbody>
 </table>
 <h2 id="ldar__stlr">LDAR + STLR<a class="headerlink" href="#ldar__stlr" title="Permanent link">#</a></h2>
-<p>There are also exclusive versions of the above, <code>LDAXR</code> and <code>STLXR</code>, available. Here <em><code>X</code></em> stands for eXclusive.</p>
+<p>There are also exclusive versions of the above, <code>LDAXR</code> and <code>STLXR</code>, available. Here <em><code>X</code></em> stands for eXclusive, see <a href="../a64-load-store-exclusive/">ARM64 exclusive Load/Store</a>.</p>
+<p>Load-Acquire and Store-Release instructions can be <strong>combined</strong> in a pair to protect a critical section of code. Combining these instructions ensures that accesses that are made <em>within</em> the critical code section are not reordered <em>outside</em> of the critical section. Accesses <em>inside</em> the critical code section are not affected, and can be reordered, as you can see in the following diagram:</p>
+<p><img alt="Protecting a critical code section with an LDAR-STLR pair" src="https://documentation-service.arm.com/static/62a304f231ea212bb662321e" /></p>
 <p>Unlike the data barrier instructions, which take a qualifier to control which shareability domains see the effect of the barrier, the <code>LDAR</code> and <code>STLR</code> instructions use the attribute of the address accessed.</p>
 <p>An <code>LDAR</code> instruction guarantees that any memory access instructions after the <code>LDAR</code>, are only visible <em>after</em> the load-acquire. A store-release(<code>STLR</code>) guarantees that all earlier memory accesses are visible <em>before</em> the store-release becomes visible and that the store is visible to all parts of the system capable of storing cached data at the same time.</p>
-<p><img alt="Protecting a critical code section with an LDAR-STLR pair" src="https://documentation-service.arm.com/static/62a304f231ea212bb662321e" /></p>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>                  +------+
 </span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>                  | STR1 |------------+
 </span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>                  | LDR1 |            |
@@ -1596,6 +1626,22 @@ The combination of <code>LDAR</code> and <code>STLR</code> can enhance code flex
 <li>STR3/LDR3 can be moved behind <code>STLR</code>, but cannot continue to move backward (the reverse direction of instruction execution in the figure) to cross <code>LDAR</code>.</li>
 <li>The memory access instruction STR2/LDR2 in the critical section cannot cross the critical section constructed by (<code>LDAR</code>, <code>STLR</code>).</li>
 </ol>
+<h2 id="sequentially_consistent">Sequentially consistent<a class="headerlink" href="#sequentially_consistent" title="Permanent link">#</a></h2>
+<p>When there is a <code>STLR</code> followed by a <code>LDAR</code> to a different address, then these 2 can't be reordered and hence it is called <em><code>RCsc</code></em> (release consistent sequential consistent).</p>
+<p>Acquire/release operations use a sequentially consistent model. This means that, when a Load-Acquire appears in program order <em>after</em> a Store-Release, the memory access that is generated by the Store-Release instruction is observed <em>before</em> the memory access that is generated by the Load-Acquire instruction. You can see these ordering requirements in the following diagram:</p>
+<p><img alt="Sequentially consistent ordering requirements" src="https://documentation-service.arm.com/static/62a304f231ea212bb6623217" /></p>
+<p>The freedom to move <code>LDAPR</code> instructions past preceding <code>STLR</code> instructions to unrelated addresses has the potential to improve performance in these sequences.</p>
+<h2 id="load-acquirepc">Load-AcquirePC<a class="headerlink" href="#load-acquirepc" title="Permanent link">#</a></h2>
+<p>When there is a <code>STLR</code> followed by a <code>LDAPR</code> to a different address, then these 2 can be reordered. This is called <em><code>RCpc</code></em> (release consistent processor consistent).</p>
+<p>Armv8.3-A also provides Load-AcquirePC instructions. The combination of Load-AcquirePC and Store-Release is used to support the weaker Release Consistency processor consistent (RCpc) model, as you can see in the following diagram:</p>
+<p><img alt="Load-AcquirePC instructions" src="https://documentation-service.arm.com/static/62a304f231ea212bb662321c" /></p>
+<p>References of <code>LDAPR</code>:</p>
+<ul>
+<li><a href="https://stackoverflow.com/questions/68676666/armv8-3-meaning-of-rcpc">arm - ARMv8.3 meaning of rcpc - Stack Overflow</a></li>
+<li><a href="https://community.arm.com/arm-community-blogs/b/tools-software-ides-blog/posts/enabling-rcpc-in-gcc-and-llvm">Enabling the LDAPR instructions for C/C++ compilers</a></li>
+<li><a href="https://patchwork.kernel.org/project/linux-arm-kernel/patch/20200630173734.14057-17-will@kernel.org/">[16/18] arm64: cpufeatures: Add capability for LDAPR instruction - Patchwork</a></li>
+<li><a href="https://gcc.gnu.org/bugzilla/show_bug.cgi?id=95751">95751 – [aarch64] Consider using ldapr for __atomic_load_n(acquire) on ARMv8.3-RCPC</a></li>
+</ul>
 <h2 id="barriers_in_c_code">barriers in C code<a class="headerlink" href="#barriers_in_c_code" title="Permanent link">#</a></h2>
 <p>The C11 and C++11 languages have a good platform-independent memory model that is preferable to intrinsics if possible.</p>
 <div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">C memory_order</label><label for="__tabbed_1_2">C++ memory_order</label></div>
@@ -1643,13 +1689,14 @@ The combination of <code>LDAR</code> and <code>STLR</code> can enhance code flex
 <blockquote>
 <p>At certain specified points in the execution sequence called <code>sequence points</code>, all side effects of previous evaluations shall be <strong><em>complete</em></strong> and <strong><em>no</em></strong> side effects of subsequent evaluations shall have taken place.</p>
 </blockquote>
-<div class="admonition note">
-<p class="admonition-title">Barriers in Linux</p>
-<p>The Linux kernel includes a number of platform independent barrier functions. See the Linux kernel documentation in the <a href="https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/memory-barriers.txt">memory-barriers.txt</a> file.</p>
-</div>
 <p>See <a href="../../20231015/c-memory-order/">C Memory Order(Sequential Consistency)</a>.</p>
 <h2 id="linuxbarrierh">linux/barrier.h<a class="headerlink" href="#linuxbarrierh" title="Permanent link">#</a></h2>
-<p>相关头文件：</p>
+<p>The Linux kernel includes a number of platform independent barrier functions. See the Linux kernel documentations:</p>
+<ul>
+<li>Documentation/memory-barriers.txt: @<a href="https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/memory-barriers.txt">kernel.org</a>, @<a href="https://github.com/torvalds/linux/blob/master/Documentation/memory-barriers.txt">github.com</a></li>
+<li>tools/memory-model/Documentation/: @<a href="https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/tools/memory-model/Documentation/">kernel.org</a>, @<a href="https://github.com/torvalds/linux/blob/master/tools/memory-model/Documentation/">github.com</a></li>
+</ul>
+<p>The relevant header files are as follows:</p>
 <ul>
 <li><a href="https://github.com/torvalds/linux/blob/master/include/asm-generic/barrier.h">include/asm-generic/barrier.h</a></li>
 <li><a href="https://github.com/torvalds/linux/blob/master/arch/x86/include/asm/barrier.h">arch/x86/include/asm/barrier.h</a></li>
@@ -1658,11 +1705,6 @@ The combination of <code>LDAR</code> and <code>STLR</code> can enhance code flex
 <li><a href="https://github.com/torvalds/linux/blob/master/tools/include/asm/barrier.h">tools/include/asm/barrier.h</a></li>
 <li><a href="https://github.com/torvalds/linux/blob/master/arch/arm64/include/asm/barrier.h">arch/arm64/include/asm/barrier.h</a></li>
 <li><a href="https://github.com/torvalds/linux/blob/master/tools/arch/arm64/include/asm/barrier.h">tools/arch/arm64/include/asm/barrier.h</a></li>
-</ul>
-<p>相关文档：</p>
-<ul>
-<li><a href="https://github.com/torvalds/linux/blob/master/Documentation/memory-barriers.txt">Documentation/memory-barriers.txt</a></li>
-<li><a href="https://github.com/torvalds/linux/blob/master/tools/memory-model/Documentation/">tools/memory-model/Documentation/</a></li>
 </ul>
 
 

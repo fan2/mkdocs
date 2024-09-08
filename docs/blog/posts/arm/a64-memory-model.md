@@ -31,14 +31,14 @@ comments: true
 
 编译器会把符合人类思维逻辑的高级语言代码（如 C 语言的代码）翻译成符合 CPU 运算规则的江编指令。编泽器会在翻泽成汇编指令时对其进行优化，如内存访问指令的重新排序可以提高指令级并行效率。然而，这些优化可能会与程序员原始的代码逻辑不符，导致一些错误发生。
 
-在 GCC 中，您可以基于 [Extended Asm](https://gcc.gnu.org/onlinedocs/gcc/Extended-Asm.html) 插入 Inline Assembly 指定内存 Clobber，来表示指令改变了内存，以使优化器无法跨越屏障重排内存访问指令。编译时的乱序访问可以通过以下函数宏来规避。
+在 GCC 中，您可以基于 [Extended Asm](https://gcc.gnu.org/onlinedocs/gcc/Extended-Asm.html) 插入 Inline Assembly 指定内存 Clobber，来表示指令修改了内存，以使优化器无法跨越屏障重排内存访问指令。
 
 ```c
 // refer to linux/arch/arm64/include/asm/barrier.h
 #define barrier() __asm__ __volatile__ ("" ::: "memory")
 ```
 
-`barrier()` 函数宏告诉编译器，不要为了性能优化而将这些代码重排。
+`barrier()` 函数宏告诉编译器，不要为了性能优化而将这些代码乱序重排。
 
 ### 执行时的存储一致性问题
 
@@ -124,12 +124,11 @@ ARM64 处理器实现了这种弱一致性内存模型，因此 ARM64 处理器�
 
 注意，预测式的数据访问只支持普通类型内存（Normal Memory），设备类型内存（Device Memory）是不支持预测式的数据访问的，因为设备内存实现的是强一致性的内存模型，它的内存访问次序是强一致性的。
 
-另一个场景是指令的预取是否支持预测式。指令预取和数据存储是两种不同的方式，一个在 CPU 的前端，一个在 CPU 的后端。在 ARMv8 体系结构里，预测式的指令预取是可以支持任意内存类型的，包括普通内存和设备内存（参考 [ARM64 Memory Ordering - re-ordering](./a64-memory-ordering.md) 中的 memory types）。
+另一个场景是指令的预取是否支持预测式。指令预取和数据存储是两种不同的方式，一个在 CPU 的前端，一个在 CPU 的后端。在 ARMv8 体系结构里，预测式的指令预取是可以支持任意内存类型的，包括普通内存和设备内存（参考 [ARM64 Memory Types](./a64-memory-types.md)）。
 
 ## 参考资料
 
-[linux/tools/memory-model/Documentation/](https://github.com/torvalds/linux/blob/master/tools/memory-model/Documentation/)
-[linux/Documentation/memory-barriers.txt](https://github.com/torvalds/linux/blob/master/Documentation/memory-barriers.txt)
+[linux/tools/memory-model/Documentation/](https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/tools/memory-model/Documentation/) @[github](https://github.com/torvalds/linux/blob/master/tools/memory-model/Documentation/)
 
 [A Primer on Memory Consistency and Cache Coherence.PDF](https://link.springer.com/book/10.1007/978-3-031-01764-3) - [笔记](https://www.cnblogs.com/icwangpu/category/2394256.html)
 [Hardware Memory Models - 筆記](https://blog.kennycoder.io/2022/07/18/Hardware-Memory-Models-%E7%AD%86%E8%A8%98/)
@@ -145,15 +144,3 @@ x86 Total Store Order:
 - [Sequential Consistency & Total Store Order.PDF](https://www.cis.upenn.edu/~devietti/classes/cis601-spring2016/sc_tso.pdf)
 - [How do modern Intel x86 CPUs implement the total order over stores](https://stackoverflow.com/questions/62465382/how-do-modern-intel-x86-cpus-implement-the-total-order-over-stores)
 - [Understanding memory models: an introduction to sequential consistency and total store order](https://techblog.lycorp.co.jp/en/20231216a)
-
-[Memory Barriers - a Hardware View for Software Hackers.PDF](https://link.zhihu.com/?target=http%3A//www.puppetmastertrading.com/images/hwViewForSwHackers.pdf)
-
-[为什么需要内存屏障？](https://blog.csdn.net/chen19870707/article/details/39896655)
-内存避障：[一个内存乱序实例](https://blog.csdn.net/jackgo73/article/details/129580683) & [前世今生](https://mingjie.blog.csdn.net/article/details/129588953)
-浅墨: 聊聊原子变量、锁、内存屏障那点事：[（1）](https://cloud.tencent.com/developer/article/1518180)，[（2）](https://cloud.tencent.com/developer/article/1517889)
-
-[从CPU缓存架构、内存一致性到内存屏障](https://blog.chongsheng.art/post/golang/cpu-cache-memory-barrier/)
-[从缓存一致性、指令重排、内存屏障到volatile](https://www.cnblogs.com/yungyu16/p/13200453.html)
-
-[什么是内存屏障？](https://blog.csdn.net/s2603898260/article/details/109234770) - MESI, [Store Buffer, Invalid Queue](https://blog.csdn.net/wll1228/article/details/107775976)
-理解内存屏障及应用实例无锁环形队列kfifo：[bw_0927](https://www.cnblogs.com/my_life/articles/5220172.html)，[绿色冰点](https://www.cnblogs.com/moodlxs/p/10718706.html)

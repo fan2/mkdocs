@@ -54,6 +54,10 @@ If there is a dependency between two memory accesses, the processor must maintai
 
 ## rearrangement
 
+The ARMv8 architecture employs a *`weakly-ordered`* model of memory. In general terms, this means that the order of memory accesses is *not* required to be the *same* as the program order for load and store operations. The processor is able to ***re-order*** memory read operations with respect to each other. Writes may also be ***re-ordered*** (for example, write combining) . As a result, hardware optimizations, such as the use of *cache* and *write buffer*, function in a way that improves the performance of the processor, which means that the required *bandwidth* between the processor and external memory can be reduced and the long latencies associated with such external memory accesses are hidden.
+
+Reads and writes to Normal memory can be **re-ordered** by hardware, being subject *only* to data dependencies and explicit memory barrier instructions. Certain situations require stronger ordering rules. You can provide information to the core about this through the [memory type](./a64-memory-types.md) attribute of the translation table entry that describes that memory.
+
 [Example of memory reordering](https://developer.arm.com/documentation/102336/0100/Memory-ordering):
 
 <!-- https://documentation-service.arm.com/static/62a304f231ea212bb6623218 -->
@@ -82,14 +86,6 @@ If the processor reordered these accesses, we might end up with the *wrong* valu
 For accesses to the *same* bytes, ordering must be maintained. The processor needs to detect the read-after-write hazard and ensure that the accesses are ordered correctly for the intended outcome.
 
 This does not mean that there is no possibility of optimization with this example. The processor could **merge** the two stores together, presenting a single combined store to the memory system. The processor could also detect that the load operation is from the bytes that are written by the store instructions. This means that the processor could return the new value *without* rereading it from memory.
-
-## ordering issues
-
-If you are an application developer, hardware interaction is probably through a device driver, the interaction with other cores is through [Pthreads](https://en.wikipedia.org/wiki/Pthreads) or another multithreading API, and the interaction with a paged memory system is through the operating system. In all of these cases, the memory ordering issues are taken care of for you by the relevant code. However, if you are writing the operating system kernel or device drivers, or implementing a hypervisor, JIT compiler, or multithreading library, you must have a good understanding of the memory ordering rules of the ARM Architecture. You must **ensure** that where your code requires *explicit* ordering of memory accesses, you are able to achieve this through the correct use of *`barriers`*.
-
-The ARMv8 architecture employs a *`weakly-ordered`* model of memory. In general terms, this means that the order of memory accesses is not required to be the same as the program order for load and store operations. The processor is able to ***re-order*** memory read operations with respect to each other. Writes may also be ***re-ordered*** (for example, write combining) . As a result, hardware optimizations, such as the use of *cache* and *write buffer*, function in a way that improves the performance of the processor, which means that the required *bandwidth* between the processor and external memory can be reduced and the long latencies associated with such external memory accesses are hidden.
-
-Reads and writes to Normal memory can be **re-ordered** by hardware, being subject *only* to data dependencies and explicit memory barrier instructions. Certain situations require stronger ordering rules. You can provide information to the core about this through the memory type attribute of the translation table entry that describes that memory.
 
 ## reorder cases
 

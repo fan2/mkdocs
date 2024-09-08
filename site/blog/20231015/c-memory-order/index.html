@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://duetorun.com/blog/20231015/c-memory-order/">
       
       
-        <link rel="prev" href="../../20231014/c-volatile/">
+        <link rel="prev" href="../gcc-ext-asm/">
       
       
         <link rel="next" href="../../20231016/c-vars-gcc-S/">
@@ -1322,6 +1322,15 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#arm_memory_barriers" class="md-nav__link">
+    <span class="md-ellipsis">
+      ARM Memory Barriers
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#references" class="md-nav__link">
     <span class="md-ellipsis">
       references
@@ -1463,6 +1472,7 @@
 <p>Explicitly using acquire-release consistency can lead to more efficient code, but it needs a careful design to supply the correct arguments to the atomic functions with a <em><code>_explicit</code></em> suffix.</p>
 <!-- more -->
 
+<p><a href="https://www.amazon.com/Modern-C-Jens-Gustedt-ebook/dp/B0978347Z6/">Modern C, 1st Edition, 2019</a> | 19 Atomic access and memory consistency</p>
 <h2 id="sequential_consistency">Sequential consistency<a class="headerlink" href="#sequential_consistency" title="Permanent link">#</a></h2>
 <p>The data consistency for atomic objects that we described earlier, guaranteed by the <em>happened-before</em> relation, is called <em>acquire-release</em> consistency. Whereas the C library calls we have seen always synchronize with that kind of consistency, no more and no less, accesses to atomics can be specified with different consistency models.</p>
 <p>As you remember, all atomic objects have a <em>modification order</em> that is consistent with all sequenced-before relations that see these modifications <em>on the same</em> object. <em>Sequential consistency</em> has even more requirements than that; see figure 19.3. Here we illustrate the common timeline of all sequentially consistent operations on top. Even if these operations are performed on different processors and the atomic objects are realized in different memory banks, the platform has to <strong>ensure</strong> that all threads perceive all these operations as being consistent with this one global linearization.</p>
@@ -1591,13 +1601,24 @@
 </span></code></pre></div>
 <p>Here, the <code>success</code> consistency must be at least as strong as the <code>failure</code> consistency; see figure 19.4.</p>
 <p>Up to now, we have implicitly assumed that the <em>acquire</em> and <em>release</em> sides of a synchronization are symmetric, but they aren't: whereas there always is just one writer of a modification, there can be several readers. Because moving new data to several processors or cores is expensive, some platforms allow us to avoid the propagation of all visible effects that happened before an atomic operation to all threads that read the new value. C's <em>consume consistency</em> is designed to map this behavior. We will not go into the details of this model, and you should use it only when you are certain that some effects prior to an atomic read will <em>not</em> affect the reading thread.</p>
-<hr />
-<div class="admonition warning">
-<p class="admonition-title">Copyright clarification</p>
-<p>Excerpt from <a href="https://www.amazon.com/Modern-C-Jens-Gustedt-ebook/dp/B0978347Z6/">Modern C, 1st Edition, 2019</a>.<br />
-Copyright credit to <a href="https://gustedt.gitlabpages.inria.fr/modern-c/">Jens Gustedt</a>. 🫡<br />
-For studying only, not commercial.</p>
-</div>
+<h2 id="arm_memory_barriers">ARM Memory Barriers<a class="headerlink" href="#arm_memory_barriers" title="Permanent link">#</a></h2>
+<p>Refer to <a href="../../20231007/a64-memory-barrier/">ARM64 Memory Barriers</a>, <a href="../../20231007/a64-oneway-barrier/">ARM64 One-Way Barriers</a>.</p>
+<p><a href="https://community.arm.com/arm-community-blogs/b/tools-software-ides-blog/posts/enabling-rcpc-in-gcc-and-llvm">Enabling the LDAPR instructions for C/C++ compilers</a>: Since the introduction of the Armv8-A architecture the defined mapping of atomic loads with an acquire memory model from C++11 has been to use the <code>LDAR</code> instruction. For example:</p>
+<div class="language-cpp highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;atomic&gt;</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="n">std</span><span class="o">::</span><span class="n">atomic</span><span class="o">&lt;</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">long</span><span class="o">&gt;</span><span class="w"> </span><span class="n">data</span><span class="p">;</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="kt">unsigned</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="nf">foo</span><span class="p">()</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">data</span><span class="p">.</span><span class="n">load</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">memory_order_acquire</span><span class="p">);</span>
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="p">}</span>
+</span></code></pre></div>
+<p>generates an <code>LDAR</code> instruction to preform the load from data. Such acquire loads are often paired with corresponding store-release operations using the <code>STLR</code> instructions.</p>
+<p><a href="https://stackoverflow.com/questions/68676666/armv8-3-meaning-of-rcpc">arm - ARMv8.3 meaning of rcpc - Stack Overflow</a>:</p>
+<ul>
+<li>When there is a <code>STLR</code> followed by a <code>LDAR</code> to a different address, then these 2 can't be reordered and hence it is called <em><code>RCsc</code></em> (release consistent sequential consistent).</li>
+<li>When there is a <code>STLR</code> followed by a <code>LDAPR</code> to a different address, then these 2 can be reordered. This is called <em><code>RCpc</code></em> (release consistent processor consistent).</li>
+</ul>
+<p>In practice, <code>STLR</code> / <code>LDAPR</code> gives C++ <code>std::memory_order_acq_rel</code>, as opposed to SC.</p>
 <h2 id="references">references<a class="headerlink" href="#references" title="Permanent link">#</a></h2>
 <p><a href="https://cloud.tencent.com/developer/article/1403223">C和C++中的volatile、内存屏障和CPU缓存一致性协议MESI</a><br />
 <a href="https://cloud.tencent.com/developer/article/2120357">深入理解C11/C++11内存模型</a><br />
@@ -1701,7 +1722,7 @@ For studying only, not commercial.</p>
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../../20231014/c-volatile/" class="md-footer__link md-footer__link--prev" aria-label="Previous: volatile in C/C++">
+          <a href="../gcc-ext-asm/" class="md-footer__link md-footer__link--prev" aria-label="Previous: GCC Extended Asm - C/C++ inline assembly">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -1711,7 +1732,7 @@ For studying only, not commercial.</p>
                 Previous
               </span>
               <div class="md-ellipsis">
-                volatile in C/C++
+                GCC Extended Asm - C/C++ inline assembly
               </div>
             </div>
           </a>

@@ -1348,6 +1348,15 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      references
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1488,6 +1497,7 @@
 <p><a href="https://developer.arm.com/documentation/den0042/latest/Memory-Ordering">ARM Cortex-R Series Programmer's Guide</a> | Chapter 10 Memory Ordering:</p>
 <p>A memory barrier is an instruction that requires the processor to apply an ordering <em>constraint</em> between memory operations that occur before and after the memory barrier instruction in the program.</p>
 <p><a href="https://developer.arm.com/documentation/den0024/latest">ARM Cortex-A Series Programmer's Guide for ARMv8-A</a> | Chapter 13 Memory Ordering:</p>
+<p>If you are an application developer, hardware interaction is probably through a device driver, the interaction with other cores is through <a href="https://en.wikipedia.org/wiki/Pthreads">Pthreads</a> or another multithreading API, and the interaction with a paged memory system is through the operating system. In all of these cases, the memory ordering issues are taken care of for you by the relevant code. However, if you are writing the operating system kernel or device drivers, or implementing a hypervisor, JIT compiler, or multithreading library, you must have a good understanding of the memory ordering rules of the ARM Architecture. You must <strong>ensure</strong> that where your code requires <em>explicit</em> ordering of memory accesses, you are able to achieve this through the correct use of <em><code>barriers</code></em>.</p>
 <p>The ARM architecture includes barrier instructions to <strong>force</strong> access <em>ordering</em> and access <em>completion</em> at a specific point. In some architectures, similar instructions are known as a <em>fence</em>(membar, memory fence).</p>
 <p>If you are writing code where ordering is important, see <em>Appendix J7 Barrier Litmus Tests in the ARM Architecture Reference Manual - ARMv8, for ARMv8-A architecture profile</em> and <em>Appendix G Barrier Litmus Tests in the ARM Architecture Reference Manual ARMv7-A/R Edition</em>, which includes many worked examples.</p>
 <p>The <em>ARM Architecture Reference Manual</em> defines certain key words, in particular, the terms <em><code>observe</code></em> and must be <em><code>observed</code></em>. In typical systems, this defines how the bus interface of a master, for example, a core or GPU and the interconnect, must handle bus transactions. Only masters are able to <strong>observe</strong> transfers. All bus transactions are initiated by a master. The order that a master performs transactions in is not necessarily the same order that such transactions complete at the slave device, because transactions might be <strong>re-ordered</strong> by the interconnect unless some ordering is explicitly <strong>enforced</strong>.</p>
@@ -1682,6 +1692,15 @@ Both <code>loads</code> and <code>stores</code> that appear <em>after</em> the b
 <li>Modify the memory area where instructions are stored, such as the scenario of self-modifying code.</li>
 </ul>
 <p>In short, the purpose of using memory barrier instructions is to make the CPU execute according to the logic of the program code, rather than having the execution order of the code disrupted by the CPU's out-of-order execution and speculative execution.</p>
+<h2 id="references">references<a class="headerlink" href="#references" title="Permanent link">#</a></h2>
+<p><a href="https://link.zhihu.com/?target=http%3A//www.puppetmastertrading.com/images/hwViewForSwHackers.pdf">Memory Barriers - a Hardware View for Software Hackers.PDF</a></p>
+<p><a href="https://blog.csdn.net/chen19870707/article/details/39896655">为什么需要内存屏障？</a><br />
+内存避障：<a href="https://blog.csdn.net/jackgo73/article/details/129580683">一个内存乱序实例</a> &amp; <a href="https://mingjie.blog.csdn.net/article/details/129588953">前世今生</a><br />
+浅墨: 聊聊原子变量、锁、内存屏障那点事：<a href="https://cloud.tencent.com/developer/article/1518180">（1）</a>，<a href="https://cloud.tencent.com/developer/article/1517889">（2）</a></p>
+<p><a href="https://blog.chongsheng.art/post/golang/cpu-cache-memory-barrier/">从CPU缓存架构、内存一致性到内存屏障</a><br />
+<a href="https://www.cnblogs.com/yungyu16/p/13200453.html">从缓存一致性、指令重排、内存屏障到volatile</a></p>
+<p><a href="https://blog.csdn.net/s2603898260/article/details/109234770">什么是内存屏障？</a> - MESI, <a href="https://blog.csdn.net/wll1228/article/details/107775976">Store Buffer, Invalid Queue</a><br />
+理解内存屏障及应用实例无锁环形队列kfifo：<a href="https://www.cnblogs.com/my_life/articles/5220172.html">bw_0927</a>，<a href="https://www.cnblogs.com/moodlxs/p/10718706.html">绿色冰点</a></p>
 
 
 

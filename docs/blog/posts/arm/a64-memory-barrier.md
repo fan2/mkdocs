@@ -23,6 +23,8 @@ A memory barrier is an instruction that requires the processor to apply an order
 
 [ARM Cortex-A Series Programmer's Guide for ARMv8-A](https://developer.arm.com/documentation/den0024/latest) | Chapter 13 Memory Ordering:
 
+If you are an application developer, hardware interaction is probably through a device driver, the interaction with other cores is through [Pthreads](https://en.wikipedia.org/wiki/Pthreads) or another multithreading API, and the interaction with a paged memory system is through the operating system. In all of these cases, the memory ordering issues are taken care of for you by the relevant code. However, if you are writing the operating system kernel or device drivers, or implementing a hypervisor, JIT compiler, or multithreading library, you must have a good understanding of the memory ordering rules of the ARM Architecture. You must **ensure** that where your code requires *explicit* ordering of memory accesses, you are able to achieve this through the correct use of *`barriers`*.
+
 The ARM architecture includes barrier instructions to **force** access *ordering* and access *completion* at a specific point. In some architectures, similar instructions are known as a *fence*(membar, memory fence).
 
 If you are writing code where ordering is important, see *Appendix J7 Barrier Litmus Tests in the ARM Architecture Reference Manual - ARMv8, for ARMv8-A architecture profile* and *Appendix G Barrier Litmus Tests in the ARM Architecture Reference Manual ARMv7-A/R Edition*, which includes many worked examples.
@@ -214,3 +216,17 @@ In most scenarios, we don't need to pay special attention to memory barriers. Es
 - Modify the memory area where instructions are stored, such as the scenario of self-modifying code.
 
 In short, the purpose of using memory barrier instructions is to make the CPU execute according to the logic of the program code, rather than having the execution order of the code disrupted by the CPU's out-of-order execution and speculative execution.
+
+## references
+
+[Memory Barriers - a Hardware View for Software Hackers.PDF](https://link.zhihu.com/?target=http%3A//www.puppetmastertrading.com/images/hwViewForSwHackers.pdf)
+
+[为什么需要内存屏障？](https://blog.csdn.net/chen19870707/article/details/39896655)
+内存避障：[一个内存乱序实例](https://blog.csdn.net/jackgo73/article/details/129580683) & [前世今生](https://mingjie.blog.csdn.net/article/details/129588953)
+浅墨: 聊聊原子变量、锁、内存屏障那点事：[（1）](https://cloud.tencent.com/developer/article/1518180)，[（2）](https://cloud.tencent.com/developer/article/1517889)
+
+[从CPU缓存架构、内存一致性到内存屏障](https://blog.chongsheng.art/post/golang/cpu-cache-memory-barrier/)
+[从缓存一致性、指令重排、内存屏障到volatile](https://www.cnblogs.com/yungyu16/p/13200453.html)
+
+[什么是内存屏障？](https://blog.csdn.net/s2603898260/article/details/109234770) - MESI, [Store Buffer, Invalid Queue](https://blog.csdn.net/wll1228/article/details/107775976)
+理解内存屏障及应用实例无锁环形队列kfifo：[bw_0927](https://www.cnblogs.com/my_life/articles/5220172.html)，[绿色冰点](https://www.cnblogs.com/moodlxs/p/10718706.html)

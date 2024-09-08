@@ -12,13 +12,13 @@
         <meta name="author" content="Cliff Fan">
       
       
-        <link rel="canonical" href="https://duetorun.com/blog/20231009/gcc-ext-asm/">
+        <link rel="canonical" href="https://duetorun.com/blog/20231015/gcc-ext-asm/">
       
       
-        <link rel="prev" href="../c-const-readonly/">
+        <link rel="prev" href="../../20231014/c-volatile/">
       
       
-        <link rel="next" href="../../20231010/c-named-const/">
+        <link rel="next" href="../c-memory-order/">
       
       
       <link rel="icon" href="../../../assets/hold_yourself.jpg">
@@ -1395,27 +1395,63 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#example_1" class="md-nav__link">
+  <a href="#i386_movadd" class="md-nav__link">
     <span class="md-ellipsis">
-      example 1
+      i386 mov/add
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#example_2" class="md-nav__link">
+  <a href="#i386_btsl" class="md-nav__link">
     <span class="md-ellipsis">
-      example 2
+      i386 btsl
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#example_3" class="md-nav__link">
+  <a href="#a64_add" class="md-nav__link">
     <span class="md-ellipsis">
-      example 3
+      a64 add
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a64_barrier" class="md-nav__link">
+    <span class="md-ellipsis">
+      a64 barrier
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a64_arch_spin_lock" class="md-nav__link">
+    <span class="md-ellipsis">
+      a64 arch_spin_lock
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a64_atomic_add" class="md-nav__link">
+    <span class="md-ellipsis">
+      a64 atomic_add
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a64_cmpxchg_mb_64" class="md-nav__link">
+    <span class="md-ellipsis">
+      a64 cmpxchg_mb_64
     </span>
   </a>
   
@@ -1423,15 +1459,6 @@
         
       </ul>
     </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#a64_barrier" class="md-nav__link">
-    <span class="md-ellipsis">
-      a64 barrier
-    </span>
-  </a>
   
 </li>
       
@@ -1491,7 +1518,7 @@
                     <li class="md-nav__item">
                       <div class="md-nav__link">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 19H5V8h14m-3-7v2H8V1H6v2H5c-1.11 0-2 .89-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-1V1m-1 11h-5v5h5z"/></svg>
-                        <time datetime="2023-10-09 10:00:00" class="md-ellipsis">Oct 9, 2023</time>
+                        <time datetime="2023-10-15 10:00:00" class="md-ellipsis">Oct 15, 2023</time>
                       </div>
                     </li>
                     
@@ -1502,7 +1529,8 @@
                           <span class="md-ellipsis">
                             in
                             
-                              <a href="../../category/arm/">arm</a></span>
+                              <a href="../../category/toolchain/">toolchain</a>, 
+                              <a href="../../category/c/">c</a></span>
                         </div>
                       </li>
                     
@@ -1513,7 +1541,7 @@
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7z"/></svg>
                           <span class="md-ellipsis">
                             
-                              6 min read
+                              9 min read
                             
                           </span>
                         </div>
@@ -1607,8 +1635,8 @@
 <p>Output operand expressions must be <em>lvalues</em>.</p>
 <p><code>cvariablename</code> Specifies a C lvalue expression to hold the output, typically a variable name. The enclosing parentheses are a required part of the syntax.</p>
 <h2 id="examples">examples<a class="headerlink" href="#examples" title="Permanent link">#</a></h2>
-<h3 id="example_1">example 1<a class="headerlink" href="#example_1" title="Permanent link">#</a></h3>
-<p>A simple (if not particularly useful) example for i386 using asm might look like this:</p>
+<h3 id="i386_movadd">i386 mov/add<a class="headerlink" href="#i386_movadd" title="Permanent link">#</a></h3>
+<p>A simple (if not particularly useful) example for i386 using <code>asm</code> might look like this:</p>
 <div class="language-c highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1">// move: the source comes first and the destination second in AT&amp;T Syntax.</span>
 </span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="kt">int</span><span class="w"> </span><span class="n">src</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
 </span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="kt">int</span><span class="w"> </span><span class="n">dst</span><span class="p">;</span>
@@ -1622,7 +1650,8 @@
 </span></code></pre></div>
 <p>This code makes no use of the optional <code>asmSymbolicName</code>. Therefore it references the first output operand as <code>%0</code> (were there a second, it would be <code>%1</code>, etc). The number of the first input operand is <em>one</em> greater than that of the <em>last</em> output operand.</p>
 <p>Therefore, <code>dst</code> is %0, <code>src</code> is %1, and this code copies <code>src</code>(input) to <code>dst</code>(output) and add 1 to <code>dst</code>.</p>
-<h3 id="example_2">example 2<a class="headerlink" href="#example_2" title="Permanent link">#</a></h3>
+<h3 id="i386_btsl">i386 btsl<a class="headerlink" href="#i386_btsl" title="Permanent link">#</a></h3>
+<p><a href="https://blog.csdn.net/zwhfly/article/details/17647815">BTS</a> — Bit Test and Set</p>
 <p>In the following i386 example, <code>old</code> (referred to in the template string as <code>%0</code>) and <code>*Base</code> (as <code>%1</code>) are outputs and <code>Offset</code> (<code>%2</code>) is an input:</p>
 <div class="language-c highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kt">bool</span><span class="w"> </span><span class="n">old</span><span class="p">;</span>
 </span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>
@@ -1635,7 +1664,12 @@
 </span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="k">return</span><span class="w"> </span><span class="n">old</span><span class="p">;</span>
 </span></code></pre></div>
 <p>clobber argument: The "<code>cc</code>" clobber indicates that the assembler code modifies the <em><code>flags register</code></em>. On some machines, GCC represents the condition codes as a specific hardware register; "<code>cc</code>" serves to name this register. On other machines, condition code handling is different, and specifying "<code>cc</code>" has no effect. But it is valid no matter what the target.</p>
-<h3 id="example_3">example 3<a class="headerlink" href="#example_3" title="Permanent link">#</a></h3>
+<p>What does <em><code>I</code></em> mean in InputOperands <code>: "Ir" (Offset)</code>?</p>
+<p><a href="https://gcc.gnu.org/onlinedocs/gcc/Constraints.html">Constraints for asm Operands</a> - <a href="https://gcc.gnu.org/onlinedocs/gcc/Simple-Constraints.html">Simple Constraints</a>:</p>
+<blockquote>
+<p>Other letters in the range ‘<code>I</code>’ through ‘<code>P</code>’ may be defined in a machine-dependent fashion to permit immediate integer operands with explicit integer values in specified ranges. For example, on the 68000, ‘<code>I</code>’ is defined to stand for the range of values 1 to 8. This is the range permitted as a shift count in the shift instructions.</p>
+</blockquote>
+<h3 id="a64_add">a64 add<a class="headerlink" href="#a64_add" title="Permanent link">#</a></h3>
 <p>Refer to <a href="https://developer.arm.com/documentation/den0024/latest">ARM Cortex-A Series Programmer's Guide for ARMv8-A</a> | 5: An Introduction to the ARMv8 Instruction Sets - 5.2 C/C++ inline assembly.</p>
 <p>In this section, we briefly cover how to include assembly code within C or C++ language modules.</p>
 <p>The <code>asm</code> keyword can incorporate inline GCC syntax assembly code into a function. For example:</p>
@@ -1696,7 +1730,7 @@
 <p><code>input_operand_list</code>(<em>InputOperands</em>) is an optional list of input operands, separated by commas. Input operands use the same syntax as output operands. In this example, there are two input operands: <code>[input_i] "r" (i)</code> and <code>[input_j] "r" (j)</code>.</p>
 <p><code>clobber_list</code>(<em>Clobbers</em>) is an optional list of clobbered registers, or other values. In our example, this is omitted.</p>
 <p>When calling functions between C/C++ and assembly code, you must follow the <a href="https://github.com/ARM-software/abi-aa/blob/2a70c42d62e9c3eb5887fa50b71257f20daca6f9/aapcs64/aapcs64.rst">AAPCS64</a> rules.</p>
-<h2 id="a64_barrier">a64 barrier<a class="headerlink" href="#a64_barrier" title="Permanent link">#</a></h2>
+<h3 id="a64_barrier">a64 barrier<a class="headerlink" href="#a64_barrier" title="Permanent link">#</a></h3>
 <p>Previously, in <a href="../../20231006/a64-memory-model/">ARM64 memory model - the reason for memory barriers</a>, we mentioned that re-ordering at compile time can be avoided using the <code>barrier()</code> function macro.</p>
 <div class="language-c highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="cp">#define barrier() __asm__ __volatile__ (&quot;&quot; ::: &quot;memory&quot;)</span>
 </span></code></pre></div>
@@ -1723,6 +1757,187 @@
 </ul>
 </li>
 </ol>
+<h3 id="a64_arch_spin_lock">a64 arch_spin_lock<a class="headerlink" href="#a64_arch_spin_lock" title="Permanent link">#</a></h3>
+<p>See <a href="../../20231008/a64-memory-barrier-cases/">ARM64 Memory Barrier Cases</a>, the following is extracted from the <code>arch_spin_lock</code> implementation in linux 3.7.</p>
+<div class="language-c highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-11-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-11-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-11-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-11-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-11-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-11-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-11-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-11-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-11-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-11-10">10</a></span>
+<span class="normal"><a href="#__codelineno-11-11">11</a></span>
+<span class="normal"><a href="#__codelineno-11-12">12</a></span>
+<span class="normal"><a href="#__codelineno-11-13">13</a></span>
+<span class="normal"><a href="#__codelineno-11-14">14</a></span>
+<span class="normal"><a href="#__codelineno-11-15">15</a></span>
+<span class="normal"><a href="#__codelineno-11-16">16</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1"></a><span class="c1">// &lt;linux-3.7/arch/arm64/include/asm/spinlock.h&gt;</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2"></a><span class="k">static</span><span class="w"> </span><span class="kr">inline</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">arch_spin_lock</span><span class="p">(</span><span class="n">arch_spinlock_t</span><span class="w"> </span><span class="o">*</span><span class="n">lock</span><span class="p">)</span>
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3"></a><span class="p">{</span>
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4"></a><span class="w">    </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">tmp</span><span class="p">;</span>
+</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5"></a>
+</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6"></a><span class="w">    </span><span class="k">asm</span><span class="w"> </span><span class="k">volatile</span><span class="w"> </span><span class="p">(</span>
+</span><span id="__span-11-7"><a id="__codelineno-11-7" name="__codelineno-11-7"></a><span class="w">    </span><span class="s">&quot;   sevl</span><span class="se">\n</span><span class="s">&quot;</span>
+</span><span id="__span-11-8"><a id="__codelineno-11-8" name="__codelineno-11-8"></a><span class="w">    </span><span class="s">&quot;1: wfe</span><span class="se">\n</span><span class="s">&quot;</span>
+</span><span id="__span-11-9"><a id="__codelineno-11-9" name="__codelineno-11-9"></a><span class="w">    </span><span class="s">&quot;2: ldaxr %w0, [%1]</span><span class="se">\n</span><span class="s">&quot;</span>
+</span><span id="__span-11-10"><a id="__codelineno-11-10" name="__codelineno-11-10"></a><span class="w">    </span><span class="s">&quot;   cbnz  %w0, 1b</span><span class="se">\n</span><span class="s">&quot;</span>
+</span><span id="__span-11-11"><a id="__codelineno-11-11" name="__codelineno-11-11"></a><span class="w">    </span><span class="s">&quot;   stxr  %w0, %w2, [%1] </span><span class="se">\n</span><span class="s">&quot;</span>
+</span><span id="__span-11-12"><a id="__codelineno-11-12" name="__codelineno-11-12"></a><span class="w">    </span><span class="s">&quot;   cbnz  %w0, 2b</span><span class="se">\n</span><span class="s">&quot;</span>
+</span><span id="__span-11-13"><a id="__codelineno-11-13" name="__codelineno-11-13"></a><span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="s">&quot;=&amp;r&quot;</span><span class="w"> </span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span>
+</span><span id="__span-11-14"><a id="__codelineno-11-14" name="__codelineno-11-14"></a><span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="s">&quot;r&quot;</span><span class="w"> </span><span class="p">(</span><span class="o">&amp;</span><span class="n">lock</span><span class="o">-&gt;</span><span class="n">lock</span><span class="p">),</span><span class="w"> </span><span class="s">&quot;r&quot;</span><span class="w"> </span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</span><span id="__span-11-15"><a id="__codelineno-11-15" name="__codelineno-11-15"></a><span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="s">&quot;memory&quot;</span><span class="p">);</span>
+</span><span id="__span-11-16"><a id="__codelineno-11-16" name="__codelineno-11-16"></a><span class="p">}</span>
+</span></code></pre></div></td></tr></table></div>
+<p>The <em><code>AssemblerTemplate</code></em> place multiple assembler instructions together in a single <code>asm</code> string, separated by the characters normally used in assembly code for the system. A combination that works in most places is a newline(<code>\n</code>) to break the line, plus a tab character(<code>\t</code>) to move to the instruction field (written as ‘<code>\n\t</code>’). Some assemblers allow semicolons as a line separator. However, note that some assembler dialects use semicolons to start a comment.</p>
+<p>The first output operand <code>tmp</code> is <code>%w0</code>, the first input operand <code>&amp;lock-&gt;lock</code> is <code>%1</code>, the second input operand <code>%w2</code> is constant <em>1</em>.</p>
+<p>The corresponding C code for the AssemblerTemplate is as follows, lines per line:</p>
+<div class="language-c highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-12-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-12-10">10</a></span>
+<span class="normal"><a href="#__codelineno-12-11">11</a></span>
+<span class="normal"><a href="#__codelineno-12-12">12</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-12-9"><a id="__codelineno-12-9" name="__codelineno-12-9"></a><span class="n">tmp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">lock</span><span class="o">-&gt;</span><span class="n">lock</span><span class="p">;</span>
+</span><span id="__span-12-10"><a id="__codelineno-12-10" name="__codelineno-12-10"></a><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">tmp</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="k">goto</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+</span><span id="__span-12-11"><a id="__codelineno-12-11" name="__codelineno-12-11"></a><span class="k">else</span><span class="w"> </span><span class="n">lock</span><span class="o">-&gt;</span><span class="n">lock</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="c1">// tmp saves the status result;</span>
+</span><span id="__span-12-12"><a id="__codelineno-12-12" name="__codelineno-12-12"></a><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">tmp</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="k">goto</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span>
+</span></code></pre></div></td></tr></table></div>
+<p>What does <em><code>&amp;</code></em> mean in OutputOperands <code>: "=&amp;r" (tmp)</code>?</p>
+<p><a href="https://gcc.gnu.org/onlinedocs/gcc/Constraints.html">Constraints for asm Operands</a> - <a href="https://gcc.gnu.org/onlinedocs/gcc/Modifiers.html">Constraint Modifier Characters</a>:</p>
+<blockquote>
+<p>Means (in a particular alternative) that this operand is an <em>earlyclobber</em> operand, which is written before the instruction is finished using the input operands. Therefore, this operand may not lie in a register that is read by the instruction or as part of any memory address.</p>
+<p>‘<code>&amp;</code>’ applies only to the alternative in which it is written. In constraints with multiple alternatives, sometimes one alternative requires ‘<code>&amp;</code>’ while others do not.</p>
+</blockquote>
+<p>The Clobber argument is <code>: "memory"</code> effectively forms a read/write memory barrier for the <em>AssemblerTemplate</em> code.</p>
+<h3 id="a64_atomic_add">a64 atomic_add<a class="headerlink" href="#a64_atomic_add" title="Permanent link">#</a></h3>
+<p>See <a href="../../20231012/a64-atomic-operations/">ARM64 Atomic operations</a>, the following is extracted from the <code>arch_spin_lock</code> implementation in linux 3.7.</p>
+<p>The code below uses the atomic addition function. The <code>atomic_add(i,v)</code> function is very simple. It adds <code>i</code> to <code>v</code> atomically.</p>
+<div class="language-c highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-13-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-13-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-13-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-13-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-13-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-13-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-13-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-13-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-13-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-13-10">10</a></span>
+<span class="normal"><a href="#__codelineno-13-11">11</a></span>
+<span class="normal"><a href="#__codelineno-13-12">12</a></span>
+<span class="normal"><a href="#__codelineno-13-13">13</a></span>
+<span class="normal"><a href="#__codelineno-13-14">14</a></span>
+<span class="normal"><a href="#__codelineno-13-15">15</a></span>
+<span class="normal"><a href="#__codelineno-13-16">16</a></span>
+<span class="normal"><a href="#__codelineno-13-17">17</a></span>
+<span class="normal"><a href="#__codelineno-13-18">18</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1"></a><span class="n">typede</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2"></a><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">counter</span><span class="p">;</span>
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3"></a><span class="p">}</span><span class="w"> </span><span class="n">atomic_t</span><span class="p">;</span>
+</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4"></a>
+</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5"></a><span class="kt">void</span><span class="w"> </span><span class="nf">atomic_add</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">atomic_t</span><span class="w"> </span><span class="o">*</span><span class="n">v</span><span class="p">)</span>
+</span><span id="__span-13-6"><a id="__codelineno-13-6" name="__codelineno-13-6"></a><span class="p">{</span>
+</span><span id="__span-13-7"><a id="__codelineno-13-7" name="__codelineno-13-7"></a><span class="w">    </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="n">tmp</span><span class="p">;</span>
+</span><span id="__span-13-8"><a id="__codelineno-13-8" name="__codelineno-13-8"></a><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">result</span><span class="p">;</span>
+</span><span id="__span-13-9"><a id="__codelineno-13-9" name="__codelineno-13-9"></a>
+</span><span id="__span-13-10"><a id="__codelineno-13-10" name="__codelineno-13-10"></a><span class="w">    </span><span class="k">asm</span><span class="w"> </span><span class="k">volatile</span><span class="p">(</span><span class="s">&quot;// atomic_add</span><span class="se">\n</span><span class="s">&quot;</span>
+</span><span id="__span-13-11"><a id="__codelineno-13-11" name="__codelineno-13-11"></a><span class="w">        </span><span class="s">&quot;1: ldxr %w0, [%2] </span><span class="se">\n</span><span class="s">&quot;</span>
+</span><span id="__span-13-12"><a id="__codelineno-13-12" name="__codelineno-13-12"></a><span class="w">        </span><span class="s">&quot;   add %w0, %w0, %w3</span><span class="se">\n</span><span class="s">&quot;</span>
+</span><span id="__span-13-13"><a id="__codelineno-13-13" name="__codelineno-13-13"></a><span class="w">        </span><span class="s">&quot;   stxr %w1, %w0, [%2] </span><span class="se">\n</span><span class="s">&quot;</span>
+</span><span id="__span-13-14"><a id="__codelineno-13-14" name="__codelineno-13-14"></a><span class="w">        </span><span class="s">&quot;   cbnz %w1, 1b&quot;</span>
+</span><span id="__span-13-15"><a id="__codelineno-13-15" name="__codelineno-13-15"></a><span class="w">        </span><span class="o">:</span><span class="w"> </span><span class="s">&quot;=&amp;r&quot;</span><span class="w"> </span><span class="p">(</span><span class="n">result</span><span class="p">),</span><span class="w"> </span><span class="s">&quot;=&amp;r&quot;</span><span class="w"> </span><span class="p">(</span><span class="n">tmp</span><span class="p">)</span>
+</span><span id="__span-13-16"><a id="__codelineno-13-16" name="__codelineno-13-16"></a><span class="w">        </span><span class="o">:</span><span class="w"> </span><span class="s">&quot;r&quot;</span><span class="w"> </span><span class="p">(</span><span class="o">&amp;</span><span class="n">v</span><span class="o">-&gt;</span><span class="n">counter</span><span class="p">),</span><span class="w"> </span><span class="s">&quot;Ir&quot;</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+</span><span id="__span-13-17"><a id="__codelineno-13-17" name="__codelineno-13-17"></a><span class="w">        </span><span class="o">:</span><span class="w"> </span><span class="s">&quot;cc&quot;</span><span class="p">)</span><span class="w"> </span><span class="p">;</span>
+</span><span id="__span-13-18"><a id="__codelineno-13-18" name="__codelineno-13-18"></a><span class="p">}</span>
+</span></code></pre></div></td></tr></table></div>
+<p>The <em><code>AssemblerTemplate</code></em> contains multiple assembler instructions separated by newline break (<code>\n</code>).</p>
+<p>The first output operand <code>result</code> is <code>%w0</code>, the second output operand <code>temp</code> is <code>%w1</code>; the first input operand <code>&amp;v-&gt;counter</code> is <code>%2</code>, the second input operand <code>i</code> is <code>%w3</code>.</p>
+<p>The corresponding C code for the AssemblerTemplate is as follows, lines per line:</p>
+<div class="language-c highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-14-11">11</a></span>
+<span class="normal"><a href="#__codelineno-14-12">12</a></span>
+<span class="normal"><a href="#__codelineno-14-13">13</a></span>
+<span class="normal"><a href="#__codelineno-14-14">14</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-14-11"><a id="__codelineno-14-11" name="__codelineno-14-11"></a><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">v</span><span class="o">-&gt;</span><span class="n">counter</span><span class="p">;</span>
+</span><span id="__span-14-12"><a id="__codelineno-14-12" name="__codelineno-14-12"></a><span class="n">result</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">i</span><span class="p">;</span>
+</span><span id="__span-14-13"><a id="__codelineno-14-13" name="__codelineno-14-13"></a><span class="n">v</span><span class="o">-&gt;</span><span class="n">counter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">result</span><span class="p">;</span><span class="w"> </span><span class="c1">// tmp saves the status result;</span>
+</span><span id="__span-14-14"><a id="__codelineno-14-14" name="__codelineno-14-14"></a><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">tmp</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="k">goto</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
+</span></code></pre></div></td></tr></table></div>
+<p>See the cases above for the meaning of the constraints <code>"=&amp;r"</code> and <code>"Ir"</code>.</p>
+<hr />
+<p>Another simple way to to implement the <code>atomic_add()</code> function is to use the the <code>STADD</code> instruction.</p>
+<div class="language-c highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-15-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-15-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-15-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-15-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-15-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-15-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-15-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-15-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-15-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-15-10">10</a></span>
+<span class="normal"><a href="#__codelineno-15-11">11</a></span>
+<span class="normal"><a href="#__codelineno-15-12">12</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1"></a><span class="n">typede</span><span class="w"> </span><span class="k">struct</span><span class="w"> </span><span class="p">{</span>
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2"></a><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">counter</span><span class="p">;</span>
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3"></a><span class="p">}</span><span class="w"> </span><span class="n">atomic_t</span><span class="p">;</span>
+</span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4"></a>
+</span><span id="__span-15-5"><a id="__codelineno-15-5" name="__codelineno-15-5"></a><span class="k">static</span><span class="w"> </span><span class="kr">inline</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">atomic_add</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">atomic_t</span><span class="w"> </span><span class="o">*</span><span class="n">v</span><span class="p">)</span>
+</span><span id="__span-15-6"><a id="__codelineno-15-6" name="__codelineno-15-6"></a><span class="p">{</span>
+</span><span id="__span-15-7"><a id="__codelineno-15-7" name="__codelineno-15-7"></a><span class="w">    </span><span class="k">asm</span><span class="w"> </span><span class="k">volatile</span><span class="p">(</span>
+</span><span id="__span-15-8"><a id="__codelineno-15-8" name="__codelineno-15-8"></a><span class="w">        </span><span class="s">&quot;stadd %w[i], %[v]</span><span class="se">\n</span><span class="s">&quot;</span>
+</span><span id="__span-15-9"><a id="__codelineno-15-9" name="__codelineno-15-9"></a><span class="w">        </span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="w"> </span><span class="s">&quot;+r&quot;</span><span class="w"> </span><span class="p">(</span><span class="n">i</span><span class="p">),</span><span class="w"> </span><span class="p">[</span><span class="n">v</span><span class="p">]</span><span class="w"> </span><span class="s">&quot;+Q&quot;</span><span class="w"> </span><span class="p">(</span><span class="n">v</span><span class="o">-&gt;</span><span class="n">counter</span><span class="p">)</span>
+</span><span id="__span-15-10"><a id="__codelineno-15-10" name="__codelineno-15-10"></a><span class="w">        </span><span class="o">:</span>
+</span><span id="__span-15-11"><a id="__codelineno-15-11" name="__codelineno-15-11"></a><span class="w">        </span><span class="o">:</span><span class="w"> </span><span class="s">&quot;cc&quot;</span><span class="p">);</span>
+</span><span id="__span-15-12"><a id="__codelineno-15-12" name="__codelineno-15-12"></a><span class="p">}</span>
+</span></code></pre></div></td></tr></table></div>
+<p>The InputOperands <code>:</code> is empty.</p>
+<p><a href="https://developer.arm.com/documentation/dui0801/l/A64-Data-Transfer-Instructions/STADD--STADDL--STADDL--A64-">STADD Ws, [Xn|SP]</a>: 32-bit, no memory ordering general registers. Atomic add on word or doubleword in memory, without return, atomically <strong>loads</strong> a 32-bit word or 64-bit doubleword from memory, <strong>adds</strong> the value held in a register to it, and <strong>stores</strong> the result back to memory.</p>
+<p>What does <code>Q</code> mean in OutputOperands <code>[v] "+Q" (v-›counter)</code>?</p>
+<p><a href="https://gcc.gnu.org/onlinedocs/gcc/Constraints.html">Constraints for asm Operands</a> - <a href="https://gcc.gnu.org/onlinedocs/gcc/Machine-Constraints.html">Constraints for Particular Machines</a></p>
+<blockquote>
+<p><code>Q</code>: A memory address which uses a single base register with no offset.</p>
+</blockquote>
+<p><code>[v] "+Q" (v-&gt;counter)</code> is equivalent to <code>[v] "+r" (&amp;v-&gt;counter)</code>?</p>
+<h3 id="a64_cmpxchg_mb_64">a64 cmpxchg_mb_64<a class="headerlink" href="#a64_cmpxchg_mb_64" title="Permanent link">#</a></h3>
+<p>For ARM64 architecture, one implementation of the <code>cmpxchg_mb_64()</code> function is as follows.</p>
+<div class="language-c highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-16-1"> 1</a></span>
+<span class="normal"><a href="#__codelineno-16-2"> 2</a></span>
+<span class="normal"><a href="#__codelineno-16-3"> 3</a></span>
+<span class="normal"><a href="#__codelineno-16-4"> 4</a></span>
+<span class="normal"><a href="#__codelineno-16-5"> 5</a></span>
+<span class="normal"><a href="#__codelineno-16-6"> 6</a></span>
+<span class="normal"><a href="#__codelineno-16-7"> 7</a></span>
+<span class="normal"><a href="#__codelineno-16-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-16-9"> 9</a></span>
+<span class="normal"><a href="#__codelineno-16-10">10</a></span>
+<span class="normal"><a href="#__codelineno-16-11">11</a></span>
+<span class="normal"><a href="#__codelineno-16-12">12</a></span>
+<span class="normal"><a href="#__codelineno-16-13">13</a></span>
+<span class="normal"><a href="#__codelineno-16-14">14</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1"></a><span class="n">u64</span><span class="w"> </span><span class="nf">cmpxchg_mb_64</span><span class="w"> </span><span class="p">(</span><span class="k">volatile</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="o">*</span><span class="n">ptr</span><span class="p">,</span><span class="w"> </span><span class="n">u64</span><span class="w"> </span><span class="n">old</span><span class="p">,</span><span class="w"> </span><span class="n">u64</span><span class="w"> </span><span class="n">new</span><span class="p">)</span>
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2"></a><span class="p">{</span>
+</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3"></a><span class="w">    </span><span class="n">u64</span><span class="w"> </span><span class="n">tmp</span><span class="p">;</span>
+</span><span id="__span-16-4"><a id="__codelineno-16-4" name="__codelineno-16-4"></a>
+</span><span id="__span-16-5"><a id="__codelineno-16-5" name="__codelineno-16-5"></a><span class="w">    </span><span class="k">asm</span><span class="w"> </span><span class="k">volatile</span><span class="p">(</span>
+</span><span id="__span-16-6"><a id="__codelineno-16-6" name="__codelineno-16-6"></a><span class="w">    </span><span class="s">&quot;   mov x30, %x[old]</span><span class="se">\n</span><span class="s">&quot;</span>
+</span><span id="__span-16-7"><a id="__codelineno-16-7" name="__codelineno-16-7"></a><span class="w">    </span><span class="s">&quot;   casal x30, %x[new], %[v]</span><span class="se">\n</span><span class="s">&quot;</span>
+</span><span id="__span-16-8"><a id="__codelineno-16-8" name="__codelineno-16-8"></a><span class="w">    </span><span class="s">&quot;   mov %x[ret], x30&quot;</span>
+</span><span id="__span-16-9"><a id="__codelineno-16-9" name="__codelineno-16-9"></a><span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="n">ret</span><span class="p">]</span><span class="w"> </span><span class="s">&quot;+r&quot;</span><span class="w"> </span><span class="p">(</span><span class="n">tmp</span><span class="p">),</span><span class="w"> </span><span class="p">[</span><span class="n">v</span><span class="p">]</span><span class="w"> </span><span class="s">&quot;+Q&quot;</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">long</span><span class="w"> </span><span class="o">*</span><span class="p">)</span><span class="n">ptr</span><span class="p">)</span>
+</span><span id="__span-16-10"><a id="__codelineno-16-10" name="__codelineno-16-10"></a><span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="p">[</span><span class="n">old</span><span class="p">]</span><span class="w"> </span><span class="s">&quot;r&quot;</span><span class="w"> </span><span class="p">(</span><span class="n">old</span><span class="p">),</span><span class="w"> </span><span class="p">[</span><span class="n">new</span><span class="p">]</span><span class="w"> </span><span class="s">&quot;r&quot;</span><span class="w"> </span><span class="p">(</span><span class="n">new</span><span class="p">)</span>
+</span><span id="__span-16-11"><a id="__codelineno-16-11" name="__codelineno-16-11"></a><span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="s">&quot;memory&quot;</span><span class="p">);</span>
+</span><span id="__span-16-12"><a id="__codelineno-16-12" name="__codelineno-16-12"></a>
+</span><span id="__span-16-13"><a id="__codelineno-16-13" name="__codelineno-16-13"></a><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">tmp</span><span class="p">;</span>
+</span><span id="__span-16-14"><a id="__codelineno-16-14" name="__codelineno-16-14"></a><span class="p">}</span>
+</span></code></pre></div></td></tr></table></div>
+<p>The <em><code>AssemblerTemplate</code></em> contains multiple assembler instructions separated by newline break (<code>\n</code>).</p>
+<p><a href="https://developer.arm.com/documentation/dui0801/l/A64-Data-Transfer-Instructions/CASA--CASAL--CAS--CASL--CASAL--CAS--CASL--A64-">CASAL</a>: Compare and Swap word or doubleword in memory.</p>
+<ul>
+<li><code>CASAL Ws, Wt, [Xn|SP,#0]</code>: 32-bit, acquire and release general registers.</li>
+<li>load from memory with acquire semantics; store to memory with release semantics.</li>
+</ul>
+<p>The corresponding C code for the AssemblerTemplate is as follows, lines per line:</p>
+<div class="language-c highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-17-6">6</a></span>
+<span class="normal"><a href="#__codelineno-17-7">7</a></span>
+<span class="normal"><a href="#__codelineno-17-8">8</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-17-6"><a id="__codelineno-17-6" name="__codelineno-17-6"></a><span class="n">x30</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">old</span><span class="p">;</span><span class="w"> </span><span class="c1">// load old value</span>
+</span><span id="__span-17-7"><a id="__codelineno-17-7" name="__codelineno-17-7"></a><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">x30</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="o">*</span><span class="n">ptr</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="n">ptr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">new</span><span class="p">;</span><span class="w"> </span><span class="c1">// new is conditionally stored to ptr</span>
+</span><span id="__span-17-8"><a id="__codelineno-17-8" name="__codelineno-17-8"></a><span class="n">tmp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x30</span><span class="p">;</span><span class="w"> </span><span class="c1">// return expected old</span>
+</span></code></pre></div></td></tr></table></div>
+<p>See the cases above for the meaning of the constraints <code>"+Q"</code>.</p>
 
 
 
@@ -1822,7 +2037,7 @@
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../c-const-readonly/" class="md-footer__link md-footer__link--prev" aria-label="Previous: const qualifier in C">
+          <a href="../../20231014/c-volatile/" class="md-footer__link md-footer__link--prev" aria-label="Previous: volatile in C/C++">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -1832,20 +2047,20 @@
                 Previous
               </span>
               <div class="md-ellipsis">
-                const qualifier in C
+                volatile in C/C++
               </div>
             </div>
           </a>
         
         
           
-          <a href="../../20231010/c-named-const/" class="md-footer__link md-footer__link--next" aria-label="Next: C Named Constants">
+          <a href="../c-memory-order/" class="md-footer__link md-footer__link--next" aria-label="Next: C Memory Order(Sequential Consistency)">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                C Named Constants
+                C Memory Order(Sequential Consistency)
               </div>
             </div>
             <div class="md-footer__button md-icon">

@@ -241,9 +241,10 @@ try_to_wake_up(struct task_struct *p, unsigned int state, int wake_flags)
 
 在ARM64体系结构里，实现自旋锁最简单的方式是使用 `LDAXR` 和 `STXR` 指令，参见上面的【例 18-13】和【例 18-15】。我们以 Linux 3.7 内核的源代码中自旋锁的实现为例进行说明。
 
+> 关于 C 代码内嵌 ASM 汇编，参考 [GCC Extended Asm - C/C++ inline assembly](../toolchain/gcc-ext-asm.md)。
+
 ```c
 // <linux-3.7/arch/arm64/include/asm/spinlock.h>
-
 static inline void arch_spin_lock(arch_spinlock_t *lock)
 {
     unsigned int tmp;
@@ -259,6 +260,15 @@ static inline void arch_spin_lock(arch_spinlock_t *lock)
     : "r" (&lock->lock), "r" (1)
     : "memory");
 }
+
+// linux-6.9:
+// arch/arm/include/asm/spinlock.h: ARMv6 ticket-based spin-locking.
+static inline void arch_spin_lock(arch_spinlock_t *lock);
+static inline void arch_spin_unlock(arch_spinlock_t *lock);
+
+// arch/arm64/kvm/hyp/include/nvhe/spinlock.h:
+static inline void hyp_spin_lock(hyp_spinlock_t *lock);
+static inline void hyp_spin_unlock(hyp_spinlock_t *lock);
 ```
 
 从上面的代码可以看到，自旋锁采用 `LDAXR` 和 `STXR` 的指令组合来实现，`LDAXR` 指令隐含了加载-获取内存屏障原语。加载-获取屏障原语之后的读写操作不能重排到该屏障原语前面，但是不能保证屏障原语前面的读写指令重排到屏障原语后面。如图19.14所示，读指令1和写指令1有可能重排到屏障原语后面，而读指令2和写指令2不能重排到屏障原语指令的前面。
@@ -289,13 +299,26 @@ static inline void arch_spin_lock(arch_spinlock_t *lock)
 
 所以，在 ARM64 体系结构里，自旋锁隐含了一条单方向（one-way barrier）的内存屏障指令，在自旋锁临界区里的读写指令不能向前（后？）越过临界区，但是自旋锁临界区前面的读写指令可以穿越到临界区里，这会引发问题。
 
-`smp_mb__after_spinlock()` 函数在 x86 体系结构下是一个空函数，而在 ARM64 体系结构里则是一个隐含了 `smp_mb()` 内存屏障指令的函数。
+```c
+// include/linux/spinlock.h
+#ifndef smp_mb__after_spinlock
+#define smp_mb__after_spinlock()	kcsan_mb()
+#endif
+```
+
+在 ARM64 体系结构里定义 `smp_mb__after_spinlock` 函数宏为 `smp_mb()` 内存屏障指令。
 
 ```c
-//对于 X86 体系结构，这是一个空函数
-#define smp_mb_after_spinlock() do { } while (0)
-//对于 ARM64 体系结构，其中隐含了 smp_mb() 内存屏障指令
-#define smp_mb_after_spinlock() smp_mb()
+// arch/arm64/include/asm/spinlock.h
+/* See include/linux/spinlock.h */
+#define smp_mb__after_spinlock()	smp_mb()
+```
+
+在 x86 体系结构下，kcsan-checks.h 中定义了 `kcsan_mb` 为一个空函数。
+
+```c
+// include/linux/kcsan-checks.h
+#define kcsan_mb()	do { } while (0)
 ```
 
 ## 邮箱传递消息

@@ -3,7 +3,7 @@ title: ARM64 Atomic operations
 authors:
     - xman
 date:
-    created: 2023-10-08T10:00:00
+    created: 2023-10-12T10:00:00
 categories:
     - arm
 tags:
@@ -16,8 +16,6 @@ comments: true
 原子操作是指保证指令以原子的方式执行，执行过程不会被打断。
 
 <!-- more -->
-
-## 原子操作(Atomic)
 
 [Concurrency support library (since C++11) - cppreference.com](https://en.cppreference.com/w/cpp/thread#Semaphores)
 
@@ -42,27 +40,15 @@ void thread_B_func ()
 
 有的读者可能认为i等于2，但也可能不等于2，代码的执行过程如下。
 
-=== "CPU0: thread_A_func"
-
-    ```asm
-    load i=0
-
-    i++
-
-    store i (i=1)
-    ```
-
-=== "CPU1: thread_B_func"
-
-    ```asm
-    // assumptive scheduling gap
-
-    load i=0
-
-    i++
-
-    store i (i=1)
-    ```
+```asm
+CPU0: thread_A_func   |     CPU1: thread_B_func
+load i=0              |     
+                      |     load i=0
+i++                   |     
+                      |     i++
+store i (i=1)         |     
+                      |     store i (i=1)
+```
 
 从上面的代码执行过程来看，最终 i 也可能等于1。因为变量 i 位于临界区，CPU0 和 CPU1 可能同时访问，发生并发访问。从CPU角度来看，变量 i 是一个静态全局变量，存储在数据段中，首先读取变量的值并存储到通用寄存器中，然后在通用寄存器里做加法运算，最后把寄存器的数值写回变量 i 所在的内存中。在多处理器体系结构中，上述动作可能同时进行。即使在单处理器体系结构上依然可能存储并发访问，例如 thread_B_func 在某个中断处理函数中执行。
 
@@ -74,7 +60,7 @@ void thread_B_func ()
 
 处理器必须提供原子操作的汇编指令来完成上述操作，如 ARM64 处理器提供 `LDXR` 和 `STXR` 独占访问内存的指令以及原子内存访问操作指令。
 
-### 独占内存访问指令
+## 独占内存访问指令
 
 原子操作需要处理器提供硬件支持，不同的处理器体系结构在原子操作上会有不同的实现。
 
@@ -89,7 +75,7 @@ LL/SC 最早用于并发与同步访问内存的 CPU 指令，它分成两部分
 
 LL/SC 常常用于实现 ***无锁*** 算法与“读-修改-回写”原子操作。很多 RISC 体系结构实现了这种 LL/SC 机制，比如 ARMv8 指令集里实现了 `LDXR` 和 `STXR` 指令。
 
-LDXR 指令是内存独占加载指令，它从内存中以独占方式加教内存地址的信到通用寄存器里。
+LDXR 指令是内存独占加载指令，它从内存中以独占方式加载内存地址的信到通用寄存器里。
 
 以下是 `LDXR` 指令的原型，它把 `Xn` 或者 `SP` 地址的值原子地加载到 `Xt` 寄存器里。
 
@@ -118,6 +104,8 @@ stxp <ws>, <xt1>, <xt2＞, [xn | sp]
 LDXR 和STXR 指令还可以和加载-获取以及存储-释放内存屏障原语结合使用，构成一个类似于临界区的内存屏障，在一些场景（比如自旋锁的实现）中非常有用。
 
 【例 20-2】下面的代码使用了原子的加法函数。`atomic_add(i,v)` 函数非常简单，它是原子地给 v 加上 i。
+
+> 关于 C 代码内嵌 ASM 汇编，参考 [GCC Extended Asm - C/C++ inline assembly](../toolchain/gcc-ext-asm.md)。
 
 ```c linenums="1"
     void atomic_add (int i, atomic_t *v)
@@ -152,7 +140,7 @@ typede struct {
 在第11行中，输出部分有两个参数，其中 `result` 和 `tmp` 具有可写属性。
 在第12行中，输入部分有两个参数，`v->counter` 的地址只有只读属性，`i` 也只有只读属性。
 
-### 独占内存访问工作原理
+## 独占内存访问工作原理
 
 我们在前文已经介绍了 `LDXR` 和 `STXR` 指令。`LDXR` 是内存加载指令的一种，不过它会通过独占监视器（exclusive monitor）来监控对内存的访问。
 
@@ -189,7 +177,7 @@ my_atomic_set:
 
 `LDXR` 指令和 `STXR` 指令在多核之间利用高速缓存一致性协议以及独占监视器来保证执行的 **串行化** 和 **数据一致性**。以 Cortex-A72 为例，L1 数据高速缓存之间的缓存一致性是通过 `MESI` 协议来实现的。
 
-### 原子内存访问操作指令
+## 原子内存访问操作指令
 
 在 ARMv8.1 体系结构中新增了原子内存访问操作指令（atomic memory access instruction），这个也称为 `LSE`（Large System Extension）。原子内存访问操作指令需要 AMBA 5 总线中的 `CHI`（Coherent Hub Interface）的支持。AMBA 5 总线引入了原子事务（atomic transaction），允许将原子操作发送到数据，并且允许原子操作在靠近数据的地方执行，例如在互连总线上执行原子算术和逻辑操作，而不需要加载到高速缓存中处理。原子事务非常适合要操作的数据离处理器核心比较*远*的情况，例如数据在内存中。
 
@@ -201,8 +189,13 @@ my_atomic_set:
 
 LSE 指令中主要新增了如下三类指令。
 
-- 比较并交换（Compare And Swap, `CAS`）指令。
-- 原子内存访问指令，比如 `LDADD` 指令，用于原子地加载内存地址的值，然后进行加法运算；`STADD` 指令原子地对内存地址的值进行加法运算，然后把结果存储到这个内存地址里。
+- 比较并交换（Compare And Swap, [CAS](https://developer.arm.com/documentation/dui0801/l/A64-Data-Transfer-Instructions/CASA--CASAL--CAS--CASL--CASAL--CAS--CASL--A64-)）指令。
+
+    - `CASA` and `CASAL` load from memory with acquire semantics.
+    - `CASL` and `CASAL` store to memory with release semantics.
+    - `CAS` has no memory ordering requirements.
+
+- 原子内存访问指令，比如 [LDADD](https://developer.arm.com/documentation/dui0801/l/A64-Data-Transfer-Instructions/LDADDA--LDADDAL--LDADD--LDADDL--LDADDAL--LDADD--LDADDL--A64-) 指令，用于原子地加载内存地址的值，然后进行加法运算；[STADD](https://developer.arm.com/documentation/dui0801/l/A64-Data-Transfer-Instructions/STADD--STADDL--STADDL--A64-) 指令原子地对内存地址的值进行加法运算，然后把结果存储到这个内存地址里。
 - 交换指令（Swap）。
 
 原子内存访问指令分成两类。
@@ -219,7 +212,7 @@ static inline void atomic_add(int i, atomic_t *v)
 {
     asm volatile(
         "stadd %w[i], %[v]\n"
-        : [i] "+r" (i), [v] "+Q" (v-›counter)
+        : [i] "+r" (i), [v] "+Q" (v->counter)
         :
         : "cc");
 }
@@ -261,7 +254,7 @@ release_lock:
     stlr x1, [x0]
 ```
 
-#### 比较并交换指令(CAS)
+### 比较并交换指令(CAS)
 
 比较并交换（CAS）指令在 ***无锁*** 实现中起到非常重要的作用。比较并交换指令的伪代码如下。
 
@@ -350,6 +343,9 @@ cmpxchg.h:
 - [arch/arm64/include/asm/cmpxchg.h](https://github.com/torvalds/linux/blob/master/arch/arm64/include/asm/cmpxchg.h)
 
 ## references
+
+[Atomic operation in aarch64](http://www.wowotech.net/armv8a_arch/492.html)
+[ARMv8.1平台下新添加原子操作指令](https://blog.csdn.net/Roland_Sun/article/details/107552574)
 
 [眉目传情之匠心独运的kfifo](https://blog.csdn.net/chen19870707/article/details/39899743)
 [眉目传情之并发无锁环形队列的实现](https://blog.csdn.net/chen19870707/article/details/39994303)
