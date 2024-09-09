@@ -14,13 +14,17 @@ comments: true
 
 The "happens before" relation is the only possible way to reason about timing between different threads. It is only established through synchronization that uses either atomic objects or very specific C library functions.
 
-Sequential consistency is the default consistency model for atomics, but not for other C library functions. It additionally assumes that all corresponding synchronization events are totally ordered. This is an assumption that can be expensive.
+An atomic object can be used to synchronize two threads, if one thread writes a value and another thread reads the value that was written. Operations on atomics are guaranteed to be locally consistent.
 
-Explicitly using acquire-release consistency can lead to more efficient code, but it needs a careful design to supply the correct arguments to the atomic functions with a *`_explicit`* suffix.
+Sequential consistency is the *default* consistency model for atomics, but not for other C library functions. It additionally assumes that all corresponding synchronization events are totally ordered.
 
 <!-- more -->
 
 [Modern C, 1st Edition, 2019](https://www.amazon.com/Modern-C-Jens-Gustedt-ebook/dp/B0978347Z6/) | 19 Atomic access and memory consistency
+
+Observe that these synchronizations are oriented: each synchronization between threads has a “writer” and a “reader” side. We attach two abstract properties to operations on atomics and to certain C library calls that are called *`release`* semantics (on the writer side), *`acquire`* semantics (for a reader), or *`acquire-release`* semantics (for a reader-writer).
+
+Explicitly using acquire-release consistency can lead to more efficient code, but it needs a careful design to supply the correct arguments to the atomic functions with a *`_explicit`* suffix.
 
 ## Sequential consistency
 
@@ -182,6 +186,10 @@ generates an `LDAR` instruction to preform the load from data. Such acquire load
 In practice, `STLR` / `LDAPR` gives C++ `std::memory_order_acq_rel`, as opposed to SC.
 
 ## references
+
+[TC++PL4: The C++ Programming Language, Fourth Edition](https://www.stroustrup.com/4th.html) | 41. Concurrency
+[Modern C++ Programming Cookbook](https://www.amazon.com/Modern-Programming-Cookbook-language-standard/dp/1800208987/) | Chapter 8: Leveraging Threading and Concurrency
+[C++ Concurrency in Action, Second Edition](https://www.amazon.com/C-Concurrency-Action-Anthony-Williams/dp/1617294691/) | 5. The C++ memory model and operations on atomic types
 
 [C和C++中的volatile、内存屏障和CPU缓存一致性协议MESI](https://cloud.tencent.com/developer/article/1403223)
 [深入理解C11/C++11内存模型](https://cloud.tencent.com/developer/article/2120357)

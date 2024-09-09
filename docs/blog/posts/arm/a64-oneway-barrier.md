@@ -23,6 +23,10 @@ The ARMv8 instruction set also supports load and store instructions with implici
 - `acquire` barrier primitive: read and write operations after this barrier primitive cannot be reordered *before* this barrier primitive. Usually, this barrier primitive is combined with `load` instructions.
 - `release` barrier primitive: read and write operations before this barrier primitive cannot be reordered *after* this barrier primitive. Usually, this barrier primitive is combined with `store` instructions.
 
+[Modern C, 1st Edition, 2019](https://www.amazon.com/Modern-C-Jens-Gustedt-ebook/dp/B0978347Z6/) | 19 Atomic access and memory consistency:
+
+> Observe that these synchronizations are oriented: each synchronization between threads has a “writer” and a “reader” side. We attach two abstract properties to operations on atomics and to certain C library calls that are called *`release`* semantics (on the writer side), *`acquire`* semantics (for a reader), or *`acquire-release`* semantics (for a reader-writer).
+
 ## Load-Acquire (LDAR)
 
 The ordering requirements that are imposed by the Load-Acquire `LDAR` instruction are as follows:

@@ -22,13 +22,13 @@ In an SMP (Symmetric multiprocessing) system, data accesses must frequently be r
 
 [ARM Cortex-A Series Programmer's Guide for ARMv8-A](https://developer.arm.com/documentation/den0024/latest) | 6: The A64 instruction set - 6.3 Memory access instructions - 6.3.11 Synchronization primitives
 
-ARMv7-A and ARMv8-A architectures both provide support for exclusive memory accesses. In A64, this is the *Load/Store exclusive* (`LDXR`/`STXR`) pair.
+ARMv7-A and ARMv8-A architectures both provide support for exclusive memory accesses. In A64, this is the *Load/Store exclusive* ([LDXR](https://developer.arm.com/documentation/ddi0602/latest/Base-Instructions/LDXR--Load-exclusive-register-)/[STXR](https://developer.arm.com/documentation/ddi0602/latest/Base-Instructions/STXR--Store-exclusive-register-)) pair.
 
 The `LDXR` instruction loads a value from a memory address and attempts to silently claim an exclusive *lock* on the address. The Store-Exclusive instruction `STXR` then writes a new value to that location only if the *lock* was successfully obtained and held. The `LDXR`/`STXR` pairing is used to construct standard synchronization primitives such as ***spinlocks***.
 
 Software must avoid having any explicit memory accesses, system control register updates, or cache maintenance instructions between paired `LDXR` and `STXR` instructions.
 
-There is also an exclusive pair of Load Acquire/Store Release instructions called `LDAXR` and `STLXR`.
+There is also an exclusive pair of Load Acquire/Store Release instructions called [LDAXR](https://developer.arm.com/documentation/ddi0602/latest/Base-Instructions/LDAXR--Load-acquire-exclusive-register-) and [STLXR](https://developer.arm.com/documentation/ddi0602/latest/Base-Instructions/STLXR--Store-release-exclusive-register-).
 
 ## Multi-processing
 

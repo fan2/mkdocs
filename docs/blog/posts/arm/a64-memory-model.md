@@ -234,8 +234,9 @@ ARM64 处理器实现了这种弱一致性内存模型，因此 ARM64 处理器�
 
 [linux/tools/memory-model/Documentation/](https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/tools/memory-model/Documentation/) @[github](https://github.com/torvalds/linux/blob/master/tools/memory-model/Documentation/)
 
+Russ Cox: [research!rsc: Memory Models.PDF](https://research.swtch.com/mm) - [筆記1](https://blog.kennycoder.io/2022/07/18/Hardware-Memory-Models-%E7%AD%86%E8%A8%98/)，[筆記2](https://blog.kennycoder.io/2022/07/26/Programming-Language-Memory-Models-%E7%AD%86%E8%A8%98/)
+[Memory Barriers - a Hardware View for Software Hackers.PDF](https://www.puppetmastertrading.com/images/hwViewForSwHackers.pdf)
 [A Primer on Memory Consistency and Cache Coherence.PDF](https://link.springer.com/book/10.1007/978-3-031-01764-3) - [笔记](https://www.cnblogs.com/icwangpu/category/2394256.html)
-[Hardware Memory Models - 筆記](https://blog.kennycoder.io/2022/07/18/Hardware-Memory-Models-%E7%AD%86%E8%A8%98/)
 
 [Consistency model](https://en.wikipedia.org/wiki/Consistency_model):
 

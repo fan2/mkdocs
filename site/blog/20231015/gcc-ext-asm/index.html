@@ -1749,7 +1749,7 @@
 <p><em><code>Clobbers</code></em> argument: <code>: "memory"</code>.</p>
 <ul>
 <li>
-<p>The "<code>memory</code>" clobber tells the compiler that the assembly code performs memory reads or writes to items other than those listed in the input and output operands (for example, accessing the memory pointed to by one of the input parameters). To ensure memory contains correct values, GCC may need to <strong>flush</strong> specific register values to memory <em>before</em> executing the <em><code>asm</code></em>. Further, the compiler does not assume that any values read from memory <em>before</em> an <em><code>asm</code></em> remain unchanged after that asm; it <strong>reloads</strong> them as needed. Using the "<code>memory</code>" clobber effectively forms a read/write memory barrier for the compiler.</p>
+<p>The "<code>memory</code>" clobber tells the compiler that the assembly code performs memory reads or writes to items other than those listed in the input and output operands (for example, accessing the memory pointed to by one of the input parameters). To ensure memory contains correct values, GCC may need to <strong>flush</strong> specific register values to memory <em>before</em> executing the <em><code>asm</code></em>. Further, the compiler does not assume that any values read from memory <em>before</em> an <em><code>asm</code></em> remain unchanged after that asm; it <strong>reloads</strong> them as needed. Using the "<code>memory</code>" clobber effectively forms a read/write memory barrier(<a href="https://en.cppreference.com/w/c/atomic/memory_order">memory_order_acq_rel</a>; <a href="https://en.cppreference.com/w/cpp/atomic/memory_order">memory_order::acq_rel</a>) for the compiler.</p>
 </li>
 <li>
 <p>Note that this clobber does not prevent the <em>processor</em> from doing speculative reads past the asm statement. To prevent that, you need processor-specific fence instructions(See <a href="../../20231007/a64-memory-barrier/">ARM64 Memory Ordering - barriers</a>).</p>
@@ -1797,9 +1797,9 @@
 <div class="language-c highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-12-9"> 9</a></span>
 <span class="normal"><a href="#__codelineno-12-10">10</a></span>
 <span class="normal"><a href="#__codelineno-12-11">11</a></span>
-<span class="normal"><a href="#__codelineno-12-12">12</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-12-9"><a id="__codelineno-12-9" name="__codelineno-12-9"></a><span class="n">tmp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">lock</span><span class="o">-&gt;</span><span class="n">lock</span><span class="p">;</span>
+<span class="normal"><a href="#__codelineno-12-12">12</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-12-9"><a id="__codelineno-12-9" name="__codelineno-12-9"></a><span class="n">tmp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">lock</span><span class="o">-&gt;</span><span class="n">lock</span><span class="p">;</span><span class="w">   </span><span class="c1">// Load-Acquire Exclusive</span>
 </span><span id="__span-12-10"><a id="__codelineno-12-10" name="__codelineno-12-10"></a><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">tmp</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="k">goto</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
-</span><span id="__span-12-11"><a id="__codelineno-12-11" name="__codelineno-12-11"></a><span class="k">else</span><span class="w"> </span><span class="n">lock</span><span class="o">-&gt;</span><span class="n">lock</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="c1">// tmp saves the status result;</span>
+</span><span id="__span-12-11"><a id="__codelineno-12-11" name="__codelineno-12-11"></a><span class="k">else</span><span class="w"> </span><span class="n">lock</span><span class="o">-&gt;</span><span class="n">lock</span><span class="o">=</span><span class="mi">1</span><span class="p">;</span><span class="w">  </span><span class="c1">// Store Exclusive, tmp saves the status result;</span>
 </span><span id="__span-12-12"><a id="__codelineno-12-12" name="__codelineno-12-12"></a><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">tmp</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="k">goto</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span>
 </span></code></pre></div></td></tr></table></div>
 <p>What does <em><code>&amp;</code></em> mean in OutputOperands <code>: "=&amp;r" (tmp)</code>?</p>
@@ -1854,9 +1854,9 @@
 <div class="language-c highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-14-11">11</a></span>
 <span class="normal"><a href="#__codelineno-14-12">12</a></span>
 <span class="normal"><a href="#__codelineno-14-13">13</a></span>
-<span class="normal"><a href="#__codelineno-14-14">14</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-14-11"><a id="__codelineno-14-11" name="__codelineno-14-11"></a><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">v</span><span class="o">-&gt;</span><span class="n">counter</span><span class="p">;</span>
+<span class="normal"><a href="#__codelineno-14-14">14</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-14-11"><a id="__codelineno-14-11" name="__codelineno-14-11"></a><span class="n">result</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">v</span><span class="o">-&gt;</span><span class="n">counter</span><span class="p">;</span><span class="w"> </span><span class="c1">// Load Exclusive</span>
 </span><span id="__span-14-12"><a id="__codelineno-14-12" name="__codelineno-14-12"></a><span class="n">result</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">i</span><span class="p">;</span>
-</span><span id="__span-14-13"><a id="__codelineno-14-13" name="__codelineno-14-13"></a><span class="n">v</span><span class="o">-&gt;</span><span class="n">counter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">result</span><span class="p">;</span><span class="w"> </span><span class="c1">// tmp saves the status result;</span>
+</span><span id="__span-14-13"><a id="__codelineno-14-13" name="__codelineno-14-13"></a><span class="n">v</span><span class="o">-&gt;</span><span class="n">counter</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">result</span><span class="p">;</span><span class="w"> </span><span class="c1">// Store Exclusive, tmp saves the status result;</span>
 </span><span id="__span-14-14"><a id="__codelineno-14-14" name="__codelineno-14-14"></a><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">tmp</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="k">goto</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
 </span></code></pre></div></td></tr></table></div>
 <p>See the cases above for the meaning of the constraints <code>"=&amp;r"</code> and <code>"Ir"</code>.</p>
@@ -1895,7 +1895,7 @@
 </blockquote>
 <p><code>[v] "+Q" (v-&gt;counter)</code> is equivalent to <code>[v] "+r" (&amp;v-&gt;counter)</code>?</p>
 <h3 id="a64_cmpxchg_mb_64">a64 cmpxchg_mb_64<a class="headerlink" href="#a64_cmpxchg_mb_64" title="Permanent link">#</a></h3>
-<p>For ARM64 architecture, one implementation of the <code>cmpxchg_mb_64()</code> function is as follows.</p>
+<p>For ARM64 architecture, one implementation of the <code>cmpxchg_mb_64()</code> function is as follows. See <a href="../../20231012/a64-atomic-operations/">ARM64 Atomic operations</a>.</p>
 <div class="language-c highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-16-1"> 1</a></span>
 <span class="normal"><a href="#__codelineno-16-2"> 2</a></span>
 <span class="normal"><a href="#__codelineno-16-3"> 3</a></span>
@@ -1925,16 +1925,11 @@
 </span><span id="__span-16-14"><a id="__codelineno-16-14" name="__codelineno-16-14"></a><span class="p">}</span>
 </span></code></pre></div></td></tr></table></div>
 <p>The <em><code>AssemblerTemplate</code></em> contains multiple assembler instructions separated by newline break (<code>\n</code>).</p>
-<p><a href="https://developer.arm.com/documentation/dui0801/l/A64-Data-Transfer-Instructions/CASA--CASAL--CAS--CASL--CASAL--CAS--CASL--A64-">CASAL</a>: Compare and Swap word or doubleword in memory.</p>
-<ul>
-<li><code>CASAL Ws, Wt, [Xn|SP,#0]</code>: 32-bit, acquire and release general registers.</li>
-<li>load from memory with acquire semantics; store to memory with release semantics.</li>
-</ul>
 <p>The corresponding C code for the AssemblerTemplate is as follows, lines per line:</p>
 <div class="language-c highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-17-6">6</a></span>
 <span class="normal"><a href="#__codelineno-17-7">7</a></span>
 <span class="normal"><a href="#__codelineno-17-8">8</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-17-6"><a id="__codelineno-17-6" name="__codelineno-17-6"></a><span class="n">x30</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">old</span><span class="p">;</span><span class="w"> </span><span class="c1">// load old value</span>
-</span><span id="__span-17-7"><a id="__codelineno-17-7" name="__codelineno-17-7"></a><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">x30</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="o">*</span><span class="n">ptr</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="n">ptr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">new</span><span class="p">;</span><span class="w"> </span><span class="c1">// new is conditionally stored to ptr</span>
+</span><span id="__span-17-7"><a id="__codelineno-17-7" name="__codelineno-17-7"></a><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">*</span><span class="n">ptr</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">x30</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="n">ptr</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">new</span><span class="p">;</span><span class="w"> </span><span class="c1">// new is conditionally stored to ptr</span>
 </span><span id="__span-17-8"><a id="__codelineno-17-8" name="__codelineno-17-8"></a><span class="n">tmp</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">x30</span><span class="p">;</span><span class="w"> </span><span class="c1">// return expected old</span>
 </span></code></pre></div></td></tr></table></div>
 <p>See the cases above for the meaning of the constraints <code>"+Q"</code>.</p>

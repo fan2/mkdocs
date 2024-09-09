@@ -94,10 +94,10 @@ CPU1 和 CPU2 都是乱序执行的 CPU，所以 CPU 不一定会按照次序来
 
 ARMv8 指令集里把加载-获取和存储-释放内存屏障原语集成到了**独占**内存访问指令中。根据结合的情况，分成下面 4 种情况。
 
-1. 没有集成屏障原语的 `LDXR` 和 `STXR` 指令。注意，ARM64 的指令的写法是 `LDXR` 和 `STXR`；ARM32 指令的写法是 `LDREX` 和 `STREX`。
+1. 没有集成屏障原语的 [LDXR](https://developer.arm.com/documentation/ddi0602/latest/Base-Instructions/LDXR--Load-exclusive-register-) 和 [STXR](https://developer.arm.com/documentation/ddi0602/latest/Base-Instructions/STXR--Store-exclusive-register-) 指令。注意：ARM32 对应指令的写法是 `LDREX` 和 `STREX`。
 2. 仅仅集成了加载-获取内存屏障原语的 *`LDAXR`* 和 `STXR` 指令。
 3. 仅仅集成了存储-释放内存屏障原语的 `LDXR` 和* `STLXR`* 指令。
-4. 同时集成了加载-获取和存储-释放内存屏障原语的 *`LDAXR`* 和 *`STLXR`* 指令。
+4. 同时集成了加载-获取和存储-释放内存屏障原语的 [LDAXR](https://developer.arm.com/documentation/ddi0602/latest/Base-Instructions/LDAXR--Load-acquire-exclusive-register-) 和 [STLXR](https://developer.arm.com/documentation/ddi0602/latest/Base-Instructions/STLXR--Store-release-exclusive-register-) 指令。
 
 > 关于配对使用的独占内存访问指令 `LDXR`/`STXR`（Load-Link/Store-Conditional, LL/SC 实现机制），参考 *第 20 章 原子操作* - *20.2 独占内存访问指令* 和 *20.3 独占内存访问工作原理*。
 
@@ -112,7 +112,7 @@ ARMv8 指令集里把加载-获取和存储-释放内存屏障原语集成到了
 【例 18-13】下面是一段获取自旋锁的伪代码，其中 X1 寄存器存放了自旋锁，W0 寄存器的值为 1。
 
 ```asm linenums="1" hl_lines="3 5"
-prfm pstllkeep, [x1]
+prfm pstl1keep, [x1]
 loop:
     ldaxr w5, [x1]
     cbnz w5, loop
@@ -121,7 +121,7 @@ loop:
     ; //成功获取了锁
 ```
 
-在第1行中，`PRFM` 是预取指令，把 *lock* 先预取到高速缓存里，起到加速的作用。
+在第1行中，[PRFM](https://developer.arm.com/documentation/ddi0602/latest/Base-Instructions/PRFM--register---Prefetch-memory--register--) 是预取指令，把 *lock* 先预取到高速缓存里，起到加速的作用。
 在第3行中，使用内置了加载-获取内存屏障原语的独占访问指令 `LDAXR` 来读取 *lock* 的值。
 在第4行中，判断 *lock* 的值是否为0，如果不等于0，说明其他 CPU 持有了锁，那只能继续跳转到 loop 标签处并***自旋***。当 lock 的值为 0 的时候，说明这个锁已经释放了，是空闲的。
 在第5行中，`STXR` 指令与第三行的 `LDXR` 指令配对使用，把 W0 的值（1）写入 lock 地址，这样就获取了锁。W5 寄存器用来接收 `STXR` 指令操作的返回值（the status result）。
@@ -145,11 +145,11 @@ stlr wzr, [x1] ; 清除锁
 
 ### WFE+SEV 优化自旋锁
 
-如果实现了 `WFE`（Wait For Event）指令将当前 CPU 核切换到低功耗模式，那就一定要实现 `SEV` 指令，否则该 CPU 核有可能会一直不被唤醒。
+如果实现了 [WFE](https://developer.arm.com/documentation/ddi0602/latest/Base-Instructions/WFE--Wait-for-event-)（Wait For Event）指令将当前 CPU 核切换到低功耗模式，那就一定要实现 `SEV` 指令，否则该 CPU 核有可能会一直不被唤醒。
 
-`SEV`（Send Event）指令将向系统中的所有 CPU 核发送事件。对应系统中的每个 CPU 核，**设置**事件寄存器（Event Register）相应的位。如果某个 CPU 核正在等待事件（`WFE`），那么该 CPU 核会被立即唤醒，并**清除**掉表示该 CPU 的事件寄存器相应的位。
+[SEV](https://developer.arm.com/documentation/ddi0602/latest/Base-Instructions/SEV--Send-event-)（Send Event）指令将向系统中的所有 CPU 核发送事件。对应系统中的每个 CPU 核，**设置**事件寄存器（Event Register）相应的位。如果某个 CPU 核正在等待事件（`WFE`），那么该 CPU 核会被立即唤醒，并**清除**掉表示该 CPU 的事件寄存器相应的位。
 
-`SEVL`（Send Event Locally）为发送本地事件指令。不同于 `SEV` 指令，这条指令只会向*当前* CPU 核心发送。如果是多核 CPU 那也只向当前核心，不会向 CPU 内的其它核心发送。值得注意的是，这条指令只有在支持 ARMv8 指令集之后的处理器中才有效。
+[SEVL](https://developer.arm.com/documentation/ddi0602/latest/Base-Instructions/SEVL--Send-event-local-)（Send Event Locally）为发送本地事件指令。不同于 `SEV` 指令，这条指令只会向*当前* CPU 核心发送。如果是多核 CPU 那也只向当前核心，不会向 CPU 内的其它核心发送。值得注意的是，这条指令只有在支持 ARMv8 指令集之后的处理器中才有效。
 
 从前面的分析可以看出来，可以通过 `SEVL` 指令来设置事件寄存器对应当前 CPU 核的位，可以通过 `SEV` 指令来设置事件寄存器对应所有 CPU 核的位，可以通过 `WFE` 指令来清空事件寄存器对应当前 CPU 核的位。
 
@@ -165,7 +165,7 @@ ARMv8 体系结构支持的 `WFE` 机制可对自旋锁进行特殊优化——�
 
 ```asm linenums="1" hl_lines="1 4"
 sevl
-prfm pstllkeep, [x1]
+prfm pstl1keep, [x1]
 loop:
     wfe
     ldaxr w5, [x1]
@@ -376,8 +376,3 @@ CPU1 用来接收数据。第5\~7行的 loop 循环等待 CPU0 更新 FLAGS 标�
 [ARM系列之ARM多核指令WFE、WFI、SEV原理](https://blog.csdn.net/xy010902100449/article/details/126812552)
 
 [ARM架构中导致独占式内存访问Exclusive access 指令（LDXR/STXR）失败的原因分析](https://blog.csdn.net/luolaihua2018/article/details/136768258)
-
-[Advanced Programming in the UNIX Environment, 3rd Edition](https://www.amazon.com/Advanced-Programming-UNIX-Environment-3rd/dp/0321637739)
-
-- 11.6.7 Spin Locks
-- 11.6.8 Barriers

@@ -1417,7 +1417,7 @@
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7z"/></svg>
                           <span class="md-ellipsis">
                             
-                              8 min read
+                              9 min read
                             
                           </span>
                         </div>
@@ -1468,11 +1468,13 @@
   <h1>C Memory Order(Sequential Consistency)</h1>
 
 <p>The "happens before" relation is the only possible way to reason about timing between different threads. It is only established through synchronization that uses either atomic objects or very specific C library functions.</p>
-<p>Sequential consistency is the default consistency model for atomics, but not for other C library functions. It additionally assumes that all corresponding synchronization events are totally ordered. This is an assumption that can be expensive.</p>
-<p>Explicitly using acquire-release consistency can lead to more efficient code, but it needs a careful design to supply the correct arguments to the atomic functions with a <em><code>_explicit</code></em> suffix.</p>
+<p>An atomic object can be used to synchronize two threads, if one thread writes a value and another thread reads the value that was written. Operations on atomics are guaranteed to be locally consistent.</p>
+<p>Sequential consistency is the <em>default</em> consistency model for atomics, but not for other C library functions. It additionally assumes that all corresponding synchronization events are totally ordered.</p>
 <!-- more -->
 
 <p><a href="https://www.amazon.com/Modern-C-Jens-Gustedt-ebook/dp/B0978347Z6/">Modern C, 1st Edition, 2019</a> | 19 Atomic access and memory consistency</p>
+<p>Observe that these synchronizations are oriented: each synchronization between threads has a “writer” and a “reader” side. We attach two abstract properties to operations on atomics and to certain C library calls that are called <em><code>release</code></em> semantics (on the writer side), <em><code>acquire</code></em> semantics (for a reader), or <em><code>acquire-release</code></em> semantics (for a reader-writer).</p>
+<p>Explicitly using acquire-release consistency can lead to more efficient code, but it needs a careful design to supply the correct arguments to the atomic functions with a <em><code>_explicit</code></em> suffix.</p>
 <h2 id="sequential_consistency">Sequential consistency<a class="headerlink" href="#sequential_consistency" title="Permanent link">#</a></h2>
 <p>The data consistency for atomic objects that we described earlier, guaranteed by the <em>happened-before</em> relation, is called <em>acquire-release</em> consistency. Whereas the C library calls we have seen always synchronize with that kind of consistency, no more and no less, accesses to atomics can be specified with different consistency models.</p>
 <p>As you remember, all atomic objects have a <em>modification order</em> that is consistent with all sequenced-before relations that see these modifications <em>on the same</em> object. <em>Sequential consistency</em> has even more requirements than that; see figure 19.3. Here we illustrate the common timeline of all sequentially consistent operations on top. Even if these operations are performed on different processors and the atomic objects are realized in different memory banks, the platform has to <strong>ensure</strong> that all threads perceive all these operations as being consistent with this one global linearization.</p>
@@ -1620,6 +1622,9 @@
 </ul>
 <p>In practice, <code>STLR</code> / <code>LDAPR</code> gives C++ <code>std::memory_order_acq_rel</code>, as opposed to SC.</p>
 <h2 id="references">references<a class="headerlink" href="#references" title="Permanent link">#</a></h2>
+<p><a href="https://www.stroustrup.com/4th.html">TC++PL4: The C++ Programming Language, Fourth Edition</a> | 41. Concurrency<br />
+<a href="https://www.amazon.com/Modern-Programming-Cookbook-language-standard/dp/1800208987/">Modern C++ Programming Cookbook</a> | Chapter 8: Leveraging Threading and Concurrency<br />
+<a href="https://www.amazon.com/C-Concurrency-Action-Anthony-Williams/dp/1617294691/">C++ Concurrency in Action, Second Edition</a> | 5. The C++ memory model and operations on atomic types</p>
 <p><a href="https://cloud.tencent.com/developer/article/1403223">C和C++中的volatile、内存屏障和CPU缓存一致性协议MESI</a><br />
 <a href="https://cloud.tencent.com/developer/article/2120357">深入理解C11/C++11内存模型</a><br />
 <a href="https://weakyon.com/2023/07/23/understanding-of-the-cpp-memory-order.html">理解 C++ 内存一致性模型</a></p>

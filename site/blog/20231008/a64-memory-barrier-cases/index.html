@@ -1578,10 +1578,10 @@
 <h2 id="单方向内存屏障与自旋锁">单方向内存屏障与自旋锁<a class="headerlink" href="#单方向内存屏障与自旋锁" title="Permanent link">#</a></h2>
 <p>ARMv8 指令集里把加载-获取和存储-释放内存屏障原语集成到了<strong>独占</strong>内存访问指令中。根据结合的情况，分成下面 4 种情况。</p>
 <ol>
-<li>没有集成屏障原语的 <code>LDXR</code> 和 <code>STXR</code> 指令。注意，ARM64 的指令的写法是 <code>LDXR</code> 和 <code>STXR</code>；ARM32 指令的写法是 <code>LDREX</code> 和 <code>STREX</code>。</li>
+<li>没有集成屏障原语的 <a href="https://developer.arm.com/documentation/ddi0602/latest/Base-Instructions/LDXR--Load-exclusive-register-">LDXR</a> 和 <a href="https://developer.arm.com/documentation/ddi0602/latest/Base-Instructions/STXR--Store-exclusive-register-">STXR</a> 指令。注意：ARM32 对应指令的写法是 <code>LDREX</code> 和 <code>STREX</code>。</li>
 <li>仅仅集成了加载-获取内存屏障原语的 <em><code>LDAXR</code></em> 和 <code>STXR</code> 指令。</li>
 <li>仅仅集成了存储-释放内存屏障原语的 <code>LDXR</code> 和<em> <code>STLXR</code></em> 指令。</li>
-<li>同时集成了加载-获取和存储-释放内存屏障原语的 <em><code>LDAXR</code></em> 和 <em><code>STLXR</code></em> 指令。</li>
+<li>同时集成了加载-获取和存储-释放内存屏障原语的 <a href="https://developer.arm.com/documentation/ddi0602/latest/Base-Instructions/LDAXR--Load-acquire-exclusive-register-">LDAXR</a> 和 <a href="https://developer.arm.com/documentation/ddi0602/latest/Base-Instructions/STLXR--Store-release-exclusive-register-">STLXR</a> 指令。</li>
 </ol>
 <blockquote>
 <p>关于配对使用的独占内存访问指令 <code>LDXR</code>/<code>STXR</code>（Load-Link/Store-Conditional, LL/SC 实现机制），参考 <em>第 20 章 原子操作</em> - <em>20.2 独占内存访问指令</em> 和 <em>20.3 独占内存访问工作原理</em>。</p>
@@ -1599,7 +1599,7 @@
 <span class="normal"><a href="#__codelineno-5-4">4</a></span>
 <span class="normal"><a href="#__codelineno-5-5">5</a></span>
 <span class="normal"><a href="#__codelineno-5-6">6</a></span>
-<span class="normal"><a href="#__codelineno-5-7">7</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1"></a><span class="nf">prfm</span><span class="w"> </span><span class="no">pstllkeep</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">x1</span><span class="p">]</span>
+<span class="normal"><a href="#__codelineno-5-7">7</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1"></a><span class="nf">prfm</span><span class="w"> </span><span class="no">pstl1keep</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">x1</span><span class="p">]</span>
 </span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2"></a><span class="nl">loop:</span>
 </span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3"></a><span class="hll"><span class="w">    </span><span class="nf">ldaxr</span><span class="w"> </span><span class="no">w5</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">x1</span><span class="p">]</span>
 </span></span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4"></a><span class="w">    </span><span class="nf">cbnz</span><span class="w"> </span><span class="no">w5</span><span class="p">,</span><span class="w"> </span><span class="no">loop</span>
@@ -1607,7 +1607,7 @@
 </span></span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6"></a><span class="w">    </span><span class="nf">cbnz</span><span class="w"> </span><span class="no">w5</span><span class="p">,</span><span class="w"> </span><span class="no">loop</span>
 </span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7"></a><span class="w">    </span><span class="c1">; //成功获取了锁</span>
 </span></code></pre></div></td></tr></table></div>
-<p>在第1行中，<code>PRFM</code> 是预取指令，把 <em>lock</em> 先预取到高速缓存里，起到加速的作用。<br />
+<p>在第1行中，<a href="https://developer.arm.com/documentation/ddi0602/latest/Base-Instructions/PRFM--register---Prefetch-memory--register--">PRFM</a> 是预取指令，把 <em>lock</em> 先预取到高速缓存里，起到加速的作用。<br />
 在第3行中，使用内置了加载-获取内存屏障原语的独占访问指令 <code>LDAXR</code> 来读取 <em>lock</em> 的值。<br />
 在第4行中，判断 <em>lock</em> 的值是否为0，如果不等于0，说明其他 CPU 持有了锁，那只能继续跳转到 loop 标签处并<strong><em>自旋</em></strong>。当 lock 的值为 0 的时候，说明这个锁已经释放了，是空闲的。<br />
 在第5行中，<code>STXR</code> 指令与第三行的 <code>LDXR</code> 指令配对使用，把 W0 的值（1）写入 lock 地址，这样就获取了锁。W5 寄存器用来接收 <code>STXR</code> 指令操作的返回值（the status result）。<br />
@@ -1622,9 +1622,9 @@
 </span></code></pre></div>
 <p>释放锁时只需要使用 <code>STLR</code> 指令往 <em>lock</em> 里写 0 即可。<code>STLR</code> 指令内置了存储-释放内存屏障原语，阻止锁的临界区里的加载/存储指令越出临界区。</p>
 <h3 id="wfesev_优化自旋锁">WFE+SEV 优化自旋锁<a class="headerlink" href="#wfesev_优化自旋锁" title="Permanent link">#</a></h3>
-<p>如果实现了 <code>WFE</code>（Wait For Event）指令将当前 CPU 核切换到低功耗模式，那就一定要实现 <code>SEV</code> 指令，否则该 CPU 核有可能会一直不被唤醒。</p>
-<p><code>SEV</code>（Send Event）指令将向系统中的所有 CPU 核发送事件。对应系统中的每个 CPU 核，<strong>设置</strong>事件寄存器（Event Register）相应的位。如果某个 CPU 核正在等待事件（<code>WFE</code>），那么该 CPU 核会被立即唤醒，并<strong>清除</strong>掉表示该 CPU 的事件寄存器相应的位。</p>
-<p><code>SEVL</code>（Send Event Locally）为发送本地事件指令。不同于 <code>SEV</code> 指令，这条指令只会向<em>当前</em> CPU 核心发送。如果是多核 CPU 那也只向当前核心，不会向 CPU 内的其它核心发送。值得注意的是，这条指令只有在支持 ARMv8 指令集之后的处理器中才有效。</p>
+<p>如果实现了 <a href="https://developer.arm.com/documentation/ddi0602/latest/Base-Instructions/WFE--Wait-for-event-">WFE</a>（Wait For Event）指令将当前 CPU 核切换到低功耗模式，那就一定要实现 <code>SEV</code> 指令，否则该 CPU 核有可能会一直不被唤醒。</p>
+<p><a href="https://developer.arm.com/documentation/ddi0602/latest/Base-Instructions/SEV--Send-event-">SEV</a>（Send Event）指令将向系统中的所有 CPU 核发送事件。对应系统中的每个 CPU 核，<strong>设置</strong>事件寄存器（Event Register）相应的位。如果某个 CPU 核正在等待事件（<code>WFE</code>），那么该 CPU 核会被立即唤醒，并<strong>清除</strong>掉表示该 CPU 的事件寄存器相应的位。</p>
+<p><a href="https://developer.arm.com/documentation/ddi0602/latest/Base-Instructions/SEVL--Send-event-local-">SEVL</a>（Send Event Locally）为发送本地事件指令。不同于 <code>SEV</code> 指令，这条指令只会向<em>当前</em> CPU 核心发送。如果是多核 CPU 那也只向当前核心，不会向 CPU 内的其它核心发送。值得注意的是，这条指令只有在支持 ARMv8 指令集之后的处理器中才有效。</p>
 <p>从前面的分析可以看出来，可以通过 <code>SEVL</code> 指令来设置事件寄存器对应当前 CPU 核的位，可以通过 <code>SEV</code> 指令来设置事件寄存器对应所有 CPU 核的位，可以通过 <code>WFE</code> 指令来清空事件寄存器对应当前 CPU 核的位。</p>
 <p>在 ARMv8 指令集中，还添加了一种情况，用来发送事件。当全局监视器标记的对某段内存的独占访问被清空后，将向所有标记了对该段内存独占访问的 CPU 核都发送事件。也就是说，当系统在多个 CPU 核上，通过 <code>LDREX</code> 或 <code>LDXR</code> 指令读取某段内存后，系统全局监视器会将该段内存标记为独占（Exclusive），这之后又调用了 <code>WFE</code> 指令进入低功耗模式了。当系统中又有一个 CPU，通过 <code>STREX</code> 或 <code>STXR</code> 指令对该段内存进行了写入，这将清空全局监视器对该段内存的独占标记，那么系统会自动给前面那些 CPU 核发送事件，将它们唤醒。</p>
 <hr />
@@ -1641,7 +1641,7 @@
 <span class="normal"><a href="#__codelineno-7-8"> 8</a></span>
 <span class="normal"><a href="#__codelineno-7-9"> 9</a></span>
 <span class="normal"><a href="#__codelineno-7-10">10</a></span></pre></div></td><td class="code"><div><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1"></a><span class="hll"><span class="nf">sevl</span>
-</span></span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2"></a><span class="nf">prfm</span><span class="w"> </span><span class="no">pstllkeep</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">x1</span><span class="p">]</span>
+</span></span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2"></a><span class="nf">prfm</span><span class="w"> </span><span class="no">pstl1keep</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">x1</span><span class="p">]</span>
 </span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3"></a><span class="nl">loop:</span>
 </span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4"></a><span class="hll"><span class="w">    </span><span class="nf">wfe</span>
 </span></span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5"></a><span class="w">    </span><span class="nf">ldaxr</span><span class="w"> </span><span class="no">w5</span><span class="p">,</span><span class="w"> </span><span class="p">[</span><span class="no">x1</span><span class="p">]</span>
@@ -1826,11 +1826,6 @@
 <p><a href="https://blog.csdn.net/Roland_Sun/article/details/107456179">ARM64平台下WFE和SEV相关指令解析</a><br />
 <a href="https://blog.csdn.net/xy010902100449/article/details/126812552">ARM系列之ARM多核指令WFE、WFI、SEV原理</a></p>
 <p><a href="https://blog.csdn.net/luolaihua2018/article/details/136768258">ARM架构中导致独占式内存访问Exclusive access 指令（LDXR/STXR）失败的原因分析</a></p>
-<p><a href="https://www.amazon.com/Advanced-Programming-UNIX-Environment-3rd/dp/0321637739">Advanced Programming in the UNIX Environment, 3rd Edition</a></p>
-<ul>
-<li>11.6.7 Spin Locks</li>
-<li>11.6.8 Barriers</li>
-</ul>
 
 
 

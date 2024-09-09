@@ -219,8 +219,6 @@ In short, the purpose of using memory barrier instructions is to make the CPU ex
 
 ## references
 
-[Memory Barriers - a Hardware View for Software Hackers.PDF](https://link.zhihu.com/?target=http%3A//www.puppetmastertrading.com/images/hwViewForSwHackers.pdf)
-
 [为什么需要内存屏障？](https://blog.csdn.net/chen19870707/article/details/39896655)
 内存避障：[一个内存乱序实例](https://blog.csdn.net/jackgo73/article/details/129580683) & [前世今生](https://mingjie.blog.csdn.net/article/details/129588953)
 浅墨: 聊聊原子变量、锁、内存屏障那点事：[（1）](https://cloud.tencent.com/developer/article/1518180)，[（2）](https://cloud.tencent.com/developer/article/1517889)

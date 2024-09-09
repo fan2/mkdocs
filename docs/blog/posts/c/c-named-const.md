@@ -173,7 +173,7 @@ char const * const p2invalid;
 
 Because it is uninitialized, its state is indeterminate, and any use of it would do you harm and leave your program in an undefined state (takeaway 5.55). Thus, if we can't ensure that a pointer is valid, we *must* at least ensure that it is set to null.
 
-> **TAKEAWAY** 5.55: Once the abstract state machine reaches an undeﬁned state, no further assumption about the continuation of the execution can be made.
+> **TAKEAWAY** 5.55: Once the abstract state machine reaches an undefined state, no further assumption about the continuation of the execution can be made.
 > **TAKEAWAY** 6.22: Always initialize pointers.
 
 ---

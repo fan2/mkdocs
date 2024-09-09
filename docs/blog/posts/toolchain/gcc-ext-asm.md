@@ -230,7 +230,7 @@ Let's analyze the definition of macro `barrier()`:
 4. `: : `: both the *`OutputOperands`* and *`InputOperands`* are empty.
 5. *`Clobbers`* argument: `: "memory"`.
 
-    - The "`memory`" clobber tells the compiler that the assembly code performs memory reads or writes to items other than those listed in the input and output operands (for example, accessing the memory pointed to by one of the input parameters). To ensure memory contains correct values, GCC may need to **flush** specific register values to memory *before* executing the *`asm`*. Further, the compiler does not assume that any values read from memory *before* an *`asm`* remain unchanged after that asm; it **reloads** them as needed. Using the "`memory`" clobber effectively forms a read/write memory barrier for the compiler.
+    - The "`memory`" clobber tells the compiler that the assembly code performs memory reads or writes to items other than those listed in the input and output operands (for example, accessing the memory pointed to by one of the input parameters). To ensure memory contains correct values, GCC may need to **flush** specific register values to memory *before* executing the *`asm`*. Further, the compiler does not assume that any values read from memory *before* an *`asm`* remain unchanged after that asm; it **reloads** them as needed. Using the "`memory`" clobber effectively forms a read/write memory barrier([memory_order_acq_rel](https://en.cppreference.com/w/c/atomic/memory_order); [memory_order::acq_rel](https://en.cppreference.com/w/cpp/atomic/memory_order)) for the compiler.
 
     - Note that this clobber does not prevent the *processor* from doing speculative reads past the asm statement. To prevent that, you need processor-specific fence instructions(See [ARM64 Memory Ordering - barriers](../arm/a64-memory-barrier.md)).
 
@@ -264,9 +264,9 @@ The first output operand `tmp` is `%w0`, the first input operand `&lock->lock` i
 The corresponding C code for the AssemblerTemplate is as follows, lines per line:
 
 ```c linenums="9"
-tmp = lock->lock;
+tmp = lock->lock;   // Load-Acquire Exclusive
 if (tmp != 0) goto 1;
-else lock->lock=1; // tmp saves the status result;
+else lock->lock=1;  // Store Exclusive, tmp saves the status result;
 if (tmp != 0) goto 2;
 ```
 
@@ -314,9 +314,9 @@ The first output operand `result` is `%w0`, the second output operand `temp` is 
 The corresponding C code for the AssemblerTemplate is as follows, lines per line:
 
 ```c linenums="11"
-result = v->counter;
+result = v->counter; // Load Exclusive
 result += i;
-v->counter = result; // tmp saves the status result;
+v->counter = result; // Store Exclusive, tmp saves the status result;
 if (tmp != 0) goto 1;
 ```
 
@@ -355,7 +355,7 @@ What does `Q` mean in OutputOperands `[v] "+Q" (v-›counter)`?
 
 ### a64 cmpxchg_mb_64
 
-For ARM64 architecture, one implementation of the `cmpxchg_mb_64()` function is as follows.
+For ARM64 architecture, one implementation of the `cmpxchg_mb_64()` function is as follows. See [ARM64 Atomic operations](../arm/a64-atomic-operations.md).
 
 ```c linenums="1"
 u64 cmpxchg_mb_64 (volatile void *ptr, u64 old, u64 new)
@@ -376,16 +376,11 @@ u64 cmpxchg_mb_64 (volatile void *ptr, u64 old, u64 new)
 
 The *`AssemblerTemplate`* contains multiple assembler instructions separated by newline break (`\n`).
 
-[CASAL](https://developer.arm.com/documentation/dui0801/l/A64-Data-Transfer-Instructions/CASA--CASAL--CAS--CASL--CASAL--CAS--CASL--A64-): Compare and Swap word or doubleword in memory.
-
-- `CASAL Ws, Wt, [Xn|SP,#0]`: 32-bit, acquire and release general registers.
-- load from memory with acquire semantics; store to memory with release semantics.
-
 The corresponding C code for the AssemblerTemplate is as follows, lines per line:
 
 ```c linenums="6"
 x30 = old; // load old value
-if (x30 == *ptr) *ptr = new; // new is conditionally stored to ptr
+if (*ptr == x30) *ptr = new; // new is conditionally stored to ptr
 tmp = x30; // return expected old
 ```
 

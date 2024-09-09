@@ -75,7 +75,7 @@ LL/SC 最早用于并发与同步访问内存的 CPU 指令，它分成两部分
 
 LL/SC 常常用于实现 ***无锁*** 算法与“读-修改-回写”原子操作。很多 RISC 体系结构实现了这种 LL/SC 机制，比如 ARMv8 指令集里实现了 `LDXR` 和 `STXR` 指令。
 
-LDXR 指令是内存独占加载指令，它从内存中以独占方式加载内存地址的信到通用寄存器里。
+[LDXR](https://developer.arm.com/documentation/ddi0602/latest/Base-Instructions/LDXR--Load-exclusive-register-) 是内存独占加载指令，它从内存中以独占方式加载内存地址的信到通用寄存器里。
 
 以下是 `LDXR` 指令的原型，它把 `Xn` 或者 `SP` 地址的值原子地加载到 `Xt` 寄存器里。
 
@@ -83,25 +83,25 @@ LDXR 指令是内存独占加载指令，它从内存中以独占方式加载内
 ldxr <xt>, [xn | sp]
 ```
 
-`STXR` 指令是内存独占存储指令，它以独占的方式把新的数据存储到内存中。这是 `STXR` 指令的原型。
+[STXR](https://developer.arm.com/documentation/ddi0602/latest/Base-Instructions/STXR--Store-exclusive-register-) 是内存独占存储指令，它以独占的方式把新的数据存储到内存中。
+
+以下是 `STXR` 指令的原型，它把 `Xt` 寄存器的值原子地存储到 `Xn` 或者 `SP` 地址里，执行的结果反馈到 `Ws` 寄存器中。
 
 ```asm
 stxr <ws>, <xt>, [xn | sp]
 ```
 
-它把 `Xt` 寄存器的值原子地存储到 `Xn` 或者 `SP` 地址里，执行的结果反映到 `Ws` 寄存器中。
-
 - 若 `Ws` 寄存器的值为 0，说明 `LDXR` 和 `STXR` 指令都执行完了。
 - 如果结果不是 0，说明 `LDXR` 和 `STXR` 指令都已经发生错误，此时需要跳转到 `LDXR` 指令处，重新做原子加载以及原子存储操作。
 
-LDXP和STXP指令是多字节独占内存访问指令，一条指令可以独占地加载和存储16字节。
+[LDXP](https://developer.arm.com/documentation/ddi0602/latest/Base-Instructions/LDXP--Load-exclusive-pair-of-registers-) 和 [STXP](https://developer.arm.com/documentation/ddi0602/latest/Base-Instructions/STXP--Store-exclusive-pair-of-registers-) 指令是多字节独占内存访问指令，一条指令可以独占地加载和存储16字节。
 
 ```asm
 ldxp <xt1>, <xt2>, [xn | sp]
 stxp <ws>, <xt1>, <xt2＞, [xn | sp]
 ```
 
-LDXR 和STXR 指令还可以和加载-获取以及存储-释放内存屏障原语结合使用，构成一个类似于临界区的内存屏障，在一些场景（比如自旋锁的实现）中非常有用。
+`LDXR` 和 `STXR` 指令还可以和加载-获取以及存储-释放内存屏障原语结合使用，构成一个类似于临界区的内存屏障，在一些场景（比如自旋锁的实现）中非常有用。
 
 【例 20-2】下面的代码使用了原子的加法函数。`atomic_add(i,v)` 函数非常简单，它是原子地给 v 加上 i。
 
@@ -140,13 +140,13 @@ typede struct {
 在第11行中，输出部分有两个参数，其中 `result` 和 `tmp` 具有可写属性。
 在第12行中，输入部分有两个参数，`v->counter` 的地址只有只读属性，`i` 也只有只读属性。
 
-## 独占内存访问工作原理
+### 独占内存访问工作原理
 
 我们在前文已经介绍了 `LDXR` 和 `STXR` 指令。`LDXR` 是内存加载指令的一种，不过它会通过独占监视器（exclusive monitor）来监控对内存的访问。
 
 独占监视器会把对应内存地址标记为独占访问模式，保证以独占的方式来访问这个内存地址，不受其他因素的影响。而 `STXR` 是*有条件*的存储指令，它会把新数据写入 `LDXR` 指令标记独占访问的内存地址里。
 
-【例 20-3】下面是一段使用 `LDXR` 和 `STXR` 指令的简单代码。
+【例 20-3】下面是一段使用 `LDXR` 和 `STXR` 指令进行独占访问的代码片段。
 
 ```asm linenums="1"
 my_atomic_set:
@@ -158,9 +158,9 @@ my_atomic_set:
 ```
 
 在第3行中，读取 X1 寄存器的值，然后以 X1 寄存器的值为地址，以独占的方式加载该地址的内容到 X2 寄存器中。
-在第4行中，通过 `ORR` 指令来设置 X2 寄存器的值。
-在第5行中，以独占的方式把 X2 寄存器的值写入 X1 寄存器里。若 W3 寄存器的值为0，表示写入成功：若 W3 寄存器的值为1，表示不成功。
-在第6行中，判断 W3 寄存器的值，如果 W3 寄存器的值不为0，说明 `LDXR` 和 `STXR` 指令执行失败，需要跳转到第2行的标签1处，重新使用 `LDXR` 指令进行独占加载。
+在第4行中，通过 [ORR](https://developer.arm.com/documentation/ddi0602/latest/Base-Instructions/ORR--shifted-register---Bitwise-OR--shifted-register--)(Bitwise OR) 指令来设置 X2 寄存器的值：x2 = x2|x0。
+在第5行中，以独占的方式把 X2 寄存器的值写回 X1 寄存器里。若 W3 寄存器的值为0，表示回写成功；否则，表示回写失败。
+在第6行中，判断 W3 的值如果非0，表明上面的 `LDXR`/`STXR` 指令对执行失败，跳转到第2行的标签1处，重新尝试 `LDXR` 指令进行独占加载。
 
 注意，`LDXR` 和 `STXR` 指令是需要**配对使用**的，而且它们之间是原子的，即使我们使用仿真器硬件也没有办法单步调试和执行 `LDXR` 和 `STXR` 指令，即我们无法使用仿真器来单步调试第3~5行的代码，它们是原子的，是一个不可分割的整体。
 
@@ -168,8 +168,8 @@ my_atomic_set:
 
 当 CPU 通过 `LDXR` 指令从内存加载数据时，CPU 会把这个内存地址标记为独占访问，然后 CPU 内部的独占监视器的状态变成独占访问状态。当 CPU 执行 `STXR` 指令的时候，需要根据独占监视器的状态来做决定。
 
-1. 如果独占监视器的状态为独占访问状态，并且 `STXR` 指令要存储的地址正好是刚才使用 `LDXR` 指令标记过的，那么 `STXR` 指令存储成功，`STXR` 指令返回0，独占监视器的状态变成开放访问状态。
-2. 如果独占监视器的状态为开放访问状态，那么 `STXR` 指令存储失败，`STXR` 指令返回1，独占监视器的状态不变，依然保持开放访问状态。
+1. 如果独占监视器的状态为独占访问状态，并且 `STXR` 指令要存储的地址正好是刚才使用 `LDXR` 指令标记过的，那么 `STXR` 指令存储成功，反馈结果0，独占监视器的状态变成开放访问状态。
+2. 如果独占监视器的状态为开放访问状态，那么 `STXR` 指令存储失败，反馈结果1，独占监视器的状态不变，依然保持开放访问状态。
 
 ---
 
@@ -189,14 +189,14 @@ my_atomic_set:
 
 LSE 指令中主要新增了如下三类指令。
 
-- 比较并交换（Compare And Swap, [CAS](https://developer.arm.com/documentation/dui0801/l/A64-Data-Transfer-Instructions/CASA--CASAL--CAS--CASL--CASAL--CAS--CASL--A64-)）指令。
+- 比较并交换（Compare And Swap）指令：[CAS](https://developer.arm.com/documentation/ddi0602/latest/Base-Instructions/CAS--CASA--CASAL--CASL--Compare-and-swap-word-or-doubleword-in-memory-)。
 
-    - `CASA` and `CASAL` load from memory with acquire semantics.
-    - `CASL` and `CASAL` store to memory with release semantics.
+    - `CASA` and `CASAL` load from memory with *acquire* semantics.
+    - `CASL` and `CASAL` store to memory with *release* semantics.
     - `CAS` has no memory ordering requirements.
 
-- 原子内存访问指令，比如 [LDADD](https://developer.arm.com/documentation/dui0801/l/A64-Data-Transfer-Instructions/LDADDA--LDADDAL--LDADD--LDADDL--LDADDAL--LDADD--LDADDL--A64-) 指令，用于原子地加载内存地址的值，然后进行加法运算；[STADD](https://developer.arm.com/documentation/dui0801/l/A64-Data-Transfer-Instructions/STADD--STADDL--STADDL--A64-) 指令原子地对内存地址的值进行加法运算，然后把结果存储到这个内存地址里。
-- 交换指令（Swap）。
+- 原子内存访问指令，比如 [LDADD](https://developer.arm.com/documentation/ddi0602/latest/Base-Instructions/LDADD--LDADDA--LDADDAL--LDADDL--Atomic-add-on-word-or-doubleword-in-memory-) 指令，用于原子地加载内存地址的值，然后进行加法运算；[STADD](https://developer.arm.com/documentation/ddi0602/latest/Base-Instructions/STADD--STADDL--Atomic-add-on-word-or-doubleword-in-memory--without-return--an-alias-of-LDADD--LDADDA--LDADDAL--LDADDL-) 指令原子地对内存地址的值进行加法运算，然后把结果存储到这个内存地址里。
+- 交换（Swap）指令：[SWP](https://developer.arm.com/documentation/ddi0602/latest/Base-Instructions/SWP--SWPA--SWPAL--SWPL--Swap-word-or-doubleword-in-memory-)。
 
 原子内存访问指令分成两类。
 
@@ -218,21 +218,93 @@ static inline void atomic_add(int i, atomic_t *v)
 }
 ```
 
-在第4行中，使用 `STADD` 指令来把变量i的值添加到 `v->counter` 中
-在第5行中，输出操作数列表，描述在指令部分中可以修改的C语言变量以及约束条件，其中变量 `i` 和 `v->counter` 都具有可读、可写属性。
-在第7行中，改变资源列表。即告诉编译器哪些资源已修改，需要更新。
+在第4行中，使用 `STADD` 指令来把变量 `i` 的值添加到 `v->counter` 中。
+在第5~7行，详情参考 [GCC Extended Asm - C/C++ inline assembly](../toolchain/gcc-ext-asm.md)。
 
 使用原子内存访问操作指令来实现 `atomic_add()` 函数非常高效。
 
-【例 20-6】下面使用 `LDUMAX`（无符号的最大值加载） 指令来实现经典的自旋锁。
+??? note "linux/arch/arm64 - arch_atomic_add(int i, atomic_t *v)"
 
-> 获取自旋锁的函数原型为 `get_lock()`。
+    1. [atomic.h](https://github.com/torvalds/linux/blob/master/arch/arm64/include/asm/atomic.h) 中定义了函数 `arch_atomic_add`，其调用 `__lse_ll_sc_body`：
+
+    ```c
+    // arch/arm64/include/asm/atomic.h
+
+    #define ATOMIC_OP(op)							\
+    static __always_inline void arch_##op(int i, atomic_t *v)		\
+    {									\
+        __lse_ll_sc_body(op, i, v);					\
+    }
+
+    ATOMIC_OP(atomic_add)
+    ```
+
+    2. lse.h 中定义了函数宏 `__lse_ll_sc_body` 调用 `__lse_atomic_add`：
+
+    ```c
+    // arch/arm64/include/asm/lse.h
+
+    #ifdef CONFIG_ARM64_LSE_ATOMICS
+
+    #define __lse_ll_sc_body(op, ...)					\
+    ({									\
+        alternative_has_cap_likely(ARM64_HAS_LSE_ATOMICS) ?		\
+            __lse_##op(__VA_ARGS__) :				\
+            __ll_sc_##op(__VA_ARGS__);				\
+    })
+
+    #else
+    ```
+
+    3. atomic_lse.h 中实现了函数 `__lse_atomic_add`，asm_op=`stadd`：
+
+    ```c
+    // arch/arm64/include/asm/atomic_lse.h
+
+    #define ATOMIC_OP(op, asm_op)						\
+    static __always_inline void						\
+    __lse_atomic_##op(int i, atomic_t *v)					\
+    {									\
+        asm volatile(							\
+        __LSE_PREAMBLE							\
+        "	" #asm_op "	%w[i], %[v]\n"				\
+        : [v] "+Q" (v->counter)						\
+        : [i] "r" (i));							\
+    }
+
+    ATOMIC_OP(add, stadd)
+    ```
+
+【例 20-6】下面使用 [LDUMAX](https://developer.arm.com/documentation/ddi0602/latest/Base-Instructions/LDUMAX--LDUMAXA--LDUMAXAL--LDUMAXL--Atomic-unsigned-maximum-on-word-or-doubleword-in-memory-)（无符号的最大值加载） 指令来实现经典的自旋锁。
+
+Linux arch/arm 下的头文件 spinlock_types.h 定义了 `arch_spinlock_t` 类型：
+
+```c
+// arch/arm/include/asm/spinlock_types.h
+typedef struct {
+	union {
+		u32 slock;
+		struct __raw_tickets {
+#ifdef __ARMEB__
+			u16 next;
+			u16 owner;
+#else
+			u16 owner;
+			u16 next;
+#endif
+		} tickets;
+	};
+} arch_spinlock_t;
+```
+
+ARM 上锁操作，参考 spinlock.h 中定义的函数 `arch_spin_lock(arch_spinlock_t *lock)`；ARM64 参考 arch/arm64/kvm/hyp/include/nvhe/spinlock.h 中的函数 `hyp_spin_lock(hyp_spinlock_t *lock)`。
+
+以 ARM 下的 `arch_spinlock_t` 为例，基于 `LDUMAXA` 指令实现获取自旋锁的函数原型 `get_lock(&lock->slock)`。
 
 ```asm linenums="1"
 #define LOCK 1
 #define UNLOCK 0
 
-//函数原型：get_lock(lock)
 get_lock:
     mov x1, #LOCK
 
@@ -242,10 +314,19 @@ retry:
     ret
 ```
 
-首先比较 X1 寄存器的值与 [X0]（[X0] 表示以 X0 寄存器的值为地址）的值，然后把 *最大值* 写入以 X0 寄存器的值为地址的内存中。最后，返回 [X0] 的旧值，存放在 X2 寄存器中。
-X2 寄存器存储了锁的旧值，如果 X2 寄存器的值为1，那么说明锁已经被其他进程持有了，当前 CPU 获取锁失败。如果 X2 寄存器的值为0，说明当前 CPU 成功获取了锁。
+1. `X0` 寄存器存放入参，即锁变量 `lock->slock` 的地址。
+2. `LDUMAXA` 的后缀 `A` 代表 “Acquire”，隐含加载-获取屏障原语。
 
-释放锁比较简单，使用 `STLR` 指令来往锁的地址写0即可。
+!!! note "LDUMAX inst"
+
+    `LDUMAX <Xs>, <Xt>, [<Xn|SP>]` => Xt = \*Xn; \*Xn = MAX(Xt, Xs);
+
+    This instruction atomically loads a 32-bit word or 64-bit doubleword from memory addressed by `Xn` to `Xt`, compares it (`Xt`) against the value held in register `Xs`, and stores the larger value back to memory addressed by `Xn`, treating the values as unsigned numbers. The value initially loaded from memory is returned in the destination register (`Xt`).
+
+1. `LDUMAX` 加载指针 `X0` 指向的值（当前锁变量 slock）到 `X2`，然后比较 `X2` 和 `X1`（LOCK=1），将其中的大值写入 `X0` 指向的内存中。
+2. 如果 `X2` 保存的锁的旧值为1，说明锁已经被其他 CPU 持有，slock 被写入 1，维持被占用状态。否则，说明锁处于空闲状态，slock 被写入 1，当前 CPU 成功上锁。
+
+释放锁比较简单，使用 `STLR` 指令来往锁的地址写 0 即可。
 
 ```asm
 //释放锁：release_lock(lock)
@@ -256,9 +337,25 @@ release_lock:
 
 ### 比较并交换指令(CAS)
 
-比较并交换（CAS）指令在 ***无锁*** 实现中起到非常重要的作用。比较并交换指令的伪代码如下。
+比较并交换（CAS）指令在 ***无锁*** 实现中起到非常重要的作用。
+
+!!! note "CAS inst"
+
+    `CAS <Xs>, <Xt>, [<Xn|SP>{, #0}]` => if (\*Xn == Xs) \*Xn = Xt
+
+    This instruction reads a 32-bit word or 64-bit doubleword from memory addressed by `Xn`, and compares it against the value held in a first register `Xs`. If the comparison is equal, the value in a second register `Xt` is written to memory addressed by `Xn`. If the write is performed, the read and write occur atomically such that no other modification of the memory location can take place between the read and write.
+
+ARM64 处理器提供的 `CAS` 指令根据内存屏障属性分成4类：
+
+- 隐含了加载-获取内存屏障原语：`CASA`。
+- 隐含了存储-释放内存屏障原语：`CASL`。
+- 同时隐含了加载-获取和存储-释放内存屏障原语：`CASAL`。
+- 不隐含内存屏障原语：`CAS`。
+
+比较并交换指令的伪代码如下：
 
 ```c linenums="1"
+// ptr->Xn; expected->Xs; new->Xt
 int compare_swap(int *ptr, int expected, int new)
 {
     int actual = *ptr;
@@ -269,18 +366,10 @@ int compare_swap(int *ptr, int expected, int new)
 }
 ```
 
-CAS 指令的基本思路是检查 `ptr` 指向的值与 `expected` 是否相等。若相等，则把 `new` 的值赋值给 `ptr`；否则，什么也不做。
+检查 `ptr` 指向的值与 `expected` 是否相等：若相等，则把 `new` 的值赋值给 `ptr`；否则，什么也不做。
 不管是否相等，最终都会返回 `ptr` 的旧值，让调用者来判断该比较并交换指令执行是否成功。
 
-ARM64 处理器提供了 CAS 指令。CAS 指令根据内存屏障属性分成4类，如表20.2所示。
-
-- 隐含了加载-获取内存屏障原语。
-- 隐含了存储-释放内存屏障原语。
-- 同时隐含了加载-获取和存储-释放内存屏障原语。
-- 不隐含内存屏障原语。
-
-Linux 内核中常见的比较并交换函数是 `cmpxchg()`。由于 Linux 内核最早是基于 x86 体系结构来实现的，x86指令集中对应的指令是 `CMPXCHG` 指令，因此 Linux 内核使用该名字作为函
-数名。
+Linux 内核中常见的比较并交换函数是 `cmpxchg()`。由于 Linux 内核最早是基于 x86 体系结构来实现的，x86指令集中对应的指令是 `CMPXCHG` 指令，因此 Linux 内核沿用该函数名。
 
 【例 20-7】对于 ARM64 体系结构，`cmpxchg_mb_64()` 函数的实现如下。
 
@@ -301,21 +390,79 @@ u64 cmpxchg_mb_64 (volatile void *ptr, u64 old, u64 new)
 }
 ```
 
-在第6行中，把 `old` 参数（expected）加载到 `X30` 寄存器中。
-在第7行中，使用 `CASAL` 指令来执行比较并交换操作。比较 `ptr` 的值是否与 `X30` 的值相等，若相等，则把 `new` 的值设置到 `ptr` 中。
+在第6行中，把 `old` 参数（expected）加载到 `X30` 寄存器中：`X30 = old`。
+在第7行中，`CASAL` 指令比较 `*ptr` 的值是否与 `X30` 的值相等，若相等则设置 `*ptr = new`。
+在第8行中，将 `X30` 寄存器的值移动到 `ret` 参数（符号变量 `tmp`），最为最终 return 返回值。
 
-> 注意，这里 `CASAL` 指令隐含了加载-获取和存储-释放内存屏障原语。
-
-在第8行中，通过 `ret` 参数返回 `X30` 寄存器的值。
-
-除 `cmpxchg()` 函数之外，Linux 内核还实现了多个变体，如表20.3所示。这些函数在 ***无锁*** 机制的实现中起到了非常重要的作用。
+Linux 内核实现了 `cmpxchg()` 函数的多个变体，如下表所示。这些函数在 ***无锁*** 机制的实现中起到了非常重要的作用。
 
 cmpxchg() 函数的变体 | 描述
 ---------------------|-----------------------------
-cmpxchg_acquire()    | 比较并交换操作，隐含了加载-获取内存屏障原语
-cmpxchg_release()    | 比较并交换操作，隐含了存储-释放内存屏障原语
-cmpchg_relaxed()     | 比较并交换操作，不隐含任何内存屏障原语
-cmpxchg()            | 比较并交换操作，隐含了加载-获取和存储-释放内存屏障原语
+cmpxchg_acquire()    | 比较并交换操作，隐含了加载-获取内存屏障原语（`CASA`）
+cmpxchg_release()    | 比较并交换操作，隐含了存储-释放内存屏障原语（`CASL`）
+cmpchg_relaxed()     | 比较并交换操作，不隐含任何内存屏障原语（`CAS`）
+cmpxchg()            | 比较并交换操作，隐含了加载-获取和存储-释放内存屏障原语（`CASAL`）
+
+??? note "linux/arch/arm64 - __cmpxchg_case_mb_64(volatile void *ptr, u##sz old, u##sz new)"
+
+    1. [cmpxchg.h](https://github.com/torvalds/linux/blob/master/arch/arm64/include/asm/cmpxchg.h) 中定义了函数 `__cmpxchg_case_mb_64`，其调用 `__lse_ll_sc_body`：
+
+    ```c
+    // arch/arm64/include/asm/cmpxchg.h
+
+    #define __CMPXCHG_CASE(name, sz)			\
+    static inline u##sz __cmpxchg_case_##name##sz(volatile void *ptr,	\
+                            u##sz old,		\
+                            u##sz new)		\
+    {									\
+        return __lse_ll_sc_body(_cmpxchg_case_##name##sz,		\
+                    ptr, old, new);				\
+    }
+
+    __CMPXCHG_CASE(mb_, 64)
+    ```
+
+    2. lse.h 中定义了函数宏 `__lse_ll_sc_body` 调用 `__lse__cmpxchg_case_mb_64`：
+
+    ```c
+    // arch/arm64/include/asm/lse.h
+
+    #ifdef CONFIG_ARM64_LSE_ATOMICS
+
+    #define __lse_ll_sc_body(op, ...)					\
+    ({									\
+        alternative_has_cap_likely(ARM64_HAS_LSE_ATOMICS) ?		\
+            __lse_##op(__VA_ARGS__) :				\
+            __ll_sc_##op(__VA_ARGS__);				\
+    })
+
+    #else
+    ```
+
+    3. atomic_lse.h 中实现了函数 `__lse__cmpxchg_case_mb_64`，mb=`al`, asm_op=`casal`：
+
+    ```c
+    // arch/arm64/include/asm/atomic_lse.h
+
+    #define __CMPXCHG_CASE(w, sfx, name, sz, mb, cl...)			\
+    static __always_inline u##sz						\
+    __lse__cmpxchg_case_##name##sz(volatile void *ptr,			\
+                            u##sz old,		\
+                            u##sz new)		\
+    {									\
+        asm volatile(							\
+        __LSE_PREAMBLE							\
+        "	cas" #mb #sfx "	%" #w "[old], %" #w "[new], %[v]\n"	\
+        : [v] "+Q" (*(u##sz *)ptr),					\
+        [old] "+r" (old)						\
+        : [new] "rZ" (new)						\
+        : cl);								\
+                                        \
+        return old;							\
+    }
+
+    __CMPXCHG_CASE(x,  ,  mb_, 64, al, "memory")
+    ```
 
 ## linux/include
 

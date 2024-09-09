@@ -808,7 +808,7 @@ At this moment, all of the targets are determined in ELF binary.
  b60:   97fffef0    bl  720 <strlen@plt>
 ```
 
-First, let's take a look at the A64 [BL - Branch with link](https://developer.arm.com/documentation/ddi0602/2024-06/Base-Instructions/BL--Branch-with-link-) instruction.
+First, let's take a look at the A64 [BL - Branch with link](https://developer.arm.com/documentation/ddi0602/latest/Base-Instructions/BL--Branch-with-link-) instruction.
 
 `BL <label>`: This instruction branches to a PC-relative offset.
 

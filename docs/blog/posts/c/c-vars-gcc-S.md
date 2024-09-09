@@ -628,7 +628,7 @@ The format string of `printf()` in func() are placed in the `.rodata` section, l
 1. load `j` to `W1`:
 
 	- line 113\~114: after `ADRP` and `ADD`, `X0` holds address of `short j`.
-	- line 115: [LDRSH](https://developer.arm.com/documentation/dui0801/latest/A64-Data-Transfer-Instructions/LDRSH--immediate-)(Load Register Signed Halfword) loads a halfword(16-bits) from address `X0` and sign extends the result to 32 bits, writes the result to `W0`.
+	- line 115: [LDRSH](https://developer.arm.com/documentation/ddi0602/latest/Base-Instructions/LDRSH--register---Load-register-signed-halfword--register--)(Load Register Signed Halfword) loads a halfword(16-bits) from address `X0` and sign extends the result to 32 bits, writes the result to `W0`.
 	- line 116: w1=w0, `W1` stores `j`, vacate `W0` for other use.
 
 2. load `i` to `W0`:
@@ -639,7 +639,7 @@ The format string of `printf()` in func() are placed in the `.rodata` section, l
 3. calc `j+i` and store to `X1`:
 
 	- line 120: w0=w1+w0 => `W0=j+i`;
-	- line 121: [SXTW](https://developer.arm.com/documentation/dui0801/latest/A64-General-Instructions/SXTW--A64-)(Sign Extend Word) `W0` to `X1`(64-bits), vacate `W0`.
+	- line 121: [SXTW](https://developer.arm.com/documentation/ddi0602/latest/Base-Instructions/SXTW--Sign-extend-word--an-alias-of-SBFM-)(Sign Extend Word) `W0` to `X1`(64-bits), vacate `W0`.
 
 4. load `k` to `X0`:
 
@@ -707,15 +707,15 @@ p.4:
 2. **`++p`**
 
 	- line 152\~153: x1=&p(load `p`)
-	- line 154: [LDRSH](https://developer.arm.com/documentation/dui0801/latest/A64-Data-Transfer-Instructions/LDRSH--immediate-)(Load Register Signed Halfword) loads a halfword(16-bits) from address `X1` and sign extends the result to 32 bits, writes the result to `W1`.
+	- line 154: LDRSH(Load Register Signed Halfword) loads a halfword(16-bits) from address `X1` and sign extends the result to 32 bits, writes the result to `W1`.
 	- line 155: w1 = w1 & 0x0000ffff, clear high 16-bits, leave low 16-bits (represent short value).
 	- line 156: w1 = w1+1(auto increment)
 	- line 157: w1 = w1 & 0x0000ffff, clear high 16-bits, leave low 16-bits (represent short value).
-	- line 158: [SXTH](https://developer.arm.com/documentation/dui0801/latest/A64-General-Instructions/SXTH--A64-)(Sign Extend Halfword) `W1` to `W2`, vacate `W1`.
+	- line 158: [SXTH](https://developer.arm.com/documentation/ddi0602/latest/Base-Instructions/SXTH--Sign-extend-halfword--an-alias-of-SBFM-)(Sign Extend Halfword) `W1` to `W2`, vacate `W1`.
 	- line 160\~161: x1=&p(reload `p`)
-	- line 162: [STRH](https://developer.arm.com/documentation/dui0801/latest/A64-Data-Transfer-Instructions/STRH--immediate---A64-)(Store Register Halfword) `W2` to `[X1]` => update p.4+1 to p.4
+	- line 162: [STRH](https://developer.arm.com/documentation/ddi0602/latest/Base-Instructions/STRH--register---Store-register-halfword--register--)(Store Register Halfword) `W2` to `[X1]` => update p.4+1 to p.4
 	- line 164\~165: x1=&p(reload latest `p`)
-	- line 166: [LDRSH](https://developer.arm.com/documentation/dui0801/latest/A64-Data-Transfer-Instructions/LDRSH--immediate-)(Load Register Signed Halfword) loads a halfword(16-bits) from address `X1` and sign extends the result to 32 bits, writes the result to `W1`.
+	- line 166: `LDRSH`(Load Register Signed Halfword) loads a halfword(16-bits) from address `X1` and sign extends the result to 32 bits, writes the result to `W1`.
 	- line 168,177: w4=w1; w2=w4(*W2* for printf `++p=%hd`)
 
 3. **`q++`**(almost the same as **`o++`**)
@@ -756,12 +756,12 @@ The format string of `printf()` in main() are also placed in the `.rodata` secti
 > long lmn = l+m+n; printf("lmn = %ld\n", lmn);
 
 1. line 245\~146: x0=&m(load `m`)
-2. line 247: [LDRSH](https://developer.arm.com/documentation/dui0801/latest/A64-Data-Transfer-Instructions/LDRSH--immediate-)(Load Register Signed Halfword) loads a halfword(16-bits) from address `X0` and sign extends the result to 32 bits, writes the result to `W0`
+2. line 247: `LDRSH`(Load Register Signed Halfword) loads a halfword(16-bits) from address `X0` and sign extends the result to 32 bits, writes the result to `W0`
 3. line 248: w1=w0, vacate `W0`
 4. line 249\~250: x0=&l(load `l`)
 5. line 251: w0=[x0]
 6. line 252: w0=w1+w0 => W0=m+l
-7. line 253: [SXTW](https://developer.arm.com/documentation/dui0801/latest/A64-General-Instructions/SXTW--A64-)(Sign Extend Word) `W0` to `X1`(64-bits), vacate `W0`.
+7. line 253: `SXTW`(Sign Extend Word) `W0` to `X1`(64-bits), vacate `W0`.
 8. line 255\~256: x0=&n(load `n`)
 9. line 257: x0=[x0]
 10. line 259: x0=x1+x0 => X0=(m+l)+n
@@ -797,12 +797,12 @@ v.1:
 > long uvw = u+v+w; printf("uvw = %ld\n", uvw);
 
 1. line 267\~268: x0=&u(load `u`)
-2. line 269: [LDRSH](https://developer.arm.com/documentation/dui0801/latest/A64-Data-Transfer-Instructions/LDRSH--immediate-)(Load Register Signed Halfword) loads a halfword(16-bits) from address `X0` and sign extends the result to 32 bits, writes the result to `W0`
+2. line 269: `LDRSH`(Load Register Signed Halfword) loads a halfword(16-bits) from address `X0` and sign extends the result to 32 bits, writes the result to `W0`
 3. line 270: w1=w0, vacate `W0`
 4. line 271\~272: x0=&v(load `v`)
 5. line 273: w0=[x0]
 6. line 274: w0=w1+w0 => W0=u+v
-7. line 275: [SXTW](https://developer.arm.com/documentation/dui0801/latest/A64-General-Instructions/SXTW--A64-)(Sign Extend Word) `W0` to `X1`(64-bits), vacate `W0`.
+7. line 275: `SXTW`(Sign Extend Word) `W0` to `X1`(64-bits), vacate `W0`.
 8. line 277\~278: x0=&w(load `w`)
 9. line 279: x0=[x0]
 10. line 281: x0=x1+x0 => X0=(u+v)+w
