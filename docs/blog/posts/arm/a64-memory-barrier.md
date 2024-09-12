@@ -44,6 +44,8 @@ There are three types of barrier instruction provided by the architecture:
 
 [Instruction barriers](https://developer.arm.com/documentation/102336/latest/Instruction-barriers)
 
+[ISB: Instruction synchronization barrier](https://developer.arm.com/documentation/ddi0602/latest/Base-Instructions/ISB--Instruction-synchronization-barrier-): This instruction flushes the pipeline in the PE([Processing Element](https://developer.arm.com/documentation/102404/latest/Common-architecture-terms)) and is a context synchronization event.
+
 This is used to guarantee that any *subsequent* instructions are fetched, again, so that privilege and access are checked with the current MMU configuration. It is used to **ensure** any previously executed context-changing operations, such as writes to system control registers, have ***completed*** by the time the `ISB` completes. In hardware terms, this might mean that the instruction pipeline is ***flushed***, for example. Typical uses of this would be in memory management, cache control, and context switching code, or where code is being moved about in memory.
 
 The ARMv8 architecture defines *context* as the state of the system registers and *context-changing operations* as things like cache, TLB, and branch predictor maintenance operations, or changes to system control registers, for example, `SCTLR_EL1`, `TCR_EL1`, and `TTBRn_EL1`. The effect of such a context-changing operation is only guaranteed to be seen after a *context synchronization event*.
@@ -68,6 +70,8 @@ ISB
 ## DMB(Data Memory Barrier)
 
 [Data Memory Barrier](https://developer.arm.com/documentation/102336/latest/Data-Memory-Barrier)
+
+[DMB: Data memory barrier.](https://developer.arm.com/documentation/ddi0602/latest/Base-Instructions/DMB--Data-memory-barrier-): This instruction is a memory barrier that ensures the ordering of observations of memory accesses.
 
 This prevents re-ordering of data accesses instructions across the barrier instruction. All data accesses, that is, loads or stores, but not instruction fetches, performed by this processor before the `DMB`, are **visible** to all other masters within the specified shareability domain before any of the data accesses after the `DMB`.
 
@@ -99,6 +103,8 @@ From the analysis of the above examples, it can be seen that the `DMB` instructi
 ## DSB(Data Synchronization Barrier)
 
 [Data Synchronization Barrier](https://developer.arm.com/documentation/102336/latest/Data-Synchronization-Barrier)
+
+[DSB: Data synchronization barrier.](https://developer.arm.com/documentation/ddi0602/2024-06/Base-Instructions/DSB--Data-synchronization-barrier-): This instruction is a memory barrier that ensures the completion of memory accesses.
 
 This **enforces** the same ordering as the Data Memory Barrier (`DMB`), but has the additional effect of blocking execution of *any* further instructions, *not* just loads or stores, or both, until synchronization is complete. This can be used to **prevent** execution of a `SEV` instruction, for instance, that would *signal* to other cores that an event occurred. It **waits** until all cache, TLB and branch predictor maintenance operations issued by this processor have completed for the specified shareability domain.
 

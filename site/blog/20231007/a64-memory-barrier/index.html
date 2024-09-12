@@ -1435,7 +1435,7 @@
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7z"/></svg>
                           <span class="md-ellipsis">
                             
-                              10 min read
+                              11 min read
                             
                           </span>
                         </div>
@@ -1510,6 +1510,7 @@ I have observed your read when I can no longer change the value you read.</p>
 <p>There are three types of barrier instruction provided by the architecture:</p>
 <h2 id="isbinstruction_synchronization_barrier">ISB(Instruction Synchronization Barrier)<a class="headerlink" href="#isbinstruction_synchronization_barrier" title="Permanent link">#</a></h2>
 <p><a href="https://developer.arm.com/documentation/102336/latest/Instruction-barriers">Instruction barriers</a></p>
+<p><a href="https://developer.arm.com/documentation/ddi0602/latest/Base-Instructions/ISB--Instruction-synchronization-barrier-">ISB: Instruction synchronization barrier</a>: This instruction flushes the pipeline in the PE(<a href="https://developer.arm.com/documentation/102404/latest/Common-architecture-terms">Processing Element</a>) and is a context synchronization event.</p>
 <p>This is used to guarantee that any <em>subsequent</em> instructions are fetched, again, so that privilege and access are checked with the current MMU configuration. It is used to <strong>ensure</strong> any previously executed context-changing operations, such as writes to system control registers, have <strong><em>completed</em></strong> by the time the <code>ISB</code> completes. In hardware terms, this might mean that the instruction pipeline is <strong><em>flushed</em></strong>, for example. Typical uses of this would be in memory management, cache control, and context switching code, or where code is being moved about in memory.</p>
 <p>The ARMv8 architecture defines <em>context</em> as the state of the system registers and <em>context-changing operations</em> as things like cache, TLB, and branch predictor maintenance operations, or changes to system control registers, for example, <code>SCTLR_EL1</code>, <code>TCR_EL1</code>, and <code>TTBRn_EL1</code>. The effect of such a context-changing operation is only guaranteed to be seen after a <em>context synchronization event</em>.</p>
 <p>There are three kinds of context synchronization event:</p>
@@ -1527,6 +1528,7 @@ I have observed your read when I can no longer change the value you read.</p>
 </span></code></pre></div>
 <h2 id="dmbdata_memory_barrier">DMB(Data Memory Barrier)<a class="headerlink" href="#dmbdata_memory_barrier" title="Permanent link">#</a></h2>
 <p><a href="https://developer.arm.com/documentation/102336/latest/Data-Memory-Barrier">Data Memory Barrier</a></p>
+<p><a href="https://developer.arm.com/documentation/ddi0602/latest/Base-Instructions/DMB--Data-memory-barrier-">DMB: Data memory barrier.</a>: This instruction is a memory barrier that ensures the ordering of observations of memory accesses.</p>
 <p>This prevents re-ordering of data accesses instructions across the barrier instruction. All data accesses, that is, loads or stores, but not instruction fetches, performed by this processor before the <code>DMB</code>, are <strong>visible</strong> to all other masters within the specified shareability domain before any of the data accesses after the <code>DMB</code>.</p>
 <p>For example:</p>
 <blockquote>
@@ -1548,6 +1550,7 @@ I have observed your read when I can no longer change the value you read.</p>
 <p>From the analysis of the above examples, it can be seen that the <code>DMB</code> instruction focuses on the sequence of memory access and does not need to care when the memory access instructions are executed. The data access instructions before the <code>DMB</code> must be <strong><em>observed</em></strong> by the data access instructions after the <code>DMB</code>.</p>
 <h2 id="dsbdata_synchronization_barrier">DSB(Data Synchronization Barrier)<a class="headerlink" href="#dsbdata_synchronization_barrier" title="Permanent link">#</a></h2>
 <p><a href="https://developer.arm.com/documentation/102336/latest/Data-Synchronization-Barrier">Data Synchronization Barrier</a></p>
+<p><a href="https://developer.arm.com/documentation/ddi0602/2024-06/Base-Instructions/DSB--Data-synchronization-barrier-">DSB: Data synchronization barrier.</a>: This instruction is a memory barrier that ensures the completion of memory accesses.</p>
 <p>This <strong>enforces</strong> the same ordering as the Data Memory Barrier (<code>DMB</code>), but has the additional effect of blocking execution of <em>any</em> further instructions, <em>not</em> just loads or stores, or both, until synchronization is complete. This can be used to <strong>prevent</strong> execution of a <code>SEV</code> instruction, for instance, that would <em>signal</em> to other cores that an event occurred. It <strong>waits</strong> until all cache, TLB and branch predictor maintenance operations issued by this processor have completed for the specified shareability domain.</p>
 <p>The <code>DSB</code> instruction is much stricter than the <code>DMB</code> instruction. <em>Any</em> instruction after the <code>DSB</code> must meet the following two conditions before it can start executing.</p>
 <ul>
