@@ -42,15 +42,15 @@ comments: true
 | ------------ | ----------------- |
 | `]`/`[`      | [] block          |
 | `)`/`(`、`b` | block             |
-| `>`/`<`      | <> block          |
+| `>`/`<`      | \<\> block          |
 | `}`/`{`、`B` | Block             |
-| `t`          | tag block：<> </> |
+| `t`          | tag block：\<\> \</\> |
 
 ## quoted string
 
 | textobject          | 说明          |
 | ------------------- | ------------- |
-| `"` / `'` / `` ` `` | quoted string |
+| `"` / `'` / \` | quoted string |
 
 ## visual mode
 
