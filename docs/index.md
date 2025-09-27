@@ -1,3 +1,11 @@
+---
+robots: noindex, nofollow
+hide:
+  - navigation
+  - toc
+  - footer
+---
+
 # 在别处或在路上
 
 !!! quote "Elsewhere, or on the road."
@@ -8,7 +16,9 @@
 
 <br />
 
+<figure markdown="span">
 ![coltree](./img/coltree.jpg)
+</figure>
 
 每一个人都遗憾他不能过其他的生活，渴望离开此处，向往远方别处。
 你也会想过一过你所有未实现的可能性，你所有可能的生活。
@@ -37,7 +47,9 @@
     试问岭南应不好，
     却道：此心安处是吾乡。
 
+<figure markdown="span">
 ![tranquility](./img/tranquility.png)
+</figure>
 
 ---
 

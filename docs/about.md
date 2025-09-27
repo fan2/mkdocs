@@ -1,6 +1,8 @@
 ---
 robots: noindex, nofollow
 hide:
+  - navigation
+  - toc
   - footer
 ---
 
