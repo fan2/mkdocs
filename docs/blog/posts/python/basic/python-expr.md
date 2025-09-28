@@ -4,6 +4,7 @@ authors:
   - xman
 date:
     created: 2019-12-02T08:00:00
+    updated: 2025-09-28T12:00:00
 categories:
     - python
 comments: true
@@ -43,6 +44,24 @@ reference - [6. Expressions](https://docs.python.org/3/reference/expressions.htm
 >>> set1
 {1, 2, 3, 4, 5, 6, 7}
 >>>
+```
+
+## ternary conditional operator
+
+[Does Python have a ternary conditional operator?](https://stackoverflow.com/questions/394809/does-python-have-a-ternary-conditional-operator)
+
+```shell
+>>> print('yes') if True else print('no')
+yes
+>>> print('yes') if False else print('no')
+no
+```
+
+datetime.py
+
+```python
+def _cmp(x, y):
+    return 0 if x == y else 1 if x > y else -1
 ```
 
 ## None, not
@@ -241,6 +260,64 @@ The expression list is evaluated once; it should yield an iterable object. An **
 - `for k in dict1` 遍历字典的键值，等效于 `for k in dict1.keys()`；  
 - `for c in str1` 遍历字符串中的字符（单字符子串）。  
 
+### Using \_ as a Loop Variable
+
+> ChatGPT/DeepSeek topic: `Using an underscore _ as a loop variable in Python`
+
+Using an underscore `_` as a loop variable in Python is a convention to indicate that the loop variable is *not* used within the loop's body. It signals that the loop is primarily for repeating an action a specific number of times, rather than processing the elements of an iterable.
+
+In Python, using a single underscore `_` as a loop variable is a ​​convention to indicate that the loop variable is intentionally unused or irrelevant​​ within the loop body. This practice improves code readability by signaling to other developers that the value is being ignored.
+
+For example:
+
+```Python
+for _ in range(5):
+    print("Hello")
+```
+
+`_` signifies that the loop index is irrelevant; only the repetition matters. The loop executes five times (prints "Hello" 5 times), but the `_` variable (loop counter) is not used.
+
+**Keywords**: Unused, Placeholder, Throwaway Indicator
+
+**Key Takeaways**: Using `_` as a loop variable is a convention to indicate that the variable's value is not needed.
+
+以下代码片段求前20项的斐波那契数：
+
+```Python
+a = 0
+b = 1
+for _ in range(20):
+    (a, b) = (b, a + b)
+    print(a, end=' ')
+```
+
+**Unpacking Extension​**​:
+
+`_` is also used to ignore values during unpacking (e.g., `x, _, y = (1, 2, 3)`), reinforcing its role as a discard placeholder.
+
+[Trying to understand Python loop using underscore and input](https://stackoverflow.com/questions/39188827/trying-to-understand-python-loop-using-underscore-and-input)
+
+As a general purpose "throwaway" variable name to indicate that part of a function result is being deliberately ignored, as in code like:
+
+```Python
+label, has_label, _ = text.partition(':')
+```
+
+另外一个典型的例子是目录循环迭代生成器 os.walk（Directory tree generator），生成 (dirpath, dirnames, filenames) 三元组。
+
+```Python
+for dirpath, folders, files in os.walk(directory):
+```
+
+如果不关注子目录名，只关注每一层中的文件，可以以 `_` 标识忽略 folders：
+
+```Python
+for dirpath, _, files in os.walk(dir):
+    print(f"{dirpath}: {files}")
+    for file in files:
+        print(f"\t{os.path.join(dirpath, file)}") # filepath
+```
+
 ### comprehension
 
 [**list comprehension**](https://docs.python.org/3/glossary.html?highlight=list%20comprehension) : A compact way to process all or part of the elements in a sequence and return a list with the results.
@@ -267,7 +344,7 @@ The expression list is evaluated once; it should yield an iterable object. An **
 [5, 6, 7]
 ```
 
-更多参考 [builtins.list](../builtins/6-builtins.list.md) 中的相关说明和例程。
+更多参考 [builtins.list](../pylib/builtins/builtins.list.md) 中的相关说明和例程。
 
 ## if
 
@@ -281,7 +358,7 @@ if_stmt ::=  "if" assignment_expression ":" suite
              ["else" ":" suite]
 ```
 
-### ternary conditional
+### 三元表达式
 
 以下代码片段，用于判断整数x的奇偶性，并将其保存到even变量。
 
@@ -326,20 +403,6 @@ a if a>b else ( c if c>d else d )
 year=2024
 leap=True if (year%400==0 or (year%4==0 and year%100!=0)) else False
 print('{} is leap: {}'.format(year, leap))
-```
-
-[Does Python have a ternary conditional operator?](https://stackoverflow.com/questions/394809/does-python-have-a-ternary-conditional-operator)
-
-```shell
->>> print('yes') if True else print('no')
-yes
->>> print('yes') if False else print('no')
-no
-```
-
-```python
-def _cmp(x, y):
-    return 0 if x == y else 1 if x > y else -1
 ```
 
 ### switch(match)
@@ -410,7 +473,7 @@ for 循环用于针对集合中的每个元素都执行一个代码块，而 whi
 
 ### break
 
-A `break` statement executed in the first suite terminates the loop without executing the else clause's suite.  
+A `break` statement executed in the first suite terminates the loop without executing the else clause’s suite.  
 
 要立即退出while循环，不再运行循环中余下的代码，也不管条件测试的结果如何，可使用 `break` 语句。  
 break语句用于控制程序流程，可使用它来控制哪些代码行将执行，哪些代码行不执行，从而让程序按你的要求执行你要执行的代码。  
