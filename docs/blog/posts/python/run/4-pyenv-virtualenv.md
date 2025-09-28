@@ -18,118 +18,80 @@ pyenv，virtualenv，pyenv-virtualenv 简介。
 
 [What is the difference between venv, pyvenv, pyenv, virtualenv, virtualenvwrapper, pipenv, etc?](https://stackoverflow.com/questions/41573587/what-is-the-difference-between-venv-pyvenv-pyenv-virtualenv-virtualenvwrappe)  
 
-[ohmyzsh / plugins / python](https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/python)
-
-## PEP 668 - externally-managed-environment
-
-[pip - Upgraded Python; Do I have to reinstall all site-packages manually? - Stack Overflow](https://stackoverflow.com/questions/45563909/upgraded-python-do-i-have-to-reinstall-all-site-packages-manually)
-
-```bash
-pip freeze > ~/Downloads/output/reqs.txt
-pip3 freeze --path /usr/local/lib/python3.10/site-packages > ~/Downloads/pip-list.txt
-
-pip3 install -r ~/Downloads/output/reqs.txt
-pip3 install --user -r pip-list.txt
-
-error: externally-managed-environment
-
-× This environment is externally managed
-╰─> To install Python packages system-wide, try brew install
-    xyz, where xyz is the package you are trying to
-    install.
-
-    If you wish to install a Python library that isn't in Homebrew,
-    use a virtual environment:
-
-    python3 -m venv path/to/venv
-    source path/to/venv/bin/activate
-    python3 -m pip install xyz
-
-    If you wish to install a Python application that isn't in Homebrew,
-    it may be easiest to use 'pipx install xyz', which will manage a
-    virtual environment for you. You can install pipx with
-
-    brew install pipx
-
-    You may restore the old behavior of pip by passing
-    the '--break-system-packages' flag to pip, or by adding
-    'break-system-packages = true' to your pip.conf file. The latter
-    will permanently disable this error.
-
-    If you disable this error, we STRONGLY recommend that you additionally
-    pass the '--user' flag to pip, or set 'user = true' in your pip.conf
-    file. Failure to do this can result in a broken Homebrew installation.
-
-    Read more about this behavior here: <https://peps.python.org/pep-0668/>
-
-note: If you believe this is a mistake, please contact your Python installation or OS distribution provider. You can override this, at the risk of breaking your Python installation or OS, by passing --break-system-packages.
-hint: See PEP 668 for the detailed specification.
-```
-
-As the caveat suggests, we have two solutions to the problem.
-
-1. use a virtual environment to install and upgrade pip packages, such as [pipx](https://pipx.pypa.io/stable/)
-2. passing `--break-system-packages` to install and upgrade commands
-
-## venv
-
-[venv — Creation of virtual environments](https://docs.python.org/3/library/venv.html)
-
-> Source code: Lib/venv/, since Python 3.3
-
-The `venv` module supports creating lightweight “virtual environments”, each with their own independent set of Python packages installed in their [`site`](https://docs.python.org/3/library/site.html#module-site) directories. A virtual environment is created on top of an existing Python installation, known as the virtual environment's “*base*” Python, and may optionally be isolated from the packages in the base environment, so *only* those explicitly installed in the virtual environment are available.
-
-When used from within a virtual environment, common installation tools such as [pip](https://pypi.org/project/pip/) will install Python packages into a virtual environment without needing to be told to do so explicitly.
-
-A virtual environment is (amongst other things):
-
-- Used to contain a specific Python interpreter and software libraries and binaries which are needed to support a project (library or application). These are by default isolated from software in other virtual environments and Python interpreters and libraries installed in the operating system.
-
-- Contained in a directory, conventionally either named `venv` or `.venv` in the project directory, or under a container directory for lots of virtual environments, such as `~/.virtualenvs`.
-
-- Not checked into source control systems such as Git.
-
-- Considered as disposable – it should be simple to delete and recreate it from scratch. You don't place any project code in the environment
-
-- Not considered as movable or copyable – you just recreate the same environment in the target location.
-
-See [**PEP 405**](https://peps.python.org/pep-0405/) for more background on Python virtual environments.
-
-[Availability](https://docs.python.org/3/library/intro.html#availability): not Emscripten, not WASI.
-
 ## pyenv
 
-github: [pyenv](https://github.com/pyenv) / [pyenv](https://github.com/pyenv/pyenv)
+[pyenv](https://github.com/pyenv/pyenv): Simple Python Version Management
 
-Simple Python Version Management: pyenv
+pyenv lets you easily switch between multiple versions of Python. It's simple, unobtrusive, and follows the UNIX tradition of single-purpose tools that do one thing well.
 
-pyenv lets you easily switch between multiple versions of Python.  
-It's simple, unobtrusive, and follows the UNIX tradition of single-purpose tools that do one thing well.  
+> pyenv is to Python as nvm is to NodeJs.
 
-> [intallation by Homebrew on macOS](https://github.com/pyenv/pyenv#homebrew-on-mac-os-x)  
-> [Multiple Python installations on OS X](https://gist.github.com/Bouke/11261620)  
-> [python 环境管理器pyenv 命令](http://blog.csdn.net/sentimental_dog/article/details/52718398)  
-> [在 Mac OS X 10.10 安装 pyenv 的一个小坑](http://blog.csdn.net/gzlaiyonghao/article/details/46343913)  
-> [CentOS 使用 pyenv](http://www.jianshu.com/p/a23448208d9a), [CentOS 6.4 下安装配置 pip 和 pyenv](http://blog.csdn.net/magedu_linux/article/details/48528257)  
+### What
 
----
+What pyenv _does..._:
 
-pyenv 的美好之处在于它并没有使用将不同的 $PATH 植入不同的 shell 这种高耦合的工作方式，而是简单地在 $PATH 最前面插入了一个垫片路径（shims）：
+-   Lets you **change the global Python version** on a per-user basis.
+-   Provides support for **per-project Python versions**.
+-   Allows you to **override the Python version** with an environment variable.
+-   Searches for commands from **multiple versions of Python at a time**. This may be helpful to test across Python versions with [tox](https://pypi.python.org/pypi/tox).
 
-> `~/.pyenv/shims:/usr/local/bin:/usr/bin:/bin`
+In contrast with pythonbrew and pythonz, pyenv _does not..._:
 
-所有对 Python 可执行文件的查找都会首先被这个 shims 路径截获，从而架空了后面的系统路径。
+-   **Depend on Python itself.** pyenv was made from pure shell scripts. There is no bootstrap problem of Python.
+-   **Need to be loaded into your shell.** Instead, pyenv's shim approach works by adding a directory to your `PATH`.
+-   **Manage virtualenv.** Of course, you can create [virtualenv](https://pypi.python.org/pypi/virtualenv) yourself, or [pyenv-virtualenv](https://github.com/pyenv/pyenv-virtualenv) to automate the process.
 
-### Command Reference
+### How
+
+At a high level, pyenv intercepts Python commands using shim executables injected into your `PATH`, determines which Python version has been specified by your application, and passes your commands along to the correct Python installation.
+
+pyenv works by inserting a directory of _shims_ at the front of your `PATH`:
+
+    $(pyenv root)/shims:/usr/local/bin:/usr/bin:/bin
+
+Through a process called _rehashing_, pyenv maintains shims in that directory to match every Python command across every installed version of Python—`python`, `pip`, and so on.
+
+Shims are lightweight executables that simply pass your command along to pyenv. So with pyenv installed, when you run, say, `pip`, your operating system will do the following:
+
+-   Search your `PATH` for an executable file named `pip`
+-   Find the pyenv shim named `pip` at the beginning of your `PATH`
+-   Run the shim named `pip`, which in turn passes the command along to pyenv
+
+### Installation
+
+```bash
+$ brew info pyenv
+==> pyenv: stable 2.6.8 (bottled), HEAD
+Python version management
+https://github.com/pyenv/pyenv
+Not installed
+From: https://github.com/Homebrew/homebrew-core/blob/HEAD/Formula/p/pyenv.rb
+
+$ brew install pyenv
+```
+
+**Set up your shell environment for Pyenv**:
+
+Add Pyenv startup commands to `~/.zshrc` by running the following in your terminal:
+
+```bash
+echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.zshrc
+echo '[[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.zshrc
+echo 'eval "$(pyenv init - zsh)"' >> ~/.zshrc
+```
+
+If you wish to get Pyenv in noninteractive login shells as well, also add the commands to `~/.zprofile` or `~/.zlogin`.
+
+### Commands
 
 [pyenv Command Reference](https://github.com/pyenv/pyenv/blob/master/COMMANDS.md)
 
+`pyenv commands`: Lists all available pyenv commands.
+
 To list the all available versions of Python, including Anaconda, Jython, pypy, and stackless use: 
 
-列出所有可安装的 python 版本：
-
-```shell
-faner@MBP-FAN:~|⇒  pyenv install --list
+```bash
+$ pyenv install --list
 Available versions:
   2.1.3
   2.2.3
@@ -138,36 +100,33 @@ Available versions:
 
 Then install the desired versions:
 
-安装特定的 python 版本：
-
-```shell
-
+```bash
 $ pyenv install 2.7.6
 $ pyenv install 2.6.8
-
+$ pyenv install 3:latest
 ```
 
 Lists all Python versions known to pyenv, and shows an asterisk next to the currently active version.
 
-列出已经安装的 python 版本：
-
-```shell
-faner@MBP-FAN:~|⇒  pyenv versions
+```bash
+$ pyenv versions
 * system (set by /Users/faner/.pyenv/version)
 ```
 
-查看当前正在使用的 python 版本：
+1. **`pyenv global`**: Sets the *global* version of Python to be used in *all* shells by writing the version name to the `~/.pyenv/version` file. This version can be overridden by an application-specific `.python-version` file, or by setting the `PYENV_VERSION` environment variable.
+2. **`pyenv local`**: Sets a local *application-specific* Python version by writing the version name to a `.python-version` file in the *current* directory. This version overrides the global version, and can be overridden itself by setting the `PYENV_VERSION` environment variable or with the `pyenv shell` command.
+3. **`pyenv shell`**: Sets a *shell-specific* Python version by setting the `PYENV_VERSION` environment variable in your shell. This version overrides application-specific versions and the global version.
 
-```shell
-faner@MBP-FAN:~|⇒  pyenv version
+Displays the currently active Python version, along with information on how it was set.
+
+```bash
+$ pyenv version
 system (set by /Users/faner/.pyenv/version)
 ```
 
 Uninstall a specific Python version.
 
-卸载指定版本的 python：
-
-```shell
+```bash
 Usage: pyenv uninstall [-f|--force] <version>
 
    -f  Attempt to remove the specified version without prompting
@@ -177,37 +136,161 @@ Usage: pyenv uninstall [-f|--force] <version>
 
 Displays the full path to the executable that pyenv will invoke when you run the given command.
 
-列出指定版本 python 的实际路径：
-
-```shell
+```bash
 $ pyenv which python3.3
-/home/yyuu/.pyenv/versions/3.3.3/bin/python3.3
+/Users/faner/.pyenv/versions/3.3.3/bin/python3.3
 ```
+
+## venv
+
+[venv — Creation of virtual environments](https://docs.python.org/3/library/venv.html) - Added in version 3.3.
+
+The `venv` module supports creating lightweight “virtual environments”, each with their own independent set of Python packages installed in their [site](https://docs.python.org/3/library/site.html#module-site) directories. A virtual environment is created on top of an existing Python installation, known as the virtual environment’s “base” Python, and by default is isolated from the packages in the base environment, so that only those explicitly installed in the virtual environment are available.
+
+When used from within a virtual environment, common installation tools such as [pip](https://pypi.org/project/pip/) will install Python packages into a virtual environment without needing to be told to do so explicitly.
+
+> Used to contain a specific Python interpreter and software libraries and binaries which are needed to support a project (library or application). These are by default isolated from software in other virtual environments and Python interpreters and libraries installed in the operating system.
+
+### help
+
+Run `python3 -m venv --help` to show usage information.
+
+```bash
+$ python3 -m venv --help
+usage: venv [-h] [--system-site-packages] [--symlinks | --copies] [--clear] [--upgrade]
+            [--without-pip] [--prompt PROMPT] [--upgrade-deps] [--without-scm-ignore-files]
+            ENV_DIR [ENV_DIR ...]
+
+Creates virtual Python environments in one or more target directories.
+
+positional arguments:
+  ENV_DIR               A directory to create the environment in.
+
+options:
+  -h, --help            show this help message and exit
+  --system-site-packages
+                        Give the virtual environment access to the system site-packages
+                        dir.
+  --symlinks            Try to use symlinks rather than copies, when symlinks are not the
+                        default for the platform.
+  --copies              Try to use copies rather than symlinks, even when symlinks are the
+                        default for the platform.
+  --clear               Delete the contents of the environment directory if it already
+                        exists, before environment creation.
+  --upgrade             Upgrade the environment directory to use this version of Python,
+                        assuming Python has been upgraded in-place.
+  --without-pip         Skips installing or upgrading pip in the virtual environment (pip
+                        is bootstrapped by default)
+  --prompt PROMPT       Provides an alternative prompt prefix for this environment.
+  --upgrade-deps        Upgrade core dependencies (pip) to the latest version in PyPI
+  --without-scm-ignore-files
+                        Skips adding SCM ignore files to the environment directory (Git is
+                        supported by default).
+
+Once an environment has been created, you may wish to activate it, e.g. by sourcing an
+activate script in its bin directory.
+```
+
+### usage
+
+1. Creating virtual environments
+
+```
+cmd> python -m venv C:\path\to\new\virtual\environment
+bash> python -m venv /path/to/new/virtual/environment
+```
+
+2. Activate a virtual environment
+
+```
+# sourcing an activate script in its bin/Scripts directory
+cmd> %VIRTUAL_ENV%\Scripts\activate
+bash> source VIRTUAL_ENV/bin/activate
+```
+
+When a virtual environment has been activated, the `VIRTUAL_ENV` environment variable is set to the path of the environment.
+
+```bash
+$ echo $VIRTUAL_ENV
+/Users/faner/.venv
+```
+
+3. Deactivate current venv when done
+
+```
+deactivate
+```
+
+### mechanism
+
+When a Python interpreter is running from a virtual environment, [`sys.prefix`](https://docs.python.org/3/library/sys.html#sys.prefix) and [`sys.exec_prefix`](https://docs.python.org/3/library/sys.html#sys.exec_prefix) point to the directories of the virtual environment, whereas [`sys.base_prefix`](https://docs.python.org/3/library/sys.html#sys.base_prefix) and [`sys.base_exec_prefix`](https://docs.python.org/3/library/sys.html#sys.base_exec_prefix) point to those of the *base* Python used to create the environment. It is sufficient to check `sys.prefix != sys.base_prefix` to determine if the current interpreter is running from a virtual environment.
+
+A virtual environment may be “activated” using a script in its binary directory (`bin` on POSIX; `Scripts` on Windows). This will **prepend** that directory to your `PATH`, so that running **python** will invoke the environment’s Python interpreter and you can run installed scripts without having to use their full path. The invocation of the activation script is platform-specific.
+
+### prefix path
+
+The `sys.prefix` and `sys.exec_prefix` have changed and are distinct from the corresponding base prefix.
+
+```bash
+$ python3 -c "import sys; print(sys.prefix)"
+/Users/faner/.venv
+$ python3 -c "import sys; print(sys.exec_prefix)"
+/Users/faner/.venv
+```
+
+`site.PREFIXES` now only points to `VIRTUAL_ENV`, and `site.ENABLE_USER_SITE` turns to be `False`.
+
+```bash
+$ python3 -c "import pprint, site; pprint.pp(site.PREFIXES)"
+['/Users/faner/.venv']
+
+$ python3 -c "import pprint, site; print(site.ENABLE_USER_SITE)"
+False
+```
+
+Let's check the current python3 bin path `sys.executable`:
+
+```bash
+$ which python3
+/Users/faner/.venv/bin/python3
+$ python3 -c "import sys; print(sys.executable)"
+/Users/faner/.venv/bin/python3
+```
+
+`site.getsitepackages()` now only returns the `VIRTUAL_ENV`'s `site-packages` and replace the last default site-package path in `sys.path`.
+
+```bash
+$ python3 -c "import pprint, site; pprint.pp(site.getsitepackages())"
+['/Users/faner/.venv/lib/python3.13/site-packages']
+
+$ python3 -c "import sys, pprint; pprint.pp(sys.path)"
+['',
+ '/opt/homebrew/Cellar/python@3.13/3.13.7/Frameworks/Python.framework/Versions/3.13/lib/python313.zip',
+ '/opt/homebrew/Cellar/python@3.13/3.13.7/Frameworks/Python.framework/Versions/3.13/lib/python3.13',
+ '/opt/homebrew/Cellar/python@3.13/3.13.7/Frameworks/Python.framework/Versions/3.13/lib/python3.13/lib-dynload',
+ '/Users/faner/.venv/lib/python3.13/site-packages']
+```
+
+## pyenv-virtualenv
+
+[pyenv-virtualenv](https://github.com/pyenv/pyenv-virtualenv) is a [pyenv](https://github.com/pyenv/pyenv) *plugin* that provides features to manage virtualenvs and conda environments for Python on UNIX-like systems.
+
+**virtualenv vs. venv**:
+
+There is a [venv](http://docs.python.org/3/library/venv.html) module available for CPython 3.3 and newer. It provides an executable module `venv` which is the successor of `virtualenv` and distributed by default.
+
+`pyenv-virtualenv` uses `python -m venv` if it is available and the `virtualenv` command is not available.
 
 ## virtualenv
 
 [virtualenv](https://pypi.python.org/pypi/virtualenv) is a tool to create isolated Python environments.
 
-[Docs](https://virtualenv.pypa.io/en/stable/#) » [Virtualenv](https://virtualenv.pypa.io/en/stable/)  
+[virtualenv documentation](https://virtualenv.pypa.io/en/latest/)
 
-> [ubuntu 使用 pyenv 和 virtualenv 搭建多版本虚拟开发环境](http://www.cnblogs.com/npumenglei/p/3719412.html)  
-> [CentOS 6.8 使用 pyenv + virtualenv 打造多版本 Python 开发环境](http://python.jobbole.com/85587/)  
+Since Python `3.3`, a subset of it has been integrated into the standard library under the [venv module](https://docs.python.org/3/library/venv.html). The `venv` module does not offer all features of this library, to name just a few more prominent:
 
-## pyenv-virtualenv
-
-github: [pyenv](https://github.com/pyenv) / [pyenv-virtualenv](https://github.com/pyenv/pyenv-virtualenv)
-
-pyenv 是一个 Python 多版本环境管理工具，这个是和我们常用的 virtualenv 有所不同。  
-
-1. 前者是对 Python 的版本进行管理，实现不同版本的切换和使用；  
-2. 后者测试创建一个虚拟环境，与系统环境以及其他 Python 环境隔离，避免干扰。  
-
-**pyenv-virtualenv** is a [pyenv](https://github.com/pyenv/pyenv) *plugin* that provides features to manage virtualenvs and conda environments for Python on UNIX-like systems.
-
-## references
-
-[pyenv简介——Debian/Ubuntu中管理多版本Python](http://www.malike.net.cn/blog/2016/05/21/pyenv-tutorial/) - git clone  
-
-[mac下使用pyenv,pyenv-virtualenv管理python的多个版本](http://blog.csdn.net/angel22xu/article/details/45443019) - homebrew - 图文详细  
-[Mac OS 上用pyenv和pyenv-virtualenv管理多个Python多版本及虚拟环境](http://blog.csdn.net/liuchunming033/article/details/78345286) - homebrew  
-[Python版本管理：pyenv和pyenv-virtualenv(MAC、Linux)、virtualenv和virtualenvwrapper(windows)](http://www.jianshu.com/p/60f361822a7e) - git clone  
+- is slower (by not having the `app-data` seed method),
+- is not as extendable,
+- cannot create virtual environments for arbitrarily installed python versions (and automatically discover these),
+- is not upgrade-able via [pip](https://pip.pypa.io/en/stable/installing/),
+- does not have as rich programmatic API (describe virtual environments without creating them).

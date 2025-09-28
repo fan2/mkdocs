@@ -344,7 +344,7 @@ for dirpath, _, files in os.walk(dir):
 [5, 6, 7]
 ```
 
-更多参考 [builtins.list](../pylib/builtins/builtins.list.md) 中的相关说明和例程。
+更多参考 [builtins.list](../builtins/6-builtins.list.md) 中的相关说明和例程。
 
 ## if
 

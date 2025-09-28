@@ -276,7 +276,7 @@ Total score for John is 85
 
 可参考 builtins.format 和 str.format 函数，输入 `help('FORMATTING')` 可查看字符串格式化相关议题。
 
-- 参考 [builtins.str.format](./builtins.str.format.md)、[builtins.string](./builtins.string.md)。
+- 参考 [builtins.str.format](./4-builtins.str.format.md)、[builtins.string](../pylib/1-string.md)。
 
 ### printf-style
 
@@ -415,7 +415,7 @@ Dcab       ==>       7678
 > Added in version 3.6.
 > Added in version 3.8: The equal sign '='.
 
-PLS ref to [str.format](./builtins.str.format.md).
+PLS ref to [str.format](./4-builtins.str.format.md).
 
 ## color
 
