@@ -501,24 +501,18 @@ md5 命令后的默认输入参数为文件名，也可通过 `-s` 选项指定�
              Print a checksum of the given string.
 ```
 
-计算从 [crx4chrome](https://www.crx4chrome.com/) 离线下载的 [Vimium CRX 1.60.3 for Chrome](https://www.crx4chrome.com/crx/731/)  插件的 MD5：
+计算 [paywallhub_chrome_v1.0.5.zip](https://github.com/Angeloyo/paywallhub-chrome-extension/releases/tag/v1.0.5) 插件的 MD5:
 
 ```bash
-faner@FAN-MB0:~/Downloads/crx|
-⇒  md5 dbepggeogbaibhgnhhndojpepiihcmeb-1.60.3-Crx4Chrome.com.crx 
-MD5 (dbepggeogbaibhgnhhndojpepiihcmeb-1.60.3-Crx4Chrome.com.crx) = c98057821ee3cede87d911ead832dcc1
+$ md5 paywallhub_chrome_v1.0.5.zip 
+MD5 (paywallhub_chrome_v1.0.5.zip) = ea7c023497e6aa1cb1f9ec130d900d0c
 ```
 
-与官网给出的 MD5 Checksum 值一致，则说明未被篡改，可放心安装。
-
----
-
-计算下载到本地的 Vimium CRX 1.60.3 for Chrome 插件所在路径字符串的 MD5 值：
+计算下载到本地的 paywallhub_chrome_v1.0.5.zip 插件文件名字符串的 MD5 值：
 
 ```bash
-faner@FAN-MB0:~/Downloads/crx|
-⇒  md5 -s "/Users/faner/Downloads/crx/dbepggeogbaibhgnhhndojpepiihcmeb-1.60.3-Crx4Chrome.com.crx" 
-MD5 ("/Users/faner/Downloads/crx/dbepggeogbaibhgnhhndojpepiihcmeb-1.60.3-Crx4Chrome.com.crx") = 2f6f9a98b561f995564793765c205a66
+md5 -s "paywallhub_chrome_v1.0.5.zip"
+3481416891c53bf74328235b0d28d0f4
 ```
 
 ### SHA
@@ -543,15 +537,14 @@ When verifying SHA-512/224 or SHA-512/256 checksums, indicate the **algorithm** 
 
 ---
 
-计算从 [crx4chrome](https://www.crx4chrome.com/) 离线下载的 [Vimium CRX 1.60.3 for Chrome](https://www.crx4chrome.com/crx/731/) 插件的 SHA-1：
+计算从 [oracle.com](https://www.oracle.com/java/technologies/downloads/#jdk25-mac) 官网下载下来的最新 JDK 25 - macOS ARM64 Compressed Archive 安装包的 SHA-256：
 
 ```bash
-faner@FAN-MB0:~/Downloads/crx|
-⇒  shasum dbepggeogbaibhgnhhndojpepiihcmeb-1.60.3-Crx4Chrome.com.crx 
-476c61437d3c34e38ed1ee15950d202ded0902c8  dbepggeogbaibhgnhhndojpepiihcmeb-1.60.3-Crx4Chrome.com.crx
+$ shasum -a 256 jdk-25_macos-aarch64_bin.tar.gz
+be91514807049dee326fcb1269861caa9f7a5bb75c11462d9246c45dad645b76  jdk-25_macos-aarch64_bin.tar.gz
 ```
 
-与官网给出的 SHA1 Checksum 值一致，则说明未被篡改，可放心安装。
+与官网给出的 SHA256 Checksum 值一致，则说明未被篡改，可放心安装。
 
 ---
 
@@ -597,7 +590,7 @@ lsof -i :8010 | awk 'NR>1 {print $2}' | xargs kill -KILL
 
 You can use `lsof` (list of open files) in most cases to find open log files without knowing the configuration.
 
-```Shell
+```bash
 # macOS
 ~$ ps aux | grep nginx
 faner            33741   0.0  0.0 35126068   3596   ??  S     7:34AM   0:00.30 nginx: worker process

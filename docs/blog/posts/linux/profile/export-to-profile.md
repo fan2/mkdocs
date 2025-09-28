@@ -57,11 +57,30 @@ bash-3.2$
 
 ## export（global variable）
 
-使用 export 设置的环境变量，对当前终端 Shell 及其子进程有效：
+从 bash 手册中可以看到内置的 `export` 命令。
+
+```bash
+$ man bash
+
+SHELL BUILTIN COMMANDS
+
+       export [-fn] [name[=word]] ...
+       export -p
+              The supplied names are marked for automatic export to the environment of subsequently
+              executed commands.  If the -f option is given, the names refer to functions.  If no
+              names are given, or if the -p option is supplied, a list of all names that are exported
+              in this shell is printed.  The -n option causes the export property to be removed from
+              each name.  If a variable name is followed by =word, the value of the variable is set
+              to word.  export returns an exit status of 0 unless an invalid option is encountered,
+              one of the names is not a valid shell variable name, or -f is supplied with a name that
+              is not a function.
+```
+
+使用 `export name[=word]` 不带选项参数设置的环境变量，对当前终端 Shell 及其子进程（subsequently）有效：
 
 ```Shell
 faner@FAN-MB0:~|⇒  export HTTP_PROXY=socks5://127.0.0.1:1080
-faner@FAN-MB0:~|⇒  echo $HTTP_PROXY 
+faner@FAN-MB0:~|⇒  echo $HTTP_PROXY
 socks5://127.0.0.1:1080
 ```
 
@@ -69,7 +88,7 @@ socks5://127.0.0.1:1080
 
 ```Shell
 faner@FAN-MB0:~|⇒  bash
-bash-3.2$ echo $HTTP_PROXY 
+bash-3.2$ echo $HTTP_PROXY
 socks5://127.0.0.1:1080
 bash-3.2$ 
 ```
@@ -80,6 +99,15 @@ bash-3.2$
 > [Mac OS Yosemite and java classpaths](https://stackoverflow.com/questions/26014079/mac-os-yosemite-and-java-classpaths)  
 > [Where is JAVA_HOME on macOS](https://stackoverflow.com/questions/6588390/where-is-java-home-on-osx-sierra-10-12-el-capitan-10-11-yosemite-10-10)  
 > [Mac下配置JAVA_HOME](http://blog.csdn.net/shallowgrave/article/details/39367119)  
+
+按照手册，`export -n name` 应该可以移除 name 对应的环境变量，但 ARM/macOS 下显示不支持该选项。
+
+```bash
+$ export -n HTTP_PROXY
+export: bad option: -n
+```
+
+此外，执行 `export -p` 将会打印所有 export 导出的环境变量。
 
 ### 示例1：[替换Homebrew Bottles源](https://lug.ustc.edu.cn/wiki/mirrors/help/homebrew-bottles)
 

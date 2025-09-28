@@ -26,7 +26,7 @@ grep命令会在输入或指定的文件中查找包含匹配指定模式的字�
 
 执行 `grep -V` 查看版本信息：
 
-```Shell
+```bash
 # macOS
 > grep -V
 grep (BSD grep) 2.5.1-FreeBSD
@@ -60,7 +60,7 @@ There is NO WARRANTY, to the extent permitted by law.
 
 执行 `man grep` 可查看详细帮助手册（Manual Page）：
 
-```Shell
+```bash
 # macOS
 $ man grep
 GREP(1)                   BSD General Commands Manual                  GREP(1)
@@ -91,7 +91,7 @@ DESCRIPTION
 
 查看正则表达式（regex）相关的手册：
 
-```Shell
+```bash
 faner@MBP-FAN:~|⇒  man 7 re_format
 faner@MBP-FAN:~|⇒  man 3 regex
 ```
@@ -102,7 +102,7 @@ faner@MBP-FAN:~|⇒  man 3 regex
 
 以下为 `man grep` 中的模式说明：
 
-```Shell
+```bash
 OPTIONS
 
    Generic Program Information
@@ -139,7 +139,7 @@ These variants are **deprecated**, but are provided for backward compatibility.
 2. `-i`：支持忽略大小写敏感；  
 3. `-v`：支持输出不匹配的行；  
 
-```Shell
+```bash
 
 -e pattern, --regexp=pattern
 
@@ -166,7 +166,7 @@ These variants are **deprecated**, but are provided for backward compatibility.
 3. `-m` 限定最多查找匹配条目数；  
 4. `-q` 预检判断是否存在匹配条目；  
 
-```Shell
+```bash
 Output control:
 # 只打印匹配的部分，而非匹配的行，用的较少
   -o, --only-matching
@@ -201,7 +201,7 @@ Output control:
 
 指定输出查找结果上下文信息。
 
-```Shell
+```bash
 # 顺便打印查找结果上面 NUM 行
   -B, --before-context=NUM  print NUM lines of leading context
 # 顺便打印查找结果下面 NUM 行
@@ -217,7 +217,7 @@ Output control:
 1. `-h`：不输出文件名，只输出匹配行；  
 2. `-n`：打印匹配行的行号；  
 
-```Shell
+```bash
 
   -b, --byte-offset         print the byte offset with output lines
 
@@ -236,7 +236,7 @@ Output control:
 
 `-r` 递归搜索目录，遍历查找指定目录及其子目录下的所有文件。
 
-```Shell
+```bash
 # 递归遍历查找指定目录及其子目录下的所有文件
   -R, -r, --recursive       Recursively search subdirectories listed.
 
@@ -303,14 +303,14 @@ otherwise match any character.
 
 从最近100条日志中查找 fan 提交的记录：
 
-```Shell
+```bash
 svn log -l 100 | grep fan
 svn log --search fan -l 100
 ```
 
 git-log 的 `--grep` 选项支持过滤提交日志：
 
-```Shell
+```bash
 git log -100 --author=fan --grep='文件' --stat
 ```
 
@@ -320,14 +320,14 @@ git log -100 --author=fan --grep='文件' --stat
 
 递归查找当前目录下所有包含 git 冲突起始标记的文件：
 
-```Shell
+```bash
 grep -lr '<<<<<<<' .
 grep -lr '<<<<<<<' . | xargs git checkout --theirs
 ```
 
 递归扫描当前目录下所有文件，执行 file 命令查看文件信息，然后 grep 过滤出编码为 ISO-8859 的文件个数：
 
-```Shell
+```bash
 find . -type f -exec file {} \; | grep -c 'ISO-8859'
 15
 ```
@@ -339,7 +339,7 @@ find . -type f -exec file {} \; | grep -c 'ISO-8859'
 
 以下示例在当前目录下查找名称为 src 的子目录，并在所有子目录下，执行 grep 查找包含 XPTask 的文件。
 
-```Shell
+```bash
 # -r 递归查找
 # -I 忽略二进制文件
 # -m10 只查找前10条
@@ -349,19 +349,19 @@ find . -type d -name src | xargs grep -rIm10 --exclude="*.o" --exclude="*.o.d" '
 
 `grep -rIL .` 递归查找不匹配的二进制位文件，管传给 xargs 作为 rm 的参数，即删除找到的二进制文件。
 
-```Shell
+```bash
 $ grep -rIL . | xargs -t rm
 ```
 
 结合 find 命令，查找所有非空的二进制文件：
 
-```Shell
+```bash
 $ find . -type f ! -size 0 -exec grep -IL . {} \;
 ```
 
 查找非空、非二进制文件，并打印列出：
 
-```Shell
+```bash
 $ find . -type f -exec grep -I -q . {} \; -print
 ```
 
@@ -369,16 +369,29 @@ $ find . -type f -exec grep -I -q . {} \; -print
 
 > 相当于 vscode 等 IDE 编辑器中 Search: Find in Files 全局查找（findInFiles）。
 
-```Shell
+```bash
 # -l 只输出匹配的文件名
 grep -rIl --exclude-dir=dist 'InquiryEntrance' nodejs/src
 # 输出匹配的文件名和行及行号
 grep -rIn --exclude-dir=dist 'InquiryEntrance' nodejs/src
 ```
 
+以下示例在 Python 的 site-packages 目录下的 material 包的 templates 文件夹下查找包含 `md-nav--` 的文件：
+
+```bash
+pkg_path=$(python3 -c "import site; site_pkg_path=site.getsitepackages(); print(site_pkg_path[0])")
+# find $pkg_path/material -type d -name templates | xargs grep -rIl 'md-nav--'
+grep -rIl 'md-nav--' $pkg_path/material/templates
+/Users/faner/.venv/lib/python3.13/site-packages/material/templates/blog-post.html
+/Users/faner/.venv/lib/python3.13/site-packages/material/templates/assets/stylesheets/palette.06af60db.min.css
+/Users/faner/.venv/lib/python3.13/site-packages/material/templates/assets/stylesheets/main.e53b48f4.min.css
+/Users/faner/.venv/lib/python3.13/site-packages/material/templates/partials/toc.html
+/Users/faner/.venv/lib/python3.13/site-packages/material/templates/partials/nav.html
+```
+
 在 Xcode sdk-path 下的 usr/include 中查找宏 `WORD_BIT` 和 `__WORDSIZE` 定义所在的文件：
 
-```Shell
+```bash
 $ cd `xcrun --show-sdk-path`
 # grep -R -H "#define LONG_BIT" usr/include 2>/dev/null
 $ grep -R -H "#define WORD_BIT" usr/include 2>/dev/null
@@ -392,7 +405,7 @@ usr/include/stdint.h:#define __WORDSIZE 32
 
 在 rpi4b-ubuntu 下的 /usr/include 中查找宏 `WORD_BIT` 和 `__WORDSIZE` 定义所在的文件：
 
-```Shell
+```bash
 # -l: 只输出匹配文件
 $ grep -R -l "#*define WORD_BIT" /usr/include 2>/dev/null
 
@@ -406,19 +419,19 @@ $ grep -R -l "#*define __WORDSIZE" /usr/include 2>/dev/null
 
 包含 `foo|bar`（注意这里的 `|` 为普通字符，非正则或）：
 
-```Shell
+```bash
 grep -- 'foo|bar' *.txt
 ```
 
 如果想正则过滤包含 `foo` 或 `bar` 的行，则需要转义：
 
-```Shell
+```bash
 grep -- 'foo\|bar' *.txt
 ```
 
 从 myapp.log 日志中过滤包含 `start: role` 和 `stop: role` 的行，并打印行号：
 
-```Shell
+```bash
 grep -n 'start: role\|stop: role' myapp.log
 ```
 
@@ -426,19 +439,19 @@ grep -n 'start: role\|stop: role' myapp.log
 
 或者用 `-E` 通过扩展 egrep 实现按或查找，这样可以省掉转义字符：
 
-```Shell
+```bash
 grep -E 'foo|bar' # 等效于 egrep 'foo|bar'
 ```
 
 当然，也可以用 `-e` 指定多个匹配模式：
 
-```Shell
+```bash
 grep -e 'foo' -e 'bar' myfile
 ```
 
 ls 递归列举当前目录下的文件，然后按照文件名匹配过滤出部分文件予以删除：
 
-```Shell
+```bash
 rm $(ls -AR | grep -e .DS_Store -e AVEngine.log -e *_WTLOGIN.*.log)
 ```
 
@@ -446,13 +459,13 @@ rm $(ls -AR | grep -e .DS_Store -e AVEngine.log -e *_WTLOGIN.*.log)
 
 如果想过滤出不包含 `foo` 和 `bar` 的行，可指定 `-v` 选项进行反向过滤：
 
-```Shell
+```bash
 grep -v -e 'foo' -e 'bar' myfile
 ```
 
 以下 ps 结果管传给 grep，其中包含了 grep 进程，通过 `grep -v 'grep'` 过滤掉 grep 进程信息。
 
-```Shell
+```bash
 ps -ef | grep 'nginx:' | grep -v 'grep'
 ps aux | grep 'nginx:' | grep -v 'grep'
 # 或者添加 -l 选项

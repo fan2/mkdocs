@@ -24,7 +24,7 @@ Linux 下的 sed 命令进阶操作 —— NDP。
 
 > 对照 awk 中的 `getline` 函数。
 
-```
+```bash
 $ cat data2.txt
 This is the header line.
 This is the first data line.
@@ -48,7 +48,7 @@ This is the last line.
 以下示例中，sed 编辑器脚本查找包含单词 `first` 的行，然后将下一行合并到同一模式空间中，执行替换操作。
 将换行符替换为空格，实现合并行的效果。
 
-```
+```bash
 $ sed '/first/{ N ; s/\n/ / }' data2.txt
 sed: 1: "/first/{ N ; s/\n/ / }": bad flag in substitute command: '}'
 
@@ -61,7 +61,7 @@ This is the last line.
 
 以下命令，查找特定双词短语 `System Administrator` 并执行替换。
 
-```
+```bash
 $ cat data3.txt
 On Tuesday, the Linux System
 Administrator's group meeting will be held.
@@ -81,7 +81,7 @@ Thank you for your attendance.
 sed 编辑器发现第一个单词的那行和下一行合并后，即使短语内出现了换行，仍然可以找到它。  
 以下示例中，替换命令在 System 和 Administrator 之间用了通配符（`.`），可匹配空格和换行符这两种情况，从而实现跨行匹配替换。
 
-```
+```bash
 $ sed 'N ; s/System.Administrator/Desktop User/' data3.txt
 On Tuesday, the Linux Desktop User's group meeting will be held.
 All Desktop Users should attend.
@@ -91,7 +91,7 @@ Thank you for your attendance.
 但是，有个非预期效果：匹配到换行符时，从字符串中删掉了换行符，导致两行合并为一行。  
 要解决以上问题，可以在 sed 编辑器脚本中用2条替换命令，分别匹配短语出现在多行/单行中的情况。
 
-```
+```bash
 # macOS
 $ sed 'N
 quote> s/System\nAdministrator/Desktop\nUser/
@@ -118,14 +118,14 @@ Thank you for your attendance.
 当它到了最后一行文本时，就没有下一行可读了，从而停止执行。  
 如果要匹配的文本刚好在最后一行，则N命令会错过。
 
-```
+```bash
 $ cat data4.txt
 On Tuesday, the Linux System
 Administrator's group meeting will be held.
 All System Administrators should attend.
 ```
 
-```
+```bash
 # raspberrypi
 $ sed 'N
 quote> s/System\nAdministrator/Desktop\nUser/
@@ -138,7 +138,7 @@ All System Administrators should attend.
 
 这个问题可以将单行命令放到N命令前面来解决。
 
-```
+```bash
 # raspberrypi
 $ sed '
 quote> s/System Administrator/Desktop User/
@@ -157,7 +157,7 @@ All Desktop Users should attend.
 sed 编辑器用 `d` 命令来执行单行删除。  
 但当 d 命令和 N 命令一起使用时，可能非预期地删除模式空间的跨两行。  
 
-```
+```bash
 # raspberrypi
 $ sed 'N ; /System\nAdministrator/d' data4.txt
 All System Administrators should attend.
@@ -165,7 +165,7 @@ All System Administrators should attend.
 
 如果只想删除模式空间中的第一行，可使用多行删除命令 `D`。  
 
-```
+```bash
 $ sed 'N ; /System\nAdministrator/D' data4.txt
 Administrator's group meeting will be held.
 All System Administrators should attend.
@@ -173,7 +173,7 @@ All System Administrators should attend.
 
 以下示例，对于空行及其下一行组成的模式空间中匹配到 header，删除空行。
 
-```
+```bash
 # raspberrypi
 
 $ cat data5.txt
@@ -196,7 +196,7 @@ This is the last line.
 sed 编辑器用 `p` 命令来执行单行打印。  
 但当 p 命令和 N 命令一起使用时，可能非预期地打印模式空间的跨两行。  
 
-```
+```bash
 $ sed -n 'N ; /System\nAdministrator/p' data3.txt
 On Tuesday, the Linux System
 Administrator's group meeting will be held.
@@ -204,7 +204,7 @@ Administrator's group meeting will be held.
 
 如果只想打印多行模式空间中的第一行，可以选用 `P` 命令。
 
-```
+```bash
 $ sed -n 'N ; /System\nAdministrator/P' data3.txt
 On Tuesday, the Linux System
 ```
@@ -225,7 +225,7 @@ sed编辑器还提供另一块称做 **保持空间**（hold space）的缓存�
  `G`  | 将保持空间附加到模式空间
  `x`  | 交换模式空间和保持空间的内容
 
-```
+```bash
 $ sed -n '/first/{h;p;n;p;g;p}' data2.txt
 sed: 1: "/first/{h;p;n;p;g;p}": extra characters at the end of p command
 
@@ -244,7 +244,7 @@ This is the first data line.
 可以强制输出中的第一个数据行出现在第二个数据行后面。
 去掉第一个p命令，可以实现相反的顺序输出这两行。
 
-```
+```bash
 $ sed -n '/first/{h;n;p;g;p}' data2.txt
 sed: 1: "/first/{h;n;p;g;p}": extra characters at the end of p command
 
@@ -266,7 +266,7 @@ This is the first data line.
 
 加了感叹号之后，匹配的部分不执行p命令，不匹配的部分执行p命令打印。
 
-```
+```bash
 $ sed -n '/header/!p' data2.txt
 This is the first data line.
 This is the second data line.
@@ -276,7 +276,7 @@ This is the last line.
 在N命令捆绑下一行到模式空间的例子中，如果要匹配的文本刚好在最后一行，则N命令会错过。
 除了上面给出的先匹配单行的方案外，也可以用感叹号排除最后一行捆绑来解决这个问题。
 
-```
+```bash
 # raspberrypi
 $ sed '$!N
 quote> s/System\nAdministrator/Desktop\nUser/
@@ -293,7 +293,7 @@ All Desktop Users should attend.
 
 下面，我们来对文本实现行逆转（linux 中的 tac) 功能。
 
-```
+```bash
 $ cat data2.txt
 This is the header line.
 This is the first data line.
@@ -309,7 +309,7 @@ This is the header line.
 
 以下为基于 sed 的 tac 等效实现：
 
-```
+```bash
 $ sed -n '{1!G; h; $p}' data2.txt
 This is the last line.
 This is the second data line.

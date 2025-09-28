@@ -20,7 +20,7 @@ comments: true
 
 A `pipeline` is a sequence of one or more commands separated by one of the control operators `|` or `|&`. The format for a pipeline is:
 
-```Shell
+```bash
 [time [-p]] [ ! ] command [ [|⎪|&] command2 ... ]
 ```
 
@@ -29,7 +29,7 @@ If **`|&`** is used, *`command`*'s standard error, in addition to its standard o
 
 管道被放在命令之间，将一个命令的输出重定向到另一个命令中：
 
-```Shell
+```bash
 command1 | command2
 ```
 
@@ -41,13 +41,13 @@ command1 | command2
 
 cat命令不仅可以读取文件、拼接数据，还支持从标准输入中进行读取。以下脚本将ls的输出传给 `cat -n`，后者接收stdin输入并将内容加上行号，输出重定向到文件out.txt。
 
-```Shell
+```bash
 ls | cat -n > out.txt
 ```
 
 终端通过 curl 从 github 下载安装流行的 Zsh 配置 [Oh My ZSH](https://ohmyz.sh/#install)：
 
-```Shell
+```bash
 # curl
 $ sh -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
 ## 或者
@@ -57,13 +57,13 @@ $ curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.
 以下脚本下载 [Homebrew](https://docs.brew.sh/) 安装包tarball，基于 `&&` 递进执行创建目录和下载文件。
 下载完成后，将下载的压缩包（本地存储的文件路径）重定向给 tar 进行解压。
 
-```Shell
+```bash
 mkdir homebrew && curl -L https://github.com/Homebrew/brew/tarball/master | tar xz --strip 1 -C homebrew
 ```
 
 以下是来自 stackoverflow 上 [Amir Mehler](https://stackoverflow.com/a/22671136) 对问题 [How to read from a file or standard input in Bash](https://stackoverflow.com/questions/6980090/how-to-read-from-a-file-or-standard-input-in-bash) 的回答。
 
-```Shell
+```bash
 $ cat reader.sh
 #!/bin/bash
 while read line; do
@@ -79,7 +79,7 @@ done
 
 该案例直观阐述了管道的运行机制：
 
-```Shell
+```bash
 $ ./writer.sh | ./reader.sh
 reading: line 0
 reading: line 1
@@ -105,14 +105,14 @@ tee 默认重定向是 `>` 会清空覆写已有文件，如果不想覆写而�
 
 > `-a`: Append the output to the files rather than overwriting(default).
 
-```Shell
+```bash
 # 将 ls -l 结果追加到文件，同时输出到控制台用more分页显示。
 faner@MBP-FAN:~|⇒  ls -l / | tee -a ~/homefile | more
 ```
 
 执行 `shadowsocks.sh` 脚本安装 shadowsocks 时，将执行的 stdout 和 stderr 输出既在控制台显示，同时写入日志文件 shadowsocks.log，方便后续回看。
 
-```Shell
+```bash
 ./shadowsocks.sh |& tee shadowsocks.log # or
 ./shadowsocks.sh 2>&1 | tee shadowsocks.log
 ```
@@ -123,7 +123,7 @@ faner@MBP-FAN:~|⇒  ls -l / | tee -a ~/homefile | more
 
 **wc** - print newline, word, and byte counts for each file
 
-```Shell
+```bash
 -c, --bytes
       print the byte counts
 
@@ -153,7 +153,7 @@ $ wc -lc Podfile
 
 how count all lines in all files in current dir and omit empty lines with wc, grep, cut and bc commands
 
-```Shell
+```bash
 echo `wc -l * | grep total | cut -f2 -d’ ‘` – `grep -in “^$” * | wc -l ` | bc
 ```
 
@@ -167,7 +167,7 @@ echo `wc -l * | grep total | cut -f2 -d’ ‘` – `grep -in “^$” * | wc -l
 
 统计 `mars/mars/stn/src` 目录下类数（同名的 h/cc）
 
-```Shell
+```bash
 faner@MBP-FAN:~/Projects/git/framework/mars/mars/stn/src|master⚡ 
 ⇒  ls | cut -d '.' -f 1 | uniq -c
    2 anti_avalanche
@@ -203,7 +203,7 @@ faner@MBP-FAN:~/Projects/git/framework/mars/mars/stn/src|master⚡
 
 在 macOS 终端执行 cut 将显示 usage 简要说明，执行 `man cut` 可查看详细帮助手册（Manual Page）：
 
-```Shell
+```bash
 faner@MBP-FAN $ man cut
 CUT(1)                    BSD General Commands Manual                   CUT(1)
 
@@ -257,7 +257,7 @@ DESCRIPTION
 
 `-b`, --bytes=LIST：select only these bytes，按二进制解析处理，提取指定索引的字节。
 
-```Shell
+```bash
 # 提取第4个字节
 faner@MBP-FAN $ echo "/usr/local/bin" | cut -b 4
 r
@@ -281,7 +281,7 @@ local/bin
 
 对于混合了字母和汉字的字符串 `w我m们d的a爱`，当其按照 `-b` 索引时，第二个`我`字占据第2~4个字节位置。
 
-```Shell
+```bash
 faner@MBP-FAN $ echo "w我m们d的a爱" | cut -b 1
 w
 faner@MBP-FAN $ echo "w我m们d的a爱" | cut -b 2
@@ -296,7 +296,7 @@ faner@MBP-FAN $ echo "w我m们d的a爱" | cut -b 2,3,4,5
 
 可以通过 `hexdump` 或 `od` 查看其二进制编码，可见这几个汉字每个占据3个字节。
 
-```Shell
+```bash
 faner@MBP-FAN $ echo "w我m们d的a爱" | hexdump -C
 00000000  77 e6 88 91 6d e4 bb ac  64 e7 9a 84 61 e7 88 b1  |w...m...d...a...|
 00000010  0a                                                |.|
@@ -311,7 +311,7 @@ faner@MBP-FAN $ echo "w我m们d的a爱" | od -N 18 -A x -t xCa
 
 通常，使用 `-c` 选项，按照可视字符定位提取的场景更多一点。
 
-```Shell
+```bash
 # 提取第2个字符
 faner@MBP-FAN $ echo "w我m们d的a爱" | cut -c 2
 我
@@ -322,7 +322,7 @@ faner@MBP-FAN $ echo "w我m们d的a爱" | cut -c 2,3
 
 export 声明变量排列整齐，可据此以字符为单位提取固定字符位置区间：
 
-```Shell
+```bash
 # 获取 export 前4条
 pi@raspberrypi:~ $ export | head -n 4
 declare -x DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/1000/bus"
@@ -343,7 +343,7 @@ INFINALITY_FT_AUTOHINT_INCREASE_GLYPH_HEIGHTS="true"
 
 以下来自 manpage 的示例，相当于提取两个range的子串：
 
-```Shell
+```bash
 # Show the names and login times of the currently logged in users:
 faner@MBP-FAN $ who | cut -c 1-16,26-38
 ```
@@ -364,7 +364,7 @@ faner@MBP-FAN $ who | cut -c 1-16,26-38
 
 提取 /etc/passwd 文件中文本行第1个域和第7个域：
 
-```Shell
+```bash
 faner@MBP-FAN $ echo "nobody:*:-2:-2:Unprivileged User:/var/empty:/usr/bin/false" | cut -d : -f 1,7
 nobody:/usr/bin/false
 
@@ -375,7 +375,7 @@ faner@MBP-FAN $ cut -d : -f 1,7 /etc/passwd | head -20
 
 PATH 环境变量是以 `:` 分隔多个路径，可以使用 cut 命令提取其中部分路径。
 
-```Shell
+```bash
 faner@MBP-FAN $ echo $PATH
 /usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin
 faner@MBP-FAN $ echo $PATH | cut -d ':' -f 3
@@ -388,7 +388,7 @@ faner@MBP-FAN $ echo $PATH | cut -d ':' -f 3,5
 
 不小心向 PATH 重复追加了 `/usr/local/sbin`：
 
-```Shell
+```bash
 pi@raspberrypi:~ $ echo $PATH
 /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/games:/usr/games
 pi@raspberrypi:~ $ PATH=$PATH:/usr/local/sbin
@@ -408,7 +408,7 @@ pi@raspberrypi:~ $ echo $PATH
 
 tr只能通过stdin，而无法通过命令行参数来接受输入，它的调用格式如下：
 
-```Shell
+```bash
 tr [options] set1 set2
 ```
 
@@ -420,7 +420,7 @@ tr [options] set1 set2
 
 在 macOS 终端执行 `man tr` 可查看详细帮助手册（Manual Page）：
 
-```Shell
+```bash
 faner@MBP-FAN $ man tr
 TR(1)                     BSD General Commands Manual                    TR(1)
 
@@ -468,7 +468,7 @@ occurrence of that character. 缩减连续重复的字符成指定的单个字�
 - [Changing to Uppercase or Lowercase](https://www.shellscript.sh/tips/case/)  
 - [Shell Scripting: Convert Uppercase to Lowercase](https://www.cyberciti.biz/faq/linux-unix-shell-programming-converting-lowercase-uppercase/)  
 
-```Shell
+```bash
 # 将文件 testfile 中的大写字母全部转换为小写
 faner@MBP-FAN $ cat testfile | tr A-Z a-z
 
@@ -483,7 +483,7 @@ DOS2UNIX
 - 拉丁文中的字母：ùúûü  
 - 汉语拼音字母：ūúǔùǖǘǚǜü  
 
-```Shell
+```bash
 # 将拉丁字母中的变种u替换为普通u
 faner@MBP-FAN $ tr "[=u=]" "u" <<< ùúûü
 uuuu
@@ -498,14 +498,14 @@ faner@MBP-FAN $ tr "[=e=]" "[e*]" <file1 >file2
 
 > 注意这里左右括号的对应替换顺序。
 
-```Shell
+```bash
 faner@MBP-FAN $ tr '{}' '()' < file1 > file2
 ```
 
 通过在tr中使用集合的概念，可以轻松地将字符从一个集合映射到另一个集合中。
 以下示例使用tr完成简单地加解密：set1 中的 12345 基于索引位置将映射为 set2 中的 87654，反之解密。
 
-```Shell
+```bash
 # 加密
 $ echo 12345 | tr '0-9' '9876543210'
 87654
@@ -518,14 +518,14 @@ ROT13是一个著名的加密算法，它按照字母表排列顺序执行13个�
 在ROT13算法中，文本加密和解密都使用同一个函数。
 下面用tr进行ROT13加密：
 
-```Shell
+```bash
 $ echo "tr came, tr saw, tr conquered." | tr 'a-zA-Z' 'n-za-mN-ZA-M'
 ge pnzr, ge fnj, ge pbadhrerq.
 ```
 
 对加密后的密文再次使用同样的ROT13函数即可进行解密：
 
-```Shell
+```bash
 $ echo ge pnzr, ge fnj, ge pbadhrerq. | tr 'a-zA-Z' 'n-za-mN-ZA-M'
 tr came, tr saw, tr conquered.
 ```
@@ -534,21 +534,21 @@ tr came, tr saw, tr conquered.
 
 以下示例将字符串中的空格转换为制表符，默认每个空格都会转换。
 
-```Shell
+```bash
 faner@MBP-FAN $ echo "This is a  test" | tr '[:space:]' '\t'
 This    is      a               test    %
 ```
 
 指定 `-s` 选项，可压缩这些重复的空格：
 
-```Shell
+```bash
 faner@MBP-FAN $ echo "This is a  test" | tr -s '[:space:]' '\t'
 This    is      a       test    %
 ```
 
 以下使用 `-s` 选项去除重复字母，或将相同字母进行压缩。
 
-```Shell
+```bash
 faner@MBP-FAN $  cat oops.txt
 And the cowwwwws went homeeeeeeee
 Or did theyyyy
@@ -562,14 +562,14 @@ Or did they
 
 > `-d` 会移除所有文本行结尾的换行符。
 
-```Shell
+```bash
 # tr -s "[\012]" < oops.txt
 faner@MBP-FAN $ tr -s "[\n]" < oops.txt
 ```
 
 利用 `tr -s` 替换回车换行符（`\r\n`）为换行符（`\n`），实现dos2unix（crlf->lf）：
 
-```Shell
+```bash
 faner@MBP-FAN $ tr -s "[\r\n]" "[\n*]" < include/litestd.h
 faner@MBP-FAN $ tr -s "[\015\012]" "[\012*]" < include/litestd.h
 ```
@@ -578,14 +578,14 @@ faner@MBP-FAN $ tr -s "[\015\012]" "[\012*]" < include/litestd.h
 
 来自 unix/POSIX - [tr](https://pubs.opengroup.org/onlinepubs/9699919799/utilities/tr.html) manpage 的一个样例：
 
-```Shell
+```bash
 # creates a list of all words in file1 one per line in file2, where a word is taken to be a maximal string of letters.
 tr -cs "[:alpha:]" "[\n*]" <file1 >file2
 ```
 
 下面的文件包含一个星期的日程表，需要从其中删除所有数字，只保留日期。
 
-```Shell
+```bash
 faner@MBP-FAN $ $ cat diary.txt
 Monday     08:00
 Tuesday    08:10
@@ -598,7 +598,7 @@ sunday     09:00
 
 基于 `-c` 的补集思路：把星期之外的非字母替换为换行符，相当于移除星期之后的部分。
 
-```Shell
+```bash
 # cat diary.txt | tr -cs "[a-z][A-Z]" "[\n*]"
 faner@MBP-FAN $ cat diary.txt | tr -cs "[:alpha:]" "[\n*]"
 Monday
@@ -618,7 +618,7 @@ Sunday
 
 使用 `-d` 选项可以删除指定的字符（集），例如 `tr -d '[:space:]'`（`tr -d ' '`） 删除空格。
 
-```Shell
+```bash
 # 删除所有的小写字母
 faner@MBP-FAN $ echo 'Hua Wei' | tr -d a-z
 H W
@@ -626,14 +626,14 @@ H W
 
 使用 `-cd` 组合选项，则删除指定的字符（集）之外的其他字符，以下为 manpage 示例。
 
-```Shell
+```bash
 # 删除可打印字符的补集，即删除不可打印字符。
 faner@MBP-FAN $ tr -cd "[:print:]" < file1
 ```
 
 dos2unix（crlf->lf）的另外一种实现是利用 `tr -d`，删除回车控制字符（`\r`），并输出到新文件：
 
-```Shell
+```bash
 faner@MBP-FAN $ cat include/litestd.h | tr -d '[\r]' > include/litestd2.h
 faner@MBP-FAN $ tr -d '[\r]' < include/litestd.h > include/litestd2.h
 faner@MBP-FAN $ tr -d "[\015]" < include/litestd.h | tee include/litestd2.h
@@ -641,7 +641,7 @@ faner@MBP-FAN $ tr -d "[\015]" < include/litestd.h | tee include/litestd2.h
 
 上面示例基于补集替换提取 diary.txt 中的日期列，另一种思路是基于 `-d` 删除除星期之外的所有字符，包括空格、数字和冒号。
 
-```Shell
+```bash
 faner@MBP-FAN $ cat diary.txt | tr -d "[0-9][: ]"
 ```
 
@@ -658,7 +658,7 @@ debian/Ubuntu - [xargs](https://manpages.debian.org/buster/findutils/xargs.1.en.
 执行 `xargs --help` 可查看简要帮助（Usage）。  
 执行 `man xargs` 可查看详细帮助手册（Manual Page）：
 
-```Shell
+```bash
 pi@raspberrypi:~ $ man xargs
 
 XARGS(1)                           General Commands Manual                           XARGS(1)
@@ -684,7 +684,7 @@ DESCRIPTION
 
 执行 `xargs --version` 查看版本信息：
 
-```Shell
+```bash
 pi@raspberrypi:~ $ xargs --version
 xargs (GNU findutils) 4.7.0-git
 Copyright (C) 2016 Free Software Foundation, Inc.
@@ -749,7 +749,7 @@ lol
 md5 命令支持计算指定文件或字符串的MD5值，但不支持从stdin输入，因此无法将字符串管传给md5执行计算。
 此时可考虑基于 `| xargs md -s` 变通实现：
 
-```Shell
+```bash
 $ echo 'How many roads must a man walk down' | xargs md5 -s
 ```
 
