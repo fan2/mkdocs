@@ -101,7 +101,7 @@ print(mbr_start_line, mbr_stop_line)
  2019-09-22 21:43:59.947 Debug|1031|672495|:125|IMPDT_MBR_Engine||stop: reset role from 1
 ```
 
-也可以指定 sep 去掉空格：`print(mbr_start_line, mbr_stop_line,sep='')`
+可以指定 sep 去掉空格：`print(mbr_start_line, mbr_stop_line,sep='')`
 
 ### end
 
@@ -111,7 +111,7 @@ mbr_stop_line = '2019-09-22 21:43:59.947 Debug|1031|672495|:125|IMPDT_MBR_Engine
 #print(mbr_start_line),print(mbr_stop_line)
 mbr_border_lines = (mbr_start_line, mbr_stop_line) # make tuple
 for line in mbr_border_lines:
-    print(line,end='') #print(line)
+    print(line)
 ```
 
 打印结果为：
@@ -276,7 +276,7 @@ Total score for John is 85
 
 可参考 builtins.format 和 str.format 函数，输入 `help('FORMATTING')` 可查看字符串格式化相关议题。
 
-- 参考 [builtins.str.format](./4-builtins.str.format.md)、[builtins.str]( ./3-builtins.str.md)。
+- 参考 [builtins.str.format](./builtins.str.format.md)、[builtins.string](./builtins.string.md)。
 
 ### printf-style
 
@@ -406,4 +406,184 @@ Dcab       ==>       7678
 >>> total = 22
 >>> 'Correct rate of answers: {:.2%}'.format(points/total)
 'Correct rate of answers: 86.36%'
+```
+
+### f-string
+
+[2. Lexical analysis | 2.4. Literals | 2.4.3. f-strings](https://docs.python.org/3/reference/lexical_analysis.html#f-strings)
+
+> Added in version 3.6.
+> Added in version 3.8: The equal sign '='.
+
+PLS ref to [str.format](./builtins.str.format.md).
+
+## color
+
+[python - How do I print colored text to the terminal?](https://stackoverflow.com/questions/287871/how-do-i-print-colored-text-to-the-terminal)
+
+[Print Colors in Python terminal - GeeksforGeeks](https://www.geeksforgeeks.org/print-colors-python-terminal/)
+
+The most common ways to do this are using:
+
+1. Using colorama Module
+2. Using termcolor Module
+3. Using ANSI Code in Python
+
+Here are several ways to print colored text in Python:
+
+### ANSI Escape
+
+ANSI escape codes are special character sequences that control text formatting in terminals.
+You can embed these codes directly into your print statements.
+
+```python
+RED = '\033[31m'
+GREEN = '\033[32m'
+RESET = '\033[0m'
+
+print(f"{RED}This text is red.{RESET}")
+print(f"{GREEN}This text is green.{RESET}")
+```
+
+Explanation:
+
+- `\033[` is the escape sequence initiator.
+- `31m` sets the text color to red, 32m to green.
+- `0m` resets the color to default.
+
+[python打印各种文本颜色](https://www.cnblogs.com/zhang-ye/p/17556651.html)
+[python中print打印显示颜色](https://cloud.tencent.com/developer/article/1565211)
+[Python基础之控制台输出颜色](https://blog.csdn.net/qq_33567641/article/details/82769523)
+[python用print输出不同颜色字体](https://blog.csdn.net/weixin_45694843/article/details/124222543)
+
+显示颜色的格式：`\033[显示方式;字体色;背景色m ...... \033[0m`
+
+显示方式   | 效果         | 字体色  | 背景色   | 颜色描述
+---------|--------------|--------|---------|-----
+0        | 终端默认设置   | 30     | 40      | 黑色
+1        | 高亮显示       | 31     | 41     | 红色
+4        | 使用下划线     | 32     | 42      | 绿色
+5        | 闪烁          | 33     | 43      | 黄色
+7        | 反白显示       | 34     | 44      | 蓝色
+8        | 不可见        | 35     | 45      | 紫红色
+N/A      | N/A          | 36     | 46      | 青蓝色
+N/A      | N/A          | 37     | 47      | 白色
+
+> print("\033[4;34m下划线，蓝色字体\033[0m")
+> print("\033[1;4;34m加粗(高亮)，下划线，蓝色字体\033[0m")
+> print("\033[1;4;34;42m加粗(高亮)，下划线，蓝色字体，绿色背景\033[0m")
+
+### termcolor
+
+The [termcolor](https://pypi.org/project/termcolor/) library provides a more convenient way to color text.
+
+```python
+from termcolor import colored
+
+print(colored('Hello, World!', 'red'))
+print(colored('Hello, World!', 'green', attrs=['bold']))
+```
+
+Explanation:
+
+- `colored()` function takes the text and color as arguments.
+- You can also add attributes like `bold`, `underline`, etc.
+
+### colorama
+
+[colorama](https://pypi.org/project/colorama/) is a cross-platform library that makes ANSI escape codes work on Windows as well.
+
+The colors that `Fore` & `Back` support:
+
+- BLACK/LIGHTBLACK_EX
+- RED/LIGHTRED_EX
+- GREEN/LIGHTGREEN_EX
+- YELLOW/LIGHTYELLOW_EX
+- BLUE/LIGHTBLUE_EX
+- MAGENTA/LIGHTMAGENTA_EX: 紫红色（品红色）
+- CYAN/LIGHTCYAN_EX: 青蓝色（蓝绿色）
+- WHITE/LIGHTWHITE_EX
+
+`Style` provides the following attributes:
+
+- NORMAL
+- DIM: 昏暗，暗淡
+- BRIGHT：高亮，加粗
+
+> `Style.RESET_ALL` resets foreground, background, and brightness. Colorama will perform this reset automatically on program exit.
+
+```python
+import colorama
+from colorama import Fore, Back, Style
+
+print(Fore.RED + 'some red text')
+print(Back.GREEN + 'and with a green background')
+print(Style.DIM + 'and in dim text')
+print(Style.RESET_ALL)
+print('back to normal now')
+```
+
+If you find yourself repeatedly sending reset sequences to turn off color changes at the end of every print, then `init(autoreset=True)` will automate that for you.
+
+```python
+import colorama
+from colorama import Fore, Back, Style
+
+colorama.init(autoreset=True)
+
+print(Fore.RED + "This text is red.")
+print(Fore.GREEN + "This text is green.")
+print(Back.YELLOW + "Background is yellow.")
+print(Style.BRIGHT + "This text is bright.")
+```
+
+Explanation:
+
+- `colorama.init()` initializes colorama.
+- `Fore`, `Back`, `Style` provide color and style options.
+
+```python
+import colorama
+from colorama import Fore, Back, Style
+
+colorama.init(autoreset=True)
+
+def test_fore():
+    print(Fore.WHITE + 'Fore.WHITE')
+    print(Fore.BLACK + 'Fore.BLACK')
+    print(Fore.RED + 'Fore.RED')
+    print(Fore.GREEN + 'Fore.GREEN')
+    print(Fore.YELLOW + 'Fore.YELLOW')
+    print(Fore.BLUE + 'Fore.BLUE')
+    print(Fore.MAGENTA + 'Fore.MAGENTA')
+    print(Fore.CYAN + 'Fore.CYAN')
+
+def test_fore_light():
+    print(Fore.LIGHTWHITE_EX + 'Fore.LIGHTWHITE_EX')
+    print(Fore.LIGHTBLACK_EX + 'Fore.LIGHTBLACK_EX')
+    print(Fore.LIGHTRED_EX + 'Fore.LIGHTRED_EX')
+    print(Fore.LIGHTGREEN_EX + 'Fore.LIGHTGREEN_EX')
+    print(Fore.LIGHTYELLOW_EX + 'Fore.LIGHTYELLOW_EX')
+    print(Fore.LIGHTBLUE_EX + 'Fore.LIGHTBLUE_EX')
+    print(Fore.LIGHTMAGENTA_EX + 'Fore.LIGHTMAGENTA_EX')
+    print(Fore.LIGHTCYAN_EX + 'Fore.LIGHTCYAN_EX')
+
+def test_fore_back():
+    print(Fore.BLACK + Back.LIGHTWHITE_EX + 'Fore.BLACK, Back.LIGHTWHITE_EX')
+    print(Fore.RED + Back.LIGHTWHITE_EX + 'Fore.RED, Back.LIGHTWHITE_EX')
+    print(Fore.GREEN + Back.LIGHTWHITE_EX + 'Fore.GREEN, Back.LIGHTWHITE_EX')
+    print(Fore.YELLOW + Back.LIGHTWHITE_EX + 'Fore.YELLOW, Back.LIGHTWHITE_EX')
+    print(Fore.BLUE + Back.LIGHTWHITE_EX + 'Fore.BLUE, Back.LIGHTWHITE_EX')
+    print(Fore.MAGENTA + Back.LIGHTWHITE_EX + 'Fore.MAGENTA, Back.LIGHTWHITE_EX')
+    print(Fore.CYAN + Back.LIGHTWHITE_EX + 'Fore.CYAN, Back.LIGHTWHITE_EX')
+
+def prompt_missing_password():
+    print("No password found in os.environ, PLS export", end=' ')
+    print(f"{Style.BRIGHT}{Back.LIGHTYELLOW_EX}EXCEL_PASSWD", end=' ')
+    print("before running this program!")
+
+if __name__ == '__main__':
+    prompt_missing_password()
+else:
+    pass
 ```
