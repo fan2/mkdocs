@@ -105,6 +105,10 @@ sys.thread_info(name='pthread', lock='mutex+cond', version=None)
 
 ## os
 
+[os — Miscellaneous operating system interfaces](https://docs.python.org/3/library/os.html)
+
+This module provides a portable way of using operating system dependent functionality. If you just want to read or write a file see [open()](https://docs.python.org/3/library/functions.html#open), if you want to manipulate paths, see the [os.path](https://docs.python.org/3/library/os.path.html) module, and if you want to read all the lines in all the files on the command line see the [fileinput](https://docs.python.org/3/library/fileinput.html) module. For creating temporary files and directories see the [tempfile](https://docs.python.org/3/library/tempfile.html) module, and for high-level file and directory handling see the [shutil](https://docs.python.org/3/library/shutil.html) module.
+
 ### doc
 
 ```shell
@@ -133,9 +137,48 @@ and opendir), and leave all pathname manipulation to os.path
 (e.g., split and join).
 ```
 
-### [os.path](https://docs.python.org/3.7/library/os.path.html)
+```shell
+>>> import os
+
+>>> os.path
+<module 'posixpath' from '/usr/local/Cellar/python/3.6.5/Frameworks/Python.framework/Versions/3.6/lib/python3.6/posixpath.py'>
+
+>>> os.name
+'posix'
+
+>>> os.uname()
+posix.uname_result(sysname='Darwin', nodename='MBP-FAN', release='17.6.0', version='Darwin Kernel Version 17.6.0: Fri Apr 13 19:57:44 PDT 2018; root:xnu-4570.60.17.0.1~3/RELEASE_X86_64', machine='x86_64')
+
+# 路径分隔符（pathname separator）
+>>> os.sep
+'/'
+
+# 文件后缀分隔符（extension separator）
+>>> os.extsep
+'.'
+
+# 环境变量 PATH 分隔符（component separator used in $PATH）
+>>> os.pathsep
+':'
+
+# 换行符（line separator），nt 下为 '\r\n'
+>>> os.linesep
+'\n'
+
+# 获取当前目录
+>>> os.curdir
+'.'
+>>> os.getcwd()
+'/Users/faner'
+```
+
+### os.path
+
+[os.path — Common pathname manipulations](https://docs.python.org/3/library/os.path.html): This module implements some useful functions on pathnames. To read or write files see [open()](https://docs.python.org/3/library/functions.html#open), and for accessing the filesystem see the [os](https://docs.python.org/3/library/os.html) module.
 
 Source code: `Lib/posixpath.py` (for POSIX), `Lib/ntpath.py` (for Windows NT), and `Lib/macpath.py` (for Macintosh)
+
+> The [pathlib](https://docs.python.org/3/library/pathlib.html) module offers *high-level* path objects.
 
 macOS Python REPL 中输入 `help(os.path)` 显示  posixpath：
 
@@ -194,6 +237,50 @@ os.path.splitext(path)
 [Splitting a Path into All of Its Parts](https://www.oreilly.com/library/view/python-cookbook/0596001673/ch04s16.html)  
 [Python | os.path.splitext() method](https://www.geeksforgeeks.org/python-os-path-splitext-method/)  
 
+- os.path.dirname(path): Return the directory name of pathname path. This is the *first* element of the pair returned by passing path to the function `split()`.
+- os.path.basename(path): Return the base name of pathname path. This is the *second* element of the pair returned by passing path to the function `split()`.
+
+以下代码片段测试 `split` 系列函数（split/splitext）分解文件路径：
+
+```Python
+# filepath="/home/user/dir/subdir/"
+# filepath="~/dir/subdir/"
+# filepath="/home/user/dir/filename"
+# filepath="~/dir/filename"
+# filepath="/home/user/dir/subdir/filename.ext"
+filepath="~/dir/subdir/filename.ext"
+
+print(f'os.path.split = {os.path.split(filepath)}')
+print(f'os.path.dirname = {os.path.dirname(filepath)}')
+print(f'os.path.basename = {os.path.basename(filepath)}')
+print(f'os.path.splitdrive = {os.path.splitdrive(filepath)}')
+print(f'os.path.splitext = {os.path.splitext(filepath)}')
+```
+
+可以通过文件路径字符串是否包含后缀来简单判断文件类型，也可使用 `os.path` 或 `pathlib.Path` 提取文件后缀再判断文件类型：
+
+- [pathlib — Object-oriented filesystem paths](https://docs.python.org/3/library/pathlib.html#module-pathlib)
+
+```Python
+import os
+# import pathlib
+
+filepath='/opt/homebrew/CHANGELOG.md'
+
+# 通过文件路径字符串判断文件类型
+if '.md' in filepath:
+    print('doctype = Markdown By John Gruber')
+elif filepath.endswith('.xlsx'):
+    print('doctype = OOXML: Excel Workbook')
+
+# 通过文件后缀(ext/suffix)判断文件类型
+ext=os.path.splitext(filepath)[1] # pathlib.Path(filepath).suffix
+if ext == '.md':
+    print("MIME=text/markdown")
+elif ext == '.xlsx':
+    print("MIME=application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
+```
+
 #### join
 
 将多个部分以 `os.sep` 拼接相连。
@@ -207,36 +294,128 @@ os.path.join(path, *paths)
 [Python os.path.join() on a list](https://stackoverflow.com/questions/14826888/python-os-path-join-on-a-list)  
 [Python os.path.join on Windows](https://stackoverflow.com/questions/2422798/python-os-path-join-on-windows)  
 
-### test
+### os.walk
 
-```shell
->>> import os
+假设我们想遍历当前目录（`.`）下所有的 Excel Workbook 文件（后缀为 .xlsx），该如何实现呢？
 
->>> os.path
-<module 'posixpath' from '/usr/local/Cellar/python/3.6.5/Frameworks/Python.framework/Versions/3.6/lib/python3.6/posixpath.py'>
+[How to iterate over files in directory using Python?](https://www.geeksforgeeks.org/how-to-iterate-over-files-in-directory-using-python/)
+[Python Loop through Folders and Files in Directory](https://www.geeksforgeeks.org/python-loop-through-folders-and-files-in-directory/)
 
->>> os.name
-'posix'
+[Using os.walk() to recursively traverse directories in Python](https://stackoverflow.com/questions/16953842/using-os-walk-to-recursively-traverse-directories-in-python)
+[How to Recursively Traverse Files and Directories in Python](https://medium.com/@sabahat-khan/how-to-recursively-traverse-files-and-directories-in-python-6020155713fa)
 
->>> os.uname()
-posix.uname_result(sysname='Darwin', nodename='MBP-FAN', release='17.6.0', version='Darwin Kernel Version 17.6.0: Fri Apr 13 19:57:44 PDT 2018; root:xnu-4570.60.17.0.1~3/RELEASE_X86_64', machine='x86_64')
+`os.listdir` 和 `os.scandir` 以及 `pathlib.Path.iterdir` 均只支持扫描当前目录，不支持递归扫描子目录，相当于 `ls -1` 和 `tree -L 1`。
 
-# 路径分隔符（pathname separator）
->>> os.sep
-'/'
+1. `os.listdir(path='.')` 返回 list(str)。
+2. `os.scandir(path='.')` 返回 iterator of [os.DirEntry](https://docs.python.org/3/library/os.html#os.DirEntry) objects。
 
-# 文件后缀分隔符（extension separator）
->>> os.extsep
-'.'
+如果想实现 `ls -1R` 和 `tree` (`-a` 选项将显示 .DS_Store 这样的隐藏文件) 那样的递归遍历目录效果，则可使用 `os.walk` 方法。
 
-# 环境变量 PATH 分隔符（component separator used in $PATH）
->>> os.pathsep
-':'
+> os.walk(top, topdown=True, onerror=None, followlinks=False)
 
-# 换行符（line separator），nt 下为 '\r\n'
->>> os.linesep
-'\n'
+>> Generate the file names in a directory tree by walking the tree either top-down or bottom-up. For each directory in the tree rooted at directory top (including top itself), it yields a 3-tuple (`dirpath`, `dirnames`, `filenames`).
 
+```Python
+import os
+import pathlib
+
+def test_listdir(dir: str = '.'):
+    for item in os.listdir(dir):
+        print(item)
+
+def test_scandir(dir: str = '.'):
+    for entry in os.scandir(dir):
+        print(entry.path)
+
+def test_iterdir(dir: str = os.curdir):
+    for item in pathlib.Path(dir).iterdir():
+        print(item)
+
+# 递归遍历各级目录下的文件夹和文件
+def test_walkdir(dir: str = '.'):
+    for dirpath, folders, files in os.walk(dir):
+        print(f"{dirpath}: ")
+        print(f"\t{folders}")
+        print(f"\t{files}")
+
+# 递归遍历各级目录下的Excel Workbook文件
+def test_traverse(dir: str = '.'):
+    for dirpath, _, files in os.walk(dir):
+        print(f"{dirpath}: {files}")
+        for file in files:
+            if file.endswith('.xlsx'):
+                print(f"\t{os.path.join(dirpath, file)}")
+
+test_scandir()
+test_walkdir()
+```
+
+`pathlib.Path(dir).walk` 效果等效于 `os.walk(dir)`。
+
+> Path.walk(top_down=True, on_error=None, follow_symlinks=False)
+
+>> Generate the file names in a directory tree by walking the tree either top-down or bottom-up.
+
+>> For each directory in the directory tree rooted at self (including self but excluding `'.'` and `'..'`), the method yields a 3-tuple of `(dirpath, dirnames, filenames)`.
+
+>> `dirpath` is a Path to the directory currently being walked, `dirnames` is a list of strings for the names of subdirectories in *dirpath* (excluding '.' and '..'), and `filenames` is a list of strings for the names of the non-directory files in *dirpath*. To get a full path (which begins with self) to a file or directory in dirpath, do `dirpath / name`. Whether or not the lists are sorted is file system-dependent.
+
+## glob
+
+可以使用 [glob](https://docs.python.org/3/library/glob.html) 模块来实现通配过滤（wildcards）：
+
+> The glob module finds all the pathnames matching a specified pattern according to the rules used by the Unix shell, although results are returned in arbitrary order.
+
+```Python
+import glob
+import pathlib
+import pprint
+
+# 默认recursive=False，遍历当前目录下的 items
+def test_glob_ls(dir: str = '.'):
+    for level1_item in glob.glob(f'{dir}/*'): # same as **
+        print(level1_item)
+
+# return list, Memory-consuming
+def test_glob_list(dir: str = '.'):
+    for tree_item in glob.glob(f'{dir}/**', recursive=True):
+        print(tree_item)
+
+# return iterator, Memory-efficient
+def test_glob_iter(dir: str = '.'):
+    for tree_item in glob.iglob(f'{dir}/**', recursive=True):
+        print(tree_item)
+
+# glob match *.xlsx to filter Excel Workbook
+def test_glob_excel_1(dir: str = '.'):
+    for excel in glob.iglob(f'{dir}/**/*.xlsx', recursive=True):
+        print(excel)
+
+test_glob_iter()
+test_glob_excel_1()
+```
+
+也可使用 `pathlib.Path.glob` 方法等效实现。
+
+> Path.glob(pattern, *, case_sensitive=None, recurse_symlinks=False)
+
+>> Glob the given relative pattern in the directory represented by this path, yielding all matching files (of any kind):
+
+以下 test_glob_excel_2() 为 test_glob_excel_1() 的等效实现，使用 `Path.glob` 或 `Path.rglob`。
+
+```Python
+import pprint
+import pathlib
+
+# equiv impl with pathlib.Path(dir).glob
+def test_glob_excel_2(dir: str = '.'):
+    p = pathlib.Path(dir)
+    # 等效于 p.rglob('*.xlsx')，返回 PosixPath
+    pprint.pp(list(p.glob('**/*.xlsx')))
+    # 将 PosixPath 强转为 str 对象类型
+    # pprint.pp([str(p) for p in list(p.glob('**/*.xlsx'))])
+
+test_glob_excel_2()
 ```
 
 ## platform

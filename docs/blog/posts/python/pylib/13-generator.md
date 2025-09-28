@@ -754,3 +754,49 @@ for fib in fibonacci():
         print(fib)
         break
 ```
+
+### 目录遍历生成器
+
+`os.scandir` 和 `pathlib.Path.iterdir` 均只支持当前目录的扫描（`tree -L 1` 级别）：
+
+```Python
+# os.scandir
+(function) def scandir(path: GenericPath[AnyStr@scandir]) -> _ScandirIterator[AnyStr@scandir]
+
+# pathlib.Path.iterdir
+(method) def iterdir() -> Generator[Path, None, None]
+```
+
+`os.walk`: Directory tree generator.
+
+```Python
+(function) def walk(
+    top: GenericPath[AnyStr@walk],
+    topdown: bool = True,
+    onerror: _OnError | None = None,
+    followlinks: bool = False
+) -> Iterator[tuple[AnyStr@walk, list[AnyStr@walk], list[AnyStr@walk]]]
+```
+
+`glob.iglob`: Return an iterator which yields the paths matching a pathname pattern.
+
+```Python
+(function) def iglob(
+    pathname: AnyStr@iglob,
+    *,
+    root_dir: StrOrBytesPath | None = None,
+    dir_fd: int | None = None,
+    recursive: bool = False,
+    include_hidden: bool = False
+) -> Iterator[AnyStr@iglob]
+```
+
+`pathlib.Path.glob`: Iterate over this subtree and yield all existing files (of any kind, including directories) matching the given relative pattern.
+
+```Python
+(method) def glob(
+    pattern: str,
+    *,
+    case_sensitive: bool | None = None
+) -> Generator[Path, None, None]
+```
