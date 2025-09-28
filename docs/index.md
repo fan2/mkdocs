@@ -2,8 +2,9 @@
 robots: noindex, nofollow
 hide:
   - navigation
-  - toc
   - footer
+hide_nav: true
+hide_toc: true
 ---
 
 # 在别处或在路上

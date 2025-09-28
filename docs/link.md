@@ -1,8 +1,8 @@
 ---
 hide:
-  - navigation
-  - toc
   - footer
+hide_nav: true
+hide_toc: true
 ---
 
 !!! quote "Henry D. Thoreau, Walden"
