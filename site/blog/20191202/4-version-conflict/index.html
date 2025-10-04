@@ -1,0 +1,2367 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="在别处或在路上">
+      
+      
+        <meta name="author" content="Cliff Fan">
+      
+      
+        <link rel="canonical" href="https://duetorun.com/blog/20191202/4-version-conflict/">
+      
+      
+        <link rel="prev" href="../8-python-packaging-tools/">
+      
+      
+        <link rel="next" href="../9-python-package-installer/">
+      
+      
+      <link rel="icon" href="../../../assets/hold_yourself.jpg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.21">
+    
+    
+      
+        <title>python version conflict resolution - ElseWhere</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.2a3383ac.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../stylesheets/hide-nav-toc.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+  
+
+
+  
+  
+
+<script id="__analytics">function __md_analytics(){function e(){dataLayer.push(arguments)}window.dataLayer=window.dataLayer||[],e("js",new Date),e("config","G-XGW41EGL31"),document.addEventListener("DOMContentLoaded",(function(){document.forms.search&&document.forms.search.query.addEventListener("blur",(function(){this.value&&e("event","search",{search_term:this.value})}));document$.subscribe((function(){var t=document.forms.feedback;if(void 0!==t)for(var a of t.querySelectorAll("[type=submit]"))a.addEventListener("click",(function(a){a.preventDefault();var n=document.location.pathname,d=this.getAttribute("data-md-value");e("event","feedback",{page:n,data:d}),t.firstElementChild.disabled=!0;var r=t.querySelector(".md-feedback__note [data-md-value='"+d+"']");r&&(r.hidden=!1)})),t.hidden=!1})),location$.subscribe((function(t){e("config","G-XGW41EGL31",{page_path:t.pathname})}))}));var t=document.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id=G-XGW41EGL31",document.getElementById("__analytics").insertAdjacentElement("afterEnd",t)}</script>
+  
+    <script>"undefined"!=typeof __md_analytics&&__md_analytics()</script>
+  
+
+    
+    
+    
+  
+
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#problem_statement" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="ElseWhere" class="md-header__button md-logo" aria-label="ElseWhere" data-md-component="logo">
+      
+  <img src="../../../assets/hold_yourself.jpg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            ElseWhere
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              python version conflict resolution
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1M8 13h8v-2H8zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4a5 5 0 0 0 5-5 5 5 0 0 0-5-5"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_2" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="black" data-md-color-accent="indigo"  aria-label="Switch to system preference"  type="radio" name="__palette" id="__palette_2">
+    
+      <label class="md-header__button md-icon" title="Switch to system preference" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5M7 15a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../../" class="md-tabs__link">
+          
+  
+  
+  Blog
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../../link/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Link
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+  
+    
+    <div class="md-sidebar md-sidebar--primary rm-nav-desktop" data-md-component="sidebar" data-md-type="navigation">
+      <div class="md-sidebar__scrollwrap">
+        <div class="md-sidebar__inner">
+          
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="ElseWhere" class="md-nav__button md-logo" aria-label="ElseWhere" data-md-component="logo">
+      
+  <img src="../../../assets/hold_yourself.jpg" alt="logo">
+
+    </a>
+    ElseWhere
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Home
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    Blog
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Blog
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      <a href="../../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Blog
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Archive
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
+            <span class="md-nav__icon md-icon"></span>
+            Archive
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2024/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    2024
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2023/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    2023
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2022/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    2022
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2021/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    2021
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2020/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    2020
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2019/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    2019
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2018/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    2018
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2017/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    2017
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2015/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    2015
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../archive/2009/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    2009
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_3" id="__nav_2_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    Categories
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_3">
+            <span class="md-nav__icon md-icon"></span>
+            Categories
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/cs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    CS
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/arm/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    arm
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/c/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    c
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/cpp/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    cpp
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/editor/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    editor
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/elf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    elf
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/excerpt/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    excerpt
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/git/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    git
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/linux/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    linux
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/macos/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    macOS
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/markdown/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    markdown
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/material/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    material
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/mkdocs/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    mkdocs
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/nginx/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    nginx
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/python/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    python
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/resource/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    resource
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/shell/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    shell
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/toolchain/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    toolchain
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/ubuntu/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    ubuntu
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/vim/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    vim
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/webdav/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    webDAV
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/wiki/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    wiki
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    
+  
+  
+    <li class="md-nav__item">
+      <a href="../../category/zsh/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    zsh
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../link/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    Link
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+        </div>
+      </div>
+    </div>
+  
+  
+    
+    
+    <div class="md-sidebar md-sidebar--secondary " data-md-component="sidebar" data-md-type="toc">
+      <div class="md-sidebar__scrollwrap">
+        <div class="md-sidebar__inner">
+          
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#problem_statement" class="md-nav__link">
+    <span class="md-ellipsis">
+      Problem Statement
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#root_cause_analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      Root Cause Analysis
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#solution_1_use_python_launcher_for_windows_pyexe" class="md-nav__link">
+    <span class="md-ellipsis">
+      Solution 1: Use Python Launcher for Windows (py.exe)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Solution 1: Use Python Launcher for Windows (py.exe)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step_1_verify_python_launcher_installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 1: Verify Python Launcher Installation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step_2_use_version-specific_commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 2: Use Version-Specific Commands
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step_3_create_default_version_optional" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 3: Create Default Version (Optional)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#solution_2_modify_environment_variables_for_path_separation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Solution 2: Modify Environment Variables for Path Separation
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Solution 2: Modify Environment Variables for Path Separation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step_1_clean_up_pythonpath" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 1: Clean Up PYTHONPATH
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step_2_create_version-specific_environment_variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 2: Create Version-Specific Environment Variables
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step_3_configure_path_with_version_priority" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 3: Configure PATH with Version Priority
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step_4_create_version-specific_pythonpath_variables_optional" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 4: Create Version-Specific PYTHONPATH Variables (Optional)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#solution_3_temporary_environment_overrides" class="md-nav__link">
+    <span class="md-ellipsis">
+      Solution 3: Temporary Environment Overrides
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Solution 3: Temporary Environment Overrides">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#option_a_command-line_environment_clearing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Option A: Command-Line Environment Clearing
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#option_b_session_environment_batch_file" class="md-nav__link">
+    <span class="md-ellipsis">
+      Option B: Session Environment Batch File
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#solution_4_command_wrappers_for_seamless_version_switching" class="md-nav__link">
+    <span class="md-ellipsis">
+      Solution 4: Command Wrappers for Seamless Version Switching
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Solution 4: Command Wrappers for Seamless Version Switching">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step_1_create_wrapper_batch_files" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 1: Create Wrapper Batch Files
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Step 1: Create Wrapper Batch Files">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#python3bat_-_python_313_wrapper" class="md-nav__link">
+    <span class="md-ellipsis">
+      python3.bat - Python 3.13 Wrapper
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pip3bat_-_pip_for_python_313_wrapper" class="md-nav__link">
+    <span class="md-ellipsis">
+      pip3.bat - Pip for Python 3.13 Wrapper
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#python2bat_-_python_27_wrapper_optional" class="md-nav__link">
+    <span class="md-ellipsis">
+      python2.bat - Python 2.7 Wrapper (Optional)
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step_2_add_wrappers_to_path" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 2: Add Wrappers to PATH
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step_3_usage_examples" class="md-nav__link">
+    <span class="md-ellipsis">
+      Step 3: Usage Examples
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#solution_5_virtual_environments_recommended_approach" class="md-nav__link">
+    <span class="md-ellipsis">
+      Solution 5: Virtual Environments (Recommended Approach)
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Solution 5: Virtual Environments (Recommended Approach)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#python_3136_virtual_environments" class="md-nav__link">
+    <span class="md-ellipsis">
+      Python 3.13.6 Virtual Environments
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#activation_shortcuts" class="md-nav__link">
+    <span class="md-ellipsis">
+      Activation Shortcuts
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#python_27_virtual_environments" class="md-nav__link">
+    <span class="md-ellipsis">
+      Python 2.7 Virtual Environments
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#comparison_of_solutions" class="md-nav__link">
+    <span class="md-ellipsis">
+      Comparison of Solutions
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      References
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="References">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#official_documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Official Documentation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#python_installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Python Installation
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#additional_resources" class="md-nav__link">
+    <span class="md-ellipsis">
+      Additional Resources
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+        </div>
+      </div>
+    </div>
+  
+
+          
+  <div class="md-content md-content--post" data-md-component="content">
+    <div class="md-sidebar md-sidebar--post" data-md-component="sidebar" data-md-type="navigation">
+      <div class="md-sidebar__scrollwrap">
+        <div class="md-sidebar__inner md-post">
+          <nav class="md-nav md-nav--primary">
+            <div class="md-post__back">
+              <div class="md-nav__title md-nav__container">
+                <a href="../../" class="md-nav__link">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+                  <span class="md-ellipsis">
+                    Back to index
+                  </span>
+                </a>
+              </div>
+            </div>
+            
+              <div class="md-post__authors md-typeset">
+                
+                  <div class="md-profile md-post__profile">
+                    <span class="md-author md-author--long">
+                      <img src="https://duetorun.com/assets/carve_yourself.jpg" alt="Cliff Fan">
+                    </span>
+                    <span class="md-profile__description">
+                      <strong>
+                        
+                          Cliff Fan
+                        
+                      </strong>
+                      <br>
+                      Just do IT
+                    </span>
+                  </div>
+                
+              </div>
+            
+            <ul class="md-post__meta md-nav__list">
+              <li class="md-nav__item md-nav__item--section">
+                <div class="md-post__title">
+                  <span class="md-ellipsis">
+                    Metadata
+                  </span>
+                </div>
+                <nav class="md-nav">
+                  <ul class="md-nav__list">
+                    <li class="md-nav__item">
+                      <div class="md-nav__link">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 19H5V8h14m-3-7v2H8V1H6v2H5c-1.11 0-2 .89-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-1V1m-1 11h-5v5h5z"/></svg>
+                        <time datetime="2019-12-02 11:00:00+00:00" class="md-ellipsis">Dec 2, 2019</time>
+                      </div>
+                    </li>
+                    
+                    
+                      <li class="md-nav__item">
+                        <div class="md-nav__link">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 3v15h3V3zm3 2 4 13 3-1-4-13zM5 5v13h3V5zM3 19v2h18v-2z"/></svg>
+                          <span class="md-ellipsis">
+                            in
+                            
+                              <a href="../../category/python/">python</a></span>
+                        </div>
+                      </li>
+                    
+                    
+                      
+                      <li class="md-nav__item">
+                        <div class="md-nav__link">
+                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7z"/></svg>
+                          <span class="md-ellipsis">
+                            
+                              7 min read
+                            
+                          </span>
+                        </div>
+                      </li>
+                    
+                    <!-- Add by Cliff.Fan, 29Mar24. -->
+                    <li class="md-nav__item">
+                      <div class="md-nav__link">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m19 1-5 5v11l5-4.5zm2 4v13.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V6c-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1M10 18.41C8.75 18.09 7.5 18 6.5 18c-1.06 0-2.32.19-3.5.5V7.13c.91-.4 2.14-.63 3.5-.63s2.59.23 3.5.63z"/></svg>
+                        <span class="md-ellipsis" id="busuanzi_container_page_pv">
+                          PV：<span id="busuanzi_value_page_pv">N/A</span>
+                        </span>
+                      </div>
+                    </li>
+                  </ul>
+                </nav>
+              </li>
+            </ul>
+            
+          </nav>
+          
+        </div>
+      </div>
+    </div>
+    <article class="md-content__inner md-typeset">
+      
+        
+  
+
+
+  <nav class="md-tags" >
+    
+      
+      
+      
+        <span class="md-tag">py</span>
+      
+    
+      
+      
+      
+        <span class="md-tag">venv</span>
+      
+    
+  </nav>
+
+
+
+  <h1>python version conflict resolution</h1>
+
+<p>The error "bad magic number in 'encodings'" indicates a fundamental Python version compatibility issue. This error occurs when Python attempts to load compiled bytecode (<code>.pyc</code> files) created by a different Python version.</p>
+<!-- more -->
+
+<h2 id="problem_statement">Problem Statement<a class="headerlink" href="#problem_statement" title="Permanent link">#</a></h2>
+<p>My Windows system has Python 2.7 installed. The system is configured as follows:</p>
+<ul>
+<li>Python 2.7's bin path is added to the <code>Path</code> environment variable</li>
+<li>The directories <code>Scripts\</code>, <code>Scripts\Lib\</code>, and <code>Scripts\Lib\site-packages</code> are added to the <code>PYTHONPATH</code> environment variable</li>
+</ul>
+<p>After installing Python 3.13.6 and navigating to its installation directory, <code>Python3 -V</code> works correctly, but running <code>Scripts\pip -V</code> produces this error:</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>Fatal<span class="w"> </span>Python<span class="w"> </span>error:<span class="w"> </span>Failed<span class="w"> </span>to<span class="w"> </span>import<span class="w"> </span>encodings<span class="w"> </span>module
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>Python<span class="w"> </span>runtime<span class="w"> </span>state:<span class="w"> </span>core<span class="w"> </span>initialized
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>ImportError:<span class="w"> </span>bad<span class="w"> </span>magic<span class="w"> </span>number<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="s1">&#39;encodings&#39;</span>:<span class="w"> </span>b<span class="s1">&#39;\xb3\xf2\r\n&#39;</span>
+</span></code></pre></div>
+<p>The existing Python 2.7 installation cannot be removed as it may be required by existing applications. We need a solution to manage both Python versions effectively.</p>
+<h2 id="root_cause_analysis">Root Cause Analysis<a class="headerlink" href="#root_cause_analysis" title="Permanent link">#</a></h2>
+<p>The error "bad magic number in 'encodings'" indicates a fundamental Python version compatibility issue. This error occurs when Python attempts to load compiled bytecode (<code>.pyc</code> files) created by a different Python version.</p>
+<p><strong>Technical Explanation</strong>:</p>
+<p>Each Python version stamps its bytecode files with a unique "magic number" as a version identifier. Python 3.13.6 cannot interpret bytecode compiled by Python 2.7, resulting in this error.</p>
+<p><strong>Specific Causes</strong>:</p>
+<ol>
+<li>The <code>PYTHONPATH</code> environment variable contains Python 2.7 directories</li>
+<li>Python's module import system searches <code>PYTHONPATH</code> before standard library locations</li>
+<li>When Python 3.13.6 starts, it finds Python 2.7's bytecode files first</li>
+<li>The version mismatch in bytecode format causes the import failure</li>
+</ol>
+<p><strong>Requirements</strong>:</p>
+<ol>
+<li>Maintain both Python versions without interference between them</li>
+<li>Keep Python 2.7 functional for legacy applications</li>
+<li>Establish a clean Python 3.13.6 environment for new development</li>
+<li>Create a reliable, repeatable way to switch between versions</li>
+</ol>
+<h2 id="solution_1_use_python_launcher_for_windows_pyexe">Solution 1: Use Python Launcher for Windows (py.exe)<a class="headerlink" href="#solution_1_use_python_launcher_for_windows_pyexe" title="Permanent link">#</a></h2>
+<p>The Python Launcher (<code>py.exe</code>) is included with Python installations on Windows and provides a standardized way to manage multiple Python versions.</p>
+<p><strong>Advantages</strong>:</p>
+<ul>
+<li>Officially supported by Python</li>
+<li>No environment variable changes needed</li>
+<li>Preserves both Python installations intact</li>
+</ul>
+<h3 id="step_1_verify_python_launcher_installation">Step 1: Verify Python Launcher Installation<a class="headerlink" href="#step_1_verify_python_launcher_installation" title="Permanent link">#</a></h3>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>py --list
+</span></code></pre></div>
+<p>This command should display all installed Python versions, including both 2.7 and 3.13.6.</p>
+<h3 id="step_2_use_version-specific_commands">Step 2: Use Version-Specific Commands<a class="headerlink" href="#step_2_use_version-specific_commands" title="Permanent link">#</a></h3>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a># Use Python 2.7 specifically
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>py -2.7 --version
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>py -2.7 -m pip --version
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>py -2.7 your_legacy_script.py
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a># Use Python 3.13.6 specifically
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>py -3.13 --version
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>py -3.13 -m pip --version
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>py -3.13 -m pip install package_name
+</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>py -3.13 your_script.py
+</span></code></pre></div>
+<h3 id="step_3_create_default_version_optional">Step 3: Create Default Version (Optional)<a class="headerlink" href="#step_3_create_default_version_optional" title="Permanent link">#</a></h3>
+<p>You can set a default Python version by creating a <code>py.ini</code> file or using shebang lines in your scripts:</p>
+<div class="language-ini highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1"># In %USERPROFILE%\py.ini or %PythonHome%\py.ini</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="k">[defaults]</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="na">python</span><span class="o">=</span><span class="s">3.13</span>
+</span></code></pre></div>
+<p>With shebang lines in your scripts:</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="ch">#!/usr/bin/env python3</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="c1"># or</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="c1">#! python3.13</span>
+</span></code></pre></div>
+<h2 id="solution_2_modify_environment_variables_for_path_separation">Solution 2: Modify Environment Variables for Path Separation<a class="headerlink" href="#solution_2_modify_environment_variables_for_path_separation" title="Permanent link">#</a></h2>
+<p><strong>Current Issue</strong>: The <code>PYTHONPATH</code> environment variable is configured with Python 2.7 directories, causing module import conflicts.</p>
+<p><strong>Strategy</strong>: Establish separate, version-specific environment variables and control import paths.</p>
+<h3 id="step_1_clean_up_pythonpath">Step 1: Clean Up PYTHONPATH<a class="headerlink" href="#step_1_clean_up_pythonpath" title="Permanent link">#</a></h3>
+<ol>
+<li>Open System Properties → Advanced → Environment Variables</li>
+<li>Edit or temporarily disable <code>PYTHONPATH</code> by removing these entries:</li>
+</ol>
+<ul>
+<li><code>Scripts\</code></li>
+<li><code>Scripts\Lib\</code>  </li>
+<li><code>Scripts\Lib\site-packages</code></li>
+</ul>
+<h3 id="step_2_create_version-specific_environment_variables">Step 2: Create Version-Specific Environment Variables<a class="headerlink" href="#step_2_create_version-specific_environment_variables" title="Permanent link">#</a></h3>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a># Set these as system environment variables
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>PYTHON27_HOME=C:\Path\To\Python27
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>PYTHON313_HOME=C:\Path\To\Python313
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>PYTHON27_SCRIPTS=%PYTHON27_HOME%\Scripts
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>PYTHON313_SCRIPTS=%PYTHON313_HOME%\Scripts
+</span></code></pre></div>
+<p><a href="https://docs.python.org/3/using/windows.html#installing-without-ui">4. Using Python on Windows — 4.1.3. Installing Without UI</a></p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>InstallAllUsers</td>
+<td>Perform a system-wide installation.</td>
+<td>0</td>
+</tr>
+<tr>
+<td>TargetDir</td>
+<td>The installation directory</td>
+<td>Selected based on InstallAllUsers</td>
+</tr>
+<tr>
+<td>DefaultAllUsersTargetDir</td>
+<td>The default installation directory for all-user installs</td>
+<td>%ProgramFiles%\Python X.Y or <br/>%ProgramFiles(x86)%\Python X.Y</td>
+</tr>
+<tr>
+<td>DefaultJustForMeTargetDir</td>
+<td>The default install directory for just-for-me installs</td>
+<td>%LocalAppData%\Programs\Python\PythonXY or <br/>%LocalAppData%\Programs\Python\PythonXY-32 or <br>%LocalAppData%\Programs\Python\PythonXY-64</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>%LOCALAPPDATA% = %USERPROFILE%\AppData\Local\</p>
+</blockquote>
+<h3 id="step_3_configure_path_with_version_priority">Step 3: Configure PATH with Version Priority<a class="headerlink" href="#step_3_configure_path_with_version_priority" title="Permanent link">#</a></h3>
+<p>Modify the <code>PATH</code> environment variable to prioritize Python 3.13.6:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>%PYTHON313_HOME%;%PYTHON313_SCRIPTS%;%PYTHON27_HOME%;%PYTHON27_SCRIPTS%;...
+</span></code></pre></div>
+<h3 id="step_4_create_version-specific_pythonpath_variables_optional">Step 4: Create Version-Specific PYTHONPATH Variables (Optional)<a class="headerlink" href="#step_4_create_version-specific_pythonpath_variables_optional" title="Permanent link">#</a></h3>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a># Optional - for applications that rely on specific PYTHONPATH values
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>PYTHONPATH_27=%PYTHON27_HOME%\Scripts;%PYTHON27_HOME%\Scripts\Lib;%PYTHON27_HOME%\Scripts\Lib\site-packages
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>PYTHONPATH_313=%PYTHON313_HOME%\Scripts;%PYTHON313_HOME%\Scripts\Lib;%PYTHON313_HOME%\Scripts\Lib\site-packages
+</span></code></pre></div>
+<h2 id="solution_3_temporary_environment_overrides">Solution 3: Temporary Environment Overrides<a class="headerlink" href="#solution_3_temporary_environment_overrides" title="Permanent link">#</a></h2>
+<p>This solution uses temporary environment modifications for Python sessions without permanently changing your system configuration.</p>
+<p><strong>Advantages</strong>:</p>
+<ul>
+<li>Non-intrusive to system settings</li>
+<li>Simple to implement</li>
+<li>Session-specific with no permanent changes</li>
+</ul>
+<h3 id="option_a_command-line_environment_clearing">Option A: Command-Line Environment Clearing<a class="headerlink" href="#option_a_command-line_environment_clearing" title="Permanent link">#</a></h3>
+<p><strong>For Windows Command Prompt</strong>:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a># One-time temporary environment for a single command
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>set PYTHONPATH=
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>C:\Path\To\Python3.13.6\python.exe --version
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>C:\Path\To\Python3.13.6\Scripts\pip.exe --version
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a># For running a script with clear environment
+</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>set PYTHONPATH=
+</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a>C:\Path\To\Python3.13.6\python.exe your_script.py
+</span></code></pre></div>
+<p><strong>For PowerShell</strong>:</p>
+<div class="language-powershell highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="c"># Clear PYTHONPATH for Python 3 commands</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="nv">$env:PYTHONPATH</span> <span class="p">=</span> <span class="s2">&quot;&quot;</span>
+</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="n">C</span><span class="p">:\</span><span class="n">Path</span><span class="p">\</span><span class="n">To</span><span class="p">\</span><span class="n">Python3</span><span class="p">.</span><span class="n">13</span><span class="p">.</span><span class="n">6</span><span class="p">\</span><span class="n">python</span><span class="p">.</span><span class="n">exe</span> <span class="p">-</span><span class="n">-version</span>
+</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="n">C</span><span class="p">:\</span><span class="n">Path</span><span class="p">\</span><span class="n">To</span><span class="p">\</span><span class="n">Python3</span><span class="p">.</span><span class="n">13</span><span class="p">.</span><span class="n">6</span><span class="p">\</span><span class="n">Scripts</span><span class="p">\</span><span class="n">pip</span><span class="p">.</span><span class="n">exe</span> <span class="p">-</span><span class="n">-version</span>
+</span></code></pre></div>
+<h3 id="option_b_session_environment_batch_file">Option B: Session Environment Batch File<a class="headerlink" href="#option_b_session_environment_batch_file" title="Permanent link">#</a></h3>
+<p>Create a batch file named <code>set_py3_env.bat</code>:</p>
+<div class="language-batch highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="p">@</span><span class="k">echo</span> off
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="k">echo</span> Activating Python 3.13.6 environment...
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="k">set</span> <span class="nv">PYTHONPATH</span><span class="p">=</span>
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="k">set</span> <span class="nv">PATH</span><span class="p">=</span>C:\Path\To\Python3.13.6;C:\Path\To\Python3.13.6\Scripts;<span class="nv">%PATH%</span>
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>cmd /k echo Python 3.13.6 environment is now active
+</span></code></pre></div>
+<p>Run this batch file to start a new command prompt with the Python 3.13.6 environment configured. All commands in this session will use Python 3.13.6 by default.</p>
+<p>Given that the Python Installation Directory TargetDir/DefaultJustForMeTargetDir (<code>echo %PYTHON313_HOME%</code>) is <code>%LocalAppData%\Programs\Python\Python313</code>, we can create a sibling shims directory at <code>%LocalAppData%\Programs\Python\shims</code> (i.e., <code>%PYTHON313_HOME%\..\shims</code>) to house the batch file.</p>
+<h2 id="solution_4_command_wrappers_for_seamless_version_switching">Solution 4: Command Wrappers for Seamless Version Switching<a class="headerlink" href="#solution_4_command_wrappers_for_seamless_version_switching" title="Permanent link">#</a></h2>
+<p><strong>Strategy</strong>: Create dedicated wrapper scripts that automatically handle environment setup and version selection.</p>
+<p><strong>Advantages</strong>:<br />
+- Minimal typing for everyday use<br />
+- Consistent command experience<br />
+- Prevents accidental version mixing</p>
+<h3 id="step_1_create_wrapper_batch_files">Step 1: Create Wrapper Batch Files<a class="headerlink" href="#step_1_create_wrapper_batch_files" title="Permanent link">#</a></h3>
+<h4 id="python3bat_-_python_313_wrapper"><code>python3.bat</code> - Python 3.13 Wrapper<a class="headerlink" href="#python3bat_-_python_313_wrapper" title="Permanent link">#</a></h4>
+<div class="language-batch highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="p">@</span><span class="k">echo</span> off
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="k">setlocal</span>          # Start local environment scope
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="k">set</span> <span class="nv">PYTHONPATH</span><span class="p">=</span>   # This change is LOCAL only
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>py -3.13 <span class="nv">%*</span>       # Execute Python with local environment
+</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="k">endlocal</span>          # Restore original environment
+</span></code></pre></div>
+<h4 id="pip3bat_-_pip_for_python_313_wrapper"><code>pip3.bat</code> - Pip for Python 3.13 Wrapper<a class="headerlink" href="#pip3bat_-_pip_for_python_313_wrapper" title="Permanent link">#</a></h4>
+<div class="language-batch highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="p">@</span><span class="k">echo</span> off
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="k">setlocal</span>
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="k">set</span> <span class="nv">PYTHONPATH</span><span class="p">=</span>
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>py -3.13 -m pip <span class="nv">%*</span>
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="k">endlocal</span>
+</span></code></pre></div>
+<h4 id="python2bat_-_python_27_wrapper_optional"><code>python2.bat</code> - Python 2.7 Wrapper (Optional)<a class="headerlink" href="#python2bat_-_python_27_wrapper_optional" title="Permanent link">#</a></h4>
+<div class="language-batch highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="p">@</span><span class="k">echo</span> off
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a><span class="k">setlocal</span>
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="k">set</span> <span class="nv">PYTHONPATH</span><span class="p">=</span><span class="nv">%PYTHON27_HOME%</span>\Scripts;<span class="nv">%PYTHON27_HOME%</span>\Scripts\Lib;<span class="nv">%PYTHON27_HOME%</span>\Scripts\Lib\site-packages
+</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>py -2.7 <span class="nv">%*</span>
+</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a><span class="k">endlocal</span>
+</span></code></pre></div>
+<h3 id="step_2_add_wrappers_to_path">Step 2: Add Wrappers to PATH<a class="headerlink" href="#step_2_add_wrappers_to_path" title="Permanent link">#</a></h3>
+<ol>
+<li>Place these batch files in a dedicated directory designated for housing wrapper shims, in accordance with Solution 3, specifically <code>%PYTHON313_HOME%\..\shims</code> (which resolves to <code>%LocalAppData%\Programs\Python\shims</code>).</li>
+<li>Include the dedicated directory in your PATH environment variable to make these wrapper scripts globally accessible. This will allow you to easily call these wrapper scripts from anywhere.</li>
+</ol>
+<h3 id="step_3_usage_examples">Step 3: Usage Examples<a class="headerlink" href="#step_3_usage_examples" title="Permanent link">#</a></h3>
+<div class="language-batch highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a># Launch Python 3.13.6 interactive shell
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>python3
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>
+</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a># Run Python 3.13.6 script
+</span><span id="__span-14-5"><a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a>python3 script.py
+</span><span id="__span-14-6"><a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a>
+</span><span id="__span-14-7"><a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a># Execute Python 3.13.6 code directly
+</span><span id="__span-14-8"><a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a>python3 -c <span class="s2">&quot;print(&#39;Hello, Python 3.13.6!&#39;)&quot;</span>
+</span><span id="__span-14-9"><a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a>
+</span><span id="__span-14-10"><a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a># Install packages with Python 3.13.6 pip
+</span><span id="__span-14-11"><a id="__codelineno-14-11" name="__codelineno-14-11" href="#__codelineno-14-11"></a>pip3 install requests
+</span><span id="__span-14-12"><a id="__codelineno-14-12" name="__codelineno-14-12" href="#__codelineno-14-12"></a>pip3 install --upgrade numpy
+</span><span id="__span-14-13"><a id="__codelineno-14-13" name="__codelineno-14-13" href="#__codelineno-14-13"></a>
+</span><span id="__span-14-14"><a id="__codelineno-14-14" name="__codelineno-14-14" href="#__codelineno-14-14"></a># Run a module with Python 3.13.6
+</span><span id="__span-14-15"><a id="__codelineno-14-15" name="__codelineno-14-15" href="#__codelineno-14-15"></a>python3 -m venv my_venv
+</span><span id="__span-14-16"><a id="__codelineno-14-16" name="__codelineno-14-16" href="#__codelineno-14-16"></a>python3 -m http.server 8000
+</span></code></pre></div>
+<p>The wrapper approach provides the familiarity of <code>python</code> and <code>pip</code> commands while ensuring the correct Python version and environment are used.</p>
+<h2 id="solution_5_virtual_environments_recommended_approach">Solution 5: Virtual Environments (Recommended Approach)<a class="headerlink" href="#solution_5_virtual_environments_recommended_approach" title="Permanent link">#</a></h2>
+<p><strong>Virtual environments</strong> are the Python community's standard approach for isolating project dependencies and Python versions.</p>
+<p><strong>Key Benefits</strong>:</p>
+<ol>
+<li><strong>Project Isolation</strong> - Each project has its own dependencies and Python version</li>
+<li><strong>Zero System Conflicts</strong> - No interference with system Python installations</li>
+<li><strong>Reproducible Environments</strong> - Easy to recreate environments across machines</li>
+<li><strong>Simple Version Switching</strong> - Activate different environments as needed</li>
+</ol>
+<h3 id="python_3136_virtual_environments">Python 3.13.6 Virtual Environments<a class="headerlink" href="#python_3136_virtual_environments" title="Permanent link">#</a></h3>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a># Navigate to your project directory
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>cd D:\path\to\your_project
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>
+</span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a># Create a virtual environment using the built-in venv module
+</span><span id="__span-15-5"><a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a>py -3.13 -m venv venv_py313
+</span><span id="__span-15-6"><a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a>
+</span><span id="__span-15-7"><a id="__codelineno-15-7" name="__codelineno-15-7" href="#__codelineno-15-7"></a># Activate the virtual environment
+</span><span id="__span-15-8"><a id="__codelineno-15-8" name="__codelineno-15-8" href="#__codelineno-15-8"></a>venv_py313\Scripts\activate
+</span><span id="__span-15-9"><a id="__codelineno-15-9" name="__codelineno-15-9" href="#__codelineno-15-9"></a>
+</span><span id="__span-15-10"><a id="__codelineno-15-10" name="__codelineno-15-10" href="#__codelineno-15-10"></a># Verify Python and pip versions (should show 3.13.6)
+</span><span id="__span-15-11"><a id="__codelineno-15-11" name="__codelineno-15-11" href="#__codelineno-15-11"></a>python --version
+</span><span id="__span-15-12"><a id="__codelineno-15-12" name="__codelineno-15-12" href="#__codelineno-15-12"></a>pip --version
+</span><span id="__span-15-13"><a id="__codelineno-15-13" name="__codelineno-15-13" href="#__codelineno-15-13"></a>
+</span><span id="__span-15-14"><a id="__codelineno-15-14" name="__codelineno-15-14" href="#__codelineno-15-14"></a># Install project dependencies
+</span><span id="__span-15-15"><a id="__codelineno-15-15" name="__codelineno-15-15" href="#__codelineno-15-15"></a>pip install -r requirements.txt
+</span><span id="__span-15-16"><a id="__codelineno-15-16" name="__codelineno-15-16" href="#__codelineno-15-16"></a># or
+</span><span id="__span-15-17"><a id="__codelineno-15-17" name="__codelineno-15-17" href="#__codelineno-15-17"></a>pip install package1 package2 package3
+</span><span id="__span-15-18"><a id="__codelineno-15-18" name="__codelineno-15-18" href="#__codelineno-15-18"></a>
+</span><span id="__span-15-19"><a id="__codelineno-15-19" name="__codelineno-15-19" href="#__codelineno-15-19"></a># Save your environment dependencies
+</span><span id="__span-15-20"><a id="__codelineno-15-20" name="__codelineno-15-20" href="#__codelineno-15-20"></a>pip freeze &gt; requirements.txt
+</span><span id="__span-15-21"><a id="__codelineno-15-21" name="__codelineno-15-21" href="#__codelineno-15-21"></a>
+</span><span id="__span-15-22"><a id="__codelineno-15-22" name="__codelineno-15-22" href="#__codelineno-15-22"></a># Deactivate when done
+</span><span id="__span-15-23"><a id="__codelineno-15-23" name="__codelineno-15-23" href="#__codelineno-15-23"></a>deactivate
+</span></code></pre></div>
+<h3 id="activation_shortcuts">Activation Shortcuts<a class="headerlink" href="#activation_shortcuts" title="Permanent link">#</a></h3>
+<p>Create a project-specific activation script <code>activate_project.bat</code>:</p>
+<div class="language-batch highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="p">@</span><span class="k">echo</span> off
+</span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a><span class="k">echo</span> Activating Python 3.13.6 environment for ProjectName...
+</span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a><span class="k">call</span> D:\path\to\your_project\venv_py313\Scripts\activate.bat
+</span><span id="__span-16-4"><a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a><span class="k">cd</span> D:\path\to\your_project
+</span><span id="__span-16-5"><a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a><span class="k">echo</span> Environment activated! Type &#39;deactivate&#39; when finished.
+</span></code></pre></div>
+<h3 id="python_27_virtual_environments">Python 2.7 Virtual Environments<a class="headerlink" href="#python_27_virtual_environments" title="Permanent link">#</a></h3>
+<p>For Python 2.7 projects, use the <code>virtualenv</code> package:</p>
+<div class="language-text highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a># Navigate to your project directory
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>cd D:\path\to\legacy_project
+</span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>
+</span><span id="__span-17-4"><a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a># Install virtualenv for Python 2.7
+</span><span id="__span-17-5"><a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a>py -2.7 -m pip install virtualenv
+</span><span id="__span-17-6"><a id="__codelineno-17-6" name="__codelineno-17-6" href="#__codelineno-17-6"></a>
+</span><span id="__span-17-7"><a id="__codelineno-17-7" name="__codelineno-17-7" href="#__codelineno-17-7"></a># Create Python 2.7 virtual environment
+</span><span id="__span-17-8"><a id="__codelineno-17-8" name="__codelineno-17-8" href="#__codelineno-17-8"></a>py -2.7 -m virtualenv venv_py27
+</span><span id="__span-17-9"><a id="__codelineno-17-9" name="__codelineno-17-9" href="#__codelineno-17-9"></a>
+</span><span id="__span-17-10"><a id="__codelineno-17-10" name="__codelineno-17-10" href="#__codelineno-17-10"></a># Activate the environment
+</span><span id="__span-17-11"><a id="__codelineno-17-11" name="__codelineno-17-11" href="#__codelineno-17-11"></a>venv_py27\Scripts\activate
+</span><span id="__span-17-12"><a id="__codelineno-17-12" name="__codelineno-17-12" href="#__codelineno-17-12"></a>
+</span><span id="__span-17-13"><a id="__codelineno-17-13" name="__codelineno-17-13" href="#__codelineno-17-13"></a># Verify Python and pip versions (should show 2.7.x)
+</span><span id="__span-17-14"><a id="__codelineno-17-14" name="__codelineno-17-14" href="#__codelineno-17-14"></a>python --version
+</span><span id="__span-17-15"><a id="__codelineno-17-15" name="__codelineno-17-15" href="#__codelineno-17-15"></a>pip --version
+</span><span id="__span-17-16"><a id="__codelineno-17-16" name="__codelineno-17-16" href="#__codelineno-17-16"></a>
+</span><span id="__span-17-17"><a id="__codelineno-17-17" name="__codelineno-17-17" href="#__codelineno-17-17"></a># Install dependencies
+</span><span id="__span-17-18"><a id="__codelineno-17-18" name="__codelineno-17-18" href="#__codelineno-17-18"></a>pip install -r requirements.txt
+</span><span id="__span-17-19"><a id="__codelineno-17-19" name="__codelineno-17-19" href="#__codelineno-17-19"></a>
+</span><span id="__span-17-20"><a id="__codelineno-17-20" name="__codelineno-17-20" href="#__codelineno-17-20"></a># Deactivate when done
+</span><span id="__span-17-21"><a id="__codelineno-17-21" name="__codelineno-17-21" href="#__codelineno-17-21"></a>deactivate
+</span></code></pre></div>
+<h2 id="comparison_of_solutions">Comparison of Solutions<a class="headerlink" href="#comparison_of_solutions" title="Permanent link">#</a></h2>
+<table>
+<thead>
+<tr>
+<th>Solution</th>
+<th>Complexity</th>
+<th>Permanence</th>
+<th>Best For</th>
+<th>Limitations</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Python Launcher</td>
+<td>Low</td>
+<td>No system changes</td>
+<td>Quick version switching</td>
+<td>Requires explicit version flags</td>
+</tr>
+<tr>
+<td>Environment Variables</td>
+<td>Medium</td>
+<td>System-wide changes</td>
+<td>Global preference setup</td>
+<td>Can affect other applications</td>
+</tr>
+<tr>
+<td>Temp Environment Overrides</td>
+<td>Low</td>
+<td>Session-only</td>
+<td>One-off commands</td>
+<td>Must be repeated each session</td>
+</tr>
+<tr>
+<td>Command Wrappers</td>
+<td>Low</td>
+<td>Command shortcuts only</td>
+<td>Daily development</td>
+<td>Needs PATH configuration</td>
+</tr>
+<tr>
+<td>Virtual Environments</td>
+<td>Medium</td>
+<td>Project-specific</td>
+<td>Professional development</td>
+<td>Requires activation/deactivation</td>
+</tr>
+</tbody>
+</table>
+<h2 id="references">References<a class="headerlink" href="#references" title="Permanent link">#</a></h2>
+<h3 id="official_documentation">Official Documentation<a class="headerlink" href="#official_documentation" title="Permanent link">#</a></h3>
+<ul>
+<li><a href="https://docs.python.org/3/using/windows.html">Using Python on Windows</a> - Official Python documentation</li>
+<li><a href="https://docs.python.org/3/using/windows.html#python-launcher-for-windows">Python Launcher for Windows</a> - py.exe documentation</li>
+<li><a href="https://docs.python.org/3/tutorial/venv.html">Virtual Environments and Packages</a> - Official venv documentation</li>
+</ul>
+<h3 id="python_installation">Python Installation<a class="headerlink" href="#python_installation" title="Permanent link">#</a></h3>
+<ol>
+<li>Always install launcher for all users (recommended)</li>
+<li>Consider whether to add Python to <code>PATH</code> based on your needs</li>
+</ol>
+<p><img alt="Python Installation Options" src="https://docs.python.org/3/_images/win_installer.png" /></p>
+<h3 id="additional_resources">Additional Resources<a class="headerlink" href="#additional_resources" title="Permanent link">#</a></h3>
+<ul>
+<li><a href="https://peps.python.org/pep-0397/">PEP 397 – Python launcher for Windows</a></li>
+<li><a href="https://github.com/pyenv/pyenv">Managing Multiple Python Versions with pyenv</a></li>
+<li><a href="https://pipenv.pypa.io/">pipenv: Python Development Workflow for Humans</a></li>
+<li><a href="https://blog.csdn.net/Zhangguohao666/article/details/105632475">Python版本控制工具 py launcher-CSDN博客</a></li>
+</ul>
+
+
+
+
+
+
+
+  
+  
+
+
+
+  
+
+
+  
+
+
+
+  <h2 id="__comments">Comments</h2>
+  <!-- Insert generated snippet here -->
+  <script src="https://giscus.app/client.js"
+    data-repo="fan2/mkdocs"
+    data-repo-id="R_kgDOLltxSg"
+    data-category="Announcements"
+    data-category-id="DIC_kwDOLltxSs4CeURH"
+    data-mapping="pathname"
+    data-strict="0"
+    data-reactions-enabled="1"
+    data-emit-metadata="1"
+    data-input-position="top"
+    data-theme="preferred_color_scheme"
+    data-lang="en"
+    data-loading="lazy"
+    crossorigin="anonymous"
+    async>
+  </script>
+
+  <!-- Synchronize Giscus theme with palette -->
+  <script>
+    var giscus = document.querySelector("script[src*=giscus]")
+
+    // Set palette on initial load
+    var palette = __md_get("__palette")
+    if (palette && typeof palette.color === "object") {
+      var theme = palette.color.scheme === "slate"
+        ? "transparent_dark"
+        : "light"
+
+      // Instruct Giscus to set theme
+      giscus.setAttribute("data-theme", theme) 
+    }
+
+    // Register event handlers after documented loaded
+    document.addEventListener("DOMContentLoaded", function() {
+      var ref = document.querySelector("[data-md-component=palette]")
+      ref.addEventListener("change", function() {
+        var palette = __md_get("__palette")
+        if (palette && typeof palette.color === "object") {
+          var theme = palette.color.scheme === "slate"
+            ? "transparent_dark"
+            : "light"
+
+          // Instruct Giscus to change theme
+          var frame = document.querySelector(".giscus-frame")
+          frame.contentWindow.postMessage(
+            { giscus: { setConfig: { theme } } },
+            "https://giscus.app"
+          )
+        }
+      })
+    })
+  </script>
+
+      
+    </article>
+  </div>
+
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+        
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../8-python-packaging-tools/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Python Packaging Tools - setuptools &amp; wheel">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Python Packaging Tools - setuptools & wheel
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../9-python-package-installer/" class="md-footer__link md-footer__link--next" aria-label="Next: Python Package Installer - easy_install &amp; pip">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Python Package Installer - easy_install & pip
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+    <div class="md-copyright__highlight">
+      Copyright &copy; 2025- Cliff Fan
+    </div>
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      <script id="__config" type="application/json">{"base": "../../..", "features": ["toc.follow", "header.autohide", "navigation.tabs", "navigation.top", "navigation.footer", "navigation.tracking", "content.code.copy", "content.code.select", "content.code.annotate"], "search": "../../../assets/javascripts/workers/search.973d3a69.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.f55a23d4.min.js"></script>
+      
+        <script src="../../../javascripts/mathjax.js"></script>
+      
+        <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+      
+        <script src="https://vercount.one/js"></script>
+      
+    
+  </body>
+</html>
