@@ -66,8 +66,7 @@ Commands:
 
 > [Python的包管理工具pip的安装与使用](http://blog.csdn.net/liuchunming033/article/details/39578019)  
 > [pip安装使用详解](http://www.ttlsa.com/python/how-to-install-and-use-pip-ttlsa/) / [python pip常用命令](http://www.cnblogs.com/xueweihan/p/4981704.html)  
-> [常用的python模块及安装方法](http://blog.chinaunix.net/uid-24567872-id-3926986.html)  
-> [不得不知的几个 python 开源项目](http://lukejin.iteye.com/blog/608230)  
+> [Python 包管理工具 pip 详解](https://muzing.top/posts/594ac4a6/)
 
 ## python -m pip
 
@@ -202,6 +201,10 @@ pip 9.0.3 from /usr/local/lib/python3.6/site-packages (python 3.6)
 ```bash
 pip3 install -U $(pip3 list --outdated | awk 'NR>2 {print $1}')
 pip3 list --outdated | awk 'NR>2 {print $1}' | xargs -n1 pip3 install -U
+
+# exclude xlrd or click
+pip3 list --outdated | awk 'NR>2 && $1 !~/xlrd/ {print $1}'
+pip3 list --outdated | awk 'NR>2 && $1 !~/xlrd|click/ {print $1}'
 ```
 
 1. `pip3 list --outdated` lists all Python packages that have newer versions available, output format looks like:
@@ -235,6 +238,71 @@ If you had outdated packages `requests` and `numpy`, this would effectively run:
 pip3 install -U requests
 pip3 install -U numpy
 ```
+
+### incompatible conflicting dependencies
+
+执行 `pip3 install -U backrefs` 命令将 backrefs 5.9 升级到了最新的 6.0.1：
+
+```bash
+$ pip3 install -U backrefs
+Requirement already satisfied: backrefs in /Users/faner/.venv/lib/python3.13/site-packages (5.9)
+Collecting backrefs
+  Using cached backrefs-6.0.1-py313-none-any.whl.metadata (3.2 kB)
+Downloading backrefs-6.0.1-py313-none-any.whl (400 kB)
+Installing collected packages: backrefs
+  Attempting uninstall: backrefs
+    Found existing installation: backrefs 5.9
+    Uninstalling backrefs-5.9:
+      Successfully uninstalled backrefs-5.9
+ERROR: pip's dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.
+mkdocs-material 9.6.21 requires backrefs~=5.7.post1, but you have backrefs 6.0.1 which is incompatible.
+Successfully installed backrefs-6.0.1
+```
+
+报出 mkdocs-material 依赖的 [backrefs 版本](https://pypi.org/project/backrefs/#history) 兼容错误（incompatible ERROR）。
+
+我们可以借助 [pipdeptree](https://pypi.org/project/pipdeptree/) 工具来查看包依赖关系。
+
+执行 `pipdeptree -p mkdocs-material` 查看 mkdocs-material 的依赖信息，或执行 `pipdeptree -rp backrefs` 查看 backrefs 被依赖的信息，都提示 `Warning!!! Possibly conflicting dependencies found`：
+
+```bash
+$ pipdeptree -p mkdocs-material
+Warning!!! Possibly conflicting dependencies found:
+* mkdocs-material==9.6.21
+ - backrefs [required: ~=5.7.post1, installed: 6.0.1]
+------------------------------------------------------------------------
+mkdocs-material==9.6.21
+├── babel [required: ~=2.10, installed: 2.17.0]
+├── backrefs [required: ~=5.7.post1, installed: 6.0.1]
+...
+
+$ pipdeptree -rp backrefs
+Warning!!! Possibly conflicting dependencies found:
+* mkdocs-material==9.6.21
+ - backrefs [required: ~=5.7.post1, installed: 6.0.1]
+------------------------------------------------------------------------
+backrefs==6.0.1
+└── mkdocs-material==9.6.21 [requires: backrefs~=5.7.post1]
+```
+
+mkdocs-material 9.6.21 依赖 backrefs~=5.7.post1，即与 5.7.post1 兼容的版本，一般大版本 5.\* 至少要保持一致。这里激进升级到最新的 6.0.1，主版本已经是 6，提示出现兼容问题。
+
+> mkdocs-material 9.6.21 requires backrefs~=5.7.post1, but you have backrefs 6.0.1 which is incompatible.
+
+参考 [python requirements == 和 ~= 区别](https://blog.csdn.net/u010339879/article/details/131884373)，解决方案是卸载最新的 backrefs 6.0.1，指定安装版本 ==5.\* 进行降级：
+
+1. pip uninstall backrefs
+2. pip install backrefs==5.*
+
+回退后，重新执行 `pipdeptree -rp backrefs`，不再提示 Warning：
+
+```bash
+$ pipdeptree -rp backrefs
+backrefs==5.9
+└── mkdocs-material==9.6.21 [requires: backrefs~=5.7.post1]
+```
+
+可考虑使用 [pip lock](https://pip.pypa.io/en/stable/cli/pip_lock/) 命令来生成 lock file，Lock packages and their dependencies.
 
 ## dependency requirements
 
@@ -298,12 +366,14 @@ Package Index Options:
 1. Check dependencies before uninstalling:
 
 ```bash
+# pipdeptree -p
 pipdeptree --packages package_name
 ```
 
 2. List reverse dependencies to see what depends on each package:
 
 ```bash
+# pipdeptree -rp
 pipdeptree --reverse --packages dependency_name
 ```
 

@@ -22,9 +22,12 @@ macOS 软件清单备忘（macOS Software Inventory）。
 - 匠心打磨清理体验，一键释放磁盘空间
 
 [iTerm2 - macOS Terminal Replacement](https://iterm2.com/)
-[Warp: Your terminal, reimagined](https://www.warp.dev)
 
-- Warp is a modern, Rust-based terminal with AI built in so you and your team can build great software, faster.
+- iTerm2 is a terminal emulator for macOS that does amazing things.
+
+[Warp: The Agentic Development Environment](https://www.warp.dev/)
+
+- From prompt to production - The best way to code with Al agents. Prompt, review, edit, and ship.
 
 ## Tools
 
@@ -51,10 +54,11 @@ softorino [WALTR PRO](https://softorino.com/waltr/)
 
 - @[github](https://github.com/clash-verge-rev/clash-verge-rev) - [Releases](https://github.com/clash-verge-rev/clash-verge-rev/releases)
 
-[Google Chrome Web Browser](https://www.google.com/intl/en_hk/chrome/)
-[Arc from The Browser Company](https://arc.net/)
+[FlClash](https://flclash.cc/en/): Multi-platform proxy client based on ClashMeta, easy to use, open source and ad-free
 
-- Arc is the Chrome replacement I’ve been waiting for.
+[Google Chrome Web Browser](https://www.google.com/intl/en_hk/chrome/)
+[Helium Browser](https://helium.computer/)
+[Deta Surf](https://deta.surf/)
 
 [Cyberduck](https://cyberduck.io/)
 
@@ -72,9 +76,13 @@ softorino [WALTR PRO](https://softorino.com/waltr/)
 
 ## Messager
 
-[微信，是一个生活方式](https://weixin.qq.com/) - [WeChat](https://www.wechat.com/)
+[微信](https://weixin.qq.com/) - [WeChat](https://www.wechat.com/)
 
 - Free messaging and calling app
+
+[WhatsApp](https://www.whatsapp.com/)
+
+- Secure and Reliable Free Private Messaging and Calling
 
 [Telegram Messenger](https://telegram.org/)
 
@@ -83,6 +91,10 @@ softorino [WALTR PRO](https://softorino.com/waltr/)
 ## Image & Diagram
 
 macOS 截图预览内置 OCR 识别。
+
+[iShot for Mac | better365](https://www.better365.cn/ishot.html)
+
+- 截图、长截图、全屏带壳截图、贴图、标注、取色、录屏、录音、OCR、翻译……
 
 [Snagit | TechSmith](https://www.techsmith.com/screen-capture.html)
 
@@ -146,6 +158,10 @@ Stickies.app: [Stickies User Guide for Mac](https://support.apple.com/en-hk/guid
 - A dynamic sticky notes app for brainstorming, content curation, taking notes, and capturing ideas.
 
 ## Text Editor
+
+[Obsidian - Sharpen your thinking](https://obsidian.md/)
+
+- The free and flexible app for your private thoughts.
 
 [FoldingText](https://www.foldingtext.com/) - waiting for 3.0
 

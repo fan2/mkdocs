@@ -1426,6 +1426,21 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="upgrade packages">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#incompatible_conflicting_dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      incompatible conflicting dependencies
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1572,7 +1587,7 @@
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7z"/></svg>
                           <span class="md-ellipsis">
                             
-                              6 min read
+                              7 min read
                             
                           </span>
                         </div>
@@ -1659,8 +1674,7 @@ pip works on Unix/Linux, macOS, and Windows.  </p>
 <blockquote>
 <p><a href="http://blog.csdn.net/liuchunming033/article/details/39578019">Python的包管理工具pip的安装与使用</a><br />
 <a href="http://www.ttlsa.com/python/how-to-install-and-use-pip-ttlsa/">pip安装使用详解</a> / <a href="http://www.cnblogs.com/xueweihan/p/4981704.html">python pip常用命令</a><br />
-<a href="http://blog.chinaunix.net/uid-24567872-id-3926986.html">常用的python模块及安装方法</a><br />
-<a href="http://lukejin.iteye.com/blog/608230">不得不知的几个 python 开源项目</a>  </p>
+<a href="https://muzing.top/posts/594ac4a6/">Python 包管理工具 pip 详解</a></p>
 </blockquote>
 <h2 id="python_-m_pip">python -m pip<a class="headerlink" href="#python_-m_pip" title="Permanent link">#</a></h2>
 <p>另外，也可以通过 <code>python3 -m pip</code> 执行指定 Python 配套的 pip。</p>
@@ -1765,6 +1779,10 @@ pip works on Unix/Linux, macOS, and Windows.  </p>
 <h2 id="upgrade_packages">upgrade packages<a class="headerlink" href="#upgrade_packages" title="Permanent link">#</a></h2>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>pip3<span class="w"> </span>install<span class="w"> </span>-U<span class="w"> </span><span class="k">$(</span>pip3<span class="w"> </span>list<span class="w"> </span>--outdated<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;NR&gt;2 {print $1}&#39;</span><span class="k">)</span>
 </span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>pip3<span class="w"> </span>list<span class="w"> </span>--outdated<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;NR&gt;2 {print $1}&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>xargs<span class="w"> </span>-n1<span class="w"> </span>pip3<span class="w"> </span>install<span class="w"> </span>-U
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="c1"># exclude xlrd or click</span>
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>pip3<span class="w"> </span>list<span class="w"> </span>--outdated<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;NR&gt;2 &amp;&amp; $1 !~/xlrd/ {print $1}&#39;</span>
+</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>pip3<span class="w"> </span>list<span class="w"> </span>--outdated<span class="w"> </span><span class="p">|</span><span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;NR&gt;2 &amp;&amp; $1 !~/xlrd|click/ {print $1}&#39;</span>
 </span></code></pre></div>
 <ol>
 <li><code>pip3 list --outdated</code> lists all Python packages that have newer versions available, output format looks like:</li>
@@ -1796,14 +1814,66 @@ pip works on Unix/Linux, macOS, and Windows.  </p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>pip3<span class="w"> </span>install<span class="w"> </span>-U<span class="w"> </span>requests
 </span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>pip3<span class="w"> </span>install<span class="w"> </span>-U<span class="w"> </span>numpy
 </span></code></pre></div>
+<h3 id="incompatible_conflicting_dependencies">incompatible conflicting dependencies<a class="headerlink" href="#incompatible_conflicting_dependencies" title="Permanent link">#</a></h3>
+<p>执行 <code>pip3 install -U backrefs</code> 命令将 backrefs 5.9 升级到了最新的 6.0.1：</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>$<span class="w"> </span>pip3<span class="w"> </span>install<span class="w"> </span>-U<span class="w"> </span>backrefs
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>Requirement<span class="w"> </span>already<span class="w"> </span>satisfied:<span class="w"> </span>backrefs<span class="w"> </span><span class="k">in</span><span class="w"> </span>/Users/faner/.venv/lib/python3.13/site-packages<span class="w"> </span><span class="o">(</span><span class="m">5</span>.9<span class="o">)</span>
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>Collecting<span class="w"> </span>backrefs
+</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="w">  </span>Using<span class="w"> </span>cached<span class="w"> </span>backrefs-6.0.1-py313-none-any.whl.metadata<span class="w"> </span><span class="o">(</span><span class="m">3</span>.2<span class="w"> </span>kB<span class="o">)</span>
+</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>Downloading<span class="w"> </span>backrefs-6.0.1-py313-none-any.whl<span class="w"> </span><span class="o">(</span><span class="m">400</span><span class="w"> </span>kB<span class="o">)</span>
+</span><span id="__span-13-6"><a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a>Installing<span class="w"> </span>collected<span class="w"> </span>packages:<span class="w"> </span>backrefs
+</span><span id="__span-13-7"><a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a><span class="w">  </span>Attempting<span class="w"> </span>uninstall:<span class="w"> </span>backrefs
+</span><span id="__span-13-8"><a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a><span class="w">    </span>Found<span class="w"> </span>existing<span class="w"> </span>installation:<span class="w"> </span>backrefs<span class="w"> </span><span class="m">5</span>.9
+</span><span id="__span-13-9"><a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a><span class="w">    </span>Uninstalling<span class="w"> </span>backrefs-5.9:
+</span><span id="__span-13-10"><a id="__codelineno-13-10" name="__codelineno-13-10" href="#__codelineno-13-10"></a><span class="w">      </span>Successfully<span class="w"> </span>uninstalled<span class="w"> </span>backrefs-5.9
+</span><span id="__span-13-11"><a id="__codelineno-13-11" name="__codelineno-13-11" href="#__codelineno-13-11"></a>ERROR:<span class="w"> </span>pip<span class="err">&#39;</span>s<span class="w"> </span>dependency<span class="w"> </span>resolver<span class="w"> </span>does<span class="w"> </span>not<span class="w"> </span>currently<span class="w"> </span>take<span class="w"> </span>into<span class="w"> </span>account<span class="w"> </span>all<span class="w"> </span>the<span class="w"> </span>packages<span class="w"> </span>that<span class="w"> </span>are<span class="w"> </span>installed.<span class="w"> </span>This<span class="w"> </span>behaviour<span class="w"> </span>is<span class="w"> </span>the<span class="w"> </span><span class="nb">source</span><span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>following<span class="w"> </span>dependency<span class="w"> </span>conflicts.
+</span><span id="__span-13-12"><a id="__codelineno-13-12" name="__codelineno-13-12" href="#__codelineno-13-12"></a>mkdocs-material<span class="w"> </span><span class="m">9</span>.6.21<span class="w"> </span>requires<span class="w"> </span>backrefs~<span class="o">=</span><span class="m">5</span>.7.post1,<span class="w"> </span>but<span class="w"> </span>you<span class="w"> </span>have<span class="w"> </span>backrefs<span class="w"> </span><span class="m">6</span>.0.1<span class="w"> </span>which<span class="w"> </span>is<span class="w"> </span>incompatible.
+</span><span id="__span-13-13"><a id="__codelineno-13-13" name="__codelineno-13-13" href="#__codelineno-13-13"></a>Successfully<span class="w"> </span>installed<span class="w"> </span>backrefs-6.0.1
+</span></code></pre></div>
+<p>报出 mkdocs-material 依赖的 <a href="https://pypi.org/project/backrefs/#history">backrefs 版本</a> 兼容错误（incompatible ERROR）。</p>
+<p>我们可以借助 <a href="https://pypi.org/project/pipdeptree/">pipdeptree</a> 工具来查看包依赖关系。</p>
+<p>执行 <code>pipdeptree -p mkdocs-material</code> 查看 mkdocs-material 的依赖信息，或执行 <code>pipdeptree -rp backrefs</code> 查看 backrefs 被依赖的信息，都提示 <code>Warning!!! Possibly conflicting dependencies found</code>：</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>$<span class="w"> </span>pipdeptree<span class="w"> </span>-p<span class="w"> </span>mkdocs-material
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>Warning!!!<span class="w"> </span>Possibly<span class="w"> </span>conflicting<span class="w"> </span>dependencies<span class="w"> </span>found:
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>*<span class="w"> </span>mkdocs-material<span class="o">==</span><span class="m">9</span>.6.21
+</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="w"> </span>-<span class="w"> </span>backrefs<span class="w"> </span><span class="o">[</span>required:<span class="w"> </span>~<span class="o">=</span><span class="m">5</span>.7.post1,<span class="w"> </span>installed:<span class="w"> </span><span class="m">6</span>.0.1<span class="o">]</span>
+</span><span id="__span-14-5"><a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a>------------------------------------------------------------------------
+</span><span id="__span-14-6"><a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a>mkdocs-material<span class="o">==</span><span class="m">9</span>.6.21
+</span><span id="__span-14-7"><a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a>├──<span class="w"> </span>babel<span class="w"> </span><span class="o">[</span>required:<span class="w"> </span>~<span class="o">=</span><span class="m">2</span>.10,<span class="w"> </span>installed:<span class="w"> </span><span class="m">2</span>.17.0<span class="o">]</span>
+</span><span id="__span-14-8"><a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a>├──<span class="w"> </span>backrefs<span class="w"> </span><span class="o">[</span>required:<span class="w"> </span>~<span class="o">=</span><span class="m">5</span>.7.post1,<span class="w"> </span>installed:<span class="w"> </span><span class="m">6</span>.0.1<span class="o">]</span>
+</span><span id="__span-14-9"><a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a>...
+</span><span id="__span-14-10"><a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a>
+</span><span id="__span-14-11"><a id="__codelineno-14-11" name="__codelineno-14-11" href="#__codelineno-14-11"></a>$<span class="w"> </span>pipdeptree<span class="w"> </span>-rp<span class="w"> </span>backrefs
+</span><span id="__span-14-12"><a id="__codelineno-14-12" name="__codelineno-14-12" href="#__codelineno-14-12"></a>Warning!!!<span class="w"> </span>Possibly<span class="w"> </span>conflicting<span class="w"> </span>dependencies<span class="w"> </span>found:
+</span><span id="__span-14-13"><a id="__codelineno-14-13" name="__codelineno-14-13" href="#__codelineno-14-13"></a>*<span class="w"> </span>mkdocs-material<span class="o">==</span><span class="m">9</span>.6.21
+</span><span id="__span-14-14"><a id="__codelineno-14-14" name="__codelineno-14-14" href="#__codelineno-14-14"></a><span class="w"> </span>-<span class="w"> </span>backrefs<span class="w"> </span><span class="o">[</span>required:<span class="w"> </span>~<span class="o">=</span><span class="m">5</span>.7.post1,<span class="w"> </span>installed:<span class="w"> </span><span class="m">6</span>.0.1<span class="o">]</span>
+</span><span id="__span-14-15"><a id="__codelineno-14-15" name="__codelineno-14-15" href="#__codelineno-14-15"></a>------------------------------------------------------------------------
+</span><span id="__span-14-16"><a id="__codelineno-14-16" name="__codelineno-14-16" href="#__codelineno-14-16"></a><span class="nv">backrefs</span><span class="o">==</span><span class="m">6</span>.0.1
+</span><span id="__span-14-17"><a id="__codelineno-14-17" name="__codelineno-14-17" href="#__codelineno-14-17"></a>└──<span class="w"> </span>mkdocs-material<span class="o">==</span><span class="m">9</span>.6.21<span class="w"> </span><span class="o">[</span>requires:<span class="w"> </span>backrefs~<span class="o">=</span><span class="m">5</span>.7.post1<span class="o">]</span>
+</span></code></pre></div>
+<p>mkdocs-material 9.6.21 依赖 backrefs~=5.7.post1，即与 5.7.post1 兼容的版本，一般大版本 5.* 至少要保持一致。这里激进升级到最新的 6.0.1，主版本已经是 6，提示出现兼容问题。</p>
+<blockquote>
+<p>mkdocs-material 9.6.21 requires backrefs~=5.7.post1, but you have backrefs 6.0.1 which is incompatible.</p>
+</blockquote>
+<p>参考 <a href="https://blog.csdn.net/u010339879/article/details/131884373">python requirements == 和 ~= 区别</a>，解决方案是卸载最新的 backrefs 6.0.1，指定安装版本 ==5.* 进行降级：</p>
+<ol>
+<li>pip uninstall backrefs</li>
+<li>pip install backrefs==5.*</li>
+</ol>
+<p>回退后，重新执行 <code>pipdeptree -rp backrefs</code>，不再提示 Warning：</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>$<span class="w"> </span>pipdeptree<span class="w"> </span>-rp<span class="w"> </span>backrefs
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="nv">backrefs</span><span class="o">==</span><span class="m">5</span>.9
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>└──<span class="w"> </span>mkdocs-material<span class="o">==</span><span class="m">9</span>.6.21<span class="w"> </span><span class="o">[</span>requires:<span class="w"> </span>backrefs~<span class="o">=</span><span class="m">5</span>.7.post1<span class="o">]</span>
+</span></code></pre></div>
+<p>可考虑使用 <a href="https://pip.pypa.io/en/stable/cli/pip_lock/">pip lock</a> 命令来生成 lock file，Lock packages and their dependencies.</p>
 <h2 id="dependency_requirements">dependency requirements<a class="headerlink" href="#dependency_requirements" title="Permanent link">#</a></h2>
 <p><code>pip freeze</code> Output installed packages in requirements format.</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>pip<span class="w"> </span>freeze<span class="w"> </span>&gt;<span class="w"> </span>requirements.txt
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>pip<span class="w"> </span>freeze<span class="w"> </span>&gt;<span class="w"> </span>requirements.txt
 </span></code></pre></div>
 <p><a href="https://pypi.org/project/pipreqs/">pipreqs · PyPI</a> is a tool for generating the requirements.txt file containing project dependencies. It analyzes Python code within a project, automatically detects <em>third-party</em> libraries used, and generates the corresponding requirements.txt file.</p>
 <p>Run <code>pip install pipreqs</code> to install pipreqs, then run <code>pipreqs</code> to generate project-specific package dependencies.</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>pipreqs<span class="w"> </span>.<span class="w"> </span>--force<span class="w"> </span>--encoding<span class="o">=</span>utf8
-</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>pipreqs<span class="w"> </span>.<span class="w"> </span>--force<span class="w"> </span>--encoding<span class="o">=</span>utf8<span class="w"> </span>--savepath<span class="w"> </span>./dev-reqs.txt
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>pipreqs<span class="w"> </span>.<span class="w"> </span>--force<span class="w"> </span>--encoding<span class="o">=</span>utf8
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>pipreqs<span class="w"> </span>.<span class="w"> </span>--force<span class="w"> </span>--encoding<span class="o">=</span>utf8<span class="w"> </span>--savepath<span class="w"> </span>./dev-reqs.txt
 </span></code></pre></div>
 <ol>
 <li><code>--force</code>: Overwrite existing requirements.txt</li>
@@ -1812,10 +1882,10 @@ pip works on Unix/Linux, macOS, and Windows.  </p>
 </ol>
 <h3 id="pip_install_from_requirementstxt">pip install from requirements.txt<a class="headerlink" href="#pip_install_from_requirementstxt" title="Permanent link">#</a></h3>
 <p><code>pip3 help install</code>: pip also supports installing from "requirements files", which provide an easy way to specify a whole environment to be installed.</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="w">  </span>-r,<span class="w"> </span>--requirement<span class="w"> </span>&lt;file&gt;<span class="w">    </span>Install<span class="w"> </span>from<span class="w"> </span>the<span class="w"> </span>given<span class="w"> </span>requirements<span class="w"> </span>file.<span class="w"> </span>This<span class="w"> </span>option<span class="w"> </span>can<span class="w"> </span>be<span class="w"> </span>used<span class="w"> </span>multiple<span class="w"> </span>times.
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="w">  </span>-r,<span class="w"> </span>--requirement<span class="w"> </span>&lt;file&gt;<span class="w">    </span>Install<span class="w"> </span>from<span class="w"> </span>the<span class="w"> </span>given<span class="w"> </span>requirements<span class="w"> </span>file.<span class="w"> </span>This<span class="w"> </span>option<span class="w"> </span>can<span class="w"> </span>be<span class="w"> </span>used<span class="w"> </span>multiple<span class="w"> </span>times.
 </span></code></pre></div>
 <p>Specify <code>-r</code> or <code>--requirement</code> option to install required/dependent packages from a requirements file.</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
 </span></code></pre></div>
 <h3 id="pip_download_and_install_offline">pip download and install offline<a class="headerlink" href="#pip_download_and_install_offline" title="Permanent link">#</a></h3>
 <p>For various reasons, operations personnel often need to deploy Python in production environments, and this inevitably involves installing its various packages. When connected to the internet, executing the <code>pip install</code> command completes the installation process. However, it's important to note that production servers are often disconnected from the internet. In such scenarios, installing third-party packages can be difficult. One solution is to download the required packages within the internal network environment first, and then transfer them to the production environment via SCP for offline installation.</p>
@@ -1824,42 +1894,44 @@ pip works on Unix/Linux, macOS, and Windows.  </p>
 <li>OA/UAT: Run <code>pip download -r requirements.txt -d ./offline_packages</code> to download all packages in the requirements file.</li>
 <li>PROD: Run <code>pip install -r requirements.txt --no-index --find-links=./offline_packages</code> to install required dependency packages from local index/cache.</li>
 </ol>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>$<span class="w"> </span>pip3<span class="w"> </span><span class="nb">help</span><span class="w"> </span>install
-</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>
-</span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>Package<span class="w"> </span>Index<span class="w"> </span>Options:
-</span><span id="__span-17-4"><a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a>
-</span><span id="__span-17-5"><a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a><span class="w">  </span>--no-index<span class="w">                  </span>Ignore<span class="w"> </span>package<span class="w"> </span>index<span class="w"> </span><span class="o">(</span>only<span class="w"> </span>looking<span class="w"> </span>at<span class="w"> </span>--find-links<span class="w"> </span>URLs<span class="w"> </span>instead<span class="o">)</span>.
-</span><span id="__span-17-6"><a id="__codelineno-17-6" name="__codelineno-17-6" href="#__codelineno-17-6"></a><span class="w">  </span>-f,<span class="w"> </span>--find-links<span class="w"> </span>&lt;url&gt;<span class="w">      </span>If<span class="w"> </span>a<span class="w"> </span>URL<span class="w"> </span>or<span class="w"> </span>path<span class="w"> </span>to<span class="w"> </span>an<span class="w"> </span>html<span class="w"> </span>file,<span class="w"> </span><span class="k">then</span><span class="w"> </span>parse<span class="w"> </span><span class="k">for</span><span class="w"> </span>links<span class="w"> </span>to<span class="w"> </span>archives<span class="w"> </span>such<span class="w"> </span>as
-</span><span id="__span-17-7"><a id="__codelineno-17-7" name="__codelineno-17-7" href="#__codelineno-17-7"></a><span class="w">                              </span>sdist<span class="w"> </span><span class="o">(</span>.tar.gz<span class="o">)</span><span class="w"> </span>or<span class="w"> </span>wheel<span class="w"> </span><span class="o">(</span>.whl<span class="o">)</span><span class="w"> </span>files.<span class="w"> </span>If<span class="w"> </span>a<span class="w"> </span><span class="nb">local</span><span class="w"> </span>path<span class="w"> </span>or<span class="w"> </span>file://<span class="w"> </span>URL<span class="w"> </span>that<span class="err">&#39;</span>s<span class="w"> </span>a
-</span><span id="__span-17-8"><a id="__codelineno-17-8" name="__codelineno-17-8" href="#__codelineno-17-8"></a><span class="w">                              </span>directory,<span class="w"> </span><span class="k">then</span><span class="w"> </span>look<span class="w"> </span><span class="k">for</span><span class="w"> </span>archives<span class="w"> </span><span class="k">in</span><span class="w"> </span>the<span class="w"> </span>directory<span class="w"> </span>listing.<span class="w"> </span>Links<span class="w"> </span>to<span class="w"> </span>VCS
-</span><span id="__span-17-9"><a id="__codelineno-17-9" name="__codelineno-17-9" href="#__codelineno-17-9"></a><span class="w">                              </span>project<span class="w"> </span>URLs<span class="w"> </span>are<span class="w"> </span>not<span class="w"> </span>supported.
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>$<span class="w"> </span>pip3<span class="w"> </span><span class="nb">help</span><span class="w"> </span>install
+</span><span id="__span-20-2"><a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>
+</span><span id="__span-20-3"><a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a>Package<span class="w"> </span>Index<span class="w"> </span>Options:
+</span><span id="__span-20-4"><a id="__codelineno-20-4" name="__codelineno-20-4" href="#__codelineno-20-4"></a>
+</span><span id="__span-20-5"><a id="__codelineno-20-5" name="__codelineno-20-5" href="#__codelineno-20-5"></a><span class="w">  </span>--no-index<span class="w">                  </span>Ignore<span class="w"> </span>package<span class="w"> </span>index<span class="w"> </span><span class="o">(</span>only<span class="w"> </span>looking<span class="w"> </span>at<span class="w"> </span>--find-links<span class="w"> </span>URLs<span class="w"> </span>instead<span class="o">)</span>.
+</span><span id="__span-20-6"><a id="__codelineno-20-6" name="__codelineno-20-6" href="#__codelineno-20-6"></a><span class="w">  </span>-f,<span class="w"> </span>--find-links<span class="w"> </span>&lt;url&gt;<span class="w">      </span>If<span class="w"> </span>a<span class="w"> </span>URL<span class="w"> </span>or<span class="w"> </span>path<span class="w"> </span>to<span class="w"> </span>an<span class="w"> </span>html<span class="w"> </span>file,<span class="w"> </span><span class="k">then</span><span class="w"> </span>parse<span class="w"> </span><span class="k">for</span><span class="w"> </span>links<span class="w"> </span>to<span class="w"> </span>archives<span class="w"> </span>such<span class="w"> </span>as
+</span><span id="__span-20-7"><a id="__codelineno-20-7" name="__codelineno-20-7" href="#__codelineno-20-7"></a><span class="w">                              </span>sdist<span class="w"> </span><span class="o">(</span>.tar.gz<span class="o">)</span><span class="w"> </span>or<span class="w"> </span>wheel<span class="w"> </span><span class="o">(</span>.whl<span class="o">)</span><span class="w"> </span>files.<span class="w"> </span>If<span class="w"> </span>a<span class="w"> </span><span class="nb">local</span><span class="w"> </span>path<span class="w"> </span>or<span class="w"> </span>file://<span class="w"> </span>URL<span class="w"> </span>that<span class="err">&#39;</span>s<span class="w"> </span>a
+</span><span id="__span-20-8"><a id="__codelineno-20-8" name="__codelineno-20-8" href="#__codelineno-20-8"></a><span class="w">                              </span>directory,<span class="w"> </span><span class="k">then</span><span class="w"> </span>look<span class="w"> </span><span class="k">for</span><span class="w"> </span>archives<span class="w"> </span><span class="k">in</span><span class="w"> </span>the<span class="w"> </span>directory<span class="w"> </span>listing.<span class="w"> </span>Links<span class="w"> </span>to<span class="w"> </span>VCS
+</span><span id="__span-20-9"><a id="__codelineno-20-9" name="__codelineno-20-9" href="#__codelineno-20-9"></a><span class="w">                              </span>project<span class="w"> </span>URLs<span class="w"> </span>are<span class="w"> </span>not<span class="w"> </span>supported.
 </span></code></pre></div>
 <h2 id="pip_dep_and_autoremove">pip dep and autoremove<a class="headerlink" href="#pip_dep_and_autoremove" title="Permanent link">#</a></h2>
 <h3 id="method_1_manually_approach_with_pipdeptree">Method 1: Manually approach with pipdeptree<a class="headerlink" href="#method_1_manually_approach_with_pipdeptree" title="Permanent link">#</a></h3>
 <ol>
 <li>Check dependencies before uninstalling:</li>
 </ol>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a>pipdeptree<span class="w"> </span>--packages<span class="w"> </span>package_name
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="c1"># pipdeptree -p</span>
+</span><span id="__span-21-2"><a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>pipdeptree<span class="w"> </span>--packages<span class="w"> </span>package_name
 </span></code></pre></div>
 <ol start="2">
 <li>List reverse dependencies to see what depends on each package:</li>
 </ol>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>pipdeptree<span class="w"> </span>--reverse<span class="w"> </span>--packages<span class="w"> </span>dependency_name
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="c1"># pipdeptree -rp</span>
+</span><span id="__span-22-2"><a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a>pipdeptree<span class="w"> </span>--reverse<span class="w"> </span>--packages<span class="w"> </span>dependency_name
 </span></code></pre></div>
 <ol start="3">
 <li>Manually uninstall packages that are only used by your target package:</li>
 </ol>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-20-1"><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a>pip3<span class="w"> </span>uninstall<span class="w"> </span>package_name<span class="w"> </span>dependency1<span class="w"> </span>dependency2<span class="w"> </span>...
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>pip3<span class="w"> </span>uninstall<span class="w"> </span>package_name<span class="w"> </span>dependency1<span class="w"> </span>dependency2<span class="w"> </span>...
 </span></code></pre></div>
 <h3 id="method_2_using_pip-autoremove_recommended">Method 2: Using pip-autoremove (Recommended)<a class="headerlink" href="#method_2_using_pip-autoremove_recommended" title="Permanent link">#</a></h3>
 <p>First install the tool:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a>pip3<span class="w"> </span>install<span class="w"> </span>pip-autoremove
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>pip3<span class="w"> </span>install<span class="w"> </span>pip-autoremove
 </span></code></pre></div>
 <p>Using pip-autoremove with dry-run to see what would be removed without actually doing it:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a>pip-autoremove<span class="w"> </span>package_name<span class="w"> </span>--dry-run
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-25-1"><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a>pip-autoremove<span class="w"> </span>package_name<span class="w"> </span>--dry-run
 </span></code></pre></div>
 <p>Then use it to remove a package and its unused dependencies:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>pip-autoremove<span class="w"> </span>package_name<span class="w"> </span>-y
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-26-1"><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a>pip-autoremove<span class="w"> </span>package_name<span class="w"> </span>-y
 </span></code></pre></div>
 
 
