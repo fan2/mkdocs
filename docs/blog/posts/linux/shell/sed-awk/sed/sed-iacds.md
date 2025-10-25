@@ -29,7 +29,7 @@ Linux 下的 sed 命令基本操作。
 
 debian/raspberrypi 下可单行输入：
 
-```Shell
+```bash
 # raspberrypi
 $ echo "Test Line 2" | sed 'i Test Line 1'
 Test Line 1
@@ -42,7 +42,7 @@ Test Line 2
 
 macOS 下单行执行，提示命令 i 后面预期跟一个 `\`：
 
-```Shell
+```bash
 # macOS
 $ echo "Test Line 2" | sed 'i Test Line 1'
 sed: 1: "i Test Line 1": command i expects \ followed by text
@@ -50,7 +50,7 @@ sed: 1: "i Test Line 1": command i expects \ followed by text
 
 i 后面添加反斜杠 `\`，又提示 `\` 后不能有内容：
 
-```Shell
+```bash
 # macOS
 $ echo "Test Line 2" | sed 'i\Test Line 1'
 sed: 1: "i\Test Line 1": extra characters after \ at the end of i command
@@ -59,7 +59,7 @@ FAIL: 1
 
 需要在 `\` 处换行，跨行折行输入：
 
-```Shell
+```bash
 # macOS
 $ echo "Test Line 2" | sed 'i\
 pipe quote> Test Line 1'
@@ -76,7 +76,7 @@ Test Line 2
 
 下面示例插入新行到文件的第三行前：
 
-```Shell
+```bash
 $ cat data6.txt
 This is line number 1.
 This is line number 2.
@@ -84,7 +84,7 @@ This is line number 3.
 This is line number 4.
 ```
 
-```Shell
+```bash
 # macOS 需要显式换行
 $ sed '3i\
 quote> This is an inserted line.
@@ -100,7 +100,7 @@ This is line number 4.
 
 以下示例在所有find查找到的cpp文件头部补插一条标准的版权声明：
 
-```Shell
+```bash
 # macOS
 $ find . -name "*.cpp" -print0 | xargs -I file -0 sed -i '' '1i\
 // Tencent is pleased to support the open source community by making Mars available.\
@@ -118,7 +118,7 @@ $ find . -name "*.cpp" -print0 | xargs -I file -0 sed -i '' '1i\
 
 debian/raspberrypi 下可单行输入；macOS 下需折行输入：
 
-```Shell
+```bash
 # raspberrypi 下单行输入
 $ echo "Test Line 2" | sed 'a Test Line 1'
 # macOS 需要显式换行
@@ -131,7 +131,7 @@ Test Line 1
 
 下面示例添加新行到文件的第三行后：
 
-```Shell
+```bash
 # raspberrypi 下单行输入
 ## 行号和命令之间的空格可有可无
 $ sed '3 a This is an appened line.' data6.txt
@@ -154,7 +154,7 @@ This is line number 4.
 
 以下在第三行后追加两行，注意添加必要的反斜杠续行符：
 
-```Shell
+```bash
 # raspberrypi 下单行输入
 $ sed '3a append line 1\nappend line 2' data6.txt
 # 以下换行写法，append line 1后需添加续行符，否则 append line 2 被解读成 a(ppend line 2)
@@ -192,7 +192,7 @@ This is line number 4.
 
 debian/raspberrypi 下可单行输入；macOS 下需折行输入：
 
-```Shell
+```bash
 # raspberrypi
 $ sed '3 c This is a changed line.' data6.txt
 $ sed '3c This is a changed line.' data6.txt
@@ -211,7 +211,7 @@ This is line number 4.
 
 删除命令（delete）可以删除文本流中的特定（匹配）行。
 
-```Shell
+```bash
 $ sed '3d' data6.txt
 This is line number 1.
 This is line number 2.
@@ -235,7 +235,7 @@ sed 编辑器会删除两个指定行之间的所有行（包括指定的行）�
 
 例如以下命令可以过滤打印 git 冲突文件中 ours 部分：
 
-```Shell
+```bash
 $ sed -n '/^<<<<<<< HEAD$/,/^=======$/p' Git-Conflict.h
 ```
 
@@ -277,13 +277,13 @@ $ sed -n '/^<<<<<<< HEAD$/,/^=======$/p' Git-Conflict.h
 
 以下 sed 语句从 bak.code.yml 中查找匹配目录 `/Classes/ui/DeviceMgr/` 对应的 CR 规则区块：
 
-```Shell
+```bash
 sed -n '/- path: \/Classes\/ui\/DeviceMgr\//,/owner_rule/p' bak.code.yml
 ```
 
 移除以上匹配的 CR owner 规则区块，并直接回写到原文件：
 
-```Shell
+```bash
 # 回写之前，备份到 bak.code.yml.bak
 sed -i '.bak' '/- path: \/Classes\/ui\/DeviceMgr\//,/owner_rule/d' bak.code.yml
 
@@ -297,7 +297,7 @@ sed -i '' '/- path: \/Classes\/ui\/DeviceMgr\//,/owner_rule/d' bak.code.yml
 
 sed支持s命令（substitue），对文本行执行模式匹配和替换。
 
-```Shell
+```bash
 s/pattern/replacement/flags
 
 [address[，address]] s/pattern-to-find/replacement-pattern/[n g p w]
@@ -314,14 +314,14 @@ s/pattern/replacement/flags
 
 以下示例，用 `s` 命令实现字符串替换：
 
-```Shell
+```bash
 $ echo "This is a test" | sed 's/test/big test/'
 This is a big test
 ```
 
 以下示例将文件中的 `dog` 替换为 `cat`。
 
-```Shell
+```bash
 $ cat detail.txt
 The quick brown fox jumps over the lazy dog.
 The quick brown fox jumps over the lazy dog.
@@ -331,7 +331,7 @@ The quick brown fox jumps over the lazy dog.
 
 基于bash字符串模式匹配替换的写法如下：
 
-```Shell
+```bash
 $ sentence="The quick brown fox jumps over the lazy dog"
 $ echo $sentence
 The quick brown fox jumps over the lazy dog
@@ -342,7 +342,7 @@ The quick brown fox jumps over the lazy cat
 
 基于 sed 的替换命令写法如下：
 
-```Shell
+```bash
 $ sed 's/dog/cat/' detail.txt
 The quick brown fox jumps over the lazy cat.
 The quick brown fox jumps over the lazy cat.
@@ -354,7 +354,7 @@ The quick brown fox jumps over the lazy cat.
 
 以下示例将 AAA 替换为空，相当于移除：
 
-```Shell
+```bash
 # 基于bash字符串模式匹配替换
 $ test_text="12312312343242AAAdfasdfasdfasdfasdfadAAAfsdgfsdfgfgfgdfgasdfg"
 $ echo ${test_text//AAA/}
@@ -378,13 +378,13 @@ $ echo "12312312343242AAAdfasdfasdfasdfasdfadAAAfsdgfsdfgfgfgdfgasdfg" | sed 's/
 
 当需要同时匹配多个模式时，可以使用连续重定向管道传递：
 
-```Shell
+```bash
 $ cat detail.txt | sed 's/brown/green/' | sed 's/dog/cat/'
 ```
 
 执行两次 s 替换命令，多条命令之间用分号（`;`）隔开：
 
-```Shell
+```bash
 $ sed 's/brown/green/; s/dog/cat/' detail.txt
 The quick green fox jumps over the lazy cat.
 The quick green fox jumps over the lazy cat.
@@ -394,7 +394,7 @@ The quick green fox jumps over the lazy cat.
 
 也可基于次提示符来跨行输入，每一行是一条独立命令，行尾不用输入分号。
 
-```Shell
+```bash
 $ sed '
 quote> s/brown/green/
 quote> s/fox/elephant/
@@ -416,14 +416,14 @@ $ sed -e 's/brown/green/' -e 's/fox/elephant/' -e 's/dog/cat/' detail.txt
 有时你会在文本字符串中遇到一些不太方便在替换模式中使用的字符。  
 替换文件中的路径名会比较麻烦。例如，用 csh 替换 /etc/passwd 文件中的 bash：
 
-```Shell
+```bash
 sed 's/\/bin\/bash/\/bin\/csh/' /etc/passwd
 ```
 
 由于正斜线（`/`）通常用作路径分隔符，因而如果它出现在了模式文本中的话，必须用反斜线来转义。  
 sed 编辑器允许指定其他字符作为替换分隔标记符：
 
-```Shell
+```bash
 sed 's!/bin/bash!/bin/csh!' /etc/passwd
 ```
 
@@ -439,7 +439,7 @@ sed 's!/bin/bash!/bin/csh!' /etc/passwd
 
 以下示例，给单词 c(h)at 添加双引号：
 
-```Shell
+```bash
 $ echo "The cat sleeps in his hat." | sed 's/.at/"&"/g'
 The "cat" sleeps in his "hat".
 ```
@@ -448,7 +448,7 @@ The "cat" sleeps in his "hat".
 
 在匹配部分的前面插入内容：
 
-```Shell
+```bash
 $ sed 's/line number/head &/g' data6.txt
 This is head line number 1.
 This is head line number 2.
@@ -458,7 +458,7 @@ This is head line number 4.
 
 如果想在行首插入，则要这么写：
 
-```Shell
+```bash
 $ sed 's/.*line number/head &/g' data6.txt
 # 或
 $ sed 's/.*line number.*/head &/g' data6.txt
@@ -472,7 +472,7 @@ head This is line number 4.
 
 在匹配部分的后面插入内容：
 
-```Shell
+```bash
 $ sed 's/line number/& tail/g' data6.txt
 This is line number tail 1.
 This is line number tail 2.
@@ -498,19 +498,37 @@ sed 编辑器用圆括号来定义替换模式中的子模式，替代表达式�
 
 以下示例，将 System Administrator 替换为 System User：
 
-```Shell
+```bash
 $ echo "The System Administrator manual" | sed 's/\(System\) Administrator/\1 User/'
 The System User manual
 ```
 
 以下示例，将 c(h)at 前面的 furry 移除：
 
-```Shell
+```bash
 $ echo "That furry cat is pretty" | sed 's/furry \(.at\)/\1/'
 That cat is pretty
 
 $ echo "That furry hat is pretty" | sed 's/furry \(.at\)/\1/'
 That hat is pretty
+```
+
+以下示例为 macOS 下提取 Wi-Fi 接口名，将整体替换成匹配的部分：
+
+```bash
+networksetup -listnetworkserviceorder | sed -n '/Hardware Port: Wi-Fi/p' | sed 's/(.*Device: \(.*\))/\1/'
+# 将过滤和替换合并在一起：
+networksetup -listnetworkserviceorder | sed -n '/Hardware Port: Wi-Fi/s/(.*Device: \(.*\))/\1/p'
+```
+
+以下使用 sed 过滤目标行并使用模式替换移除前缀。
+
+```bash
+local nwi_prefix="Network interfaces: "
+# 1. 先管传 sed/grep 模式匹配再管传执行 s 命令将整体替换成匹配的部分
+# scutil --nwi | sed -n "/$nwi_prefix/p" | sed "s/$nwi_prefix\(.*\)/\1/")
+# 2. 先模式匹配再执行 s 命令将前缀替换为空的合并写法
+scutil --nwi | sed -n "/$nwi_prefix/s/$nwi_prefix//p"
 ```
 
 #### insert
@@ -550,7 +568,7 @@ index.html 中 base href 的格式为 `<base href="/baseUrl/">`，如何提取 h
 
 > **注意**：需要考虑开头和结尾的空白字符。
 
-```Shell
+```bash
 $ sed 's/^.*<base href="\(.*\)">.*$/\1/' index.html
 # 模拟测试用例
 $ echo '<base href="/">' | sed 's/^.*<base href="\(.*\)">.*$/\1/'
@@ -565,7 +583,7 @@ $ echo '<base href="/an:tgit/">' | sed 's/^.*<base href="\(.*\)">.*$/\1/'
 
 假设我们知道设备wifi接口（wlan0）的MAC地址是以 `dc:a6:32` 开头，那么在 SSH 客户端，可以通过 arp 查询该 MAC 地址对应的 IP。
 
-```Shell
+```bash
 $ arp -a | grep "dc:a6:32"
 ? (192.168.0.114) at dc:a6:32:**:**:** on en0 ifscope [ethernet]
 ```
@@ -579,7 +597,7 @@ $ arp -a | grep "dc:a6:32"
 - 界定右侧边界：`).*`；  
 - 中间部分括号引用为子模式  
 
-```Shell
+```bash
 # sed前向引用，替换提取指定子模式
 $ arp -na | grep "dc:a6:32" | sed 's/.*(\(.*\)).*/\1/'
 ```
@@ -596,7 +614,7 @@ index.html 中 base href 的格式为 `<base href="/baseUrl/">`，如何将 href
 
 基于子模式分组引用占位首尾边界，拼接中间部分替换为新的 href 值（`/an:coding/`），即达目的。
 
-```Shell
+```bash
 $ sed 's/\(<base href="\).*\(">\)/\1\/an:coding\/\2/' index.html
 # 模拟测试用例
 $ echo '<base href="/">' | sed 's/\(<base href="\).*\(">\)/\1\/an:coding\/\2/'

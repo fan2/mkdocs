@@ -122,6 +122,32 @@ function brews() {
 }
 ```
 
+[bash - Achieve Local Function - Stack Overflow](https://stackoverflow.com/questions/34985408/achieve-local-function)
+
+show_netstat 函数中定义了子函数 check_dev，用于检查网络接口的网络连接信息。其中局部函数接受第一个参数 `$1` 作为网络接口类型，第二个及之后的参数为外部调用 show_netstat 函数时透传过来的 `"$@"`。
+
+```bash
+show_netstat() {
+    # will be referenced by the following sub-routine
+    local hwp_prefix='Hardware Port: '
+
+    # 获取接口信息
+    check_dev() {
+        local service="$1"
+        local has_service=false
+        # body
+    }
+
+    # 获取有线网卡接口信息
+    # check_dev 'Ethernet' "$@"
+    # 获取无线网卡接口信息
+    # check_dev 'Wi-Fi' "$@"
+    # 获取iPhone USB接口信息
+    # check_dev 'iPhone USB' "$@"
+
+    check_dev 'Wi-Fi' "$@" || check_dev 'iPhone USB' "$@"
+```
+
 ## 函数返回
 
 bash shell 会把函数当作一个小型脚本，运行结束时会返回一个退出状态码。
@@ -156,6 +182,11 @@ dbl 函数会用 echo 语句来显示计算的结果。
 
 ## 命令中定义函数
 
+[Define function in unix/linux command line (e.g. BASH) - Stack Overflow](https://stackoverflow.com/questions/35465851/define-function-in-unix-linux-command-line-e-g-bash)
+
+在终端中，如果想多个命令一起运行，可以把它们放在同一行中，彼此间用分号（`;`）隔开。
+可以在命令行中定义包含多条命令的一行函数，但每条命令的结尾必须包含分号，这样shell才知道命令在哪分开。
+
 在 [Linux Shell Program - control](./6-sh-control.md) 中，提到可以将整个 `if ... then ... [else] ... fi` 控制结构写到一行内，方便在命令行中单行快捷测试。
 
 ```bash
@@ -163,11 +194,6 @@ backups=$(rclone lsf $dstpath)
 if [ "$backups" ]; then backupscount=$(echo $backups | wc -l | tr -d '[:space:]') ; fi
 if [ "$backupscount" -gt 0 ] ; then echo "backupscount>0" ; else echo "backupscount=0" ; fi
 ```
-
-在终端中，如果想多个命令一起运行，可以把它们放在同一行中，彼此间用分号（`;`）隔开。
-可以在命令行中定义包含多条命令的一行函数，但每条命令的结尾必须包含分号，这样shell才知道命令在哪分开。
-
-- [Define function in unix/linux command line (e.g. BASH) - Stack Overflow](https://stackoverflow.com/questions/35465851/define-function-in-unix-linux-command-line-e-g-bash)
 
 此外，也可以在命令中输入函数，按照提示符输入即可。
 

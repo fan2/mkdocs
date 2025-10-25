@@ -1713,6 +1713,28 @@
 </span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
 </span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="o">}</span>
 </span></code></pre></div>
+<p><a href="https://stackoverflow.com/questions/34985408/achieve-local-function">bash - Achieve Local Function - Stack Overflow</a></p>
+<p>show_netstat 函数中定义了子函数 check_dev，用于检查网络接口的网络连接信息。其中局部函数接受第一个参数 <code>$1</code> 作为网络接口类型，第二个及之后的参数为外部调用 show_netstat 函数时透传过来的 <code>"$@"</code>。</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>show_netstat<span class="o">()</span><span class="w"> </span><span class="o">{</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">    </span><span class="c1"># will be referenced by the following sub-routine</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">    </span><span class="nb">local</span><span class="w"> </span><span class="nv">hwp_prefix</span><span class="o">=</span><span class="s1">&#39;Hardware Port: &#39;</span>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="w">    </span><span class="c1"># 获取接口信息</span>
+</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="w">    </span>check_dev<span class="o">()</span><span class="w"> </span><span class="o">{</span>
+</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="w">        </span><span class="nb">local</span><span class="w"> </span><span class="nv">service</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
+</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="w">        </span><span class="nb">local</span><span class="w"> </span><span class="nv">has_service</span><span class="o">=</span><span class="nb">false</span>
+</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="w">        </span><span class="c1"># body</span>
+</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="w">    </span><span class="o">}</span>
+</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a>
+</span><span id="__span-4-12"><a id="__codelineno-4-12" name="__codelineno-4-12" href="#__codelineno-4-12"></a><span class="w">    </span><span class="c1"># 获取有线网卡接口信息</span>
+</span><span id="__span-4-13"><a id="__codelineno-4-13" name="__codelineno-4-13" href="#__codelineno-4-13"></a><span class="w">    </span><span class="c1"># check_dev &#39;Ethernet&#39; &quot;$@&quot;</span>
+</span><span id="__span-4-14"><a id="__codelineno-4-14" name="__codelineno-4-14" href="#__codelineno-4-14"></a><span class="w">    </span><span class="c1"># 获取无线网卡接口信息</span>
+</span><span id="__span-4-15"><a id="__codelineno-4-15" name="__codelineno-4-15" href="#__codelineno-4-15"></a><span class="w">    </span><span class="c1"># check_dev &#39;Wi-Fi&#39; &quot;$@&quot;</span>
+</span><span id="__span-4-16"><a id="__codelineno-4-16" name="__codelineno-4-16" href="#__codelineno-4-16"></a><span class="w">    </span><span class="c1"># 获取iPhone USB接口信息</span>
+</span><span id="__span-4-17"><a id="__codelineno-4-17" name="__codelineno-4-17" href="#__codelineno-4-17"></a><span class="w">    </span><span class="c1"># check_dev &#39;iPhone USB&#39; &quot;$@&quot;</span>
+</span><span id="__span-4-18"><a id="__codelineno-4-18" name="__codelineno-4-18" href="#__codelineno-4-18"></a>
+</span><span id="__span-4-19"><a id="__codelineno-4-19" name="__codelineno-4-19" href="#__codelineno-4-19"></a><span class="w">    </span>check_dev<span class="w"> </span><span class="s1">&#39;Wi-Fi&#39;</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$@</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">||</span><span class="w"> </span>check_dev<span class="w"> </span><span class="s1">&#39;iPhone USB&#39;</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$@</span><span class="s2">&quot;</span>
+</span></code></pre></div>
 <h2 id="函数返回">函数返回<a class="headerlink" href="#函数返回" title="Permanent link">#</a></h2>
 <p>bash shell 会把函数当作一个小型脚本，运行结束时会返回一个退出状态码。<br />
 函数的退出状态码，实际上是最后一条命令执行的退出状态。<br />
@@ -1723,62 +1745,60 @@
 <h3 id="函数输出">函数输出<a class="headerlink" href="#函数输出" title="Permanent link">#</a></h3>
 <p>正如可以这样 result=<code>dbl</code> 将命令的输出保存到shell变量中一样，也可以对函数的输出采用同样的处理办法。<br />
 下面是在脚本中使用这种方法的例子。</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="ch">#!/bin/bash</span>
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="c1"># using the echo to return a value</span>
-</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>
-</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="k">function</span><span class="w"> </span>dbl
-</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="o">{</span>
-</span><span id="__span-4-6"><a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="w">    </span><span class="nb">read</span><span class="w"> </span>-p<span class="w"> </span><span class="s2">&quot;Enter a value: &quot;</span><span class="w"> </span>value
-</span><span id="__span-4-7"><a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="w">    </span><span class="nb">echo</span><span class="w"> </span>$<span class="o">[</span><span class="w"> </span><span class="nv">$value</span><span class="w"> </span>*<span class="w"> </span><span class="m">2</span><span class="w"> </span><span class="o">]</span>
-</span><span id="__span-4-8"><a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="o">}</span>
-</span><span id="__span-4-9"><a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>
-</span><span id="__span-4-10"><a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="nv">result</span><span class="o">=</span><span class="k">$(</span>dbl<span class="k">)</span>
-</span><span id="__span-4-11"><a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;The new value is </span><span class="nv">$result</span><span class="s2">&quot;</span>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="ch">#!/bin/bash</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="c1"># using the echo to return a value</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="k">function</span><span class="w"> </span>dbl
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="o">{</span>
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="w">    </span><span class="nb">read</span><span class="w"> </span>-p<span class="w"> </span><span class="s2">&quot;Enter a value: &quot;</span><span class="w"> </span>value
+</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="w">    </span><span class="nb">echo</span><span class="w"> </span>$<span class="o">[</span><span class="w"> </span><span class="nv">$value</span><span class="w"> </span>*<span class="w"> </span><span class="m">2</span><span class="w"> </span><span class="o">]</span>
+</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="o">}</span>
+</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>
+</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a><span class="nv">result</span><span class="o">=</span><span class="k">$(</span>dbl<span class="k">)</span>
+</span><span id="__span-5-11"><a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;The new value is </span><span class="nv">$result</span><span class="s2">&quot;</span>
 </span></code></pre></div>
 <p>dbl 函数会用 echo 语句来显示计算的结果。</p>
 <h2 id="命令中定义函数">命令中定义函数<a class="headerlink" href="#命令中定义函数" title="Permanent link">#</a></h2>
-<p>在 <a href="../6-sh-control/">Linux Shell Program - control</a> 中，提到可以将整个 <code>if ... then ... [else] ... fi</code> 控制结构写到一行内，方便在命令行中单行快捷测试。</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nv">backups</span><span class="o">=</span><span class="k">$(</span>rclone<span class="w"> </span>lsf<span class="w"> </span><span class="nv">$dstpath</span><span class="k">)</span>
-</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$backups</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span><span class="w"> </span><span class="nv">backupscount</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span><span class="w"> </span><span class="nv">$backups</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>wc<span class="w"> </span>-l<span class="w"> </span><span class="p">|</span><span class="w"> </span>tr<span class="w"> </span>-d<span class="w"> </span><span class="s1">&#39;[:space:]&#39;</span><span class="k">)</span><span class="w"> </span><span class="p">;</span><span class="w"> </span><span class="k">fi</span>
-</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$backupscount</span><span class="s2">&quot;</span><span class="w"> </span>-gt<span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="o">]</span><span class="w"> </span><span class="p">;</span><span class="w"> </span><span class="k">then</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;backupscount&gt;0&quot;</span><span class="w"> </span><span class="p">;</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;backupscount=0&quot;</span><span class="w"> </span><span class="p">;</span><span class="w"> </span><span class="k">fi</span>
-</span></code></pre></div>
+<p><a href="https://stackoverflow.com/questions/35465851/define-function-in-unix-linux-command-line-e-g-bash">Define function in unix/linux command line (e.g. BASH) - Stack Overflow</a></p>
 <p>在终端中，如果想多个命令一起运行，可以把它们放在同一行中，彼此间用分号（<code>;</code>）隔开。<br />
 可以在命令行中定义包含多条命令的一行函数，但每条命令的结尾必须包含分号，这样shell才知道命令在哪分开。</p>
-<ul>
-<li><a href="https://stackoverflow.com/questions/35465851/define-function-in-unix-linux-command-line-e-g-bash">Define function in unix/linux command line (e.g. BASH) - Stack Overflow</a></li>
-</ul>
+<p>在 <a href="../6-sh-control/">Linux Shell Program - control</a> 中，提到可以将整个 <code>if ... then ... [else] ... fi</code> 控制结构写到一行内，方便在命令行中单行快捷测试。</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nv">backups</span><span class="o">=</span><span class="k">$(</span>rclone<span class="w"> </span>lsf<span class="w"> </span><span class="nv">$dstpath</span><span class="k">)</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$backups</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span><span class="w"> </span><span class="nv">backupscount</span><span class="o">=</span><span class="k">$(</span><span class="nb">echo</span><span class="w"> </span><span class="nv">$backups</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>wc<span class="w"> </span>-l<span class="w"> </span><span class="p">|</span><span class="w"> </span>tr<span class="w"> </span>-d<span class="w"> </span><span class="s1">&#39;[:space:]&#39;</span><span class="k">)</span><span class="w"> </span><span class="p">;</span><span class="w"> </span><span class="k">fi</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$backupscount</span><span class="s2">&quot;</span><span class="w"> </span>-gt<span class="w"> </span><span class="m">0</span><span class="w"> </span><span class="o">]</span><span class="w"> </span><span class="p">;</span><span class="w"> </span><span class="k">then</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;backupscount&gt;0&quot;</span><span class="w"> </span><span class="p">;</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;backupscount=0&quot;</span><span class="w"> </span><span class="p">;</span><span class="w"> </span><span class="k">fi</span>
+</span></code></pre></div>
 <p>此外，也可以在命令中输入函数，按照提示符输入即可。</p>
 <p>假设有函数 check_python_version：</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>check_python_version<span class="o">()</span>
-</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="o">{</span>
-</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span>python<span class="w"> </span>-V<span class="w"> </span><span class="p">&amp;</span>&gt;/dev/null<span class="p">;</span>
-</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="w">    </span><span class="k">then</span>
-</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="w">        </span><span class="nv">python_version</span><span class="o">=</span><span class="k">$(</span>python<span class="w"> </span>-V<span class="k">)</span><span class="w"> </span><span class="m">1</span>&gt;/dev/null
-</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="w">        </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;python installed: </span><span class="nv">$python_version</span><span class="s2">&quot;</span>
-</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="m">0</span>
-</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="w">    </span><span class="k">else</span>
-</span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="w">        </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;python uninstalled!&quot;</span>
-</span><span id="__span-6-10"><a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="m">1</span>
-</span><span id="__span-6-11"><a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a><span class="w">    </span><span class="k">fi</span>
-</span><span id="__span-6-12"><a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a><span class="o">}</span>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>check_python_version<span class="o">()</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="o">{</span>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span>python<span class="w"> </span>-V<span class="w"> </span><span class="p">&amp;</span>&gt;/dev/null<span class="p">;</span>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="w">    </span><span class="k">then</span>
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="w">        </span><span class="nv">python_version</span><span class="o">=</span><span class="k">$(</span>python<span class="w"> </span>-V<span class="k">)</span><span class="w"> </span><span class="m">1</span>&gt;/dev/null
+</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="w">        </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;python installed: </span><span class="nv">$python_version</span><span class="s2">&quot;</span>
+</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="m">0</span>
+</span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a><span class="w">    </span><span class="k">else</span>
+</span><span id="__span-7-9"><a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a><span class="w">        </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;python uninstalled!&quot;</span>
+</span><span id="__span-7-10"><a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="m">1</span>
+</span><span id="__span-7-11"><a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a><span class="w">    </span><span class="k">fi</span>
+</span><span id="__span-7-12"><a id="__codelineno-7-12" name="__codelineno-7-12" href="#__codelineno-7-12"></a><span class="o">}</span>
 </span></code></pre></div>
 <p>以上脚本直接复制到命令行中，感叹号要转义，否则会截断提示 function else dquote&gt;。</p>
 <p>在命令行下逐行输入如下：</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>check_python_version<span class="o">()</span><span class="w"> </span><span class="o">{</span>
-</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="k">function</span>&gt;<span class="w"> </span><span class="k">if</span><span class="w"> </span>python<span class="w"> </span>-V<span class="w"> </span><span class="p">&amp;</span>&gt;/dev/null<span class="p">;</span>
-</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="k">function</span><span class="w"> </span><span class="k">if</span>&gt;<span class="w"> </span><span class="k">then</span>
-</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="k">function</span><span class="w"> </span><span class="k">then</span>&gt;<span class="w"> </span><span class="nv">python_version</span><span class="o">=</span><span class="k">$(</span>python<span class="w"> </span>-V<span class="k">)</span><span class="w"> </span><span class="m">1</span>&gt;/dev/null<span class="p">;</span>
-</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="k">function</span><span class="w"> </span><span class="k">then</span>&gt;<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;python installed: </span><span class="nv">$python_version</span><span class="s2">&quot;</span><span class="p">;</span>
-</span><span id="__span-7-6"><a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="k">function</span><span class="w"> </span><span class="k">then</span>&gt;<span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="m">0</span><span class="p">;</span>
-</span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="k">function</span><span class="w"> </span><span class="k">then</span>&gt;<span class="w"> </span><span class="k">else</span>
-</span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a><span class="k">function</span><span class="w"> </span><span class="k">else</span>&gt;<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;python uninstalled\!&quot;</span><span class="p">;</span>
-</span><span id="__span-7-9"><a id="__codelineno-7-9" name="__codelineno-7-9" href="#__codelineno-7-9"></a><span class="k">function</span><span class="w"> </span><span class="k">else</span>&gt;<span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="m">1</span><span class="p">;</span>
-</span><span id="__span-7-10"><a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a><span class="k">function</span><span class="w"> </span><span class="k">else</span>&gt;<span class="w"> </span><span class="k">fi</span>
-</span><span id="__span-7-11"><a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a><span class="k">function</span>&gt;<span class="w"> </span><span class="o">}</span>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>check_python_version<span class="o">()</span><span class="w"> </span><span class="o">{</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="k">function</span>&gt;<span class="w"> </span><span class="k">if</span><span class="w"> </span>python<span class="w"> </span>-V<span class="w"> </span><span class="p">&amp;</span>&gt;/dev/null<span class="p">;</span>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="k">function</span><span class="w"> </span><span class="k">if</span>&gt;<span class="w"> </span><span class="k">then</span>
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a><span class="k">function</span><span class="w"> </span><span class="k">then</span>&gt;<span class="w"> </span><span class="nv">python_version</span><span class="o">=</span><span class="k">$(</span>python<span class="w"> </span>-V<span class="k">)</span><span class="w"> </span><span class="m">1</span>&gt;/dev/null<span class="p">;</span>
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="k">function</span><span class="w"> </span><span class="k">then</span>&gt;<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;python installed: </span><span class="nv">$python_version</span><span class="s2">&quot;</span><span class="p">;</span>
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="k">function</span><span class="w"> </span><span class="k">then</span>&gt;<span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="m">0</span><span class="p">;</span>
+</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="k">function</span><span class="w"> </span><span class="k">then</span>&gt;<span class="w"> </span><span class="k">else</span>
+</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a><span class="k">function</span><span class="w"> </span><span class="k">else</span>&gt;<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;python uninstalled\!&quot;</span><span class="p">;</span>
+</span><span id="__span-8-9"><a id="__codelineno-8-9" name="__codelineno-8-9" href="#__codelineno-8-9"></a><span class="k">function</span><span class="w"> </span><span class="k">else</span>&gt;<span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="m">1</span><span class="p">;</span>
+</span><span id="__span-8-10"><a id="__codelineno-8-10" name="__codelineno-8-10" href="#__codelineno-8-10"></a><span class="k">function</span><span class="w"> </span><span class="k">else</span>&gt;<span class="w"> </span><span class="k">fi</span>
+</span><span id="__span-8-11"><a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a><span class="k">function</span>&gt;<span class="w"> </span><span class="o">}</span>
 </span></code></pre></div>
 <p>然后输入 <code>check_python_version</code> 回车即可调用该函数。</p>
 <p>以下函数将两句脚本用分号隔开放在同一行里：</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>pman<span class="o">()</span><span class="w"> </span><span class="o">{</span><span class="w"> </span><span class="nv">manpage</span><span class="o">=</span><span class="k">$(</span>man<span class="w"> </span>-w<span class="w"> </span><span class="nv">$@</span><span class="k">)</span><span class="p">;</span><span class="w"> </span>mandoc<span class="w"> </span>-T<span class="w"> </span>pdf<span class="w"> </span><span class="nv">$manpage</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>open<span class="w"> </span>-fa<span class="w"> </span>Preview<span class="p">;</span><span class="w"> </span><span class="o">}</span>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>pman<span class="o">()</span><span class="w"> </span><span class="o">{</span><span class="w"> </span><span class="nv">manpage</span><span class="o">=</span><span class="k">$(</span>man<span class="w"> </span>-w<span class="w"> </span><span class="nv">$@</span><span class="k">)</span><span class="p">;</span><span class="w"> </span>mandoc<span class="w"> </span>-T<span class="w"> </span>pdf<span class="w"> </span><span class="nv">$manpage</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>open<span class="w"> </span>-fa<span class="w"> </span>Preview<span class="p">;</span><span class="w"> </span><span class="o">}</span>
 </span></code></pre></div>
 <h2 id="跨脚本调用">跨脚本调用<a class="headerlink" href="#跨脚本调用" title="Permanent link">#</a></h2>
 <h3 id="source导入引用脚本">source导入引用脚本<a class="headerlink" href="#source导入引用脚本" title="Permanent link">#</a></h3>
@@ -1795,99 +1815,99 @@
 </blockquote>
 <p>如果不是在脚本所在目录，而是在外层目录执行sh，那么 source 引入脚本需要相对路径。</p>
 <p>除了绝对路径，安全引入同目录下的其他脚本的写法如下：</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="ch">#!/bin/bash</span>
-</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>
-</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="nb">source</span><span class="w"> </span><span class="k">$(</span>dirname<span class="w"> </span><span class="nv">$0</span><span class="k">)</span>/aux_etc.sh
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="ch">#!/bin/bash</span>
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="nb">source</span><span class="w"> </span><span class="k">$(</span>dirname<span class="w"> </span><span class="nv">$0</span><span class="k">)</span>/aux_etc.sh
 </span></code></pre></div>
 <p>假如引入的脚本文件路径是拼接的字符串，则 ShellCheck 将会警告 <a href="https://github.com/koalaman/shellcheck/wiki/SC1090">SC1090</a>: Can't follow non-constant source. Use a directive to specify location.</p>
 <p>参考 <a href="https://stackoverflow.com/questions/29324463/source-from-string-is-there-any-way-in-shell">Source from string? Is there any way in shell?</a>，可考虑用 <code>eval</code> 来解释执行 source 语句：</p>
 <blockquote>
 <p>以下脚本路径为 scripts/proxy/launch.sh，导入配置脚本的路径为 scripts/conf/debug.conf。</p>
 </blockquote>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="w">    </span><span class="c1"># 导入shell脚本格式的配置文件</span>
-</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="w">    </span><span class="nv">script_dir</span><span class="o">=</span><span class="s2">&quot;</span><span class="k">$(</span>dirname<span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span>dirname<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$0</span><span class="s2">&quot;</span><span class="k">)</span><span class="s2">&quot;</span><span class="k">)</span><span class="s2">&quot;</span>
-</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="w">    </span><span class="nv">conf</span><span class="o">=</span><span class="nv">$script_dir</span>/config/<span class="s2">&quot;</span><span class="si">${</span><span class="nv">run_mode</span><span class="p">:=debug</span><span class="si">}</span><span class="s2">&quot;</span>.conf
-</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="w">    </span><span class="c1"># echo &quot;conf = $conf&quot;</span>
-</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span>-f<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$conf</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
-</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a><span class="w">        </span><span class="nb">eval</span><span class="w"> </span><span class="s2">&quot;source </span><span class="nv">$conf</span><span class="s2">&quot;</span>
-</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="w">    </span><span class="k">fi</span>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="w">    </span><span class="c1"># 导入shell脚本格式的配置文件</span>
+</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="w">    </span><span class="nv">script_dir</span><span class="o">=</span><span class="s2">&quot;</span><span class="k">$(</span>dirname<span class="w"> </span><span class="s2">&quot;</span><span class="k">$(</span>dirname<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$0</span><span class="s2">&quot;</span><span class="k">)</span><span class="s2">&quot;</span><span class="k">)</span><span class="s2">&quot;</span>
+</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="w">    </span><span class="nv">conf</span><span class="o">=</span><span class="nv">$script_dir</span>/config/<span class="s2">&quot;</span><span class="si">${</span><span class="nv">run_mode</span><span class="p">:=debug</span><span class="si">}</span><span class="s2">&quot;</span>.conf
+</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="w">    </span><span class="c1"># echo &quot;conf = $conf&quot;</span>
+</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="o">[</span><span class="w"> </span>-f<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$conf</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">]</span><span class="p">;</span><span class="w"> </span><span class="k">then</span>
+</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a><span class="w">        </span><span class="nb">eval</span><span class="w"> </span><span class="s2">&quot;source </span><span class="nv">$conf</span><span class="s2">&quot;</span>
+</span><span id="__span-11-7"><a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a><span class="w">    </span><span class="k">fi</span>
 </span></code></pre></div>
 <h3 id="终端调用脚本中的函数">终端调用脚本中的函数<a class="headerlink" href="#终端调用脚本中的函数" title="Permanent link">#</a></h3>
 <p>假设我们创建了一个脚本 <code>~/Projects/shell/test-function.sh</code>，其内容如下：</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>~/Projects/shell<span class="w"> </span><span class="p">|</span><span class="w"> </span>cat<span class="w"> </span>test-function.sh
-</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="c1">#!/bin/bash</span>
-</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>
-</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>use_python38<span class="o">()</span>
-</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="o">{</span>
-</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a><span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;which python3 = `which python3`&quot;</span>
-</span><span id="__span-11-7"><a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a><span class="w">    </span><span class="nb">export</span><span class="w"> </span><span class="nv">PATH</span><span class="o">=</span>/usr/local/opt/python@3.8/bin:<span class="nv">$PATH</span>
-</span><span id="__span-11-8"><a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a><span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;use_python38...&quot;</span>
-</span><span id="__span-11-9"><a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a><span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;which python3 = `which python3`&quot;</span>
-</span><span id="__span-11-10"><a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a><span class="o">}</span>
-</span><span id="__span-11-11"><a id="__codelineno-11-11" name="__codelineno-11-11" href="#__codelineno-11-11"></a>
-</span><span id="__span-11-12"><a id="__codelineno-11-12" name="__codelineno-11-12" href="#__codelineno-11-12"></a><span class="nv">file_name</span><span class="o">=</span><span class="nv">$0</span>
-</span><span id="__span-11-13"><a id="__codelineno-11-13" name="__codelineno-11-13" href="#__codelineno-11-13"></a><span class="nv">script_dir</span><span class="o">=</span><span class="k">$(</span>dirname<span class="w"> </span><span class="nv">$0</span><span class="k">)</span>
-</span><span id="__span-11-14"><a id="__codelineno-11-14" name="__codelineno-11-14" href="#__codelineno-11-14"></a><span class="nv">script_name</span><span class="o">=</span><span class="k">$(</span>basename<span class="w"> </span><span class="nv">$0</span><span class="k">)</span>
-</span><span id="__span-11-15"><a id="__codelineno-11-15" name="__codelineno-11-15" href="#__codelineno-11-15"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;file_name=</span><span class="nv">$file_name</span><span class="s2">&quot;</span>
-</span><span id="__span-11-16"><a id="__codelineno-11-16" name="__codelineno-11-16" href="#__codelineno-11-16"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;script_dir=</span><span class="nv">$script_dir</span><span class="s2">&quot;</span>
-</span><span id="__span-11-17"><a id="__codelineno-11-17" name="__codelineno-11-17" href="#__codelineno-11-17"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;script_name=</span><span class="nv">$script_name</span><span class="s2">&quot;</span>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>~/Projects/shell<span class="w"> </span><span class="p">|</span><span class="w"> </span>cat<span class="w"> </span>test-function.sh
+</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="c1">#!/bin/bash</span>
+</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>
+</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>use_python38<span class="o">()</span>
+</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="o">{</span>
+</span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a><span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;which python3 = `which python3`&quot;</span>
+</span><span id="__span-12-7"><a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a><span class="w">    </span><span class="nb">export</span><span class="w"> </span><span class="nv">PATH</span><span class="o">=</span>/usr/local/opt/python@3.8/bin:<span class="nv">$PATH</span>
+</span><span id="__span-12-8"><a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a><span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;use_python38...&quot;</span>
+</span><span id="__span-12-9"><a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a><span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;which python3 = `which python3`&quot;</span>
+</span><span id="__span-12-10"><a id="__codelineno-12-10" name="__codelineno-12-10" href="#__codelineno-12-10"></a><span class="o">}</span>
+</span><span id="__span-12-11"><a id="__codelineno-12-11" name="__codelineno-12-11" href="#__codelineno-12-11"></a>
+</span><span id="__span-12-12"><a id="__codelineno-12-12" name="__codelineno-12-12" href="#__codelineno-12-12"></a><span class="nv">file_name</span><span class="o">=</span><span class="nv">$0</span>
+</span><span id="__span-12-13"><a id="__codelineno-12-13" name="__codelineno-12-13" href="#__codelineno-12-13"></a><span class="nv">script_dir</span><span class="o">=</span><span class="k">$(</span>dirname<span class="w"> </span><span class="nv">$0</span><span class="k">)</span>
+</span><span id="__span-12-14"><a id="__codelineno-12-14" name="__codelineno-12-14" href="#__codelineno-12-14"></a><span class="nv">script_name</span><span class="o">=</span><span class="k">$(</span>basename<span class="w"> </span><span class="nv">$0</span><span class="k">)</span>
+</span><span id="__span-12-15"><a id="__codelineno-12-15" name="__codelineno-12-15" href="#__codelineno-12-15"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;file_name=</span><span class="nv">$file_name</span><span class="s2">&quot;</span>
+</span><span id="__span-12-16"><a id="__codelineno-12-16" name="__codelineno-12-16" href="#__codelineno-12-16"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;script_dir=</span><span class="nv">$script_dir</span><span class="s2">&quot;</span>
+</span><span id="__span-12-17"><a id="__codelineno-12-17" name="__codelineno-12-17" href="#__codelineno-12-17"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;script_name=</span><span class="nv">$script_name</span><span class="s2">&quot;</span>
 </span></code></pre></div>
 <p>在终端执行点或source命令导入加载脚本，然后就可以在当前命令行中引用sh脚本中定义的变量和函数了。</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>~<span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="nb">source</span><span class="w"> </span>~/Projects/shell/test-function.sh
-</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>
-</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>~<span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="nv">$file_name</span>
-</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a>/Users/faner/Projects/shell/test-function.sh
-</span><span id="__span-12-5"><a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>
-</span><span id="__span-12-6"><a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a>~<span class="w"> </span><span class="p">|</span><span class="w"> </span>use_python38
-</span><span id="__span-12-7"><a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a>which<span class="w"> </span><span class="nv">python3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>/usr/local/bin/python3
-</span><span id="__span-12-8"><a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a>use_python38...
-</span><span id="__span-12-9"><a id="__codelineno-12-9" name="__codelineno-12-9" href="#__codelineno-12-9"></a>which<span class="w"> </span><span class="nv">python3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>/usr/local/opt/python@3.8/bin/python3
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>~<span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="nb">source</span><span class="w"> </span>~/Projects/shell/test-function.sh
+</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>
+</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>~<span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="nv">$file_name</span>
+</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a>/Users/faner/Projects/shell/test-function.sh
+</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>
+</span><span id="__span-13-6"><a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a>~<span class="w"> </span><span class="p">|</span><span class="w"> </span>use_python38
+</span><span id="__span-13-7"><a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a>which<span class="w"> </span><span class="nv">python3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>/usr/local/bin/python3
+</span><span id="__span-13-8"><a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a>use_python38...
+</span><span id="__span-13-9"><a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a>which<span class="w"> </span><span class="nv">python3</span><span class="w"> </span><span class="o">=</span><span class="w"> </span>/usr/local/opt/python@3.8/bin/python3
 </span></code></pre></div>
 <p>假设脚本 check_python_version.sh 只包含 check_python_version 函数，那么source导入终端，仅是导入函数。</p>
 <p>如果 sh 脚本中有入口点 main 调用了 check_python_version 函数，那么source导入终端，直接运行脚本。</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="ch">#!/bin/bash</span>
-</span><span id="__span-13-2"><a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>
-</span><span id="__span-13-3"><a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>check_python_version<span class="o">()</span>
-</span><span id="__span-13-4"><a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="o">{</span>
-</span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a><span class="w">    </span><span class="c1"># ...</span>
-</span><span id="__span-13-6"><a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a><span class="o">}</span>
-</span><span id="__span-13-7"><a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a>
-</span><span id="__span-13-8"><a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a>main<span class="o">()</span>
-</span><span id="__span-13-9"><a id="__codelineno-13-9" name="__codelineno-13-9" href="#__codelineno-13-9"></a><span class="o">{</span>
-</span><span id="__span-13-10"><a id="__codelineno-13-10" name="__codelineno-13-10" href="#__codelineno-13-10"></a><span class="w">    </span>check_python_version
-</span><span id="__span-13-11"><a id="__codelineno-13-11" name="__codelineno-13-11" href="#__codelineno-13-11"></a><span class="o">}</span>
-</span><span id="__span-13-12"><a id="__codelineno-13-12" name="__codelineno-13-12" href="#__codelineno-13-12"></a>
-</span><span id="__span-13-13"><a id="__codelineno-13-13" name="__codelineno-13-13" href="#__codelineno-13-13"></a>main<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$@</span><span class="s2">&quot;</span><span class="w"> </span><span class="c1"># $*</span>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="ch">#!/bin/bash</span>
+</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>
+</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>check_python_version<span class="o">()</span>
+</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="o">{</span>
+</span><span id="__span-14-5"><a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a><span class="w">    </span><span class="c1"># ...</span>
+</span><span id="__span-14-6"><a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a><span class="o">}</span>
+</span><span id="__span-14-7"><a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a>
+</span><span id="__span-14-8"><a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a>main<span class="o">()</span>
+</span><span id="__span-14-9"><a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a><span class="o">{</span>
+</span><span id="__span-14-10"><a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a><span class="w">    </span>check_python_version
+</span><span id="__span-14-11"><a id="__codelineno-14-11" name="__codelineno-14-11" href="#__codelineno-14-11"></a><span class="o">}</span>
+</span><span id="__span-14-12"><a id="__codelineno-14-12" name="__codelineno-14-12" href="#__codelineno-14-12"></a>
+</span><span id="__span-14-13"><a id="__codelineno-14-13" name="__codelineno-14-13" href="#__codelineno-14-13"></a>main<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$@</span><span class="s2">&quot;</span><span class="w"> </span><span class="c1"># $*</span>
 </span></code></pre></div>
 <p>source导入或运行脚本，与当前终端shell共享环境变量。<br />
 但直接在终端执行脚本，将按照Shebang新起子shell进程，环境变量可能与当前终端shell不一致。<br />
 在执行完sh后，脚本中未export导出的变量，无法再引用！</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>~/Projects/shell<span class="w"> </span><span class="p">|</span><span class="w"> </span>./test-function.sh
-</span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="nv">file_name</span><span class="o">=</span>./test-function.sh
-</span><span id="__span-14-3"><a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="nv">script_dir</span><span class="o">=</span>.
-</span><span id="__span-14-4"><a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="nv">script_name</span><span class="o">=</span>test-function.sh
-</span><span id="__span-14-5"><a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a>
-</span><span id="__span-14-6"><a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a><span class="c1"># 变量file_name未export，执行完sh后不可见</span>
-</span><span id="__span-14-7"><a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a>~/Projects/shell<span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="nv">$file_name</span>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>~/Projects/shell<span class="w"> </span><span class="p">|</span><span class="w"> </span>./test-function.sh
+</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="nv">file_name</span><span class="o">=</span>./test-function.sh
+</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a><span class="nv">script_dir</span><span class="o">=</span>.
+</span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a><span class="nv">script_name</span><span class="o">=</span>test-function.sh
+</span><span id="__span-15-5"><a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a>
+</span><span id="__span-15-6"><a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a><span class="c1"># 变量file_name未export，执行完sh后不可见</span>
+</span><span id="__span-15-7"><a id="__codelineno-15-7" name="__codelineno-15-7" href="#__codelineno-15-7"></a>~/Projects/shell<span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="nv">$file_name</span>
 </span></code></pre></div>
 <h3 id="调用其他脚本中的函数">调用其他脚本中的函数<a class="headerlink" href="#调用其他脚本中的函数" title="Permanent link">#</a></h3>
 <p><a href="https://zhuanlan.zhihu.com/p/59528626">Bash编程入门-4：函数</a></p>
 <p>假设有两个脚本 <code>my_info.bash</code> 和 <code>app.bash</code>，内容如下：</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>$<span class="w"> </span>cat<span class="w"> </span>my_info.sh
-</span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="c1">#!/bin/bash</span>
-</span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>
-</span><span id="__span-15-4"><a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a><span class="k">function</span><span class="w"> </span>my_info<span class="o">()</span>
-</span><span id="__span-15-5"><a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a><span class="o">{</span>
-</span><span id="__span-15-6"><a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a><span class="w">    </span>lscpu<span class="w"> </span>&gt;&gt;<span class="w"> </span><span class="nv">$1</span>
-</span><span id="__span-15-7"><a id="__codelineno-15-7" name="__codelineno-15-7" href="#__codelineno-15-7"></a><span class="w">    </span>uname<span class="w"> </span>–a<span class="w"> </span>&gt;&gt;<span class="w"> </span><span class="nv">$1</span>
-</span><span id="__span-15-8"><a id="__codelineno-15-8" name="__codelineno-15-8" href="#__codelineno-15-8"></a><span class="w">    </span>free<span class="w"> </span>–h<span class="w"> </span>&gt;&gt;<span class="w"> </span><span class="nv">$1</span>
-</span><span id="__span-15-9"><a id="__codelineno-15-9" name="__codelineno-15-9" href="#__codelineno-15-9"></a><span class="o">}</span>
-</span></code></pre></div>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>$<span class="w"> </span>cat<span class="w"> </span>app.bash
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>$<span class="w"> </span>cat<span class="w"> </span>my_info.sh
 </span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a><span class="c1">#!/bin/bash</span>
 </span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>
-</span><span id="__span-16-4"><a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a><span class="nb">source</span><span class="w"> </span>./my_info.bash<span class="w">  </span><span class="c1">#引入另一个脚本</span>
-</span><span id="__span-16-5"><a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a>my_info<span class="w"> </span>output.file<span class="w">    </span><span class="c1">#调用另一个脚本中的函数</span>
+</span><span id="__span-16-4"><a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a><span class="k">function</span><span class="w"> </span>my_info<span class="o">()</span>
+</span><span id="__span-16-5"><a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a><span class="o">{</span>
+</span><span id="__span-16-6"><a id="__codelineno-16-6" name="__codelineno-16-6" href="#__codelineno-16-6"></a><span class="w">    </span>lscpu<span class="w"> </span>&gt;&gt;<span class="w"> </span><span class="nv">$1</span>
+</span><span id="__span-16-7"><a id="__codelineno-16-7" name="__codelineno-16-7" href="#__codelineno-16-7"></a><span class="w">    </span>uname<span class="w"> </span>–a<span class="w"> </span>&gt;&gt;<span class="w"> </span><span class="nv">$1</span>
+</span><span id="__span-16-8"><a id="__codelineno-16-8" name="__codelineno-16-8" href="#__codelineno-16-8"></a><span class="w">    </span>free<span class="w"> </span>–h<span class="w"> </span>&gt;&gt;<span class="w"> </span><span class="nv">$1</span>
+</span><span id="__span-16-9"><a id="__codelineno-16-9" name="__codelineno-16-9" href="#__codelineno-16-9"></a><span class="o">}</span>
+</span></code></pre></div>
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a>$<span class="w"> </span>cat<span class="w"> </span>app.bash
+</span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a><span class="c1">#!/bin/bash</span>
+</span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>
+</span><span id="__span-17-4"><a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a><span class="nb">source</span><span class="w"> </span>./my_info.bash<span class="w">  </span><span class="c1">#引入另一个脚本</span>
+</span><span id="__span-17-5"><a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a>my_info<span class="w"> </span>output.file<span class="w">    </span><span class="c1">#调用另一个脚本中的函数</span>
 </span></code></pre></div>
 <p>运行 app.bash 时，执行到 source 命令那一行时，就会执行 my_info.bash 脚本。<br />
 在 app.bash 的后续部分，就可以调用 my_info.bash 中的 my_info 函数。</p>
