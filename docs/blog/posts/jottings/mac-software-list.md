@@ -14,12 +14,16 @@ macOS 软件清单备忘（macOS Software Inventory）。
 
 <!-- more -->
 
+[jaywcjlove/awesome-mac](https://github.com/jaywcjlove/awesome-mac):  Now we have become very big, Different from the original idea. Collect premium software in various categories.
+
 ## System
 
 [Tencent Lemon](https://lemon.qq.com/) @[github](https://github.com/Tencent/lemon-cleaner)
 
 - 畅快清理 · 全新体验
 - 匠心打磨清理体验，一键释放磁盘空间
+
+[Karabiner-Elements](https://karabiner-elements.pqrs.org/): A powerful and stable keyboard customizer for macOS.
 
 [iTerm2 - macOS Terminal Replacement](https://iterm2.com/)
 
@@ -29,7 +33,15 @@ macOS 软件清单备忘（macOS Software Inventory）。
 
 - From prompt to production - The best way to code with Al agents. Prompt, review, edit, and ship.
 
-## Tools
+[kitty](https://sw.kovidgoyal.net/kitty/)
+
+- The fast, feature-rich, GPU based terminal emulator
+
+[Nushell](https://www.nushell.sh/)
+
+- A new type of shell, Modern shell for the GitHub era
+
+## iTools
 
 Macroplant [iExplorer](https://macroplant.com/iexplorer)
 
@@ -40,13 +52,9 @@ softorino [WALTR PRO](https://softorino.com/waltr/)
 - Any Format to Any Destination
 - Convert, Transfer ANY File into iPhone, iPad… Like a PRO
 
-## Utilities
-
 [iBar](https://www.better365.cn/ibar.html): 强大的Mac电脑菜单栏图标管理工具
 
 [iCopy](https://www.better365.cn/icopy.html): 剪切板、快捷回复强强组合，无与伦比的效率倍增神器！
-
-[Karabiner-Elements](https://karabiner-elements.pqrs.org/): A powerful and stable keyboard customizer for macOS.
 
 ## Network
 
@@ -57,8 +65,7 @@ softorino [WALTR PRO](https://softorino.com/waltr/)
 [FlClash](https://flclash.cc/en/): Multi-platform proxy client based on ClashMeta, easy to use, open source and ad-free
 
 [Google Chrome Web Browser](https://www.google.com/intl/en_hk/chrome/)
-[Helium Browser](https://helium.computer/)
-[Deta Surf](https://deta.surf/)
+[ChatGPT Atlas](https://chatgpt.com/atlas/)
 
 [Cyberduck](https://cyberduck.io/)
 
@@ -136,6 +143,38 @@ macOS 截图预览内置 OCR 识别。
 - 易用、强大、高效的字幕制作软件
 - 让做字幕变成一种享受
 
+## Doc Reader
+
+PDF Expert，搭配内置 Preview 查看扫描件。
+
+[PDF Expert - PDF Editor and Reader for Mac](https://pdfexpert.com/lp-free-buy-now)
+
+- The go-to PDF editor for iPhone, iPad and Mac
+- We make it easy to edit, annotate, sign and organize PDFs.
+
+[Kindle Classic](https://apps.apple.com/se/app/kindle/id405399194?l=en&mt=12)：mobi 文档阅读器。
+[CHM Reader](https://apps.apple.com/us/app/chm-reader-reference-library/id1547099572)：chm 文档阅读器。
+[DjView4](https://djvu.sourceforge.net/djview4.html) / [Cisdem Document Reader](https://www.cisdem.com/document-reader-mac.html)：DjVu 格式文档阅读器。
+
+## Text Editor
+
+[FoldingText](https://www.foldingtext.com/) - waiting for 3.0
+
+- For Mac users who love plain text.
+- FoldingText is the markdown text editor with productivity features.
+- Unlike other editors, FoldingText does outlining, todo lists, and more.
+
+[Marked 2 - Smarter tools for smarter writers](https://marked2app.com/)
+
+- Marked is a previewer for Markdown and other plain text markups.
+
+[Visual Studio Code - Code Editing. Redefined](https://code.visualstudio.com/)
+
+- [Markdown Preview Enhanced](https://marketplace.visualstudio.com/items?itemName=shd101wyy.markdown-preview-enhanced)
+- [Markdown Shortcuts](https://marketplace.visualstudio.com/items?itemName=mdickin.markdown-shortcuts)
+- [File Utils](https://marketplace.visualstudio.com/items?itemName=sleistner.vscode-fileutils)
+- [GitLens](https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens)
+
 ## Stickies & Notes
 
 Notes.app: [Start a Quick Note on Mac](https://support.apple.com/en-hk/guide/notes/apdf028f7034/mac)
@@ -157,44 +196,11 @@ Stickies.app: [Stickies User Guide for Mac](https://support.apple.com/en-hk/guid
 - Visual project management and collaboration platform
 - A dynamic sticky notes app for brainstorming, content curation, taking notes, and capturing ideas.
 
-## Text Editor
-
 [Obsidian - Sharpen your thinking](https://obsidian.md/)
 
 - The free and flexible app for your private thoughts.
 
-[FoldingText](https://www.foldingtext.com/) - waiting for 3.0
-
-- For Mac users who love plain text.
-- FoldingText is the markdown text editor with productivity features.
-- Unlike other editors, FoldingText does outlining, todo lists, and more.
-
-[Marked 2 - Smarter tools for smarter writers](https://marked2app.com/)
-
-- Marked is a previewer for Markdown and other plain text markups.
-
-[Sublime Text - Text Editing, Done Right](https://www.sublimetext.com/)
-[Visual Studio Code - Code Editing. Redefined](https://code.visualstudio.com/)
-
-- [Markdown Preview Enhanced](https://marketplace.visualstudio.com/items?itemName=shd101wyy.markdown-preview-enhanced)
-- [Markdown Shortcuts](https://marketplace.visualstudio.com/items?itemName=mdickin.markdown-shortcuts)
-- [File Utils](https://marketplace.visualstudio.com/items?itemName=sleistner.vscode-fileutils)
-- [GitLens](https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens)
-
-## Doc Reader
-
-PDF Expert，搭配内置 Preview 查看扫描件。
-
-[PDF Expert - PDF Editor and Reader for Mac](https://pdfexpert.com/lp-free-buy-now)
-
-- The go-to PDF editor for iPhone, iPad and Mac
-- We make it easy to edit, annotate, sign and organize PDFs.
-
-[Kindle Classic](https://apps.apple.com/se/app/kindle/id405399194?l=en&mt=12)：mobi 文档阅读器。
-[CHM Reader](https://apps.apple.com/us/app/chm-reader-reference-library/id1547099572)：chm 文档阅读器。
-[DjView4](https://djvu.sourceforge.net/djview4.html) / [Cisdem Document Reader](https://www.cisdem.com/document-reader-mac.html)：DjVu 格式文档阅读器。
-
-## development
+## Development
 
 [SmartGit – Git Client for Windows, macOS, Linux](https://www.syntevo.com/smartgit/)
 
@@ -220,34 +226,36 @@ PDF Expert，搭配内置 Preview 查看扫描件。
 
 ## Chrome Extensions
 
-[帮小忙，腾讯QQ浏览器在线工具箱平台](https://tool.browser.qq.com/)
+[Command Palette](https://chromewebstore.google.com/detail/command-palette/lfmfhlofoaleegdogpmknfbibciflfek)
+[Extension Manager](https://chromewebstore.google.com/detail/extension-manager/gjldcdngmdknpinoemndlidpcabkggco)
+[Better History](https://chromewebstore.google.com/detail/better-history-manage-exp/egehpkpgpgooebopjihjmnpejnjafefi)
+
+[Vimium](https://chromewebstore.google.com/detail/vimium/dbepggeogbaibhgnhhndojpepiihcmeb)
+[Super Drag and Go](https://chromewebstore.google.com/detail/super-drag-and-go/jaikcnhlohebodlpkmjepipngegjbfpg)
+[Clutter Free](https://chromewebstore.google.com/detail/prevent-duplicate-tabs/eednccpckdkpojaiemedoejdngappaag)
+[Split Screen](https://chromewebstore.google.com/detail/split-screen-for-google-c/dnollkdkikklpdganoecjcmmlddbennb)
 
 [Tampermonkey](https://chromewebstore.google.com/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo)
-[Vimium](https://chromewebstore.google.com/detail/vimium/dbepggeogbaibhgnhhndojpepiihcmeb)
-
-[Prevent Duplicate Tabs](https://chromewebstore.google.com/detail/prevent-duplicate-tabs/eednccpckdkpojaiemedoejdngappaag)
-[Smart TOC](https://chromewebstore.google.com/detail/smart-toc/lifgeihcfpkmmlfjbailfpfhbahhibba)
-
-[Simple Allow Copy](https://chromewebstore.google.com/detail/simple-allow-copy/aefehdhdciieocakfobpaaolhipkcpgc)
-[MarkDownload](https://chromewebstore.google.com/detail/markdownload-markdown-web/pcmpcfapbekmbjjkdalcgopdkipoggdi): 内置 Copy As Markdown。
-
-[Talking Clock](https://chromewebstore.google.com/detail/talking-clock/babblknbggnkbadcnoeoendifjkbkflj)
+[Allow Copy+](https://chromewebstore.google.com/detail/allow-copy-+/ajhbdcgfhlhhmocddefknjjkejcfpbnj)
 [Google Mail Checker](https://chromewebstore.google.com/detail/google-mail-checker/mihcahmgecmbnbcchbopgniflfhgnkff)
-[ImageAssistant](https://chromewebstore.google.com/detail/imageassistant-batch-imag/dbjbempljhcmhlfpfacalomonjpalpko): 内置 QR Code Generator。
-[Voice Control for ChatGPT x Mia AI](https://chromewebstore.google.com/detail/voice-control-for-chatgpt/eollffkcakegifhacjnlnegohfdlidhn)：不支持 Arc Browser。
+
+[Smart TOC](https://chromewebstore.google.com/detail/smart-toc/lifgeihcfpkmmlfjbailfpfhbahhibba): Webpage outliner, TOC sidebar
+[Copy as Markdown](https://chromewebstore.google.com/detail/copy-as-markdown/fkeaekngjflipcockcnpobkpbbfbhmdn): config <kbd>⌥</kbd><kbd>M</kbd> for `current tab: [title](url)` to Copy Title and URL(Markdown).
+[MarkDownload](https://chromewebstore.google.com/detail/markdownload-markdown-web/pcmpcfapbekmbjjkdalcgopdkipoggdi) - Markdown Web Clipper: clip websites and download them into a readable markdown file.
 
 [bypass-paywalls](https://github.com/iamadamdev/bypass-paywalls-chrome/blob/master/README.md)
 [PaywallHub](https://chromewebstore.google.com/detail/paywallhub/iimagbhmhkinjaaammedekiocfphhhca) - [archive.today](https://archive.today/) / [archive.is](https://archive.is/)
+[ImageAssistant](https://chromewebstore.google.com/detail/imageassistant-batch-imag/dbjbempljhcmhlfpfacalomonjpalpko): Batch Image Downloader + QR Code Generator
 
 [ChatGPT » Summarize & Chat](https://chromewebstore.google.com/detail/chatgpt-%C2%BB-summarize-chat/cbgecfllfhmmnknmamkejadjmnmpfjmp)
-[PrintFriendly - Print and PDF Web Pages](https://chromewebstore.google.com/detail/printfriendly-print-and-p/ohlencieiipommannpdfcmfdpjjmeolj)
-[Video Downloader Professional](https://chromewebstore.google.com/detail/elicpjhcidhpjomhibiffojpinpmmpil)
+[PrintFriendly - Print and PDF Web Pages](https://chromewebstore.google.com/detail/printfriendly-print-and-p/ohlencieiipommannpdfcmfdpjjmeolj) + Webpage Screenshot
 [Media Harvest : twitter Media Downloader](https://chromewebstore.google.com/detail/media-harvest-twitter-med/hpcgabhdlnapolkkjpejieegfpehfdok)
-
-[划词翻译](https://chromewebstore.google.com/detail/%E5%88%92%E8%AF%8D%E7%BF%BB%E8%AF%91/ikhdkkncnoglghljlkmcimlnlhkeamad)
-
-- [Immersive Translate - Translate Website & PDF](https://chromewebstore.google.com/detail/immersive-translate-trans/bpoadfkcbjbfhfodiogcnhhhpibjhbnh)
 
 [Web Highlights - PDF & Web Highlighter](https://chromewebstore.google.com/detail/web-highlights-pdf-web-hi/hldjnlbobkdkghfidgoecgmklcemanhm)
 
 - [Glasp Web Highlighter - PDF & Web Highlights](https://chromewebstore.google.com/detail/glasp-web-highlighter-pdf/blillmbchncajnhkjfdnincfndboieik)
+
+[划词翻译](https://chromewebstore.google.com/detail/%E5%88%92%E8%AF%8D%E7%BF%BB%E8%AF%91/ikhdkkncnoglghljlkmcimlnlhkeamad): 一站式划词 / 截图 / 网页全文 / 音视频 AI 翻译扩展
+
+- [Immersive Translate - Translate Website & PDF](https://chromewebstore.google.com/detail/immersive-translate-trans/bpoadfkcbjbfhfodiogcnhhhpibjhbnh)
+
