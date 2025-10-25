@@ -28,8 +28,8 @@ Usage: `mkdocs get-deps [OPTIONS]`
 检查当前 mkdocs.yml 中配置的插件依赖的 PyPI 包。
 
 ```Shell
-pifan@rpi4b-ubuntu~/Sites/mkdocs $ python3 -m mkdocs get-deps
-markdown-checklist
+# python3 -m mkdocs get-deps
+pifan@rpi4b-ubuntu~/Sites/mkdocs $ mkdocs get-deps
 mkdocs
 mkdocs-material
 pymdown-extensions
@@ -37,30 +37,51 @@ pymdown-extensions
 
 ## serve
 
-Run the builtin development server: `mkdocs serve [OPTIONS]`
+Run the builtin development server: `mkdocs serve [OPTIONS]`, see usage with `mkdoc serve --help`.
 
-Name | Type | Description | Default
------|------|-------------|--------
-`-a`, --dev-addr | text | IP address and port to serve documentation locally (default: localhost:8000) | None
---no-livereload | boolean | Disable the live reloading in the development server. | False
---dirty | text | Only re-build files that have changed. | False
-`-c`, --clean | text | Build the site without any effects of mkdocs serve - pure mkdocs build, then serve. | False
-`-w`, --watch | path | A directory or file to watch for live reloading. Can be supplied multiple times. | []
-`-v`, --verbose | boolean | Enable verbose output | False
+Name             | Type    | Description                                                                         | Default
+-----------------|---------|-------------------------------------------------------------------------------------|--------
+`-a`, --dev-addr | text    | IP address and port to serve documentation locally (default: localhost:8000)        | None
+--no-livereload  | boolean | Disable the live reloading in the development server                                | False
+--livereload     | boolean | Enable the live reloading in the development server                                 | False
+--dirty          | text    | Only re-build files that have changed.                                              | False
+`-c`, --clean    | text    | Build the site without any effects of mkdocs serve - pure mkdocs build, then serve. | False
+`-w`, --watch    | path    | A directory or file to watch for live reloading. Can be supplied multiple times.    | []
+`-v`, --verbose  | boolean | Enable verbose output                                                               | False
 
 1. 默认的 IP 端口是 localhost:8000，可指定 `-a 0.0.0.0:8000`，方便局域网调试。
-2. 指定 `--dirty` 只增量编译改动的文件，文档规模增大后，此项可提高调试时的实时加载反馈。
+2. 指定 `--dirty` 只增量编译改动的文件，文档规模增大后，可提高调试时的热加载反馈。
+
+执行 `mkdocs serve` 启动本地测试服务：`-a` 指定监听端口；`--livereload` 开启热加载；`--dirty` 只编译改动的文件。
+
+```bash hl_lines="5"
+$ mkdocs serve -a 0.0.0.0:8000 --livereload --dirty
+INFO    -  Building documentation...
+WARNING -  A 'dirty' build is being performed, this will likely lead to inaccurate navigation and other links within your site. This option is designed for site development purposes only.
+INFO    -  Documentation built in 23.15 seconds
+INFO    -  [08:12:44] Watching paths for changes: 'docs', 'mkdocs.yml'
+INFO    -  [08:12:44] Serving on http://0.0.0.0:8000/
+```
+
+当修改了 mkdocs.yml 文件或 docs 目录下的文件，浏览器会自动刷新。
+
+```bash hl_lines="1 4"
+INFO    -  [08:15:38] Detected file changes
+INFO    -  Building documentation...
+INFO    -  Documentation built in 0.55 seconds
+INFO    -  [08:15:39] Reloading browsers
+```
 
 ## build
 
 Build the MkDocs documentation: `mkdocs build [OPTIONS]`
 
-Name | Type | Description | Default
------|------|-------------|--------
-`-c`, --clean / --dirty | boolean | Remove old files from the site_dir before building (the default). | True
-`-f`, --config-file | filename | Provide a specific MkDocs config. This can be a file name, or '-' to read from stdin. | None
-`-d`, --site-dir | path | The directory to output the result of the documentation build. | None
-`-v`, --verbose | boolean | Enable verbose output | False
+Name                    | Type     | Description                                                                           | Default
+------------------------|----------|---------------------------------------------------------------------------------------|--------
+`-c`, --clean / --dirty | boolean  | Remove old files from the site_dir before building (the default).                     | True
+`-f`, --config-file     | filename | Provide a specific MkDocs config. This can be a file name, or '-' to read from stdin. | None
+`-d`, --site-dir        | path     | The directory to output the result of the documentation build.                        | None
+`-v`, --verbose         | boolean  | Enable verbose output                                                                 | False
 
 关于 [build速度](http://hpc.ncpgr.cn/linux/086-mkdocs/#buildsu-du) 问题：
 
@@ -76,11 +97,11 @@ For large sites the build time required to create the pages can become problemat
 
 Deploy your documentation to GitHub Pages: `mkdocs gh-deploy [OPTIONS]`
 
-Name | Type | Description | Default
------|------|-------------|--------
-`-c`, --clean / --dirty | boolean | Remove old files from the site_dir before building (the default). | True
-`-m`, --message | text | A commit message to use when committing to the GitHub Pages remote branch. Commit {sha} and MkDocs {version} are available as expansions | None
-`-b`, --remote-branch | text | The remote branch to commit to for GitHub Pages. This overrides the value specified in config | None
+Name                    | Type    | Description                                                                                                                              | Default
+------------------------|---------|------------------------------------------------------------------------------------------------------------------------------------------|--------
+`-c`, --clean / --dirty | boolean | Remove old files from the site_dir before building (the default).                                                                        | True
+`-m`, --message         | text    | A commit message to use when committing to the GitHub Pages remote branch. Commit {sha} and MkDocs {version} are available as expansions | None
+`-b`, --remote-branch   | text    | The remote branch to commit to for GitHub Pages. This overrides the value specified in config                                            | None
 `-r`, --remote-name | text | The remote name to commit to for GitHub Pages. This overrides the value specified in config
 `--no-history` | boolean | Replace the whole Git history with one new commit. | False
 `-d`, --site-dir | path | The directory to output the result of the documentation build. | None
@@ -145,3 +166,40 @@ $ sudo ln -s /home/pifan/Sites/mkdocs/site/ /usr/share/nginx/html
 
 [Cloudflare Docs](https://developers.cloudflare.com/) - [Cloudflare Zero Trust docs](https://developers.cloudflare.com/cloudflare-one/) - [Create a locally-managed tunnel (CLI)](https://developers.cloudflare.com/cloudflare-one/connections/connect-networks/get-started/create-local-tunnel/)
 
+## deploy to Cloudflare Pages
+
+[Cloudflare Pages](https://pages.cloudflare.com/) 是 Cloudflare 提供的静态站点托管服务，支持 GitHub、GitLab、Bitbucket 等主流代码托管平台。
+
+1. 登入 Cloudflare，点击左侧菜单的 Workers & Pages，进入 Pages 控制台，点击 `Import an existing Git repository`：
+
+![Workers&Pages-Get_started](./images/Cloudflare_Page/1-Workers&Pages-Get_started.jpg)
+
+2. 点击【Connect Github】按钮：
+
+![Deploy_a_site_from_Github](./images/Cloudflare_Page/2-Deploy_a_site_from_Github.png)
+
+3. 输入 Github account 账号，选择一个仓库 `mkdocs`：
+
+![Connect_Github-Select_repository](./images/Cloudflare_Page/3-Connect_Github-Select_repository.jpg)
+
+4. 在弹出的 Github 授权界面中，点击【Install & Authorize】按钮：
+
+![Install&Authorize_on_your_personal_github_account](./images/Cloudflare_Page/4-Install&Authorize_on_your_personal_github_account.png)
+
+5. 输入 Project name: `mkdocs`，Framework preset 选择 MkDocs 框架，输入构建命令（Build command）: `mkdocs build`。
+
+![Set_up_builds_and_deployments](./images/Cloudflare_Page/5-Set_up_builds_and_deployments.png)
+
+6. 点击【Custom Domains】，Enter domain 输入在 Cloudflare 上购买托管的域名，下一步 Configure DNS 显示 Cloudflare 将会为站点配置一条 DNS 记录，点击【Activate domain】进入验证（Verifying）：
+
+![Custom_domains-Enter_Domain-Confirm_New_DNS](./images/Cloudflare_Page/6-Custom_domains-Enter_Domain-Confirm_New_DNS.png)
+
+![Custom_domains-Activate_domain-Verifying](./images/Cloudflare_Page/7-Custom_domains-Activate_domain-Verifying.jpg)
+
+7. 在 Cloudflare 的 DNS Records 管理界面，可以找到刚刚添加的 CNAME 记录：
+
+![Confirm_new_DNS_Record_under_domain_management](./images/Cloudflare_Page/8-Confirm_new_DNS_Record_under_domain_management.png)
+
+8.回到 Workers & Pages / mkdocs 的 Custom domains 界面，可以看到自定义域名已经激活生效：
+
+![Custom_domains-Active](./images/Cloudflare_Page/9-Custom_domains-Active.png)
