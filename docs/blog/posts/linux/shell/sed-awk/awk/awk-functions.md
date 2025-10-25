@@ -50,14 +50,14 @@ Linux 下的 awk 命令中的函数运用。
 
 以下返回常量字符串长度：
 
-```Shell
+```bash
 $ awk 'BEGIN{print length("A FEW GOOD MEN")}'
 14
 ```
 
 以下检验字符串 J.Troll 返回名字及其长度，即人名构成的字符个数。
 
-```Shell
+```bash
 $ awk '$1=="J.Troll"{print length($1),$1}' grade.txt
 7 J.Troll
 
@@ -69,7 +69,7 @@ length( J.Troll ) = 7
 
 查询字符串s中t出现的第一位置，必须用双引号将字符串括起来。
 
-```Shell
+```bash
 $ awk 'BEGIN{print index("Bunny","ny")}'
 4
 ```
@@ -78,7 +78,7 @@ $ awk 'BEGIN{print index("Bunny","ny")}'
 
 [shell 查找字符串中字符出现的位置](https://www.cnblogs.com/sea-stream/p/11403014.html)
 
-```Shell
+```bash
 $ test="cat"
 $ sentence="The cat sat on the mat"
 $ index=`awk -v a="$sentence" -v b="$test" 'BEGIN{print index(a,b)}'`
@@ -91,7 +91,7 @@ $ echo $index
 match 测试目标字符串是否包含查找字符的一部分。  
 可以对查找部分使用正则表达式，返回值为成功出现的字符（子串）索引位置。如果未找到，则返回 0。
 
-```Shell
+```bash
 # 在 ANCD 中查找 d
 $ awk 'BEGIN{print match("ANCD", /d/)}'
 0
@@ -113,7 +113,7 @@ $ awk '$1=="J.Lulu"{print match($1, "lu")}' grade.txt
 
 在 awk-pattern 中的 多行划分区块 示例中，基于 `- path: ` 划分区块。
 
-```Shell
+```bash
 $ awk 'BEGIN {RS="- path: "; FS="\n"; ORS=""} $1~/\/Classes\/ui\/DeviceMgr\//' bak.code.yml
 ```
 
@@ -121,7 +121,7 @@ $ awk 'BEGIN {RS="- path: "; FS="\n"; ORS=""} $1~/\/Classes\/ui\/DeviceMgr\//' b
 
 sed 天然适合用来执行此类区块匹配及删除操作：
 
-```Shell
+```bash
 # 指定备份扩展名为空，即不备份
 sed -i '' '/- path: \/Classes\/ui\/DeviceMgr\//,/owner_rule/d' bak.code.yml
 ```
@@ -133,7 +133,7 @@ sed -i '' '/- path: \/Classes\/ui\/DeviceMgr\//,/owner_rule/d' bak.code.yml
 2. 由于 .code.yml 文件开头有一大段规则描述，故忽略掉第1个 `- path: ` 之前的第1条记录，相当于 `if (NR==1) next;` 直接打印第1条记录；  
 3. 如果记录块的第1行以 `/` 开头（合起来就是 `- path: /xxx`），或第2行包含 `owners:`（第1行路径可能非斜杠开头，也可能是行号），则补齐切割掉的 RS 前缀（`- path: `），并且打印该条记录；不匹配的则直接打印该记录块。  
 
-```Shell
+```bash
 # 调试
 awk 'BEGIN {RS="- path: "; FS="\n"; ORS=""; OFS="\n"}
     $1 !~ /\/Classes\/ui\/DeviceMgr\// {
@@ -145,7 +145,7 @@ awk 'BEGIN {RS="- path: "; FS="\n"; ORS=""; OFS="\n"}
 
 调试OK后，可将移除匹配区块后的内容重定向输出到新的文件：
 
-```Shell
+```bash
 awk 'BEGIN {RS="- path: "; FS="\n"; ORS=""; OFS="\n"}
     $1 !~ /\/Classes\/ui\/DeviceMgr\// {
         if (NR > 1 && (index($1, "/")==1 || index($2, "owners:")))
@@ -160,14 +160,14 @@ awk 'BEGIN {RS="- path: "; FS="\n"; ORS=""; OFS="\n"}
 
 返回常量字符串从指定索引开始的后缀：
 
-```Shell
+```bash
 awk 'BEGIN{STR="A FEW GOOD MEN"; print substr(STR,7)}'
 GOOD MEN
 ```
 
 以下为 index 和 substr 综合示例：
 
-```Shell
+```bash
 # a 在句子中的索引位置
 $ echo 'This is a test' | awk '{print index($0,$3)}'
 9
@@ -183,14 +183,14 @@ a te
 
 返回从1开始长度为5的子串：
 
-```Shell
+```bash
 $ awk '$1=="L.Tansley"{print substr($1,1,5)}' grade.txt
 L.Tan
 ```
 
 substr 的另一种形式是返回字符串后缀或指定位置后面字符。
 
-```Shell
+```bash
 $ awk '{print substr($1, 3)}' grade.txt
 Tansley
 Lulu
@@ -201,7 +201,7 @@ Tansley
 
 #### pipe
 
-```Shell
+```bash
 $ echo "Stand-by" | awk '{print length($0)}'
 8
 $ STR="mydoc.txt"
@@ -213,7 +213,7 @@ txt
 
 以下为 index 和 substr 综合示例，基于文件名分隔符切分文件名和后缀：
 
-```Shell
+```bash
 echo $STR | awk '{
     l=length($0)
     i=index($0,".")
@@ -231,7 +231,7 @@ prefix=mydoc suffix=txt
 工作方式如下：如果有一字符串，包含一指定分隔符 `-`，例如 `AD2-KP9-JU2-LP-1`，将之划分成一个数组。
 使用 split，指定分隔符及数组名，返回数组下标数，这里结果为4。
 
-```Shell
+```bash
 $ awk 'BEGIN{print split("123#456#789",myarray,"#")}'
 3
 $ awk 'BEGIN{print split("AD2-KP9-JU2-LP-1",parts_array,"-")}'
@@ -240,7 +240,7 @@ $ awk 'BEGIN{print split("AD2-KP9-JU2-LP-1",parts_array,"-")}'
 
 for 循环遍历数组：
 
-```Shell
+```bash
 awk 'BEGIN{
     print split("AD2-KP9-JU2-LP-1",parts_array,"-")
     for (i in parts_array)
@@ -258,7 +258,7 @@ Index: 1 - Value: AD2
 
 接上述基于 pipe 从shell中向awk传入字符串的例子，基于 `split` 函数分割文件名和后缀：
 
-```Shell
+```bash
 echo $STR | awk '{
     print split($0,components,".")
     print "prefix="components["1"],"suffix="components["2"]
@@ -271,7 +271,7 @@ prefix=mydoc suffix=txt
 
 使用 sub 发现并替换模式的 **第一次** 出现位置。
 
-```Shell
+```bash
 # 模式 op 第一次出现时，进行替换
 $ awk 'BEGIN{STR="poped popo pill"; sub(/op/,"OP",STR); print STR}'
 pOPed popo pill
@@ -279,16 +279,29 @@ pOPed popo pill
 
 匹配记录（`$0`）中第一处出现的模式 `4842`，进行替换
 
-```Shell
+```bash
 $ awk 'sub(/4842/,4899)' grade.txt
 J.Troll     07/99   4899    Brown-3     12  26  26
+```
+
+以下脚本使用 `awk -v` 前置传递变量，使用 `$0 ~ pattern` 进行模式匹配，`-F` 切割提取最后一个域：
+
+```bash
+local nwi_prefix="Network interfaces: "
+scutil --nwi | awk -v pattern="$nwi_prefix" -F ': ' '$0 ~ pattern {print $NF}'
+```
+
+或在模式匹配后，在 body 中使用 sub 函数替换移除前缀再执行 print 打印：
+
+```bash
+scutil --nwi | awk -v pattern="$nwi_prefix" '$0 ~ pattern {sub(prefix, ""); print}'
 ```
 
 #### gsub
 
 gsub 相对 sub，多了个 g 标志，发现并替换记录中所有匹配模式的地方。
 
-```Shell
+```bash
 # 模式 op 所有出现的地方，都进行替换
 $ awk 'BEGIN{STR="poped popo pill"; gsub(/op/,"OP",STR); print STR}'
 pOPed pOPo pill
@@ -298,7 +311,7 @@ pOPed pOPo pill
 
 函数定义作为独立部分，独立于 begin、body、end 部分：
 
-```Shell
+```bash
 $ awk '
     function myprint()
     {
