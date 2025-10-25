@@ -321,6 +321,20 @@ This is the header line.
 2. 第2行至最后一行执行 `G` 指令，将保持空间附加到模式空间（当前行），形成逆序；再执行 `h` 指令；  
 3. 执行到最后一行，将模式空间中的整个数据流都按行反转了之后，当达到数据流中的最后一行时，打印模式空间整个数据流。  
 
+line 1: `h` - copy pattern space to hold space
+
+- hold space = 1st line
+
+line 2: `G` - append hold space to pattern space; `h` - copy pattern space to hold space
+
+- pattern space = 2nd line; 1st line
+- hold space = 2nd line; 1st line
+
+line 3: `G` - append hold space to pattern space; `h` - copy pattern space to hold space
+
+- pattern space = 3nd line; 2nd line; 1st line
+- hold space = 3nd line; 2nd line; 1st line
+
 ## refs
 
 [How to use the Linux sed command](https://opensource.com/article/21/3/sed-cheat-sheet) - [使用 sed 命令进行复制、剪切和粘贴](https://linux.cn/article-13417-1.html)

@@ -187,17 +187,14 @@ The −v option causes the output to be assigned to the variable var rather than
 The format is reused as necessary to consume all of the arguments. If the format requires more arguments than are supplied, the extra format specifications behave as if a zero value or null string, as appropriate, had been supplied. The return value is zero on success, non-zero on failure.
 ```
 
-- [Shell printf命令：格式化输出语句](https://wiki.jikexueyuan.com/project/shell-tutorial/shell-printf-command.html)  
-- [Shell printf命令详解](https://www.cnblogs.com/machangwei-8/p/10354698.html)  
-- [Bash Printf 命令](https://www.itcoder.tech/posts/bash-printf-command/)  
-
 - [Bash's Built-in printf Function](https://www.linuxjournal.com/content/bashs-built-printf-function)  
 - [Linux printf command](https://www.computerhope.com/unix/uprintf.htm)  
 - [Bash Printf command](https://linuxhint.com/bash-printf-command/)  
 - [Bash printf Command](https://linuxize.com/post/bash-printf-command/)  
+- [Shell printf命令详解](https://www.cnblogs.com/machangwei-8/p/10354698.html)  
 - [Bash printf Function: 7 Examples for Linux](https://www.makeuseof.com/bash-printf-examples/)  
 
-### rev
+### rev line
 
 ```bash
 NAME
@@ -211,10 +208,52 @@ DESCRIPTION
      every line.  If no files are specified, the standard input is read.
 ```
 
+例如 `echo "Bash Shell" | rev` 将 “Bash Shell” 反转为 “llehS hsaB”。
+
 ```bash
 echo "Bash Shell" | rev
 llehS hsaB
 ```
+
+### reverse file
+
+如果想逆序（按行倒序）输出文件内容，​​Linux​ 下可通过内置的 `tac` 命令，反向 `cat` 打印文件内容。
+BSD/​​macOS​​ 系统则需安装 coreutils，或者使用 `tail -r` 等效实现。
+此外，可通过 awk或 sed​​ ​脚本编程实现行逆转的效果。
+
+参考 [sed-NDP](../sed-awk/sed/sed-NDP.md)：
+
+```bash
+$ sed -n '{1!G; h; $p}' data2.txt
+This is the last line.
+This is the second data line.
+This is the first data line.
+This is the header line.
+```
+
+line 1: `h` - copy pattern space to hold space
+
+- hold space = 1st line
+
+line 2: `G` - append hold space to pattern space; `h` - copy pattern space to hold space
+
+- pattern space = 2nd line; 1st line
+- hold space = 2nd line; 1st line
+
+line 3: `G` - append hold space to pattern space; `h` - copy pattern space to hold space
+
+- pattern space = 3nd line; 2nd line; 1st line
+- hold space = 3nd line; 2nd line; 1st line
+
+参考 [awk-vars](../sed-awk/awk/awk-vars.md)：
+
+```bash
+echo "$wlan_inet" | awk '{ ip[NR] = $0 } END { for (i = NR; i >= 1; i--) { print "\t"ip[i] } }'
+```
+
+通过 awk 命令逐行遍历 `wlan_inet`，并将每一行 `$0` 保存到数组 `ip[]`。
+在 END 中基于 NR 逆序遍历打印 inet 地址，即先打印 ipv4 再打印 ipv6。
+print 在每个 `ip[i]` 前添加一个制表符 (`\t`) 控制输出格式。
 
 ## head/tail
 
@@ -254,6 +293,14 @@ $ history | tail # 默认显示10条
 $ history | tail -n 10
 ```
 
+以下示例，只打印 `curl -I` (--head) 返回的第一行信息，即 HTTP STATUS LINE：
+
+```bash
+curl -sI www.google.com | head -n 1
+# 基于 awk 的 NR 变量等效实现
+curl -sI www.google.com | awk 'NR==1'
+```
+
 下面通过 du 命令按占用磁盘空间大小降序列举某一目录下各个子目录。
 当子目录太多时，可重定向给 `more` 滚动查看，或重定向给 `head` 查看前10条。
 
@@ -277,6 +324,14 @@ $ man tail
        -n, --lines=[+]NUM
               output  the  last NUM lines, instead of the last 10; or use -n +NUM
               to output starting with line NUM
+```
+
+以下示例，打印 pip3 列表中所有过期包的信息，略过前两行表头：
+
+```bash
+$ pip3 list --outdated | tail -n +3
+# 基于 awk 的 NR 变量等效实现
+$ pip3 list --outdated | awk 'NR>2'
 ```
 
 在 Linux 下，如想打印除开头和结尾10行的中间部分可以执行：`head -n -10 file.txt | tail +11`。
@@ -334,12 +389,12 @@ tl=$(expr $lines - 10)
 sed -n "$hl, $tl p" file.txt
 ```
 
-## du
+## df/du
 
 关于磁盘统计涉及到两个命令：
 
-- `df` (Disk FileSystem)  
-- `du` (Disk Usage)  
+- `df` (Disk FileSystem): report file system space usage
+- `du` (Disk Usage): estimate file space usage
 
 ```bash
 $ df -lh
@@ -501,14 +556,14 @@ md5 命令后的默认输入参数为文件名，也可通过 `-s` 选项指定�
              Print a checksum of the given string.
 ```
 
-计算 [paywallhub_chrome_v1.0.5.zip](https://github.com/Angeloyo/paywallhub-chrome-extension/releases/tag/v1.0.5) 插件的 MD5:
+计算下载到本地的 [paywallhub_chrome_v1.0.5.zip](https://github.com/Angeloyo/paywallhub-chrome-extension/releases/tag/v1.0.5) 插件的 MD5:
 
 ```bash
 $ md5 paywallhub_chrome_v1.0.5.zip 
 MD5 (paywallhub_chrome_v1.0.5.zip) = ea7c023497e6aa1cb1f9ec130d900d0c
 ```
 
-计算下载到本地的 paywallhub_chrome_v1.0.5.zip 插件文件名字符串的 MD5 值：
+计算 paywallhub_chrome_v1.0.5.zip 插件文件名字符串的 MD5 值：
 
 ```bash
 md5 -s "paywallhub_chrome_v1.0.5.zip"
@@ -609,11 +664,10 @@ nginx   33741 faner    5w     REG              1,13    51695             3821144
 
 - [JSON在线解析及格式化验证](https://www.json.cn/)：支持在线解析和压缩转义。
 - [JSON解析格式化工具](https://www.sojson.com/)：支持校验/格式化、压缩/转义。
-- [JSON格式化查看工具](https://www.baidufe.com/fehelper/json-format/index.html)：支持对 JSON 进行压缩，以及对压缩（转义）的JSON字符串进行还原。
 
 macOS/Linux 下还可以安装 `jq` 命令行工具，将压缩/转义的json字符串转换为格式化的 JSON 对象。
 
-[jq](https://stedolan.github.io/jq/) is a lightweight and flexible command-line JSON processor.
+[jq](https://jqlang.org/) is a lightweight and flexible command-line JSON processor.
 
 - [linux下jq的使用](https://www.cnblogs.com/haima/p/15135587.html)
 - [给力的linux命令--jq简易教程](https://www.jianshu.com/p/6de3cfdbdb0e)
