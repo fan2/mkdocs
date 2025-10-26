@@ -18,7 +18,7 @@ Linux command lists —— ;, &&, ||.
 
 使用空格或分号（**`;`**）可执行无相关性的连续命令：
 
-```Shell
+```bash
 faner@FAN-MB0:~|⇒  test1='test 1' test2='test 2'
 faner@FAN-MB0:~|⇒  echo $test1
 test 1
@@ -50,7 +50,7 @@ faner@MBP-FAN:~/Downloads|⇒
 
 > command2 is executed if, and only if, command1 returns an exit status of zero.
 
-```Shell
+```bash
 mkdir homebrew && curl -L https://github.com/Homebrew/brew/tarball/master
 ```
 
@@ -62,7 +62,7 @@ mkdir homebrew && curl -L https://github.com/Homebrew/brew/tarball/master
 
 1. 下面的 bash 系统级配置 `/etc/profile` 的内容：
 
-```Shell
+```bash
 $ cat /etc/profile
 
 # System-wide .profile for sh(1)
@@ -79,7 +79,7 @@ fi
 
 2. [vim-interaction.plugin.zsh](https://github.com/ohmyzsh/ohmyzsh/blob/master/plugins/vim-interaction/vim-interaction.plugin.zsh) 中判等串联执行命令：
 
-```Shell
+```bash
   # If before or after commands begin with : and don't end with <cr>, append it
   [[ ${after}  = :* && ${after}  != *\<cr\> ]] && after+="<cr>"
   [[ ${before} = :* && ${before} != *\<cr\> ]] && before+="<cr>"
@@ -87,17 +87,28 @@ fi
   [[ $# -gt 0 ]] && files=':args! '"${@:A:q}<cr>"
 ```
 
-3. 下面是 RapaNui - [getopts-12523979.sh](https://stackoverflow.com/a/12523979) 中判断串联、并联执行命令：
+3. 发送 2 次 ping 请求，每次最长等待 500ms，只要收到一个响应即退出。
 
-```Shell
+    - 2*500ms 内收到响应，命令成功返回（`$?` 为 0），执行 && 后面的命令，输出 “Google: ping OK”。
+    - 否则，命令执行失败（`$?` 为 1 或其他非零值），则短路执行 || 后面的命令，输出 “Google: ping fail”。
+
+```bash
+ping -o -c 2 -W 500 www.google.com > /dev/null 2>&1\
+    && echo "Google: ping OK"\
+    || echo "Google: ping fail"
+```
+
+4. 下面是 RapaNui - [getopts-12523979.sh](https://stackoverflow.com/a/12523979) 中判断串联、并联执行命令：
+
+```bash
 [ $OPTIND -ge 1 ] && optind=$(expr $OPTIND - 1) || optind=$OPTIND
 ```
 
-4. 当前目录下如果有 `forms-debug` 文件夹则进入，否则先创建再进入。
+5. 当前目录下如果有 `forms-debug` 文件夹则进入，否则先创建再进入。
 
     - [Check if a directory exists in a shell script](https://stackoverflow.com/questions/59838/check-if-a-directory-exists-in-a-shell-script)  
     - [Linux / UNIX: Find Out If a Directory Exists or Not](https://www.cyberciti.biz/tips/find-out-if-directory-exists.html)  
 
-```Shell
+```bash
 ([ -d forms-debug ] || mkdir forms-debug) && cd forms-debug
 ```

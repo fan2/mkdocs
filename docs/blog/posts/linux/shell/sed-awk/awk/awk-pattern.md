@@ -31,7 +31,7 @@ J.Troll     07/99   4842    Brown-3     12  26  26
 L.Tansley   05/99   4712    Brown-2     12  30  28
 ```
 
-![awk-cond-op](./images/awk-cond-op.png)
+![awk-cond-op](../../../images/awk-cond-op.png)
 
 ## 域匹配
 
