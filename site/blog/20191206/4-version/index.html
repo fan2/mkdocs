@@ -92,7 +92,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#sh检测是否安装了python" class="md-skip">
+        <a href="#python_version" class="md-skip">
           Skip to content
         </a>
       
@@ -1393,6 +1393,16 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#python_version" class="md-nav__link">
+    <span class="md-ellipsis">
+      python version
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="python version">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#sh检测是否安装了python" class="md-nav__link">
     <span class="md-ellipsis">
       sh检测是否安装了python
@@ -1400,8 +1410,8 @@
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#python检测当前安装版本" class="md-nav__link">
     <span class="md-ellipsis">
       python检测当前安装版本
@@ -1409,13 +1419,18 @@
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#python对比安装版本" class="md-nav__link">
     <span class="md-ellipsis">
       python对比安装版本
     </span>
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -1545,60 +1560,66 @@
 <p>本文简单介绍了如何检测本机安装的 python 版本。</p>
 <!-- more -->
 
+<h2 id="python_version">python version<a class="headerlink" href="#python_version" title="Permanent link">#</a></h2>
 <p>假设我们的python项目基于某一版本发行，若客户python运行时低于此版本，则某些功能特性可能不支持。<br />
 此时，我们可能需要检测客户是否安装了python，并且版本是否满足最低要求，否则提示用户安装或升级python。</p>
-<h2 id="sh检测是否安装了python">sh检测是否安装了python<a class="headerlink" href="#sh检测是否安装了python" title="Permanent link">#</a></h2>
+<h3 id="sh检测是否安装了python">sh检测是否安装了python<a class="headerlink" href="#sh检测是否安装了python" title="Permanent link">#</a></h3>
 <p>未安装python时，执行 <code>python -V</code> 提示命令找不到：</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>$<span class="w"> </span>python<span class="w"> </span>-V
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>$<span class="w"> </span>python<span class="w"> </span>-V
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>zsh:<span class="w"> </span><span class="nb">command</span><span class="w"> </span>not<span class="w"> </span>found:<span class="w"> </span>python
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>$<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="nv">$?</span>
 </span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="m">127</span>
 </span></code></pre></div>
 <p>已安装python时，执行 <code>python -V</code> 正常返回版本：</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>$<span class="w"> </span>python<span class="w"> </span>-V
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>$<span class="w"> </span>python<span class="w"> </span>-V
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>Python<span class="w"> </span><span class="m">3</span>.9.6
 </span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>$<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="nv">$?</span>
 </span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="m">0</span>
 </span></code></pre></div>
 <p>以下定义了 shell 函数 check_python_version 用于检测本地是否安装了 python 运行时：</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>check_python_version<span class="o">()</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>check_python_version<span class="o">()</span>
 </span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="o">{</span>
-</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">    </span><span class="k">if</span><span class="w"> </span>python<span class="w"> </span>-V<span class="w"> </span><span class="p">&amp;</span>&gt;/dev/null<span class="p">;</span><span class="w"> </span><span class="c1"># 不输出执行结果</span>
-</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">    </span><span class="k">then</span>
-</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">        </span><span class="nv">python_version</span><span class="o">=</span><span class="k">$(</span>python<span class="w"> </span>-V<span class="k">)</span><span class="w"> </span><span class="m">1</span>&gt;/dev/null<span class="w"> </span><span class="c1"># 不输出版本信息</span>
-</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">        </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;python installed: </span><span class="nv">$python_version</span><span class="s2">&quot;</span>
-</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="m">0</span>
-</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">    </span><span class="k">else</span>
-</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="w">        </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;python uninstalled!&quot;</span>
-</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="m">1</span>
-</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="w">    </span><span class="k">fi</span>
-</span><span id="__span-2-12"><a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="o">}</span>
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="w">    </span>python<span class="w"> </span>-V<span class="w"> </span><span class="p">&amp;</span>&gt;/dev/null<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="o">{</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="w">        </span><span class="nv">python_version</span><span class="o">=</span><span class="k">$(</span>python<span class="w"> </span>-V<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="k">)</span><span class="w"> </span><span class="m">1</span>&gt;/dev/null
+</span><span id="__span-2-5"><a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a><span class="w">        </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;python installed: </span><span class="nv">$python_version</span><span class="s2">&quot;</span>
+</span><span id="__span-2-6"><a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="m">0</span>
+</span><span id="__span-2-7"><a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="w">    </span><span class="o">}</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="o">{</span>
+</span><span id="__span-2-8"><a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a><span class="w">        </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;python uninstalled!&quot;</span>
+</span><span id="__span-2-9"><a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="m">1</span>
+</span><span id="__span-2-10"><a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a><span class="w">    </span><span class="o">}</span>
+</span><span id="__span-2-11"><a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="o">}</span>
 </span></code></pre></div>
-<h2 id="python检测当前安装版本">python检测当前安装版本<a class="headerlink" href="#python检测当前安装版本" title="Permanent link">#</a></h2>
-<p>通过上文，我们知道，可以通过 platform, sys 和 sysconfig 相关接口检测当前 python 版本。</p>
+<h3 id="python检测当前安装版本">python检测当前安装版本<a class="headerlink" href="#python检测当前安装版本" title="Permanent link">#</a></h3>
+<p>通过上文，我们知道，可以通过 sys、sysconfig 和 platform 相关接口检测当前 python 版本。</p>
 <ol>
-<li>sysconfig.get_python_version() 返回字符串，例如 '3.9'；</li>
-</ol>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>&gt;&gt;&gt;<span class="w"> </span>sysconfig.get_python_version<span class="o">()</span>
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="s1">&#39;3.9&#39;</span>
-</span></code></pre></div>
-<ol start="2">
-<li>platform.python_version() 返回字符串，或调用 platform.python_version_tuple() 返回字符串元组。</li>
-</ol>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>&gt;&gt;&gt;<span class="w"> </span>platform.python_version<span class="o">()</span>
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="s1">&#39;3.9.6&#39;</span>
-</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>&gt;&gt;&gt;<span class="w"> </span>platform.python_version_tuple<span class="o">()</span>
-</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="o">(</span><span class="s1">&#39;3&#39;</span>,<span class="w"> </span><span class="s1">&#39;9&#39;</span>,<span class="w"> </span><span class="s1">&#39;6&#39;</span><span class="o">)</span>
-</span></code></pre></div>
-<ol start="3">
 <li>sys.version_info 返回 version_info 对象。</li>
 </ol>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>&gt;&gt;&gt;<span class="w"> </span>sys.version_info
-</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>sys.version_info<span class="o">(</span><span class="nv">major</span><span class="o">=</span><span class="m">3</span>,<span class="w"> </span><span class="nv">minor</span><span class="o">=</span><span class="m">9</span>,<span class="w"> </span><span class="nv">micro</span><span class="o">=</span><span class="m">6</span>,<span class="w"> </span><span class="nv">releaselevel</span><span class="o">=</span><span class="s1">&#39;final&#39;</span>,<span class="w"> </span><span class="nv">serial</span><span class="o">=</span><span class="m">0</span><span class="o">)</span>
-</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>&gt;&gt;&gt;<span class="w"> </span>tuple<span class="o">(</span>sys.version_info<span class="o">)</span>
-</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="o">(</span><span class="m">3</span>,<span class="w"> </span><span class="m">9</span>,<span class="w"> </span><span class="m">6</span>,<span class="w"> </span><span class="s1">&#39;final&#39;</span>,<span class="w"> </span><span class="m">0</span><span class="o">)</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>&gt;&gt;&gt;<span class="w"> </span>sys.version_info
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>sys.version_info<span class="o">(</span><span class="nv">major</span><span class="o">=</span><span class="m">3</span>,<span class="w"> </span><span class="nv">minor</span><span class="o">=</span><span class="m">9</span>,<span class="w"> </span><span class="nv">micro</span><span class="o">=</span><span class="m">6</span>,<span class="w"> </span><span class="nv">releaselevel</span><span class="o">=</span><span class="s1">&#39;final&#39;</span>,<span class="w"> </span><span class="nv">serial</span><span class="o">=</span><span class="m">0</span><span class="o">)</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>&gt;&gt;&gt;<span class="w"> </span>tuple<span class="o">(</span>sys.version_info<span class="o">)</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="o">(</span><span class="m">3</span>,<span class="w"> </span><span class="m">9</span>,<span class="w"> </span><span class="m">6</span>,<span class="w"> </span><span class="s1">&#39;final&#39;</span>,<span class="w"> </span><span class="m">0</span><span class="o">)</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>&gt;&gt;&gt;<span class="w"> </span>sys.version_info<span class="o">[</span>:3<span class="o">]</span>
+</span><span id="__span-3-6"><a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="o">(</span><span class="m">3</span>,<span class="w"> </span><span class="m">9</span>,<span class="w"> </span><span class="m">6</span><span class="o">)</span>
+</span><span id="__span-3-7"><a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>&gt;&gt;&gt;<span class="w"> </span><span class="s2">&quot;.&quot;</span>.join<span class="o">(</span>map<span class="o">(</span>str,<span class="w"> </span>sys.version_info<span class="o">[</span>:3<span class="o">]))</span>
+</span><span id="__span-3-8"><a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="s1">&#39;3.9.6&#39;</span>
 </span></code></pre></div>
-<h2 id="python对比安装版本">python对比安装版本<a class="headerlink" href="#python对比安装版本" title="Permanent link">#</a></h2>
+<ol start="2">
+<li>sysconfig.get_python_version() 返回字符串，例如 '3.9'；</li>
+</ol>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>&gt;&gt;&gt;<span class="w"> </span>sysconfig.get_python_version<span class="o">()</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="s1">&#39;3.9&#39;</span>
+</span></code></pre></div>
+<ol start="3">
+<li>platform.python_version() 返回字符串，或调用 platform.python_version_tuple() 返回字符串元组。</li>
+</ol>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>&gt;&gt;&gt;<span class="w"> </span>platform.python_version<span class="o">()</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="s1">&#39;3.9.6&#39;</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>&gt;&gt;&gt;<span class="w"> </span>platform.python_version_tuple<span class="o">()</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="o">(</span><span class="s1">&#39;3&#39;</span>,<span class="w"> </span><span class="s1">&#39;9&#39;</span>,<span class="w"> </span><span class="s1">&#39;6&#39;</span><span class="o">)</span>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>&gt;&gt;&gt;<span class="w"> </span><span class="s2">&quot;.&quot;</span>.join<span class="o">(</span>platform.python_version_tuple<span class="o">())</span>
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="s1">&#39;3.9.6&#39;</span>
+</span></code></pre></div>
+<h3 id="python对比安装版本">python对比安装版本<a class="headerlink" href="#python对比安装版本" title="Permanent link">#</a></h3>
 <p><a href="https://stackoverflow.com/questions/11887762/how-do-i-compare-version-numbers-in-python">How do I compare version numbers in Python? - Stack Overflow</a></p>
 <p>以下用四种方式判断 python 版本是否大于 3.8/3.9.6。</p>
 <div class="language-Python highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">platform</span><span class="o">,</span><span class="w"> </span><span class="nn">sys</span><span class="o">,</span><span class="w"> </span><span class="nn">sysconfig</span>

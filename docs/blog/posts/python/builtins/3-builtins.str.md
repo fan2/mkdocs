@@ -452,6 +452,10 @@ def capwords(s, sep=None):
     return (sep or ' ').join(map(str.capitalize, s.split(sep)))
 ```
 
+Join all args with space to print in the original input order:
+
+> python3 -c "import sys; print(" ".join(sys.argv[1:]))"
+
 Pretty-Printed Python Path:
 
 > python3 -c "import sys, pprint; pprint.pp(sys.path)"

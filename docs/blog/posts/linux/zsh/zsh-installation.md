@@ -78,7 +78,7 @@ FILES
        /etc/zlogout    (installation-specific - /etc is the default)
 ```
 
-If `ZDOTDIR` is unset, `HOME` is used instead. Files listed above as being in `/etc` may be in another direc- tory, depending on the installation.
+If `ZDOTDIR` is unset, `HOME` is used instead. Files listed above as being in `/etc` may be in another directory, depending on the installation.
 
 > 未设置环境变量 ZDOTDIR，默认就是 HOME 目录。
 
@@ -157,16 +157,13 @@ Then edit your `.zshrc` to use that theme.
 
 ## 参考
 
-[终极 Shell](http://macshuo.com/?p=676)  
-[为什么说 zsh 是 shell 中的极品？](https://www.zhihu.com/question/21418449)  
-
+[macOS/Linux 安装 zsh & OMZ](https://segmentfault.com/a/1190000013857738)  
 [Terminal & zsh & oh-my-zsh 配置](http://www.jianshu.com/p/6cb063d860ff)  
 [bash 轉移 zsh (oh-my-zsh) 設定心得](http://icarus4.logdown.com/posts/177661-from-bash-to-zsh-setup-tips)  
 
-[利用 Oh-My-Zsh 打造你的超级终端](https://sanwen8.cn/p/1b9NhOn.html) @[CSDN](https://blog.csdn.net/czg13548930186/article/details/72858289)  
-[oh-my-zsh,让你的终端从未这么爽过](https://www.jianshu.com/p/d194d29e488c?open_source=weibo_search)  
-[iTerm2 + zsh + oh-my-zsh The Most Power Full of Terminal on macOS](https://medium.com/ayuth/iterm2-zsh-oh-my-zsh-the-most-power-full-of-terminal-on-macos-bdb2823fb04c)  
+[为什么说 zsh 是 shell 中的极品？](https://www.zhihu.com/question/21418449)  
+[利用 Oh-My-Zsh 打造你的超级终端](https://blog.csdn.net/czg13548930186/article/details/72858289)  
+[oh-my-zsh,让你的终端从未这么爽过](https://www.jianshu.com/p/d194d29e488c)  
 
-[zsh 简单设置](http://www.cnblogs.com/bamanzi/p/zsh-simple-guide.html)  
-[macOS/Linux 安装 zsh & OMZ](https://segmentfault.com/a/1190000013857738)  
 [oh-my-zsh 配置你的 zsh 提高 shell 逼格终极选择](http://yijiebuyi.com/blog/b9b5e1ebb719f22475c38c4819ab8151.html)  
+[iTerm2 + zsh + oh-my-zsh The Most Power Full of Terminal on macOS](https://medium.com/ayuth/iterm2-zsh-oh-my-zsh-the-most-power-full-of-terminal-on-macos-bdb2823fb04c)  

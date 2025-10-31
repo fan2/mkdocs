@@ -213,6 +213,8 @@ True
 
 综上，`x in y` 等效于 **`any(x is e or x == e for e in y)`**.
 
+判断字符串 s 是否包含空白字符：`any(e in string.whitespace for e in s)`
+
 ## for
 
 reference - [8.3. The for statement](https://docs.python.org/3/reference/compound_stmts.html#the-for-statement)  

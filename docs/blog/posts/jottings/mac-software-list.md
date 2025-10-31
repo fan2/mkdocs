@@ -240,22 +240,25 @@ Stickies.app: [Stickies User Guide for Mac](https://support.apple.com/en-hk/guid
 [Google Mail Checker](https://chromewebstore.google.com/detail/google-mail-checker/mihcahmgecmbnbcchbopgniflfhgnkff)
 
 [Smart TOC](https://chromewebstore.google.com/detail/smart-toc/lifgeihcfpkmmlfjbailfpfhbahhibba): Webpage outliner, TOC sidebar
-[Copy as Markdown](https://chromewebstore.google.com/detail/copy-as-markdown/fkeaekngjflipcockcnpobkpbbfbhmdn): config <kbd>⌥</kbd><kbd>M</kbd> for `current tab: [title](url)` to Copy Title and URL(Markdown).
-[MarkDownload](https://chromewebstore.google.com/detail/markdownload-markdown-web/pcmpcfapbekmbjjkdalcgopdkipoggdi) - Markdown Web Clipper: clip websites and download them into a readable markdown file.
+[MarkDownload](https://chromewebstore.google.com/detail/markdownload-markdown-web/pcmpcfapbekmbjjkdalcgopdkipoggdi) - Markdown Web Clipper: clip websites and download them into a readable markdown file - no longer available
+[Copy as Markdown](https://chromewebstore.google.com/detail/copy-as-markdown/fkeaekngjflipcockcnpobkpbbfbhmdn): Copy Link or Image as Markdown code
+
+- <kbd>⌥</kbd><kbd>M</kbd> for `current tab: [title](url)` to Copy Title and URL as Markdown; 
+- <kbd>⇧</kbd><kbd>⌘</kbd><kbd>C</kbd> to Copy Selection as Markdown
 
 [bypass-paywalls](https://github.com/iamadamdev/bypass-paywalls-chrome/blob/master/README.md)
 [PaywallHub](https://chromewebstore.google.com/detail/paywallhub/iimagbhmhkinjaaammedekiocfphhhca) - [archive.today](https://archive.today/) / [archive.is](https://archive.is/)
-[ImageAssistant](https://chromewebstore.google.com/detail/imageassistant-batch-imag/dbjbempljhcmhlfpfacalomonjpalpko): Batch Image Downloader + QR Code Generator
 
 [ChatGPT » Summarize & Chat](https://chromewebstore.google.com/detail/chatgpt-%C2%BB-summarize-chat/cbgecfllfhmmnknmamkejadjmnmpfjmp)
-[PrintFriendly - Print and PDF Web Pages](https://chromewebstore.google.com/detail/printfriendly-print-and-p/ohlencieiipommannpdfcmfdpjjmeolj) + Webpage Screenshot
-[Media Harvest : twitter Media Downloader](https://chromewebstore.google.com/detail/media-harvest-twitter-med/hpcgabhdlnapolkkjpejieegfpehfdok)
+[PrintFriendly - Print and PDF Web Pages](https://chromewebstore.google.com/detail/printfriendly-print-and-p/ohlencieiipommannpdfcmfdpjjmeolj) + Webpage Screenshot: assign <kbd>⌘</kbd><kbd>P</kbd> to activate the extension and override the default print function.
 
-[Web Highlights - PDF & Web Highlighter](https://chromewebstore.google.com/detail/web-highlights-pdf-web-hi/hldjnlbobkdkghfidgoecgmklcemanhm)
-
-- [Glasp Web Highlighter - PDF & Web Highlights](https://chromewebstore.google.com/detail/glasp-web-highlighter-pdf/blillmbchncajnhkjfdnincfndboieik)
+[ImageAssistant](https://chromewebstore.google.com/detail/imageassistant-batch-imag/dbjbempljhcmhlfpfacalomonjpalpko): Batch Image Downloader + QR Code Generator
+[Media Harvest : twitter Media Downloader](https://chromewebstore.google.com/detail/media-harvest-twitter-med/hpcgabhdlnapolkkjpejieegfpehfdok): Download videos and images from twitter
 
 [划词翻译](https://chromewebstore.google.com/detail/%E5%88%92%E8%AF%8D%E7%BF%BB%E8%AF%91/ikhdkkncnoglghljlkmcimlnlhkeamad): 一站式划词 / 截图 / 网页全文 / 音视频 AI 翻译扩展
 
 - [Immersive Translate - Translate Website & PDF](https://chromewebstore.google.com/detail/immersive-translate-trans/bpoadfkcbjbfhfodiogcnhhhpibjhbnh)
 
+[Web Highlights - PDF & Web Highlighter](https://chromewebstore.google.com/detail/web-highlights-pdf-web-hi/hldjnlbobkdkghfidgoecgmklcemanhm)
+
+- [Glasp Web Highlighter - PDF & Web Highlights](https://chromewebstore.google.com/detail/glasp-web-highlighter-pdf/blillmbchncajnhkjfdnincfndboieik)

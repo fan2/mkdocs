@@ -202,6 +202,19 @@ def fibs(n: int) -> list:
 
 以上将生成的斐波那契数列一一存储在列表中。但假如我们只想逐个地获取值，而不是使用列表一次性获取。
 例如，只想找出第一个大于1000的斐波那契数，而不关注前向序列，如果用列表实现，非常耗费内存。
+
+以下使用 for 循环和 tuple 初级实现，最大的问题是不确定循环次数（以下估摸 20 次）：
+
+```Python
+(a, b) = (0, 1)
+for _ in range(20):
+    (a, b) = (b, a + b)
+    # print(a, end=' ')
+    if a > 1000:
+        print(a)
+        break
+```
+
 此时，使用迭代器实现更通用、更简单、更优雅。
 
 ```Python
@@ -297,7 +310,7 @@ abc
 
 **注意**：字典（dict）的迭代器是针对 键值对 进行的一维迭代。
 
-由于 iterator 本身也实现了 `__iter__` 接口，也可直接对其执行 for 循环迭代：
+当然，由于 iterator 本身也实现了 `__iter__` 接口，也可直接对其执行 for 循环迭代：
 
 ```Shell
 >>> l=['abc', 2024, (3,8)]
@@ -310,7 +323,7 @@ abc
 (3, 8)
 ```
 
-当然，直接使用 for 循环对 iterable object 遍历迭代更简洁：
+当然，调用 iter 就多此一举，直接使用 for 循环对 iterable object 遍历迭代更简洁：
 
 ```Shell
 >>> for i in l:
@@ -535,6 +548,23 @@ def capwords(s, sep=None):
 
 #### demo2: version tuple str2int
 
+sys.version_info 输出 tuple `(3, 9, 6, 'final', 0)`，可以通过 map 对 `sys.version_info[:3]` 中的每个元素调用 str 转换为字符串。
+
+```python
+>>> ".".join(map(str, sys.version_info[:3]))
+'3.9.6'
+```
+
+以下代码片段中根据当前版本是小于 3.8 还是大于 3.8 来选择使用 time.clock() 还是 time.perf_counter() 来获取当前时间戳。
+
+```python
+def time_perf() -> float:
+    if sys.version_info < (3, 8):
+        return time.clock()
+    else:
+        return time.perf_counter()
+```
+
 1. sysconfig.get_python_version() 输出 '3.9'，platform.python_version() 输出 '3.9.6'。
 
 `version_str2tuple` 函数将版本号字符串按点号（`.`）分割成字符数组，再对字符数组调用 int 逐一映射为整数。
@@ -571,9 +601,6 @@ version_str2tuple(platform.python_version()) > (3, 9, 6)
 
 # ('3', '9', '6')
 version_tuple_str2int(platform.python_version_tuple()) > (3, 9, 6)
-
-# (3, 9, 6, 'final', 0)
-tuple(sys.version_info) > (3, 9, 6) # sys.version_info > (3, 9, 6)
 ```
 
 以上示例中，字符串转整数，转换器为 int 类，传入字符串构造转换。

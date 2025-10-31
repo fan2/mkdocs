@@ -534,6 +534,15 @@ correct_page_no=list(map(lambda x:x+offset, page_no))
 ['Formatter', 'Template', 'ascii_letters', 'ascii_lowercase', 'ascii_uppercase', 'capwords', 'digits', 'hexdigits', 'octdigits', 'printable', 'punctuation', 'whitespace']
 ```
 
+判断 A 是否包含列表 B 中的所有元素：`all(item in listA for item in listB)`。
+
+```python
+listA = [1, 2, 3, 4, 5]
+listB = [2, 3, 5]
+
+result = all(item in listA for item in listB)
+```
+
 ### multilayer
 
 listcomp 还支持 multi-layers loop。
