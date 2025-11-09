@@ -255,12 +255,12 @@ collections.deque = class deque(builtins.object)
 
 也可通过 dir 查看其属性列表，方便略览其中定义的属性。
 
-#### quit
+#### quit help
 
 > `help(object)` 以 less/vi 模式打开帮助 manual page，底行输入 `q` 即可退出返回控制台。  
 > 输入 `h` 可查看 less 命令帮助；输入 `?pattern` 或 `/pattern` 可执行前向/后向搜索。  
 
-### help()
+### help prompt
 
 在 python 控制台中输入 `help()` 可打开交互式（`help> prompt`）帮助系统（help utility）。
 
@@ -425,6 +425,79 @@ has the same effect as typing a particular string at the help> prompt.
 `help>` 输入 `module`（无需先 import）, `module.function`, `module.class`, `module.class.method` 可查看相关帮助。
 
 退回到 `>>>` 中输入`help(module)`、`help(module.function)`、`help(module.class)`、`help(module.class.method)` 可查看等效帮助。  
+
+### rich.inspect
+
+Rich has an [inspect](https://rich.readthedocs.io/en/latest/reference/init.html?highlight=inspect#rich.inspect) function which can produce a report on any Python object, such as class, instance, or builtin.
+
+```bash
+>>> my_list = ["foo", "bar"]
+>>> from rich import inspect
+>>> inspect(inspect)
+>>> inspect(my_list, methods=True)
+```
+
+Inspect module `time`:
+
+```bash
+>>> import time
+>>> rich.inspect(time)
+╭─────────────────── <module 'time' (built-in)> ────────────────────╮
+│ This module provides various functions to manipulate time values. │
+│                                                                   │
+│                    altzone = -28800                               │
+│            CLOCK_MONOTONIC = 6                                    │
+│        CLOCK_MONOTONIC_RAW = 4                                    │
+│ CLOCK_MONOTONIC_RAW_APPROX = 5                                    │
+│   CLOCK_PROCESS_CPUTIME_ID = 12                                   │
+│             CLOCK_REALTIME = 0                                    │
+│    CLOCK_THREAD_CPUTIME_ID = 16                                   │
+│           CLOCK_UPTIME_RAW = 8                                    │
+│    CLOCK_UPTIME_RAW_APPROX = 9                                    │
+│                   daylight = 0                                    │
+│                   timezone = -28800                               │
+│                     tzname = ('CST', 'CST')                       │
+╰───────────────────────────────────────────────────────────────────╯
+>>> rich.inspect(time, help=True)
+╭─────────────────────────── <module 'time' (built-in)> ────────────────────────────╮
+│ This module provides various functions to manipulate time values.                 │
+│                                                                                   │
+│ There are two standard representations of time.  One is the number                │
+│ of seconds since the Epoch, in UTC (a.k.a. GMT).  It may be an integer            │
+│ or a floating-point number (to represent fractions of seconds).                   │
+│ The epoch is the point where the time starts, the return value of time.gmtime(0). │
+│ It is January 1, 1970, 00:00:00 (UTC) on all platforms.                           │
+│                                                                                   │
+│ The other representation is a tuple of 9 integers giving local time.              │
+│ The tuple items are:                                                              │
+│   year (including century, e.g. 1998)                                             │
+│   month (1-12)                                                                    │
+│   day (1-31)                                                                      │
+│   hours (0-23)                                                                    │
+│   minutes (0-59)                                                                  │
+│   seconds (0-59)                                                                  │
+│   weekday (0-6, Monday is 0)                                                      │
+│   Julian day (day in the year, 1-366)                                             │
+│   DST (Daylight Savings Time) flag (-1, 0 or 1)                                   │
+│ If the DST flag is 0, the time is given in the regular time zone;                 │
+│ if it is 1, the time is given in the DST time zone;                               │
+│ if it is -1, mktime() should guess based on the date and time.                    │
+│                                                                                   │
+│                    altzone = -28800                                               │
+│            CLOCK_MONOTONIC = 6                                                    │
+│        CLOCK_MONOTONIC_RAW = 4                                                    │
+│ CLOCK_MONOTONIC_RAW_APPROX = 5                                                    │
+│   CLOCK_PROCESS_CPUTIME_ID = 12                                                   │
+│             CLOCK_REALTIME = 0                                                    │
+│    CLOCK_THREAD_CPUTIME_ID = 16                                                   │
+│           CLOCK_UPTIME_RAW = 8                                                    │
+│    CLOCK_UPTIME_RAW_APPROX = 9                                                    │
+│                   daylight = 0                                                    │
+│                   timezone = -28800                                               │
+│                     tzname = ('CST', 'CST')                                       │
+╰───────────────────────────────────────────────────────────────────────────────────╯
+>>> rich.inspect(time, help=True, methods=True)
+```
 
 ## dir() & __all__
 

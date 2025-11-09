@@ -1522,6 +1522,24 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#richloggingrichhandler" class="md-nav__link">
+    <span class="md-ellipsis">
+      rich.logging.RichHandler
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bypass_to_the_log_server" class="md-nav__link">
+    <span class="md-ellipsis">
+      Bypass to the log server
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1842,12 +1860,12 @@ print 也许是大多数人学习 Python 时认识和使用的第一个函数，
 <p>Apache Log4j is a Java-based logging utility originally written by Ceki Gülcü. It is part of the Apache Logging Services, a project of the Apache Software Foundation. Log4j is one of several Java logging frameworks.</p>
 </blockquote>
 <h3 id="logging_module">logging module<a class="headerlink" href="#logging_module" title="Permanent link">#</a></h3>
-<p><a href="https://docs.python.org/3/library/logging.html">logging — Logging facility for Python — Python 3.12.2 documentation</a></p>
+<p><a href="https://docs.python.org/3/library/logging.html">logging — Logging facility for Python</a></p>
 <ul>
 <li>Module <a href="https://docs.python.org/3/library/logging.config.html#module-logging.config">logging.config</a>: Configuration API for the logging module.</li>
 <li>Module <a href="https://docs.python.org/3/library/logging.handlers.html#sockethandler">logging.handlers</a>: Useful handlers included with the logging module.</li>
 </ul>
-<p><a href="https://docs.python.org/3/howto/logging.html#logging-basic-tutorial">Logging HOWTO — Python 3.12.2 documentation</a></p>
+<p><a href="https://docs.python.org/3/howto/logging.html#logging-basic-tutorial">Logging HOWTO</a> - Logging Flow</p>
 <p>按照惯例，我们先借助 help 系统一览 logging 提供的 class hierarchy。</p>
 <p>主要包括继承自 Filterer 的 <code>Logger</code> 类和 <code>Handler</code> 类，以及内置的 <code>Filter</code> 类和 <code>Formatter</code> 类。</p>
 <div class="language-Shell highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>&gt;&gt;&gt;<span class="w"> </span>help<span class="o">(</span>logging<span class="o">)</span>
@@ -1868,26 +1886,26 @@ print 也许是大多数人学习 Python 时认识和使用的第一个函数，
 </span></code></pre></div>
 <p>The basic classes defined by the module, together with their functions, are listed below.</p>
 <ul>
-<li><code>Loggers</code> expose the interface that application code directly uses.</li>
-<li><code>Handlers</code> send the log records (created by loggers) to the appropriate destination.</li>
-<li><code>Filters</code> provide a finer grained facility for determining which log records to output.</li>
-<li><code>Formatters</code> specify the layout of log records in the final output.</li>
+<li><code>Loggers</code> expose the <code>interface</code> that application code directly uses.</li>
+<li><code>Handlers</code> send the log records (created by loggers) to the appropriate <code>destination</code>.</li>
+<li><code>Filters</code> provide a finer grained facility for determining <em>which</em> log records to output.</li>
+<li><code>Formatters</code> specify the <code>layout</code> of log records in the final output.</li>
 </ul>
 <p>下面对这四个类进行简单梳理：</p>
 <ol>
 <li>
-<p><code>Logger</code>：提供日志接口，供应用代码使用。logger最常用的操作有两类：配置和发送日志消息。</p>
+<p><code>Logger</code>：提供日志接口，供应用代码使用。logger 最常用的操作有两类：配置和发送日志消息。</p>
 <ul>
-<li>可通过 logging.<strong>getLogger</strong>(name) 获取 logger 对象，如不指定name则返回root对象。</li>
-<li>使用相同的 name 调用 getLogger 方法返回同一个 logger 对象。</li>
+<li>可通过 logging.<strong>getLogger</strong>(name) 获取 logger 对象，如不指定 name 则返回 root 对象。</li>
+<li>传入相同的 name 调用 getLogger 方法返回同一个 logger 对象。</li>
 <li>name 可取模块名称（<code>__name__</code>），即按模块 getLogger。</li>
 </ul>
 </li>
 <li>
 <p><code>Handler</code>：将日志记录（LogRecord）发送到合适的目的地（destination），比如控制台、文件、socket 等。</p>
 <ul>
-<li>一个 Logger 对象可以通过 <strong>addHandler</strong> 方法添加 0 到多个 Handler。</li>
-<li>每个 Handler 又可以定义不同日志级别，以实现日志分级过滤显示、存储落盘或远程上报。</li>
+<li>一个 Logger 对象可以通过 <strong>addHandler</strong> 方法添加多个 Handler。</li>
+<li>每个 Handler 又可以定义不同的日志级别，以实现日志分级过滤显示、存储落盘或远程上报。</li>
 </ul>
 </li>
 <li>
@@ -1899,18 +1917,17 @@ print 也许是大多数人学习 Python 时认识和使用的第一个函数，
 </li>
 <li>
 <p><code>Formatter</code>：指定日志记录输出的具体格式。</p>
-</li>
-</ol>
 <ul>
 <li>Formatter 的构造方法需要两个参数：消息的格式字符串（fmt）和日期字符串（datefmt），这两个参数都是可选的。</li>
 <li>可对 Handler 调用 <strong>setFormatter</strong> 为其设定 Formatter。</li>
 </ul>
+</li>
+</ol>
 <p>The flow of log event information in loggers and handlers is illustrated in the following diagram.</p>
 <ul>
 <li>LogRecord instances are created automatically by the Logger every time something is logged.</li>
 <li>Logger pass LogRecords to Handler for further processing/dispatch.</li>
 </ul>
-<p><img alt="Logging Flow" src="https://docs.python.org/3/_images/logging_flow.png" /></p>
 <p>通过简单梳理 logging 模块涉及的核心类后，我们来看看日志模块的惯用法。</p>
 <h3 id="logging_levels">logging levels<a class="headerlink" href="#logging_levels" title="Permanent link">#</a></h3>
 <p>The numeric values of logging levels are given in the following table. These are primarily of interest if you want to define your own levels, and need them to have specific values relative to the predefined levels. If you define a level with the same numeric value, it overwrites the predefined value; the predefined name is lost.</p>
@@ -1959,7 +1976,7 @@ print 也许是大多数人学习 Python 时认识和使用的第一个函数，
 <h3 id="logginglog">logging.log<a class="headerlink" href="#logginglog" title="Permanent link">#</a></h3>
 <p>logging 模块提供了 log 接口打点指定级别的日志，也可直接调用对应级别的log接口（debug、info、warning、error 和 critical）。</p>
 <div class="language-Shell highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>logging.disable<span class="o">(</span><span class="nv">level</span><span class="o">=</span>CRITICAL<span class="o">)</span>
-</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>Provides<span class="w"> </span>an<span class="w"> </span>overriding<span class="w"> </span>level<span class="w"> </span>level<span class="w"> </span><span class="k">for</span><span class="w"> </span>all<span class="w"> </span>loggers<span class="w"> </span>which<span class="w"> </span>takes<span class="w"> </span>precedence<span class="w"> </span>over<span class="w"> </span>the<span class="w"> </span>logger<span class="err">&#39;</span>s<span class="w"> </span>own<span class="w"> </span>level.
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>Provides<span class="w"> </span>an<span class="w"> </span>overriding<span class="w"> </span>level<span class="w"> </span>level<span class="w"> </span><span class="k">for</span><span class="w"> </span>all<span class="w"> </span>loggers<span class="w"> </span>which<span class="w"> </span>takes<span class="w"> </span>precedence<span class="w"> </span>over<span class="w"> </span>the<span class="w"> </span>logger’s<span class="w"> </span>own<span class="w"> </span>level.
 </span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>
 </span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>logging.log<span class="o">(</span>level,<span class="w"> </span>msg,<span class="w"> </span>*args,<span class="w"> </span>**kwargs<span class="o">)</span>
 </span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>Logs<span class="w"> </span>a<span class="w"> </span>message<span class="w"> </span>with<span class="w"> </span>level<span class="w"> </span>level<span class="w"> </span>on<span class="w"> </span>the<span class="w"> </span>root<span class="w"> </span>logger.<span class="w"> </span>The<span class="w"> </span>other<span class="w"> </span>arguments<span class="w"> </span>are<span class="w"> </span>interpreted<span class="w"> </span>as<span class="w"> </span><span class="k">for</span><span class="w"> </span>debug<span class="o">()</span>.
@@ -1998,7 +2015,7 @@ print 也许是大多数人学习 Python 时认识和使用的第一个函数，
 </span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>Does<span class="w"> </span>basic<span class="w"> </span>configuration<span class="w"> </span><span class="k">for</span><span class="w"> </span>the<span class="w"> </span>logging<span class="w"> </span>system<span class="w"> </span>by<span class="w"> </span>creating<span class="w"> </span>a<span class="w"> </span>StreamHandler<span class="w"> </span>with<span class="w"> </span>a<span class="w"> </span>default<span class="w"> </span>Formatter<span class="w"> </span>and<span class="w"> </span>adding<span class="w"> </span>it<span class="w"> </span>to<span class="w"> </span>the<span class="w"> </span>root<span class="w"> </span>logger.<span class="w"> </span>The<span class="w"> </span>functions<span class="w"> </span>debug<span class="o">()</span>,<span class="w"> </span>info<span class="o">()</span>,<span class="w"> </span>warning<span class="o">()</span>,<span class="w"> </span>error<span class="o">()</span><span class="w"> </span>and<span class="w"> </span>critical<span class="o">()</span><span class="w"> </span>will<span class="w"> </span>call<span class="w"> </span>basicConfig<span class="o">()</span><span class="w"> </span>automatically<span class="w"> </span><span class="k">if</span><span class="w"> </span>no<span class="w"> </span>handlers<span class="w"> </span>are<span class="w"> </span>defined<span class="w"> </span><span class="k">for</span><span class="w"> </span>the<span class="w"> </span>root<span class="w"> </span>logger.
 </span></code></pre></div>
 <ul>
-<li>logging.debug() (as well as info(), warning(), error() and critical()) will call <code>basicConfig</code>() if the root logger doesn't have any handler attached.</li>
+<li>logging.debug() (as well as info(), warning(), error() and critical()) will call <code>basicConfig</code>() if the root logger doesn’t have any handler attached.</li>
 </ul>
 <p>我们可以调用 <code>logging.getLogger()</code> 查看默认的 RootLogger。</p>
 <blockquote>
@@ -2162,7 +2179,7 @@ print 也许是大多数人学习 Python 时认识和使用的第一个函数，
 </span><span id="__span-19-64"><a id="__codelineno-19-64" name="__codelineno-19-64" href="#__codelineno-19-64"></a>    <span class="n">loggers</span><span class="p">[</span><span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">]</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
 </span></code></pre></div>
 <h3 id="logger_with_multiple_handlers">logger with multiple handlers<a class="headerlink" href="#logger_with_multiple_handlers" title="Permanent link">#</a></h3>
-<p><a href="https://cloud.tencent.com/developer/article/1587902">Python日志模块logging用法详解</a><br />
+<p><a href="https://cloud.tencent.com/developer/article/1587902">Python 日志模块 logging 用法详解</a><br />
 <a href="https://rgb-24bit.github.io/blog/2018/python-logging.html">Python 日志模块</a></p>
 <p>下面示例，演示同时将日志输出到控制台和文件中，这也是日常开发过程最常用的日志打点模式。</p>
 <p>在控制台（stderr）上只打出 warning 及以上级别的日志，在日志文件中打出 debug 及以上级别的日志。</p>
@@ -2212,6 +2229,32 @@ print 也许是大多数人学习 Python 时认识和使用的第一个函数，
 </span><span id="__span-21-11"><a id="__codelineno-21-11" name="__codelineno-21-11" href="#__codelineno-21-11"></a><span class="m">2024</span>-03-07<span class="w"> </span><span class="m">17</span>:13:31,969<span class="w"> </span>-<span class="w"> </span>log_demo<span class="w"> </span>-<span class="w"> </span>CRITICAL<span class="w"> </span>-<span class="w"> </span>critical<span class="w"> </span>message
 </span></code></pre></div>
 <p>如果是系统级服务，可考虑将日志记录到操作系统事务日志，参考 <code>SysLogHandler</code> 和 <code>NTEventLogHandler</code>。</p>
+<h3 id="richloggingrichhandler">rich.logging.RichHandler<a class="headerlink" href="#richloggingrichhandler" title="Permanent link">#</a></h3>
+<p><a href="https://github.com/Textualize/rich">Textualize/rich</a> / <a href="https://github.com/Textualize/rich/blob/master/README.md">README.md</a></p>
+<ul>
+<li><a href="https://rich.readthedocs.io/">documentation</a> - <a href="https://rich.readthedocs.io/en/stable/logging.html">Logging Handler</a></li>
+</ul>
+<p>You can also use the builtin Handler class to format and colorize output from Python's logging module. Here's an example of the output:</p>
+<ul>
+<li>The RichHandler class may be configured to use Rich's <code>Traceback</code> class to format exceptions, which provides more context than a built-in exception. To get beautiful exceptions in your logs set <code>rich_tracebacks=True</code> on the handler constructor:</li>
+</ul>
+<p>Rich 可以替代标准日志模块，为日志添加颜色和格式，不同级别的日志一目了然。上面创建的 StreamHandler 用于将日志打在控制台上，可以构造一个 rich.logging.RichHandler 替代之。</p>
+<blockquote>
+<p>RichHandler 构造函数支持传入 <code>rich_tracebacks=True</code> 以便使用 rich.traceback 输出异常堆栈。</p>
+</blockquote>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-22-1"><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+</span><span id="__span-22-2"><a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">rich.logging</span><span class="w"> </span><span class="kn">import</span> <span class="n">RichHandler</span>
+</span><span id="__span-22-3"><a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a>
+</span><span id="__span-22-4"><a id="__codelineno-22-4" name="__codelineno-22-4" href="#__codelineno-22-4"></a><span class="c1"># 使用 RichHandler 替换 StreamHandler</span>
+</span><span id="__span-22-5"><a id="__codelineno-22-5" name="__codelineno-22-5" href="#__codelineno-22-5"></a><span class="n">ch</span> <span class="o">=</span> <span class="n">RichHandler</span><span class="p">(</span><span class="n">rich_tracebacks</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span><span id="__span-22-6"><a id="__codelineno-22-6" name="__codelineno-22-6" href="#__codelineno-22-6"></a><span class="n">ch</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">WARNING</span><span class="p">)</span>
+</span><span id="__span-22-7"><a id="__codelineno-22-7" name="__codelineno-22-7" href="#__codelineno-22-7"></a>
+</span><span id="__span-22-8"><a id="__codelineno-22-8" name="__codelineno-22-8" href="#__codelineno-22-8"></a><span class="c1"># ...</span>
+</span><span id="__span-22-9"><a id="__codelineno-22-9" name="__codelineno-22-9" href="#__codelineno-22-9"></a>
+</span><span id="__span-22-10"><a id="__codelineno-22-10" name="__codelineno-22-10" href="#__codelineno-22-10"></a><span class="c1"># 将 RichHandler 添加到 logger 对象中</span>
+</span><span id="__span-22-11"><a id="__codelineno-22-11" name="__codelineno-22-11" href="#__codelineno-22-11"></a><span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">ch</span><span class="p">)</span>
+</span></code></pre></div>
+<h3 id="bypass_to_the_log_server">Bypass to the log server<a class="headerlink" href="#bypass_to_the_log_server" title="Permanent link">#</a></h3>
 <p>现代日志系统中，可能还要旁路一份上传到日志服务器。</p>
 <ul>
 <li>

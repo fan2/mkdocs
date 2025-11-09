@@ -254,6 +254,7 @@ Stickies.app: [Stickies User Guide for Mac](https://support.apple.com/en-hk/guid
 
 [ImageAssistant](https://chromewebstore.google.com/detail/imageassistant-batch-imag/dbjbempljhcmhlfpfacalomonjpalpko): Batch Image Downloader + QR Code Generator
 [Media Harvest : twitter Media Downloader](https://chromewebstore.google.com/detail/media-harvest-twitter-med/hpcgabhdlnapolkkjpejieegfpehfdok): Download videos and images from twitter
+[FetchV](https://fetchv.net/) - [Video Downloader for m3u8 & hls](https://chromewebstore.google.com/detail/fetchv-video-downloader-f/nfmmmhanepmpifddlkkmihkalkoekpfd): FetchV Video Download Extension
 
 [划词翻译](https://chromewebstore.google.com/detail/%E5%88%92%E8%AF%8D%E7%BF%BB%E8%AF%91/ikhdkkncnoglghljlkmcimlnlhkeamad): 一站式划词 / 截图 / 网页全文 / 音视频 AI 翻译扩展
 

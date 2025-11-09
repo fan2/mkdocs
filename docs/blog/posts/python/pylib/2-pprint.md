@@ -172,3 +172,72 @@ pprint.pprint(sys.implementation.__dict__)
  'name': 'cpython',
  'version': sys.version_info(major=3, minor=10, micro=8, releaselevel='final', serial=0)}
 ```
+
+## rich.pretty
+
+[Textualize/rich](https://github.com/Textualize/rich) / [README.md](https://github.com/Textualize/rich/blob/master/README.md)
+
+```bash
+>>> import requests, rich
+>>> r = requests.get('http://ipinfo.io')
+>>> print(r.json())
+{'ip': '119.237.98.88', 'hostname': 'n1192379888.netvigator.com', 'city': 'Hong Kong', 'region': 'Hong Kong', 'country': 'HK', 'loc': '22.3735, 114.1791', 'org': 'AS4760 HKT Limited', 'postal': '999077', 'timezone': 'Asia/Hong_Kong', 'readme': 'https://ipinfo.io/missingauth'}
+```
+
+Use `rich.print` or `rich.console.Console().print` to dump json dict:
+
+```bash
+>>> rich.print(r.json())
+{
+    'ip': '119.237.98.88',
+    'hostname': 'n1192379888.netvigator.com',
+    'city': 'Hong Kong',
+    'region': 'Hong Kong',
+    'country': 'HK',
+    'loc': '22.3735, 114.1791',
+    'org': 'AS4760 HKT Limited',
+    'postal': '999077',
+    'timezone': 'Asia/Hong_Kong',
+    'readme': 'https://ipinfo.io/missingauth'
+}
+```
+
+[documentation](https://rich.readthedocs.io/) / [rich.console](https://rich.readthedocs.io/en/latest/reference/console.html#rich.console.Console)
+
+- `Console.print_json`: Pretty prints JSON *str*. Output will be valid JSON.
+
+```bash
+>>> rich.console.Console().print_json(r.text)
+{
+  "ip": "119.237.98.88",
+  "hostname": "n1192379888.netvigator.com",
+  "city": "Hong Kong",
+  "region": "Hong Kong",
+  "country": "HK",
+  "loc": "22.3735, 114.1791",
+  "org": "AS4760 HKT Limited",
+  "postal": "999077",
+  "timezone": "Asia/Hong_Kong",
+  "readme": "https://ipinfo.io/missingauth"
+}
+```
+
+- [documentation](https://rich.readthedocs.io/) / [rich.pretty](https://rich.readthedocs.io/en/stable/pretty.html)
+
+The `pprint()` method offers a few more arguments you can use to tweak how objects are pretty printed.
+
+```bash
+>>> rich.pretty.pprint(r.json())
+{
+│   'ip': '119.237.98.88',
+│   'hostname': 'n1192379888.netvigator.com',
+│   'city': 'Hong Kong',
+│   'region': 'Hong Kong',
+│   'country': 'HK',
+│   'loc': '22.3735, 114.1791',
+│   'org': 'AS4760 HKT Limited',
+│   'postal': '999077',
+│   'timezone': 'Asia/Hong_Kong',
+│   'readme': 'https://ipinfo.io/missingauth'
+}
+```

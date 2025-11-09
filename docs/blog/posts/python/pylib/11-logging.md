@@ -229,12 +229,12 @@ python 的 logging 模块与 Android/Java 中的 log4j 日志系统的机制基�
 
 ### logging module
 
-[logging — Logging facility for Python — Python 3.12.2 documentation](https://docs.python.org/3/library/logging.html)
+[logging — Logging facility for Python](https://docs.python.org/3/library/logging.html)
 
 - Module [logging.config](https://docs.python.org/3/library/logging.config.html#module-logging.config): Configuration API for the logging module.
 - Module [logging.handlers](https://docs.python.org/3/library/logging.handlers.html#sockethandler): Useful handlers included with the logging module.
 
-[Logging HOWTO — Python 3.12.2 documentation](https://docs.python.org/3/howto/logging.html#logging-basic-tutorial)
+[Logging HOWTO](https://docs.python.org/3/howto/logging.html#logging-basic-tutorial) - Logging Flow
 
 按照惯例，我们先借助 help 系统一览 logging 提供的 class hierarchy。
 
@@ -261,23 +261,23 @@ CLASSES
 
 The basic classes defined by the module, together with their functions, are listed below.
 
-- `Loggers` expose the interface that application code directly uses.
-- `Handlers` send the log records (created by loggers) to the appropriate destination.
-- `Filters` provide a finer grained facility for determining which log records to output.
-- `Formatters` specify the layout of log records in the final output.
+- `Loggers` expose the `interface` that application code directly uses.
+- `Handlers` send the log records (created by loggers) to the appropriate `destination`.
+- `Filters` provide a finer grained facility for determining *which* log records to output.
+- `Formatters` specify the `layout` of log records in the final output.
 
 下面对这四个类进行简单梳理：
 
-1. `Logger`：提供日志接口，供应用代码使用。logger最常用的操作有两类：配置和发送日志消息。
+1. `Logger`：提供日志接口，供应用代码使用。logger 最常用的操作有两类：配置和发送日志消息。
 
-    - 可通过 logging.**getLogger**(name) 获取 logger 对象，如不指定name则返回root对象。
-    - 使用相同的 name 调用 getLogger 方法返回同一个 logger 对象。
+    - 可通过 logging.**getLogger**(name) 获取 logger 对象，如不指定 name 则返回 root 对象。
+    - 传入相同的 name 调用 getLogger 方法返回同一个 logger 对象。
     - name 可取模块名称（`__name__`），即按模块 getLogger。
 
 2. `Handler`：将日志记录（LogRecord）发送到合适的目的地（destination），比如控制台、文件、socket 等。
 
-    - 一个 Logger 对象可以通过 **addHandler** 方法添加 0 到多个 Handler。
-    - 每个 Handler 又可以定义不同日志级别，以实现日志分级过滤显示、存储落盘或远程上报。
+    - 一个 Logger 对象可以通过 **addHandler** 方法添加多个 Handler。
+    - 每个 Handler 又可以定义不同的日志级别，以实现日志分级过滤显示、存储落盘或远程上报。
 
 3. `Filter`：为 Logger、Handler 提供的过滤器（钩子），提供一种优雅的方式决定一个日志记录是否发送到 Handler。
 
@@ -286,15 +286,13 @@ The basic classes defined by the module, together with their functions, are list
 
 4. `Formatter`：指定日志记录输出的具体格式。
 
-   - Formatter 的构造方法需要两个参数：消息的格式字符串（fmt）和日期字符串（datefmt），这两个参数都是可选的。
-   - 可对 Handler 调用 **setFormatter** 为其设定 Formatter。
+    - Formatter 的构造方法需要两个参数：消息的格式字符串（fmt）和日期字符串（datefmt），这两个参数都是可选的。
+    - 可对 Handler 调用 **setFormatter** 为其设定 Formatter。
 
 The flow of log event information in loggers and handlers is illustrated in the following diagram.
 
 - LogRecord instances are created automatically by the Logger every time something is logged.
 - Logger pass LogRecords to Handler for further processing/dispatch.
-
-![Logging Flow](https://docs.python.org/3/_images/logging_flow.png)
 
 通过简单梳理 logging 模块涉及的核心类后，我们来看看日志模块的惯用法。
 
@@ -319,7 +317,7 @@ logging 模块提供了 log 接口打点指定级别的日志，也可直接调�
 
 ```Shell
 logging.disable(level=CRITICAL)
-Provides an overriding level level for all loggers which takes precedence over the logger's own level.
+Provides an overriding level level for all loggers which takes precedence over the logger’s own level.
 
 logging.log(level, msg, *args, **kwargs)
 Logs a message with level level on the root logger. The other arguments are interpreted as for debug().
@@ -366,7 +364,7 @@ logging.basicConfig(**kwargs)
 Does basic configuration for the logging system by creating a StreamHandler with a default Formatter and adding it to the root logger. The functions debug(), info(), warning(), error() and critical() will call basicConfig() automatically if no handlers are defined for the root logger.
 ```
 
-- logging.debug() (as well as info(), warning(), error() and critical()) will call `basicConfig`() if the root logger doesn't have any handler attached.
+- logging.debug() (as well as info(), warning(), error() and critical()) will call `basicConfig`() if the root logger doesn’t have any handler attached.
 
 我们可以调用 `logging.getLogger()` 查看默认的 RootLogger。
 
@@ -562,7 +560,7 @@ def warn(message):
 
 ### logger with multiple handlers
 
-[Python日志模块logging用法详解](https://cloud.tencent.com/developer/article/1587902)
+[Python 日志模块 logging 用法详解](https://cloud.tencent.com/developer/article/1587902)
 [Python 日志模块](https://rgb-24bit.github.io/blog/2018/python-logging.html)
 
 下面示例，演示同时将日志输出到控制台和文件中，这也是日常开发过程最常用的日志打点模式。
@@ -620,6 +618,36 @@ $ cat spam.log
 ```
 
 如果是系统级服务，可考虑将日志记录到操作系统事务日志，参考 `SysLogHandler` 和 `NTEventLogHandler`。
+
+### rich.logging.RichHandler
+
+[Textualize/rich](https://github.com/Textualize/rich) / [README.md](https://github.com/Textualize/rich/blob/master/README.md)
+
+- [documentation](https://rich.readthedocs.io/) - [Logging Handler](https://rich.readthedocs.io/en/stable/logging.html)
+
+You can also use the builtin Handler class to format and colorize output from Python's logging module. Here's an example of the output:
+
+- The RichHandler class may be configured to use Rich's `Traceback` class to format exceptions, which provides more context than a built-in exception. To get beautiful exceptions in your logs set `rich_tracebacks=True` on the handler constructor:
+
+Rich 可以替代标准日志模块，为日志添加颜色和格式，不同级别的日志一目了然。上面创建的 StreamHandler 用于将日志打在控制台上，可以构造一个 rich.logging.RichHandler 替代之。
+
+> RichHandler 构造函数支持传入 `rich_tracebacks=True` 以便使用 rich.traceback 输出异常堆栈。
+
+```python
+import logging
+from rich.logging import RichHandler
+
+# 使用 RichHandler 替换 StreamHandler
+ch = RichHandler(rich_tracebacks=True)
+ch.setLevel(logging.WARNING)
+
+# ...
+
+# 将 RichHandler 添加到 logger 对象中
+logger.addHandler(ch)
+```
+
+### Bypass to the log server
 
 现代日志系统中，可能还要旁路一份上传到日志服务器。
 

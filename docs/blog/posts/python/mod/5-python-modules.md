@@ -313,6 +313,23 @@ comp.lang.python.
 
 	> Extract, format and print information about Python stack traces.
 
+### rich.traceback
+
+[Textualize/rich](https://github.com/Textualize/rich) / [README.md](https://github.com/Textualize/rich/blob/master/README.md)
+
+- [documentation](https://rich.readthedocs.io/) / [Traceback](https://rich.readthedocs.io/en/latest/traceback.html)
+
+Rich can render beautiful tracebacks which are easier to read and show more code than standard Python tracebacks. You can set Rich as the default traceback handler so all uncaught exceptions will be rendered by Rich.
+
+Rich can be installed as the default traceback handler so that all uncaught exceptions will be rendered with highlighting. Here’s how:
+
+```python
+from rich.traceback import install
+install(show_locals=True)
+```
+
+There are a few options to configure the traceback handler, see [install()](https://rich.readthedocs.io/en/latest/reference/traceback.html#rich.traceback.install) for details.
+
 ## test
 
 - unittest  

@@ -213,7 +213,10 @@ True
 
 综上，`x in y` 等效于 **`any(x is e or x == e for e in y)`**.
 
-判断字符串 s 是否包含空白字符：`any(e in string.whitespace for e in s)`
+判断字符串 s 是否包含空白字符的两种方式：
+
+1. `any(c.isspace() for c in s)`
+2. `any(e in string.whitespace for e in s)`
 
 ## for
 

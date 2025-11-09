@@ -587,3 +587,98 @@ if __name__ == '__main__':
 else:
     pass
 ```
+
+## rich
+
+[Textualize/rich](https://github.com/Textualize/rich) / [README.md](https://github.com/Textualize/rich/blob/master/README.md) - [documentation](https://rich.readthedocs.io/)
+
+### print with markup
+
+- [Console Markup](https://rich.readthedocs.io/en/stable/markup.html)
+- [Pretty Printing](https://rich.readthedocs.io/en/stable/pretty.html)
+
+To effortlessly add rich output to your application, you can import the [rich print](https://rich.readthedocs.io/en/latest/introduction.html#quick-start) method, which has the same signature as the builtin Python function. Try this:
+
+```python
+from rich import print
+
+print("Hello, [bold magenta]World[/bold magenta]!", ":vampire:", locals())
+```
+
+### Console.print with style
+
+[documentation](https://rich.readthedocs.io/) - [rich.console](https://rich.readthedocs.io/en/latest/reference/console.html#rich.console.Console)
+
+For more control over rich terminal content, import and construct a `Console` object.
+
+The Console object has a `print` method which has an intentionally similar interface to the builtin `print` function.
+
+- `Console.print`: Print to the console.
+
+```python
+from rich.console import Console
+
+console = Console()
+```
+
+The Console object has a `print` method which has an intentionally similar interface to the builtin `print` function. Here's an example of use:
+
+```python
+console.print("Hello", "World!")
+```
+
+As you might expect, this will print `"Hello World!"` to the terminal. Note that unlike the builtin `print` function, Rich will word-wrap your text to fit within the terminal width.
+
+There are a few ways of adding color and style to your output. You can set a style for the entire output by adding a `style` keyword argument, see [Styles](https://rich.readthedocs.io/en/stable/style.html). Here's an example:
+
+```python
+console.print("Hello", "World!", style="bold red")
+```
+
+That's fine for styling a line of text at a time. For more finely grained styling, Rich renders a special markup which is similar in syntax to [bbcode](https://en.wikipedia.org/wiki/BBCode). Here's an example:
+
+```python
+console.print("Where there is a [bold cyan]Will[/bold cyan] there [u]is[/u] a [i]way[/i].")
+```
+
+The Console object has a `log()` method which has a similar interface to `print()`, but also renders a column for the current *time* and the *file* and *line* which made the call. By default Rich will do syntax highlighting for Python structures and for *repr* strings. If you log a collection (i.e. a dict or a list) Rich will pretty print it so that it fits in the available space.
+
+- `Console.log`: Log rich content to the terminal.
+
+### alternative markup to colorama
+
+Colorama Attribute | Rich Markup Example  | Rich Style Object Example | Description
+-------------------|----------------------|---------------------------|------------
+Fore.RED <br/> Fore.LIGHTRED_EX  | [red]Text[/red] <br/> [bright_red]Text[/bright_red] | Style(color="red") <br/> Style(color="bright_red") | Sets the foreground color.
+Back.CYAN <br/> Back.LIGHTCYAN_EX | [on cyan]Text[/on cyan] <br/> [on bright_cyan]Text[/on bright_cyan] | Style(bgcolor="cyan") | Sets the background color.
+Style.BRIGHT       | [bold]Text[/bold]  | Style(bold=True)  | Makes text bold/bright.
+Style.NORMAL       | [not bold]Text[/not bold] (to disable)  | Style(bold=False) | Resets brightness/bolding.
+Style.RESET_ALL    | [not bold not italic on default]Text[/not bold not italic on default] (disable specific styles) | Use console.print() without a style, or define a new Style that is the base style | Resets all formatting to default.
+
+Use `rich.print` instead of print+`colorama` to output colored message:
+
+```python
+import rich
+
+def test_fore_back():
+    # print(Fore.BLACK + Back.LIGHTWHITE_EX + 'Fore.BLACK, Back.LIGHTWHITE_EX')
+    rich.print('[black on bright_white]Fore.BLACK, Back.LIGHTWHITE_EX[/black on bright_white]')
+    # print(Fore.RED + Back.LIGHTWHITE_EX + 'Fore.RED, Back.LIGHTWHITE_EX')
+    rich.print('[red on bright_white]Fore.RED, Back.LIGHTWHITE_EX[/red on bright_white]')
+    # print(Fore.GREEN + Back.LIGHTWHITE_EX + 'Fore.GREEN, Back.LIGHTWHITE_EX')
+    rich.print('[green on bright_white]Fore.GREEN, Back.LIGHTWHITE_EX[/green on bright_white]')
+    # print(Fore.YELLOW + Back.LIGHTWHITE_EX + 'Fore.YELLOW, Back.LIGHTWHITE_EX')
+    rich.print('[yellow on bright_white]Fore.YELLOW, Back.LIGHTWHITE_EX[/yellow on bright_white]')
+    # print(Fore.BLUE + Back.LIGHTWHITE_EX + 'Fore.BLUE, Back.LIGHTWHITE_EX')
+    rich.print('[blue on bright_white]Fore.BLUE, Back.LIGHTWHITE_EX[/blue on bright_white]')
+    # print(Fore.MAGENTA + Back.LIGHTWHITE_EX + 'Fore.MAGENTA, Back.LIGHTWHITE_EX')
+    rich.print('[magenta on bright_white]Fore.MAGENTA, Back.LIGHTWHITE_EX[/magenta on bright_white]')
+    # print(Fore.CYAN + Back.LIGHTWHITE_EX + 'Fore.CYAN, Back.LIGHTWHITE_EX')
+    rich.print('[cyan on bright_white]Fore.CYAN, Back.LIGHTWHITE_EX[/cyan on bright_white]')
+
+def prompt_missing_password():
+    print("No password found in os.environ, PLS export", end=' ')
+    # print(f"{Style.BRIGHT}{Back.LIGHTYELLOW_EX}EXCEL_PASSWD", end=' ')
+    rich.print("[bold on bright_yellow]EXCEL_PASSWD[/bold on bright_yellow]", end=' ')
+    print("before running this program!")
+```

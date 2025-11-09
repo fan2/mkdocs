@@ -277,7 +277,7 @@ A string literal with `'f'` or `'F'` in its prefix is a *formatted string litera
 
 If a conversion is specified, the result of evaluating the expression is converted before formatting. Conversion '`!s`' calls `str`() on the result, '`!r`' calls `repr`(), and '`!a`' calls `ascii`().
 
-!r 对整数变量调用str字符串化输出：
+!s 对整数变量调用str字符串化输出：
 
 > 此处不带这个，默认也会转换。
 
