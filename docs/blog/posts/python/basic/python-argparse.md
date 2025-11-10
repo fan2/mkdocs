@@ -178,6 +178,10 @@ $ python3 --help
 -X opt : set implementation-specific option
 ```
 
+可执行 `python3 --help-xoptions` 查看 implementation-specific options 的详细信息。
+
+> `-X faulthandler`: dump the Python traceback on fatal errors; also PYTHONFAULTHANDLER
+
 ```mermaid
 flowchart TD
     Start@{ shape: circle, label: "开始" }

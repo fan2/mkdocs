@@ -78,6 +78,36 @@ class `datetime.timedelta`
 
 - A duration expressing the difference between two [date](https://docs.python.org/3/library/datetime.html#datetime.date), [time](https://docs.python.org/3/library/datetime.html#datetime.time), or [datetime](https://docs.python.org/3/library/datetime.html#datetime.datetime) instances to microsecond resolution.
 
+### now & today
+
+调用 `datetime.datetime` 的 `now()` 或 `today()` 返回当前时间：
+
+```bash
+>>> dt_now = datetime.datetime.now()
+>>> dt_now
+datetime.datetime(2025, 11, 10, 22, 0, 35, 665900)
+
+>>> dt_today = datetime.datetime.today()
+>>> dt_today
+datetime.datetime(2025, 11, 10, 22, 1, 10, 516142)
+```
+
+调用 `datetime.date.today()` 返回今日 datetime.date 对象：
+
+```bash
+>>> d_today = datetime.date.today()
+>>> d_today
+datetime.date(2025, 11, 10)
+```
+
+调用 `datetime.datetime.combine()` 方法，将 date 对象和 time 对象（默认构造零点）合并为 datetime 对象：
+
+```bash
+>>> dt_today = datetime.datetime.combine(d, datetime.time())
+>>> dt_today
+datetime.datetime(2025, 11, 10, 0, 0)
+```
+
 ### strftime
 
 datetime.**strftime**(*format*)
@@ -86,7 +116,7 @@ datetime.**strftime**(*format*)
 
 按格式输出日期字符串：
 
-```shell
+```bash
 >>> import datetime
 
 >>> datetime_now = datetime.datetime.now()
@@ -98,7 +128,7 @@ datetime.datetime(2018, 4, 24, 15, 51, 2, 399371)
 
 type-specific formatting 等效写法：
 
-```shell
+```bash
 >>> import datetime
 >>> d=datetime.datetime(2018, 4, 25, 13, 0, 0)
 >>> '{:%Y-%m-%d %H:%M:%S}'.format(d)
@@ -111,7 +141,9 @@ type-specific formatting 等效写法：
 
 **strptime**: Return a datetime corresponding to date_string, parsed according to format.
 
-```shell
+从日期字符串按格式构造 datetime 对象：
+
+```bash
 >>> datetime_now = datetime.datetime.strptime('20180424', '%Y%m%d')
 >>> datetime_begin = datetime.datetime.strptime('20180323', '%Y%m%d')
 >>> datetime_count = datetime_now-datetime_begin
@@ -137,7 +169,7 @@ time和datetime都是Python中的内置模块，都可以对时间进行获取�
 
 time 模块定义的 `time()` 函数返回当前时间，是一个秒级时间戳浮点数。
 
-```Shell
+```bash
 FUNCTIONS
 
     time(...)
@@ -218,14 +250,14 @@ Return the local date and time corresponding to the POSIX timestamp, such as is 
 
 也可调用类方法 datetime.timestamp(ts)，其中ts为秒级时间戳：
 
-```Shell
+```bash
 >>> datetime.fromtimestamp(time.time())
 datetime.datetime(2022, 11, 21, 11, 42, 7, 720789)
 ```
 
 ## timedelta
 
-```shell
+```bash
 >>> # 获取当前时间
 >>> d0 = datetime.datetime.now()
 >>> # 基于日期字符串创建日期对象

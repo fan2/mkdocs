@@ -637,8 +637,8 @@ Rich 可以替代标准日志模块，为日志添加颜色和格式，不同级
 import logging
 from rich.logging import RichHandler
 
-# 使用 RichHandler 替换 StreamHandler
-ch = RichHandler(rich_tracebacks=True)
+# 使用 RichHandler 替换 StreamHandler，指定时间戳精确到毫秒
+ch = RichHandler(rich_tracebacks=True, log_time_format="%Y-%m-%d, %H:%M:%S,%f")
 ch.setLevel(logging.WARNING)
 
 # ...
