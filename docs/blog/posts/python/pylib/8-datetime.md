@@ -103,18 +103,19 @@ datetime.date(2025, 11, 10)
 调用 `datetime.datetime.combine()` 方法，将 date 对象和 time 对象（默认构造零点）合并为 datetime 对象：
 
 ```bash
->>> dt_today = datetime.datetime.combine(d, datetime.time())
+>>> dt_today = datetime.datetime.combine(d_today, datetime.time())
 >>> dt_today
 datetime.datetime(2025, 11, 10, 0, 0)
 ```
 
 ### strftime
 
-datetime.**strftime**(*format*)
+**strftime**: Return a string representing the datetime/date
 
-**strftime**: Return a string representing the date
+- datetime.**strftime**(*format*)
+- date.**strftime**(*format*)
 
-按格式输出日期字符串：
+`datetime` 和 `date` 对象都支持 `strftime()` 方法，按格式输出日期字符串：
 
 ```bash
 >>> import datetime
@@ -137,11 +138,12 @@ type-specific formatting 等效写法：
 
 ### strptime
 
-*classmethod* datetime.**strptime**(*date_string*, *format*)
+**strptime**: Return a datetime/date corresponding to *date_string*, parsed according to format.
 
-**strptime**: Return a datetime corresponding to date_string, parsed according to format.
+- *classmethod* datetime.**strptime**(*date_string*, *format*)
+- *classmethod* date.**strptime**(*date_string*, *format*)
 
-从日期字符串按格式构造 datetime 对象：
+`datetime` 和 `date` 对象都支持 `strptime()` 方法，从日期字符串按格式构造 datetime/date 对象：
 
 ```bash
 >>> datetime_now = datetime.datetime.strptime('20180424', '%Y%m%d')
@@ -151,6 +153,29 @@ type-specific formatting 等效写法：
 datetime.timedelta(32)
 >>> datetime_count.days
 32
+```
+
+### fromisoformat
+
+Return a datetime/date corresponding to a *date_string* in any valid ISO 8601 format.
+
+- *classmethod* datetime.**fromisoformat**(*date_string*)
+- *classmethod* date.**fromisoformat**(*date_string*)
+
+`datetime` 和 `date` 对象都支持 `fromisoformat()` 方法，从日期字符串构造 datetime/date 对象：
+
+```bash
+>>> datetime.datetime.fromisoformat('2011-11-04')
+datetime.datetime(2011, 11, 4, 0, 0)
+>>> datetime.datetime.fromisoformat('20111104')
+datetime.datetime(2011, 11, 4, 0, 0)
+>>> datetime.datetime.fromisoformat('2011-11-04T00:05:23')
+datetime.datetime(2011, 11, 4, 0, 5, 23)
+
+>>> datetime.date.fromisoformat('2019-12-04')
+datetime.date(2019, 12, 4)
+>>> datetime.date.fromisoformat('20191204')
+datetime.date(2019, 12, 4)
 ```
 
 ## timestamp
@@ -260,6 +285,8 @@ datetime.datetime(2022, 11, 21, 11, 42, 7, 720789)
 ```bash
 >>> # 获取当前时间
 >>> d0 = datetime.datetime.now()
+>>> d0
+datetime.datetime(2018, 4, 26, 22, 37, 55, 465668)
 >>> # 基于日期字符串创建日期对象
 >>> str_begin_date = '20180314'
 >>> d1 = datetime.datetime.strptime(str_begin_date, '%Y%m%d')
@@ -275,6 +302,40 @@ datetime.datetime(2022, 11, 21, 11, 42, 7, 720789)
 >>> d3 = d0 - datetime.timedelta(days=32)
 >>> d3
 datetime.datetime(2018, 3, 25, 22, 37, 55, 465668)
+```
+
+假设有一个工单在明天过期，下面基于 `datetime` 来统计剩余天数。
+由于现在不是今日零点，因此计算日期差不足 1 天：
+
+```bash
+>>> today = datetime.datetime.today()
+>>> today
+datetime.datetime(2018, 4, 26, 22, 37, 55, 465668)
+>>> due_date = datetime.datetime.strptime('2018-04-27', '%Y-%m-%d')
+>>> delta = due_date - today
+>>> delta.days
+0
+```
+
+如果要计算整点天数，需要取今日零点 `datetime`：
+
+```bash
+>>> d_today = datetime.date.today()  # datetime.datetime.today().date()
+>>> dt_today = datetime.datetime.combine(d_today, datetime.time())
+>>> dt_due = datetime.datetime.fromisoformat('2018-04-27')
+>>> delta = dt_due - dt_today
+>>> delta.days
+1
+```
+
+基于 `date` 计算最合适：
+
+```bash
+>>> d_today = datetime.date.today()
+>>> d_due = datetime.date.fromisoformat('2018-04-27')
+>>> delta = d_due - d_today
+>>> delta.days
+1
 ```
 
 ## Examples
