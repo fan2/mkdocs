@@ -25,6 +25,8 @@ macOS 软件清单备忘（macOS Software Inventory）。
 
 [Karabiner-Elements](https://karabiner-elements.pqrs.org/): A powerful and stable keyboard customizer for macOS.
 
+[AltTab - Windows alt-tab on macOS](https://alt-tab-macos.netlify.app/)
+
 [iTerm2 - macOS Terminal Replacement](https://iterm2.com/)
 
 - iTerm2 is a terminal emulator for macOS that does amazing things.
@@ -99,7 +101,7 @@ softorino [WALTR PRO](https://softorino.com/waltr/)
 
 macOS 截图预览内置 OCR 识别。
 
-[iShot for Mac | better365](https://www.better365.cn/ishot.html)
+[iShot for Mac | better365](https://www.better365.cn/ishot.html) / [Snow Shot for Windows](https://snowshot.top/)
 
 - 截图、长截图、全屏带壳截图、贴图、标注、取色、录屏、录音、OCR、翻译……
 
@@ -174,6 +176,10 @@ PDF Expert，搭配内置 Preview 查看扫描件。
 - [Markdown Shortcuts](https://marketplace.visualstudio.com/items?itemName=mdickin.markdown-shortcuts)
 - [File Utils](https://marketplace.visualstudio.com/items?itemName=sleistner.vscode-fileutils)
 - [GitLens](https://marketplace.visualstudio.com/items?itemName=eamodio.gitlens)
+
+[Zed — The editor for what's next](https://zed.dev/)
+
+- Zed is a next-generation code editor designed for high-performance collaboration with humans and AI.
 
 ## Stickies & Notes
 

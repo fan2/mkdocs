@@ -4,7 +4,7 @@ authors:
   - xman
 date:
     created: 2024-03-18T15:30:00
-    updated: 2024-04-15T17:00:00
+    updated: 2025-12-12T17:00:00
 categories:
     - macOS
     - ubuntu
@@ -119,6 +119,8 @@ macOS 下使用包管理器 [brew](https://brew.sh/) 搜索安装 rclone；ubunt
 ### config webdav
 
 以下使用 `rclone config` 交互式配置 webDAV 服务，其中高亮行是交互输入。
+
+> ⚠️：在 ubuntu 中，remote name 中不能包含 @ 符号，建议改为 - 替代：webdav-rpi4b。
 
 ??? note "rclone config webdav"
 
@@ -336,10 +338,6 @@ macOS 下使用包管理器 [brew](https://brew.sh/) 搜索安装 rclone；ubunt
 - 28 / Local Disk \\ (local)
 - 43 / SMB / CIFS \\ (smb)
 
-如果中途不小心输错或后续想更改配置，可输入 `rclone config edit` 选择编辑已有的配置。
-
-> ⚠️：在 ubuntu 中，remote name 中不能包含 @ 符号，可改为 - 替代：webdav-rpi4b。
-
 ### config show
 
 rclone config 配置完成后，可调用相关命令 dump/show 相关配置信息：
@@ -351,6 +349,13 @@ rclone config 配置完成后，可调用相关命令 dump/show 相关配置信�
 | [rclone config show](https://rclone.org/commands/rclone_config_show/)   | Print (decrypted) config file, or the config for a single remote.             |
 | [rclone config dump](https://rclone.org/commands/rclone_config_dump/)   | Dump the config file as JSON.                                                 |
 | [rclone listremotes](https://rclone.org/commands/rclone_listremotes/)   | List all the remotes in the config file and defined in environment variables. |
+
+列举已配置/挂载的远端服务/云盘（名称）：
+
+```bash
+$ rclone listremotes
+webdav@rpi4b:
+```
 
 查看配置文件路径：
 
@@ -368,6 +373,7 @@ Configuration file is stored at:
 查看配置文件中的配置：
 
 ```bash
+# 等效于 cat ~/.config/rclone/rclone.conf
 $ rclone config show
 [webdav@rpi4b]
 type = webdav
@@ -375,7 +381,11 @@ url = http://rpi4b-ubuntu.local:81/webdav/
 vendor = other
 user = xman
 pass = *** ENCRYPTED ***
+```
 
+或 `dump` 出 json 格式：
+
+```bash
 $ rclone config dump
 {
     "webdav@rpi4b": {
@@ -388,11 +398,35 @@ $ rclone config dump
 }%
 ```
 
-列举配置文件中已配置的远端服务（名称）：
+### config edit
+
+如果中途不小心输错或后续想更改配置，可输入 `rclone config edit` 选择编辑已有的配置。
 
 ```bash
-$ rclone listremotes
-webdav@rpi4b:
+e) Edit existing remote -- 编辑现存 remote 配置
+n) New remote
+d) Delete remote
+r) Rename remote        -- 重命名 remote
+c) Copy remote
+s) Set configuration password
+q) Quit config
+```
+
+也可执行 `rclone config delete` 命令删除一个 remote（Delete an existing remote）。
+
+## test
+
+[rclone size](https://rclone.org/commands/rclone_size/): Prints the total size and number of objects in remote:path.
+
+```bash
+$ rclone size webdav@rpi4b:
+```
+
+[rclone test speed](https://rclone.org/commands/rclone_test_speed/): Run a speed test to the remote.
+
+```bash
+# use -q flag for a simpler output
+$ rclone test speed webdav@rpi4b: -q
 ```
 
 ## ls
@@ -421,11 +455,98 @@ There are several related list commands:
 
 `ls`,`lsl`,`lsd` are designed to be human-readable. `lsf` is designed to be human and machine-readable. `lsjson` is designed to be machine-readable.
 
+### lsd, lsf
+
+The other list commands `lsd`,`lsf`,`lsjson` do not recurse by default - use `-R` to make them recurse.
+
+`lsd` 命令显示指定路径（根目录）下的目录/容器/桶：
+
+```bash
+$ rclone lsd webdav@rpi4b:
+          -1 2024-04-05 08:34:31        -1 CS
+          -1 2024-04-03 10:53:51        -1 English_Docs
+          -1 2024-03-25 10:17:59        -1 The_Economist
+          -1 2024-04-01 18:25:31        -1 mkdocs
+```
+
+`lsf` 命令以一种简单的方式列举目录（和文件）：
+
+```bash
+$ rclone lsf webdav@rpi4b:
+CS/
+English_Docs/
+The_Economist/
+mkdocs/
+```
+
+`lsjson` 命令支持以 json 格式列举目录：
+
+```bash
+$ rclone lsjson webdav@rpi4b:
+[
+{"Path":"CS","Name":"CS","Size":-1,"MimeType":"inode/directory","ModTime":"2024-04-05T00:34:31Z","IsDir":true},
+{"Path":"English_Docs","Name":"English_Docs","Size":-1,"MimeType":"inode/directory","ModTime":"2024-04-03T02:53:51Z","IsDir":true},
+{"Path":"The_Economist","Name":"The_Economist","Size":-1,"MimeType":"inode/directory","ModTime":"2024-03-25T02:17:59Z","IsDir":true},
+{"Path":"mkdocs","Name":"mkdocs","Size":-1,"MimeType":"inode/directory","ModTime":"2024-04-01T10:25:31Z","IsDir":true}
+]
+```
+
+除此之外，rclone 还提供了 `tree` 命令支持以树形递归显示目录结构：
+
+```bash
+# 递归展示整个云盘的树形目录结构
+$ rclone tree webdav@rpi4b:
+```
+
+#### filter
+
+`tree` 命令以树形递归显示目录结构，支持使用 `--max-depth` 限制递归层级：
+
+```bash
+# 等效于 rclone lsf 的树形展示（包括文件）
+$ rclone tree webdav@rpi4b: --max-depth 1
+/
+├── CS
+├── English_Docs
+├── The_Economist
+└── mkdocs
+
+0 directories, 0 files
+
+$ rclone tree webdav@rpi4b: --max-depth 2
+
+```
+
+`ls` / `lsl` 命令递归列举指定目录下的文件时，还可以使用 `--max-depth` 限制递归层级：
+
+```bash
+# 只列举显示根目录下的文件
+$ rclone lsl webdav@rpi4b: --max-depth 1
+
+# 列举显示根目录及子目录下的文件
+$ rclone lsl webdav@rpi4b: --max-depth 2
+
+# 列举显示根目录、子目录及孙子目录下的文件
+$ rclone lsl webdav@rpi4b: --max-depth 3
+```
+
+`lsf` 还可以使用 `--include`/`--exclude` 选项过滤显示/排除不显示指定目录。
+
+```bash
+# 过滤只显示 CS- 开头的目录
+$ rclone lsf webdav@rpi4b: --include "CS-*/"
+# $ rclone lsf webdav@rpi4b: --include "CS-*/**"
+
+# 过滤不显示 CS-System 和 CS-Network 目录
+# $ rclone lsf webdav@rpi4b: --exclude "{CS-System/**,CS-Network/**}"
+$ rclone lsf webdav@rpi4b: --exclude "CS-{System, Network}/**"
+```
+
 ### ls, lsl
 
 Note that `ls` and `lsl`** recurse** by default - use `--max-depth 1` to stop the recursion.
 
-`ls` 命令递归列举根路径下的所有文件（大小和路径）：
+`ls` 命令递归列举根路径下的所有文件（显示大小和路径）：
 
 ```bash
 $ rclone ls webdav@rpi4b:
@@ -435,7 +556,7 @@ $ rclone tree webdav@rpi4b:
       ...
 ```
 
-`ls` 命令递归列举 `/mkdocs` 下的所有文件（显示大小和路径）：
+`ls` 命令递归列举 `/mkdocs` 目录下的文件：
 
 ```bash
 $ rclone ls webdav@rpi4b:/mkdocs
@@ -459,16 +580,22 @@ $ rclone lsl webdav@rpi4b:/mkdocs
       279 2024-04-01 18:02:26.000000000 hello-world.c
 ```
 
-`lsl` 命令递归列举指定目录下的所有文件，可以使用 `--max-depth` 限制递归层级：
+#### filter
+
+`ls` / `lsl` 命令还支持使用 `--include`/`--exclude` 选项过滤显示/排除不显示指定文件。
+
+以下 `--include` 选项使用通配符指定目录层级：
 
 ```bash
-# 只列举显示一级目录下的文件
-$ rclone lsl webdav@rpi4b: --max-depth 2
-
+# 只列举显示根目录下的文件（请区分 --max-depth 1）
+$ rclone lsl webdav@rpi4b: --include "/*"
+# 只列举显示子目录下的文件（请区分 --max-depth 2）
 $ rclone lsl webdav@rpi4b: --include "/*/*"
+# 只列举显示孙子目录下的文件（请区分 --max-depth 3）
+$ rclone lsl webdav@rpi4b: --include "/*/*/*"
 ```
 
-还可以使用 `--include` 选项，过滤列举指定目录下的文件：
+以下 `--include` 选项指定目录名称，并结合通配符来指定层级：
 
 ```bash
 # 只列举 CS 目录下的文件
@@ -492,12 +619,12 @@ $ rclone lsl webdav@rpi4b: --include "CS-{System, Network}/**"
 
 以下按文件名过滤所有树莓派相关资料：
 
-```
+```bash
 # 文件名包含 rpi 或 raspberry，忽略大小写
 $ rclone lsl webdav@rpi4b: --include "*{rpi,raspberry}*" --ignore-case
 ```
 
-以下按文件后缀过滤：
+以下按文件后缀过滤所有的 `*.DS_Store` 文件：
 
 ```bash
 $ rclone lsl smbhd@rpi4b:WDHD/backups/ --include "*.DS_Store"
@@ -505,7 +632,7 @@ $ rclone lsl smbhd@rpi4b:WDHD/backups/ --include "*.DS_Store"
      4096 2024-04-17 15:55:15.000000000 ._.DS_Store
 ```
 
-也可以使用 `--exclude` 选项，排除指定目录下的文件：
+以下使用 `--exclude` 选项，排除指定目录下的文件：
 
 ```bash
 # 不递归列举 CS 目录下的文件
@@ -546,66 +673,6 @@ $ rclone lsl webdav@rpi4b: --max-size 1M
     - [How to specify what folders to sync and what to exclude -- include, exclude, filter?](https://forum.rclone.org/t/how-to-specify-what-folders-to-sync-and-what-to-exclude-include-exclude-filter/21821)
     - [Rclone copy using regex expression using include multiple expression for file name](https://forum.rclone.org/t/rclone-copy-using-regex-expression-using-include-multiple-expression-for-file-name/26846)
 
-### lsd, lsf, lsjson
-
-The other list commands `lsd`,`lsf`,`lsjson` do not recurse by default - use `-R` to make them recurse.
-
-`lsd` 命令显示指定路径（根目录）下的目录/容器/桶：
-
-```bash
-$ rclone lsd webdav@rpi4b:
-          -1 2024-04-05 08:34:31        -1 CS
-          -1 2024-04-03 10:53:51        -1 English_Docs
-          -1 2024-03-25 10:17:59        -1 The_Economist
-          -1 2024-04-01 18:25:31        -1 mkdocs
-```
-
-`lsf` 命令以一种简单的方式列举目录（和文件）：
-
-```bash
-$ rclone lsf webdav@rpi4b:
-CS/
-English_Docs/
-The_Economist/
-mkdocs/
-
-# 过滤只显示 CS- 开头的目录
-$ rclone lsf webdav@rpi4b: --include "CS-*/"
-# $ rclone lsf webdav@rpi4b: --include "CS-*/**"
-
-# 过滤不显示 CS-System 和 CS-Network 目录
-# $ rclone lsf webdav@rpi4b: --exclude "{CS-System/**,CS-Network/**}"
-$ rclone lsf webdav@rpi4b: --exclude "CS-{System, Network}/**"
-
-```
-
-`lsjson` 命令以 json 格式列举目录：
-
-```bash
-$ rclone lsjson webdav@rpi4b:
-[
-{"Path":"CS","Name":"CS","Size":-1,"MimeType":"inode/directory","ModTime":"2024-04-05T00:34:31Z","IsDir":true},
-{"Path":"English_Docs","Name":"English_Docs","Size":-1,"MimeType":"inode/directory","ModTime":"2024-04-03T02:53:51Z","IsDir":true},
-{"Path":"The_Economist","Name":"The_Economist","Size":-1,"MimeType":"inode/directory","ModTime":"2024-03-25T02:17:59Z","IsDir":true},
-{"Path":"mkdocs","Name":"mkdocs","Size":-1,"MimeType":"inode/directory","ModTime":"2024-04-01T10:25:31Z","IsDir":true}
-]
-```
-
-除此之外，rclone 还提供了 tree 命令，支持以树形显示目录结构：
-
-```bash
-$ rclone tree webdav@rpi4b: --max-depth 1
-/
-├── CS
-├── English_Docs
-├── The_Economist
-└── mkdocs
-
-0 directories, 0 files
-
-$ rclone tree webdav@rpi4b: --max-depth 2
-```
-
 ## mkdir
 
 语义同 bash shell 中的 `mkdir`，创建目录（remote:path）。
@@ -614,9 +681,9 @@ $ rclone tree webdav@rpi4b: --max-depth 2
 |---------|-------------|
 | [rclone mkdir](https://rclone.org/commands/rclone_mkdir/) | Make the path if it doesn't already exist. |
 
-在根目录 /webdav 下新建文件夹 rcdir：
+在根目录下新建文件夹 rcdir：
 
-```bash
+```bash linenums="1" hl_lines="14"
 $ rclone lsf webdav@rpi4b:
 CS/
 English_Docs/
@@ -645,26 +712,20 @@ rcdir/
 
 **copy**:
 
-1. If dest\:path doesn't exist, it is created and the source\:path contents go there.
-2. To copy single files, use the [copyto](https://rclone.org/commands/rclone_copyto/) command instead.
+1. If `dest:path` doesn't exist, it is created and the `source:path` contents go there.
+2. To copy *single* files, use the [copyto](https://rclone.org/commands/rclone_copyto/) command instead.
 
 **copyto**:
 
-1. If source:path is a file or directory then it copies it to a file or directory *named* dest:path.
-2. This can be used to upload single files to other than their current name.
+1. If `source:path` is a file or directory then it copies it to a file or directory *named* `dest:path`.
+2. This can be used to upload *single* files to other than their current name.
 3. If the source is a directory then it acts exactly like the [copy](https://rclone.org/commands/rclone_copy/) command.
+
+**copyurl** = download from URL to local Temp dir, then copy to the specified `dst:path`.
 
 ### upload from local
 
-将当前目录下文件夹 mkdocs/script/ 中的所有文件复制到 test/script 目录下：
-
-*   如果目标目录不存在，会逐级创建目录（mkdir -p test/script）。
-
-```bash
-$ rclone copy -v mkdocs/script/ webdav@rpi4b:test/script
-```
-
-将当前目录下的文件 test.txt 拷贝上传（copy upload）到目录 rcdir 下：
+将当前工作目录下的文件 test.txt 拷贝上传（copy upload）到目录 rcdir 下：
 
 ```bash
 $ rclone copy -v test.txt webdav@rpi4b:rcdir
@@ -673,19 +734,30 @@ $ rclone lsf webdav@rpi4b:rcdir
 test.txt
 ```
 
+!!! warning "如果使用 copyto 命令，会将 rcdir 视作文件"
+
+    ```bash
+    # test.txt 文件将复制为远端文件 rcdir
+    $ rclone copyto -v test.txt webdav@rpi4b:rcdir
+    ```
+
+将当前工作目录下 mkdocs/script 文件夹中的所有文件复制到 test/script 目录下：
+
+*   如果目标目录不存在，会逐级创建目录（mkdir -p test/script）。
+
 ```bash
-# 仅拷贝 srcpath 中 5s 之内有变动的文件
+$ rclone copy -v mkdocs/script webdav@rpi4b:test/script
+```
+
+仅拷贝本地目录 testdir 中 5s 之内有变动的文件：
+
+```bash
 $ rclone copy -v ~/Downloads/testdir webdav@mbpa2991:testdir --max-age 5
 ```
 
-**注意**：如果使用 copyto 命令，会将 rcdir 视作文件：
+---
 
-```bash
-# 将当前目录下的 test.txt 文件复制为远端文件 rcdir
-$ rclone copyto -v test.txt webdav@rpi4b:rcdir
-```
-
-使用 copyto 命令，dstpath 部分指定上传后的目标文件名。
+使用 copyto 命令，dstpath 需明确指定上传后的目标文件名。
 例如，将 test.txt 上传为 rcdir/test2.txt：
 
 ```bash
@@ -705,19 +777,30 @@ filedate=$(date -r "$config" +%Y%m%d)
 $ rclone copyto -v ~/.zshrc smbhd@rpi4b:WDHD/backups/config/$host-$filedate.zshrc
 ```
 
-**注意**：如果使用 copy 命令，会将 test2.txt 视作目录：
+!!! warning "如果使用 copy 命令，会将 test2.txt 视作目录"
 
-```bash
-# 将当前目录下的 test.txt 文件复制到远端目录 rcdir/test2.txt/ 下
-$ rclone copy test.txt webdav@rpi4b:rcdir/test2.txt
+    ```bash
+    # test.txt 文件将复制到远端目录 rcdir/test2.txt/ 下
+    $ rclone copy test.txt webdav@rpi4b:rcdir/test2.txt
 
-$ rclone lsf webdav@rpi4b:rcdir
-test.txt
-test2.txt/
+    $ rclone lsf webdav@rpi4b:rcdir
+    test.txt
+    test2.txt/
 
-$ rclone lsf webdav@rpi4b:rcdir/test2.txt
-test.txt
-```
+    $ rclone lsf webdav@rpi4b:rcdir/test2.txt
+    test.txt
+    ```
+
+使用 `copy`/`copyto` 从 src 上传文件到 dst 时，亦可通过 `--include` / `--exclude` 选项来设定过滤条件，
+
+- `--include` - Include files matching pattern
+- `--include-from` - Read include patterns from *file*
+
+- `--exclude` - Exclude files matching pattern
+- `--exclude-from` - Read exclude patterns from *file*
+
+- `--filter` - Add a file-filtering rule
+- `--filter-from` - Read filtering patterns from a *file*
 
 ### download from remote
 
@@ -800,18 +883,20 @@ test4.txt
 **move**:
 
 1. Moves the contents of the source directory to the destination directory.
-2. To move single files, use the [moveto](https://rclone.org/commands/rclone_moveto/) command instead.
+2. To move *single* files, use the [moveto](https://rclone.org/commands/rclone_moveto/) command instead.
 
 **moveto**:
 
-1. If source:path is a file or directory then it moves it to a file or directory *named* dest:path.
-2. This can be used to rename files or upload single files to other than their existing name.
+1. If `source:path` is a file or directory then it moves it to a file or directory *named* `dest:path`.
+2. This can be used to *rename* files or upload single files to other than their existing name.
 3. If the source is a directory then it acts exactly like the [move](https://rclone.org/commands/rclone_move/) command.
 
 !!! note "move vs. copy"
 
     在上面使用 `copy` 的场合，都可以替换为 `move`。
     区别在于 `copy` 是复制-粘贴，而 `move` 相当于剪切-粘贴。
+
+### server-side move
 
 server-side move：不同目录为移动，相同目录相当于重命名。
 
@@ -820,7 +905,7 @@ server-side move：不同目录为移动，相同目录相当于重命名。
 ```bash
 $ rclone moveto -v webdav@rpi4b:rcdir1/test4.txt webdav@rpi4b:rcdir1/test3.txt
 
-rclone lsf webdav@rpi4b:rcdir1
+$ rclone lsf webdav@rpi4b:rcdir1
 test.txt
 test2.txt
 test3.txt
@@ -875,7 +960,7 @@ test2.txt
 test3.txt
 ```
 
-删除远端文件夹 rcdir1 下的所有文件：
+删除远端文件夹 rcdir1 下的所有文件（如不确定，可带上 `--dry-run` 先测试验证）：
 
 ```bash
 $ rclone delete -v webdav@rpi4b:rcdir1
@@ -884,7 +969,7 @@ $ rclone lsf webdav@rpi4b:rcdir1
 
 ```
 
-过滤删除指定目录下特定后缀的文件（请先 --dry-run 验证）：
+过滤删除指定目录下特定后缀的文件（如不确定，可带上 `--dry-run` 先测试验证）：
 
 ```bash
 $ rclone lsl smbhd@rpi4b:WDHD --include "*.DS_Store"
@@ -898,7 +983,7 @@ $ rclone delete -v smbhd@rpi4b:WDHD --include "*.DS_Store"
 | [rclone rmdir](https://rclone.org/commands/rclone_rmdir/)   | Remove the empty directory at path.      |
 | [rclone rmdirs](https://rclone.org/commands/rclone_rmdirs/) | Remove empty directories under the path. |
 
-再在根目录下创建个2文件夹 rcdir2、rcdir3
+再在根目录下创建个2文件夹 rcdir2、rcdir3：
 
 ```bash
 $ rclone mkdir webdav@rpi4b:rcdir2
@@ -1018,6 +1103,16 @@ $ rclone sync -v webdav@rpi4b:C-C++ /Volumes/WDHD/webdav@rpi4b/C-C++ 2>&1 | tee 
     1. 先将云盘某个目录 remote\:dstpath 拷贝检出（类似 git clone check) 到本地文件夹 srcpath。
     2. 然后，以 srcpath 为工作目录进行本地文件编辑活动，包括新建、移动、删除等一系列操作。
     3. 编辑完毕，执行 `rclone sync srcpath dest:dstpath` 命令即可同步本地数据到服务端。
+
+---
+
+使用 `rclone check` 命令来验证备份是否完整：
+
+> [rclone check](https://rclone.org/commands/rclone_check/): Checks the files in the source and destination match.
+
+```bash
+$ rclone check /Volumes/WDHD/webdav@rpi4b/English webdav@rpi4b:English
+```
 
 ### bisync
 
