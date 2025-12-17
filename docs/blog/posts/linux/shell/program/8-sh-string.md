@@ -4,6 +4,7 @@ authors:
   - xman
 date:
     created: 2019-11-06T09:50:00
+    updated: 2025-12-17T08:40:00
 categories:
     - linux
     - shell
@@ -16,195 +17,6 @@ Linux 下的 Shell 编程之字符串常用操作。
 
 [linux shell 字符串操作详解](https://www.iteye.com/blog/justcoding-1963463)  
 [shell 变量的高级用法](https://www.cnblogs.com/crazymagic/p/11067147.html)  
-
-## 变量替换
-
-参考 man bash - `Parameter Expansion` 章节
-
-```Shell
-$ man bash
-
-       ${parameter:-word}
-              Use Default Values.  If parameter is unset or null, the  expansion  of  word  is  substituted.
-              Otherwise, the value of parameter is substituted.
-       ${parameter:=word}
-              Assign  Default  Values.   If parameter is unset or null, the expansion of word is assigned to
-              parameter.  The value of parameter is then substituted.   Positional  parameters  and  special
-              parameters may not be assigned to in this way.
-       ${parameter:?word}
-              Display  Error  if  Null or Unset.  If parameter is null or unset, the expansion of word (or a
-              message to that effect if word is not present) is written to the standard error and the shell,
-              if it is not interactive, exits.  Otherwise, the value of parameter is substituted.
-       ${parameter:+word}
-              Use  Alternate  Value.   If  parameter is null or unset, nothing is substituted, otherwise the
-              expansion of word is substituted.
-
-```
-
-[shell 编程：:后面跟-=?+的意义](https://handerfly.github.io/shell/2019/04/03/shell%E7%BC%96%E7%A8%8B%E5%86%92%E5%8F%B7%E5%8A%A0-%E7%AD%89%E5%8F%B7-%E5%8A%A0%E5%8F%B7-%E5%87%8F%E5%8F%B7-%E9%97%AE%E5%8F%B7/)  
-[shell之变量替换：:=、=、:-、-、=?、?、:+、+句法](https://www.cnblogs.com/fhefh/archive/2011/04/22/2024750.html)  
-
-[POSIX](https://pubs.opengroup.org/onlinepubs/9699919799/utilities/V3_chap02.html#tag_18_06_02) 文档中的这张表说得很清楚：
-
-|    |*parameter*<br>**Set and Not Null** |*parameter*<br>**Set But Null** |*parameter*<br>**Unset** |
-|:--|:--|:--|:--|
-|**${***parameter***:-***word***}** |substitute *parameter* |substitute *word* |substitute *word* |
-|**${***parameter***-***word***}** |substitute *parameter* |substitute null |substitute *word* |
-|**${***parameter***:=***word***}** |substitute *parameter* |assign *word* |assign *word* |
-|**${***parameter***=***word***}** |substitute *parameter* |substitute null |assign *word* |
-|**${***parameter***:?***word***}** |substitute *parameter* |error, exit |error, exit |
-|**${***parameter***?***word***}** |substitute *parameter* |substitute null |error, exit |
-|**${***parameter***:+***word***}** |substitute *word* |substitute null |substitute null |
-|**${***parameter***+***word***}** |substitute *word* |substitute *word* |substitute null |
-
-[shell 脚本 ${1:-"false"}的含义](https://blog.csdn.net/fhaitao2009/article/details/104165211)
-
-如果 $1 存在并且不为空，则 a=$1；未定义或为空，则 a=false;
-
-[Usage of :- (colon dash) in bash](https://stackoverflow.com/questions/10390406/usage-of-colon-dash-in-bash)  
-
-`${PUBLIC_INTERFACE:-eth0}`: If `$PUBLIC_INTERFACE` exists and isn't null, return its value, otherwise return "eth0".
-
-### demo
-
-in `/etc/zshrc`: If `ZDOTDIR` is unset(or empty), `HOME` is used instead.
-
-```Shell
-$ vim /etc/zshrc
-
-HISTFILE=${ZDOTDIR:-$HOME}/.zsh_history
-```
-
-[zsh-autosuggestions/INSTALL](https://github.com/zsh-users/zsh-autosuggestions/blob/master/INSTALL.md)：如果变量 `ZSH_CUSTOM` 未定义或为空，则替换为 `~/.oh-my-zsh/custom`。
-
-```Shell
-git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
-```
-
-[How variables inside braces are evaluated](https://unix.stackexchange.com/questions/286335/how-variables-inside-braces-are-evaluated)  
-
-Omitting the `:` drops the "*or null*" part of all these definitions.
-
-This is all described in the [bash(1) manpage](http://man7.org/linux/man-pages/man1/bash.1.html), and in [POSIX](https://pubs.opengroup.org/onlinepubs/9699919799/utilities/V3_chap02.html#tag_18_06_02).
-
-1. 变量未定义：
-
-```Shell
-# 未定义变量
-~  $ unset a
-# 变量未定义，返回default
-~  $ echo "${a:-default}"
-default
-# 变量未定义，返回default
-~  $ echo "${a-default}"
-default
-```
-
-2. 变量有定义，但为空值（空字符串）
-
-```Shell
-# 定义变量，但赋值为空
-~  $ a= # a=''
-# 变量a已定义，但值为空，返回a
-~  $ echo "${a:-default}"
-default
-# 变量a已定义，返回a——空值
-~  $ echo "${a-default}"
-
-~  $
-```
-
-3. 定义变量，且非空值
-
-```Shell
-# 定义变量，且有赋值（非空），返回a
-~  $ a=test
-~  $ echo "${a:-default}"
-test
-~  $ echo "${a-default}"
-test
-```
-
-4. 变量未定义或为空，赋默认值
-
-```Shell
-# 变量未定义，赋默认值
-~  $ unset a
-~  $ echo "${a:=default}"
-default
-~  $ echo $a
-default
-
-# 变量为空值，赋默认值
-~ $ echo $a
-default
-~ $ a=''
-~ $ echo "${a:=default}"
-default
-```
-
-The `+` form might seem strange, but it is useful when constructing variables in several steps:
-
-```Shell
-PATH="${PATH}${PATH:+:}/blah/bin"
-```
-
-will add `:` before `/blah/bin` only if PATH is non-empty, which avoids having a path starting with `:`.
-
-- 如果 PATH 未定义或为空，则什么也不做，第一个环境变量不用添加冒号前缀分隔符；  
-- 如果 PATH 有定义或非空，则相当于在现有 PATH 后面追加变量：`PATH=${PATH}:/blash/bin`；  
-
-### default
-
-以下是一段来自生产实践中的sh脚本，基于 `:=` 来给未定义或空值变量赋默认值兜底：
-
-```Shell
-    # 兜底启动角色和模式
-    echo "role = ${role:=client}"
-    echo "mode = ${mode:=debug}"
-
-    # 兜底默认服务和代理端口
-    echo "web_port = ${web_port:=8080}"
-    echo "proxy_port = ${proxy_port:=8010}"
-```
-
-以下sh脚本中调用get_lan_ip函数，预期其中会定义未export的全局变量lan_ip。
-
-```Shell
-    get_lan_ip
-    echo "lan_ip = $lan_ip"
-```
-
-由于无法确保第三方脚本中的其他函数是否定义了该变量，ShellCheck 会报引用安全警告：
-
-[SC2154](https://github.com/koalaman/shellcheck/wiki/SC2154): lan_ip is referenced but not assigned.
-
-如果局域网 LAN IP 获取不到，往往意味着网络服务不可用，可以使用 `:?` 进行判空警告。
-
-```Shell
-    echo "lan_ip = ${lan_ip:?unset or null}"
-```
-
-这样，如果 lan_ip 未定义或为空值，则直接报错中止退出（exit 1）。
-
-```
-Wi-Fi en0 : status=inactive
-./scripts/proxy/launch_shelf.sh: line 33: lan_ip: unset or null
-```
-
-### read
-
-我们来看一下 [How to read from a file or standard input in Bash](https://stackoverflow.com/questions/6980090/how-to-read-from-a-file-or-standard-input-in-bash) 这个问题，优先从文件读入参数，否则从stdin接受输入。
-
-Read either the first argument or from stdin
-
-`file=${1--}`（`file=${1:--}`，等效于 `${1:-/dev/stdin}`），可理解为 `[ "$1" ] && file=$1 || file="-"`。
-
-以下脚本，从文件$1或stdin读取数据传给cat，然后输出到文件$2或stdout。
-
-```Shell
-cat "${1:-/dev/stdin}" > "${2:-/dev/stdout}"
-```
 
 ## 字符串长度
 
@@ -247,7 +59,7 @@ fi
 `${string:offset}`          | 在 $string 中, 从索引位置 position 开始提取子串至末尾
 `${string:offset:length}`   | 在 $string 中, 从索引位置 position 开始提取，总计 length 个字符的子串
 
-```Shell
+```bash
 $ man bash
 
        ${parameter:offset}
@@ -279,7 +91,7 @@ $ man bash
 - `${str:0-5}`：表示从右边第5个字符开始，一直到结尾。  
 - `${str:0-7:5}`：表示从右边第7个字符开始，截取5个字符。  
 
-```Shell
+```bash
 name="this is my name";
 # 1:4 从第2个开始 到索引4截止
 $ echo ${name:1:5}
@@ -322,7 +134,7 @@ $ echo $index
 
 字符串五种拼接模式：
 
-```Shell
+```bash
 #!/bin/bash
 name="Shell"
 str="Test"
@@ -373,7 +185,7 @@ pi@raspberrypi:~ $ testPATH=${testPATH}:/usr/local/sbin
 
 `[[ ]]`: 判断命令  
 
-```Shell
+```bash
 #!/bin/bash
 
 A="helloworld"
@@ -390,7 +202,7 @@ fi
 
 `=~`: 正则式匹配符号  
 
-```Shell
+```bash
 #!/bin/bash
 
 strA="helloworld"
@@ -405,7 +217,7 @@ fi
 
 ### 利用grep查找
 
-```Shell
+```bash
 #!/bin/bash
 
 strA="long string"
@@ -424,7 +236,7 @@ fi
 
 ### 利用 case in 语句
 
-```Shell
+```bash
 #!/bin/bash
 
 thisString="1 2 3 4 5" # 源字符串
@@ -437,7 +249,7 @@ esac
 
 ### 运用替换运算
 
-```Shell
+```bash
 #!/bin/bash
 
 STRING_A=$1
@@ -460,7 +272,7 @@ fi
 
 `#` 和 `##` 号截断左边留取右边子串（非贪婪模式，贪婪模式）
 
-```Shell
+```bash
 $ man bash
 
        ${parameter#word}
@@ -493,7 +305,7 @@ $ echo $suffix
 
 `%` 和 `%%` 号截断右边留取左边子串（非贪婪模式，贪婪模式）
 
-```Shell
+```bash
 $ man bash
 
        ${parameter%word}
@@ -523,7 +335,7 @@ $ echo $prefix
 /Users/faner/Downloads/iosdeploy_download
 ```
 
-### refs
+### 相关参考
 
 [bash shell字符串的截取](https://www.cnblogs.com/liuweijian/archive/2009/12/27/1633661.html)  
 [Shell字符串截取](http://c.biancheng.net/view/1120.html) - 非常详细  
@@ -544,7 +356,7 @@ $ echo $prefix
 [字符串操作 ${} 的截取，删除和替换](https://www.jianshu.com/p/2305fc9351c2)  
 [Shell脚本中替换字符串等操作](https://blog.csdn.net/jeffiny/article/details/83271889)  
 
-```Shell
+```bash
 $ man bash
 
        ${parameter/pattern/string}
@@ -605,7 +417,7 @@ $ echo "${str/%123/r}"
 123abcr
 ```
 
-### demo
+### 案例示范
 
 doc_subdir 字符串值为 "2015952713/FileRecv" 或 "/2015952713/FileRecv/"，如果是后者需要移除首尾的 `/`：
 
@@ -619,7 +431,7 @@ doc_subdir 字符串值为 "2015952713/FileRecv" 或 "/2015952713/FileRecv/"，�
 - 截右留左：`sub_dir=${sub_dir%/}`;  
 - 后缀替换为空：`sub_dir=${sub_dir/%\//}`;  
 
-```Shell
+```bash
     sub_dir=$doc_subdir
     if [ ${sub_dir:0:1} = "/" ]   # 去掉开头的 /
     then
@@ -635,12 +447,12 @@ doc_subdir 字符串值为 "2015952713/FileRecv" 或 "/2015952713/FileRecv/"，�
 
 移除首尾的 `/` 后，要生成临时文件名，中间的 `/` 需要全部替换为 `-`：
 
-```Shell
+```bash
     file_name=${sub_dir//\//-} # 替换 / 为 -
     ls_out_file="./ios-deploy-list-Documents-$file_name.txt"
 ```
 
-## trim spaces
+## 移除空白字符
 
 如何移除字符串两侧的空格呢？
 
@@ -650,7 +462,7 @@ doc_subdir 字符串值为 "2015952713/FileRecv" 或 "/2015952713/FileRecv/"，�
 
 参考 [Linux Pipeline（管道）](../pipeline/Pipelines.md) 中的 `tr` 命令，可采用 `| tr -s '[:space:]'` 或 `| tr -d '[:space:]'` 压缩/移除所有的空格。
 
-```Shell
+```bash
 $ echo "  0xDEADBEEF" | tr -d ' '
 0xDEADBEEF
 $ echo "0xFEEDBABE    " | tr -d '[:space:]'
@@ -665,7 +477,7 @@ $ echo "  0xDEADBEEF   0xFEEDBABE    " | tr -s '[:space:]'
 
 默认情况下，`xargs` 将其标准输入中的内容以空白(包括空格、tab、回车换行等)分割成多个 arguments 之后当作命令行参数传递给其后面的命令。基于这一原理，可以采用 ` | xargs` 移除首尾和中间的无效空格。
 
-```Shell
+```bash
 $ echo "  0xDEADBEEF" | xargs
 0xDEADBEEF
 $ echo "0xFEEDBABE    " | xargs
@@ -678,7 +490,7 @@ $ echo "  0xDEADBEEF   0xFEEDBABE    " | xargs
 
 可以基于bash内置提供的变量替换之字符串截取，来实现移除字符串首尾空格。
 
-```Shell
+```bash
 trim()
 {
     local trimmed="$1"
@@ -696,17 +508,17 @@ trim()
 }
 ```
 
-### sed
+### 基于sed替换
 
 sed 的强项就文本行替换移除，基于sed可很直观地实现这一目标。
 
-```Shell
+```bash
 echo "  BAADDAAD   FEEDBABE    DEADBEEF     " | sed 's/^[ \t]*//g' | sed 's/[ \t]*$//g'
 echo "  BAADDAAD   FEEDBABE    DEADBEEF     " | sed -e 's/^[[:blank:]]*//' -e 's/[[:blank:]]*$//'
 echo "  BAADDAAD   FEEDBABE    DEADBEEF     " | sed 's/^[[:blank:]]*//;s/[[:blank:]]*$//'
 ```
 
-```Shell
+```bash
 function ltrim ()
 {
     sed -E 's/^[[:space:]]+//'
@@ -723,11 +535,11 @@ function trim ()
 }
 ```
 
-### awk
+### 基于awk实现
 
 另外，基于 awk 提供的 sub（gsub）替换函数也可实现这一目标。
 
-```Shell
+```bash
 echo "  BAADDAAD   FEEDBABE    DEADBEEF     " | awk '{gsub(/^[ \t]+/,""); gsub(/[ \t]+$/,""); print $0 }'
 echo "  BAADDAAD   FEEDBABE    DEADBEEF     " | awk '{gsub(/^[[:blank:]]+|[[:blank:]]+$/,""); print $0 }'
 echo "  BAADDAAD   FEEDBABE    DEADBEEF     " | awk '{gsub(/^[[:blank:]]+|[[:blank:]]+$/,"")}1'
@@ -737,7 +549,7 @@ echo "  BAADDAAD   FEEDBABE    DEADBEEF     " | awk '{gsub(/^[[:blank:]]+|[[:bla
 
 [注意以下脚本会把中间的空格压缩](https://unix.stackexchange.com/a/205854)：
 
-```Shell
+```bash
 echo "  BAADDAAD   FEEDBABE    DEADBEEF     " | awk '{$1=$1};1'
 ```
 

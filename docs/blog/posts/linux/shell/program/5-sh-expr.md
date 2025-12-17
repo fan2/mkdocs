@@ -4,6 +4,7 @@ authors:
   - xman
 date:
     created: 2019-11-06T09:20:00
+    updated: 2025-12-16T10:00:00
 categories:
     - linux
     - shell
@@ -506,3 +507,215 @@ Disassembly of section .init:
  5c8:	a8c17bfd 	ldp	x29, x30, [sp], #16
  5cc:	d65f03c0 	ret
 ```
+
+## Parameter Expansion
+
+参考 man bash - `Parameter Expansion`（参数扩展）章节
+
+```bash
+$ man bash
+
+       ${parameter:-word}
+              Use Default Values.  If parameter is unset or null, the  expansion  of  word  is  substituted.
+              Otherwise, the value of parameter is substituted.
+       ${parameter:=word}
+              Assign  Default  Values.   If parameter is unset or null, the expansion of word is assigned to
+              parameter.  The value of parameter is then substituted.   Positional  parameters  and  special
+              parameters may not be assigned to in this way.
+       ${parameter:?word}
+              Display  Error  if  Null or Unset.  If parameter is null or unset, the expansion of word (or a
+              message to that effect if word is not present) is written to the standard error and the shell,
+              if it is not interactive, exits.  Otherwise, the value of parameter is substituted.
+       ${parameter:+word}
+              Use  Alternate  Value.   If  parameter is null or unset, nothing is substituted, otherwise the
+              expansion of word is substituted.
+
+```
+
+[shell 编程：:后面跟-=?+的意义](https://handerfly.github.io/shell/2019/04/03/shell%E7%BC%96%E7%A8%8B%E5%86%92%E5%8F%B7%E5%8A%A0-%E7%AD%89%E5%8F%B7-%E5%8A%A0%E5%8F%B7-%E5%87%8F%E5%8F%B7-%E9%97%AE%E5%8F%B7/)  
+[shell之变量替换：:=、=、:-、-、=?、?、:+、+句法](https://www.cnblogs.com/fhefh/archive/2011/04/22/2024750.html)  
+
+[POSIX](https://pubs.opengroup.org/onlinepubs/9699919799/utilities/V3_chap02.html#tag_18_06_02) 文档中的这张表说得很清楚：
+
+|    |*parameter*<br>**Set and Not Null** |*parameter*<br>**Set But Null** |*parameter*<br>**Unset** |
+|:--|:--|:--|:--|
+|**${***parameter***:-***word***}** |substitute *parameter* |substitute *word* |substitute *word* |
+|**${***parameter***-***word***}** |substitute *parameter* |substitute null |substitute *word* |
+|**${***parameter***:=***word***}** |substitute *parameter* |assign *word* |assign *word* |
+|**${***parameter***=***word***}** |substitute *parameter* |substitute null |assign *word* |
+|**${***parameter***:?***word***}** |substitute *parameter* |error, exit |error, exit |
+|**${***parameter***?***word***}** |substitute *parameter* |substitute null |error, exit |
+|**${***parameter***:+***word***}** |substitute *word* |substitute null |substitute null |
+|**${***parameter***+***word***}** |substitute *word* |substitute *word* |substitute null |
+
+### Use Default Values
+
+> `${parameter:-word}`: Use Default Values.
+
+[How variables inside braces are evaluated](https://unix.stackexchange.com/questions/286335/how-variables-inside-braces-are-evaluated)  
+
+Omitting the `:` drops the "*or null*" part of all these definitions.
+
+- `${a:-default}​`: 如果变量 a 未设置或为空，则使用默认值。
+- `${a-default}​`: 仅当变量未设置时，才使用默认值。
+
+This is all described in the [bash(1) manpage](http://man7.org/linux/man-pages/man1/bash.1.html), and in [POSIX](https://pubs.opengroup.org/onlinepubs/9699919799/utilities/V3_chap02.html#tag_18_06_02).
+
+1. 变量未定义：
+
+```bash
+# 未定义变量
+~  $ unset a
+# 变量未定义，返回default
+~  $ echo "${a:-default}"
+default
+# 变量未定义，返回default
+~  $ echo "${a-default}"
+default
+```
+
+2. 变量有定义，但为空值（空字符串）
+
+```bash
+# 定义变量，但赋值为空
+~  $ a= # or a=''
+# 变量a已定义，但值为空，返回default
+~  $ echo "${a:-default}"
+default
+# 变量a已定义，返回a——空值
+~  $ echo "${a-default}"
+
+~  $
+```
+
+3. 定义变量，且非空值
+
+```bash
+# 定义变量，且有赋值（非空），返回a
+~  $ a=test
+~  $ echo "${a:-default}"
+test
+~  $ echo "${a-default}"
+test
+```
+
+in `/etc/zshrc`: If `ZDOTDIR` is unset(or empty), `HOME` is used instead.
+
+```bash
+$ vim /etc/zshrc
+
+HISTFILE=${ZDOTDIR:-$HOME}/.zsh_history
+```
+
+[shell 脚本 ${1:-"false"}的含义](https://blog.csdn.net/fhaitao2009/article/details/104165211)
+
+> 如果 `$1` 存在并且不为空，则 a=`$1`；否则（未定义或为空），则 a=`false`。
+
+[Usage of :- (colon dash) in bash](https://stackoverflow.com/questions/10390406/usage-of-colon-dash-in-bash)  
+
+> `${PUBLIC_INTERFACE:-eth0}`: If `$PUBLIC_INTERFACE` exists and isn't null, return its value, otherwise return "eth0".
+
+[zsh-autosuggestions/INSTALL](https://github.com/zsh-users/zsh-autosuggestions/blob/master/INSTALL.md)：如果变量 `ZSH_CUSTOM` 未定义或为空，则替换为 `~/.oh-my-zsh/custom`。
+
+```bash
+git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+```
+
+我们来看一下 [How to read from a file or standard input in Bash](https://stackoverflow.com/questions/6980090/how-to-read-from-a-file-or-standard-input-in-bash) 这个问题，优先从文件读入参数，否则从stdin接受输入。
+
+Read either the first argument or from stdin
+
+`file=${1--}`（`file=${1:--}`，等效于 `${1:-/dev/stdin}`），可理解为 `[ "$1" ] && file=$1 || file="-"`。
+
+以下脚本，从文件$1或stdin读取数据传给cat，然后输出到文件$2或stdout。
+
+```bash
+cat "${1:-/dev/stdin}" > "${2:-/dev/stdout}"
+```
+
+### Assign Default Values
+
+> `${parameter:=word}`: Assign Default Values.
+
+变量未定义或为空，赋默认值：
+
+```bash
+# 变量未定义，赋默认值
+~  $ unset a
+~  $ echo "${a:=default}"
+default
+~  $ echo $a
+default
+
+# 变量为空值，赋默认值
+~ $ echo $a
+default
+~ $ a=''
+~ $ echo "${a:=default}"
+default
+```
+
+以下是一段来自生产实践中的sh脚本，基于 `:=` 来给未定义或空值变量赋默认值兜底：
+
+```bash
+    # 兜底启动角色和模式
+    # 当作命令执行，报错
+    ${role:=client}
+    zsh: command not found: client
+    echo $role
+    client
+
+    # 在赋值表达式前添加冒号，否则设置了 set -e 会退出
+    : ${role:=client}
+    echo $role
+    client
+
+    echo "mode = ${mode:=debug}"
+
+    # 兜底默认服务和代理端口
+    : "${web_port:=8080}"
+    : "${proxy_port:=8010}"
+```
+
+### Display Error if Null or Unset
+
+> `${parameter:?word}`: Display Error if Null or Unset.
+
+以下sh脚本中调用get_lan_ip函数，预期其中会定义未export的全局变量lan_ip。
+
+```bash
+    get_lan_ip
+    echo "lan_ip = $lan_ip"
+```
+
+由于无法确保第三方脚本中的其他函数是否定义了该变量，ShellCheck 会报引用安全警告：
+
+[SC2154](https://github.com/koalaman/shellcheck/wiki/SC2154): lan_ip is referenced but not assigned.
+
+如果局域网 LAN IP 获取不到，往往意味着网络服务不可用，可以使用 `:?` 进行判空警告。
+
+```bash
+    echo "lan_ip = ${lan_ip:?unset or null}"
+```
+
+这样，如果 lan_ip 未定义或为空值，则直接报错中止退出（exit 1）。
+
+```bash
+Wi-Fi en0 : status=inactive
+./scripts/proxy/launch_shelf.sh: line 33: lan_ip: unset or null
+```
+
+### Use Alternate Value
+
+> `${parameter:+word}`: Use Alternate Value.
+
+The `+` form might seem strange, but it is useful when constructing variables in several steps:
+
+```bash
+PATH="${PATH}${PATH:+:}/blah/bin"
+```
+
+will add `:` before `/blah/bin` only if PATH is non-empty, which avoids having a path starting with `:`.
+
+- 如果 PATH 未定义或为空，则什么也不做，第一个环境变量不用添加冒号前缀分隔符；  
+- 如果 PATH 有定义或非空，则相当于在现有 PATH 后面追加变量：`PATH=${PATH}:/blash/bin`；  
