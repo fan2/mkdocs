@@ -4,6 +4,7 @@ authors:
   - xman
 date:
     created: 2019-10-27T11:30:00
+    updated: 2026-01-22T18:30:00
 categories:
     - wiki
     - zsh
@@ -64,10 +65,11 @@ This plugin provides a few utilities to make it more enjoyable on macOS (previou
 
 几个有用的命令：
 
-- `tab`：Terminal.app - Preferences - General - New tabs open with `Same Working Directory`，`⌘T` 打开新 tab 默认打开当前工作目录。  
+- `tab`：相当于 `⌘T` 在新 tab 打开当前工作目录。注意 Supported Terminals，不支持 Warp。  
 - `ofd`：在 Finder 中定位到当前工作目录（reveal in finder），等效于执行 `open .` 命令。  
 - `man-preview zsh`：等效于 `man -t zsh | open -fa "Preview"`，用 Preview.app 以 PDF 格式打开 zsh 的 man page。  
 - `showfiles`/`hidefiles`：定位到 Finder 中 显示/隐藏 隐藏文件（Show/Hide hidden files）。  
+- `rmdsstore`：递归删除目录中的 `.DS_Store` 文件。
 
 ---
 

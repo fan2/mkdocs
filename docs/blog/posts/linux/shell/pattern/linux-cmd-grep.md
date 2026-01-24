@@ -4,6 +4,7 @@ authors:
   - xman
 date:
     created: 2019-11-02T10:00:00
+    updated: 2026-01-22T18:40:00
 categories:
     - wiki
     - linux
@@ -450,6 +451,8 @@ grep -e 'foo' -e 'bar' myfile
 ```
 
 ls 递归列举当前目录下的文件，然后按照文件名匹配过滤出部分文件予以删除：
+
+- 注意：`ls -AR | grep -e` 无法输出完整路径，如要输出完整路径可以尝试 `find . -name ".DS_Store"`。
 
 ```bash
 rm $(ls -AR | grep -e .DS_Store -e AVEngine.log -e *_WTLOGIN.*.log)
