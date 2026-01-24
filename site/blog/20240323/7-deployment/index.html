@@ -1621,6 +1621,23 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="serve">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#vscode_task" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        vscode task
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1763,7 +1780,7 @@
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7z"/></svg>
                           <span class="md-ellipsis">
                             
-                              6 min read
+                              7 min read
                             
                           </span>
                         </div>
@@ -1890,6 +1907,63 @@
 </span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>INFO<span class="w">    </span>-<span class="w">  </span>Documentation<span class="w"> </span>built<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="m">0</span>.55<span class="w"> </span>seconds
 </span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="hll">INFO<span class="w">    </span>-<span class="w">  </span><span class="o">[</span><span class="m">08</span>:15:39<span class="o">]</span><span class="w"> </span>Reloading<span class="w"> </span>browsers
 </span></span></code></pre></div>
+<p>在 mkdocs.yml 中配置了博客的 URL 格式：</p>
+<div class="language-yaml highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="w">      </span><span class="nt">post_url_date_format</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">yyyyMMdd</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">      </span><span class="nt">post_url_format</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;{date}/{file}&quot;</span>
+</span></code></pre></div>
+<h3 id="vscode_task">vscode task<a class="headerlink" href="#vscode_task" title="Permanent link">#</a></h3>
+<p>在 vscode 中修改某篇博客后，我们希望能在本地浏览器中打开该博客文章，以便预览修改后的渲染效果。<br />
+要预览修改后的文档，只能从 blog 中逐级点开进入；或者基于当前打开文档的创建时间和文件名，手动拼接出 URL 再在浏览器中打开。<br />
+由于每篇博客的创建时间都在开头的 meta 声明中，无法快速拼接出其 URL。可以考虑基于 vscode task 自动化这个过程，加快调试效率。</p>
+<blockquote>
+<p>VS Code tasks are used to run scripts and automate processes within the editor, such as building, linting, testing, or deploying software, without having to use the command line directly. They integrate with various external tools like npm, Gulp, Make, and Rake.</p>
+</blockquote>
+<p>在 vscode 中，创建 .vscode/tasks.json 任务配置文件来配置编译/调试任务。</p>
+<ol>
+<li>task 1: Start mkdocs serve with HMR，执行 <em>serve.sh</em> 启动 mkdocs serve 热加载服务。</li>
+</ol>
+<div class="language-json highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="w">            </span><span class="nt">&quot;label&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Start mkdocs serve with HMR&quot;</span><span class="p">,</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">            </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;shell&quot;</span><span class="p">,</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">            </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;.vscode/serve.sh&quot;</span><span class="p">,</span>
+</span></code></pre></div>
+<ol start="2">
+<li>
+<p>task 2: Preview blog in Google Chrome，执行 <em>preview.sh</em> 在浏览器中预览博客文章。</p>
+<ul>
+<li><a href="https://code.visualstudio.com/docs/reference/variables-reference">Variables reference</a>：vscode 内置变量 <code>${file}</code> 为当前打开文件的绝对路径（含文件名和扩展名）。</li>
+</ul>
+</li>
+</ol>
+<div class="language-json highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="w">            </span><span class="nt">&quot;label&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Preview blog in Google Chrome&quot;</span><span class="p">,</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">            </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;shell&quot;</span><span class="p">,</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">            </span><span class="nt">&quot;command&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;.vscode/preview.sh&quot;</span><span class="p">,</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">            </span><span class="nt">&quot;args&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="w">                </span><span class="s2">&quot;${file}&quot;</span>
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="w">            </span><span class="p">],</span>
+</span></code></pre></div>
+<p>在脚本 preview.sh 中，首先读取传入的文件内容基于 <code>sed</code> 命令提取出日期，再拼接不含扩展名的文件名，即为博客相对路径（blog_path）。<br />
+假设监听的端口为8000，则博客的 base_url = <code>http://localhost:8000/blog</code>，基于 base_url 和 blog_path 拼接出博客 URL（blog_url）。<br />
+preview.sh 脚本最后调用 <code>open -a "Google Chrome" $blog_url</code> 在 Google Chrome 浏览器中新开 tab 打开博客进行预览。</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="c1"># get the absolute path of current openned file of vscode</span>
+</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a><span class="nv">file</span><span class="o">=</span><span class="nv">$1</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;blog file = </span><span class="nv">$file</span><span class="s2">&quot;</span>
+</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="nv">full_file_name</span><span class="o">=</span><span class="k">$(</span>basename<span class="w"> </span><span class="nv">$file</span><span class="k">)</span><span class="w">    </span><span class="c1"># get file name with extension</span>
+</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="nv">file_name</span><span class="o">=</span><span class="si">${</span><span class="nv">full_file_name</span><span class="p">%.*</span><span class="si">}</span><span class="w">      </span><span class="c1"># remove extension .md</span>
+</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>
+</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="c1"># extract blog created time and concat with file name to build blog url</span>
+</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="nv">created_date</span><span class="o">=</span><span class="k">$(</span>sed<span class="w"> </span>-n<span class="w"> </span><span class="s1">&#39;s/.*created: \(.*\)T.*/\1/p&#39;</span><span class="w"> </span><span class="nv">$file</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>tr<span class="w"> </span>-d<span class="w"> </span><span class="s1">&#39;-&#39;</span><span class="k">)</span>
+</span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="nv">blog_path</span><span class="o">=</span><span class="nv">$created_date</span>/<span class="nv">$file_name</span><span class="w">  </span><span class="c1"># concat blog path</span>
+</span><span id="__span-6-10"><a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a><span class="nv">blog_url</span><span class="o">=</span><span class="nv">$MKDOCS_BLOG</span>/<span class="nv">$blog_path</span><span class="w">    </span><span class="c1"># concat blog url</span>
+</span><span id="__span-6-11"><a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a>
+</span><span id="__span-6-12"><a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a><span class="c1"># open blog url in Google Chrome Browser</span>
+</span><span id="__span-6-13"><a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;open in Google Chrome: </span><span class="nv">$blog_url</span><span class="s2">&quot;</span>
+</span><span id="__span-6-14"><a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a>open<span class="w"> </span>-a<span class="w"> </span><span class="s2">&quot;Google Chrome&quot;</span><span class="w"> </span><span class="nv">$blog_url</span>
+</span></code></pre></div>
+<p>在 vscode 中，<code>⌘⇧P</code> 打开命令面板（Pallette），输入选择 <em>Tasks: Run Task</em>：</p>
+<ol>
+<li><em>Start mkdocs serve with HMR</em> 启动 <code>mkdocs serve --livereload --dirty</code> 热加载服务。</li>
+<li><em>Preview blog in Google Chrome</em> 在 Chrome 浏览器中预览 vscode 当前打开的博客文章。</li>
+</ol>
 <h2 id="build">build<a class="headerlink" href="#build" title="Permanent link">#</a></h2>
 <p>Build the MkDocs documentation: <code>mkdocs build [OPTIONS]</code></p>
 <table>
@@ -2014,8 +2088,8 @@
 <p>ubuntu 下执行 <code>nginx -V</code> 可知 nginx 的默认工作空间为 --prefix=/usr/share/nginx。</p>
 <p>对于自启的非80服务（这里监听 81 端口），<code>location /</code> 未指定 root 时，Docroot 默认为 /usr/share/nginx/html。</p>
 <p>这里懒得修改 webdav 配置文件了，假设工程存储在 ~/Sites/mkdocs 目录，执行 <code>mkdocs build</code> 生成的静态站点产物目录为 site，那么只需将 site 软链为 /usr/share/nginx/html 即可完成部署，参考 <a href="https://zhuanlan.zhihu.com/p/551345157">用mkdocs+nginx搭建个人网站</a>。</p>
-<div class="language-Shell highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>$<span class="w"> </span>sudo<span class="w"> </span>mv<span class="w"> </span>/usr/share/nginx/html/<span class="w"> </span>/usr/share/nginx/html_bak/
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>$<span class="w"> </span>sudo<span class="w"> </span>ln<span class="w"> </span>-s<span class="w"> </span>/home/pifan/Sites/mkdocs/site/<span class="w"> </span>/usr/share/nginx/html
+<div class="language-Shell highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>$<span class="w"> </span>sudo<span class="w"> </span>mv<span class="w"> </span>/usr/share/nginx/html/<span class="w"> </span>/usr/share/nginx/html_bak/
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>$<span class="w"> </span>sudo<span class="w"> </span>ln<span class="w"> </span>-s<span class="w"> </span>/home/pifan/Sites/mkdocs/site/<span class="w"> </span>/usr/share/nginx/html
 </span></code></pre></div>
 <p>局域网内，在浏览器输入 http://rpi4b-ubuntu.local:81/（或使用 IP 代替 host），即可访问博客站点。</p>
 <p>接下来，可自行购买 VPS 将站点部署上去；或 <a href="https://developers.cloudflare.com/registrar/get-started/transfer-domain-to-cloudflare/">将域名交由 cloudflare 托管</a>，然后创建一条 <a href="https://one.dash.cloudflare.com/">Cloudflare Zero Trust</a> 内网穿透隧道（Cloudflare Tunnel），将内网服务（blog+webdav）暴露到公网。</p>
@@ -2059,28 +2133,28 @@
 <p>参考 <a href="https://developers.cloudflare.com/pages/configuration/build-image/#supported-languages-and-tools">Build image · Cloudflare Pages docs</a>，构建机 Supported languages and tools 默认安装了 python/pip，但是并没有 mkdocs。</p>
 <p>需要在执行 <code>mkdocs build</code> 的工程目录下放置 requirements.txt 以便构建机（Workers）预安装依赖的 mkdocs-material 工具集。</p>
 <p>在工程目录下执行 <code>mkdocs get-deps</code> 获取依赖：mkdocs-material 依赖 <code>mkdocs</code> 和 <code>pymdown-extensions</code>。</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>$<span class="w"> </span>mkdocs<span class="w"> </span>get-deps
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>mkdocs
-</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>mkdocs-material
-</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>pymdown-extensions
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>$<span class="w"> </span>mkdocs<span class="w"> </span>get-deps
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>mkdocs
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>mkdocs-material
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>pymdown-extensions
 </span></code></pre></div>
 <p>假如还要依赖 <code>mkdocs-callouts</code> 插件，以便将 Obsidian style callouts 转换成 mkdocs supported 'admonitions' (a.k.a. callouts)，则项目的直接依赖如下：</p>
-<div class="language-yaml highlight"><span class="filename">requirements.in</span><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="l l-Scalar l-Scalar-Plain">mkdocs-material~=9.7.0</span>
-</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="l l-Scalar l-Scalar-Plain">mkdocs-callouts&gt;=1.16.0</span>
+<div class="language-yaml highlight"><span class="filename">requirements.in</span><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="l l-Scalar l-Scalar-Plain">mkdocs-material~=9.7.0</span>
+</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a><span class="l l-Scalar l-Scalar-Plain">mkdocs-callouts&gt;=1.16.0</span>
 </span></code></pre></div>
 <p>接下来，可借助 <code>pip-tools</code> 的 <code>pip-compile</code> 命令或 <code>uv</code> 的 <code>pip compile</code> 来基于 <code>requirements.in</code> 生成完整的 <code>requirements.txt</code>。</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>$<span class="w"> </span>uv<span class="w"> </span>pip<span class="w"> </span>compile<span class="w"> </span>requirements.in<span class="w"> </span>-o<span class="w"> </span>requirements.txt
-</span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>
-</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>$<span class="w"> </span>cat<span class="w"> </span>requirements.txt
-</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="c1"># This file was autogenerated by uv via the following command:</span>
-</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="c1">#    uv pip compile requirements.in -o requirements.txt</span>
-</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="nv">babel</span><span class="o">==</span><span class="m">2</span>.17.0
-</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="w">    </span><span class="c1"># via mkdocs-material</span>
-</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a><span class="nv">backrefs</span><span class="o">==</span><span class="m">6</span>.1
-</span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="w">    </span><span class="c1"># via mkdocs-material</span>
-</span><span id="__span-6-10"><a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a><span class="nv">certifi</span><span class="o">==</span><span class="m">2025</span>.11.12
-</span><span id="__span-6-11"><a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a><span class="w">    </span><span class="c1"># via requests</span>
-</span><span id="__span-6-12"><a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a><span class="c1"># ...</span>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>$<span class="w"> </span>uv<span class="w"> </span>pip<span class="w"> </span>compile<span class="w"> </span>requirements.in<span class="w"> </span>-o<span class="w"> </span>requirements.txt
+</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>
+</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>$<span class="w"> </span>cat<span class="w"> </span>requirements.txt
+</span><span id="__span-10-4"><a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="c1"># This file was autogenerated by uv via the following command:</span>
+</span><span id="__span-10-5"><a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="c1">#    uv pip compile requirements.in -o requirements.txt</span>
+</span><span id="__span-10-6"><a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a><span class="nv">babel</span><span class="o">==</span><span class="m">2</span>.17.0
+</span><span id="__span-10-7"><a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="w">    </span><span class="c1"># via mkdocs-material</span>
+</span><span id="__span-10-8"><a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a><span class="nv">backrefs</span><span class="o">==</span><span class="m">6</span>.1
+</span><span id="__span-10-9"><a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a><span class="w">    </span><span class="c1"># via mkdocs-material</span>
+</span><span id="__span-10-10"><a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a><span class="nv">certifi</span><span class="o">==</span><span class="m">2025</span>.11.12
+</span><span id="__span-10-11"><a id="__codelineno-10-11" name="__codelineno-10-11" href="#__codelineno-10-11"></a><span class="w">    </span><span class="c1"># via requests</span>
+</span><span id="__span-10-12"><a id="__codelineno-10-12" name="__codelineno-10-12" href="#__codelineno-10-12"></a><span class="c1"># ...</span>
 </span></code></pre></div>
 </details>
 <p><img alt="Set_up_builds_and_deployments" src="../../mkdocs/images/Cloudflare_Page/5-Set_up_builds_and_deployments.png" /></p>

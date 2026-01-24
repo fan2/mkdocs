@@ -3,7 +3,7 @@ title: 采用Material主题
 authors:
   - xman
 date:
-    created: 2024-03-25
+    created: 2024-03-25T00:00:00
     updated: 2024-04-01T13:20:00
 categories:
     - mkdocs

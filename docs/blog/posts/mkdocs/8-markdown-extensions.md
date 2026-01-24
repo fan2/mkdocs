@@ -3,8 +3,8 @@ title: Python-Markdown扩展
 authors:
   - xman
 date:
-    created: 2024-03-24
-    updated: 2024-03-29
+    created: 2024-03-24T00:00:00
+    updated: 2024-03-29T00:00:00
 categories:
     - mkdocs
     - markdown

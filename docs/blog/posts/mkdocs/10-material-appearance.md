@@ -3,7 +3,7 @@ title: 定制Material外观
 authors:
   - xman
 date:
-    created: 2024-03-26
+    created: 2024-03-26T00:00:00
 categories:
     - mkdocs
     - material

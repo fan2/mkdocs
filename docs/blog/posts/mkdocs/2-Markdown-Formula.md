@@ -3,7 +3,7 @@ title: Markdown Formula
 authors:
   - xman
 date:
-    created: 2022-12-12
+    created: 2022-12-12T00:00:00
     updated: 2024-05-04T15:00:00
 categories:
     - mkdocs

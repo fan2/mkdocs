@@ -3,7 +3,7 @@ title: Markdown Syntax
 authors:
   - xman
 date:
-    created: 2015-11-02
+    created: 2015-11-02T00:00:00
 categories:
     - mkdocs
     - markdown

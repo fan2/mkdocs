@@ -3,7 +3,7 @@ title: Mkdocs构建部署
 authors:
   - xman
 date:
-    created: 2024-03-23
+    created: 2024-03-23T00:00:00
     updated: 2024-04-02T08:00:00
 categories:
     - mkdocs
@@ -71,6 +71,70 @@ INFO    -  Building documentation...
 INFO    -  Documentation built in 0.55 seconds
 INFO    -  [08:15:39] Reloading browsers
 ```
+
+在 mkdocs.yml 中配置了博客的 URL 格式：
+
+```yaml
+      post_url_date_format: yyyyMMdd
+      post_url_format: "{date}/{file}"
+```
+
+### vscode task
+
+在 vscode 中修改某篇博客后，我们希望能在本地浏览器中打开该博客文章，以便预览修改后的渲染效果。
+要预览修改后的文档，只能从 blog 中逐级点开进入；或者基于当前打开文档的创建时间和文件名，手动拼接出 URL 再在浏览器中打开。
+由于每篇博客的创建时间都在开头的 meta 声明中，无法快速拼接出其 URL。可以考虑基于 vscode task 自动化这个过程，加快调试效率。
+
+> VS Code tasks are used to run scripts and automate processes within the editor, such as building, linting, testing, or deploying software, without having to use the command line directly. They integrate with various external tools like npm, Gulp, Make, and Rake.
+
+在 vscode 中，创建 .vscode/tasks.json 任务配置文件来配置编译/调试任务。
+
+1. task 1: Start mkdocs serve with HMR，执行 *serve.sh* 启动 mkdocs serve 热加载服务。
+
+```json
+            "label": "Start mkdocs serve with HMR",
+            "type": "shell",
+            "command": ".vscode/serve.sh",
+```
+
+2. task 2: Preview blog in Google Chrome，执行 *preview.sh* 在浏览器中预览博客文章。
+
+    - [Variables reference](https://code.visualstudio.com/docs/reference/variables-reference)：vscode 内置变量 `${file}` 为当前打开文件的绝对路径（含文件名和扩展名）。
+
+```json
+            "label": "Preview blog in Google Chrome",
+            "type": "shell",
+            "command": ".vscode/preview.sh",
+            "args": [
+                "${file}"
+            ],
+```
+
+在脚本 preview.sh 中，首先读取传入的文件内容基于 `sed` 命令提取出日期，再拼接不含扩展名的文件名，即为博客相对路径（blog_path）。
+假设监听的端口为8000，则博客的 base_url = `http://localhost:8000/blog`，基于 base_url 和 blog_path 拼接出博客 URL（blog_url）。
+preview.sh 脚本最后调用 `open -a "Google Chrome" $blog_url` 在 Google Chrome 浏览器中新开 tab 打开博客进行预览。
+
+```bash
+# get the absolute path of current openned file of vscode
+file=$1
+echo "blog file = $file"
+full_file_name=$(basename $file)    # get file name with extension
+file_name=${full_file_name%.*}      # remove extension .md
+
+# extract blog created time and concat with file name to build blog url
+created_date=$(sed -n 's/.*created: \(.*\)T.*/\1/p' $file | tr -d '-')
+blog_path=$created_date/$file_name  # concat blog path
+blog_url=$MKDOCS_BLOG/$blog_path    # concat blog url
+
+# open blog url in Google Chrome Browser
+echo "open in Google Chrome: $blog_url"
+open -a "Google Chrome" $blog_url
+```
+
+在 vscode 中，`⌘⇧P` 打开命令面板（Pallette），输入选择 *Tasks: Run Task*：
+
+1. *Start mkdocs serve with HMR* 启动 `mkdocs serve --livereload --dirty` 热加载服务。
+2. *Preview blog in Google Chrome* 在 Chrome 浏览器中预览 vscode 当前打开的博客文章。
 
 ## build
 

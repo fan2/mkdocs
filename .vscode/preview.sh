@@ -29,7 +29,7 @@ full_file_name=$(basename $file)    # get file name with extension
 file_name=${full_file_name%.*}      # remove extension .md
 
 # extract blog created time and concat with file name to build blog url
-created_date=$(sed -n 's/.*created: \(.*\)T.*/\1/p' $file | tr -d '-')
+created_date=$(sed -n 's/^[[:space:]]*created: \(.*\)T.*/\1/p' $file | tr -d '-')
 blog_path=$created_date/$file_name  # concat blog path
 blog_url=$MKDOCS_BLOG/$blog_path    # concat blog url
 

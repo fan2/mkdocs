@@ -3,7 +3,7 @@ title: Mkdocs配置
 authors:
   - xman
 date:
-    created: 2024-03-21
+    created: 2024-03-21T00:00:00
 categories:
     - mkdocs
 comments: true

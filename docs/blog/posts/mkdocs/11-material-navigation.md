@@ -3,7 +3,7 @@ title: 配置Material导航
 authors:
   - xman
 date:
-    created: 2024-03-27
+    created: 2024-03-27T00:00:00
 categories:
     - mkdocs
     - material

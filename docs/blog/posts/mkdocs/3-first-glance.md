@@ -3,7 +3,7 @@ title: Mkdocs初识
 authors:
   - xman
 date:
-    created: 2024-03-19
+    created: 2024-03-19T00:00:00
     updated: 2024-04-01T13:00:00
 categories:
     - mkdocs

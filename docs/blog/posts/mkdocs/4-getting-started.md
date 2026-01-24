@@ -3,7 +3,7 @@ title: Mkdocs上手
 authors:
   - xman
 date:
-    created: 2024-03-20
+    created: 2024-03-20T00:00:00
 categories:
     - mkdocs
 comments: true

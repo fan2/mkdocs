@@ -3,7 +3,7 @@ title: 安装Material博客(sidecar to mkdocs)
 authors:
   - xman
 date:
-    created: 2024-03-28
+    created: 2024-03-28T00:00:00
     updated: 2024-04-15T18:26:00
 categories:
     - mkdocs
