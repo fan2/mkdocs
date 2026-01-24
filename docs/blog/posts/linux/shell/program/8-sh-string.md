@@ -4,7 +4,7 @@ authors:
   - xman
 date:
     created: 2019-11-06T09:50:00
-    updated: 2025-12-17T08:40:00
+    updated: 2026-01-23T18:30:00
 categories:
     - linux
     - shell
@@ -554,3 +554,18 @@ echo "  BAADDAAD   FEEDBABE    DEADBEEF     " | awk '{$1=$1};1'
 ```
 
 > when you assign something to one of the fields, awk rebuilds the whole record (as printed by print) by joining all fields (`$1`, ..., `$NF`) with `OFS` (space by default).
+
+### 基于xargs实现
+
+默认情况下 xargs 将其标准输入中的内容以空白(包括空格、tab、回车换行等)分割成多个 arguments 之后当作命令行参数传递给其后面的命令。
+基于这一原理，可以采用 ` | xargs` 移除首尾及中间多余的空格。
+
+```bash
+$ echo "  Bash  Scripting  Language   " | xargs
+Bash Scripting Language
+
+$ echo "  Bash  Scripting  Language   " | xargs -n 1
+Bash
+Scripting
+Language
+```

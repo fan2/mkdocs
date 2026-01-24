@@ -4,6 +4,7 @@ authors:
   - xman
 date:
     created: 2019-11-01T10:00:00
+    updated: 2026-01-23T19:00:00
 categories:
     - wiki
     - linux
@@ -649,51 +650,75 @@ faner@MBP-FAN $ cat diary.txt | tr -d "[0-9][: ]"
 
 ## xargs
 
-unix/POSIX - [xargs](https://pubs.opengroup.org/onlinepubs/9699919799/utilities/xargs.html)  
-FreeBSD/Darwin - [xargs](https://www.freebsd.org/cgi/man.cgi?query=xargs)  
+以下是各大平台的 xargs 在线手册：
 
-linux - [xargs(1)](http://man7.org/linux/man-pages/man1/xargs.1.html) & [xargs(1p)](http://man7.org/linux/man-pages/man1/xargs.1p.html)  
-debian/Ubuntu - [xargs](https://manpages.debian.org/buster/findutils/xargs.1.en.html)  
+- unix/POSIX - [xargs](https://pubs.opengroup.org/onlinepubs/9699919799/utilities/xargs.html)  
+- FreeBSD/Darwin - [xargs](https://www.freebsd.org/cgi/man.cgi?query=xargs)  
+- linux - [xargs(1)](http://man7.org/linux/man-pages/man1/xargs.1.html)  
+- debian - [xargs(1)](https://manpages.debian.org/buster/findutils/xargs.1.en.html)  
+- ubuntu - [xargs(1)](https://manpages.ubuntu.com/manpages/jammy/en/man1/xargs.1.html)  
+
+以下是各大平台对 xargs 的定义：
+
+- unix/POSIX：xargs - construct argument lists and invoke utility  
+- FreeBSD/Darwin：xargs -- construct argument list(s) and execute utility  
+- linux/debian/ubuntu：xargs - build and execute command lines from standard input  
+
+macOS 下关于 xargs 的 DESCRIPTION：
+
+> The `xargs` utility reads space, tab, newline and end-of-file delimited strings from the standard input and executes *`utility`* with the strings as arguments.
+> If `utility` is omitted, *echo*(1) is used.
 
 执行 `xargs --help` 可查看简要帮助（Usage）。  
-执行 `man xargs` 可查看详细帮助手册（Manual Page）：
+执行 `man xargs` 可查看详细帮助手册（Manual Page）。
+
+### usage
+
+大多数时候，xargs 命令都是跟管道一起使用的，但是它也可以单独使用。`xargs` 后面的缺省命令（utility）是 `echo`。
+
+`xargs` 是构建单行命令的重要组件之一，它擅长将标准输入数据转换成命令行参数。 它一般紧跟在管道操作符之后，以标准输入作为主要的源数据流。
+
+关于 xargs 的用法，可以参考 《Linux Shell 脚本攻略》中的 `2.5 玩转 xargs` 相关章节。
+
+- [xargs 命令教程](http://www.ruanyifeng.com/blog/2019/08/xargs-tutorial.html)  
+- [xargs 命令详解](https://www.cnblogs.com/wangqiguo/p/6464234.html)  
+- [Xargs 用法详解](https://blog.csdn.net/zhangfn2011/article/details/6776925)  
+- [xargs 原理剖析及用法详解](https://www.cnblogs.com/f-ck-need-u/p/5925923.html)  
+
+默认情况下 xargs 将其标准输入中的内容以空白(包括空格、tab、回车换行等)分割成多个 arguments 之后当作命令行参数传递给其后面的命令，也可以使用 `-d` 命令指定特定分隔符（macOS 貌似不支持该选项）。
+
+基于这一原理，最简单的应用是通过 ` | xargs` 移除字符串首尾以及中间多余的空格。
 
 ```bash
-pi@raspberrypi:~ $ man xargs
+# 移除首尾空格
+$ echo "   lol  " | xargs
+lol
 
-XARGS(1)                           General Commands Manual                           XARGS(1)
+# 移除首尾及中间多余的空格
+$ echo "  Bash  Scripting  Language   " | xargs
+Bash Scripting Language
 
-NAME
-     xargs -- construct	argument list(s) and execute utility
-
-SYNOPSIS
-     xargs [-0oprt] [-E	eofstr]	[-I replstr [-R	replacements] [-S replsize]]
-	   [-J replstr]	[-L number] [-n	number [-x]] [-P maxprocs] [-s size]
-	   [utility [argument ...]]
-
-DESCRIPTION
-     The xargs utility reads space, tab, newline and end-of-file delimited
-     strings from the standard input and executes utility with the strings as
-     arguments.
-
-     Any arguments specified on	the command line are given to utility upon
-     each invocation, followed by some number of the arguments read from the
-     standard input of xargs.  This is repeated	until standard input is	ex-
-     hausted.
+$ echo "  Bash  Scripting  Language   " | xargs -n 1
+Bash
+Scripting
+Language
 ```
 
-执行 `xargs --version` 查看版本信息：
+`xargs` 使用 stdin 并通过提供 *命令行参数* 给后续要执行的命令（utility）。
+
+md5 命令支持计算指定文件或字符串的MD5值，但不支持从stdin输入，因此无法将字符串管传给md5执行计算。此时，可考虑基于 `echo $string | xargs md -s` 变通实现：
 
 ```bash
-pi@raspberrypi:~ $ xargs --version
-xargs (GNU findutils) 4.7.0-git
-Copyright (C) 2016 Free Software Foundation, Inc.
-License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>.
-This is free software: you are free to change and redistribute it.
-There is NO WARRANTY, to the extent permitted by law.
-
-Written by Eric B. Decker, James Youngman, and Kevin Dalley.
+$ echo 'How many roads must a man walk down' | xargs md5 -s
 ```
+
+以下通过 `brew list --cask` 列举所有brew安装的cask应用，然后通过管道 xargs 传参给 `brew upgrade --cask` 执行升级：
+
+```bash
+brew list --cask | xargs -t brew upgrade --cask
+```
+
+xargs 和 find 算是一对死党，两者结合使用可以让任务变得更轻松，详情参考 [find](../commands/linux-cmd-find-xargs.md)，特别是 `find ... -print0 | xargs -0 ...` 的搭配使用。
 
 ### options
 
@@ -723,75 +748,80 @@ Written by Eric B. Decker, James Youngman, and Kevin Dalley.
 	     fore it is	executed.
 ```
 
-`xargs -I` 和 `xargs -i` 是一样的，只是 `-i` 默认使用大括号（`{}`）作为替换字符串（replstr），`-I` 则可以自定义其他字符串作为 replstr，但是必须用引号包起来（？）。
+#### -t
 
-man 推荐使用 `-I` 代替 `-i`，但是一般都使用 `-i` 图个简单，除非在命令中不能使用大括号。
-
-> macOS 下不支持 `-i` 选项！
-
-### usage
-
-大多数时候，xargs 命令都是跟管道一起使用的。但是，它也可以单独使用。
-`xargs` 后面的命令默认是 `echo`。
-
-`xargs` 是构建单行命令的重要组件之一，它擅长将标准输入数据转换成命令行参数。  
-xargs 命令一般紧跟在管道操作符之后，以标准输入作为主要的源数据流。它使用 stdin 并通过提供 *命令行参数* 来执行其他命令。  
-默认情况下 xargs 将其标准输入中的内容以空白(包括空格、tab、回车换行等)分割成多个 arguments 之后当作命令行参数传递给其后面的命令。
-也可以使用 `-d` 命令指定特定分隔符（macOS 貌似不支持该选项）。  
-
-基于这一原理，最简单的应用是通过 ` | xargs` 移除字符串首尾空格。
-
-``Shell
-$ echo "   lol  " | xargs
-lol
-```
-
-md5 命令支持计算指定文件或字符串的MD5值，但不支持从stdin输入，因此无法将字符串管传给md5执行计算。
-此时可考虑基于 `| xargs md -s` 变通实现：
+xargs 的 `-t` 选项允许每次执行 xargs 后面的命令之前，先在 stderr 上打印出扩展开的真实命令。
 
 ```bash
-$ echo 'How many roads must a man walk down' | xargs md5 -s
+echo "  Bash  Scripting  Language   " | xargs -t
+/bin/echo Bash Scripting Language
+Bash Scripting Language
 ```
 
-以下通过 `brew list --cask` 列举所有brew安装的cask应用，然后通过管道 xargs 传参给 `brew upgrade --cask` 执行升级：
+#### -n
 
-```
-brew list --cask | xargs -t brew upgrade --cask
-```
+> `-n, --max-args`: Set the maximum number of arguments taken from standard input for each invocation of *utility*.
 
-xargs 和 find 算是一对死党，两者结合使用可以让任务变得更轻松，详情参考 [find](../commands/linux-cmd-find-xargs.md)。
-
-### tricks
-
-无法通过 xargs 传递数值做正确的算术扩展：
-
-```
-$ echo 1 | xargs -I "x" echo $((2*x))
-```
-
-这时只能改变方法或寻找一些小技巧，例如：
-
-```
-$ echo 1 | xargs -I {} expr 2 \* {}
-```
-
----
-
-默认情况下，xargs 每次只能传递一条分割的数据到命令行中作为参数。
-
-[How to upgrade all Python packages with pip](https://stackoverflow.com/questions/2720014/how-to-upgrade-all-python-packages-with-pip)
+在上面的例子中，指定 `-n 1` 每次只取一个参数，实现空格分割：
 
 ```bash
+$ echo "  Bash  Scripting  Language   " | xargs -n 1
+Bash
+Scripting
+Language
+```
+
+工作目录下有3个文件，其中文件名 `hello world.txt` 包含空格：
+
+```bash
+$ ls -1
+hello world.txt
+HELLO.txt
+WORLD.txt
+
+$ tree -L 1
+.
+├── hello world.txt
+├── HELLO.txt
+└── WORLD.txt
+
+1 directory, 3 files
+```
+
+将 ls 结果重定向给 xargs 进行 echo 回显，指定 `-n 1` 每次取1个参数：
+
+```bash
+# ls : 输出一行，以空格分割
+# ls -1 : 每行一个文件，以 \n 分割
+$ ls | xargs -n 1
+hello
+world.txt
+HELLO.txt
+WORLD.txt
+```
+
+文件名 `hello world.txt` 被 xargs 以空格作为分割符视作两个参数：`hello` 和 `world.txt`。
+
+若指定 `-n 2` 则一次取2个参数，第1行输出=`hello` 和 `world.txt`，第2行输出=`HELLO.txt` 和 `WORLD.txt`。
+
+```bash
+$ ls | xargs -n 2
+hello world.txt
+HELLO.txt WORLD.txt
+```
+
+默认情况下，xargs 每次导入一条分割的数据到命令行中作为参数。
+
+从 pip 过期包列表中提取出第一列包名，并使用 xargs 命令批量安装：
+
+```bash
+$ pip3 install -U $(pip3 list --outdated | awk 'NR>2 {print $1}')
 $ pip3 list --outdated | awk 'NR>2 {print $1}' | xargs -n1 pip3 install -U
 ```
 
-> `xargs -n1` limits the number of arguments passed to each command `pip install -U` to be 1, prevents stopping and keeps going if an error occurs.
+假设有一个文件保存了 wget 想要下载的大量链接和对应要保存的目标文件名，一行链接紧跟一行文件名，格式如下：
 
-但有时候想要让 xargs 一次传递2个或2个以上参数到命令行中。如何实现呢？
-
-例如有一个文件保存了 wget 想要下载的大量链接和对应要保存的文件名，一行链接一行文件名。格式如下：
-
-```
+```bash
 https://www.xxx.yyy/a1
 filename1
 https://www.xxx.yyy/a2
@@ -800,23 +830,132 @@ https://www.xxx.yyy/a3
 filename3
 ```
 
-现在想要通过读取这个文件，将每一个URL和对应的文件名传递给wget去下载：
+如何实现每次从文件读取两行作为一对参数，传递给 wget 进行下载呢？
 
-```
+```bash
 $ wget '{URL}' -O '{FILENAME}'
 ```
 
 xargs 自身的功能无法一次性传递多个参数（parallel命令可以，而且方式多种），只能寻求一些技巧来实现。
 
-```
+```bash
 cat url.txt | xargs -n 2 bash -c 'wget "$1" -O "$2"'
 ```
 
-### refs
 
-关于 xargs 的用法，可以参考 《Linux Shell 脚本攻略》中的 `2.5 玩转 xargs` 相关章节。
+#### -0
 
-[xargs 命令教程](http://www.ruanyifeng.com/blog/2019/08/xargs-tutorial.html)  
-[xargs 命令详解](https://www.cnblogs.com/wangqiguo/p/6464234.html)  
-[Xargs 用法详解](https://blog.csdn.net/zhangfn2011/article/details/6776925)  
-[xargs 原理剖析及用法详解](https://www.cnblogs.com/f-ck-need-u/p/5925923.html)  
+xargs 默认是以空白字元作为导入参数列表的分割符，如果有一些档名或者是其他意义的名词内含有空白字元的时候，xargs 可能会误判分割导致参数错误。
+
+接下来我们结合一些实例来分析一下 `find -print0` 和 `xargs -0` 选项的配对使用场景。
+
+`find` 默认对匹配到的文件（路径）执行打印操作（`-print`），以换行符 `\n` 作为分隔符将结果行（条目）进行分隔输出到控制台。
+
+```bash
+$ find . -type f
+./WORLD.txt
+./hello world.txt
+./HELLO.txt
+```
+
+使用 `-ls` 替代默认的 `-print` 选项，列举找到的文件的属性信息：
+
+```bash
+$ find . -type f -ls
+128555241        8 -rw-r--r--    1 faner            staff                 146 Apr  9  2024 ./WORLD.txt
+128555232        8 -rw-r--r--    1 faner            staff                 146 Apr  9  2024 ./hello world.txt
+27135950        8 -rw-r--r--    1 faner            staff                 146 Apr  9  2024 ./HELLO.txt
+```
+
+`find -ls` 可以基于 `find`+`ls -l` 等效实现：将 `find` 输出结果重定向给 `xargs` 作为参数传递给 `ls -l` 命令进行处理：
+
+```bash
+$ find . -type f | xargs -t ls -l
+ls -l ./WORLD.txt ./hello world.txt ./HELLO.txt
+ls: ./hello: No such file or directory
+-rw-r--r--@ 1 faner  staff   146 Apr  9  2024 ./HELLO.txt
+-rw-r--r--@ 1 faner  staff   146 Apr  9  2024 ./WORLD.txt
+-rw-r--r--@ 1 faner  staff   146 Apr  9  2024 world.txt
+```
+
+不出意外，遇到和 `ls | xargs -n 1` 同样的问题，`hello world.txt` 被 xargs 以空格作为分割符解析成了两个参数：`hello` 和 `world.txt`。尝试执行 `ls -l ./hello` 时，报错文件（夹）不存在。
+
+对于 find 出的文件（名/路径）包含空格，可以指定 `-print0` 替代隐含默认的 `-print`，使用 `\0` 代替 `\n` 作为结果分隔符，每个文件（名/路径）后都隐含有一个字符 NUL（`\0`）。然后，相应通过 `xargs -0` 选项指定以 `\0` 而非空白字元来作为参数分隔符，从而正确解析出参数列表，再逐个文件调用 `ls -l`，则结果符合预期。
+
+```bash
+$ find . -type f -print0 | xargs -0 -t ls -l
+ls -l ./WORLD.txt ./hello world.txt ./HELLO.txt
+-rw-r--r--@ 1 cliff  staff   146 Apr  9  2024 ./hello world.txt
+-rw-r--r--@ 1 cliff  staff   146 Apr  9  2024 ./HELLO.txt
+-rw-r--r--@ 1 cliff  staff   146 Apr  9  2024 ./WORLD.txt
+```
+
+---
+
+在 vim 下执行 `:%s/\r//g` 可将DOS文件中的回车符 `^M` 替换为空（即删除）。
+
+dos2unix 批量替换方案：`find ./ -type f print0 | xargs -0 sed -i 's/^M$//'`。  
+
+#### -I
+
+xargs 的 `-I` 选项是一个功能强大的工具，它的核心作用是定义一个**占位符**，让你能够精确控制从标准输入读取的参数被放置在后续命令的哪个位置。
+
+默认情况下，`xargs` 会将接收到的参数添加到命令的末尾。但很多场景下，我们需要将参数插入到命令中间或指定位置，这时 `-I` 选项就派上用场了。
+
+例如，`cat url_list.txt | xargs -n 1 wget` 中，`-n 1` 表示每行一个参数（URL）传递给 `wget` 进行下载，相当于 `wget URL`。
+
+上面的 `find . -type f -print0 | xargs -0 -t ls -l` 以 `\0` 分割的参数（文件名）将作为 `ls -l FILEs` 的参数 FILEs，实际展开效果如下：
+
+```bash
+# 参数位置在 ls 命令尾部
+ls -l ./WORLD.txt ./hello world.txt ./HELLO.txt
+```
+
+**基本语法格式**：`xargs -I <占位符> <命令> <占位符>`，占位符可以是任意字符串，如 `{}`、`file`、`@` 等，`{}` 是最常见的选择。
+
+> `xargs -I` 和 `xargs -i` 是一样的，只是 `-i` 默认使用大括号（`{}`）作为替换字符串（replstr），`-I` 则可以自定义其他字符串作为 replstr，但是必须用引号包起来（？）。
+> man 推荐使用 `-I` 代替 `-i`（macOS 下不支持 `-i` 选项），但是一般都使用 `-i` 图个简单，除非在命令中不能使用大括号。
+
+典型应用场景包括：
+
+1. 批量重命名文件
+
+```bash
+ls *.txt | xargs -t -I {} mv {} {}.bak
+```
+
+- 这条命令会将所有 `.txt` 文件追加 `.bak` 后缀进行重命名。例如，输入是 `a.txt`，那么构造出的命令就是 `mv a.txt a.txt.bak`。
+
+2. 将文件复制到特定目录
+
+```bash
+find . \( -iname "*.jpg" -o -iname "*.png" \) | xargs -I {} cp {} /data/images
+```
+
+- 将所有找到的图片文件（后缀为 .jpg 或 .png，不区分大小写）复制到 /data/images 目录下。
+
+无法通过 xargs 传递数值做正确的算术扩展：
+
+```bash
+$ echo 1 | xargs -I "x" echo $((2*x))
+```
+
+这时只能改变方法或寻找一些小技巧，例如：
+
+```bash
+$ echo 1 | xargs -I {} expr 2 \* {}
+```
+
+`cat url_list.txt | xargs -I % sh -c '...'` 是一个经典的组合，用于对文件中的每一行内容（例如每个URL）执行一系列复杂的操作。
+
+这个结构的强大之处在于，你可以在 `sh -c '...'` 的单引号内编写任何复杂的命令序列。
+
+- `sh -c` 后面的命令字符串必须用单引号引起来，这样可以确保占位符 `%` 由 xargs 进行替换，而不是被当前Shell提前解释。
+
+例如，可以依次执行下载URL并记录日志：
+
+```bash
+cat url_list.txt | xargs -I % sh -c 'echo "正在下载：%"; wget %; echo "已完成：%" >> wget_download.log'
+```
+
+对于 url_list.txt 里的每个URL，Shell 都会依次执行三条命令：先打印正在下载提示信息，然后使用 wget下载，最后将完成信息追加到日志文件中。
