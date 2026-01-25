@@ -10,6 +10,11 @@ categories:
     - linux
 tags:
     - pipeline
+    - tee
+    - wc
+    - cut
+    - tr
+    - xargs
 comments: true
 ---
 
@@ -718,7 +723,7 @@ $ echo 'How many roads must a man walk down' | xargs md5 -s
 brew list --cask | xargs -t brew upgrade --cask
 ```
 
-xargs 和 find 算是一对死党，两者结合使用可以让任务变得更轻松，详情参考 [find](../commands/linux-cmd-find-xargs.md)，特别是 `find ... -print0 | xargs -0 ...` 的搭配使用。
+xargs 和 find 算是一对死党，两者结合使用可以让任务变得更轻松，详情参考 [find](../commands/linux-cmd-find.md)，特别是 `find ... -print0 | xargs -0 ...` 的搭配使用。
 
 ### options
 
