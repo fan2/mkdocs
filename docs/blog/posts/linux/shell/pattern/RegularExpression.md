@@ -4,6 +4,7 @@ authors:
   - xman
 date:
     created: 2019-11-03T15:00:00
+    updated: 2026-01-24T10:00:00
 categories:
     - wiki
     - linux
@@ -16,6 +17,8 @@ Linux 命令行下使用正则表达式 —— [Regular Expression](https://en.w
 
 <!-- more -->
 
+[Regular Expression](https://en.wikipedia.org/wiki/Regular_expression)  
+
 A **regular expression**, **regex** or **regexp** (sometimes called a **rational expression**) is, in theoretical computer science and formal language theory, a sequence of characters that define a search [pattern](https://en.wikipedia.org/wiki/Pattern_matching). Usually this pattern is then used by [string searching algorithms](https://en.wikipedia.org/wiki/String_searching_algorithm) for "find" or "find and replace" operations on strings, or for input validation.
 
 The concept arose in the 1950s when the American mathematician Stephen Cole Kleene formalized the description of a regular language. The concept came into common use with Unix text-processing utilities.
@@ -23,6 +26,143 @@ The concept arose in the 1950s when the American mathematician Stephen Cole Klee
 Since the 1980s, different syntaxes for writing regular expressions exist, one being the [POSIX](https://en.wikipedia.org/wiki/POSIX) standard and another, widely used, being the [Perl](https://en.wikipedia.org/wiki/Perl) syntax.
 
 [**Regular-Expressions.info**](https://www.regular-expressions.info/) - The Premier website about Regular Expressions
+
+## [standards](https://en.wikipedia.org/wiki/Regular_expression)
+
+linux 下 `man 7 regex`，macOS 下 `man 7 re_format` 可以查看 POSIX regular expressions 相关信息。
+
+### BRE vs. ERE
+
+[BRE](https://en.wikipedia.org/wiki/Regular_expression#POSIX_basic_and_extended): 基本的正则表达式（Basic Regular Expressions），Basic RegEx -> `BRE`。
+
+[ERE](https://en.wikipedia.org/wiki/Regular_expression#POSIX_extended): 扩展的正则表达式（Extended Regular Expressions），Extended RegEx -> `ERE`。
+
+`BRE` and `ERE` work together.
+
+1. **`BRE`** requires that the metacharacters `( )` and `{ }` be designated `\(\)` and `\{\}`, whereas Extended Regular Syntax (`ERE`) does not.  
+2. ***`ERE`*** adds **`?`**, **`+`**, and **`|`**, and it removes the need to escape the metacharacters `( )` and `{ }`, which are required in `BRE`.  
+
+By default, the Unix utility `grep` and `sed` use **BRE**, while `awk` uses **ERE**. This primarily affects how special characters are used in patterns.
+
+Tool | Default Regex Mode | Option for ERE
+-----|--------------------|-----------------------------------------------
+grep | BRE                | `-E` (or egrep)
+sed  | BRE                | `-E` (or formerly `-r`, `-E` is more portable)
+awk  | ERE                | N/A (always uses ERE)
+
+The main difference between BRE and ERE lies in which metacharacters require a backslash (`\`) to be treated as a special operator versus a literal character.
+
+| Feature     | BRE (grep,sed default) | ERE (awk default) |
+|-------------|------------------------|-------------------|
+| Grouping    | \\( ... \\)            | ( ... )           |
+| Quantifiers | \\{ ... \\}            | { ... }           |
+| One or more | \\+                    | +                 |
+| Zero or one | \\?                    | ?                 |
+| Alternation (OR) | \|                | `                 |
+
+In BRE, these characters are treated as literals unless they are escaped with a backslash to activate their *special* meaning. In ERE, the opposite is true: they are special operators by default and require a backslash to be treated as *literals*.
+
+You can enable ERE in `grep` and `sed` by using the `-E, --extended-regexp` (or the less portable older `-r`) option on the command line.
+
+- `grep -E`: Interpret pattern as an extended regular expression (i.e., force grep to behave as egrep).
+- `sed -E`: Interpret regular expressions as extended (modern) regular expressions rather than basic regular expressions (BRE's).
+
+### [Perl and PCRE](https://en.wikipedia.org/wiki/Regular_expression#Perl_and_PCRE)
+
+https://pcre.org/
+
+Perl 的正则表达式（Perl Regular Expressions），又叫 Perl RegEx，简称 `PRE`。  
+Perl 兼容格式的正则表达式（Perl Compatible Regular Expressions），简称 `PCRE`。  
+
+[**PCRE**](https://en.wikipedia.org/wiki/Perl_Compatible_Regular_Expressions) is a library written in C, which implements a [regular expression](https://en.wikipedia.org/wiki/Regular_expression) engine, inspired by the capabilities of the [Perl programming language](https://en.wikipedia.org/wiki/Perl). Philip Hazel started writing PCRE in summer 1997. PCRE's syntax is much more powerful and flexible than either of the [POSIX regular expression](https://en.wikipedia.org/wiki/Regular_expression#POSIX) flavors and than that of many other regular-expression libraries.
+
+Because of its expressive power and (relative) ease of reading, many other utilities and programming languages have **adopted** syntax similar to Perl's—for example, `Java`, `JavaScript`, `Python`, `Ruby`, `Qt`, `Microsoft's .NET Framework`, and `XML Schema`.
+
+A number of prominent open-source programs, such as the Apache and Nginx HTTP Servers, and the PHP and R scripting languages, **incorporate** the PCRE library; proprietary software can do likewise, as the library is BSD licensed.
+
+Perl 5.10 implements syntactic extensions originally developed in PCRE and Python.
+
+## [cheatsheet](https://regexr.com/)
+
+[regexper](https://regexper.com/) - railroad  
+[regexr](https://regexr.com/)  
+
+[w3cschool](https://www.w3cschool.cn/regexp/6a7w1pr0.html)  
+[chinaz](http://tool.chinaz.com/regex) / [oschina](http://tool.oschina.net/regex)  
+
+### BRE Metacharacters
+
+| 代码      | 说明                                    |
+|-----------|-----------------------------------------|
+| ^         | 匹配字符串的 `开始`                     |
+| $         | 匹配字符串的 `结束`                     |
+| .         | 匹配除 `换行符` 以外的任意字符          |
+| *         | 重复0次或多次                           |
+| [^x]      | 匹配除了 x 以外的任意字符               |
+| [^aeiou]  | 匹配除了 aeiou 这几个字母以外的任意字符 |
+| \\{n\\}   | 重复n次                                 |
+| \\{n,\\}  | 重复n次或更多次                         |
+| \\{m,n\\} | 重复m到n次                              |
+| \\(.*\\)  | 捕获分组                                |
+
+To match any character including newline, use a pattern such as `[.\n]`.
+
+> Python 中对应 flag 为 `re.S`。
+
+### ERE Extended Qualifiers
+
+ERE 中增加了扩展限定符：`?`、`+`、`|`，重复m到n次 `{m,n}` 和 捕获分组 `(.*)` 中的括号无需添加反斜杠转义。
+
+| 代码/语法 | 说明            |
+|-----------|-----------------|
+| ?         | 重复0次或1次    |
+| +         | 重复1次或多次   |
+| \|        | 子表达式或运算  |
+| {n}       | 重复n次         |
+| {n,}      | 重复n次或更多次 |
+| {m,n}     | 重复m到n次      |
+| (.*)      | 捕获分组        |
+
+`+` is equivalent to `{1,}`
+
+### Tables of Perl Regex
+
+[**Regular expressions in Perl**](http://jkorpela.fi/perl/regexp.html)  
+[Tables of Perl Regular Expression (PRX) Metacharacters](http://support.sas.com/documentation/cdl/en/lrdict/64316/HTML/default/viewer.htm#a003288497.htm)  
+
+<table class="cheatsheet"> <tbody><tr><th colspan="2" data-id="charclasses">Character classes</th></tr> <tr><td><a>.</a></td><td>any character except newline</td></tr> <tr><td><a>\w</a>&ensp;<a>\d</a>&ensp;<a>\s</a></td><td>word, digit, whitespace</td></tr> <tr><td><a>\W</a>&ensp;<a>\D</a>&ensp;<a>\S</a></td><td>not word, digit, whitespace</td></tr> <tr><td><a>[abc]</a></td><td>any of a, b, or c</td></tr> <tr><td><a>[^abc]</a></td><td>not a, b, or c</td></tr> <tr><td><a>[a-g]</a></td><td>character between a &amp; g</td></tr> <tr><th colspan="2" data-id="anchors">Anchors</th></tr> <tr><td><a>^abc$</a></td><td>start / end of the string</td></tr> <tr><td><a>\b</a>&ensp;<a>\B</a></td><td>word, not-word boundary</td></tr> <tr><th colspan="2" data-id="escchars">Escaped characters</th></tr> <tr><td><a>\.</a>&ensp;<a>\*</a>&ensp;<a>\\</a></td><td>escaped special characters</td></tr> <tr><td><a>\t</a>&ensp;<a>\n</a>&ensp;<a>\r</a></td><td>tab, linefeed, carriage return</td></tr> <tr><th colspan="2" data-id="groups">Groups &amp; Lookaround</th></tr> <tr><td><a>(abc)</a></td><td>capture group</td></tr> <tr><td><a>\1</a></td><td>backreference to group #1</td></tr> <tr><td><a>(?:abc)</a></td><td>non-capturing group</td></tr> <tr><td><a>(?=abc)</a></td><td>positive lookahead</td></tr> <tr><td><a>(?!abc)</a></td><td>negative lookahead</td></tr> <tr><th colspan="2" data-id="quants">Quantifiers &amp; Alternation</th></tr> <tr><td><a>a*</a>&ensp;<a>a+</a>&ensp;<a>a?</a></td><td>0 or more, 1 or more, 0 or 1</td></tr> <tr><td><a>a{5}</a>&ensp;<a>a{2,}</a></td><td>exactly five, two or more</td></tr> <tr><td><a>a{1,3}</a></td><td>between one &amp; three</td></tr> <tr><td><a>a+?</a>&ensp;<a>a{2,}?</a></td><td>match as few as possible</td></tr> <tr><td><a>ab|cd</a></td><td>match ab or cd</td></tr> </tbody></table>
+
+`(?:re)` 类似 `(…)`，匹配部分区块，但是不捕获存储为组。
+
+例1: `industr(?:y|ies)`：非捕获匹配 industry|industries。  
+例2：`/(?:^)\d{4}/m` 顶格匹配以四个数字开头的行。  
+
+### Character classes
+
+像 `\s`、`\d` 这类简写符（Shortcuts）源于 Perl​ 等高级正则引擎的扩展。在 UNIX-like 系统中，需要使用 POSIX 标准的字符类 character classes - `[:class:]`，语法固定为 `[[:class:]]` 这种双层括号形式。
+
+以下是 macOS 终端执行 `man bash` 查看 bash 手册中的 `Pattern Matching` 摘选：
+
+```bash
+              Within [ and ], character classes can be specified using the syntax [:class:], where class is one of the following
+              classes defined in the POSIX standard:
+              alnum alpha ascii blank cntrl digit graph lower print punct space upper word xdigit
+```
+
+Perl 和 POSIX 中部分等效的字符类：
+
+| POSIX         | Perl | 说明                              | 否定式
+|---------------|------|-----------------------------------|-------
+| `[[:space:]]` | \s   | 匹配任意的 `空白符`，包括换行符   | \S; `[^[:space:]]`
+| `[[:digit:]]` | \d   | 匹配 `数字`                       | \D; `[^[:digit:]]`
+| `[[:alnum:]]` | \w   | 匹配 `字母` 或 `数字` 或 `下划线` | \W; `[^[:alnum:]]`
+| `[:alpha:]`   | \a   | 匹配 `字母`                       | ; `[^[:alpha:]]`
+| `[:lower:]`   | \l   | 匹配 `小写字母`                   | ; `[^[:lower:]]`
+| `[:upper:]`   | \u   | 匹配 `大写字母`                   | ; `[^[:upper:]]`
+
+在编写 shell 脚本或使用不确定的工具时，优先使用 POSIX 字符类 `[[:class:]]`。它是最通用的“通用语”，可移植性特别好，几乎所有兼容 POSIX 的环境和工具（比如 shell globbing、grep、sed、awk）都支持。
+
+当你明确在使用支持 Perl 语法的工具（如 `grep -P`、Python 的 `re` 模块、Perl 等），并且追求代码简洁时，再考虑使用 `\s`、`\d` 这种简写符。
 
 ## references
 
@@ -116,96 +256,6 @@ result = re.match(pattern, string)
 > 注意： match 和 search 是匹配 **一次**，findall 则是匹配 **所有**。
 
 flags 可为 re.M, re.I, re.S。
-
-## [standards](https://en.wikipedia.org/wiki/Regular_expression)
-
-### [BRE](https://en.wikipedia.org/wiki/Regular_expression#POSIX_basic_and_extended)
-
-基本的正则表达式（Basic Regular Expressions），又叫 Basic RegEx，简称 `BRE`。
-
-### [ERE](https://en.wikipedia.org/wiki/Regular_expression#POSIX_extended)
-
-扩展的正则表达式（Extended Regular Expressions），又叫 Extended RegEx，简称 `ERE`。
-
-`BRE` and `ERE` work together.
-
-**`BRE`** requires that the metacharacters `( )` and `{ }` be designated `\(\)` and `\{\}`, whereas Extended Regular Syntax (`ERE`) does not.  
-***`ERE`*** adds **`?`**, **`+`**, and **`|`**, and it removes the need to escape the metacharacters `( )` and `{ }`, which are required in `BRE`.  
-
-### [Perl and PCRE](https://en.wikipedia.org/wiki/Regular_expression#Perl_and_PCRE)
-
-https://pcre.org/
-
-Perl 的正则表达式（Perl Regular Expressions），又叫 Perl RegEx，简称 `PRE`。  
-Perl 兼容格式的正则表达式（Perl Compatible Regular Expressions），简称 `PCRE`。  
-
-[**PCRE**](https://en.wikipedia.org/wiki/Perl_Compatible_Regular_Expressions) is a library written in C, which implements a [regular expression](https://en.wikipedia.org/wiki/Regular_expression) engine, inspired by the capabilities of the [Perl programming language](https://en.wikipedia.org/wiki/Perl). Philip Hazel started writing PCRE in summer 1997. PCRE's syntax is much more powerful and flexible than either of the [POSIX regular expression](https://en.wikipedia.org/wiki/Regular_expression#POSIX) flavors and than that of many other regular-expression libraries.
-
-Because of its expressive power and (relative) ease of reading, many other utilities and programming languages have **adopted** syntax similar to Perl's—for example, `Java`, `JavaScript`, `Python`, `Ruby`, `Qt`, `Microsoft's .NET Framework`, and `XML Schema`.
-
-A number of prominent open-source programs, such as the Apache and Nginx HTTP Servers, and the PHP and R scripting languages, **incorporate** the PCRE library; proprietary software can do likewise, as the library is BSD licensed.
-
-Perl 5.10 implements syntactic extensions originally developed in PCRE and Python.
-
-## regex online
-
-[regexper](https://regexper.com/) - railroad  
-[regexr](https://regexr.com/)  
-
-[w3cschool](https://www.w3cschool.cn/regexp/6a7w1pr0.html)  
-[chinaz](http://tool.chinaz.com/regex) / [oschina](http://tool.oschina.net/regex)  
-
-## [cheatsheet](https://regexr.com/)
-
-[**Regular expressions in Perl**](http://jkorpela.fi/perl/regexp.html)  
-[Tables of Perl Regular Expression (PRX) Metacharacters](http://support.sas.com/documentation/cdl/en/lrdict/64316/HTML/default/viewer.htm#a003288497.htm)  
-
-<table class="cheatsheet"> <tbody><tr><th colspan="2" data-id="charclasses">Character classes</th></tr> <tr><td><a>.</a></td><td>any character except newline</td></tr> <tr><td><a>\w</a>&ensp;<a>\d</a>&ensp;<a>\s</a></td><td>word, digit, whitespace</td></tr> <tr><td><a>\W</a>&ensp;<a>\D</a>&ensp;<a>\S</a></td><td>not word, digit, whitespace</td></tr> <tr><td><a>[abc]</a></td><td>any of a, b, or c</td></tr> <tr><td><a>[^abc]</a></td><td>not a, b, or c</td></tr> <tr><td><a>[a-g]</a></td><td>character between a &amp; g</td></tr> <tr><th colspan="2" data-id="anchors">Anchors</th></tr> <tr><td><a>^abc$</a></td><td>start / end of the string</td></tr> <tr><td><a>\b</a>&ensp;<a>\B</a></td><td>word, not-word boundary</td></tr> <tr><th colspan="2" data-id="escchars">Escaped characters</th></tr> <tr><td><a>\.</a>&ensp;<a>\*</a>&ensp;<a>\\</a></td><td>escaped special characters</td></tr> <tr><td><a>\t</a>&ensp;<a>\n</a>&ensp;<a>\r</a></td><td>tab, linefeed, carriage return</td></tr> <tr><th colspan="2" data-id="groups">Groups &amp; Lookaround</th></tr> <tr><td><a>(abc)</a></td><td>capture group</td></tr> <tr><td><a>\1</a></td><td>backreference to group #1</td></tr> <tr><td><a>(?:abc)</a></td><td>non-capturing group</td></tr> <tr><td><a>(?=abc)</a></td><td>positive lookahead</td></tr> <tr><td><a>(?!abc)</a></td><td>negative lookahead</td></tr> <tr><th colspan="2" data-id="quants">Quantifiers &amp; Alternation</th></tr> <tr><td><a>a*</a>&ensp;<a>a+</a>&ensp;<a>a?</a></td><td>0 or more, 1 or more, 0 or 1</td></tr> <tr><td><a>a{5}</a>&ensp;<a>a{2,}</a></td><td>exactly five, two or more</td></tr> <tr><td><a>a{1,3}</a></td><td>between one &amp; three</td></tr> <tr><td><a>a+?</a>&ensp;<a>a{2,}?</a></td><td>match as few as possible</td></tr> <tr><td><a>ab|cd</a></td><td>match ab or cd</td></tr> </tbody></table>
-
-`(?:re)` 类似 `(…)`，匹配部分区块，但是不捕获存储为组。
-
-例1: `industr(?:y|ies)`：非捕获匹配 industry|industries。  
-例2：`/(?:^)\d{4}/m` 顶格匹配以四个数字开头的行。  
-
-### 常用限定符
-
-| 代码/语法 | 说明            |
-| --------- | --------------- |
-| ?         | 重复0次或1次    |
-| +         | 重复1次或多次   |
-| *         | 重复0次或多次   |
-| {n}       | 重复n次         |
-| {n,}      | 重复n次或更多次 |
-| {n,m}     | 重复n到m次      |
-
-`+` is equivalent to `{1,}`
-
-### 常用元字符
-
-| 代码 | 说明                                         |
-| ---- | -------------------------------------------- |
-| .    | 匹配除 `换行符` 以外的任意字符               |
-| \w   | 匹配 `字母` 或 `数字` 或 `下划线`（word）    |
-| \s   | 匹配任意的 `空白符`（space）                 |
-| \d   | 匹配 `数字`（digit）                         |
-| \b   | 匹配单词的 `开始` 或 `结束`（word boundary） |
-| ^    | 匹配字符串的 `开始`                          |
-| $    | 匹配字符串的 `结束`                          |
-
-To match any character including newline, use a pattern such as `[.\n]`.
-
-> Python 中对应 flag 为 `re.S`。
-
-### 常用反义词
-
-| 代码/语法 | 说明                                             |
-| --------- | ------------------------------------------------ |
-| \W        | 匹配任意 **不是** 字母，数字，下划线，汉字的字符 |
-| \S        | 匹配任意 **不是** 空白符的字符                   |
-| \D        | 匹配任意 **非** 数字的字符                       |
-| \B        | 匹配 **不是** 单词开头或结束的位置               |
-| [^x]      | 匹配除了 x 以外的任意字符                        |
-| [^aeiou]  | 匹配除了 aeiou 这几个字母以外的任意字符          |
 
 ## vscode extensions
 

@@ -4,6 +4,7 @@ authors:
   - xman
 date:
     created: 2019-11-04T09:00:00
+    updated: 2026-01-24T09:00:00
 categories:
     - wiki
     - linux
@@ -168,6 +169,16 @@ sed -i '.bak' 's/main/fun/g' 'Test.txt'
 # macOS
 sed -i '' 's/main/fun/g' 'Test.txt'
 ```
+
+#### -E
+
+awk 默认支持扩展的正则表达式（Extended Regular Expressions，EREs），而 sed 默认使用基本的正则表达式（Basic Regular Expressions，BREs）。
+
+sed 默认的 BRE 正则表达式中，`^` 和 `$` 分别匹配行首和行尾，`.` 匹配任意字符，`*` 匹配任意长度字符串，且捕获分组的括号需要加上反斜杠转义。
+
+sed 可以使用 `-E` 选项启用扩展正则表达式（ERE），支持扩展的 `?`、`+` 重复次数限定符，重复次数范围 `{m,n}` 和捕获分组 `(.*)` 中的括号无需添加反斜杠转义。
+
+- **`sed -E '...'`**: Enables Extended Regular Expressions in `sed`.
 
 ### match
 
