@@ -1,37 +1,40 @@
 ---
-title: python index and config
+title: pip config index and proxy
 authors:
   - xman
 date:
     created: 2019-12-04T14:00:00
+    updated: 2026-01-24T10:00:00
 categories:
     - python
 tags:
     - pip
-    - index
     - config
+    - index
+    - proxy
 comments: true
 ---
+
+[PyPI · The Python Package Index](https://pypi.org/)
 
 [pip documentation v25.2](https://pip.pypa.io/en/stable/)
 
 <!-- more -->
 
-[腾讯云pip源配置](https://cloud.tencent.com/developer/article/1601851)
-[使用腾讯云镜像源加速pip](https://mirrors.cloud.tencent.com/help/pypi.html)
-
 常见的 PyPI（Python Package Index）软件包镜像源：
 
-- Official: https://pypi.org/
-- 腾讯云: https://mirrors.cloud.tencent.com/pypi/simple/
 - 阿里云: https://mirrors.aliyun.com/pypi/simple/
-- 百度: https://mirror.baidu.com/pypi/simple
+- 腾讯云: https://mirrors.cloud.tencent.com/pypi/simple/
 - 清华大学: https://pypi.tuna.tsinghua.edu.cn/simple/
 - 中国科技大学: https://pypi.mirrors.ustc.edu.cn/simple/
+
+[使用腾讯云镜像源加速pip](https://mirrors.cloud.tencent.com/help/pypi.html) - [pip源配置](https://cloud.tencent.com/developer/article/1601851)
+[Python pip 源设置成国内源](https://zhuanlan.zhihu.com/p/616174273)
 
 ## pip install from specific index
 
 ```bash
+# pip3 help download
 $ pip3 help install
 
 Package Index Options:
@@ -66,12 +69,21 @@ pip install tccli -i http://mirrors.tencentyun.com/pypi/simple --trusted-host mi
 以上 HTTP 域名已经停止服务，建议改用 HTTPS 新域名：
 
 ```bash
-pip install tccli -i https://mirrors.cloud.tencent.com/pypi/simple --trusted-host mirrors.cloud.tencent.com
+pip install tccli -i https://mirrors.cloud.tencent.com/pypi/simple
 ```
 
 ## pip config set global.index-url
 
-如果 pip3 -V >= 10.0.0，也可考虑使用 `pip config set` 命令配置全局 index-url 和 trusted-host。
+执行 `pip3 help config` 可以查看 config 子命令（Subcommands）如下：
+
+- **list**: List the active configuration (or from the file specified)
+- **edit**: Edit the configuration file in an editor
+- **get**: Get the value associated with command.option
+- **set**: Set the command.option=value
+- **unset**: Unset the value associated with command.option
+- **debug**: List the configuration files and values defined under them
+
+如果 pip3 -V >= 10.0.0，可使用 `pip config set` 命令配置全局 index-url 和 trusted-host。
 
 pip3 config 配置命令的完整格式：`pip3 config [<file-option>] subcommand [command.option] [value]`。
 
@@ -79,15 +91,34 @@ pip3 config 配置命令的完整格式：`pip3 config [<file-option>] subcomman
 
 关于 `file-option`，可选 `--user`、`--global` 和 `--site` 三个级别：
 
-- `--global`: Use the system-wide configuration file only
-- `--user`: Use the user configuration file only
-- `--site`: Use the current environment configuration file only
+Configuration files can change the default values for command line options. The files are written using standard INI format.
+
+pip has 3 “levels” of configuration files:
+
+- `global`: system-wide configuration file, shared across users.
+- `user`: per-user configuration file.
+- `site`: per-environment configuration file; i.e. per-virtualenv.
+
+Additionally, environment variables can be specified which will override any of the above.
 
 > If none of `--user`, `--global` and `--site` are passed, a virtual environment configuration file is used if one is *active* and the file *exists*, e.g., site: `$HOME/.venv/pip.conf`. Otherwise, all modifications happen to the user file by *default*, i.e., `$HOME/.config/pip/pip.conf`.
 
 执行 `pip3 config debug` 将列举 global、user、current 三个级别的配置文件，以及配置文件中的具体配置（如果有的话）。
 
 ```bash
+# Windows
+$ pip3 config debug
+env_var:
+env:
+global:
+  C:\ProgramData\pip\pip.ini, exists: False
+site:
+  C:\Python314\pip.ini, exists: False
+user:
+  C:\Users\faner\pip\pip.ini, exists: False
+  C:\Users\faner\AppData\Roaming\pip\pip.ini, exists: False
+
+# macOS
 $ pip3 config debug
 env_var:
 env:
@@ -99,27 +130,84 @@ site:
 user:
   /Users/faner/.pip/pip.conf, exists: False
   /Users/faner/.config/pip/pip.conf, exists: False
+
+# Linux(Ubuntu)
+$ pip3 config debug
+env_var:
+env:
+global:
+  /etc/xdg/pip/pip.conf, exists: False
+  /etc/pip.conf, exists: False
+site:
+  /usr/pip.conf, exists: False
+user:
+  /home/faner/.pip/pip.conf, exists: False
+  /home/faner/.config/pip/pip.conf, exists: False
 ```
 
-`pip3 config` 子命令（Subcommands）如下：
+执行 `pip3 config set global.option value` 全局配置将会写入当前用户的配置文件:
 
-- **list**: List the active configuration (or from the file specified)
-- **edit**: Edit the configuration file in an editor
-- **get**: Get the value associated with command.option
-- **set**: Set the command.option=value
-- **unset**: Unset the value associated with command.option
-- **debug**: List the configuration files and values defined under them
+- Windows: `%APPDATA%\pip\pip.ini`
+- macOS/Linux: `$HOME/.config/pip/pip.conf`
 
-执行 `pip3 config set global.option value` 全局配置将会写入当前用户的配置文件 `$HOME/.config/pip/pip.conf`。
+`pip3 config set` index-url 和 trusted-host 可以指定 **global** 级别影响所有子命令的配置，也可分别为 **download** 和 **install** 命令配置。
+
+配置项          | 作用范围  | 影响的操作
+----------------|-----------|----------------------------------------------------
+global.*option*   | 全局​      | 影响所有 pip 子命令（包括 install, download, list 等）
+download.*option* | 下载操作​  | 仅影响 pip download 命令
+install.*option*  | 安装操作​  | 仅影响 pip install 命令
 
 ```bash
-pip3 config set global.index-url http://mirrors.cloud.tencent.com/pypi/simple
-pip3 config get global.index-url
-pip3 config set global.trusted-host mirrors.cloud.tencent.com
-pip3 config get global.trusted-host
+$ pip3 config set global.index-url https://mirrors.aliyun.com/pypi/simple
+Writing to /Users/faner/.config/pip/pip.conf
+
+$ pip3 config set global.trusted-host mirrors.aliyun.com
+Writing to /Users/faner/.config/pip/pip.conf
 ```
 
-执行 `pip3 config list` 可以查看所有的配置项；执行 `pip3 config debug` 可检查写入到哪个配置文件。
+执行 `pip3 config get global.option` 读取全局配置值：
+
+```bash
+$ pip3 config get global.index-url
+https://mirrors.aliyun.com/pypi/simple
+
+$ pip3 config get global.trusted-host
+mirrors.aliyun.com
+```
+
+执行 `pip3 config list` 可以查看所有的配置项。
+
+```bash
+$ pip3 config list
+global.index-url='https://mirrors.aliyun.com/pypi/simple'
+global.trusted-host='mirrors.aliyun.com'
+```
+
+重新执行 `pip3 config debug` 可以查看配置文件的详细信息：
+
+```bash
+$ pip3 config debug
+env_var:
+env:
+global:
+  /opt/homebrew/share/pip/pip.conf, exists: False
+  /Library/Application Support/pip/pip.conf, exists: False
+site:
+  /opt/homebrew/opt/python@3.14/Frameworks/Python.framework/Versions/3.14/pip.conf, exists: False
+user:
+  /Users/faner/.pip/pip.conf, exists: False
+  /Users/faner/.config/pip/pip.conf, exists: True
+    global.index-url: https://mirrors.aliyun.com/pypi/simple
+    global.trusted-host: mirrors.aliyun.com
+
+$ cat ~/.config/pip/pip.conf
+[global]
+index-url = https://mirrors.aliyun.com/pypi/simple
+
+[install]
+trusted-host = mirrors.aliyun.com
+```
 
 如果想取消配置，则可以执行 `pip3 config unset global.option`。
 

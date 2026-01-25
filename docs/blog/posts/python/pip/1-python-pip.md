@@ -325,6 +325,8 @@ pipreqs . --force --encoding=utf8 --savepath ./dev-reqs.txt
 2. `--encoding=utf8`: Specify the encoding of the requirements.txt file.
 3. `--savepath`: Specify the path to save the requirements.txt file.
 
+> 如果提示 `No module named pipreqs.__main__; 'pipreqs' is a package and cannot be directly executed`，请改用 `pipreqs.pipreqs`。
+
 ### pip install from requirements.txt
 
 `pip3 help install`: pip also supports installing from "requirements files", which provide an easy way to specify a whole environment to be installed.
@@ -348,7 +350,7 @@ For various reasons, operations personnel often need to deploy Python in product
 3. PROD: Run `pip install -r requirements.txt --no-index --find-links=./offline_packages` to install required dependency packages from local index/cache.
 
 ```bash
-$ pip3 help install
+$ pip3 help download
 
 Package Index Options:
 
