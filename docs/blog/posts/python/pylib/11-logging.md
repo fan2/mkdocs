@@ -647,6 +647,86 @@ ch.setLevel(logging.WARNING)
 logger.addHandler(ch)
 ```
 
+以下是跨模块复用统一日志配置的示例。
+
+首先，在 main.py 中定义根日志器初始化函数：
+
+```python title='main.py'
+#!/usr/bin/env python3
+# -*- coding: UTF-8 -*-
+
+import logging
+from rich.logging import RichHandler
+
+# Get a logger instance named after the current module
+logger = logging.getLogger(__name__)
+
+# Logger Hierarchy: All loggers are descendants of the root logger.
+# Messages logged by a module-specific logger propagate up the hierarchy
+# to the root logger's handlers unless propagation is explicitly stopped.
+def init_root_logger(log_path: str):
+    # 创建控制台处理器(Streamhandler): ch = logging.StreamHandler()
+    # 使用 RichHandler 替换 StreamHandler，指定时间戳精确到毫秒
+    ch = RichHandler(rich_tracebacks=True, log_time_format="%Y-%m-%d, %H:%M:%S,%f")
+    ch.setLevel(logging.INFO)  # default is WARNING
+
+    # 创建文件处理器(FileHandler)
+    fh = logging.FileHandler(log_path, encoding="utf-8")
+    fh.setLevel(logging.DEBUG)  # record more details in file
+
+    # 设置 StreamHandler 和 FileHandler 共用的日志格式
+    formatter = logging.Formatter(
+        "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    )
+    ch.setFormatter(formatter)
+    fh.setFormatter(formatter)
+
+    # 直接配置根日志器，以确保传播生效。
+    root_logger = logging.getLogger()  # 获取根日志器(RootLogger)
+    root_logger.setLevel(logging.DEBUG)  # 设置根日志器的捕获级别
+
+    # 将两个 handler 添加到根日志器(RootLogger)中
+    root_logger.addHandler(ch)
+    root_logger.addHandler(fh)
+
+```
+
+然后，在 main() 函数中调用 `init_root_logger()` 初始化根日志器：
+
+```python
+def main():
+        # 尚未配置根日志器，logger将使用默认配置
+        # logger.warning("logger将使用默认的日志配置")
+
+        # 配置根日志器，统一时间戳
+        dt_start = datetime.datetime.now()
+        start_ts = dt_start.strftime("%Y%m%d_%H%M%S")
+        log_path = os.path.join(cfg.work_dir, f"retrieve_{start_ts}.log")
+        init_root_logger(log_path)
+
+        # 配置变更对logger生效后，才开始打印第一条日志
+        logger.info("logger使用RichHandler和FileHandler")
+
+if __name__ == "__main__":
+    main()
+
+```
+
+main.py 开头申请创建的 logger 对象，是 main 模块的 logger 对象，但是继承了根日志器(RootLogger)的配置。
+
+- 如果在 init 配置之前调用 logger，将使用默认的配置，日志可能未如预期落盘。
+- 请确保在 init 配置生效之后调用 logger，使用自定义的 Handler 处理日志。
+
+在 main 导入的其他子模块（例如 test.py）中，声明以模块命名的 logger 对象，无需再次配置（复用 main 中的 RootLogger 配置）。
+
+```python title='test.py'
+# Get a logger instance named after the current module
+
+logger = logging.getLogger(__name__)
+
+logger.info("test.logger使用RichHandler和FileHandler")
+```
+
 ### Bypass to the log server
 
 现代日志系统中，可能还要旁路一份上传到日志服务器。
