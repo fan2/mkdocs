@@ -4,7 +4,7 @@ authors:
   - xman
 date:
     created: 2024-03-18T15:45:00
-    updated: 2024-04-15T17:00:00
+    updated: 2026-01-31T17:00:00
 categories:
     - macOS
     - ubuntu
@@ -146,8 +146,15 @@ Choose 1-5 [2]: 3
 执行 `crontab -e` 在末尾新增一条测试任务，每分钟执行 echo 写入文件 crontab.log。
 
 ```Shell title="crontab -e test"
-*/1 * * * * echo "echo from crontab." >> $HOME/Downloads/output/crontab.log
-# */1 * * * * echo "$(date) : echo from crontab." >> $HOME/Downloads/output/crontab.log
+# 每分钟执行一次，打印一条信息到日志文件
+* * * * * echo "$(date +\%Y-\%m-\%d\ \%H:\%M) : echo from crontab." >> /tmp/crontab.log
+# 每分钟执行一次，查看 cron 的实际 PATH
+*/1 * * * * echo $PATH >> /tmp/crontab.log
+# 每分钟执行一次，查看命令位置
+* * * * * which hostname >> /tmp/crontab.log
+# 系统配置工具目录 /usr/sbin 和 brew 安装工具目录 /opt/homebrew/bin 不在 PATH 中
+* * * * * which scutil >> /tmp/crontab.log 2>&1
+* * * * * which rclone >> /tmp/crontab.log 2>&1
 ```
 
 `tail -f crontab.log`，整点分钟观察 crontab.log 是否有追加内容，以验证 cron 任务正常调度。
@@ -155,7 +162,7 @@ Choose 1-5 [2]: 3
 确认 cron 任务调度正常后，在 cron table 末尾新增一条 rclone 命令测试任务：
 
 ```Shell title="crontab -e test rclone"
-*/1 * * * * rclone version >> $HOME/Downloads/output/crontab.log
+*/1 * * * * rclone version >> /tmp/crontab.log
 ```
 
 整点分钟，观察 crontab.log，确认 rclone version 被 cron 正常调度执行。
@@ -282,8 +289,10 @@ Choose 1-5 [2]: 3
 在末尾新增一条测试任务，每分钟执行 echo(date) 写入文件 crontab.log。
 
 ```Shell title="crontab -e test"
-*/1 * * * * echo "echo from crontab." >> /Users/faner/Downloads/output/crontab.log
-# */1 * * * * echo "$(date) : echo from crontab." >> /Users/faner/Downloads/output/crontab.log
+# 每分钟执行一次，打印一条信息到日志文件
+* * * * * echo "$(date +\%Y-\%m-\%d\ \%H:\%M) : echo from crontab." >> /tmp/crontab.log
+# 每分钟执行一次，查看 cron 的实际 PATH
+*/1 * * * * echo $PATH >> /tmp/crontab.log
 ```
 
 保存退回到终端，命令行显示以下内容：
@@ -431,7 +440,7 @@ MAILTO=root
 确认 cron 任务调度正常后，在 cron table 末尾新增一条 rclone 命令测试任务：
 
 ```Shell title="crontab -e test rclone"
-*/1 * * * * rclone version >> /Users/faner/Downloads/output/crontab.log
+*/1 * * * * rclone version >> /tmp/crontab.log
 ```
 
 这一次，没有在 ubuntu 上那么幸运，整点分钟观察 crontab.log，rclone version 没有被 cron 调度执行。
@@ -456,7 +465,7 @@ cron 执行出错时默认会通过 MTA 服务给系统管理员发邮件，执�
 将 rclone 命令改为绝对路径 `/opt/homebrew/bin/rclone`，cron 任务调度正常。
 
 ```Shell title="crontab -e"
-*/1 * * * * /opt/homebrew/bin/rclone version >> /Users/faner/Downloads/output/crontab.log
+*/1 * * * * /opt/homebrew/bin/rclone version >> /tmp/crontab.log
 ```
 
 ### cron rclone sync

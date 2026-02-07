@@ -673,6 +673,26 @@ $ rclone lsl webdav@rpi4b: --max-size 1M
     - [How to specify what folders to sync and what to exclude -- include, exclude, filter?](https://forum.rclone.org/t/how-to-specify-what-folders-to-sync-and-what-to-exclude-include-exclude-filter/21821)
     - [Rclone copy using regex expression using include multiple expression for file name](https://forum.rclone.org/t/rclone-copy-using-regex-expression-using-include-multiple-expression-for-file-name/26846)
 
+## cat
+
+语义同 bash shell 中的 `cat`，在终端显示 remote 云盘中的文件内容。
+
+| Command | Description |
+|---------|-------------|
+| [rclone cat](https://rclone.org/commands/rclone_cat/) | Concatenates any files and sends them to stdout. |
+
+You can use it like this to output a single file
+
+```bash
+rclone cat remote:path/to/file
+```
+
+Or like this to output any file in dir or its subdirectories.
+
+```bash
+rclone cat remote:path/to/dir
+```
+
 ## mkdir
 
 语义同 bash shell 中的 `mkdir`，创建目录（remote:path）。
@@ -722,6 +742,41 @@ rcdir/
 3. If the source is a directory then it acts exactly like the [copy](https://rclone.org/commands/rclone_copy/) command.
 
 **copyurl** = download from URL to local Temp dir, then copy to the specified `dst:path`.
+
+### server-side copy
+
+server-side copy 复制文件夹：
+
+```bash
+$ rclone copy -v webdav@rpi4b:rcdir webdav@rpi4b:rcdir1
+
+$ rclone lsf webdav@rpi4b:
+CS/
+English_Docs/
+The_Economist/
+mkdocs/
+rcdir/
+rcdir1/
+```
+
+server-side copy 复制文件：
+
+```bash
+$ rclone copyto -v webdav@rpi4b:rcdir/test.txt webdav@rpi4b:rcdir/test3.txt
+
+$ rclone lsf webdav@rpi4b:rcdir
+test.txt
+test2.txt
+test3.txt
+
+$ rclone copyto -v webdav@rpi4b:rcdir/test.txt webdav@rpi4b:rcdir/test4.txt
+
+$ rclone lsf webdav@rpi4b:rcdir
+test.txt
+test2.txt
+test3.txt
+test4.txt
+```
 
 ### upload from local
 
@@ -802,6 +857,33 @@ $ rclone copyto -v ~/.zshrc smbhd@rpi4b:WDHD/backups/config/$host-$filedate.zshr
 - `--filter` - Add a file-filtering rule
 - `--filter-from` - Read filtering patterns from a *file*
 
+### upload from URL
+
+rclone 本身不支持直接从 HTTP/HTTPS URL 下载并上传到 remote 云盘。
+
+可以结合 curl / wget 和 shell 管道（pipe），将远程 URL 的内容流式传输给 rclone rcat 命令（`rcat` = remote cat），从而实现“不落地上传”，即不保存临时文件的“URL → 云盘”直传。
+
+| Command | Description |
+|---------|-------------|
+| [rclone rcat](https://rclone.org/commands/rclone_rcat/) | Copies standard input to file on remote. |
+
+1. 目标 remote 必须支持 PutStream 操作（大多数主流云盘都支持，如 Google Drive、OneDrive、S3、WebDAV、阿里云 OSS 等）。
+2. 需要知道上传的目标文件名（因为 URL 本身可能不包含清晰的文件名）。
+
+**方式1**：使用 curl + rclone rcat（推荐）
+
+```bash
+# -L：跟随重定向（重要！很多 URL 会 302 跳转）
+curl -L "https://example.com/file.pdf" | rclone rcat remote:myfolder/file.pdf
+```
+
+**方式2**：使用 wget + rclone rcat
+
+```bash
+# -O - 表示输出到 stdout
+wget -O - "https://example.com/file.jpg" | rclone rcat remote:images/photo.jpg
+```
+
 ### download from remote
 
 将 rcdir 目录下的所有文件下载到当前目录（pwd）：
@@ -834,41 +916,6 @@ rclone copy -v webdav@rpi4b:English/恋词考研英语-全真题源报刊7000词
 
 ```bash
 $ rclone copyto -v webdav@rpi4b:rcdir/test2.txt ./test3.txt
-```
-
-### server-side copy
-
-server-side copy 复制文件夹：
-
-```bash
-$ rclone copy -v webdav@rpi4b:rcdir webdav@rpi4b:rcdir1
-
-$ rclone lsf webdav@rpi4b:
-CS/
-English_Docs/
-The_Economist/
-mkdocs/
-rcdir/
-rcdir1/
-```
-
-server-side copy 复制文件：
-
-```bash
-$ rclone copyto -v webdav@rpi4b:rcdir/test.txt webdav@rpi4b:rcdir/test3.txt
-
-$ rclone lsf webdav@rpi4b:rcdir
-test.txt
-test2.txt
-test3.txt
-
-$ rclone copyto -v webdav@rpi4b:rcdir/test.txt webdav@rpi4b:rcdir/test4.txt
-
-$ rclone lsf webdav@rpi4b:rcdir
-test.txt
-test2.txt
-test3.txt
-test4.txt
 ```
 
 ## move
