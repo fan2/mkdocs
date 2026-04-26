@@ -4,6 +4,7 @@ authors:
   - xman
 date:
     created: 2019-10-22T08:30:00
+    updated: 2026-04-26T22:00:00
 categories:
     - wiki
     - linux
@@ -220,6 +221,221 @@ pi@raspberrypi:~$ type -p ifconfig
 /sbin/ifconfig
 pi@raspberrypi:~$ type -a ifconfig
 ifconfig is /sbin/ifconfig
+```
+
+### command test
+
+#### command -v: 检查命令是否存在
+
+`command -v` 是一个 **内置的 shell 命令**，用于：
+
+1. **检查命令是否存在**
+2. **显示命令的类型和位置**
+
+检查命令是否存在示例：
+
+```bash
+# 存在显示路径，退出码为0
+$ command -v curl
+/usr/bin/curl
+echo $?
+0
+
+# 不存在无输出，且退出码非0
+command -v wget
+
+echo $?
+1
+```
+
+显示命令的类型和位置示例：
+
+```bash
+# 1. 查找内置命令：command, cd, pwd, echo, which, test
+# 注意：显示为命令名，而非路径
+$ command -v cd
+cd
+
+# 2. 查找关键字: if, else, do, while
+# 注意：显示关键字名
+$ command -v if
+if
+
+# 3. 查找外部命令：ls, rm; nice, log, find, grep, awk, sed
+$ command -v log
+/usr/bin/log
+
+# 4. 识别命令别名
+$ command -v ls
+alias ls='ls -G'
+$ command -v rm
+alias rm='rm -i'
+
+# 5. 查找函数: 显示函数名
+$ command -v omz
+omz
+$ command -v upgrade_oh_my_zsh
+upgrade_oh_my_zsh
+```
+
+##### `command -v` vs. `which`
+
+**相似性**：两者都用于查找命令路径
+
+**关键区别**：
+
+| 特性          | `command -v`                | `which`               |
+|---------------|-----------------------------|-----------------------|
+| 类型          | **shell 内置命令**          | **外部程序**          |
+| POSIX         | 符合 POSIX 标准             | 不符合 POSIX          |
+| 可移植性      | 高（所有 POSIX shell 都支持） | 较低（非所有系统都有）  |
+| 效率          | 更快（不启动子进程）          | 较慢（需启动子进程）    |
+| 处理别名/函数 | 能识别别名、函数、内置命令    | 通常只找可执行文件    |
+| 退出码        | 找到返回0，没找到返回1       | 找到返回0，没找到返回1 |
+
+#### command -V: 查看命令详细信息
+
+显示命令的类型和定义。
+
+```bash
+$ command -V cd
+cd is a shell builtin
+
+$ command -V if
+if is a reserved word
+
+$ command -V log
+log is /usr/bin/log
+
+$ command -v rsync
+/usr/bin/rsync
+$ command -V rsync
+rsync is /usr/bin/rsync
+```
+
+显示命令别名：
+
+```bash
+# Enable colorized output.
+$ command -V ls
+ls is an alias for ls -G
+# Request confirmation before attempting
+$ command -V rm
+rm is an alias for rm -i
+
+$ command -v python
+alias python=/usr/bin/python3
+$ command -V python
+python is an alias for /usr/bin/python3
+
+$ command -v cp
+alias cp='nocorrect cp'
+$ command -V cp
+cp is an alias for nocorrect cp
+```
+
+显示安装的 brew、rclone 命令工具类型信息：
+
+```bash
+$ command -v brew
+/opt/homebrew/bin/brew
+$ command -V brew
+brew is /opt/homebrew/bin/brew
+```
+
+```bash
+$ command -v rclone
+/opt/homebrew/bin/rclone
+$ command -V rclone
+rclone is /opt/homebrew/bin/rclone
+```
+
+显示 Oh-My-Zsh 插件命令，`omz` 和 `upgrade_oh_my_zsh` 是 shell funciton，且给出了定义所在脚本文件：
+
+> 这个功能非常适用，可以帮助我们找到 shell 函数的定义位置。
+
+```bash
+$ command -V omz
+omz is a shell function from /Users/cliff/.oh-my-zsh/lib/cli.zsh
+$ command -V upgrade_oh_my_zsh
+upgrade_oh_my_zsh is a shell function from /Users/cliff/.oh-my-zsh/lib/functions.zsh
+```
+
+#### command -p: 使用默认PATH中的原始命令
+
+`ls`, `rm` 命令被定义成了带默认选项的 alias - `ls -G` 和 `rm -i`。 指定 `-p` 选项搜索默认 PATH，可以看到原始命令真身：
+
+```bash
+$ command -pv ls
+/bin/ls
+$ command -pv rm
+/bin/rm
+```
+
+安转 brew 时，会将 `/opt/homebrew/bin` 添加到 `PATH` 头部，brew 安装的 python3 如下：
+
+```bash
+$ command -v python3
+/opt/homebrew/bin/python3
+
+$ command -V python3
+python3 is /opt/homebrew/bin/python3
+
+$ command python3 -V
+Python 3.14.4
+```
+
+指定 `-p` 选项搜索默认 PATH，可以看到系统自带的 python3：
+
+```bash
+$ command -pv python3
+/usr/bin/python3
+
+$ command -pV python3
+python3 is /usr/bin/python3
+
+$ command -p python3 -V
+Python 3.9.6
+```
+
+使用 command 绕过别名，执行原始命令：`command ls` 或 `command -p ls`。
+
+#### command 命令在脚本中的使用示例
+
+```bash
+#!/bin/bash
+
+# 检查命令是否存在的函数
+cmd_exists() {
+    # 将标准输出和标准错误都重定向到 `/dev/null`（丢弃）
+    command -v "$1" &> /dev/null
+}
+
+# 最佳实践：检查命令是否存在
+if cmd_exists "rsync"; then
+    echo "使用 rsync"
+    rsync -av source/ dest/
+elif cmd_exists "cp"; then
+    echo "使用 cp (rsync 不可用)"
+    cp -r source/* dest/
+else
+    echo "错误: 没有可用的复制工具" >&2
+    exit 1
+
+# 批量检查命令是否存在
+required_cmds=("bash" "git" "make" "curl")
+missing_cmds=()
+
+for cmd in "${required_cmds[@]}"; do
+    if ! cmd_exists "$cmd"; then
+        missing_cmds+=("$cmd")
+    fi
+done
+
+if [ ${#missing_cmds[@]} -gt 0 ]; then
+    echo "缺少的命令: ${missing_cmds[*]}"
+    exit 1
+fi
 ```
 
 ### Special keys
