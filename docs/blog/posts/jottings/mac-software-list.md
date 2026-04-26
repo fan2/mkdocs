@@ -4,6 +4,7 @@ authors:
   - xman
 date:
     created: 2024-04-30T10:00:00
+    updated: 2026-04-25T10:00:00
 categories:
     - macOS
     - resource
@@ -213,6 +214,11 @@ Stickies.app: [Stickies User Guide for Mac](https://support.apple.com/en-hk/guid
 - Get your commit done.
 - SmartGit is the most popular Git GUI client at slant.co.
 
+[Beyond Compare](https://www.scootersoftware.com/)
+
+- Reconcile Your Differences!
+- Change is inevitable, so manage it with the best tools.
+
 [Araxis Merge](https://www.araxis.com/merge/index.en)
 
 - Advanced 2 & 3-way file comparison (diff), merging and folder synchronization
@@ -232,40 +238,46 @@ Stickies.app: [Stickies User Guide for Mac](https://support.apple.com/en-hk/guid
 
 ## Chrome Extensions
 
-[Command Palette](https://chromewebstore.google.com/detail/command-palette/lfmfhlofoaleegdogpmknfbibciflfek)
-[Extension Manager](https://chromewebstore.google.com/detail/extension-manager/gjldcdngmdknpinoemndlidpcabkggco)
-[Better History](https://chromewebstore.google.com/detail/better-history-manage-exp/egehpkpgpgooebopjihjmnpejnjafefi)
+1. Productivity & Navigation
 
-[Vimium](https://chromewebstore.google.com/detail/vimium/dbepggeogbaibhgnhhndojpepiihcmeb)
-[Super Drag and Go](https://chromewebstore.google.com/detail/super-drag-and-go/jaikcnhlohebodlpkmjepipngegjbfpg)
-[Clutter Free](https://chromewebstore.google.com/detail/prevent-duplicate-tabs/eednccpckdkpojaiemedoejdngappaag)
-[Split Screen](https://chromewebstore.google.com/detail/split-screen-for-google-c/dnollkdkikklpdganoecjcmmlddbennb)
+    - [Command Palette](https://chromewebstore.google.com/detail/lfmfhlofoaleegdogpmknfbibciflfek): A command palette to navigate in Google Chrome faster.
+    - [Extension Manager](https://chromewebstore.google.com/detail/gjldcdngmdknpinoemndlidpcabkggco): Manage extensions, Quickly enable/disable, Support batching operation, Smart sorting.
+    - [Better History](https://chromewebstore.google.com/detail/egehpkpgpgooebopjihjmnpejnjafefi): leek History Manager: Powerful search, bulk export, delete custom selections, filter by day/hour, and block domains from history.
+    - [Clutter Free - Prevent duplicate tabs](https://chromewebstore.google.com/detail/iipjdmnoigaobkamfhnojmglcdbnfaaf): Automatically detect and close duplicate tabs
+    - [Vimium](https://chromewebstore.google.com/detail/vimium/dbepggeogbaibhgnhhndojpepiihcmeb): Vimium provides keyboard shortcuts for navigation and control in the spirit of Vim.
 
-[Tampermonkey](https://chromewebstore.google.com/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo)
-[Allow Copy+](https://chromewebstore.google.com/detail/allow-copy-+/ajhbdcgfhlhhmocddefknjjkejcfpbnj)
-[Google Mail Checker](https://chromewebstore.google.com/detail/google-mail-checker/mihcahmgecmbnbcchbopgniflfhgnkff)
+2. Research & Note-Taking
 
-[Smart TOC](https://chromewebstore.google.com/detail/smart-toc/lifgeihcfpkmmlfjbailfpfhbahhibba): Webpage outliner, TOC sidebar
-[MarkDownload](https://chromewebstore.google.com/detail/markdownload-markdown-web/pcmpcfapbekmbjjkdalcgopdkipoggdi) - Markdown Web Clipper: clip websites and download them into a readable markdown file - no longer available
-[Copy as Markdown](https://chromewebstore.google.com/detail/copy-as-markdown/fkeaekngjflipcockcnpobkpbbfbhmdn): Copy Link or Image as Markdown code
+    - [Smart TOC](https://chromewebstore.google.com/detail/lifgeihcfpkmmlfjbailfpfhbahhibba): Webpage outliner, TOC sidebar
+    - [Copy as Markdown](https://chromewebstore.google.com/detail/fkeaekngjflipcockcnpobkpbbfbhmdn): Copy Link or Image as Markdown code
 
-- <kbd>⌥</kbd><kbd>M</kbd> for `current tab: [title](url)` to Copy Title and URL as Markdown; 
-- <kbd>⇧</kbd><kbd>⌘</kbd><kbd>C</kbd> to Copy Selection as Markdown
+        - <kbd>⌥</kbd><kbd>M</kbd> for `current tab: [title](url)` to Copy Title and URL as Markdown; 
+        - <kbd>⇧</kbd><kbd>⌘</kbd><kbd>C</kbd> to Copy Selection as Markdown
 
-[bypass-paywalls](https://github.com/iamadamdev/bypass-paywalls-chrome/blob/master/README.md)
-[PaywallHub](https://chromewebstore.google.com/detail/paywallhub/iimagbhmhkinjaaammedekiocfphhhca) - [archive.today](https://archive.today/) / [archive.is](https://archive.is/)
+    - [PrintFriendly - Print and PDF Web Pages](https://chromewebstore.google.com/detail/ohlencieiipommannpdfcmfdpjjmeolj) + Webpage Screenshot: assign <kbd>⌘</kbd><kbd>P</kbd> to activate the extension and override the default print function.
+    - [Obsidian Web Clipper](https://chromewebstore.google.com/detail/cnjifjpddelmedmihgijeibhnjfabmlf): Save and highlight web pages in a private and durable format that you can access offline.
+    - [Note Sidebar](https://chromewebstore.google.com/detail/emiochiflnnegkecnjndifbobmbepdne): Simple note sidebar which can be used to write a note, record thoughts, to-do list, meeting notes, etc.
+    - [Obsidian AI Video Notes - HoverNotes](https://chromewebstore.google.com/detail/fhdmbhgpabjkadpaafomaabbdckofphm): Video Note-taking for YouTube, Udemy, Coursera & more to Obsidian
 
-[ChatGPT » Summarize & Chat](https://chromewebstore.google.com/detail/chatgpt-%C2%BB-summarize-chat/cbgecfllfhmmnknmamkejadjmnmpfjmp)
-[PrintFriendly - Print and PDF Web Pages](https://chromewebstore.google.com/detail/printfriendly-print-and-p/ohlencieiipommannpdfcmfdpjjmeolj) + Webpage Screenshot: assign <kbd>⌘</kbd><kbd>P</kbd> to activate the extension and override the default print function.
+3. Media Extraction & Capture
 
-[ImageAssistant](https://chromewebstore.google.com/detail/imageassistant-batch-imag/dbjbempljhcmhlfpfacalomonjpalpko): Batch Image Downloader + QR Code Generator
-[Media Harvest : twitter Media Downloader](https://chromewebstore.google.com/detail/media-harvest-twitter-med/hpcgabhdlnapolkkjpejieegfpehfdok): Download videos and images from twitter
-[FetchV](https://fetchv.net/) - [Video Downloader for m3u8 & hls](https://chromewebstore.google.com/detail/fetchv-video-downloader-f/nfmmmhanepmpifddlkkmihkalkoekpfd): FetchV Video Download Extension
+    - [ImageAssistant](https://chromewebstore.google.com/detail/dbjbempljhcmhlfpfacalomonjpalpko): Batch Image Downloader + QR Code Generator
+    - [GoFullPage](https://chromewebstore.google.com/detail/fdpohaocaechififmbbbbbknoalclacl): The simplest way to take a full page screenshot of your current browser window.
+    - [Media Harvest : twitter Media Downloader](https://chromewebstore.google.com/detail/hpcgabhdlnapolkkjpejieegfpehfdok): Download videos and images from twitter
+    - [FetchV](https://fetchv.net/) - [Video Downloader for m3u8 & hls](https://chromewebstore.google.com/detail/nfmmmhanepmpifddlkkmihkalkoekpfd): FetchV Video Download Extension
+    - [bilibili video downloader](https://chromewebstore.google.com/detail/pamdgobbggbpfpnadidipelihgkafiid): one click to download videos easily.
 
-[划词翻译](https://chromewebstore.google.com/detail/%E5%88%92%E8%AF%8D%E7%BF%BB%E8%AF%91/ikhdkkncnoglghljlkmcimlnlhkeamad): 一站式划词 / 截图 / 网页全文 / 音视频 AI 翻译扩展
+4. Content Access & Bypassing
 
-- [Immersive Translate - Translate Website & PDF](https://chromewebstore.google.com/detail/immersive-translate-trans/bpoadfkcbjbfhfodiogcnhhhpibjhbnh)
+    - [Allow Copy +](https://chromewebstore.google.com/detail/ajhbdcgfhlhhmocddefknjjkejcfpbnj): Allow copying. Remove copy protection.
+    - [PaywallHub](https://chromewebstore.google.com/detail/iimagbhmhkinjaaammedekiocfphhhca) & [bypass-paywalls](https://github.com/iamadamdev/bypass-paywalls-chrome/blob/master/README.md): unavailable due to DMCA takedown
+        - [archive.today](https://archive.today/) / [archive.is](https://archive.is/)
 
-[Web Highlights - PDF & Web Highlighter](https://chromewebstore.google.com/detail/web-highlights-pdf-web-hi/hldjnlbobkdkghfidgoecgmklcemanhm)
+5. Communication & Language
 
-- [Glasp Web Highlighter - PDF & Web Highlights](https://chromewebstore.google.com/detail/glasp-web-highlighter-pdf/blillmbchncajnhkjfdnincfndboieik)
+    - [Google Mail Checker](https://chromewebstore.google.com/detail/mihcahmgecmbnbcchbopgniflfhgnkff): Displays the number of unread messages in your Google Mail inbox.
+    - [划词翻译](https://chromewebstore.google.com/detail/ikhdkkncnoglghljlkmcimlnlhkeamad): 一站式划词 / 截图 / 网页全文 / 音视频 AI 翻译扩展，支持调用本地 Ollama 部署的翻译模型。
+
+6. AI & Automation
+
+    - [Page Assist - A Web UI for Local AI Models](https://chromewebstore.google.com/detail/jfgfiigpkhlkbnfnbobbkinehhfdhndo): Use your locally running AI models to assist you in your web browsing.

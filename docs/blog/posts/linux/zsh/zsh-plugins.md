@@ -4,7 +4,7 @@ authors:
   - xman
 date:
     created: 2019-10-27T11:30:00
-    updated: 2026-01-22T18:30:00
+    updated: 2026-04-24T21:00:00
 categories:
     - wiki
     - zsh
@@ -456,20 +456,12 @@ The [web-search](https://github.com/ohmyzsh/ohmyzsh/tree/02b52a03a5a78362c57d75c
 
 web_search from terminal：直接在命令行发起搜索。
 
-- alias bing='web_search bing'
 - alias google='web_search google'
-- alias yahoo='web_search yahoo'
-- alias ddg='web_search duckduckgo'
-- alias sp='web_search startpage'
-- alias yandex='web_search yandex'
-- alias github='web_search github'
+- alias bing='web_search bing'
 - alias baidu='web_search baidu'
-- alias ecosia='web_search ecosia'
-- alias goodreads='web_search goodreads'
-- alias qwant='web_search qwant'
+- alias github='web_search github'
 
 **搜索示例**：`google oh-my-zsh`、 `bing zsh plugins`、 `baidu zsh 插件`
-
 
 ### editor
 
