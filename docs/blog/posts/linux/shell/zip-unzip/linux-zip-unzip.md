@@ -42,7 +42,7 @@ zip -r archive.zip ./*
 zip 打包 log 文件：
 
 ```bash
-FAN-MB1:zip $ zip -v avg_speed ~/Downloads/Logs/*-avg_speed.log
+$ zip -v avg_speed ~/Downloads/Logs/*-avg_speed.log
   adding: ~/Downloads/Logs/2019-12-01-10-avg_speed.log	(in=2394) (out=795) (deflated 67%)
   adding: ~/Downloads/Logs/2019-12-01-11-avg_speed.log	(in=1638) (out=642) (deflated 61%)
   adding: ~/Downloads/Logs/2019-12-01-15-avg_speed.log	(in=1640) (out=656) (deflated 60%)
@@ -53,7 +53,7 @@ total bytes=6856, compressed=2565 -> 63% savings
 zip 打包 png 文件：
 
 ```bash
-FAN-MB1:zip $ zip -v map_image ~/Downloads/Images/map-*.png
+$ zip -v map_image ~/Downloads/Images/map-*.png
   adding: Users/faner/Downloads/Images/map-深圳市东湖公园.png 	(in=2619042) (out=2597184) (deflated 1%)
   adding: Users/faner/Downloads/Images/map-深圳市梧桐山森林公园.png 	(in=2592064) (out=2567088) (deflated 1%)
   adding: Users/faner/Downloads/Images/map-深圳市民中心周边公园.png 	(in=2888867) (out=2877121) (deflated 0%)
@@ -219,8 +219,8 @@ zip -d foo foo/tom/junk "foo/harry/*" "*.o"
 
 用 macOS Archive Utility.app 打包生成的 zip 文件中，通常包含 `__MACOSX/` 目录。
 
-```
-FAN-MB1:zip $ unzip -l map_image-arch.zip
+```bash
+$ unzip -l map_image-arch.zip
 Archive:  map_image-arch.zip
   Length      Date    Time    Name
 ---------  ---------- -----   ----
@@ -236,13 +236,13 @@ Archive:  map_image-arch.zip
 
 执行 `zip -d` 删除 `__MACOSX/` 目录下的内容：
 
-```
-FAN-MB1:zip $ zip -d map_image-arch.zip __MACOSX/\*
+```bash
+$ zip -d map_image-arch.zip __MACOSX/\*
 deleting: __MACOSX/._map-深圳市东湖公园.png
 deleting: __MACOSX/._map-深圳市梧桐山森林公园.png
 deleting: __MACOSX/._map-深圳市民中心周边公园.png
 
-FAN-MB1:zip $ unzip -l map_image-arch.zip
+$ unzip -l map_image-arch.zip
 Archive:  map_image-arch.zip
   Length      Date    Time    Name
 ---------  ---------- -----   ----
@@ -279,6 +279,16 @@ Archive:  map_image-arch.zip
 
 `unzip` - list, test and extract compressed files in a ZIP archive
 
+- `[-x xfile(s)]`: An optional list of archive members to be excluded from processing.
+- `[-d exdir]`: An optional directory to which to extract files.
+
+**OPTIONS**:
+
+- `-f`: freshen existing files, i.e., extract *only* those files that already exist on disk and that are newer than the disk copies.
+- `-l`: list archive files (short format). The names, uncompressed file sizes and modification dates and times of the specified files are printed, along with totals for all files specified. 
+- `-u`: update existing files and create new ones if needed. This option performs the same function as the `-f` option, extracting (with query) files that are newer than those with the same name on disk, and in addition it extracts those files that do not already exist on disk.
+- `-v`: list archive files (verbose format) or show diagnostic version info. This option has evolved and now behaves as both an option and a modifier.
+
 ### preview
 
 [Preview an archive contents without extracting it](https://apple.stackexchange.com/questions/364706/preview-an-archive-contents-without-extracting-it)  
@@ -300,18 +310,17 @@ zcat filename.Z
 `file` 命令查看文件属性：
 
 ```bash
-faner@FAN-MB1:~/Downloads/zip
-> file avg_speed.zip
+$ file avg_speed.zip
 avg_speed.zip: Zip archive data, at least v2.0 to extract
-faner@FAN-MB1:~/Downloads/zip
-> file -bI avg_speed.zip
+
+$ file -bI avg_speed.zip
 application/zip; charset=binary
 ```
 
 `unzip -l` 预览压缩包内容：
 
 ```bash
-FAN-MB1:zip $ unzip -l avg_speed.zip
+$ unzip -l avg_speed.zip
 Archive:  avg_speed.zip
   Length      Date    Time    Name
 ---------  ---------- -----   ----
@@ -322,7 +331,7 @@ Archive:  avg_speed.zip
 ---------                     -------
      6856                     4 files
 
-FAN-MB1:zip $ unzip -l map_image.zip
+$ unzip -l map_image.zip
 Archive:  map_image.zip
   Length      Date    Time    Name
 ---------  ---------- -----   ----
@@ -337,9 +346,8 @@ Archive:  map_image.zip
 
 利用 unzip 命令解压 zip 到同名子目录（`-d` 指定）：
 
-```
-faner@FAN-MB1:~/Downloads/zip
-> unzip avg_speed-arch.zip -d avg_speed-arch
+```bash
+$ unzip avg_speed-arch.zip -d avg_speed-arch
 Archive:  avg_speed-arch.zip
   inflating: avg_speed-arch/2019-12-01-10-avg_speed.log
   inflating: avg_speed-arch/__MACOSX/._2019-12-01-10-avg_speed.log
@@ -353,9 +361,8 @@ Archive:  avg_speed-arch.zip
 
 只解压其中的某一个文件到当前目录：
 
-```
-faner@FAN-MB1:~/Downloads/zip
-> unzip avg_speed-arch.zip 2019-12-01-10-avg_speed.log
+```bash
+$ unzip avg_speed-arch.zip 2019-12-01-10-avg_speed.log
 Archive:  avg_speed-arch.zip
   inflating: 2019-12-01-10-avg_speed.log
 ```

@@ -171,7 +171,7 @@ Use the `file` command to view the file properties.
 ```bash
 $ file avg_speed.7z
 avg_speed.7z: 7-zip archive data, version 0.4
-faner@FAN-MB1:~/Downloads/zip
+
 $ file -bI avg_speed.7z
 application/x-7z-compressed; charset=binary
 ```
@@ -213,7 +213,7 @@ View the contents of a compressed file suffixed with rar.
 ```bash
 $ file Audio.Hijack.v3.3.7.rar
 Audio.Hijack.v3.3.7.rar: RAR archive data, v5
-faner@FAN-MB1:~/Downloads/zip
+
 $ file -bI Audio.Hijack.v3.3.7.rar
 application/x-rar; charset=binary
 
@@ -245,6 +245,22 @@ Comment =
 2018-04-12 08:14:39 ....A     16511034     16511034  Audio.Hijack.v3.3.7.dmg
 ------------------- ----- ------------ ------------  ------------------------
 2018-04-12 08:14:39           16511034     16511034  1 files
+```
+
+### delete
+
+`7z d` 删除 Archive.zip 中的 `__MACOSX` 文件夹：
+
+```bash
+# zip -d map_image-arch.zip __MACOSX/\*
+$ 7z d Archive.zip __MACOSX
+```
+
+`7z d` 删除 Archive.zip 中的 `.DS_Store` 文件及 `__MACOSX` 文件夹：
+
+```bash
+# zip -d Archive.zip .DS_Store __MACOSX/\*
+$ 7z d Archive.zip .DS_Store __MACOSX
 ```
 
 ### extract
@@ -323,7 +339,7 @@ data.7z
 ./note.txt
 ```
 
-#### x 命令：严谨细致的“专业复原”（⭐️最常用）
+#### x 命令：严谨细致的“专业复原”
 
 **行为逻辑**：7z 会像一个专业的档案管理员一样，不仅把文件拿出来，还会**自动帮你建好原本的文件夹**，把文件各归各位。
 **生动场景**：这是你**90%的情况下都应该使用的命令**。比如你在备份网站数据、传输代码项目，或者下载了别人整理好的学习资料。一旦丢了目录结构，整个项目可能就跑不起来，或者变得一团糟。

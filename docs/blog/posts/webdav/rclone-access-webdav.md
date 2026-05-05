@@ -544,7 +544,7 @@ $ rclone lsf webdav@rpi4b: --exclude "CS-{System, Network}/**"
 
 ### ls, lsl
 
-Note that `ls` and `lsl`** recurse** by default - use `--max-depth 1` to stop the recursion.
+Note that `ls` and `lsl` **recurse** by default - use `--max-depth 1` to stop the recursion.
 
 `ls` 命令递归列举根路径下的所有文件（显示大小和路径）：
 
