@@ -22,16 +22,22 @@ Linux 下的 Shell 编程之字符串常用操作。
 
 字符串长度计算表达式：`${#string}`
 
-```
-$ file_path=/Users/faner/Downloads/iosdeploy_download/Documents/2905558360/image_original_flash
-$ echo $file_path
-/Users/faner/Downloads/iosdeploy_download/Documents/2905558360/image_original_flash
+```bash
+$ man bash
+
+       ${#parameter}
+              The length in characters of the value of parameter is substituted.  If parameter is * or @, the value
+              substituted is the number of positional parameters.  If parameter is an array name subscripted by * or @, the
+              value substituted is the number of elements in the array.
 ```
 
 字符串长度：
 
-```
-# echo ${#file_path}
+```bash
+$ file_path=/Users/faner/Downloads/iosdeploy_download/Documents/2905558360/image_original_flash
+$ echo $file_path
+/Users/faner/Downloads/iosdeploy_download/Documents/2905558360/image_original_flash
+$ echo ${#file_path}
 83
 $ strlen=${#file_path}
 $ echo $strlen
@@ -54,10 +60,10 @@ fi
 
 > 注意：字符串的索引从0开始。
 
-表达式 | 含义
--------|---
-`${string:offset}`          | 在 $string 中, 从索引位置 position 开始提取子串至末尾
-`${string:offset:length}`   | 在 $string 中, 从索引位置 position 开始提取，总计 length 个字符的子串
+表达式                    | 含义
+--------------------------|---------------------------------------------------------------------
+`${string:offset}`        | 在 $string 中, 从索引位置 position 开始提取子串至末尾
+`${string:offset:length}` | 在 $string 中, 从索引位置 position 开始提取，总计 length 个字符的子串
 
 ```bash
 $ man bash
@@ -110,7 +116,7 @@ this
 
 可以借助 awk 中的 `index` 函数，在 awk 的 BEGIN 中针对 shell 字符串变量进行操作：
 
-```
+```bash
 $ str='uellevcmpottcap'
 $ str1='ott'
 $ awk 'BEGIN{print index("'${str}'","'${str1}'") }'
@@ -120,7 +126,7 @@ $ awk 'BEGIN{print index("'${str}'","'${str1}'") }'
 
 > [shell 查找字符串中字符出现的位置](https://www.cnblogs.com/sea-stream/p/11403014.html)
 
-```
+```bash
 $ a="The cat sat on the mat"
 $ test="cat"
 $ index=`awk -v a="$a" -v b="$test" 'BEGIN{print index(a,b)}'`
@@ -140,10 +146,10 @@ name="Shell"
 str="Test"
 
 str1=$name$str      #中间不能有空格
-str2="$name $str"   #如果被双引号包围，那么中间可以有空格
+str2="$name $str"   #如果被双引号包围，中间可以有空格
 str3="$name: $str"
-str4=$name": "$str  #中间可以出现别的字符串
-str5="${name}Script: ${str}" #这个时候需要给变量名加上大括号
+str4=$name": "$str  #双引号字符串自然拼接
+str5="${name}Script: ${str}" #大括号明示变量名
 
 echo $str1
 echo $str2
@@ -154,7 +160,7 @@ echo $str5
 
 运行结果：
 
-```
+```bash
 ShellTest
 Shell Test
 Shell: Test
@@ -164,7 +170,7 @@ ShellScript: Test
 
 经常需要在shell环境变量 `PATH` 中头插或追加第三方工具的路径：
 
-```
+```bash
 # testPATH 初始值
 pi@raspberrypi:~ $ testPATH=/usr/bin:/bin:/usr/sbin:/sbin
 
@@ -181,9 +187,54 @@ pi@raspberrypi:~ $ testPATH=${testPATH}:/usr/local/sbin
 [Shell判断字符串是否包含小结](https://blog.csdn.net/Primeprime/article/details/79625306)  
 [shell判断字符串包含关系](https://zhuanlan.zhihu.com/p/51708411)  
 
-### 利用通配符
+### 利用 [[\ ]\] 通配
 
-`[[ ]]`: 判断命令  
+双方括号表达式 `[[ expression ]]` 提供了针对字符串比较的高级特性，它提供了test命令未提供的另一个特性——**模式匹配**（pattern matching）。
+
+```bash
+$ man bash
+
+       [[ expression ]]
+              Return a status of 0 or 1 depending on the evaluation of the conditional expression `expression`.  Expressions
+              are composed of the primaries described below under **CONDITIONAL EXPRESSIONS**.  Word splitting and pathname
+              expansion are not performed on the words between the [[ and ]]; tilde expansion, parameter and variable
+              expansion, arithmetic expansion, command substitution, process substitution, and quote removal are performed.
+              Conditional operators such as -f must be unquoted to be recognized as primaries.
+```
+
+在 [ohmyzsh/plugins/shell-proxy/](https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/shell-proxy) 中，使用双方括号进行判等 `=`。
+
+```bash
+$ cat $HOME/.config/proxy
+
+#!/bin/bash
+
+# equiv. to [ -eq ]
+if [[ "$(uname)" = Darwin ]]; then
+  echo "http://127.0.0.1:6152" # Surge Mac
+else
+  echo "http://127.0.0.1:8123" # polipo
+fi
+```
+
+使用 `==` 基于 wildcards 的 glob 匹配。
+
+Demo 1: glob match username starting with `c`
+
+```bash
+#!/bin/bash
+# using pattern matching
+#
+
+if [[ $USER == c* ]]
+then
+    echo "Hello $USER"
+else
+    echo "Sorry, I do not know you"
+fi
+```
+
+Demo 2: glob match `A` containing `B`
 
 ```bash
 #!/bin/bash
@@ -198,9 +249,7 @@ else
 fi
 ```
 
-### 利用字符串运算符
-
-`=~`: 正则式匹配符号  
+使用 `=~` 的匹配包含关系：
 
 ```bash
 #!/bin/bash
@@ -266,7 +315,9 @@ else
 fi
 ```
 
-## [字符串截取](https://blog.csdn.net/qq_33951180/article/details/68059098)
+## 字符串截取
+
+[Shell 字符串截取方法](https://blog.csdn.net/qq_33951180/article/details/68059098)
 
 ### 截左留右
 
@@ -287,19 +338,23 @@ $ man bash
 
 ```
 
-表达式 | 含义
----------|----------
-`${string#substring}`	| 从变量 $string 的开头, 删除最短匹配 $substring 的子串
-`${string##substring}`	| 从变量 $string 的开头, 删除最长匹配 $substring 的子串
+表达式                 | 含义
+-----------------------|------------------------------------------------------
+`${string#substring}`  | 从变量 $string 的开头, 删除最短匹配 $substring 的子串
+`${string##substring}` | 从变量 $string 的开头, 删除最长匹配 $substring 的子串
 
 > 其中 substring 可以是一个正则表达式。
 
-```
+```bash
 $ file_path=/Users/faner/Downloads/iosdeploy_download/Documents/2905558360/image_original_flash
 $ suffix=${file_path#*iosdeploy_download}
 $ echo $suffix
 /Documents/2905558360/image_original_flash
+$ file_name=${file_path##*/}
+$ echo $file_name
+image_original_flash
 ```
+
 
 ### 截右留左
 
@@ -321,14 +376,14 @@ $ man bash
 
 ```
 
-表达式 | 含义
----------|----------
-`${string%substring}`	| 从变量 $string 的结尾, 删除最短匹配 $substring的子串
-`${string%%substring}`	| 从变量 $string 的结尾, 删除最长匹配 $substring 的子串
+表达式                 | 含义
+-----------------------|------------------------------------------------------
+`${string%substring}`  | 从变量 $string 的结尾, 删除最短匹配 $substring的子串
+`${string%%substring}` | 从变量 $string 的结尾, 删除最长匹配 $substring 的子串
 
 > 其中 substring 可以是一个正则表达式。
 
-```
+```bash
 $ file_path=/Users/faner/Downloads/iosdeploy_download/Documents/2905558360/image_original_flash
 $ prefix=${file_path%/Documents/*}
 $ echo $prefix
@@ -373,8 +428,8 @@ $ man bash
 
 ```
 
-expr    | note
---------|--------
+expr                               | note
+-----------------------------------|------------------------------------------------------------------------------------
 `${string/substring/replacement}`  | 使用 $replacement, 代替第一个匹配的 $substring
 `${string//substring/replacement}` | 使用 $replacement, 代替所有匹配的 $substring
 `${string/#substring/replacement}` | 如果 $string 的前缀匹配 $substring, 那么就用 $replacement 来代替匹配到的 $substring
@@ -385,7 +440,7 @@ expr    | note
 `${string/match_string/replace_string}`: 将 string 中第一个 match_string 替换成 replace_string；  
 `${string//match_string/replace_string}`: 将 string 中的 match_string 全部替换成 replace_string；  
 
-```
+```bash
 $ str=123abc123
 $ echo "${str/123/r}"
 rabc123
@@ -395,7 +450,7 @@ rabcr
 
 将 `2905558360/FileRecv` 中的 / 替换为 -；
 
-```
+```bash
 > str='2905558360/FileRecv'
 > echo $str
 2905558360/FileRecv
@@ -409,7 +464,7 @@ rabcr
 `${string/#match_string/replace_string}`: 将 string 中第一个 match_string 替换成 replace_string  
 `${string/%match_string/replace_string}`: 将 string 中最后一个 match_string 替换成 replace_string  
 
-```
+```bash
 $ str=123abc123
 $ echo "${str/#123/r}"
 rabc123

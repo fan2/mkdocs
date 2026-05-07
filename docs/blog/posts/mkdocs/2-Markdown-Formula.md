@@ -238,6 +238,7 @@ $$f(x_1,x_2,\underbrace{\ldots}_{\rm ldots} ,x_n) = x_1^2 + x_2^2 + \underbrace{
 由余弦差角公式：$\cos\theta = \cos(\beta-\alpha)=\cos\beta\cos\alpha+\sin\beta\sin\alpha = u_v \cdot u_w = \frac{v \cdot w}{{\lVert}v{\rVert}{\lVert}w{\rVert}}$
 
 ## 线性矩阵
+
 `{matrix}` 标识无边框矩阵的开始和结束，每一行以 `\\` 结尾，行间元素以 `&` 分隔。
 
 行内矩阵：$\begin{matrix} 1 & 2 & 3 \\ 4 & 5 & 6 \\ 7 & 8 & 9 \end{matrix}$
