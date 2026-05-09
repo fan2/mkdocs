@@ -21,7 +21,7 @@ MkDocs is a fast, simple and downright gorgeous static site generator that's gea
 
 <!-- more -->
 
-## pip install mkdocs
+## pip/uv install mkdocs
 
 参考 User Guide - [MkDocs Installation](https://www.mkdocs.org/user-guide/installation/)。
 
@@ -29,6 +29,15 @@ MkDocs is a fast, simple and downright gorgeous static site generator that's gea
 
 ```bash
 $ pip install mkdocs
+```
+
+如果使用 uv，可以安装为 uv tool：
+
+```bash
+$ uv tool install mkdocs
+
+# 连带安装 mkdocs-material
+$ uv tool install mkdocs -w mkdocs-material
 ```
 
 执行 `mkdocs -V` 查看版本：
@@ -71,7 +80,7 @@ If you are using Windows/ubuntu, some of the above commands may not work out-of-
 
 A quick solution may be to preface every Python command with `python -m` like this:
 
-```Shell
+```bash
 python -m pip install mkdocs
 python -m mkdocs
 ```
@@ -125,9 +134,9 @@ INFO    -  [20:46:56] Watching paths for changes: 'docs', 'mkdocs.yml'
 INFO    -  [20:46:56] Serving on http://127.0.0.1:8000/
 ```
 
-在浏览器中打开 http://localhost:8000，就可以查看新建的 mkdocs 工程了。
+在浏览器中打开 http://localhost:8000，就可以查看新建的 mkdocs 网页了，更多参考 [Mkdocs构建部署](./7-deployment.md)。
 
-## 编写 Markdown 文档
+## 编写新增 Markdown 文档
 
 参考 User Guide - [Writing your docs](https://www.mkdocs.org/user-guide/writing-your-docs/)。
 
@@ -163,7 +172,7 @@ $ tree -L 3 .
 
 - Mkdocs 将自动按照目录结构，生成相应的层叠菜单。
 
-## refs
+## references
 
 [EdgeAI Lab](https://edgeai-lab.github.io/notebook/)
 

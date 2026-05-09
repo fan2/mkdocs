@@ -23,7 +23,7 @@ Material for MkDocs is a powerful documentation framework on top of MkDocs, a st
 
 [Getting started](https://squidfunk.github.io/mkdocs-material/getting-started/) - [Installation](https://squidfunk.github.io/mkdocs-material/getting-started/)
 
-```Shell
+```bash
 $ pip install mkdocs-material
 # or 
 $ pip3 install mkdocs-material
@@ -62,6 +62,25 @@ Material for MkDocs comes with many configuration options. The [Setup](https://s
 1. Adding assets
 2. Extending the theme
 3. Theme development
+
+## MkDocs Material Preview
+
+[MkDocs Material Preview - Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=0x10.mkdocs-material-preview): A VS Code extension that enhances the built-in Markdown preview to render **[Material for MkDocs](https://squidfunk.github.io/mkdocs-material/)** and **[Zensical](https://zensical.org/)** components that are not supported by the default Markdown renderer.
+
+它通过附加插件来扩展 VS Code 内置的 Markdown 解析器--`markdown-it`，从而增强支持渲染/预览以下 Material 特性组件：
+
+- **Admonitions** — `!!! type "title"` (standard), `??? type` (collapsible), `???+ type` (collapsible, open)
+- **Content Tabs** — `=== "Tab Title"` with CSS-only tab switching
+- **Code Enhancements** — `title="file.py"`, `hl_lines="2 4-6"`, `linenums="1"` on fenced code blocks
+
+它是预览 Material for MkDocs/Zensical 语法最高效的方式，无需任何配置步骤，只需打开预览界面即可使用。
+
+The relevant commands in Command Pallete are as follows: 
+
+1. Markdown: Toggle Preview View
+2. Markdown: Open Preview to the Side
+3. Markdown: Open Preview
+4. Markdown: Switch to Preview View
 
 ## 参考借鉴
 

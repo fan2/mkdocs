@@ -27,7 +27,7 @@ Usage: `mkdocs get-deps [OPTIONS]`
 
 检查当前 mkdocs.yml 中配置的插件依赖的 PyPI 包。
 
-```Shell
+```bash
 # python3 -m mkdocs get-deps
 pifan@rpi4b-ubuntu~/Sites/mkdocs $ mkdocs get-deps
 mkdocs
@@ -35,7 +35,7 @@ mkdocs-material
 pymdown-extensions
 ```
 
-## serve
+## mkdocs serve
 
 Run the builtin development server: `mkdocs serve [OPTIONS]`, see usage with `mkdoc serve --help`.
 
@@ -79,66 +79,181 @@ INFO    -  [08:15:39] Reloading browsers
       post_url_format: "{date}/{file}"
 ```
 
-### vscode task
+## serve & preview
 
-在 vscode 中修改某篇博客后，我们希望能在本地浏览器中打开该博客文章，以便预览修改后的渲染效果。
-要预览修改后的文档，只能从 blog 中逐级点开进入；或者基于当前打开文档的创建时间和文件名，手动拼接出 URL 再在浏览器中打开。
-由于每篇博客的创建时间都在开头的 meta 声明中，无法快速拼接出其 URL。可以考虑基于 vscode task 自动化这个过程，加快调试效率。
+在 vscode 中修改博客文章后，开发者希望能在本地（浏览器）即时预览当前正在打开/修改的文档的渲染效果。
 
-> VS Code tasks are used to run scripts and automate processes within the editor, such as building, linting, testing, or deploying software, without having to use the command line directly. They integrate with various external tools like npm, Gulp, Make, and Rake.
+第一种方式是 vscode 中预览 Markdown，安装 [MkDocs Material Preview](https://marketplace.visualstudio.com/items?itemName=0x10.mkdocs-material-preview) ，它通过附加插件扩展 VS Code 内置的 Markdown 解析器--`markdown-it`，增强支持渲染/预览 Material 特性组件，包括 Content Tabs、Admonitions、Code Block Enhancements。
 
-在 vscode 中，创建 .vscode/tasks.json 任务配置文件来配置编译/调试任务。
+第二种方式是在浏览器预览网页渲染效果。执行 `mkdocs serve` 启动本地服务后，将看到控制台日志 `INFO    -  [15:15:55] Serving on http://0.0.0.0:8000/`，在浏览器地址栏输入 http://localhost:8000/ 将打开博客首页，从 blog 目录中找到要预览的文章。
 
-1. task 1: Start mkdocs serve with HMR，执行 *serve.sh* 启动 mkdocs serve 热加载服务。
+- 如果想在局域网手机上预览移动端渲染效果，将 localhost 改为 server (serve host) 的实际 IP 地址即可。
 
-```json
-            "label": "Start mkdocs serve with HMR",
-            "type": "shell",
-            "command": ".vscode/serve.sh",
+> [MkDocs Preview](https://marketplace.visualstudio.com/items?itemName=aswinunni01.mkdocs-vscode): It spins up a live MkDocs server in the background and provides an integrated, side-by-side preview directly within your editor.
+> It only displays the blog homepage just like manually starting the server for a preview, and it does not support quick previewing of the current article.
+
+[安装Material博客(sidecar to mkdocs)](./12-material-blog.md) 中配置了 blog 的 `blog_dir: blog`（`post_dir: posts`） 和 `post_url_format: {date}/{file}`。根据 POST URL 配置规则，可基于文档的创建时间和文件名手动拼接出 URL 再粘贴到浏览器地址栏打开访问。
+
+由于每篇博客的创建时间都在开头的 meta 声明中，需要打开文档才能找到，无法快速拼接出其 URL。因此，可以考虑基于 vscode task 自动化这个过程，加快调试效率。
+
+> [Integrate with External Tools via Tasks](https://code.visualstudio.com/docs/debugtest/tasks): VS Code tasks are used to run scripts and automate processes within the editor, such as building, linting, testing, or deploying software, without having to use the command line directly. They integrate with various external tools like npm, Gulp, Make, and Rake.
+
+在存放 mkdocs.yml 的 mkdocs 工程根目录下创建 .vscode 文件夹，其下有4个文件：
+
+```bash
+$ tree .vscode
+.vscode
+├── preview.sh
+├── serve.env
+├── serve.sh
+└── tasks.json
+
+1 directory, 4 files
 ```
 
-2. task 2: Preview blog in Google Chrome，执行 *preview.sh* 在浏览器中预览博客文章。
+`serve.env` 定义了调试相关的环境变量，被2个sh脚本导入引用：
+
+```bash
+$ cat .vscode/serve.env
+# mkdocs serve info
+# bind to all available network interfaces
+MKDOCS_SERVE_IP=${MKDOCS_SERVE_IP:-0.0.0.0}
+MKDOCS_PREVIEW_IP=localhost  # or specific IP
+MKDOCS_SERVE_PORT=${MKDOCS_SERVE_PORT:-8000}
+MKDOCS_SERVE_ADDR=$MKDOCS_SERVE_IP:$MKDOCS_SERVE_PORT
+MKDOCS_PREVIEW_ADDR=$MKDOCS_PREVIEW_IP:$MKDOCS_SERVE_PORT
+```
+
+`tasks.json` 为 vscode 任务配置文件，用来配置编译/调试任务，包括 serve 和 preview 两个 subtasks。
+
+1. serve task: `MkDocs: Start serve with HMR`，执行 *serve.sh* 启动 mkdocs serve 热加载服务。
+
+```json title="tasks.json - subtask serve"
+        {
+            "label": "MkDocs: Start serve with HMR",
+            "type": "shell",
+            "command": ".vscode/serve.sh",
+            "args": [
+                // "0.0.0.0",
+                // "8000"
+            ],
+            "group": "build",
+            "presentation": {
+                "reveal": "always"
+            }
+        },
+```
+
+在脚本 serve.sh 中，先调用 `lsof -i` 检查调试端口（默认 8000）是否被占用，然后执行 `mkdocs serve` 命令启动调试 server。
+
+??? note "serve.sh"
+
+    ```bash
+    #!/bin/bash
+
+    # load envvars
+    if ! source .vscode/serve.env; then
+        echo "PLS config mkdocs serve envvars in serve.env"
+        exit 1
+    fi
+
+    # main entrypoint
+    if lsof -i :$MKDOCS_SERVE_PORT; then
+        echo "mkdocs server is already listening at $MKDOCS_SERVE_PORT!"
+        exit 0
+    else  # start mkdocs server
+        mkdocs serve -a $MKDOCS_SERVE_ADDR --livereload --dirty
+    fi
+    ```
+
+2. preview task: `MkDocs: Open preview in Chrome`，执行 *preview.sh* 拼接 blog_url 然后在 Chrome 浏览器中打开预览。
 
     - [Variables reference](https://code.visualstudio.com/docs/reference/variables-reference)：vscode 内置变量 `${file}` 为当前打开文件的绝对路径（含文件名和扩展名）。
 
-```json
-            "label": "Preview blog in Google Chrome",
+```json title="tasks.json - subtask preview"
+        {
+            "label": "MkDocs: Open preview in Chrome",
             "type": "shell",
             "command": ".vscode/preview.sh",
             "args": [
-                "${file}"
+                "${file}", // 当前打开文件的绝对路径（含文件名和扩展名）
+                // "${fileBasenameNoExtension}", // 当前打开文件的主文件名（不含扩展名）
             ],
+            "group": "test",
+            "presentation": {
+                "reveal": "always"
+            }
+        }
 ```
 
-在脚本 preview.sh 中，首先读取传入的文件内容基于 `sed` 命令提取出日期，再拼接不含扩展名的文件名，即为博客相对路径（blog_path）。
-假设监听的端口为8000，则博客的 base_url = `http://localhost:8000/blog`，基于 base_url 和 blog_path 拼接出博客 URL（blog_url）。
-preview.sh 脚本最后调用 `open -a "Google Chrome" $blog_url` 在 Google Chrome 浏览器中新开 tab 打开博客进行预览。
+preview.sh 首先基于 `sed` 或 `awk` 命令从文件内容中提取出日期，再拼接不含扩展名的文件名，即为博客的相对路径（blog_path）。
+假设监听端口为8000，则博客的 base_url=`http://localhost:8000/blog`，base_url+blog_path 拼接出博客 URL（blog_url）。
+脚本最后调用 `open -a "Google Chrome" "$blog_url"` 在 Google Chrome 浏览器中新开 tab 打开博客进行预览。
 
-```bash
-# get the absolute path of current openned file of vscode
-file=$1
-echo "blog file = $file"
-full_file_name=$(basename $file)    # get file name with extension
-file_name=${full_file_name%.*}      # remove extension .md
+??? note "preview.sh"
 
-# extract blog created time and concat with file name to build blog url
-# consider two date formats: complete ISO datetime and simple date
-created_date=$(awk '/^[[:space:]]+created:/ {gsub(/-/, "", $2); gsub(/T.*/, "", $2); print $2}' "$file")
-# created_date=$(sed -n -E 's/^[[:space:]]+created:[[:space:]]*//p' "$file" | sed 's/T.*//' | tr -d '-')
-blog_path=$created_date/$file_name  # concat blog path
-blog_url=$MKDOCS_BLOG/$blog_path    # concat blog url
+    ```bash
+    #!/bin/bash
 
-# open blog url in Google Chrome Browser
-echo "open in Google Chrome: $blog_url"
-open -a "Google Chrome" $blog_url
-```
+    # check task args
+    if [ $# -eq 0 ]; then
+        echo "PLS specify \${file} (the openned file path) as task arg."
+        exit 1
+    fi
+
+    # load envvars
+    if ! source .vscode/serve.env; then
+        echo "PLS config mkdocs serve envvars in serve.env"
+        exit 1
+    fi
+
+    # access via localhost or specific IP address
+    MKDOCS_BLOG=http://$MKDOCS_PREVIEW_ADDR/blog
+
+    script=$0   # sh relative to .vscode
+    file=$1     # absolute path of current open file
+    echo "current_open_file=$file"
+
+    # avoid current sh
+    if [[ $file == *$script ]]
+    then
+        echo "$script does not support previewing."
+        exit 1
+    fi
+
+    # check path & suffix extension
+    blog_posts_path=/docs/blog/posts/
+    if [[ ! $file =~ $blog_posts_path ]]; then
+        echo "Only support preview blog under $blog_posts_path"
+        exit 1
+    elif [[ $file != *.md ]]; then
+        echo "Only support preview blog suffixed with md"
+        exit 1
+    fi
+
+    blog_post=${file#*"$blog_posts_path"}
+    echo "blog_post=$blog_post"
+    full_file_name=$(basename "$file")  # get file name with extension
+    file_name=${full_file_name%.*}      # remove extension .md
+
+    # extract blog created time and concat with file name to build blog url
+    # consider two date formats: complete ISO datetime and simple date
+    created_date=$(awk '/^[[:space:]]+created:/ {gsub(/-/, "", $2); gsub(/T.*/, "", $2); print $2}' "$file")
+    # created_date=$(sed -n -E 's/^[[:space:]]+created:[[:space:]]*//p' "$file" | sed 's/T.*//' | tr -d '-')
+    blog_path=$created_date/$file_name  # concat blog path
+    blog_url=$MKDOCS_BLOG/$blog_path    # concat blog url
+
+    # open blog url in Google Chrome Browser under macOS
+    echo "preview in Google Chrome: $blog_url"
+    open -a "Google Chrome" "$blog_url"
+    ```
 
 在 vscode 中，`⌘⇧P` 打开命令面板（Pallette），输入选择 *Tasks: Run Task*：
 
-1. *Start mkdocs serve with HMR* 启动 `mkdocs serve --livereload --dirty` 热加载服务。
-2. *Preview blog in Google Chrome* 在 Chrome 浏览器中预览 vscode 当前打开的博客文章。
+1. *MkDocs: Start serve with HMR* 启动 `mkdocs serve --livereload --dirty` 热加载服务。
+2. *MkDocs: Open preview in Chrome* 在 Chrome 浏览器中预览 vscode 当前打开的博客文章。
 
-## build
+## mkdocs build
 
 Build the MkDocs documentation: `mkdocs build [OPTIONS]`
 
@@ -209,7 +324,7 @@ ubuntu 下执行 `nginx -V` 可知 nginx 的默认工作空间为 --prefix=/usr/
 
 这里懒得修改 webdav 配置文件了，假设工程存储在 ~/Sites/mkdocs 目录，执行 `mkdocs build` 生成的静态站点产物目录为 site，那么只需将 site 软链为 /usr/share/nginx/html 即可完成部署，参考 [用mkdocs+nginx搭建个人网站](https://zhuanlan.zhihu.com/p/551345157)。
 
-```Shell
+```bash
 $ sudo mv /usr/share/nginx/html/ /usr/share/nginx/html_bak/
 $ sudo ln -s /home/pifan/Sites/mkdocs/site/ /usr/share/nginx/html
 ```

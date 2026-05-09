@@ -714,6 +714,15 @@ Generic grids allow for arranging arbitrary block elements in a grid, including 
 
 </div>
 
+### vscode extensions
+
+[MkDocs Syntax Highlight](https://marketplace.visualstudio.com/items?itemName=aikebang.mkdocs-syntax-highlight)
+
+- [x] neoteroi 全部语法高亮，包括 Timeline、Cards、Gantt、Spantable
+- [x] Content Tab 语法高亮
+- [x] Markmap 语法高亮
+- [x] Progressbar 语法高亮
+
 ## embed-pdf
 
 [前端预览PDF总结：iframe、embed、PDFObject、PDF.js](https://www.cnblogs.com/lanwp1/articles/14395608.html)

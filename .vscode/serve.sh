@@ -11,5 +11,5 @@ if lsof -i :$MKDOCS_SERVE_PORT; then
     echo "mkdocs server is already listening at $MKDOCS_SERVE_PORT!"
     exit 0
 else  # start mkdocs server
-    mkdocs serve -a $MKDOCS_SERVE_HOST --livereload --dirty
+    mkdocs serve -a $MKDOCS_SERVE_ADDR --livereload --dirty
 fi

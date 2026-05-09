@@ -129,9 +129,9 @@ This will create a new directory, named `site`.
 
 `site` 目录即是 mkdocs 这个 static site generator 生成（generate）的静态网页。
 
-可以将其部署到服务器，以下为 ubuntu/nginx 下最简单的本地部署：
+可以将其部署到服务器，参考 [Mkdocs构建部署](./7-deployment.md)。以下为 ubuntu/nginx 下最简单的本地部署：
 
-```Shell
+```bash
 $ sudo mv /usr/share/nginx/html/ /usr/share/nginx/html_bak/
 $ sudo ln -s /home/pifan/Sites/mkdocs/site/ /usr/share/nginx/html
 ```

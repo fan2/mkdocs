@@ -262,14 +262,14 @@ The following templates are added by the built-in blog plugin:
 
 首先查看安装 mkdocs-material 的 site-pacages 目录：
 
-```Shell
+```bash
 $ mkdocs -V
 mkdocs, version 1.5.3 from /usr/local/lib/python3.10/site-packages/mkdocs (Python 3.10)
 ```
 
 在 site-packages 目录下找到 material，其 templates 目录下存放着网页模板文件：
 
-```Shell hl_lines="8"
+```bash hl_lines="8"
 $ tree -L 1 /usr/local/lib/python3.10/site-packages/material/templates
 /usr/local/lib/python3.10/site-packages/material/templates
 ├── 404.html

@@ -63,7 +63,7 @@ For example, the mkdocs theme (browse source), contains the following directory 
 
 To override any of the files contained in that theme, create a new directory next to your `docs_dir`:
 
-```Shell
+```bash
 mkdir custom_theme
 ```
 

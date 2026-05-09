@@ -33,7 +33,7 @@ The built-in blog plugin adds support for building a blog from a folder of posts
 
 启用后，首次 serve 或 build，在 docs 目录下会创建一个 blog 文件夹：
 
-```Shell
+```bash
 $ tree -L 2 docs/blog
 docs/blog
 ├── index.md
@@ -48,7 +48,7 @@ docs/blog
 
 You might need to build a pure blog without any documentation. In this case, you can create a folder tree like this:
 
-```Shell
+```bash
 .
 ├─ docs/
 │  ├─ posts/ 
@@ -73,7 +73,7 @@ With this configuration, the url of the blog post will be `/<post_slug>` instead
 
 在 blog/posts 下创建一个 hello-world.md：
 
-```Shell
+```bash
 .
 ├─ docs/
 │  └─ blog/
@@ -108,7 +108,7 @@ that `archive` and `category` indexes have been automatically generated for you.
 
 The plugin scans the configured *posts* directory for `.md` files from which paginated views are automatically generated. If not configured otherwise, the plugin expects that your project has the following directory layout, and will create any missing directories or files for you:
 
-```Shell
+```bash
 .
 ├─ docs/
 │  └─ blog/
@@ -307,7 +307,7 @@ nav:
 
 在服务上配置好二级目录路由 `location /kb` 即可。
 
-## refs
+## references
 
 Material for Mkdocs: [Blog](https://squidfunk.github.io/mkdocs-material/blog/) @[github](https://github.com/squidfunk/mkdocs-material/tree/master)
 
