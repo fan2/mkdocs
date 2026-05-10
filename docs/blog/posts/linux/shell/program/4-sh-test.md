@@ -19,22 +19,32 @@ Linux 下的 Shell 编程之比较和测试表达式。
 你可能想问，if-then 语句是否能测试命令退出状态码之外的条件呢？
 答案是不能。但在 bash shell 中有个好用的工具可以帮你通过 if-then 语句测试其他条件。
 
-## test condition（条件判断）
+## test [（条件测试）
 
-test命令提供了在if-then语句中测试不同条件的途径。
+```bash
+$ man test
+NAME
+     test, [ – condition evaluation utility
 
-1. 如果test命令中列出的条件成立，test命令就会退出并返回退出状态码0。这样if-then语句就与其他编程语言中的if-then语句以类似的方式工作了。  
-2. 如果条件不成立，test命令就会退出并返回非零的退出状态码，这使得 if-then语句不会再被执行。  
+SYNOPSIS
+     test expression
+     [ expression ]
 
-test命令的格式非常简单。
+DESCRIPTION
+     The test utility evaluates the expression and, if it evaluates to true, returns a zero
+     (true) exit status; otherwise it returns 1 (false).  If there is no expression, test also
+     returns 1 (false).
+```
+
+test 命令的格式非常简单：
 
 ```bash
 test condition
 ```
 
-condition是test命令要测试的一系列参数和值。
+`condition` 是 test 命令要测试的一系列参数和值。
 
-当用在if-then语句中时，test命令看起来是这样的：
+当用在 if-then 语句中时，test 命令看起来是这样的：
 
 ```bash
 if test condition
@@ -43,28 +53,13 @@ then
 fi
 ```
 
-如果不写 test 命令的 condition 部分，它会以非零的退出状态码退出，并执行 elif/else 语句块。
+test 命令提供了在 if-then 语句中测试不同条件的途径。
 
-bash shell 提供了另一种条件测试方法，无需在 if-then 语句中声明 test 命令。
+1. 如果条件成立，test 命令就会退出并返回退出状态码0，if 语句会被执行。  
+2. 如果条件不成立，test 命令就会退出并返回非零的退出状态码，if 语句不会被执行。  
+3. 如果不写 condition 部分，它会以非零的退出状态码退出，将执行 elif/else 语句块。  
 
-```bash
-if [ condition ]
-then
-    commands
-fi
-```
-
-**方括号** 定义了测试条件。
-
-注意，第一个方括号之后和第二个方括号之前必须加上一个空格，否则就会报语法错。
-
-test 命令（方括号）可以判断三类条件：
-
-- 数值比较  
-- 字符串比较  
-- 文件属性判断  
-
-bash shell 提供了另一种条件测试方法，无需在 if-then 语句中声明 test 命令。
+bash shell 提供了另一种等效的写法，使用方括号替代 test。
 
 ```bash
 if [ condition ]
@@ -73,37 +68,30 @@ then
 fi
 ```
 
-**方括号** 定义了测试条件。
+!!! warning
 
-注意，第一个方括号之后和第二个方括号之前必须加上一个空格，否则就会报错。
+    **注意**：左方括号之后和右方括号之前必须添加空格，否则会报语法错误！
 
-test 命令可以判断三类条件：
+test 命令（方括号 [ ]）可以判断三类条件：
 
-1. 数值比较  
-2. 字符串比较  
-3. 文件比较  
+- 字符串比较：e.g., `test string`, `test -n string`, `test s1 = s2`  
+- 数值比较：e.g., `test n1 -eq n2`, `test n1 -lt n2`, `test n1 -gt n2`  
+- 文件属性判断：e.g., `test -f file`, `test file1 -nt file2`  
 
 ### 非空判断
 
-方括号 `if [ condition ]`（等效 `test condition`），可用于变量判空：
+`test expression` 或 `if [ condition ]` 可用于变量判空：
 
-1. 变量 set 有值，则返回 TRUE；  
-2. 变量 unset 为空，则返回 FALSE；  
+变量 set 且有值才返回 0（true）；否则，变量 set 无值（null）或 unset 未定义，则返回 1（false）。
 
 ```bash
+# if test $isAtHome; then echo "isAtHome" ; fi
 Ξ ~ → if [ $isAtHome ] ; then echo "isAtHome" ; fi
 isAtHome
+# if test $isAtOffice; then echo "isAtOffice" ; fi
 Ξ ~ → if [ $isAtOffice ] ; then echo "isAtOffice" ; fi
 Ξ ~ →
 ```
-
-### 数值比较
-
-使用 test 命令最常见的情形是对两个数值进行比较。数值条件测试可以用在数字和变量上。
-
-![test-value](../../images/shell-test-value.png)
-
-对于命令执行的返回状态码，可按数值形式进行判断：`if [ $? -eq 0 ]` or `if [ $? -ne 0 ]`。
 
 ### 字符串比较
 
@@ -126,7 +114,17 @@ isAtOffice
 not isAtOffice
 ```
 
-需要对变量引用添加双引号字符串化，再判断：
+!!! note
+
+    当 `isAtOffice` 未定义，为 unset/undefined 状态时，参数2扩展展开为空，测试表达式只剩参数1--测试运算符（operator flags），退化成了 `test string`/`[ string ]`。运算符 `-n`/`-z` 被视作非空字符串，返回0（true）。
+
+针对判断变量非空的情况，可以省去 `-n`，直接用 `test string`/`[ string ]` 来判断 string 有定义且有值（set and not null）。
+
+```bash
+if [ $isAtOffice ] ; then echo "isAtOffice" ; fi
+```
+
+或者对变量引用添加双引号明确字符串化再判断：
 
 ```bash
 Ξ ~ → if [ -n "$isAtOffice" ] ; then echo "isAtOffice" ; fi
@@ -135,9 +133,18 @@ not isAtOffice
 not isAtOffice
 ```
 
-当然，还可以这样判空：`"$isAtOffice" = ""`。
+当然，也可以改写成判等空字符串：`test "$isAtOffice" = ""`；`test "$isAtOffice" != ""`。
 
-MacBook 上一般没有有线网卡，执行 awk 匹配为空，打印 eth_dev 为空：
+```bash
+$ man bash
+
+CONDITIONAL EXPRESSIONS
+
+       string1 == string2
+              True if the strings are equal.  = may be used in place of == for strict POSIX compliance.
+```
+
+另一个案例：MacBook 上一般没有有线网卡，执行 awk 匹配为空，打印 eth_dev 为空：
 
 ```bash
 $ eth_dev=$(networksetup -listallhardwareports | awk '/Hardware Port: Ethernet/{getline; print $NF}')
@@ -152,8 +159,7 @@ $ if [ -n $eth_dev ]; then echo "not empty"; fi
 not empty
 ```
 
-原因是 awk 未匹配，实际上不会执行变量定义（及赋值），对于 unset 的 eth_dev，`$eth_dev` 被当成字符串，而不是解引用变量！
-修改为 `[ -n "$eth_dev" ]` 则符合预期，则双引号内部会尝试解引用，unset 变量的值为空串。
+原因是 awk 未匹配，实际上不会执行变量定义（及赋值）。修改为 `[ -n "$eth_dev" ]` 对于 unset 或 null 值变量，双引号内部解引用为空串。
 
 ```bash
 $ if [ -n "$eth_dev" ]; then echo "not empty"; fi
@@ -163,29 +169,26 @@ $ echo ${#eth_dev}
 0
 ```
 
-可以进一步通过变量替换测试来验证以上问题。
+!!! note
 
-```bash
-$ echo "${eth_dev:-unset_or_null}"
-unset_or_null
-# macOS bash shell 版本较低，返回空
-$ echo "${eth_dev-unset}"
+    对于 test/方括号 中对变量的引用，建议总是对解引用添加**双引号**，兼顾变量 unset 的情况，确保扩展展开后的测试安全性。
 
-# ubuntu 等新 bash shell，返回unset
-$ echo "${eth_dev-unset}"
-unset
-```
+    - [ ] : <s>if [ -n $var ]; then echo "not empty" ; fi</s>  
+    - [x] : if [ -n "$var" ]; then echo "not empty" ; fi  
 
-为了安全起见，对于方括号中对变量的引用判空，建议**加双引号确保解引用**，兼顾变量 unset 的情况。
+### 关于 bool
 
-- [ ] : <s>if [ -n $var ]; then echo "not empty" ; fi</s>  
-- [x] : if [ -n "$var" ]; then echo "not empty" ; fi  
+!!! info "everything is a string in Bash"
 
-### 关于 boolean
+    In the Bash shell, everything is fundamentally treated as a *string*. Unlike typical programming languages that use strict data types like integers or floats, Bash is a *character-based* interpreter.
 
-[shell有bool运算么](https://blog.csdn.net/weixin_42353805/article/details/111929566)
+    Here is how that "everything is a string" philosophy works in practice:
 
-在shell脚本中没有布尔值的概念，只能按照字符串处理。
+    1. Variables are Typeless: When you define a variable, Bash stores it as a sequence of characters.
+    2. Numbers are Just "Special" Strings: Bash only treats a string as a number when you explicitly use it in a mathematical context.
+    3. Strings as Commands and Arguments: The shell's primary job is to take a single input string and break it down into a list of strings to pass to a command.
+
+[shell有bool运算么](https://blog.csdn.net/weixin_42353805/article/details/111929566)：在shell脚本中没有布尔值的概念，只能按照字符串处理。
 
 ```bash
 doFirst=true
@@ -228,7 +231,7 @@ var='<some valid command>'           # Case 5
 
 What I do recommend:
 
-Here are ways I recommend you check your "Booleans". They work as expected.
+Here are ways I recommend you check your so-called "Booleans". They work as expected.
 
 ```bash
 my_bool=true
@@ -245,6 +248,14 @@ if test "$my_bool" = true; then
 if test "$my_bool" = "true"; then
 ```
 
+### 数值化比较
+
+使用 test 命令最常见的情形是对两个数值进行比较，数值条件测试可以用在数字和变量上。
+
+![test-value](../../images/shell-test-value.png)
+
+对于命令执行的返回状态码，可按数值形式进行判断：`if [ $? -eq 0 ]` or `if [ $? -ne 0 ]`。
+
 ### 文件属性判断
 
 最后一类比较测试很有可能是 shell 编程中最为强大、也是用得最多的比较形式。它允许你测试 Linux 文件系统上文件和目录的状态。
@@ -257,88 +268,121 @@ if test "$my_bool" = "true"; then
 
 [Linux / UNIX: Find Out If a Directory Exists or Not](https://www.cyberciti.biz/tips/find-out-if-directory-exists.html)  
 
-1. 以下脚本使用 `-d` 判断目录是否存在：
+1. 以下脚本使用 `-d` 判断目录是否存在，再根据其存在性执行不同的策略：
 
 ```bash
-# 当前目录下如果有 `forms-debug` 文件夹则进入，否则先创建再进入。
+# 当前目录下如果有 `forms-debug` 文件夹则进入，否则先创建（且成功）再进入。
 ([ -d forms-debug ] || mkdir forms-debug) && cd forms-debug
 ```
 
 > 括号的使命令列表变成了进程列表，生成了一个子shell来执行对应的命令。
 
-2. 参考 [Create Permanent aliases](https://linoxide.com/linux-how-to/create-remove-alias-linux/)，考虑将常用的便捷命令收集在 `~/.bash_aliases`，然后在 `~/.bashrc` 或 `~/.zshrc` 中判断文件有效 source 载入。
+2. 参考 [Create Permanent aliases](https://linoxide.com/linux-how-to/create-remove-alias-linux/)，考虑将常用的便捷命令收集在 `~/.bash_aliases`，然后在 `~/.bashrc` 或 `~/.zshrc` 中判断该文件存在且有效后 source 载入。
 
 ```bash
 if [ -f ~/.bash_aliases ]; then
-    . ~/.bash_aliases # source
+    . ~/.bash_aliases  # source/import
 fi
 ```
 
-3. 在 `/etc/zprofile` 和 `/etc/profile` 中使用 `-x` 测试脚本可执行，然后 eval 执行：
+3. 在 `/etc/zprofile` 和 `/etc/profile` 中使用 `-x` 测试脚本可执行性，然后 eval 执行：
 
 ```bash
 $ cat /etc/zprofile
 
-# System-wide profile for interactive zsh(1) login shells.
+# System-wide profile for interactive zsh login shells.
 
-# Setup user specific overrides for this in ~/.zprofile. See zshbuiltins(1)
-# and zshoptions(1) for more details.
+# Setup user specific overrides for this in ~/.zprofile. See zshbuiltins
+# and zshoptions for more details.
 
 if [ -x /usr/libexec/path_helper ]; then
 	eval `/usr/libexec/path_helper -s`
 fi
 ```
 
-4. 在 `/etc/profile` 中使用 `-r` 测试脚本可读，然后 source 引入：
+4. 在 `/etc/profile` 中使用 `-r` 测试脚本可读性，然后 source 引入：
 
 ```bash
 $ cat /etc/profile
 
-# System-wide .profile for sh(1)
+# System-wide .profile for sh
 
 if [ -x /usr/libexec/path_helper ]; then
 	eval `/usr/libexec/path_helper -s`
 fi
 
 if [ "${BASH-no}" != "no" ]; then
-	[ -r /etc/bashrc ] && . /etc/bashrc
+    [ -r /etc/bashrc ] && . /etc/bashrc
 fi
 ```
 
 5. 在 [transfer.sh](https://transfer.sh/) 中使用 ` ! -e ` 排查捕获处理文件不存在的情形：
 
 ```bash
-        if [ ! -e "$file" ]; then
+        if [ ! -e "$file" ]; then  # 文件不存在
             echo "$file: No such file or directory" >&2
             return 1
         fi
-        if [ -d "$file" ]; then
+        if [ -d "$file" ]; then  # 是目录
             # ...
         fi
 ```
 
 ### 复合条件测试
 
-if-then 语句允许你使用布尔逻辑来组合测试。有两种布尔运算符可用：
+if-then 语句允许使用布尔逻辑运算符 `&&` 和 `||` 来组合测试多个 `test, [` 表达式：
 
 - [ condition1 ] && [ condition2 ]  
 - [ condition1 ] || [ condition2 ]  
 
-第一种布尔运算使用 AND 布尔运算符来组合两个条件。要让 then 部分的命令执行，两个条件都必须满足。  
-第二种布尔运算使用 OR 布尔运算符来组合两个条件。如果任意条件为 TRUE，then 部分的命令就会执行。  
+1. AND 布尔运算：所有条件都同时满足时 then 部分才会执行。条件1不满足即短路退出跳转执行 else 分支。  
+2. OR 布尔运算：任一条件满足，then 部分都会执行。条件1满足即短路退出，无需再判断条件2。  
+
+在一个 `test, [` 中括号表达式中，可使用 `-a` 或 `-o` 连接多个测试条件。
+
+```bash
+$ man test
+
+     These primaries can be combined with the following operators:
+
+     ! expression  True if expression is false.
+
+     expression1 -a expression2
+                   True if both expression1 and expression2 are true.
+
+     expression1 -o expression2
+                   True if either expression1 or expression2 are true.
+
+     ( expression )
+                   True if expression is true.
+
+     The -a operator has higher precedence than the -o operator.
+```
+
+关于两者的区别，`man test` BUGS 部分提到，`expression1 -a expression2` 会同时执行两个表达式，即不支持短路特性。
+建议采用逻辑运算符（`&&`、`||`）连接 `test, []` 表达式（`[ condition1 ] && [ condition2 ]`）更高效。
+
+```bash
+$ man test
+
+     Both sides are always evaluated in -a and -o.  For instance, the writable status of file
+     will be tested by the following command even though the former expression indicated false,
+     which results in a gratuitous access to the file system:
+           [ -z abc -a -w file ]
+     To avoid this, write
+           [ -z abc ] && [ -w file ]
+```
+
+[ShellCheck: SC2166](https://www.shellcheck.net/wiki/SC2166): Prefer \`[ p ] && [ q ]\` as \`[ p -a q ]\` is not well-defined. And likewise, prefer `[ p ] || [ q ]` over `[ p -o q ]`.
 
 返回值和执行结果综合判断示例：
-
-> `-a` 选项用来对其他两个选项的结果执行布尔AND运算。
 
 ```bash
 is_iosdeploy_installed()
 {
     # ios-deploy -V | read ios_deploy_version # wrong???
     ios_deploy_version=$(ios-deploy -V)
-    if [ $? -eq 0 -a $ios_deploy_version ]
-    # if test $ios_deploy_version
-    # if [ -n "$ios_deploy_version" ]
+    if [ $? -eq 0 ] && [ $ios_deploy_version ]
     then
         echo "ios-deploy version: $ios_deploy_version"
         return 0
@@ -347,18 +391,14 @@ is_iosdeploy_installed()
         return 1
     fi
 }
-```
 
-注意以下复合条件测试的综合示例：
-
-```bash
 if is_iosdeploy_installed
 then
     ios_deploy_device=`ios-deploy -c`
     # if [ $? -eq 0 -a $ios_deploy_device ]         # [: too many arguments
-    # if [ $? -eq 0 ] && [ $ios_deploy_device ]     # [: too many arguments
     # if [[ $? -eq 0 ]] && [[ $ios_deploy_device ]] # right, not recommended
-    if [ $? -eq 0 ] && [ -n "$ios_deploy_device" ]  # SC2166 建议写法
+    # if [ $? -eq 0 ] && [ -n "$ios_deploy_device" ]
+    if [ $? -eq 0 ] && [ $ios_deploy_device ]
     then
         echo $ios_deploy_device
         main $@ # $*
@@ -368,12 +408,101 @@ then
 fi
 ```
 
+除了 test [ \] 测试命令（builtin commands），BASH 中的 CONDITIONAL EXPRESSIONS 还支持 Compound Commands，例如 `[[ expression ]]` 双中括号表达式。
+
+## [[ \]\] 复合测试
+
+??? info "man bash - Compound Commands - [[ expression ]]"
+
+    ```bash
+    $ man bash
+
+    CONDITIONAL EXPRESSIONS
+
+    Compound Commands
+
+        Conditional expressions are used by the [[ compound command and the test and [ builtin commands to
+        test file attributes and perform string and arithmetic comparisons.  Expressions are formed from
+        the following unary or binary primaries.
+
+        [[ expression ]]
+                Return a status of 0 or 1 depending on the evaluation of the conditional expression
+                expression.  Expressions are composed of the primaries described below under CONDITIONAL
+                EXPRESSIONS.  Word splitting and pathname expansion are not performed on the words between
+                the [[ and ]]; tilde expansion, parameter and variable expansion, arithmetic expansion,
+                command substitution, process substitution, and quote removal are performed.  Conditional
+                operators such as -f must be unquoted to be recognized as primaries.
+
+                When the == and != operators are used, the string to the right of the operator is considered
+                a pattern and matched according to the rules described below under Pattern Matching.  If the
+                shell option nocasematch is enabled, the match is performed without regard to the case of
+                alphabetic characters.  The return value is 0 if the string matches (==) or does not match
+                (!=) the pattern, and 1 otherwise.  Any part of the pattern may be quoted to force it to be
+                matched as a string.
+
+                An additional binary operator, =~, is available, with the same precedence as == and !=.
+                When it is used, the string to the right of the operator is considered an extended regular
+                expression and matched accordingly (as in regex(3)).  The return value is 0 if the string
+                matches the pattern, and 1 otherwise.  If the regular expression is syntactically incorrect,
+                the conditional expression's return value is 2.  If the shell option nocasematch is enabled,
+                the match is performed without regard to the case of alphabetic characters.  Substrings
+                matched by parenthesized subexpressions within the regular expression are saved in the array
+                variable BASH_REMATCH.  The element of BASH_REMATCH with index 0 is the portion of the
+                string matching the entire regular expression.  The element of BASH_REMATCH with index n is
+                the portion of the string matching the nth parenthesized subexpression.
+
+                Expressions may be combined using the following operators, listed in decreasing order of
+                precedence:
+
+                ( expression )
+                        Returns the value of expression.  This may be used to override the normal precedence
+                        of operators.
+                ! expression
+                        True if expression is false.
+                expression1 && expression2
+                        True if both expression1 and expression2 are true.
+                expression1 || expression2
+                        True if either expression1 or expression2 is true.
+
+                The && and || operators do not evaluate expression2 if the value of expression1 is
+                sufficient to determine the return value of the entire conditional expression.
+    ```
+
+如 manual 所示，`[ ]` 和 `[[ ]]` 都支持复合条件测试，都可以用在 Command Lists 中。
+
+1. `[ ]`是命令，依赖参数个数；`[[ ]]`是语法结构，语义更稳定。  
+2. 在现代 Bash 脚本中，要避免使用裸 `[ $var ]`，建议使用 `[ "$var" ]` 或 `[[ $var ]]`。  
+
+当 var 未定义（unset, i.e. undefined）时，`[ -n $var]` 展开为 `[ -n ]` 返回 0（true），建议改用更安全的双方括号形式 `[[ -n $var ]]`。
+
+另外，相比 `[ expression ]`，`[[ expression ]]` 增加支持模式匹配：
+
+1. the right of the operator `==` and `!=` is considered a **pattern**
+2. the right of the operator `=~` is considered an **extended regular expression**
+
+参考 [Linux Shell Program - string](./8-sh-string.md) 中的字符串匹配示例。
+
+[vim-interaction.plugin.zsh](https://github.com/ohmyzsh/ohmyzsh/blob/master/plugins/vim-interaction/vim-interaction.plugin.zsh) 中判等串联执行命令案例：
+
+```bash
+  # If before or after commands begin with : and don't end with <cr>, append it
+  [[ ${after}  = :* && ${after}  != *\<cr\> ]] && after+="<cr>"
+  [[ ${before} = :* && ${before} != *\<cr\> ]] && before+="<cr>"
+  # Open files passed (:A means abs path resolving symlinks, :q means quoting special chars)
+  [[ $# -gt 0 ]] && files=':args! '"${@:A:q}<cr>"
+```
+
 ## Parameter Expansion（参数扩展）
 
 参考 man bash - `Parameter Expansion`（参数扩展）章节
 
 ```bash
 $ man bash
+
+       In each of the cases below, word is subject to tilde expansion, parameter expansion, command
+       substitution, and arithmetic expansion.  When not performing substring expansion, bash tests for a
+       parameter that is unset or null; omitting the colon results in a test only for a parameter that is
+       unset.
 
        ${parameter:-word}
               Use Default Values.  If parameter is unset or null, the  expansion  of  word  is  substituted.
@@ -407,14 +536,15 @@ $ man bash
 
 ### 取默认值
 
-> `${parameter:-word}`: Use Default Values.
+> `${parameter:-word}`: Use Default Values if unset or null.
+
+- `${var:-default}`: return `default` if var is unset or null, else return var
+- `${var-default}`: return `default` if var is unset (even null), else return var
 
 [How variables inside braces are evaluated](https://unix.stackexchange.com/questions/286335/how-variables-inside-braces-are-evaluated)  
 
-Omitting the `:` drops the "*or null*" part of all these definitions.
-
-- `${a:-default}​`: 如果变量 a 未设置或为空，则使用默认值。
-- `${a-default}​`: 仅当变量未设置时，才使用默认值。
+- `${a:-default}​`: 如果变量 a 未定义或为空（unset or null），则扩展展开为 `-` 后的默认值。
+- `${a-default}​`: 仅当变量 a 未定义（unset or undefined）时，才扩展展开为 `-` 后的默认值。
 
 This is all described in the [bash(1) manpage](http://man7.org/linux/man-pages/man1/bash.1.html), and in [POSIX](https://pubs.opengroup.org/onlinepubs/9699919799/utilities/V3_chap02.html#tag_18_06_02).
 
@@ -431,7 +561,7 @@ default
 default
 ```
 
-2. 变量有定义，但为空值（空字符串）
+2. 变量有定义，但为空值（空字符串）：
 
 ```bash
 # 定义变量，但赋值为空
@@ -445,7 +575,7 @@ default
 ~  $
 ```
 
-3. 定义变量，且非空值
+3. 定义变量，且非空值，返回 a 不执行替换：
 
 ```bash
 # 定义变量，且有赋值（非空），返回a
@@ -456,12 +586,24 @@ test
 test
 ```
 
+---
+
 in `/etc/zshrc`: If `ZDOTDIR` is unset(or empty), `HOME` is used instead.
 
 ```bash
 $ vim /etc/zshrc
 
 HISTFILE=${ZDOTDIR:-$HOME}/.zsh_history
+```
+
+/etc/profile 中判断 `BASH` 是否定义过（可能未赋值），再判断 `/etc/bashrc` 可读性，进而执行 `.`（source）导入 `/etc/bashrc`。
+
+- 这里的 `no` 仅仅是个辅助判断占位，可替换为任何字符(串)，例如 `[ "${BASH-x}" != "x" ]`。
+
+```bash
+if [ "${BASH-no}" != "no" ]; then
+	[ -r /etc/bashrc ] && . /etc/bashrc
+fi
 ```
 
 [shell 脚本 ${1:-"false"}的含义](https://blog.csdn.net/fhaitao2009/article/details/104165211)
@@ -492,7 +634,10 @@ cat "${1:-/dev/stdin}" > "${2:-/dev/stdout}"
 
 ### 赋默认值
 
-> `${parameter:=word}`: Assign Default Values.
+> `${parameter:=word}`: Assign Default Values if unset or null.
+
+- `${var:=default}`: var=`default` if var is unset (i.e. undefined) or null, then return var
+- `${var=default}`: var=`default` only if var is unset (i.e. undefined), then return var
 
 变量未定义或为空，赋默认值：
 
@@ -538,6 +683,9 @@ default
 
 > `${parameter:?word}`: Display Error if Null or Unset.
 
+- `${var:?error}`: display error and exit if var is unset or null else return var
+- `${var?error}`: display error and exit if var is unset else return var
+
 以下sh脚本中调用get_lan_ip函数，预期其中会定义未export的全局变量lan_ip。
 
 ```bash
@@ -564,7 +712,10 @@ Wi-Fi en0 : status=inactive
 
 ### 替代值
 
-> `${parameter:+word}`: Use Alternate Value.
+> `${parameter:+word}`: Use Alternate Value if set.
+
+- `${var:+value}`: return `value` if var is set and not null else return null
+- `${var+value}`: return `value` if var is set (even null) else return null
 
 The `+` form might seem strange, but it is useful when constructing variables in several steps:
 

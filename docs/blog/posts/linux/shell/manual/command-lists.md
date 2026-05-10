@@ -65,7 +65,7 @@ mkdir homebrew && curl -L https://github.com/Homebrew/brew/tarball/master
 ```bash
 $ cat /etc/profile
 
-# System-wide .profile for sh(1)
+# System-wide .profile for sh
 
 if [ -x /usr/libexec/path_helper ]; then
 	eval `/usr/libexec/path_helper -s`
@@ -111,4 +111,20 @@ ping -o -c 2 -W 500 www.google.com > /dev/null 2>&1\
 
 ```bash
 ([ -d forms-debug ] || mkdir forms-debug) && cd forms-debug
+```
+
+6. `check_python_version` 函数执行 `python -V` 如果正确输出则重新执行获取提确 python 的版本信息，否则提示未定义。
+
+```bash
+check_python_version()
+{
+    python -V &>/dev/null && {
+        python_version=$(python -V 2>&1) 1>/dev/null
+        echo "python installed: $python_version"
+        return 0
+    } || {
+        echo "python uninstalled!"
+        return 1
+    }
+}
 ```
