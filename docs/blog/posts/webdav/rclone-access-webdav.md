@@ -457,9 +457,14 @@ There are several related list commands:
 
 ### lsd, lsf
 
-The other list commands `lsd`,`lsf`,`lsjson` do not recurse by default - use `-R` to make them recurse.
+The other list commands `lsd`,`lsf`,`lsjson` do *not* recurse by default - use `-R` to make them recurse.
 
 `lsd` 命令显示指定路径（根目录）下的目录/容器/桶：
+
+1. total size of the directory (if known, -1 if not)
+2. the modification time (if known, the current time if not)
+3. the number of objects in the directory (if known, -1 if not)
+4. the name of the directory
 
 ```bash
 $ rclone lsd webdav@rpi4b:
@@ -467,9 +472,16 @@ $ rclone lsd webdav@rpi4b:
           -1 2024-04-03 10:53:51        -1 English_Docs
           -1 2024-03-25 10:17:59        -1 The_Economist
           -1 2024-04-01 18:25:31        -1 mkdocs
+
+$ rclone lsd cf_r2:icloud/AI-LLM
+           0 2000-01-01 08:00:00        -1 Dify-RAG
+           0 2000-01-01 08:00:00        -1 RAGFlow
 ```
 
-`lsf` 命令以一种简单的方式列举目录（和文件）：
+`lsf` 命令以一种简单的方式列举目录（和文件），显示文件（夹）名：
+
+- By default this will just be the names of the objects and directories, one per line. The directories will have a `/` suffix.
+- Use the `--format` option to control what gets listed.
 
 ```bash
 $ rclone lsf webdav@rpi4b:
@@ -477,9 +489,20 @@ CS/
 English_Docs/
 The_Economist/
 mkdocs/
+
+$ rclone lsf cf_r2:icloud/AI-LLM
+Dify-RAG/
+Dify-RAG-Solution.md
+RAGFlow/
+
+# format: size;time;path
+$ rclone lsf --format "stp" cf_r2:icloud/AI-LLM
+-1;2000-01-01 08:00:00;Dify-RAG/
+10014;2026-01-29 21:36:55;Dify-RAG-Solution.md
+-1;2000-01-01 08:00:00;RAGFlow/
 ```
 
-`lsjson` 命令支持以 json 格式列举目录：
+`lsjson` 命令支持以 json 格式列举目录（和文件），通过 `IsDir` 标识目录：
 
 ```bash
 $ rclone lsjson webdav@rpi4b:
@@ -496,6 +519,9 @@ $ rclone lsjson webdav@rpi4b:
 ```bash
 # 递归展示整个云盘的树形目录结构
 $ rclone tree webdav@rpi4b:
+
+# -d, --dirs-only：只列举目录
+$ rclone tree -d webdav@rpi4b:
 ```
 
 #### filter
@@ -546,7 +572,7 @@ $ rclone lsf webdav@rpi4b: --exclude "CS-{System, Network}/**"
 
 Note that `ls` and `lsl` **recurse** by default - use `--max-depth 1` to stop the recursion.
 
-`ls` 命令递归列举根路径下的所有文件（显示大小和路径）：
+`ls` 命令递归列举根路径下的所有文件，显示大小（size）和相对路径（path）。
 
 ```bash
 $ rclone ls webdav@rpi4b:
@@ -556,7 +582,7 @@ $ rclone tree webdav@rpi4b:
       ...
 ```
 
-`ls` 命令递归列举 `/mkdocs` 目录下的文件：
+`ls` 命令递归列举 `/mkdocs` 目录下的所有文件，显示大小（size）和相对路径（path）。
 
 ```bash
 $ rclone ls webdav@rpi4b:/mkdocs
@@ -564,9 +590,21 @@ $ rclone ls webdav@rpi4b:/mkdocs
       310 hello-world-3.c
       310 hello-world-4.c
       279 hello-world.c
+
+# | awk '{print $2}' 只打印相对文件路径
+$ rclone ls cf_r2:icloud/AI-LLM
+    10014 Dify-RAG-Solution.md
+   143672 Dify-RAG/Dify-知识库+聊天机器人.png
+   102401 Dify-RAG/Dify-知识库.png
+   250764 Dify-RAG/Dify-问题分类+知识库+聊天机器人.png
+    24737 RAGFlow/RAGFlow-Demo-创建知识库.png
+   447377 RAGFlow/RAGFlow-Demo-模型提供商.png
+    66215 RAGFlow/RAGFlow-Demo-知识库_kb1-新增文件.png
+   188908 RAGFlow/RAGFlow-Local_Demo-Login.png
+    12110 RAGFlow/pipeline/RAGFlow.zip
 ```
 
-`lsl` 命令相比 `ls` 增加显示文件的修改时间（modification time）：
+`lsl` 命令相比 `ls` 增加显示文件的修改时间（modification time）。
 
 ```bash
 $ rclone lsl webdav@rpi4b:
@@ -578,6 +616,17 @@ $ rclone lsl webdav@rpi4b:/mkdocs
       310 2024-04-01 18:05:18.000000000 hello-world-3.c
       310 2024-04-01 18:25:27.000000000 hello-world-4.c
       279 2024-04-01 18:02:26.000000000 hello-world.c
+
+$ rclone lsl cf_r2:icloud/AI-LLM
+    10014 2026-01-29 21:36:55.566000000 Dify-RAG-Solution.md
+   143672 2026-01-29 21:36:59.786000000 Dify-RAG/Dify-知识库+聊天机器人.png
+   102401 2026-01-29 21:36:59.864000000 Dify-RAG/Dify-知识库.png
+   250764 2026-01-29 21:36:59.877000000 Dify-RAG/Dify-问题分类+知识库+聊天机器人.png
+    24737 2026-01-29 21:36:58.418000000 RAGFlow/RAGFlow-Demo-创建知识库.png
+   447377 2026-01-29 21:36:58.585000000 RAGFlow/RAGFlow-Demo-模型提供商.png
+    66215 2026-01-29 21:36:58.759000000 RAGFlow/RAGFlow-Demo-知识库_kb1-新增文件.png
+   188908 2026-01-29 21:36:59.242000000 RAGFlow/RAGFlow-Local_Demo-Login.png
+    12110 2026-01-29 21:37:00.440000000 RAGFlow/pipeline/RAGFlow.zip
 ```
 
 #### filter
@@ -692,6 +741,202 @@ Or like this to output any file in dir or its subdirectories.
 ```bash
 rclone cat remote:path/to/dir
 ```
+
+## link
+
+`rclone link` 为文件（夹）生成临时链接。
+
+| Command | Description |
+|---------|-------------|
+| [rclone link](https://rclone.org/commands/rclone_link/) | Generate public link to file/folder. |
+
+以下脚本定义了 `r2link` 函数，为指定（文件夹下的）文件生成基于 Custom Domain 的公开链接。
+
+1. line 127: 基于 `rclone lsjson` 非递归列举 directories and objects 个数判断传入参数 `$1` 是文件夹还是文件。
+2. line 138: 对于文件夹，使用 `rclone ls` 递归列举文件，取第2个字段 path 与 Custom Domain 拼接成 Public Url。
+3. line 150: 对于文件，使用 `rclone lsjson` 显示文件属性，并将生成的链接（Public Url）复制到剪贴板。
+
+脚本使用说明：
+
+1. 替换第49行的 `YOUR.CUSTOM.DOMAIN` 为你自己的 Custom Domain。
+2. 在 `~/.bashrc` 或 `~/.zshrc` 中 `source rclone-link.sh` 引入脚本。
+3. Usage: `r2link remote:bucket/path/to/folder` 或 `r2link remote:bucket/path/to/file`。
+
+??? note "rclone-link.sh"
+
+    ```bash linenums="1" hl_lines="49 127 138 150"
+    #!/usr/bin/env bash
+
+    ################################################################################
+    # 适用于 bash 3.2 的关联数组模拟
+    # prefix=custom_domain, key=remote_bucket, value=domain
+
+    # 定义：使用前缀+键名作为变量名
+    prefix="custom_domain_"
+
+    # 设置值
+    function map_set() {
+        local key="$1"
+        local value="$2"
+        local var_name="${prefix}${key}"
+        eval "$var_name='$value'"
+    }
+
+    # 获取值
+    function map_get() {
+        local key="$1"
+        local var_name="${prefix}${key}"
+        eval "echo \$$var_name"
+    }
+
+    # 检查键是否存在
+    function map_has() {
+        local key="$1"
+        local var_name="${prefix}${key}"
+        # 如果变量存在（即使值为空），扩展为 x（非空），eval 退出码为零
+        # 否则扩展为空字符串（为空），eval 退出码非零
+        eval "[[ -n \${$var_name+x} ]]"
+    }
+
+    # 删除键
+    function map_delete() {
+        local key="$1"
+        local var_name="${prefix}${key}"
+        unset "$var_name"
+    }
+
+    # 获取所有键
+    function map_keys() {
+        compgen -A variable "${prefix}" | sed "s/^${prefix}//"
+    }
+    ################################################################################
+
+    #-------------------------------------------------
+    # key=remote_bucket
+    map_set "cf_r2_icloud" "YOUR.CUSTOM.DOMAIN"
+    #-------------------------------------------------
+
+    # 还原冒号 : 和斜杠 /
+    # echo -n $url | jq -sRr @uri |  sed 's|%3A|:|g' | sed 's|%2F|/|g'
+    safe_urlencode() {
+        # Define the full set of RFC 3986 reserved characters
+        local gen_delims=":/?#[]@"
+        local sub_delims="!$&'()*+,;="  # exclamation escape
+        all_reserved="${gen_delims}${sub_delims}"
+
+        python3 -c "import sys, urllib.parse; print(urllib.parse.quote(sys.argv[1], safe=\"$all_reserved\"))" "$1"
+    }
+
+    # 基于 rclone link 生成原始链接，再替换公共域名
+    # $1: remote full path; $2: origin domain; $3: bucket name
+    # context global var: custom_domain
+    r2_gen_link() {
+        gen_link=$(rclone link --unlink --expire 1h -q "$1" | awk -F '?' '{print $1}')
+        custom_link=${gen_link/$2$3/$custom_domain}  # sed 's/\?.*//'
+        echo "$custom_link"
+    }
+
+    # 直接拼接自定义域名，获得永久公开链接
+    # $1: remote relative path
+    # context global var: custom_domain
+    r2_cat_link() {
+        encoded_path=$(safe_urlencode "$1")
+        custom_link="https://$custom_domain/$encoded_path"
+        echo "$custom_link"
+    }
+
+    # $1: remote full path such as remote:bucket/path/to/your/file
+    r2link() {
+        # 检测是否符合模式 remote:path/*
+        if [[ $1 != *:*/* ]]; then
+            echo -e "\033[1m$1\033[0m: \033[1;31minvalid remote path\033[0m"
+            echo "Usage: r2link remote:bucket/path/to/your/file"
+            return 1
+        fi
+
+        # 移除 / 及右侧
+        local rb=${1%%/*}
+        echo "remote:bucket=$rb"
+
+        # 提取 remote:path
+        local remote
+        local bucket
+        remote=$(echo "$rb" | cut -d ':' -f 1)
+        bucket=$(echo "$rb" | cut -d ':' -f 2)
+        # 检测 remote 是否配置（-x: 整行精确匹配）
+        if ! rclone listremotes | grep -xq "${remote}:"; then
+            echo -e "\033[1m$remote\033[0m: \033[1;31mremote not found\033[0m"
+            return 1
+        fi
+        # 检测 bucket 是否存在（-x: 整行精确匹配）
+        if ! rclone lsf "$remote:" | grep -xq "${bucket}/"; then
+            echo -e "\033[1m$bucket\033[0m: \033[1;31mbucket not found\033[0m"
+            return 1
+        fi
+
+        # 提取 remote 类型 & endpoint 域名
+        remote_type=$(rclone config show "$remote" | awk '/type/ {print $3}')
+        endpoint=$(rclone config show "$remote" | awk '/endpoint/ {print $3}')
+        domain=${endpoint/#https:\/\//}
+        echo "$remote_type domain=$domain"
+
+        # 获取自定义域名
+        key=${remote}_${bucket}
+        if map_has "$key"; then
+            custom_domain=$(map_get "$key")
+            echo "custom_domain for $key=$custom_domain"
+        else
+            echo "custom_domain for $key=undefined!"
+            return 1
+        fi
+
+        # 非递归列举指定文件（夹）信息，输出 json 数组
+        length=$(rclone lsjson "$1" | jq 'length')
+
+        if [ "$length" -eq 0 ]; then
+            echo -e "\033[1m$1\033[0m: \033[1;31mdoes not exist\033[0m"
+            return 1
+        else
+            if [ "$length" -gt 1 ]; then
+                echo -e "\033[1m$1\033[0m: \033[1;32mis dir\033[0m"
+
+                # macOS bash 3.2<4.0 不支持 mapfile/readarray
+                # mapfile -t files < <(rclone ls "$1")
+                rclone ls "$1" | awk '{print $2}' | while IFS= read -r name; do
+                    full_path=$1/$name
+                    # custom_link=$(r2_gen_link "$full_path" "$domain" "$bucket")
+
+                    relative_path=${full_path#"$rb"/}
+                    custom_link=$(r2_cat_link "$relative_path")
+
+                    # 打印文件名并高亮输出链接
+                    echo -n "$name: "
+                    echo -e "\033[32m$custom_link\033[0m"
+                done
+            elif [ "$length" -eq 1 ]; then
+                rclone lsjson "$1" | jq '.[0]'
+                # custom_link=$(r2_gen_link "$1" "$domain" "$bucket")
+
+                relative_path=${1#"$rb"/}
+                custom_link=$(r2_cat_link "$relative_path")
+
+                # 高亮输出链接
+                echo -e "\033[32m$custom_link\033[0m"
+
+                # 将生成的链接复制到剪贴板
+                if command -v pbcopy &> /dev/null; then
+                    echo -n "$custom_link" | pbcopy
+                    echo "✅ 链接已复制到Mac剪贴板(pbcopy)！"
+                elif command -v xclip &> /dev/null; then
+                    echo -n "$custom_link" | xclip -selection clipboard
+                    echo "✅ 链接已复制到Linux剪贴板(xclip)！"
+                fi
+            fi
+
+            return 0
+        fi
+    }
+    ```
 
 ## mkdir
 
@@ -1206,7 +1451,7 @@ $ rclone sync -v webdav@mbpa1398: webdav@rpi4b:
 
 下一篇 《[基于cron配置rclone自动同步任务](./cron-auto-rclone.md)》将介绍如何使用 cron 配置 crontab 配置 rclone 定时自动同步任务。
 
-## refs
+## references
 
 [Rclone云存储数据同步工具](https://www.cnblogs.com/varden/p/17181717.html)
 [备份同步神器 Rclone 使用教程](https://cloud.tencent.com/developer/article/2192254)
