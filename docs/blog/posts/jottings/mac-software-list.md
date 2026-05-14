@@ -67,8 +67,7 @@ softorino [WALTR PRO](https://softorino.com/waltr/)
 
 [FlClash](https://flclash.cc/en/): Multi-platform proxy client based on ClashMeta, easy to use, open source and ad-free
 
-[Google Chrome Web Browser](https://www.google.com/intl/en_hk/chrome/)
-[ChatGPT Atlas](https://chatgpt.com/atlas/)
+Web Browser: [Google Chrome](https://www.google.com/intl/en_hk/chrome/); [ChatGPT Atlas](https://chatgpt.com/atlas/)
 
 [Cyberduck](https://cyberduck.io/)
 
@@ -254,24 +253,24 @@ Stickies.app: [Stickies User Guide for Mac](https://support.apple.com/en-hk/guid
         - <kbd>⌥</kbd><kbd>M</kbd> for `current tab: [title](url)` to Copy Title and URL as Markdown; 
         - <kbd>⇧</kbd><kbd>⌘</kbd><kbd>C</kbd> to Copy Selection as Markdown
 
-    - [PrintFriendly - Print and PDF Web Pages](https://chromewebstore.google.com/detail/ohlencieiipommannpdfcmfdpjjmeolj) + Webpage Screenshot: assign <kbd>⌘</kbd><kbd>P</kbd> to activate the extension and override the default print function.
-    - [Obsidian Web Clipper](https://chromewebstore.google.com/detail/cnjifjpddelmedmihgijeibhnjfabmlf): Save and highlight web pages in a private and durable format that you can access offline.
     - [Note Sidebar](https://chromewebstore.google.com/detail/emiochiflnnegkecnjndifbobmbepdne): Simple note sidebar which can be used to write a note, record thoughts, to-do list, meeting notes, etc.
+    - [Obsidian Web Clipper](https://chromewebstore.google.com/detail/cnjifjpddelmedmihgijeibhnjfabmlf): Save and highlight web pages in a private and durable format that you can access offline.
     - [Obsidian AI Video Notes - HoverNotes](https://chromewebstore.google.com/detail/fhdmbhgpabjkadpaafomaabbdckofphm): Video Note-taking for YouTube, Udemy, Coursera & more to Obsidian
 
 3. Media Extraction & Capture
 
     - [ImageAssistant](https://chromewebstore.google.com/detail/dbjbempljhcmhlfpfacalomonjpalpko): Batch Image Downloader + QR Code Generator
-    - [GoFullPage](https://chromewebstore.google.com/detail/fdpohaocaechififmbbbbbknoalclacl): The simplest way to take a full page screenshot of your current browser window.
-    - [Media Harvest : twitter Media Downloader](https://chromewebstore.google.com/detail/hpcgabhdlnapolkkjpejieegfpehfdok): Download videos and images from twitter
+    - [GoFullPage](https://chromewebstore.google.com/detail/fdpohaocaechififmbbbbbknoalclacl): Take a full page screenshot of your current browser window
+    - [PrintFriendly - Print and PDF Web Pages](https://chromewebstore.google.com/detail/ohlencieiipommannpdfcmfdpjjmeolj) + Webpage Screenshot: override <kbd>⌘</kbd><kbd>P</kbd>
+    - [bilibili video downloader](https://chromewebstore.google.com/detail/pamdgobbggbpfpnadidipelihgkafiid): one click to download videos from BiliBili easily
     - [FetchV](https://fetchv.net/) - [Video Downloader for m3u8 & hls](https://chromewebstore.google.com/detail/nfmmmhanepmpifddlkkmihkalkoekpfd): FetchV Video Download Extension
-    - [bilibili video downloader](https://chromewebstore.google.com/detail/pamdgobbggbpfpnadidipelihgkafiid): one click to download videos easily.
+    - [Media Harvest : twitter Media Downloader](https://chromewebstore.google.com/detail/hpcgabhdlnapolkkjpejieegfpehfdok): Download videos and images from twitter
 
 4. Content Access & Bypassing
 
     - [Allow Copy +](https://chromewebstore.google.com/detail/ajhbdcgfhlhhmocddefknjjkejcfpbnj): Allow copying. Remove copy protection.
-    - [PaywallHub](https://chromewebstore.google.com/detail/iimagbhmhkinjaaammedekiocfphhhca) & [bypass-paywalls](https://github.com/iamadamdev/bypass-paywalls-chrome/blob/master/README.md): unavailable due to DMCA takedown
-        - [archive.today](https://archive.today/) / [archive.is](https://archive.is/)
+    - [Archive.today automator](https://chromewebstore.google.com/detail/mmhadhnchpgicjlmlcdfaapkekknnkha) for [archive.today](https://archive.today/) / [archive.is](https://archive.is/)
+    - [Bypass Paywalls Clean (BPC)](https://gitflic.ru/project/magnolia1234/bypass-paywalls-chrome-clean); [PaywallHub](https://chromewebstore.google.com/detail/iimagbhmhkinjaaammedekiocfphhhca); [bypass-paywalls](https://github.com/iamadamdev/bypass-paywalls-chrome/blob/master/README.md)
 
 5. Communication & Language
 

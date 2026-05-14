@@ -750,11 +750,11 @@ rclone cat remote:path/to/dir
 |---------|-------------|
 | [rclone link](https://rclone.org/commands/rclone_link/) | Generate public link to file/folder. |
 
-以下脚本定义了 `r2link` 函数，为指定（文件夹下的）文件生成基于 Custom Domain 的公开链接。
+以下脚本 rclone-link.sh 中定义了 `r2link` 函数，为指定（文件夹下的）文件生成基于 Custom Domain 的公开链接。
 
-1. line 127: 基于 `rclone lsjson` 非递归列举 directories and objects 个数判断传入参数 `$1` 是文件夹还是文件。
-2. line 138: 对于文件夹，使用 `rclone ls` 递归列举文件，取第2个字段 path 与 Custom Domain 拼接成 Public Url。
-3. line 150: 对于文件，使用 `rclone lsjson` 显示文件属性，并将生成的链接（Public Url）复制到剪贴板。
+1. line 127: 基于 `rclone lsjson` 非递归列举 directories and objects，根据个数判断传入参数 `$1` 是文件夹还是文件。
+2. line 138: 对于文件夹，使用 `rclone ls` 递归列举文件，取第2个字段 path 与 Custom Domain 拼接成 Public Link。
+3. line 150: 对于文件，使用 `rclone lsjson` 显示文件属性，并将生成的链接（Public Link）复制到剪贴板。
 
 脚本使用说明：
 
