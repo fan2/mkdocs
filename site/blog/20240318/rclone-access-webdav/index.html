@@ -1685,6 +1685,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        options
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#ls" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1784,6 +1795,17 @@
     <span class="md-ellipsis">
       
         mkdir
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#convmv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        convmv
       
     </span>
   </a>
@@ -1969,6 +1991,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#mountserve" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        mount/serve
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#references" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2042,7 +2075,7 @@
                       <li class="md-nav__item">
                         <div class="md-nav__link">
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15 13h1.5v2.82l2.44 1.41-.75 1.3L15 16.69zm4-5H5v11h4.67c-.43-.91-.67-1.93-.67-3a7 7 0 0 1 7-7c1.07 0 2.09.24 3 .67zM5 21a2 2 0 0 1-2-2V5c0-1.11.89-2 2-2h1V1h2v2h8V1h2v2h1a2 2 0 0 1 2 2v6.1c1.24 1.26 2 2.99 2 4.9a7 7 0 0 1-7 7c-1.91 0-3.64-.76-4.9-2zm11-9.85A4.85 4.85 0 0 0 11.15 16c0 2.68 2.17 4.85 4.85 4.85A4.85 4.85 0 0 0 20.85 16c0-2.68-2.17-4.85-4.85-4.85"/></svg>
-                          <time datetime="2025-12-12 17:00:00+00:00" class="md-ellipsis">Dec 12, 2025</time>
+                          <time datetime="2026-05-15 21:00:00+00:00" class="md-ellipsis">May 15, 2026</time>
                         </div>
                       </li>
                     
@@ -2066,7 +2099,7 @@
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7z"/></svg>
                           <span class="md-ellipsis">
                             
-                              21 min read
+                              24 min read
                             
                           </span>
                         </div>
@@ -2129,8 +2162,15 @@
 <p>Users call rclone "The Swiss army knife of cloud storage", and "Technology indistinguishable from magic".</p>
 </div>
 <p>Rclone has powerful cloud equivalents to the unix commands <code>rsync</code>, <code>cp</code>, <code>mv</code>, <code>mount</code>, <code>ls</code>, <code>ncdu</code>, <code>tree</code>, <code>rm</code>, and <code>cat</code>. Rclone's familiar syntax includes shell pipeline support, and <code>--dry-run</code> protection. It is used at the command line, in scripts or via its API.</p>
-<p>Rclone mounts any local, cloud or virtual filesystem as a disk on Windows, macOS, linux and FreeBSD, and also serves these over SFTP, HTTP, WebDAV, FTP and DLNA.</p>
-<p>Rclone is mature, open-source software originally inspired by rsync and written in <a href="https://golang.org/">Go</a>.</p>
+<p>Rclone <em>mounts</em> any local, cloud or virtual filesystem as a disk on Windows, macOS, linux and FreeBSD, and also <em>serves</em> these over SFTP, HTTP, WebDAV, FTP and DLNA.</p>
+<p>Rclone is mature, open-source software originally inspired by <a href="https://rsync.samba.org/">rsync</a> and written in <a href="https://golang.org/">Go</a>.</p>
+<div class="admonition note">
+<p class="admonition-title">rsync vs. rclone</p>
+<p><code>rsync</code> (Remote Sync)  和 <code>rclone</code>  (Rsync for Cloud) 都是非常强大的数据同步和备份工具，它们的核心区别在于目标存储的类型：<code>rsync</code> 专注于<strong>本地和传统服务器</strong>之间（通过 SSH）的数据传输，而 <code>rclone</code> 则被称为“云存储版的 rsync”，专注于<strong>本地与各种网盘/对象存储</strong>之间（通过云 API）的数据传输。</p>
+<p><code>rsync</code> 的核心定位是经典的 Linux 增量备份工具，基于增量/差异传输算法高效同步两台机器上的文件系统。<code>rclone</code> 的核心定位是云盘及对象存储管理大师，用于统一管理各种云存储和远程存储。</p>
+<p>云对象存储的 API 模型是"整个对象读写"，没有随机写/补丁接口。所以 rclone 只能通过比较文件名+大小+修改时间（或哈希）来判断"这个文件要不要重新传"。</p>
+<p>两者可互补：例如用 <code>rclone mount</code> 将云盘挂载到本地，再用 <code>rsync</code> 做精细增量同步；或通过 <code>rsync</code> + <code>rclone copy</code> 实现本地→云端的高效流水线。</p>
+</div>
 <h2 id="install">install<a class="headerlink" href="#install" title="Permanent link">#</a></h2>
 <p>macOS 下使用包管理器 <a href="https://brew.sh/">brew</a> 搜索安装 rclone；ubuntu 下使用包管理器 <a href="https://manpages.ubuntu.com/manpages/noble/en/man8/apt.8.html">apt</a>(apt-get/apt-cache) 搜索安装 rclone。</p>
 <div class="tabbed-set tabbed-alternate" data-tabs="1:2"><input checked="checked" id="__tabbed_1_1" name="__tabbed_1" type="radio" /><input id="__tabbed_1_2" name="__tabbed_1" type="radio" /><div class="tabbed-labels"><label for="__tabbed_1_1">macOS</label><label for="__tabbed_1_2">ubuntu</label></div>
@@ -2181,6 +2221,7 @@
 </div>
 </div>
 </div>
+<p><a href="https://rclone.org/commands/rclone_selfupdate/">rclone selfupdate</a> - Update the rclone binary.</p>
 <p>执行 <code>rclone config paths</code>、<code>rclone config show</code> 查看配置信息。</p>
 <h2 id="docs">docs<a class="headerlink" href="#docs" title="Permanent link">#</a></h2>
 <p><a href="https://rclone.org/overview/#optional-features">Overview of cloud storage systems</a></p>
@@ -2190,23 +2231,10 @@
 </ul>
 <p><a href="https://rclone.org/commands/">Commands Index</a></p>
 <ul>
+<li><a href="https://rclone.org/docs/#subcommands">Subcommands</a>: rclone uses a system of subcommands.</li>
 <li>This is an index of all commands in rclone. Run <code>rclone command --help</code> to see the help for that command.</li>
 </ul>
-<p><a href="https://rclone.org/commands/rclone_mount/">rclone mount</a> / <a href="https://rclone.org/commands/rclone_nfsmount/">nfsmount</a></p>
-<p><a href="https://rclone.org/commands/rclone_serve/">rclone serve</a> - <a href="https://rclone.org/commands/rclone_serve_webdav/">webdav</a></p>
-<p><a href="https://rclone.org/rc/">Remote Control / API</a> - <a href="https://rclone.org/gui/">GUI</a></p>
 <p><a href="https://rclone.org/docs/">Usage</a>: <a href="https://rclone.org/filtering/">Filtering</a>, <a href="https://rclone.org/flags/">Flags</a></p>
-<p><a href="https://rclone.org/docs/#log-file-file">--log-file=FILE</a> / <a href="https://rclone.org/docs/#log-level-level">log-level-level</a></p>
-<div class="admonition note">
-<p class="admonition-title">--log-level LEVEL</p>
-<p>This sets the log level for rclone. The default log level is <em>NOTICE</em>.</p>
-<ol>
-<li><strong>DEBUG</strong> is equivalent to <mark>-vv</mark>. It outputs lots of debug info - useful for bug reports and really finding out what rclone is doing.</li>
-<li><strong>INFO</strong> is equivalent to <mark>-v</mark>. It outputs information about each transfer and prints stats once a minute by default.</li>
-<li><strong>NOTICE</strong> is the default log level if no logging flags are supplied. It outputs very little when things are working normally. It outputs warnings and significant events.</li>
-<li><strong>ERROR</strong> is equivalent to <code>-q</code>. It only outputs error messages.</li>
-</ol>
-</div>
 <h2 id="config">config<a class="headerlink" href="#config" title="Permanent link">#</a></h2>
 <p>在命令行输入 <code>rclone config</code> 进入交互式配置会话。</p>
 <h3 id="config_webdav">config webdav<a class="headerlink" href="#config_webdav" title="Permanent link">#</a></h3>
@@ -2721,6 +2749,31 @@
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="c1"># use -q flag for a simpler output</span>
 </span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>$<span class="w"> </span>rclone<span class="w"> </span><span class="nb">test</span><span class="w"> </span>speed<span class="w"> </span>webdav@rpi4b:<span class="w"> </span>-q
 </span></code></pre></div>
+<h2 id="options">options<a class="headerlink" href="#options" title="Permanent link">#</a></h2>
+<p><code>-n</code>, <code>--dry-run</code>: Do a trial run with no permanent changes.</p>
+<ul>
+<li>Use this to see what rclone would do without actually doing it. Useful when setting up the <a href="https://rclone.org/commands/rclone_sync/">sync</a> command which deletes files in the destination.</li>
+</ul>
+<p><code>-q</code>, <code>--quiet</code>: This flag will limit rclone's output to error messages only.</p>
+<p><code>-P</code>, <code>--progress</code>: This flag makes rclone update the stats in a static block in the terminal providing a realtime overview of the transfer.</p>
+<ul>
+<li>Any log messages will scroll above the static block. Log messages will push the static block down to the bottom of the terminal where it will stay. Normally this is updated every 500mS but this period can be overridden with the <code>--stats</code> flag.</li>
+</ul>
+<p><code>-log-file string</code>: Log all of rclone's output to a file. If the file exists, then rclone will append to it.</p>
+<ul>
+<li>This is not active by default. This can be useful for tracking down problems with syncs in combination with the <code>-v</code> flag. See the <a href="https://rclone.org/docs/#logging">logging</a> section for more info.</li>
+</ul>
+<p><a href="https://rclone.org/docs/#log-file-file">--log-file=FILE</a> / <a href="https://rclone.org/docs/#log-level-level">log-level-level</a></p>
+<div class="admonition note">
+<p class="admonition-title">--log-level LEVEL</p>
+<p>This sets the log level for rclone. The default log level is <em>NOTICE</em>.</p>
+<ol>
+<li><strong>DEBUG</strong> is equivalent to <mark>-vv</mark>. It outputs lots of debug info - useful for bug reports and really finding out what rclone is doing.</li>
+<li><strong>INFO</strong> is equivalent to <mark>-v</mark>. It outputs information about each transfer and prints stats once a minute by default.</li>
+<li><strong>NOTICE</strong> is the default log level if no logging flags are supplied. It outputs very little when things are working normally. It outputs warnings and significant events.</li>
+<li><strong>ERROR</strong> is equivalent to <code>-q</code>. It only outputs error messages.</li>
+</ol>
+</div>
 <h2 id="ls">ls<a class="headerlink" href="#ls" title="Permanent link">#</a></h2>
 <p><code>ls</code> 系列命令语义同 bash shell 中的 <code>ls</code>，拉取远端目录（fetch remote:path）并显示列表（list）。</p>
 <p><a href="https://rclone.org/commands/">Commands Index</a></p>
@@ -3422,6 +3475,35 @@
 </span><span id="__span-30-13"><a id="__codelineno-30-13" name="__codelineno-30-13"></a>mkdocs/
 </span><span id="__span-30-14"><a id="__codelineno-30-14" name="__codelineno-30-14"></a><span class="hll">rcdir/
 </span></span></code></pre></div></td></tr></table></div>
+<h2 id="convmv">convmv<a class="headerlink" href="#convmv" title="Permanent link">#</a></h2>
+<p><a href="https://rclone.org/commands/rclone_convmv/">rclone convmv</a>: Convert file and directory names in place.</p>
+<p>convmv supports advanced path name transformations for converting and renaming files and directories by applying prefixes, suffixes, and other alterations.</p>
+<blockquote>
+<p>The <code>--name-transform</code> flag is also available in <code>sync</code>, <code>copy</code>, and <code>move</code>.</p>
+</blockquote>
+<p>By default <code>--name-transform</code> will only apply to file names. The means only the leaf file name will be transformed. However some of the transforms would be better applied to the whole path or just directories. To choose which which part of the file path is affected some tags can be added to the <code>--name-transform</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Tag</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>file</code></td>
+<td>Only transform the leaf name of files (DEFAULT)</td>
+</tr>
+<tr>
+<td><code>dir</code></td>
+<td>Only transform name of directories - these may appear anywhere in the path</td>
+</tr>
+<tr>
+<td><code>all</code></td>
+<td>Transform the entire path for files and directories</td>
+</tr>
+</tbody>
+</table>
 <h2 id="copy">copy<a class="headerlink" href="#copy" title="Permanent link">#</a></h2>
 <p>基本语义同 bash shell 中的 <code>cp</code>，支持端到端的文件（夹）复制。</p>
 <table>
@@ -3458,6 +3540,22 @@
 <li>If the source is a directory then it acts exactly like the <a href="https://rclone.org/commands/rclone_copy/">copy</a> command.</li>
 </ol>
 <p><strong>copyurl</strong> = download from URL to local Temp dir, then copy to the specified <code>dst:path</code>.</p>
+<div class="admonition note">
+<p class="admonition-title">options/flags</p>
+<ol>
+<li>Use the <code>--dry-run</code> or the <code>--interactive</code>/<code>-i</code> flag to test without copying anything.</li>
+<li>Use the <code>-P</code>/<code>--progress</code> flag to view real-time transfer statistics.</li>
+<li>
+<p><code>-u</code>, <code>--update</code>: This forces rclone to skip any files which exist on the destination and have a modified time that is newer than the source file.</p>
+<ul>
+<li>Both the <code>copy</code> &amp; <code>copyto</code> commands doesn't transfer files that are identical on src and dst, testing by size and modification time or MD5SUM. Therefore, there is no need to add the <code>-u</code> option/flag for <code>copy</code> &amp; <code>copyto</code>.</li>
+</ul>
+</li>
+<li>
+<p><code>--name-transform</code> introduces path name transformations for <code>rclone copy</code>, <code>rclone sync</code>, and <code>rclone move</code>. These transformations enable modifications to source and destination file names by applying prefixes, suffixes, and other alterations during transfer operations. For detailed docs and examples, see <a href="https://rclone.org/commands/rclone_convmv/"><code>convmv</code></a>.</p>
+</li>
+</ol>
+</div>
 <h3 id="server-side_copy">server-side copy<a class="headerlink" href="#server-side_copy" title="Permanent link">#</a></h3>
 <p>server-side copy 复制文件夹：</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-31-1"><a id="__codelineno-31-1" name="__codelineno-31-1" href="#__codelineno-31-1"></a>$<span class="w"> </span>rclone<span class="w"> </span>copy<span class="w"> </span>-v<span class="w"> </span>webdav@rpi4b:rcdir<span class="w"> </span>webdav@rpi4b:rcdir1
@@ -3869,6 +3967,25 @@
 <p>所以，最好以一个为主（编辑），另一个为辅（备份）。这样，相当于将主盘增量同步到备份盘。此时，退化为单向 sync：</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-65-1"><a id="__codelineno-65-1" name="__codelineno-65-1" href="#__codelineno-65-1"></a>$<span class="w"> </span>rclone<span class="w"> </span>sync<span class="w"> </span>-v<span class="w"> </span>webdav@mbpa1398:<span class="w"> </span>webdav@rpi4b:
 </span></code></pre></div>
+<h2 id="mountserve">mount/serve<a class="headerlink" href="#mountserve" title="Permanent link">#</a></h2>
+<p><a href="https://rclone.org/commands/rclone_mount/">rclone mount</a> / <a href="https://rclone.org/commands/rclone_nfsmount/">rclone nfsmount</a>: Mount the remote as file system on a mountpoint.</p>
+<ul>
+<li>Rclone mount allows Linux, FreeBSD, macOS and Windows to mount any of Rclone's cloud storage systems as a file system with FUSE.</li>
+</ul>
+<p><a href="https://rclone.org/rc/">Remote Control / API</a> - <a href="https://rclone.org/gui/">GUI</a></p>
+<ul>
+<li><a href="https://rclone.org/commands/rclone_rcd/">rclone rcd</a>: Run rclone listening to remote control commands only. This runs rclone so that it only listens to remote control commands. This is useful if you are controlling rclone via the rc API.</li>
+</ul>
+<p><a href="https://rclone.org/commands/rclone_serve/">rclone serve</a>: Serve a remote over a protocol.</p>
+<ul>
+<li><a href="https://rclone.org/commands/rclone_serve_dlna/">rclone serve dlna</a> - Serve remote:path over DLNA</li>
+<li><a href="https://rclone.org/commands/rclone_serve_ftp/">rclone serve ftp</a> - Serve remote:path over FTP.</li>
+<li><a href="https://rclone.org/commands/rclone_serve_http/">rclone serve http</a> - Serve the remote over HTTP.</li>
+<li><a href="https://rclone.org/commands/rclone_serve_restic/">rclone serve restic</a> - Serve the remote for restic's REST API.</li>
+<li><a href="https://rclone.org/commands/rclone_serve_s3/">rclone serve s3</a> - Serve remote:path over s3.</li>
+<li><a href="https://rclone.org/commands/rclone_serve_sftp/">rclone serve sftp</a> - Serve the remote over SFTP.</li>
+<li><a href="https://rclone.org/commands/rclone_serve_webdav/">rclone serve webdav</a> - Serve remote:path over WebDAV.</li>
+</ul>
 <hr />
 <p>下一篇 《<a href="../cron-auto-rclone/">基于cron配置rclone自动同步任务</a>》将介绍如何使用 cron 配置 crontab 配置 rclone 定时自动同步任务。</p>
 <h2 id="references">references<a class="headerlink" href="#references" title="Permanent link">#</a></h2>

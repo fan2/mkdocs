@@ -4,7 +4,7 @@ authors:
   - xman
 date:
     created: 2024-03-18T15:30:00
-    updated: 2025-12-12T17:00:00
+    updated: 2026-05-15T21:00:00
 categories:
     - macOS
     - ubuntu
@@ -29,9 +29,19 @@ comments: true
 
 Rclone has powerful cloud equivalents to the unix commands `rsync`, `cp`, `mv`, `mount`, `ls`, `ncdu`, `tree`, `rm`, and `cat`. Rclone's familiar syntax includes shell pipeline support, and `--dry-run` protection. It is used at the command line, in scripts or via its API.
 
-Rclone mounts any local, cloud or virtual filesystem as a disk on Windows, macOS, linux and FreeBSD, and also serves these over SFTP, HTTP, WebDAV, FTP and DLNA.
+Rclone *mounts* any local, cloud or virtual filesystem as a disk on Windows, macOS, linux and FreeBSD, and also *serves* these over SFTP, HTTP, WebDAV, FTP and DLNA.
 
-Rclone is mature, open-source software originally inspired by rsync and written in [Go](https://golang.org/).
+Rclone is mature, open-source software originally inspired by [rsync](https://rsync.samba.org/) and written in [Go](https://golang.org/).
+
+!!! note "rsync vs. rclone"
+
+    `rsync` (Remote Sync)  和 `rclone`  (Rsync for Cloud) 都是非常强大的数据同步和备份工具，它们的核心区别在于目标存储的类型：`rsync` 专注于**本地和传统服务器**之间（通过 SSH）的数据传输，而 `rclone` 则被称为“云存储版的 rsync”，专注于**本地与各种网盘/对象存储**之间（通过云 API）的数据传输。
+
+    `rsync` 的核心定位是经典的 Linux 增量备份工具，基于增量/差异传输算法高效同步两台机器上的文件系统。`rclone` 的核心定位是云盘及对象存储管理大师，用于统一管理各种云存储和远程存储。
+
+    云对象存储的 API 模型是"整个对象读写"，没有随机写/补丁接口。所以 rclone 只能通过比较文件名+大小+修改时间（或哈希）来判断"这个文件要不要重新传"。
+
+    两者可互补：例如用 `rclone mount` 将云盘挂载到本地，再用 `rsync` 做精细增量同步；或通过 `rsync` + `rclone copy` 实现本地→云端的高效流水线。
 
 ## install
 
@@ -80,6 +90,8 @@ macOS 下使用包管理器 [brew](https://brew.sh/) 搜索安装 rclone；ubunt
     - go version: go1.18.1
     ```
 
+[rclone selfupdate](https://rclone.org/commands/rclone_selfupdate/) - Update the rclone binary.
+
 执行 `rclone config paths`、`rclone config show` 查看配置信息。
 
 ## docs
@@ -91,26 +103,10 @@ macOS 下使用包管理器 [brew](https://brew.sh/) 搜索安装 rclone；ubunt
 
 [Commands Index](https://rclone.org/commands/)
 
+- [Subcommands](https://rclone.org/docs/#subcommands): rclone uses a system of subcommands.
 - This is an index of all commands in rclone. Run `rclone command --help` to see the help for that command.
 
-[rclone mount](https://rclone.org/commands/rclone_mount/) / [nfsmount](https://rclone.org/commands/rclone_nfsmount/)
-
-[rclone serve](https://rclone.org/commands/rclone_serve/) - [webdav](https://rclone.org/commands/rclone_serve_webdav/)
-
-[Remote Control / API](https://rclone.org/rc/) - [GUI](https://rclone.org/gui/)
-
 [Usage](https://rclone.org/docs/): [Filtering](https://rclone.org/filtering/), [Flags](https://rclone.org/flags/)
-
-[--log-file=FILE](https://rclone.org/docs/#log-file-file) / [log-level-level](https://rclone.org/docs/#log-level-level)
-
-!!! note "--log-level LEVEL"
-
-    This sets the log level for rclone. The default log level is *NOTICE*.
-
-    1. **DEBUG** is equivalent to ==-vv==. It outputs lots of debug info - useful for bug reports and really finding out what rclone is doing.
-    2. **INFO** is equivalent to ==-v==. It outputs information about each transfer and prints stats once a minute by default.
-    3. **NOTICE** is the default log level if no logging flags are supplied. It outputs very little when things are working normally. It outputs warnings and significant events.
-    4. **ERROR** is equivalent to `-q`. It only outputs error messages.
 
 ## config
 
@@ -428,6 +424,33 @@ $ rclone size webdav@rpi4b:
 # use -q flag for a simpler output
 $ rclone test speed webdav@rpi4b: -q
 ```
+
+## options
+
+`-n`, `--dry-run`: Do a trial run with no permanent changes.
+
+- Use this to see what rclone would do without actually doing it. Useful when setting up the [sync](https://rclone.org/commands/rclone_sync/) command which deletes files in the destination.
+
+`-q`, `--quiet`: This flag will limit rclone's output to error messages only.
+
+`-P`, `--progress`: This flag makes rclone update the stats in a static block in the terminal providing a realtime overview of the transfer.
+
+- Any log messages will scroll above the static block. Log messages will push the static block down to the bottom of the terminal where it will stay. Normally this is updated every 500mS but this period can be overridden with the `--stats` flag.
+
+`-log-file string`: Log all of rclone's output to a file. If the file exists, then rclone will append to it.
+
+- This is not active by default. This can be useful for tracking down problems with syncs in combination with the `-v` flag. See the [logging](https://rclone.org/docs/#logging) section for more info.
+
+[--log-file=FILE](https://rclone.org/docs/#log-file-file) / [log-level-level](https://rclone.org/docs/#log-level-level)
+
+!!! note "--log-level LEVEL"
+
+    This sets the log level for rclone. The default log level is *NOTICE*.
+
+    1. **DEBUG** is equivalent to ==-vv==. It outputs lots of debug info - useful for bug reports and really finding out what rclone is doing.
+    2. **INFO** is equivalent to ==-v==. It outputs information about each transfer and prints stats once a minute by default.
+    3. **NOTICE** is the default log level if no logging flags are supplied. It outputs very little when things are working normally. It outputs warnings and significant events.
+    4. **ERROR** is equivalent to `-q`. It only outputs error messages.
 
 ## ls
 
@@ -965,6 +988,22 @@ mkdocs/
 rcdir/
 ```
 
+## convmv
+
+[rclone convmv](https://rclone.org/commands/rclone_convmv/): Convert file and directory names in place.
+
+convmv supports advanced path name transformations for converting and renaming files and directories by applying prefixes, suffixes, and other alterations.
+
+> The `--name-transform` flag is also available in `sync`, `copy`, and `move`.
+
+By default `--name-transform` will only apply to file names. The means only the leaf file name will be transformed. However some of the transforms would be better applied to the whole path or just directories. To choose which which part of the file path is affected some tags can be added to the `--name-transform`.
+
+Tag    | Effect
+-------|---------------------------------------------------------------------------
+`file` | Only transform the leaf name of files (DEFAULT)
+`dir`  | Only transform name of directories - these may appear anywhere in the path
+`all`  | Transform the entire path for files and directories
+
 ## copy
 
 基本语义同 bash shell 中的 `cp`，支持端到端的文件（夹）复制。
@@ -987,6 +1026,16 @@ rcdir/
 3. If the source is a directory then it acts exactly like the [copy](https://rclone.org/commands/rclone_copy/) command.
 
 **copyurl** = download from URL to local Temp dir, then copy to the specified `dst:path`.
+
+!!! note "options/flags"
+
+    1. Use the `--dry-run` or the `--interactive`/`-i` flag to test without copying anything.
+    2. Use the `-P`/`--progress` flag to view real-time transfer statistics.
+    3. `-u`, `--update`: This forces rclone to skip any files which exist on the destination and have a modified time that is newer than the source file.
+
+        - Both the `copy` & `copyto` commands doesn't transfer files that are identical on src and dst, testing by size and modification time or MD5SUM. Therefore, there is no need to add the `-u` option/flag for `copy` & `copyto`.
+
+    4. `--name-transform` introduces path name transformations for `rclone copy`, `rclone sync`, and `rclone move`. These transformations enable modifications to source and destination file names by applying prefixes, suffixes, and other alterations during transfer operations. For detailed docs and examples, see [`convmv`](https://rclone.org/commands/rclone_convmv/).
 
 ### server-side copy
 
@@ -1446,6 +1495,26 @@ $ rclone bisync -v webdav@mbpa1398: webdav@rpi4b:
 ```bash
 $ rclone sync -v webdav@mbpa1398: webdav@rpi4b:
 ```
+
+## mount/serve
+
+[rclone mount](https://rclone.org/commands/rclone_mount/) / [rclone nfsmount](https://rclone.org/commands/rclone_nfsmount/): Mount the remote as file system on a mountpoint.
+
+- Rclone mount allows Linux, FreeBSD, macOS and Windows to mount any of Rclone's cloud storage systems as a file system with FUSE.
+
+[Remote Control / API](https://rclone.org/rc/) - [GUI](https://rclone.org/gui/)
+
+- [rclone rcd](https://rclone.org/commands/rclone_rcd/): Run rclone listening to remote control commands only. This runs rclone so that it only listens to remote control commands. This is useful if you are controlling rclone via the rc API.
+
+[rclone serve](https://rclone.org/commands/rclone_serve/): Serve a remote over a protocol.
+
+-   [rclone serve dlna](https://rclone.org/commands/rclone_serve_dlna/) - Serve remote:path over DLNA
+-   [rclone serve ftp](https://rclone.org/commands/rclone_serve_ftp/) - Serve remote:path over FTP.
+-   [rclone serve http](https://rclone.org/commands/rclone_serve_http/) - Serve the remote over HTTP.
+-   [rclone serve restic](https://rclone.org/commands/rclone_serve_restic/) - Serve the remote for restic's REST API.
+-   [rclone serve s3](https://rclone.org/commands/rclone_serve_s3/) - Serve remote:path over s3.
+-   [rclone serve sftp](https://rclone.org/commands/rclone_serve_sftp/) - Serve the remote over SFTP.
+-   [rclone serve webdav](https://rclone.org/commands/rclone_serve_webdav/) - Serve remote:path over WebDAV.
 
 ---
 

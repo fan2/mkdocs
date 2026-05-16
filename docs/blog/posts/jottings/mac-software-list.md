@@ -280,3 +280,4 @@ Stickies.app: [Stickies User Guide for Mac](https://support.apple.com/en-hk/guid
 6. AI & Automation
 
     - [Page Assist - A Web UI for Local AI Models](https://chromewebstore.google.com/detail/jfgfiigpkhlkbnfnbobbkinehhfdhndo): Use your locally running AI models to assist you in your web browsing.
+    - [AI Compare - Multi-AI one-click compare & copy results](https://chromewebstore.google.com/detail/dkhpgbbhlnmjbkihoeniojpkggkabbbl): AI Compare helps you find the best answer from multiple AI quickly.
