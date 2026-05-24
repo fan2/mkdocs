@@ -271,6 +271,7 @@ Stickies.app: [Stickies User Guide for Mac](https://support.apple.com/en-hk/guid
     - [Allow Copy +](https://chromewebstore.google.com/detail/ajhbdcgfhlhhmocddefknjjkejcfpbnj): Allow copying. Remove copy protection.
     - [Archive.today automator](https://chromewebstore.google.com/detail/mmhadhnchpgicjlmlcdfaapkekknnkha) for [archive.today](https://archive.today/) / [archive.is](https://archive.is/)
     - [Bypass Paywalls Clean (BPC)](https://gitflic.ru/project/magnolia1234/bypass-paywalls-chrome-clean); [PaywallHub](https://chromewebstore.google.com/detail/iimagbhmhkinjaaammedekiocfphhhca); [bypass-paywalls](https://github.com/iamadamdev/bypass-paywalls-chrome/blob/master/README.md)
+    - [Data Scraper - AI Data Miner](https://chromewebstore.google.com/detail/nkkdeadncmkfpmoafagdoanfkipoogkl); [Instant Data Scraper](https://chromewebstore.google.com/detail/ofaokhiedipichpaobibbnahnkdoiiah) - Turn Any Website Into a Spreadsheet In a Second.
 
 5. Communication & Language
 

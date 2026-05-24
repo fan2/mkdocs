@@ -187,7 +187,7 @@ pi@raspberrypi:~ $ testPATH=${testPATH}:/usr/local/sbin
 [Shell判断字符串是否包含小结](https://blog.csdn.net/Primeprime/article/details/79625306)  
 [shell判断字符串包含关系](https://zhuanlan.zhihu.com/p/51708411)  
 
-### 利用 [[\ ]\] 通配
+### 利用 [[ \]\] 通配
 
 双方括号表达式 `[[ expression ]]` 提供了针对字符串比较的高级特性，它提供了test命令未提供的另一个特性——**模式匹配**（pattern matching）。
 
@@ -202,7 +202,7 @@ $ man bash
               Conditional operators such as -f must be unquoted to be recognized as primaries.
 ```
 
-在 [ohmyzsh/plugins/shell-proxy/](https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/shell-proxy) 中，使用双方括号进行判等 `=`。
+在 [ohmyzsh/plugins/shell-proxy/](https://github.com/ohmyzsh/ohmyzsh/tree/master/plugins/shell-proxy) 中，使用双方括号进行判等 `=` 或 `!=`。
 
 ```bash
 $ cat $HOME/.config/proxy
@@ -226,6 +226,7 @@ Demo 1: glob match username starting with `c`
 # using pattern matching
 #
 
+# negative: if [[ ! $USER == c* ]]
 if [[ $USER == c* ]]
 then
     echo "Hello $USER"
@@ -256,6 +257,8 @@ fi
 
 strA="helloworld"
 strB="low"
+
+# negative: if [[ ! $strA =~ $strB ]]
 if [[ $strA =~ $strB ]]
 then
     echo "包含"

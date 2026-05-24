@@ -452,7 +452,7 @@ $ rclone test speed webdav@rpi4b: -q
     3. **NOTICE** is the default log level if no logging flags are supplied. It outputs very little when things are working normally. It outputs warnings and significant events.
     4. **ERROR** is equivalent to `-q`. It only outputs error messages.
 
-## ls
+## traverse
 
 `ls` 系列命令语义同 bash shell 中的 `ls`，拉取远端目录（fetch remote:path）并显示列表（list）。
 
@@ -470,17 +470,21 @@ $ rclone test speed webdav@rpi4b: -q
 
 There are several related list commands:
 
-*   `ls` to list size and path of objects only（文件）
-*   `lsl` to list modification time, size and path of objects only（文件）
-*   `lsd` to list directories only（目录）
-*   `lsf` to list objects and directories in easy to parse format（目录+文件）
-*   `lsjson` to list objects and directories in JSON format（目录+文件）
+* `lsd` to list directories only（目录，非递归）
+* `lsf` to list objects and directories in easy to parse format（目录+文件，非递归）
+* `lsjson` to list objects and directories in JSON format（目录+文件，非递归）
+* `ls` to list size and path of objects only（文件，递归）
+* `lsl` to list modification time, size and path of objects only（文件，递归）
 
-`ls`,`lsl`,`lsd` are designed to be human-readable. `lsf` is designed to be human and machine-readable. `lsjson` is designed to be machine-readable.
+Classify by purposes:
 
-### lsd, lsf
+- `ls`,`lsl`,`lsd` are designed to be human-readable.
+- `lsf` is designed to be human and machine-readable.
+- `lsjson` is designed to be machine-readable.
 
-The other list commands `lsd`,`lsf`,`lsjson` do *not* recurse by default - use `-R` to make them recurse.
+### lsd, lsf, lsjson
+
+The other list commands `lsd`,`lsf`,`lsjson` do *not recurse* by default - use `-R` to make them recurse.
 
 `lsd` 命令显示指定路径（根目录）下的目录/容器/桶：
 
@@ -537,46 +541,13 @@ $ rclone lsjson webdav@rpi4b:
 ]
 ```
 
-除此之外，rclone 还提供了 `tree` 命令支持以树形递归显示目录结构：
-
-```bash
-# 递归展示整个云盘的树形目录结构
-$ rclone tree webdav@rpi4b:
-
-# -d, --dirs-only：只列举目录
-$ rclone tree -d webdav@rpi4b:
-```
-
 #### filter
 
-`tree` 命令以树形递归显示目录结构，支持使用 `--max-depth` 限制递归层级：
+Shared options of `lsf` & `lsjson`:
 
 ```bash
-# 等效于 rclone lsf 的树形展示（包括文件）
-$ rclone tree webdav@rpi4b: --max-depth 1
-/
-├── CS
-├── English_Docs
-├── The_Economist
-└── mkdocs
-
-0 directories, 0 files
-
-$ rclone tree webdav@rpi4b: --max-depth 2
-
-```
-
-`ls` / `lsl` 命令递归列举指定目录下的文件时，还可以使用 `--max-depth` 限制递归层级：
-
-```bash
-# 只列举显示根目录下的文件
-$ rclone lsl webdav@rpi4b: --max-depth 1
-
-# 列举显示根目录及子目录下的文件
-$ rclone lsl webdav@rpi4b: --max-depth 2
-
-# 列举显示根目录、子目录及孙子目录下的文件
-$ rclone lsl webdav@rpi4b: --max-depth 3
+      --dirs-only            Only list directories
+      --files-only           Only list files
 ```
 
 `lsf` 还可以使用 `--include`/`--exclude` 选项过滤显示/排除不显示指定目录。
@@ -589,6 +560,31 @@ $ rclone lsf webdav@rpi4b: --include "CS-*/"
 # 过滤不显示 CS-System 和 CS-Network 目录
 # $ rclone lsf webdav@rpi4b: --exclude "{CS-System/**,CS-Network/**}"
 $ rclone lsf webdav@rpi4b: --exclude "CS-{System, Network}/**"
+```
+
+`lsjson --stat`: Just return the info for the pointed to file.
+
+- We can determine whether it is a directory or not based on the `IsDir` field.
+
+```bash
+$ rclone lsjson --stat webdav@rpi4b:
+{
+	"Path": "",
+	"Name": "",
+	"Size": -1,
+	"MimeType": "inode/directory",
+	"ModTime": "2024-04-05T00:34:31.514123000+08:00",
+	"IsDir": true
+}
+
+$ rclone lsjson --stat cf_r2:icloud/AI-LLM | jq '.IsDir'
+true
+$ is_dir=$(rclone lsjson --stat cf_r2:icloud/AI-LLM | jq '.IsDir')
+if [ $is_dir = true ]; then
+    echo "remote_path is dir"
+else
+    echo "remote_path is file"
+fi
 ```
 
 ### ls, lsl
@@ -653,6 +649,19 @@ $ rclone lsl cf_r2:icloud/AI-LLM
 ```
 
 #### filter
+
+`ls` / `lsl` 命令递归列举指定目录下的文件时，可以使用 `--max-depth` 限制递归层级：
+
+```bash
+# 只列举显示根目录下的文件
+$ rclone lsl webdav@rpi4b: --max-depth 1
+
+# 列举显示根目录及子目录下的文件
+$ rclone lsl webdav@rpi4b: --max-depth 2
+
+# 列举显示根目录、子目录及孙子目录下的文件
+$ rclone lsl webdav@rpi4b: --max-depth 3
+```
 
 `ls` / `lsl` 命令还支持使用 `--include`/`--exclude` 选项过滤显示/排除不显示指定文件。
 
@@ -745,6 +754,83 @@ $ rclone lsl webdav@rpi4b: --max-size 1M
     - [How to specify what folders to sync and what to exclude -- include, exclude, filter?](https://forum.rclone.org/t/how-to-specify-what-folders-to-sync-and-what-to-exclude-include-exclude-filter/21821)
     - [Rclone copy using regex expression using include multiple expression for file name](https://forum.rclone.org/t/rclone-copy-using-regex-expression-using-include-multiple-expression-for-file-name/26846)
 
+### tree
+
+rclone 还提供了 `tree` 命令支持以树形递归显示目录结构：
+
+```bash
+# 递归展示整个云盘的树形目录结构
+$ rclone tree webdav@rpi4b:
+
+rclone tree cf_r2:icloud/AI-LLM
+/
+├── Dify-RAG
+│   ├── Dify-知识库+聊天机器人.png
+│   ├── Dify-知识库.png
+│   └── Dify-问题分类+知识库+聊天机器人.png
+├── Dify-RAG-Solution.md
+└── RAGFlow
+    ├── RAGFlow-Demo-创建知识库.png
+    ├── RAGFlow-Demo-模型提供商.png
+    ├── RAGFlow-Demo-知识库_kb1-新增文件.png
+    ├── RAGFlow-Local_Demo-Login.png
+    └── pipeline
+        └── RAGFlow.zip
+
+3 directories, 9 files
+```
+
+#### filter
+
+`tree` 命令以树形递归显示目录结构，支持使用 `--max-depth` 限制递归层级：
+
+```bash
+# 等效于 rclone lsf 的树形展示（包括文件）
+$ rclone tree webdav@rpi4b: --max-depth 1
+/
+├── CS
+├── English_Docs
+├── The_Economist
+└── mkdocs
+
+0 directories, 0 files
+
+$ rclone tree webdav@rpi4b: --max-depth 2
+```
+
+`-d` (`--dirs-only`)：只列举目录。
+
+```bash
+$ rclone tree -d cf_r2:icloud/AI-LLM
+/
+├── Dify-RAG
+└── RAGFlow
+    └── pipeline
+
+0 directories
+```
+
+`--dirsfirst`: List directories before files (-U disables)，优先展示目录。
+
+```bash
+$ rclone tree --dirsfirst cf_r2:icloud/AI-LLM
+/
+├── Dify-RAG
+│   ├── Dify-知识库+聊天机器人.png
+│   ├── Dify-知识库.png
+│   └── Dify-问题分类+知识库+聊天机器人.png
+├── RAGFlow
+│   ├── pipeline
+│   │   └── RAGFlow.zip
+│   ├── RAGFlow-Demo-创建知识库.png
+│   ├── RAGFlow-Demo-模型提供商.png
+│   ├── RAGFlow-Demo-知识库_kb1-新增文件.png
+│   └── RAGFlow-Local_Demo-Login.png
+└── Dify-RAG-Solution.md
+
+3 directories, 9 files
+```
+
 ## cat
 
 语义同 bash shell 中的 `cat`，在终端显示 remote 云盘中的文件内容。
@@ -787,7 +873,7 @@ rclone cat remote:path/to/dir
 
 ??? note "rclone-link.sh"
 
-    ```bash linenums="1" hl_lines="49 127 138 150"
+    ```bash linenums="1" hl_lines="49 127 138 164"
     #!/usr/bin/env bash
 
     ################################################################################
@@ -929,6 +1015,7 @@ rclone cat remote:path/to/dir
                     full_path=$1/$name
                     # custom_link=$(r2_gen_link "$full_path" "$domain" "$bucket")
 
+                    # remote:bucket/ 后的相对路径
                     relative_path=${full_path#"$rb"/}
                     custom_link=$(r2_cat_link "$relative_path")
 
@@ -937,10 +1024,22 @@ rclone cat remote:path/to/dir
                     echo -e "\033[32m$custom_link\033[0m"
                 done
             elif [ "$length" -eq 1 ]; then
-                rclone lsjson "$1" | jq '.[0]'
-                # custom_link=$(r2_gen_link "$1" "$domain" "$bucket")
-
+                # remote:bucket/ 后的相对路径
                 relative_path=${1#"$rb"/}
+
+                # 对单文件目录进行特殊处理
+                is_dir=$(rclone lsjson --stat "$1" | jq '.IsDir')
+                if [ "$is_dir" = true ]; then
+                    echo -e "\033[1m$1\033[0m: \033[1;32mis dir\033[0m"
+                    file_name=$(rclone lsjson "$1" | jq -r '.[0].Name')
+                    # remove the trailing /, concat file name
+                    relative_path="${relative_path:+${relative_path%/}/}$file_name"
+                fi
+
+                # 列举单文件属性
+                rclone lsjson "$1" | jq '.[0]'
+
+                # custom_link=$(r2_gen_link "$1" "$domain" "$bucket")
                 custom_link=$(r2_cat_link "$relative_path")
 
                 # 高亮输出链接
