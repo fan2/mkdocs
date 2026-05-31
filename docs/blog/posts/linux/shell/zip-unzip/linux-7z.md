@@ -4,7 +4,7 @@ authors:
   - xman
 date:
     created: 2019-10-30T10:20:00
-    updated: 2026-04-26T21:30:00
+    updated: 2026-05-30T14:30:00
 categories:
     - wiki
     - linux
@@ -17,9 +17,9 @@ linux 下的 压缩/解压缩 命令 —— 7z。
 
 <!-- more -->
 
-
 [7-Zip](https://www.7-zip.org/): p7zip@[github](https://github.com/p7zip-project/p7zip), P7ZIP@[sourceforge](http://p7zip.sourceforge.net/)  
 
+- [7-Zip Documentation](https://documentation.help/7-Zip/)
 - [7z命令行下的最快压缩和解压缩说明](https://blog.csdn.net/weekdawn/article/details/81039364)  
 - [用命令行的方式来执行7z压缩和解压缩](https://blog.csdn.net/oilcode/article/details/50063425)  
 
@@ -111,12 +111,52 @@ FUNCTION LETTERS
 
 SWITCHES
 
+       -o{Directory}
+              Set Output directory
+
+       -p{Password}
+              Set Password
+
+       -r[-|0]
+              Recurse subdirectories (CAUTION: this flag does not do what you think, avoid using it)
+
+       -si    Read data from StdIn (eg: tar cf - directory | 7z a -si directory.tar.7z)
+
+       -so    Write data to StdOut (eg: % echo foo | 7z a dummy -tgzip -si -so > /dev/null)
+
        -t{Type}
               Type of archive (7z, zip, gzip, bzip2 or tar. 7z format is default)
+
+       -v{Size}[b|k|m|g]
+              Create volumes
+
+       -u[-][p#][q#][r#][x#][y#][z#][!newArchiveName]
+              Update options
+
+       -w[path]
+              Set Working directory
+
+       -x[r[-|0]]]{@listfile|!wildcard}
+              Exclude filenames
 
 SEE ALSO
        7za(1), 7zr(1), bzip2(1), gzip(1), zip(1)
 ```
+
+### LIMITATIONS
+
+DO NOT USE the 7-zip format for backup purpose on Linux/Unix because :
+
+- 7-zip *does not* store the owner/group of the file.
+
+On Linux/Unix, in order to backup directories you must use `tar` :
+
+- to backup a directory  : `tar cf - directory | 7za a -si directory.tar.7z`
+- to restore your backup : `7za x -so directory.tar.7z | tar xf -`
+
+If you want to send files and directories (not the owner of file) to others Unix/MacOS/Windows users, you can use the 7-zip format.
+
+- example : `7za a directory.7z directory`
 
 ## demo
 

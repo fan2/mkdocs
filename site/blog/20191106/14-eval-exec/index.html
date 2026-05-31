@@ -12,13 +12,13 @@
         <meta name="author" content="Cliff Fan">
       
       
-        <link rel="canonical" href="https://duetorun.com/blog/20191106/13-read-by-line/">
+        <link rel="canonical" href="https://duetorun.com/blog/20191106/14-eval-exec/">
       
       
-        <link rel="prev" href="../12-get-ostype/">
+        <link rel="prev" href="../13-read-by-line/">
       
       
-        <link rel="next" href="../14-eval-exec/">
+        <link rel="next" href="../15-sh-daemon1/">
       
       
         
@@ -29,7 +29,7 @@
     
     
       
-        <title>Linux Shell Program - read by line - ElseWhere</title>
+        <title>Linux Shell Program - eval & exec - ElseWhere</title>
       
     
     
@@ -94,7 +94,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#awk" class="md-skip">
+        <a href="#eval_动态命令构造器" class="md-skip">
           Skip to content
         </a>
       
@@ -127,7 +127,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Linux Shell Program - read by line
+              Linux Shell Program - eval & exec
             
           </span>
         </div>
@@ -1602,33 +1602,44 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#awk" class="md-nav__link">
+  <a href="#eval_动态命令构造器" class="md-nav__link">
     <span class="md-ellipsis">
       
-        awk
+        eval: 动态命令构造器
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="eval: 动态命令构造器">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#动态变量赋值" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        动态变量赋值
       
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#array" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#执行包含特殊字符的命令" class="md-nav__link">
     <span class="md-ellipsis">
       
-        array
+        执行包含特殊字符的命令
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="array">
-      <ul class="md-nav__list">
+</li>
         
           <li class="md-nav__item">
-  <a href="#ifs" class="md-nav__link">
+  <a href="#从配置文件动态设置变量" class="md-nav__link">
     <span class="md-ellipsis">
       
-        IFS
+        从配置文件动态设置变量
       
     </span>
   </a>
@@ -1641,10 +1652,60 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#while" class="md-nav__link">
+  <a href="#exec_进程替换与重定向专家" class="md-nav__link">
     <span class="md-ellipsis">
       
-        while
+        exec: 进程替换与重定向专家
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="exec: 进程替换与重定向专家">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#在脚本中启动最终程序" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        在脚本中启动最终程序
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#永久重定向文件描述符" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        永久重定向文件描述符
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#切换_shell_环境" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        切换 Shell 环境
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#eval_vs_exec" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        eval vs. exec
       
     </span>
   </a>
@@ -1707,14 +1768,14 @@
                     <li class="md-nav__item">
                       <div class="md-nav__link">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 19H5V8h14m-3-7v2H8V1H6v2H5c-1.11 0-2 .89-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-1V1m-1 11h-5v5h5z"/></svg>
-                        <time datetime="2019-11-06 10:40:00+00:00" class="md-ellipsis">Nov 6, 2019</time>
+                        <time datetime="2019-11-06 10:50:00+00:00" class="md-ellipsis">Nov 6, 2019</time>
                       </div>
                     </li>
                     
                       <li class="md-nav__item">
                         <div class="md-nav__link">
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15 13h1.5v2.82l2.44 1.41-.75 1.3L15 16.69zm4-5H5v11h4.67c-.43-.91-.67-1.93-.67-3a7 7 0 0 1 7-7c1.07 0 2.09.24 3 .67zM5 21a2 2 0 0 1-2-2V5c0-1.11.89-2 2-2h1V1h2v2h8V1h2v2h1a2 2 0 0 1 2 2v6.1c1.24 1.26 2 2.99 2 4.9a7 7 0 0 1-7 7c-1.91 0-3.64-.76-4.9-2zm11-9.85A4.85 4.85 0 0 0 11.15 16c0 2.68 2.17 4.85 4.85 4.85A4.85 4.85 0 0 0 20.85 16c0-2.68-2.17-4.85-4.85-4.85"/></svg>
-                          <time datetime="2026-05-06 21:00:00+00:00" class="md-ellipsis">May 6, 2026</time>
+                          <time datetime="2026-01-22 18:50:00+00:00" class="md-ellipsis">Jan 22, 2026</time>
                         </div>
                       </li>
                     
@@ -1737,7 +1798,7 @@
                           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 20a8 8 0 0 0 8-8 8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8m0-18a10 10 0 0 1 10 10 10 10 0 0 1-10 10C6.47 22 2 17.5 2 12A10 10 0 0 1 12 2m.5 5v5.25l4.5 2.67-.75 1.23L11 13V7z"/></svg>
                           <span class="md-ellipsis">
                             
-                              2 min read
+                              3 min read
                             
                           </span>
                         </div>
@@ -1770,132 +1831,168 @@
 
 
 
-  <h1>Linux Shell Program - read by line</h1>
+  <h1>Linux Shell Program - eval & exec</h1>
 
-<p>Linux 下的 Shell 编程之逐行读取方式。</p>
+<p>Linux 下的 Shell 编程之执行 eval &amp; exec。</p>
 <!-- more -->
 
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>$<span class="w"> </span>cat<span class="w"> </span>data2.txt
-</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>One<span class="w"> </span>line<span class="w"> </span>of<span class="w"> </span><span class="nb">test</span><span class="w"> </span>text.
-</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>Two<span class="w"> </span>lines<span class="w"> </span>of<span class="w"> </span><span class="nb">test</span><span class="w"> </span>text.
-</span><span id="__span-0-4"><a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>Three<span class="w"> </span>lines<span class="w"> </span>of<span class="w"> </span><span class="nb">test</span><span class="w"> </span>text.
+<p>参考 man bash - SHELL BUILTIN COMMANDS.</p>
+<h2 id="eval_动态命令构造器">eval: 动态命令构造器<a class="headerlink" href="#eval_动态命令构造器" title="Permanent link">#</a></h2>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nb">eval</span><span class="w"> </span><span class="o">[</span>arg<span class="w"> </span>...<span class="o">]</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>The<span class="w"> </span>args<span class="w"> </span>are<span class="w"> </span><span class="nb">read</span><span class="w"> </span>and<span class="w"> </span>concatenated<span class="w"> </span>together<span class="w"> </span>into<span class="w"> </span>a<span class="w"> </span>single<span class="w"> </span>command.<span class="w"> </span>This<span class="w"> </span><span class="nb">command</span><span class="w"> </span>is<span class="w"> </span><span class="k">then</span><span class="w"> </span><span class="nb">read</span><span class="w"> </span>and<span class="w"> </span>executed<span class="w"> </span>by<span class="w"> </span>the<span class="w"> </span>shell,<span class="w"> </span>and<span class="w"> </span>its<span class="w"> </span><span class="nb">exit</span><span class="w"> </span>status<span class="w"> </span>is<span class="w"> </span>returned<span class="w"> </span>as<span class="w"> </span>the<span class="w"> </span>value<span class="w"> </span>of<span class="w"> </span>eval.<span class="w"> </span>If<span class="w"> </span>there<span class="w"> </span>are<span class="w"> </span>no<span class="w"> </span>args,<span class="w"> </span>or<span class="w"> </span>only<span class="w"> </span>null<span class="w"> </span>arguments,<span class="w"> </span><span class="nb">eval</span><span class="w"> </span>returns<span class="w"> </span><span class="m">0</span>.
 </span></code></pre></div>
-<h2 id="awk">awk<a class="headerlink" href="#awk" title="Permanent link">#</a></h2>
-<p>awk 默认对数据流逐行读取分析，每一行即为一条记录（Record），然后针对每条记录执行动作。</p>
-<p>记录之间的分隔符可用 <code>RS</code> 配置，记录内部的字段分隔符可用 <code>FS</code> 指定。</p>
-<p>以下为最简单的逐行处理，打印每行（<code>print $0</code>）。</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># 可简写为 awk 1 data2.txt</span>
-</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>$<span class="w"> </span>awk<span class="w"> </span><span class="s1">&#39;1{print}&#39;</span><span class="w"> </span>data2.txt
-</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>One<span class="w"> </span>line<span class="w"> </span>of<span class="w"> </span><span class="nb">test</span><span class="w"> </span>text.
-</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>Two<span class="w"> </span>lines<span class="w"> </span>of<span class="w"> </span><span class="nb">test</span><span class="w"> </span>text.
-</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>Three<span class="w"> </span>lines<span class="w"> </span>of<span class="w"> </span><span class="nb">test</span><span class="w"> </span>text.
+<p><code>eval</code> 命令会执行两步操作：首先进行变量替换等操作，然后将结果作为一个完整的命令交给 Shell 执行。这个“二次解析”的特性，让它非常适合处理动态生成的命令。</p>
+<h3 id="动态变量赋值">动态变量赋值<a class="headerlink" href="#动态变量赋值" title="Permanent link">#</a></h3>
+<p>当变量名本身也是变量时（间接引用），<code>eval</code> 就派上用场了。</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># 假设变量名是动态生成的</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="nv">var_name</span><span class="o">=</span><span class="s2">&quot;username&quot;</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="nv">value</span><span class="o">=</span><span class="s2">&quot;alice&quot;</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="c1"># 使用 eval 实现 username=&quot;alice&quot;</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="nb">eval</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$var_name</span><span class="s2">=\$value&quot;</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="nb">echo</span><span class="w"> </span><span class="nv">$username</span>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="c1"># 输出：alice</span>
 </span></code></pre></div>
-<p>可在中括号中替换 <code>print</code>，针对每行执行更多的其他操作。</p>
-<h2 id="array">array<a class="headerlink" href="#array" title="Permanent link">#</a></h2>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>$<span class="w"> </span><span class="nv">array</span><span class="o">=(</span><span class="k">$(</span>cat<span class="w"> </span>data2.txt<span class="k">)</span><span class="o">)</span>
-</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>$<span class="w"> </span><span class="nv">array</span><span class="o">=(</span><span class="k">$(</span>awk<span class="w"> </span><span class="m">1</span><span class="w"> </span>data2.txt<span class="k">)</span><span class="o">)</span>
+<h3 id="执行包含特殊字符的命令">执行包含特殊字符的命令<a class="headerlink" href="#执行包含特殊字符的命令" title="Permanent link">#</a></h3>
+<p>如果文件路径字符串变量中包含波浪线 <code>~</code> ，当读取文件路径时可能未展开替换导致报错，但是使用 <code>eval</code> 可以二次解析。</p>
+<p>以下是正常的赋值，不带引号时波浪线 <code>~</code> 会展开替换为家目录（$HOME）的值：</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># expands the tilde to $HOME/.zshrc before storing it</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>$<span class="w"> </span><span class="nv">conf</span><span class="o">=</span>~/.zshrc
+</span><span id="__span-2-3"><a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="c1"># will work correctly</span>
+</span><span id="__span-2-4"><a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>$<span class="w"> </span><span class="nb">source</span><span class="w"> </span><span class="nv">$conf</span>
 </span></code></pre></div>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>$<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="nv">$array</span>
-</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>One<span class="w"> </span>line<span class="w"> </span>of<span class="w"> </span><span class="nb">test</span><span class="w"> </span>text.<span class="w"> </span>Two<span class="w"> </span>lines<span class="w"> </span>of<span class="w"> </span><span class="nb">test</span><span class="w"> </span>text.<span class="w"> </span>Three<span class="w"> </span>lines<span class="w"> </span>of<span class="w"> </span><span class="nb">test</span><span class="w"> </span>text.
-</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>$<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="si">${#</span><span class="nv">array</span><span class="p">[*]</span><span class="si">}</span>
-</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="m">15</span>
+<p>如果使用引号将波浪线表达式封起，则无法应用展开(tilde expansion)，导致报错：</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1"># Single quotes prevent tilde expansion, it&#39;s stored as a literal string</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>$<span class="w"> </span><span class="nv">conf</span><span class="o">=</span><span class="s1">&#39;~/.zshrc&#39;</span>
+</span><span id="__span-3-3"><a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="c1"># source doesn&#39;t perform tilde expansion</span>
+</span><span id="__span-3-4"><a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>$<span class="w"> </span><span class="nb">source</span><span class="w"> </span><span class="nv">$conf</span>
+</span><span id="__span-3-5"><a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>source:<span class="w"> </span>no<span class="w"> </span>such<span class="w"> </span>file<span class="w"> </span>or<span class="w"> </span>directory:<span class="w"> </span>~/.zshrc
 </span></code></pre></div>
-<h3 id="ifs">IFS<a class="headerlink" href="#ifs" title="Permanent link">#</a></h3>
-<p>以上示例中，从 data2.txt 中读入数据到 array 数组，但是数组长度不是3，而是15！</p>
-<p>造成这个问题的原因是特殊的环境变量 <code>IFS</code>（Internal Field Separator），叫作内部字段分隔符。  </p>
-<p>环境变量 IFS 定义了 bash shell 用作字段分隔符的一系列字符，默认情况下，bash shell 会将下列字符当作字段分隔符：</p>
+<p>如果改成 <code>eval "source $conf"</code> 则成功执行，因为 <code>eval</code> 使得命令被重新解析了两次，这样波浪号展开就能生效。</p>
+<ol>
+<li>
+<p>source $conf - 直接执行时：</p>
 <ul>
-<li>空格  </li>
-<li>制表符  </li>
-<li>换行符  </li>
+<li>Shell 先进行变量展开：<code>$conf</code> → <code>~/.zshrc</code></li>
+<li>然后执行 <code>source ~/.zshrc</code>，但此时 <code>~</code> 已经是字面字符串，不会被展开</li>
 </ul>
-<p>在 man bash 的 PARAMETERS 章节中有对 IFS 的定义和说明：</p>
-<blockquote>
-<p><strong>IFS</strong> The Internal Field Separator that is used for word splitting after expansion and to split lines into words with the read builtin command. The default value is <code>&lt;space&gt;&lt;tab&gt;&lt;newline&gt;</code>.</p>
-</blockquote>
-<p>如果 bash shell 在数据中看到了这些字符中的任意一个，它就会假定这表明了列表中一个新数据字段的开始。</p>
-<p>命令行执行 <code>"$IFS"</code> 会提示非命令，看到 IFS 的值。</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>$<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$IFS</span><span class="s2">&quot;</span>
-</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>zsh:<span class="w"> </span><span class="nb">command</span><span class="w"> </span>not<span class="w"> </span>found:<span class="w">  </span><span class="se">\t\n</span>
+</li>
+<li>
+<p>eval "source $conf" - 使用 eval 时：</p>
+<ul>
+<li>第一次解析：<code>$conf</code> → <code>~/.zshrc</code>，命令变成字符串 <code>source ~/.zshrc</code></li>
+<li><code>eval</code> 将这个字符串作为新命令再次解析执行时，先将 <code>~</code> 展开解析为 <code>/Users/faner</code> 再执行命令</li>
+</ul>
+</li>
+</ol>
+<p>简单来说，<code>eval</code> 触发了额外一轮 shell 解析，让波浪号展开得以执行。这是因为波浪号展开发生在 shell 解析阶段，而变量展开之后的字符串不会再次触发波浪号展开——除非用 <code>eval</code> 重新解析。</p>
+<hr />
+<p>如果命令存储在变量中且包含管道、重定向等符号，直接执行变量会出错，而 <code>eval</code> 可以正确解析。</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># 一个包含管道的复杂命令</span>
+</span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="nv">cmd</span><span class="o">=</span><span class="s2">&quot;ls -l | grep &#39;\.txt</span>$<span class="s2">&#39;&quot;</span>
+</span><span id="__span-4-3"><a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="c1"># 直接执行 $cmd 会失败，因为管道符不会被解析</span>
+</span><span id="__span-4-4"><a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="c1"># 使用 eval 则可以正确执行</span>
+</span><span id="__span-4-5"><a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="nb">eval</span><span class="w"> </span><span class="nv">$cmd</span>
 </span></code></pre></div>
-<p>data2.txt 中有3行，但是每一行单词之间以空格分割，导致for循环读取了15个单词，而非三行。<br />
-若想按行读入数组，可临时更改环境变量 IFS 的值，执行前保存旧值，执行后恢复。</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>$<span class="w"> </span><span class="nv">OLDIFS</span><span class="o">=</span><span class="nv">$IFS</span>
-</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>$<span class="w"> </span><span class="nv">IFS</span><span class="o">=</span><span class="s1">$&#39;\n&#39;</span>
-</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>$<span class="w"> </span><span class="nv">array</span><span class="o">=(</span><span class="k">$(</span>cat<span class="w"> </span>data2.txt<span class="k">)</span><span class="o">)</span>
-</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a>$<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="si">${#</span><span class="nv">array</span><span class="p">[@]</span><span class="si">}</span>
-</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="m">3</span>
-</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a>
-</span><span id="__span-5-7"><a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a>$<span class="w"> </span><span class="k">for</span><span class="w"> </span>line<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="si">${</span><span class="nv">array</span><span class="p">[@]</span><span class="si">}</span><span class="p">;</span><span class="w"> </span><span class="k">do</span>
-</span><span id="__span-5-8"><a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a>$<span class="w"> </span><span class="k">for</span>&gt;<span class="w"> </span><span class="nb">echo</span><span class="w"> </span><span class="nv">$line</span>
-</span><span id="__span-5-9"><a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a>$<span class="w"> </span><span class="k">for</span>&gt;<span class="w"> </span><span class="k">done</span>
-</span><span id="__span-5-10"><a id="__codelineno-5-10" name="__codelineno-5-10" href="#__codelineno-5-10"></a>One<span class="w"> </span>line<span class="w"> </span>of<span class="w"> </span><span class="nb">test</span><span class="w"> </span>text.
-</span><span id="__span-5-11"><a id="__codelineno-5-11" name="__codelineno-5-11" href="#__codelineno-5-11"></a>Two<span class="w"> </span>lines<span class="w"> </span>of<span class="w"> </span><span class="nb">test</span><span class="w"> </span>text.
-</span><span id="__span-5-12"><a id="__codelineno-5-12" name="__codelineno-5-12" href="#__codelineno-5-12"></a>Three<span class="w"> </span>lines<span class="w"> </span>of<span class="w"> </span><span class="nb">test</span><span class="w"> </span>text.
-</span><span id="__span-5-13"><a id="__codelineno-5-13" name="__codelineno-5-13" href="#__codelineno-5-13"></a>
-</span><span id="__span-5-14"><a id="__codelineno-5-14" name="__codelineno-5-14" href="#__codelineno-5-14"></a>$<span class="w"> </span><span class="nv">IFS</span><span class="o">=</span><span class="nv">$OLDIFS</span><span class="w"> </span><span class="c1"># restore</span>
+<h3 id="从配置文件动态设置变量">从配置文件动态设置变量<a class="headerlink" href="#从配置文件动态设置变量" title="Permanent link">#</a></h3>
+<p>结合循环，可以优雅地从配置文件中读取并设置变量。</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1"># 假设 file 内容为：NAME Zhang AGE 20</span>
+</span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="k">while</span><span class="w"> </span><span class="nb">read</span><span class="w"> </span>KEY<span class="w"> </span>VALUE<span class="p">;</span><span class="w"> </span><span class="k">do</span>
+</span><span id="__span-5-3"><a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">    </span><span class="nb">eval</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$KEY</span><span class="s2">=\&quot;</span><span class="nv">$VALUE</span><span class="s2">\&quot;&quot;</span>
+</span><span id="__span-5-4"><a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="k">done</span><span class="w"> </span>&lt;<span class="w"> </span>file
+</span><span id="__span-5-5"><a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="nv">$NAME</span><span class="s2"> is </span><span class="nv">$AGE</span><span class="s2"> years old.&quot;</span>
+</span><span id="__span-5-6"><a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="c1"># 输出：Zhang is 20 years old.</span>
 </span></code></pre></div>
-<p>以下为在脚本中逐行读取，并附带打印行号：</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="ch">#!/bin/bash</span>
+<p><strong>安全警告</strong>：<code>eval</code> 会执行任意字符串，如果内容来自不可信的用户输入，可能带来严重安全风险（如命令注入），务必谨慎使用！</p>
+<h2 id="exec_进程替换与重定向专家">exec: 进程替换与重定向专家<a class="headerlink" href="#exec_进程替换与重定向专家" title="Permanent link">#</a></h2>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="nb">exec</span><span class="w"> </span><span class="o">[</span>−cl<span class="o">]</span><span class="w"> </span><span class="o">[</span>−a<span class="w"> </span>name<span class="o">]</span><span class="w"> </span><span class="o">[</span><span class="nb">command</span><span class="w"> </span><span class="o">[</span>arguments<span class="o">]]</span>
 </span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>
-</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="nv">filename</span><span class="o">=</span><span class="nv">$1</span>
-</span><span id="__span-6-4"><a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>
-</span><span id="__span-6-5"><a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a><span class="nv">OLDIFS</span><span class="o">=</span><span class="nv">$IFS</span>
-</span><span id="__span-6-6"><a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a><span class="nv">IFS</span><span class="o">=</span><span class="s1">$&#39;\n&#39;</span>
-</span><span id="__span-6-7"><a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="nv">i</span><span class="o">=</span><span class="m">0</span>
-</span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>
-</span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a><span class="k">for</span><span class="w"> </span>line<span class="w"> </span><span class="k">in</span><span class="w"> </span><span class="sb">`</span>cat<span class="w"> </span><span class="nv">$filename</span><span class="sb">`</span><span class="p">;</span><span class="w"> </span><span class="k">do</span>
-</span><span id="__span-6-10"><a id="__codelineno-6-10" name="__codelineno-6-10" href="#__codelineno-6-10"></a><span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;</span><span class="k">$((</span><span class="nv">i</span><span class="o">++</span><span class="k">))</span><span class="s2"> : </span><span class="nv">$line</span><span class="s2">&quot;</span><span class="w"> </span>
-</span><span id="__span-6-11"><a id="__codelineno-6-11" name="__codelineno-6-11" href="#__codelineno-6-11"></a><span class="k">done</span>
-</span><span id="__span-6-12"><a id="__codelineno-6-12" name="__codelineno-6-12" href="#__codelineno-6-12"></a>
-</span><span id="__span-6-13"><a id="__codelineno-6-13" name="__codelineno-6-13" href="#__codelineno-6-13"></a><span class="nv">IFS</span><span class="o">=</span><span class="nv">$OLDIFS</span><span class="w"> </span><span class="c1"># restore</span>
-</span><span id="__span-6-14"><a id="__codelineno-6-14" name="__codelineno-6-14" href="#__codelineno-6-14"></a>
-</span><span id="__span-6-15"><a id="__codelineno-6-15" name="__codelineno-6-15" href="#__codelineno-6-15"></a><span class="nb">exit</span><span class="w"> </span><span class="m">0</span>
+</span><span id="__span-6-3"><a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>If<span class="w"> </span><span class="nb">command</span><span class="w"> </span>is<span class="w"> </span>specied,<span class="w"> </span>it<span class="w"> </span>replaces<span class="w"> </span>the<span class="w"> </span>shell.<span class="w"> </span>No<span class="w"> </span>new<span class="w"> </span>process<span class="w"> </span>is<span class="w"> </span>created.<span class="w"> </span>The<span class="w"> </span>arguments<span class="w"> </span>become<span class="w"> </span>the<span class="w"> </span>arguments<span class="w"> </span>to<span class="w"> </span>command.<span class="w"> </span>If<span class="w"> </span>the<span class="w"> </span>−l<span class="w"> </span>option<span class="w"> </span>is<span class="w"> </span>supplied,<span class="w"> </span>the<span class="w"> </span>shell<span class="w"> </span>places<span class="w"> </span>a<span class="w"> </span>dash<span class="w"> </span>at<span class="w"> </span>the<span class="w"> </span>beginning<span class="w"> </span>of<span class="w"> </span>the<span class="w"> </span>zeroth<span class="w"> </span>arg<span class="w"> </span>passed<span class="w"> </span>to<span class="w"> </span>command.<span class="w"> </span>This<span class="w"> </span>is<span class="w"> </span>what<span class="w"> </span>login<span class="o">(</span><span class="m">1</span><span class="o">)</span><span class="w"> </span>does.<span class="w"> </span>The<span class="w"> </span>−c<span class="w"> </span>option<span class="w"> </span>causes<span class="w"> </span><span class="nb">command</span><span class="w"> </span>to<span class="w"> </span>be<span class="w"> </span>executed<span class="w"> </span>with<span class="w"> </span>an<span class="w"> </span>empty<span class="w"> </span>environment.<span class="w"> </span>If<span class="w"> </span>−a<span class="w"> </span>is<span class="w"> </span>supplied,<span class="w"> </span>the<span class="w"> </span>shell<span class="w"> </span>passes<span class="w"> </span>name<span class="w"> </span>as<span class="w"> </span>the<span class="w"> </span>zeroth<span class="w"> </span>argument<span class="w"> </span>to<span class="w"> </span>the<span class="w"> </span>executed<span class="w"> </span>command.<span class="w"> </span>If<span class="w"> </span><span class="nb">command</span><span class="w"> </span>cannot<span class="w"> </span>be<span class="w"> </span>executed<span class="w"> </span><span class="k">for</span><span class="w"> </span>some<span class="w"> </span>reason,<span class="w"> </span>a<span class="w"> </span>non-interactive<span class="w"> </span>shell<span class="w"> </span>exits,<span class="w"> </span>unless<span class="w"> </span>the<span class="w"> </span>shell<span class="w"> </span>option<span class="w"> </span>execfail<span class="w"> </span>is<span class="w"> </span>enabled,<span class="w"> </span><span class="k">in</span><span class="w"> </span>which<span class="w"> </span><span class="k">case</span><span class="w"> </span>it<span class="w"> </span>returns<span class="w"> </span>failure.<span class="w"> </span>An<span class="w"> </span>interactive<span class="w"> </span>shell<span class="w"> </span>returns<span class="w"> </span>failure<span class="w"> </span><span class="k">if</span><span class="w"> </span>the<span class="w"> </span>ﬁle<span class="w"> </span>cannot<span class="w"> </span>be<span class="w"> </span>executed.<span class="w"> </span>If<span class="w"> </span><span class="nb">command</span><span class="w"> </span>is<span class="w"> </span>not<span class="w"> </span>speciﬁed,<span class="w"> </span>any<span class="w"> </span>redirections<span class="w"> </span>take<span class="w"> </span>effect<span class="w"> </span><span class="k">in</span><span class="w"> </span>the<span class="w"> </span>current<span class="w"> </span>shell,<span class="w"> </span>and<span class="w"> </span>the<span class="w"> </span><span class="k">return</span><span class="w"> </span>status<span class="w"> </span>is<span class="w"> </span><span class="m">0</span>.<span class="w"> </span>If<span class="w"> </span>there<span class="w"> </span>is<span class="w"> </span>a<span class="w"> </span>redirection<span class="w"> </span>error,<span class="w"> </span>the<span class="w"> </span><span class="k">return</span><span class="w"> </span>status<span class="w"> </span>is<span class="w"> </span><span class="m">1</span>.
 </span></code></pre></div>
-<p>执行结果如下：</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>$<span class="w"> </span>./dumpFileLines.sh<span class="w"> </span>data2.txt
-</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="m">0</span><span class="w"> </span>:<span class="w"> </span>One<span class="w"> </span>line<span class="w"> </span>of<span class="w"> </span><span class="nb">test</span><span class="w"> </span>text.
-</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="m">1</span><span class="w"> </span>:<span class="w"> </span>Two<span class="w"> </span>lines<span class="w"> </span>of<span class="w"> </span><span class="nb">test</span><span class="w"> </span>text.
-</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="m">2</span><span class="w"> </span>:<span class="w"> </span>Three<span class="w"> </span>lines<span class="w"> </span>of<span class="w"> </span><span class="nb">test</span><span class="w"> </span>text.
+<p><code>exec</code> 的核心在于“替换”，当用它来执行命令时，它会用该命令替换当前的 Shell 进程，从而不创建新的子进程。</p>
+<h3 id="在脚本中启动最终程序">在脚本中启动最终程序<a class="headerlink" href="#在脚本中启动最终程序" title="Permanent link">#</a></h3>
+<p>在脚本末尾使用 <code>exec</code> 启动主程序，可以节省一个进程资源，并且主程序继承当前 Shell 的 PID。</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-7-1"><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="ch">#!/bin/bash</span>
+</span><span id="__span-7-2"><a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="c1"># ... 一些准备工作 ...</span>
+</span><span id="__span-7-3"><a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="c1"># 用主程序替换当前 shell</span>
+</span><span id="__span-7-4"><a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="nb">exec</span><span class="w"> </span>/usr/bin/my-daemon<span class="w"> </span>--config<span class="w"> </span>config.file
+</span><span id="__span-7-5"><a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a><span class="c1"># 这行之后的代码永远不会执行</span>
 </span></code></pre></div>
-<h2 id="while">while<a class="headerlink" href="#while" title="Permanent link">#</a></h2>
-<p><a href="https://stackoverflow.com/questions/10929453/read-a-file-line-by-line-assigning-the-value-to-a-variable">Read a file line by line assigning the value to a variable</a></p>
-<p><a href="http://mywiki.wooledge.org/BashFAQ/001">standard form</a> for reading lines from a file in a loop.</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="k">while</span><span class="w"> </span><span class="nv">IFS</span><span class="o">=</span><span class="w"> </span><span class="nb">read</span><span class="w"> </span>-r<span class="w"> </span>line<span class="p">;</span><span class="w"> </span><span class="k">do</span>
-</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Text read from file: </span><span class="nv">$line</span><span class="s2">&quot;</span>
-</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="k">done</span><span class="w"> </span>&lt;<span class="w"> </span>my_filename.txt
+<h3 id="永久重定向文件描述符">永久重定向文件描述符<a class="headerlink" href="#永久重定向文件描述符" title="Permanent link">#</a></h3>
+<p>这是 <code>exec</code> 极为常用的功能，可以为整个脚本或当前 Shell 会话永久性地重定向输入/输出。</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-8-1"><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="c1"># 将后续所有标准输出和错误追加到日志文件</span>
+</span><span id="__span-8-2"><a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="nb">exec</span><span class="w"> </span>&gt;&gt;<span class="w"> </span>/var/log/myscript.log<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span>
+</span><span id="__span-8-3"><a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;这条信息会写入日志文件，不再显示在终端。&quot;</span>
+</span><span id="__span-8-4"><a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>
+</span><span id="__span-8-5"><a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a><span class="c1"># 打开一个文件作为输入</span>
+</span><span id="__span-8-6"><a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a><span class="nb">exec</span><span class="w"> </span><span class="m">3</span>&lt;<span class="w"> </span>/etc/passwd
+</span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="nb">read</span><span class="w"> </span>-u<span class="w"> </span><span class="m">3</span><span class="w"> </span>line<span class="w">  </span><span class="c1"># 从文件描述符 3 读取</span>
+</span><span id="__span-8-8"><a id="__codelineno-8-8" name="__codelineno-8-8" href="#__codelineno-8-8"></a><span class="nb">exec</span><span class="w"> </span><span class="m">3</span>&lt;<span class="p">&amp;</span>-<span class="w">       </span><span class="c1"># 读取完毕后关闭文件描述符</span>
 </span></code></pre></div>
+<ol>
+<li>
+<p><strong><code>exec &gt;&gt; /var/log/myscript.log</code></strong>：<code>exec</code> 后面不跟命令，只跟重定向操作时，它会为当前整个 Shell 进程设置重定向规则。</p>
 <ul>
-<li><code>IFS=</code> (or <code>IFS=''</code>) prevents leading/trailing whitespace from being trimmed.  </li>
-<li><code>-r</code> prevents backslash escapes from being interpreted.  </li>
+<li><code>&gt;&gt; /var/log/myscript.log</code> 表示将标准输出（stdout，文件描述符 1）以追加模式重定向到文件 <code>/var/log/myscript.log</code>。</li>
+<li>与临时重定向（如 <code>echo "hello" &gt; file.log</code>，只对当前命令有效）不同，<code>exec</code> 设置的重定向是<strong>永久性</strong>的，对后续所有命令都有效，直到再次改变或脚本结束。</li>
 </ul>
-<p>Or you can put it in a bash file helper script, example contents:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="ch">#!/bin/bash</span>
-</span><span id="__span-9-2"><a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>
-</span><span id="__span-9-3"><a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="k">while</span><span class="w"> </span><span class="nv">IFS</span><span class="o">=</span><span class="w"> </span><span class="nb">read</span><span class="w"> </span>-r<span class="w"> </span>line<span class="p">;</span><span class="w"> </span><span class="k">do</span>
-</span><span id="__span-9-4"><a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Text read from file: </span><span class="nv">$line</span><span class="s2">&quot;</span>
-</span><span id="__span-9-5"><a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a><span class="k">done</span><span class="w"> </span>&lt;<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
+</li>
+<li>
+<p><strong><code>2&gt;&amp;1</code></strong>：这个操作符将<strong>标准错误（stderr，文件描述符 2）</strong> 重定向到<strong>标准输出（文件描述符 1）</strong> 当前指向的位置。因为上一条命令已经将标准输出重定向到了日志文件，所以标准错误也会被一同发送到日志文件。</p>
+<ul>
+<li><strong>效果</strong>：执行这行后，脚本中所有后续命令的普通输出和错误信息都会<strong>追加</strong>到 <code>/var/log/myscript.log</code> 文件中，而不会显示在终端上。这非常适合用于脚本日志记录。</li>
+</ul>
+</li>
+</ol>
+<hr />
+<ol>
+<li><strong><code>exec 3&lt; /etc/passwd</code></strong>：这行命令以<strong>只读</strong>方式打开文件 <code>/etc/passwd</code>，并将其分配给自定义的文件描述符 <code>3</code>。文件描述符 <code>0</code>、<code>1</code>、<code>2</code> 是系统预留的，我们通常使用 <code>3</code> 到 <code>9</code> 的自定义描述符。</li>
+<li><strong><code>read -u 3 line</code></strong>：<code>-u</code> 选项告诉 <code>read</code> 命令从指定的文件描述符（这里是 <code>3</code>）而不是标准输入读取一行内容，并将其赋值给变量 <code>line</code>。这样就实现了从特定文件中读取数据。</li>
+<li><strong><code>exec 3&lt;&amp;-</code></strong>：这是关闭文件描述符 <code>3</code> 的标准写法。虽然 Shell 在脚本结束时会自动关闭它，但显式关闭是一个好习惯，可以释放资源，避免在脚本后续部分误操作。如果尝试使用已关闭的描述符，会收到 "Bad file descriptor" 错误。</li>
+</ol>
+<h3 id="切换_shell_环境">切换 Shell 环境<a class="headerlink" href="#切换_shell_环境" title="Permanent link">#</a></h3>
+<p>如果你想在当前终端会话中永久切换到另一个 Shell（如 zsh），可以使用 <code>exec</code>。</p>
+<div class="language-bash highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="nb">exec</span><span class="w"> </span>zsh
 </span></code></pre></div>
-<p>If the file isn't a standard POSIX text file (= not terminated by a newline character), the loop can be modified to handle trailing partial lines:</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="k">while</span><span class="w"> </span><span class="nv">IFS</span><span class="o">=</span><span class="w"> </span><span class="nb">read</span><span class="w"> </span>-r<span class="w"> </span>line<span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="o">[[</span><span class="w"> </span>-n<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$line</span><span class="s2">&quot;</span><span class="w"> </span><span class="o">]]</span><span class="p">;</span><span class="w"> </span><span class="k">do</span>
-</span><span id="__span-10-2"><a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Text read from file: </span><span class="nv">$line</span><span class="s2">&quot;</span>
-</span><span id="__span-10-3"><a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="k">done</span><span class="w"> </span>&lt;<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span>
-</span></code></pre></div>
-<p>The output of <code>rclone lsf</code> is multiple lines separated by <code>\n</code>, while ... reads them line by line.</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="c1"># macOS bash 3.2&lt;4.0 doesn&#39;t support mapfile/readarray</span>
-</span><span id="__span-11-2"><a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="c1"># mapfile -t files &lt; &lt;(rclone lsf &quot;$1&quot;)</span>
-</span><span id="__span-11-3"><a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>rclone<span class="w"> </span>lsf<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2">&quot;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="k">while</span><span class="w"> </span><span class="nv">IFS</span><span class="o">=</span><span class="w"> </span><span class="nb">read</span><span class="w"> </span>-r<span class="w"> </span>name<span class="p">;</span><span class="w"> </span><span class="k">do</span>
-</span><span id="__span-11-4"><a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="w">    </span><span class="nb">echo</span><span class="w"> </span>-n<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$name</span><span class="s2">: &quot;</span>
-</span><span id="__span-11-5"><a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a>
-</span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a><span class="k">done</span>
-</span></code></pre></div>
-<p>Here, <code>|| [[ -n $line ]]</code> prevents the last line from being ignored if it doesn't end with a <code>\n</code> (since read returns a non-zero exit code when it encounters EOF).</p>
-<div class="language-bash highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="ch">#! /bin/bash</span>
-</span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>cat<span class="w"> </span>filename<span class="w"> </span><span class="p">|</span><span class="w"> </span><span class="k">while</span><span class="w"> </span><span class="nb">read</span><span class="w"> </span>LINE<span class="p">;</span><span class="w"> </span><span class="k">do</span>
-</span><span id="__span-12-3"><a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="w">    </span><span class="nb">echo</span><span class="w"> </span><span class="nv">$LINE</span>
-</span><span id="__span-12-4"><a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="k">done</span>
-</span></code></pre></div>
-<p>cat 重定向单行简写：<code>cat data2.txt | ( while read line; do echo $line; done )</code></p>
+<h2 id="eval_vs_exec">eval vs. exec<a class="headerlink" href="#eval_vs_exec" title="Permanent link">#</a></h2>
+<p>在 Bash shell 中，<code>eval</code> 和 <code>exec</code> 都是强大的内置命令，但它们的核心功能和使用场景有本质区别。简单来说，<code>eval</code> 用于<strong>二次解析并执行命令字符串</strong>，而 <code>exec</code> 用于<strong>替换当前进程或操作文件描述符</strong>。</p>
+<p>下面这个表格能帮你快速抓住它们的主要区别。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: left;">特性</th>
+<th style="text-align: left;"><code>eval</code></th>
+<th style="text-align: left;"><code>exec</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: left;"><strong>核心功能</strong></td>
+<td style="text-align: left;">二次解析字符串并作为命令执行</td>
+<td style="text-align: left;">用命令替换当前进程，或操作文件描述符</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>进程关系</strong></td>
+<td style="text-align: left;">在当前 Shell 的子进程中执行命令</td>
+<td style="text-align: left;">直接替换当前 Shell 进程，不创建新进程（执行命令时）</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>是否返回</strong></td>
+<td style="text-align: left;"><strong>返回</strong>原 Shell，继续执行后续命令</td>
+<td style="text-align: left;"><strong>不返回</strong>（执行命令时），原 Shell 被结束</td>
+</tr>
+<tr>
+<td style="text-align: left;"><strong>主要用途</strong></td>
+<td style="text-align: left;">1. 动态构造并执行命令<br>2. 间接引用变量<br>3. 处理含特殊字符的命令</td>
+<td style="text-align: left;">1. 在脚本中启动最终程序<br>2. 永久重定向输入/输出<br>3. 切换 Shell 环境</td>
+</tr>
+</tbody>
+</table>
+<p>记住一个关键点就能很好区分它们：<strong><code>eval</code> 是为了“更好地运行命令”，而 <code>exec</code> 在运行命令时是为了“运行后取而代之”</strong>。</p>
+<ul>
+<li>当你需要 Shell 再次解析一个动态生成的<strong>命令字符串</strong>时，用 <code>eval</code>。</li>
+<li>当你想用另一个命令<strong>完全替换</strong>当前 Shell，或者想要<strong>永久地重定向</strong>输入输出时，用 <code>exec</code>。</li>
+</ul>
 
 
 
@@ -1995,7 +2092,7 @@
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../12-get-ostype/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Linux Shell Program - ostype">
+          <a href="../13-read-by-line/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Linux Shell Program - read by line">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -2005,20 +2102,20 @@
                 Previous
               </span>
               <div class="md-ellipsis">
-                Linux Shell Program - ostype
+                Linux Shell Program - read by line
               </div>
             </div>
           </a>
         
         
           
-          <a href="../14-eval-exec/" class="md-footer__link md-footer__link--next" aria-label="Next: Linux Shell Program - eval &amp; exec">
+          <a href="../15-sh-daemon1/" class="md-footer__link md-footer__link--next" aria-label="Next: Linux Shell Program - daemon 1">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                Linux Shell Program - eval & exec
+                Linux Shell Program - daemon 1
               </div>
             </div>
             <div class="md-footer__button md-icon">

@@ -3,8 +3,8 @@ title: Linux Command - zip/unzip
 authors:
   - xman
 date:
-    created: 2019-10-30T09:30:00
-    updated: 2026-04-26T12:00:00
+    created: 2019-10-30T10:00:00
+    updated: 2026-05-30T13:00:00
 categories:
     - wiki
     - linux
