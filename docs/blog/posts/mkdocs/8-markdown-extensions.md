@@ -340,12 +340,11 @@ MathJax and KaTeX are two popular libraries for displaying mathematical content 
 ```YAML
 markdown_extensions:
   - pymdownx.arithmatex:
-      generic: true
+      generic: true  # 让 MkDocs 把 $$…$$ 原样交给 MathJax 处理
 
 extra_javascript:
   - javascripts/mathjax.js
-  - https://polyfill.io/v3/polyfill.min.js?features=es6
-  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+  - https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js
 ```
 
 **注意**：要将脚本拷贝到本地 docs/javascripts/mathjax.js。

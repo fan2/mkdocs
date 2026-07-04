@@ -4,6 +4,10 @@ window.MathJax = {
     displayMath: [["\\[", "\\]"]],
     processEscapes: true,
     processEnvironments: true,
+    packages: {'[+]': ['color', 'mathtools']} // 启用扩展
+  },
+  loader: {
+    load: ['[tex]/color', '[tex]/mathtools']  // 加载扩展
   },
   options: {
     ignoreHtmlClass: ".*|",
